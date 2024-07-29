@@ -1,0 +1,57 @@
+.video-carousel {
+  width: 100%;
+  height: auto;
+  margin: auto;
+}
+
+.video-carousel-item {
+  position: relative;
+  width: 100%;
+  height: 100vh; /* Full viewport height */
+}
+
+.video-element {
+  width: 100%;
+  height: 100vh; /* Full viewport height */
+  object-fit: cover; /* Ensure the video covers the container */
+}
+
+.video-carousel-caption {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  text-align: center;
+  padding: 10px;
+  border-radius: 10px;
+  z-index: 10;
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+  height: 100%;
+}
+
+.carousel .carousel-control-prev-icon,
+.carousel .carousel-control-next-icon {
+  visibility: visible;
+  background-color: #d4c7c7;
+}
+
+.carousel:hover .carousel-control-prev-icon,
+.carousel:hover .carousel-control-next-icon {
+  visibility: visible;
+}
+
+.video-carousel-button {
+  margin-top: 20px; /* Adjusted to fit better */
+  border-color: #B71A18;
+  color: #B71A18;
+  background-color: transparent;
+}
+
+.video-carousel-button:hover {
+  background-color: #B71A18;
+  color: white;
+}

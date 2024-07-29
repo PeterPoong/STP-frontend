@@ -1,0 +1,154 @@
+/* General Styling */
+.masthead {
+  position: relative;
+  width: 100%;
+  height: auto;
+}
+
+.header-image {
+  width: 100%;
+  height: 300px;
+  display: block;
+  object-fit: cover;
+}
+
+.country-button,
+.university-button {
+  background-color: #ffffff;
+  color: #B71A18;
+  border: 1px solid #B71A18;
+  min-width: 200px;
+  margin-top: 35px;
+}
+
+.country-button:hover,
+.university-button:hover {
+  background-color: #9c1515;
+  color: #ffffff;
+  border: none;
+}
+
+.pagination .page-item .page-link {
+  background-color: #B71A18;
+  color: white;
+  border: none;
+  margin-top: 30px;
+}
+
+.pagination .page-item.active .page-link {
+  background-color: #8B0000;
+  color: white;
+}
+
+.pagination .page-item .page-link:hover {
+  background-color: #ff6347;
+  color: white;
+}
+
+.mr-2 {
+  margin-right: 0.5rem;
+}
+
+.ml-auto {
+  margin-left: auto;
+}
+
+.studypal-image {
+  width: 1045px;
+  height: 150px;
+  display: block;
+  object-fit: cover;
+  margin-bottom: 40px;
+}
+
+/* Layout Adjustments */
+.location-container {
+  border: 1px solid #dadada;
+  border-radius: 10px;
+  height: auto; /* Adjusted for better responsiveness */
+  padding: 20px;
+}
+
+.institute-card {
+  width: 1045px;
+  height: auto;
+  /* style={{ borderColor: "#B71A18", borderRadius: "10px" }} */
+  border-color: #B71A18 ;
+  border-radius: 10px;
+}
+
+.institute-card .card-body {
+  display: flex;
+  align-items: flex-start;
+  padding: 20px;
+}
+
+.institute-card .card-image {
+  flex-shrink: 0;
+  margin-right: 20px;
+}
+
+.institute-card .card-image img {
+  max-width: 100px;
+  height: auto;
+  display: block;
+}
+
+.institute-card .card-content {
+  flex-grow: 1;
+  margin-right: 20px;
+}
+
+.institute-card .card-text {
+  margin-bottom: 10px;
+}
+
+.institute-card .details-div {
+  flex-shrink: 0;
+  width: 250px;
+}
+
+.institute-card .details-div .d-flex {
+  margin-bottom: 5px;
+}
+
+.institute-card .knowmore-button {
+  margin-top: 20px;
+  text-align: right;
+}
+
+.knowmore-button .featured {
+  background-color: #FFA500;
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+  .header-image {
+    height: 200px;
+  }
+
+  .institute-card {
+    width: 100%;
+  }
+
+  .studypal-image {
+    width: 100%;
+    max-width: none;
+  }
+
+  .location-container {
+    width: 100%;
+    height: auto;
+    padding: 10px;
+  }
+
+  .institute-card .details-div {
+    width: 100%;
+  }
+}

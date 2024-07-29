@@ -1,0 +1,71 @@
+/* Add this to your CSS file */
+.form-container {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin-top: 50px;
+}
+
+.form-header {
+  background-color: #f5f5f5;
+  padding: 15px;
+  border-radius: 5px 5px 0 0;
+  margin-top: 50px;
+}
+
+.stepper {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  margin: 0 auto;
+  width: 80%;
+}
+
+.step {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #d3d3d3;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.step.active {
+  background-color: #B71A18;
+}
+
+.step:before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: calc(100% / 5);
+  height: 2px;
+  background-color: #d3d3d3;
+  z-index: -1;
+}
+
+.step:nth-child(2):before {
+  width: calc(100% / 5 * 2);
+}
+
+.step:nth-child(3):before {
+  width: calc(100% / 5 * 3);
+}
+
+.step:nth-child(4):before {
+  width: calc(100% / 5 * 4);
+}
+
+.step:nth-child(5):before {
+  width: calc(100% / 5 * 5);
+}
+
+.step.active ~ .step:before {
+  background-color: #B71A18;
+}
