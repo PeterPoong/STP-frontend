@@ -1,4 +1,4 @@
-import React from "react";
+import { React, useEffect } from "react";
 import { useLocation, Link } from "react-router-dom";
 import NavButtons from "../Components/NavButtons";
 import headerImage from "../CoursesPage/images/StudyPal10.png";
@@ -23,6 +23,13 @@ import Footer from "../Components/Footer";
 const ApplyNow = () => {
   const location = useLocation();
   const { program } = location.state || {};
+
+  const test = import.meta.env.VITE_TEST;
+
+  useEffect(() => {
+    // Log environment variables to verify they are loaded
+    console.log(import.meta.env);
+  }, []);
 
   if (!program) {
     return <p>No program selected. Please go back and choose a program.</p>;
@@ -53,6 +60,7 @@ const ApplyNow = () => {
           <Col md={6} className="d-flex align-items-center">
             <div style={{ paddingBottom: "25px" }}>
               <h4>{program.university}</h4>
+              <p>{import.meta.env.VITE_random_Var}</p>
               <p>
                 <FontAwesomeIcon icon={faLocationDot} />
                 <span style={{ paddingLeft: "10px" }}>{program.location}</span>
@@ -102,7 +110,7 @@ const ApplyNow = () => {
         </div>
         <div className="card mt-4 apply-now-card">
           <div className="card-body">
-            <h5 className="card-title">Summary</h5>
+            <h5 className="card-title">Summary{test}</h5>
             <Row style={{ paddingLeft: "50px" }}>
               <Col md={4}>
                 <div style={{ marginBottom: "10px" }}>

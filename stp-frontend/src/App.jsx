@@ -12,7 +12,7 @@ import "../Footer.css";
 import Courses from "./Pages/CoursesPage";
 import ApplyForm from "./pages/ApplyForm";
 
-const App = () => {
+function App() {
   const style = {
     backgroundColor: "#f0f0f0", // For solid color
     // background: 'linear-gradient(to right, #ff7e5f, #feb47b)', // For gradient
@@ -50,7 +50,7 @@ const App = () => {
       </div>
     </Router>
   );
-};
+}
 
 export default App;
 <Route path="/videoslide" element={<VideoSlide />} />;

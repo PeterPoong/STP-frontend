@@ -1,66 +1,118 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Carousel, Card } from "react-bootstrap";
-import image1 from "../assets/image1.jpg";
-import image2 from "../assets/image2.png";
-import image3 from "../assets/image3.png";
-import image4 from "../assets/image4.png";
-import image5 from "../assets/image5.jpg";
-import image6 from "../assets/image6.png";
-import image7 from "../assets/image7.png";
-import image8 from "../assets/image8.png";
-import umslogo from "../assets/umslogo.png";
-import usmlogo from "../assets/usmlogo.jpeg";
-
-const images = [
-  image1,
-  image2,
-  umslogo,
-  image8,
-  image4,
-  image5,
-  usmlogo,
-  image7,
-];
 
 const itemsPerSlide = 4;
+const baseURL = import.meta.env.VITE_BASE_URL; // Using Vite environment variable
+const apiURL = import.meta.env.VITE_API_URL; // Using Vite environment variable
 
 const UniversityRow = () => {
-  const numSlides = Math.ceil(images.length / itemsPerSlide);
+  const [schools, setSchools] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    loadSchools();
+  }, []);
+
+  const loadSchools = async () => {
+    setLoading(true);
+    setError(null); // Clear previous errors
+
+    try {
+      const response = await fetch(apiURL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          // Add the necessary parameters for your POST request here
+          schoolID: 1,
+          schoolName: "updated School",
+          schoolLogo: "schoolLogo/1721804035.png",
+
+          schoolID: 2,
+          schoolName: "swinbrune",
+          schoolLogo: "schoolLogo/1721804464.png",
+
+          schoolID: 3,
+          schoolName: "curtin",
+          schoolLogo: "schoolLogo/1721804783.png",
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new Error("Response is not JSON");
+      }
+
+      const result = await response.json();
+      console.log("API Response:", result); // Debug log
+      setSchools(result.data);
+    } catch (error) {
+      setError(error.message);
+      console.error("Error fetching university images:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div>
-      <h4>Featured Universities</h4>
-      <Container
-        className="universityimages-container my-6"
-        style={{ padding: "20px" }}
-      >
-        <Carousel controls={true} style={{ height: "auto" }}>
-          {Array.from({ length: numSlides }).map((_, slideIndex) => (
-            <Carousel.Item key={slideIndex}>
-              <Row className="justify-content-center g-0">
-                {images
-                  .slice(
-                    slideIndex * itemsPerSlide,
-                    (slideIndex + 1) * itemsPerSlide
-                  )
-                  .map((src, index) => (
-                    <Col xs={12} md={4} lg={3} className="mb-3" key={index}>
-                      <Card className="university-card">
-                        <Card.Img
-                          variant="top"
-                          src={src}
-                          alt={`Slide ${
-                            slideIndex * itemsPerSlide + index + 1
-                          }`}
-                        />
-                      </Card>
-                    </Col>
-                  ))}
-              </Row>
-            </Carousel.Item>
-          ))}
-        </Carousel>
-      </Container>
+      {error && <div>Error: {error}</div>}
+      {loading && <div>Loading...</div>}
+      {!loading && schools.length > 0 && (
+        <div>
+          <h4>Featured Universities</h4>
+          <Container
+            className="universityimages-container my-6"
+            style={{ padding: "20px" }}
+          >
+            <Carousel controls={true} style={{ height: "auto" }}>
+              {Array.from({
+                length: Math.ceil(schools.length / itemsPerSlide),
+              }).map((_, slideIndex) => (
+                <Carousel.Item key={slideIndex}>
+                  <Row className="justify-content-center g-0">
+                    {schools
+                      .slice(
+                        slideIndex * itemsPerSlide,
+                        (slideIndex + 1) * itemsPerSlide
+                      )
+                      .map((school, index) => {
+                        const imgUrl = `${baseURL}storage/${school.schoolLogo}`;
+                        console.log("Image URL:", imgUrl); // Debug log
+                        return (
+                          <Col
+                            xs={12}
+                            md={4}
+                            lg={3}
+                            className="mb-3"
+                            key={index}
+                          >
+                            <Card className="university-card">
+                              <Card.Img
+                                variant="top"
+                                src={imgUrl}
+                                alt={school.schoolName}
+                              />
+                              <Card.Body>
+                                <Card.Title>{school.schoolName}</Card.Title>
+                              </Card.Body>
+                            </Card>
+                          </Col>
+                        );
+                      })}
+                  </Row>
+                </Carousel.Item>
+              ))}
+            </Carousel>
+          </Container>
+        </div>
+      )}
     </div>
   );
 };
