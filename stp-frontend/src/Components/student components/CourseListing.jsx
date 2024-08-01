@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Container, Row, Col, Form, Pagination } from "react-bootstrap";
 // import "../css/student css/course page css/CoursesPage.css";
 import "../../css/student css/course page css/CoursesPage.css";
-import StudyPal from "../assets/student asset/coursepage image/StudyPal.png";
+import StudyPal from "../../assets/student asset/coursepage image/StudyPal.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faGraduationCap,
@@ -11,9 +11,9 @@ import {
   faCalendarCheck,
   faLocationDot,
 } from "@fortawesome/free-solid-svg-icons";
-import image1 from "../assets/student asset/coursepage image/image1.jpg";
-import image7 from "../assets/student asset/coursepage image/image7.png";
-import image5 from "../assets/student asset/coursepage image/image5.jpg";
+import image1 from "../../assets/student asset/coursepage image/image1.jpg";
+import image7 from "../../assets/student asset/coursepage image/image7.png";
+import image5 from "../../assets/student asset/coursepage image/image5.jpg";
 import { useNavigate } from "react-router-dom";
 
 const CourseListing = () => {

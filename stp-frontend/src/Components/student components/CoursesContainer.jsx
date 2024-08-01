@@ -1,22 +1,23 @@
 // CoursesContainer.js
 
 import React from "react";
-import CoursesButton from "../Components/student components/CoursesButton";
+import CoursesButton from "../../Components/student components/CoursesButton";
 import { Container, Row, Col } from "react-bootstrap";
-import business from "../assets/student asset/CoursesLogo/business.png";
-import compsc from "../assets/student asset/CoursesLogo/compsc.png";
-import accounting from "../assets/student asset/CoursesLogo/accounting.png";
-import engineering from "../assets/student asset/CoursesLogo/engineering.png";
-import humanresource from "../assets/student asset/CoursesLogo/hr.png";
-import hospitality from "../assets/student asset/CoursesLogo/hosp.png";
-import medicine from "../assets/student asset/CoursesLogo/medicine.png";
-import finance from "../assets/student asset/CoursesLogo/finance.png";
-import technology from "../assets/student asset/CoursesLogo/technology.png";
-import architecture from "../assets/student asset/CoursesLogo/architecture.png";
-import multimedia from "../assets/student asset/CoursesLogo/multimedia.png";
-import economy from "../assets/student asset/CoursesLogo/economy.png";
-import science from "../assets/student asset/CoursesLogo/science.png";
-import languages from "../assets/student asset/CoursesLogo/language.png";
+// import business from "../assets/student asset/CoursesLogo/business.png";
+import business from "../../assets/student asset/CoursesLogo/business.png";
+import compsc from "../../assets/student asset/CoursesLogo/compsc.png";
+import accounting from "../../assets/student asset/CoursesLogo/accounting.png";
+import engineering from "../../assets/student asset/CoursesLogo/engineering.png";
+import humanresource from "../../assets/student asset/CoursesLogo/hr.png";
+import hospitality from "../../assets/student asset/CoursesLogo/hosp.png";
+import medicine from "../../assets/student asset/CoursesLogo/medicine.png";
+import finance from "../../assets/student asset/CoursesLogo/finance.png";
+import technology from "../../assets/student asset/CoursesLogo/technology.png";
+import architecture from "../../assets/student asset/CoursesLogo/architecture.png";
+import multimedia from "../../assets/student asset/CoursesLogo/multimedia.png";
+import economy from "../../assets/student asset/CoursesLogo/economy.png";
+import science from "../../assets/student asset/CoursesLogo/science.png";
+import languages from "../../assets/student asset/CoursesLogo/language.png";
 
 const CoursesContainer = () => {
   const buttons = [

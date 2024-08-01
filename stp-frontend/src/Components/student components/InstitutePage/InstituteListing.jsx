@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { Container, Row, Col, Form, Pagination } from "react-bootstrap";
-// import "../css/student css/institutepage css/Institute.css";
 import "../../../css/student css/institutepage css/Institute.css";
-import StudyPal from "../assets/student asset/institute image/StudyPal.png";
+import StudyPal from "../../../assets/student asset/institute image/StudyPal.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faGraduationCap,
@@ -13,9 +12,9 @@ import {
   faSchool,
   faBookOpen,
 } from "@fortawesome/free-solid-svg-icons";
-import image1 from "./images/image1.jpg";
-import image7 from "./images/image7.png";
-import image5 from "./images/image5.jpg";
+import image1 from "../../../assets/student asset/institute image/image1.jpg";
+import image7 from "../../../assets/student asset/institute image/image7.png";
+import image5 from "../../../assets/student asset/institute image/image5.jpg";
 import { useNavigate } from "react-router-dom";
 
 const InstituteListing = () => {

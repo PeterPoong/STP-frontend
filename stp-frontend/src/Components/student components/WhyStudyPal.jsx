@@ -1,8 +1,9 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Container, Row, Col } from "react-bootstrap";
-import gif from "../assets/student asset/stp.gif"; // Import the GIF file
-import cc from "../assets/student asset/circlecheck.png"; // Import the circle-check image
+// import gif from "../assets/student asset/stp.gif"; // Import the GIF file
+import gif from "../../assets/student asset/stp.gif";
+import cc from "../../assets/student asset/circlecheck.png"; // Import the circle-check image
 
 const WhyStudyPal = () => {
   return (

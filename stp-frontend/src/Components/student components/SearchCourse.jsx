@@ -11,9 +11,9 @@ import {
 } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../css/student css/course page css/CoursesPage.css";
-import malaysiaFlag from "../assets/student asset/coursepage image/malaysiaFlag.png";
-import koreaFlag from "../assets/student asset/coursepage image/koreaFlag.png";
+import "../../css/student css/course page css/CoursesPage.css";
+import malaysiaFlag from "../../assets/student asset/coursepage image/malaysiaFlag.png";
+import koreaFlag from "../../assets/student asset/coursepage image/koreaFlag.png";
 
 const SearchCourse = () => {
   return (

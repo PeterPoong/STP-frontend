@@ -1,8 +1,9 @@
 import { React, useEffect } from "react";
 import { useLocation, Link } from "react-router-dom";
 import NavButtons from "../../Components/student components/NavButtons";
+// import headerImage from "../../assets/student asset/coursepage image/StudyPal10.png";
 import headerImage from "../../assets/student asset/coursepage image/StudyPal10.png";
-import "../../css/student css/course page css/Apply.css";
+import "../../css/student css/Apply.css";
 import { Container, Row, Col, Button, Carousel } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -13,12 +14,12 @@ import {
   faLocationDot,
 } from "@fortawesome/free-solid-svg-icons";
 
-import studypal1 from "../assets/student asset/coursepage image/StudyPal1.png";
-import studypal2 from "../assets/student asset/coursepage image/StudyPal2.png";
-import studypal3 from "../assets/student asset/coursepage image/StudyPal3.png";
-import studypal4 from "../assets/student asset/coursepage image/StudyPal4.png";
-import studypal11 from "../assets/student asset/coursepage image/StudyPal11.png";
-import Footer from "../Components/student components/Footer";
+import studypal1 from "../../assets/student asset/coursepage image/StudyPal1.png";
+import studypal2 from "../../assets/student asset/coursepage image/StudyPal2.png";
+import studypal3 from "../../assets/student asset/coursepage image/StudyPal3.png";
+import studypal4 from "../../assets/student asset/coursepage image/StudyPal4.png";
+import studypal11 from "../../assets/student asset/coursepage image/StudyPal11.png";
+import Footer from "../../Components/student components/Footer";
 
 const ApplyNow = () => {
   const location = useLocation();

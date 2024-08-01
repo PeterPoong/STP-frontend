@@ -2,15 +2,17 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./App.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import Home from "./Pages/Home";
-import KnowMore from "./Pages/KnowMore";
-import ApplyNow from "./Pages/ApplyNow";
+import Home from "./Pages/student pages/Home";
+import KnowMore from "./Pages/student pages/KnowMore";
+import ApplyNow from "./Pages/student pages/ApplyNow";
+
 import NavButtons from "./Components/NavButtons";
 import "bootstrap/dist/css/bootstrap.min.css";
-import VideoSlide from "../Components/VideoSlide";
-import "../Footer.css";
-import Courses from "./Pages/CoursesPage";
-import ApplyForm from "./pages/ApplyForm";
+// import VideoSlide from "../Components/VideoSlide";
+import VideoSlide from "./Components/student components/VideoSlide";
+import Footer from "./css/student css/Footer.css";
+import Courses from "./Pages/student pages/CoursesPage";
+import ApplyForm from "./Pages/student pages/ApplyForm";
 
 function App() {
   const style = {

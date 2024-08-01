@@ -1,9 +1,9 @@
 import React from "react";
 import Carousel from "react-bootstrap/Carousel";
 import { Form, FormControl, InputGroup, Button } from "react-bootstrap";
-import library from "../assets/student asset/background image/library.jpg";
-import blurbg from "../assets/student asset/background image/blurbg.png";
-import "../css/student css/carousel css/FeaturedUni.css";
+import library from "../../assets/student asset/background image/library.jpg";
+import blurbg from "../../assets/student asset/background image/blurbg.png";
+import "../../css/student css/carousel css/FeaturedUni.css";
 
 const FeaturedUni = () => {
   return (

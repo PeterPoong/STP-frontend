@@ -1,11 +1,8 @@
-import "../VideoCarousel.css";
+import "../../css/student css/carousel css/VideoCarousel.css";
 import React from "react";
 import { Carousel } from "react-bootstrap";
-// import Vid1 from "../Videos/student asset/vid1.mp4";
-// import Vid2 from "../Videos/student asset/vid2.mp4";
-
-import Vid1 from "../assets/student asset/Videos/vid1.mp4";
-import Vid2 from "../assets/student asset/Videos/vid2.mp4";
+import Vid1 from "../../assets/student asset/Videos/vid1.mp4";
+import Vid2 from "../../assets/student asset/Videos/vid2.mp4";
 import "bootstrap/dist/css/bootstrap.css";
 
 const VideoSlide = () => {
