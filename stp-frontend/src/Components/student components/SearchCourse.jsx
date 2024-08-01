@@ -11,18 +11,17 @@ import {
 } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../InstitutePage/css/Institute.css";
-import malaysiaFlag from "../InstitutePage/images/malaysiaFlag.png";
-import koreaFlag from "../InstitutePage/images/koreaFlag.png";
+import "../css/student css/course page css/CoursesPage.css";
+import malaysiaFlag from "../assets/student asset/coursepage image/malaysiaFlag.png";
+import koreaFlag from "../assets/student asset/coursepage image/koreaFlag.png";
 
-const SearchInstitute = () => {
+const SearchCourse = () => {
   return (
     <Container>
-      <h3 className="text-left pt-3">Institute in Malaysia</h3>
+      <h3 className="pt-3">Courses in Degree</h3>
 
       <Row className="align-items-center mb-3">
-        {/* Country */}
-        <Col xs={12} sm={4} md={3} lg={2} className="mb-2 mb-md-0">
+        <Col xs={12} sm={4} md={3} lg={2} className="mb-2 mb-sm-0">
           <ButtonGroup>
             <Dropdown as={ButtonGroup}>
               <Dropdown.Toggle className="country-button" id="dropdown-country">
@@ -54,8 +53,7 @@ const SearchInstitute = () => {
           </ButtonGroup>
         </Col>
 
-        {/* Type of university */}
-        <Col xs={12} sm={6} md={4} lg={3} className="mb-2 mb-md-0">
+        <Col xs={12} sm={4} md={3} lg={2} className="mb-2 mb-sm-0">
           <ButtonGroup>
             <Dropdown as={ButtonGroup}>
               <Dropdown.Toggle
@@ -76,7 +74,24 @@ const SearchInstitute = () => {
           </ButtonGroup>
         </Col>
 
-        {/* Pagination */}
+        <Col xs={12} sm={4} md={3} lg={2} className="mb-2 mb-sm-0">
+          <ButtonGroup>
+            <Dropdown as={ButtonGroup}>
+              <Dropdown.Toggle className="degree-button" id="dropdown-degree">
+                Education
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                <Dropdown.Item className="dropdown" as={Link} to="/country">
+                  Diploma
+                </Dropdown.Item>
+                <Dropdown.Item className="dropdown" as={Link} to="/country">
+                  Degree
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+          </ButtonGroup>
+        </Col>
+
         <Col className="d-flex justify-content-end">
           <Pagination className="ml-auto mb-2 mb-md-0">
             <Pagination.Prev aria-label="Previous">
@@ -99,15 +114,10 @@ const SearchInstitute = () => {
             aria-label="Search for Courses, Institutions"
             aria-describedby="search-icon"
           />
-          {/* <InputGroup.Append>
-            <InputGroup.Text id="search-icon">
-              <i className="fas fa-search"></i>
-            </InputGroup.Text>
-          </InputGroup.Append> */}
         </InputGroup>
       </Form>
     </Container>
   );
 };
 
-export default SearchInstitute;
+export default SearchCourse;

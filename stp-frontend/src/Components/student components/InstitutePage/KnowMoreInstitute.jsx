@@ -1,8 +1,12 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
-import NavButtons from "../Components/NavButtons";
-import headerImage from "../InstitutePage/images/StudyPal10.png";
-import "../InstitutePage/css/KnowMoreInstitute.css";
+// import NavButtons from "../../../Components/student components/NavButtons";
+import NavButtons from "../NavButtons";
+
+// import headerImage from "../assets/student asset/institute image/StudyPal10.png";
+import headerImage from "../../../assets/student asset/institute image/StudyPal10.png";
+// import ".../css/student css/institutepage css/KnowMoreInstitute.css";
+import "../../../css/student css/institutepage css/KnowMoreInstitute.css";
 import { Container, Row, Col, Button, Carousel } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -15,15 +19,17 @@ import {
   faBookOpen,
 } from "@fortawesome/free-solid-svg-icons";
 
-import studypal1 from "../InstitutePage/images/StudyPal1.png";
-import studypal2 from "../InstitutePage/images/StudyPal2.png";
-import studypal3 from "../InstitutePage/images/StudyPal3.png";
-import studypal4 from "../InstitutePage/images/StudyPal4.png";
-import studypal11 from "../InstitutePage/images/StudyPal11.png";
-import Footer from "../Components/Footer";
-import image1 from "../InstitutePage/images/image1.jpg";
-import image7 from "../InstitutePage/images/image7.png";
-import image5 from "../InstitutePage/images/image5.jpg";
+// import studypal1 from "../assets/student asset/institute image/StudyPal1.png";
+import studypal1 from "../../../assets/student asset/institute image/StudyPal1.png";
+import studypal2 from "../../../assets/student asset/institute image/StudyPal2.png";
+import studypal3 from "../../../assets/student asset/institute image/StudyPal3.png";
+import studypal4 from "../../../assets/student asset/institute image/StudyPal4.png";
+import studypal11 from "../../../assets/student asset/institute image/StudyPal11.png";
+// import Footer from "../Components/student components/Footer";
+import Footer from "../Footer";
+import image1 from "../../../assets/student asset/institute image/image1.jpg";
+import image7 from "../../../assets/student asset/institute image/image7.png";
+import image5 from "../../../assets/student asset/institute image/image5.jpg";
 
 const KnowMoreInstitute = () => {
   const location = useLocation();

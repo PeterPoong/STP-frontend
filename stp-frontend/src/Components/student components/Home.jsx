@@ -1,13 +1,13 @@
 import React from "react";
 import ButtonGroup from "../Components/ButtonGroup";
-import NavButtons from "../Components/NavButtons";
+import NavButtons from "../Components/student components/NavButtons";
 import image1 from "../assets/image1.jpg";
-import FeaturedUni from "../Components/FeaturedUni";
-import UniversityRow from "../Components/UniversityRow";
-import WhyStudyPal from "../Components/WhyStudyPal";
-import CoursesContainer from "./CoursesContainer";
-import VideoSlide from "../Components/VideoSlide";
-import Footer from "../Components/Footer";
+import FeaturedUni from "../Components/student components/FeaturedUni";
+import UniversityRow from "../Components/student components/UniversityRow";
+import WhyStudyPal from "../Components/student components/WhyStudyPal";
+import CoursesContainer from "../Components/student components/CoursesContainer";
+import VideoSlide from "../Components/student components/VideoSlide";
+import Footer from "../Components/student components/Footer";
 
 const Home = () => {
   return (

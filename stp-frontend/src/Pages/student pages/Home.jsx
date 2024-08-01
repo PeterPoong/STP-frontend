@@ -1,15 +1,15 @@
 import React, { useEffect } from "react";
-import ButtonGroup from "../Components/ButtonGroup";
-import NavButtons from "../Components/NavButtons";
-import image1 from "../assets/image1.jpg";
-import FeaturedUni from "../Components/FeaturedUni";
-import UniversityRow from "../Components/UniversityRow";
-import WhyStudyPal from "../Components/WhyStudyPal";
-import CoursesContainer from "../Components/CoursesContainer";
+import ButtonGroup from "../../Components/student components/ButtonGroup";
+// import NavButtons from "../../../Components/student components/NavButtons";
+import NavButtons from "../../Components/student components/NavButtons";
+import FeaturedUni from "../Components/student components/FeaturedUni";
+import UniversityRow from "../Components/student components/UniversityRow";
+import WhyStudyPal from "../Components/student components/WhyStudyPal";
+import CoursesContainer from "../Components/student components/CoursesContainer";
 import { Button } from "react-bootstrap";
-import FeaturedCoursesContainer from "../Components/FeaturedCoursesContainer";
-import VideoSlide from "../Components/VideoSlide";
-import Footer from "../Components/Footer";
+import FeaturedCoursesContainer from "../Components/student components/FeaturedCoursesContainer";
+import VideoSlide from "../Components/student components/VideoSlide";
+import Footer from "../Components/student components/Footer";
 
 import AOS from "aos";
 import "aos/dist/aos.css";

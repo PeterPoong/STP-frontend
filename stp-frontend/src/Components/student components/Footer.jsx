@@ -1,10 +1,12 @@
 import React from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../Footer.css"; // Ensure this path is correct
-import fb from "../logo/fblogo.png";
-import ig from "../logo/instalogo.png";
-import sms from "../logo/smslogo.png";
+// import "../css/student css/Footer.css"; // Ensure this path is correct
+import "../../css/student css/Footer.css";
+// import fb from "../assets/student asset/logo/fblogo.png";
+import fb from "../../assets/student asset/logo/fblogo.png";
+import ig from "../../assets/student asset/logo/instalogo.png";
+import sms from "../../assets/student asset/logo/smslogo.png";
 
 const Footer = () => {
   return (

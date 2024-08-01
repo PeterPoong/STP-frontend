@@ -9,9 +9,10 @@ import {
 } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../InstitutePage/css/InstitutePage.css";
-import malaysiaFlag from "../CoursesPage/images/malaysiaFlag.png";
-import koreaFlag from "../CoursesPage/images/koreaFlag.png";
+// import "../css/student css/institutepage css/Institute.css";
+import "../../../css/student css/institutepage css/Institute.css";
+import malaysiaFlag from "../assets/student asset/institute image/malaysiaFlag.png";
+import koreaFlag from "../assets/student asset/institute image/koreaFlag.png";
 
 const SearchInstitute = () => {
   return (

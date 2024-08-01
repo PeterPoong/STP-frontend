@@ -1,20 +1,19 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Home from "./Pages/Home";
-import NotFoundPage from "./Pages/NotFoundPage";
-import KnowMore from "./Pages/KnowMore"; // Import KnowMore component
-import ApplyNow from "./Pages/ApplyNow"; // Import ApplyNow component
-import ApplyDetail from "./Pages/ApplyDetail"; // Import ApplyDetail component
+import Home from "./Pages/student pages/Home";
+import NotFoundPage from "./Pages/student pages/NotFoundPage";
+import KnowMore from "./Pages/student pages/KnowMore"; // Import KnowMore component
+import ApplyNow from "./Pages/student pages/ApplyNow"; // Import ApplyNow component
+import ApplyDetail from "./Pages/student pages/ApplyDetail"; // Import ApplyDetail component
 import "./index.css";
-import "./coursesbutton.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import LoginPage from "./Pages/LoginPage";
-import CoursesPage from "./Pages/CoursesPage";
-import InstitutePage from "./Pages/InstitutePage";
-import KnowMoreInstitute from "./InstitutePage/KnowMoreInstitute";
-import ApplyForm from "./ApplyPage/ApplyForm";
-import PersonalDetails from "./ApplyPage/PersonalDetails";
+import LoginPage from "./Pages/student pages/LoginPage";
+import CoursesPage from "./Pages/student pages/CoursesPage";
+import InstitutePage from "./Pages/student pages/InstitutePage";
+import KnowMoreInstitute from "./Components/student components/InstitutePage/KnowMoreInstitute";
+import ApplyForm from "./Pages/student pages/ApplyPage/ApplyForm";
+import PersonalDetails from "./Pages/student pages/ApplyPage/PersonalDetails";
 const router = createBrowserRouter([
   {
     path: "/",

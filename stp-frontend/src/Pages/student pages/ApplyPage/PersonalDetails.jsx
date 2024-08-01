@@ -1,9 +1,9 @@
 import React from "react";
 import { Container, Row, Col, Form, Button } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
-import "../ApplyPage/css/Apply.css";
-import NavButtons from "../Components/NavButtons";
-
+import "../../../css/student css/Apply.css";
+// import NavButtons from "../Components/student components/NavButtons";
+import NavButtons from "../../../Components/student components/NavButtons";
 const ApplyForm = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -25,7 +25,7 @@ const ApplyForm = () => {
       <Row className="justify-content-md-center">
         <Col md={8}>
           <div className="form-header text-center mb-4">
-            <h2>{program ? program.title : "Basic Details"}</h2>
+            <h2>{program ? program.title : "Personal Details"}</h2>
             {program ? (
               <div>
                 <p>
@@ -93,6 +93,9 @@ const ApplyForm = () => {
 
             <Button variant="primary" type="submit" className="mt-4" block>
               Next
+            </Button>
+            <Button variant="primary" type="submit" className="mt-4" block>
+              Previous
             </Button>
           </Form>
         </Col>

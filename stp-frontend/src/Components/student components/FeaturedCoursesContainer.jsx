@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Carousel, Container, Button } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../Unicard.css";
+import "../css/student css/carousel css/Unicard.css";
 
 const apiURL =
   "https://glorious-cricket-largely.ngrok-free.app/api/student/hpFeaturedCoursesList";

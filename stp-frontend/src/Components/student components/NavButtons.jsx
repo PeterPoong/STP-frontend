@@ -7,8 +7,10 @@ import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
 import Dropdown from "react-bootstrap/Dropdown";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
-import logo from "../assets/logo.png";
-import "../NavButtons.css";
+// import logo from "../assets/student asset/nav logo/logo.png";
+import logo from "../../assets/student asset/nav logo/logo.png";
+// import "../css/student css/NavButtons.css";
+import "../../css/student css/NavButtons.css";
 
 const NavigationBar = () => {
   return (

@@ -1,6 +1,6 @@
 // CoursesButton.js
 import React from "react";
-import "../CoursesButton.css";
+import "../css/student css/course button group/CoursesButton.css";
 
 const CoursesButton = ({ src, label }) => {
   return (
