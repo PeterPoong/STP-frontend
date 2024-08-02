@@ -1,0 +1,116 @@
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: #d9d9d9;
+    height: 100vh;
+    margin: 0;
+  }
+
+  /*↓ Password Eye ↓*/
+  .password-container {
+    position: relative;
+  }
+  
+  .password-icon {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    cursor: pointer;
+  }
+  /*↑ Password Eye ↑*/
+  
+  .login-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+  }
+  
+  .logo-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  
+  .logo-image {
+    width: 450px;
+    height: 150px;
+  }
+  
+  .login-card {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+  
+  .login-container {
+    background-color: #ffffff;
+    border: none;
+    border-radius: 15px;
+    padding: 2rem;
+    width: 400px;
+  }
+  
+  .login-title {
+    text-align: center;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .signup-button {
+    width: 100%;
+    margin-top: 1rem;
+    background-color: #000;
+    border: none;
+  }
+  
+  .signup-button:hover {
+    background-color: #333;
+  }
+  
+  .login-footer {
+    text-align: center;
+    margin-top: 1rem;
+  }
+  
+  .login-footer a {
+    color: #000;
+    text-decoration: none;
+  }
+  
+  .login-footer a:hover {
+    text-decoration: underline;
+  }
+  
+  .social-login {
+    text-align: center;
+    margin-top: 1rem;
+  }
+  
+  .social-login p {
+    margin: 0.5rem 0;
+  }
+  
+  .social-button {
+    width: 100%;
+    margin-top: 0.5rem;
+    background-color: #ffffff;
+    border: 1px solid #000;
+    color: #000;
+  }
+  
+  .social-button:hover {
+    background-color: #f8f9fa;
+  }
+
+  .forgot-password {
+    color: #000;
+    text-decoration: none;
+  }
+  
+  .forgot-password:hover {
+    text-decoration: underline;
+  }

@@ -14,6 +14,12 @@ import InstitutePage from "./Pages/student pages/InstitutePage";
 import KnowMoreInstitute from "./Components/student components/InstitutePage/KnowMoreInstitute";
 import ApplyForm from "./Pages/student pages/ApplyPage/ApplyForm";
 import PersonalDetails from "./Pages/student pages/ApplyPage/PersonalDetails";
+
+// Admin Login Page
+import AdminSignup from "./Pages/AdminPages/AdminSignup";
+import AdminLogin from "./Pages/AdminPages/AdminLogin"
+
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -56,6 +62,17 @@ const router = createBrowserRouter([
     path: "/personaldetails",
     element: <PersonalDetails />,
   },
+
+  // Admin Logins
+  {
+    path: "/adminSignup",
+    element: <AdminSignup/>
+  },
+
+  {
+    path: "/adminLogin",
+    element: <AdminLogin/>
+  }
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
