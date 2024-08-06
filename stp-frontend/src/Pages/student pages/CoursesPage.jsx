@@ -1,13 +1,8 @@
 import React from "react";
-// import NavButtons from "../../../Components/student components/NavButtons";
 import NavButtons from "../../Components/student components/NavButtons";
-// import SearchCourse from "../Components/student components/SearchCourse";
-import SearchCourse from "../../Components/student components/SearchCourse";
-// import headerImage from "../assets/student asset/coursepage image/heading.png";
+import SearchCourse from "../../Components/student components/CoursePage/SearchCourse";
 import headerImage from "../../assets/student asset/coursepage image/heading.png";
-// import CourseListing from "../Components/student components/CourseListing";
-import CourseListing from "../../Components/student components/CourseListing";
-// import Footer from "../Components/student components/Footer";
+import CourseListing from "../../Components/student components/CoursePage/CourseListing";
 import Footer from "../../Components/student components/Footer";
 
 const CoursesPage = () => {
@@ -18,9 +13,7 @@ const CoursesPage = () => {
         <img src={headerImage} alt="Header" className="header-image" />
       </header>
       <SearchCourse />
-      <div>
-        <CourseListing />
-      </div>
+      <div></div>
       <div>
         <Footer />
       </div>

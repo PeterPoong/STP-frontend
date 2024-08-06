@@ -1,61 +1,60 @@
 .carousel-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  flex-wrap: wrap;
+}
+
+.featured-course-card {
+  margin: 10px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #fff;
+  text-align: center;
+  max-width: 300px; /* Adjust width as needed */
+  box-sizing: border-box;
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.featured-course-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.section-image {
+  width: 50px;
+  height: 200px; /* Fixed height */
+  object-fit: cover; /* Ensures image covers the area while maintaining aspect ratio */
+}
+
+@media (min-width: 768px) {
+  .carousel-item {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 200px;
-    flex-wrap: wrap;
-
   }
-  
+
   .featured-course-card {
-    margin: 10px;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    background-color: #fff;
-    text-align: center;
-    max-width: 300px; /* Adjust width as needed */
-    box-sizing: border-box;
-    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    flex: 1 0 calc(33.333% - 20px); /* Three items per slide */
+    max-width: calc(33.333% - 20px);
+  }
+}
+
+@media (max-width: 767px) {
+  .carousel-item {
+    display: block;
   }
 
-  .featured-course-card:hover{
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  .featured-course-card {
+    flex: 1 0 100%;
+    max-width: 100%;
   }
-  
-  .section-image {
-    width: 50px;
-    height: 200px; /* Fixed height */
-    object-fit: cover; /* Ensures image covers the area while maintaining aspect ratio */
-  }
-  
-  @media (min-width: 768px) {
-    .carousel-item {
-      display: flex;
-    }
-  
-    .featured-course-card {
-      flex: 1 0 calc(33.333% - 20px); /* Three items per slide */
-      max-width: calc(33.333% - 20px);
-    }
-  }
-  
-  @media (max-width: 767px) {
-    .carousel-item {
-      display: block;
-    }
-  
-    .featured-course-card {
-      flex: 1 0 100%;
-      max-width: 100%;
-    }
-  }
-  
+}
+
 .carousel-control-prev,
 .carousel-control-next {
-    color: azure;
-} 
+  color: azure;
+}
 
 @media (max-width: 992px) {
   .featured-course-card {
@@ -68,4 +67,3 @@
     width: calc(100% - 20px);
   }
 }
-

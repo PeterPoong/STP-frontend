@@ -4,8 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 // import "../css/student css/carousel css/Unicard.css";
 import "../../css/student css/carousel css/Unicard.css";
 
-const apiURL =
-  "https://glorious-cricket-largely.ngrok-free.app/api/student/hpFeaturedCoursesList";
+const apiURL = "http://192.168.0.69:8000/api/student/hpFeaturedCoursesList";
 
 const FeaturedCoursesContainer = () => {
   const [courses, setCourses] = useState([]);
@@ -73,7 +72,7 @@ const FeaturedCoursesContainer = () => {
                       <div key={idx} className="featured-course-card">
                         <div style={{ height: "240px" }}>
                           <img
-                            src={`https://glorious-cricket-largely.ngrok-free.app/storage/${course.course_logo}`}
+                            src={`http://192.168.0.69:8000/storage/${course.course_logo}`}
                             alt={course.course_school}
                             className="section-image"
                           />

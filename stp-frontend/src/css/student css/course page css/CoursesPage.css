@@ -219,3 +219,65 @@
   }
 }
 
+.search-button {
+  background-color: #B71A18;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 0 5px 5px 0; /* Ensure the button aligns with the input */
+  cursor: pointer;
+  height: 100%; /* Make sure the button height matches the input height */
+}
+
+.search-button:hover {
+  background-color: #9c1515;
+}
+
+/* Default state for larger screens */
+.custom-accordion {
+  display: none;
+}
+
+/* Filters are always visible on larger screens */
+.filters-container {
+  display: block;
+}
+
+/* Media query for smaller screens */
+@media (max-width: 767px) {
+  .custom-accordion {
+    display: block;
+  }
+  
+  .filters-container {
+    display: none;
+  }
+}
+
+/* Style for the Accordion Header */
+.custom-accordion-header {
+  /* background-color: #b71a18; */
+  color: white;
+  font-weight: bold;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+/* Style for the Accordion Body */
+.custom-accordion-body {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border: 1px solid #dee2e6;
+  border-radius: 5px;
+}
+
+/* Additional Custom Styles */
+.custom-range-label {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.custom-range-input {
+  color: #b71a18;
+}
+

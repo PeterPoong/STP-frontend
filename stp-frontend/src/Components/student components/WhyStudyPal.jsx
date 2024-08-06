@@ -10,7 +10,7 @@ const WhyStudyPal = () => {
     <div className="container-fluid">
       <Container className="whystp-container">
         <Row className="why-study-pal-card wider-card responsive-card">
-          <Col md={8}>
+          <Col md={6}>
             <div>
               <h2
                 className="text-left"
@@ -79,12 +79,12 @@ const WhyStudyPal = () => {
               </div>
             </div>
           </Col>
-          <Col md={4}>
+          <Col md={6}>
             <img
               src={gif}
               className="img-fluid"
               alt="Why StudyPal"
-              style={{ maxWidth: "100%", height: "auto" }} // Adjust max-width and height as needed
+              style={{ maxWidth: "600px", maxHeight: "auto" }} // Adjust max-width and height as needed
             />
           </Col>
         </Row>

@@ -15,9 +15,7 @@ const InstitutePage = () => {
         <img src={headerImage} alt="Header" className="header-image" />
       </header>
       <SearchInstitute />
-      <div>
-        <InstituteListing />
-      </div>
+      <div> </div>
       <div>
         <Footer />
       </div>

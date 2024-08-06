@@ -14,14 +14,14 @@ import {
 } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../../../css/student css/institutepage css/Institute.css";
-import InstituteListing from "./InstituteListing";
+import "../../../css/student css/course page css/CoursesPage.css";
+import CourseListing from "../../../Components/student components/CoursePage/CourseListing";
 
-const apiURL = "http://192.168.0.69:8000/api/student/schoolList";
+const apiURL = "http://192.168.0.69:8000/api/student/courseList";
 const countriesURL = "http://192.168.0.69:8000/api/student/countryList";
 const instituteURL = "http://192.168.0.69:8000/api/student/instituteType";
 
-const SearchInstitute = () => {
+const SearchCourse = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -136,7 +136,7 @@ const SearchInstitute = () => {
     if (searchQuery.trim()) {
       fetchData();
     }
-  }, [searchQuery, currentPage, selectedCountry, selectedInstitute]);
+  }, [searchQuery, currentPage, selectedCountry, selectedInstitute]); // Dependencies for useEffect
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -156,9 +156,7 @@ const SearchInstitute = () => {
 
   return (
     <Container>
-      <h3 style={{ textAlign: "left", paddingTop: "15px" }}>
-        Institute in Malaysia
-      </h3>
+      <h3 className="pt-3">Courses in Degree</h3>
 
       <Row className="align-items-center mb-3">
         <Col xs={12} sm={4} md={3} lg={2} className="mb-2 mb-sm-0">
@@ -223,6 +221,24 @@ const SearchInstitute = () => {
           </ButtonGroup>
         </Col>
 
+        <Col xs={12} sm={4} md={3} lg={2} className="mb-2 mb-sm-0">
+          <ButtonGroup>
+            <Dropdown as={ButtonGroup}>
+              <Dropdown.Toggle className="degree-button" id="dropdown-degree">
+                Education
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                <Dropdown.Item className="dropdown" as={Link} to="/country">
+                  Diploma
+                </Dropdown.Item>
+                <Dropdown.Item className="dropdown" as={Link} to="/country">
+                  Degree
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+          </ButtonGroup>
+        </Col>
+
         <Col className="d-flex justify-content-end">
           <Pagination className="ml-auto mb-2 mb-md-0">
             <Pagination.Prev
@@ -276,9 +292,9 @@ const SearchInstitute = () => {
 
       {error && <Alert variant="danger">{error}</Alert>}
 
-      <InstituteListing searchResults={searchResults} />
+      <CourseListing searchResults={searchResults} />
     </Container>
   );
 };
 
-export default SearchInstitute;
+export default SearchCourse;

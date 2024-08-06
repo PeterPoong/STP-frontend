@@ -7,8 +7,8 @@ import {
   Pagination,
   Accordion,
 } from "react-bootstrap";
-import "../../../css/student css/institutepage css/Institute.css";
-import StudyPal from "../../../assets/student asset/institute image/StudyPal.png";
+import "../../../css/student css/course page css/CoursesPage.css";
+import StudyPal from "../../../assets/student asset/coursepage image/StudyPal.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faGraduationCap,
@@ -16,25 +16,79 @@ import {
   faCalendarAlt,
   faCalendarCheck,
   faLocationDot,
-  faSchool,
-  faBookOpen,
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 
 const baseURL = import.meta.env.VITE_BASE_URL;
-const apiURL = "http://192.168.0.69:8000/api/student/schoolList";
+const apiURL = "http://192.168.0.69:8000/api/student/courseList";
 
-const InstituteListing = ({ searchResults = [] }) => {
+const CourseListing = ({ searchResults = [] }) => {
   const [locationFilters, setLocationFilters] = useState([]);
   const [categoryFilters, setCategoryFilters] = useState([]);
   const [modeFilters, setModeFilters] = useState([]);
-  const [institutes, setInstitutes] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [tuitionFee, setTuitionFee] = useState(0); // Initial state for tuition fee range
-  const navigate = useNavigate(); // Initialize useNavigate
+  const [programs, setPrograms] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+
+      const maxRetries = 5;
+      let attempt = 0;
+      const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+      while (attempt < maxRetries) {
+        try {
+          const response = await fetch(apiURL, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({}),
+          });
+
+          if (response.status === 429) {
+            attempt++;
+            const waitTime = Math.pow(2, attempt) * 1000; // Exponential backoff
+            await delay(waitTime);
+            continue; // Retry request
+          }
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+
+          const contentType = response.headers.get("content-type");
+          if (!contentType || !contentType.includes("application/json")) {
+            throw new Error("Response is not JSON");
+          }
+
+          const result = await response.json();
+          setPrograms(result.data);
+
+          if (result.data) {
+            console.log("Fetched courses:", result.data);
+          } else {
+            throw new Error("Invalid API response structure");
+          }
+          break; // Exit while loop if successful
+        } catch (error) {
+          setError(error.message);
+          console.error("Error fetching course data:", error);
+          break; // Exit while loop if an error occurs
+        }
+      }
+
+      setLoading(false);
+    };
+
+    fetchData();
+  }, [searchResults]);
+
   const locations = [
     "Johor",
     "Kedah",
@@ -66,57 +120,6 @@ const InstituteListing = ({ searchResults = [] }) => {
 
   const modes = ["Full time", "Part time", "Remote"];
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
-
-      const maxRetries = 5;
-      let attempt = 0;
-      const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-      while (attempt < maxRetries) {
-        try {
-          const response = await fetch(`${apiURL}?page=${currentPage}`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          });
-
-          if (response.status === 429) {
-            attempt++;
-            const waitTime = Math.pow(2, attempt) * 1000; // Exponential backoff
-            await delay(waitTime);
-            continue; // Retry request
-          }
-
-          if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-          }
-
-          const result = await response.json();
-
-          setInstitutes(result.data);
-          setTotalPages(result.last_page);
-          break; // Exit while loop if successful
-        } catch (error) {
-          setError(error.message);
-          console.error("Error fetching institutes:", error);
-          if (response.status !== 429) break; // Exit while loop if an error occurs other than 429
-        }
-      }
-
-      setLoading(false);
-    };
-
-    fetchData();
-  }, [searchResults]);
-
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
-
   const handleLocationChange = (location) => {
     if (locationFilters.includes(location)) {
       setLocationFilters(locationFilters.filter((l) => l !== location));
@@ -142,13 +145,13 @@ const InstituteListing = ({ searchResults = [] }) => {
   };
 
   const handleApplyNow = (program) => {
-    navigate("/applynow", { state: { program } }); // Navigate with state
+    navigate("/applynow", { state: { program } });
   };
 
-  const displayInstitutes =
-    searchResults.length > 0 ? searchResults : institutes;
+  // Use searchResults prop if provided
+  const displayPrograms = searchResults.length > 0 ? searchResults : programs;
 
-  const mappedInstitutes = displayInstitutes.map((program, index) => (
+  const mappedPrograms = displayPrograms.map((program, index) => (
     <div key={index} className="card mb-4 degree-card">
       <div className="card-body d-flex flex-column flex-md-row align-items-start">
         <div className="card-image mb-3 mb-md-0">
@@ -210,7 +213,7 @@ const InstituteListing = ({ searchResults = [] }) => {
               <Row className="align-items-center justify-content-end">
                 <div className="fee-apply ms-5">
                   <div className="fee-info">
-                    <p>Estimate Fee</p>
+                    <p>estimate fee</p>
                     <span>{program.fee}</span>
                   </div>
                   <div className="apply-button">
@@ -384,38 +387,26 @@ const InstituteListing = ({ searchResults = [] }) => {
             <div>Loading...</div>
           ) : error ? (
             <div>Error: {error}</div>
-          ) : institutes.length > 0 ? (
-            mappedInstitutes
+          ) : programs.length > 0 ? (
+            mappedPrograms
           ) : (
-            <div>No institute available</div>
+            <div>No programs available</div>
           )}
         </Col>
-        <Col xs={12} className="d-flex justify-content-end">
-          <Pagination className="pagination">
-            <Pagination.Prev
-              aria-label="Previous"
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-            />
-            {[...Array(totalPages)].map((_, index) => (
-              <Pagination.Item
-                key={index + 1}
-                active={index + 1 === currentPage}
-                onClick={() => handlePageChange(index + 1)}
-              >
-                {index + 1}
-              </Pagination.Item>
-            ))}
-            <Pagination.Next
-              aria-label="Next"
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-            />
-          </Pagination>
-        </Col>
+        <Pagination className="d-flex justify-content-end">
+          <Pagination.Prev aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+          </Pagination.Prev>
+          <Pagination.Item active>{1}</Pagination.Item>
+          <Pagination.Item>{2}</Pagination.Item>
+          <Pagination.Item>{3}</Pagination.Item>
+          <Pagination.Next aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+          </Pagination.Next>
+        </Pagination>
       </Row>
     </Container>
   );
 };
 
-export default InstituteListing;
+export default CourseListing;
