@@ -22,6 +22,7 @@ const countriesURL = "http://192.168.0.69:8000/api/student/countryList";
 const instituteURL = "http://192.168.0.69:8000/api/student/instituteType";
 
 const SearchCourse = () => {
+  const [locationFilters, setLocationFilters] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -35,7 +36,7 @@ const SearchCourse = () => {
 
   // Fetch countries from API
   useEffect(() => {
-    const fetchCountries = async () => {
+    const fetchCountries = async (countryID) => {
       try {
         const response = await fetch(countriesURL, {
           method: "GET",
@@ -146,8 +147,14 @@ const SearchCourse = () => {
     setCurrentPage(1); // Reset to first page when search query changes
   };
 
-  const handleCountryChange = (country) => {
-    setSelectedCountry(country);
+  const handleCountryChange = async (countryID) => {
+    console.log("Country selected:", countryID);
+    setSelectedCountry(countryID);
+    if (countryID) {
+      setLocationFilters(countryID.locations || []);
+    } else {
+      setLocationFilters([]);
+    }
   };
 
   const handleInstituteChange = (institute) => {
@@ -160,9 +167,12 @@ const SearchCourse = () => {
 
       <Row className="align-items-center mb-3">
         <Col xs={12} sm={4} md={3} lg={2} className="mb-2 mb-sm-0">
-          <ButtonGroup>
-            <Dropdown as={ButtonGroup}>
-              <Dropdown.Toggle className="country-button" id="dropdown-country">
+          <ButtonGroup className="w-100">
+            <Dropdown as={ButtonGroup} className="w-100">
+              <Dropdown.Toggle
+                className="country-button w-100"
+                id="dropdown-country"
+              >
                 {selectedCountry ? selectedCountry.country_name : "Country"}
               </Dropdown.Toggle>
               <Dropdown.Menu>
@@ -192,10 +202,10 @@ const SearchCourse = () => {
         </Col>
 
         <Col xs={12} sm={4} md={3} lg={2} className="mb-2 mb-sm-0">
-          <ButtonGroup>
-            <Dropdown as={ButtonGroup}>
+          <ButtonGroup className="w-100">
+            <Dropdown as={ButtonGroup} className="w-100">
               <Dropdown.Toggle
-                className="university-button"
+                className="university-button w-100"
                 id="dropdown-university"
               >
                 {selectedInstitute
@@ -222,9 +232,12 @@ const SearchCourse = () => {
         </Col>
 
         <Col xs={12} sm={4} md={3} lg={2} className="mb-2 mb-sm-0">
-          <ButtonGroup>
-            <Dropdown as={ButtonGroup}>
-              <Dropdown.Toggle className="degree-button" id="dropdown-degree">
+          <ButtonGroup className="w-100">
+            <Dropdown as={ButtonGroup} className="w-100">
+              <Dropdown.Toggle
+                className="degree-button w-100"
+                id="dropdown-degree"
+              >
                 Education
               </Dropdown.Toggle>
               <Dropdown.Menu>

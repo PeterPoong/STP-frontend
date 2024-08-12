@@ -78,11 +78,13 @@
 }
 
 .degree-card {
+  display: flex;
+  flex-direction: column;
   width: 1045px;
-  height: 150px;
-  /* style={{ borderColor: "#B71A18", borderRadius: "10px" }} */
-  border-color: #B71A18 ;
+  height: auto;
+  border-color: #B71A18;
   border-radius: 10px;
+  margin-bottom: 20px; /* Add spacing between cards */
 }
 
 .degree-card .card-title {
@@ -91,36 +93,51 @@
 
 .degree-card .card-body {
   display: flex;
+  flex-direction: row;
   align-items: flex-start;
-  padding: 20px;
+  position: relative;
 }
 
 .degree-card .card-image {
   flex-shrink: 0;
-  
+  margin-right: 20px;
+  margin-bottom: 10px; /* Adjusted for smaller screens */
 }
 
 .degree-card .card-image img {
   max-width: 100px;
   height: auto;
+  display: block;
+}
+
+.degree-card .card-content {
+  flex-grow: 1;
+  margin-right: 20px;
+}
+
+.degree-card .card-text {
+  margin-bottom: 10px;
 }
 
 .degree-card .details-div {
-  flex-shrink: 0;
-  width: 250px;
-
+  flex-grow: 1;
 }
 
-.degree-card .details-div .d-flex {
+/* .degree-card .details-div .d-flex {
   margin-bottom: 5px;
+} */
+
+.degree-card .apply-button  {
+  margin-top: 20px;
+  text-align: right;
 }
 
-
-.apply-button .featured{
-  background-color: #B71A18;
-  color: #ffffff;
-  margin-left: auto;
-  width: 150px;
+.degree-card .fee-apply {
+  margin-left: 100px; /* Pushes the fee-apply div to the right side */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
 }
 
 
@@ -128,24 +145,21 @@
   background-color: #c00;
 }
 
-
 .fee-info {
   text-align: right;
   margin-right: 10px; /* Adjust margin to bring the text closer */
 
 }
 
-.apply-button {
+.apply-button .featured {
   margin-left: 10px;
-}
-
-.featured {
   background-color: #B71A18;
   color: white;
   border: none;
   padding: 10px 20px;
   border-radius: 5px;
   cursor: pointer;
+  width: 150px;
 }
 
 .featured:hover {
@@ -161,6 +175,23 @@
   justify-content: flex-end;
 }
 
+
+/* Ensure buttons stack vertically on larger screens and horizontally on smaller screens */
+@media (max-width: 767px) {
+  .dropdown-button-group {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+@media (min-width: 768px) {
+  .dropdown-button-group {
+    display: flex;
+    flex-direction: row;
+  }
+}
+
+
 @media (max-width: 576px) {
   .country-button,
   .university-button,
@@ -175,12 +206,19 @@
     width: 100%;
     height: auto;
   }
-  .details-div {
-    padding-left: 0;
+  .degree-card .card-body {
+    flex-direction: row;
   }
-  .fee-apply {
-    align-items: flex-start;
+  
+  .degree-card .details-div, .degree-card .fee-apply {
+    display: flex;
+    flex-direction: column;
   }
+
+  .degree-card .fee-apply {
+    text-align: right;
+  }
+
   .card-body {
     flex-direction: column;
     
@@ -198,24 +236,29 @@
   .search-course-container {
     padding: 0 15px;
   }
-  .degree-card {
-    width: 100%;
-    height: auto;
-  }
-  .card-body {
+  .degree-card .card-body {
     flex-direction: column;
     align-items: flex-start;
   }
-  .card-image {
+
+  .degree-card .card-image {
     margin-bottom: 15px;
   }
-  .degree-card .details-div {
-    width: 100%;
 
+  .degree-card .details-div,
+  .degree-card .fee-apply {
+    width: 100%;
+    text-align: left; /* Adjusted for smaller screens */
   }
-  .fee-apply {
+
+  .degree-card .fee-apply {
     align-items: flex-start;
     margin-top: 15px;
+    text-align: right;
+  }
+
+  .degree-card .apply-button .featured {
+    width: 100%; /* Make the button full width on smaller screens */
   }
 }
 

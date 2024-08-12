@@ -517,11 +517,18 @@ button:focus-visible {
 }
 
 .universityimages-container {
-  background-color: #ffffff;
+  /* background-color: #ffffff;
   border: 1px solid #ced4da;
   border-radius: 8px;
   margin: 0% auto;
-  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%; /* Full width */
+  margin: 0 auto; /* Center */
+  background-color: white;
+  padding: 1rem 0;
 }
 
 .universityimages-container:hover {
@@ -530,8 +537,8 @@ button:focus-visible {
 }
 
 .university-card {
-  width: 80%;
-  height: 90%;
+  max-width: 80%;
+  max-height: 90%;
   border: none;
 }
 

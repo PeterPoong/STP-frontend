@@ -24,9 +24,9 @@
 }
 
 .section-image {
-  width: 50px;
-  height: 200px; /* Fixed height */
-  object-fit: cover; /* Ensures image covers the area while maintaining aspect ratio */
+  max-width: 50px;
+  max-height: 100px; /* Fixed height */
+  object-fit: fit; /* Ensures image covers the area while maintaining aspect ratio */
 }
 
 @media (min-width: 768px) {
@@ -67,3 +67,5 @@
     width: calc(100% - 20px);
   }
 }
+
+

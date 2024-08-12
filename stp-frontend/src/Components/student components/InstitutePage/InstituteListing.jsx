@@ -23,19 +23,36 @@ import { useNavigate } from "react-router-dom";
 
 const baseURL = import.meta.env.VITE_BASE_URL;
 const apiURL = "http://192.168.0.69:8000/api/student/schoolList";
+const locationAPIURL =
+  "http://192.168.0.69:8000/api/student/locationFilterList";
+const studylevelAPIURL =
+  "http://192.168.0.69:8000/api/student/qualificationFilterList";
+const studyModeAPIURL =
+  "http://192.168.0.69:8000/api/student/studyModeFilterlist";
+const tuitionFeeAPIURL =
+  "http://192.168.0.69:8000/api/student/tuitionFeeFilterRange";
 
 const InstituteListing = ({ searchResults = [] }) => {
   const [locationFilters, setLocationFilters] = useState([]);
   const [categoryFilters, setCategoryFilters] = useState([]);
+  const [studyLevelFilters, setStudyLevelFilters] = useState([]);
+  const [intakeFilters, setIntakeFilters] = useState([]);
   const [modeFilters, setModeFilters] = useState([]);
   const [institutes, setInstitutes] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [tuitionFee, setTuitionFee] = useState(0); // Initial state for tuition fee range
+  const [tuitionFee, setTuitionFee] = useState(0);
+  const [minTuitionFee, setMinTuitionFee] = useState(0);
+  const [maxTuitionFee, setMaxTuitionFee] = useState(100000);
   const navigate = useNavigate(); // Initialize useNavigate
-  const locations = [
+  const [locations, setLocations] = useState([]); // New state for locations
+  const [studyLevels, setStudyLevels] = useState([]);
+  const [studyModes, setStudyModes] = useState([]);
+  const [selectedCountry, setSelectedCountry] = useState(null);
+
+  const locationOptions = [
     "Johor",
     "Kedah",
     "Melaka",
@@ -51,20 +68,107 @@ const InstituteListing = ({ searchResults = [] }) => {
     "Labuan",
   ];
 
-  const categories = [
-    "Business & Marketing",
-    "Accounting",
-    "Agricultural",
-    "Architecture",
-    "Arts, Design & Multimedia",
-    "Aviation",
-    "Computer & Technology",
-    "Hospitality & Tourism",
-    "Language Studies",
-    "Mathematics & Actuarial",
-  ];
+  const StudyLevel = ["PRE UNIVERSITY", "DIPLOMA", "DEGREE", "MASTER", "PHD"];
+
+  // const categories = [
+  //   "Business & Marketing",
+  //   "Accounting",
+  //   "Agricultural",
+  //   "Architecture",
+  //   "Arts, Design & Multimedia",
+  //   "Aviation",
+  //   "Computer & Technology",
+  //   "Hospitality & Tourism",
+  //   "Language Studies",
+  //   "Mathematics & Actuarial",
+  // ];
+
+  const Intakes = ["MARCH", "AUGUST", "OCTOBER", "SEPTEMBER"];
 
   const modes = ["Full time", "Part time", "Remote"];
+
+  useEffect(() => {
+    const fetchLocations = async (countryID) => {
+      if (!countryID) {
+        console.error("Country ID is not defined.");
+        return;
+      }
+
+      try {
+        console.log("Fetching locations for countryID:", countryID);
+
+        const response = await fetch(locationAPIURL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            countryID: countryID,
+          }),
+        });
+
+        const locationFilters = await response.json();
+
+        console.log("Location filters response:", locationFilters);
+
+        if (locationFilters.data) {
+          setLocationFilters(locationFilters.data);
+          console.log("Fetched location data:", locationFilters.data);
+        } else {
+          console.warn("No location data found.");
+        }
+      } catch (error) {
+        console.error("Error fetching locations:", error);
+      }
+    };
+
+    if (selectedCountry && selectedCountry.country_id) {
+      fetchLocations(selectedCountry.country_id);
+    } else if (!selectedCountry) {
+      // If selectedCountry is not defined, fetch locations with a default country ID
+      fetchLocations(1); // Replace 1 with your default country ID
+    } else {
+      console.log("Country ID is not defined.");
+    }
+  }, [selectedCountry]);
+
+  useEffect(() => {
+    const fetchStudyLevels = async () => {
+      try {
+        const response = await fetch(studylevelAPIURL, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const studyLevelsData = await response.json();
+        setStudyLevels(studyLevelsData.data);
+      } catch (error) {
+        console.error("Error fetching study levels:", error);
+      }
+    };
+
+    fetchStudyLevels();
+  }, []);
+
+  useEffect(() => {
+    const fetchStudyModes = async () => {
+      try {
+        const response = await fetch(studyModeAPIURL, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const studyModesData = await response.json();
+        setStudyModes(studyModesData.data);
+      } catch (error) {
+        console.error("Error fetching study modes:", error);
+      }
+    };
+
+    fetchStudyModes();
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -77,11 +181,12 @@ const InstituteListing = ({ searchResults = [] }) => {
 
       while (attempt < maxRetries) {
         try {
-          const response = await fetch(`${apiURL}?page=${currentPage}`, {
+          const response = await fetch(apiURL, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
+            body: JSON.stringify({}),
           });
 
           if (response.status === 429) {
@@ -95,10 +200,21 @@ const InstituteListing = ({ searchResults = [] }) => {
             throw new Error(`HTTP error! Status: ${response.status}`);
           }
 
-          const result = await response.json();
+          const contentType = response.headers.get("content-type");
+          if (!contentType || !contentType.includes("application/json")) {
+            throw new Error("Response is not JSON");
+          }
 
-          setInstitutes(result.data);
-          setTotalPages(result.last_page);
+          const result = await response.json();
+          // console.log(result);
+          setInstitutes(result.data); // access the inner data property
+          // setTotalPages(result.data.last_page); // set the total pages
+
+          if (result.data) {
+            console.log("Fetched courses:", result.data);
+          } else {
+            throw new Error("Invalid API response structure");
+          }
           break; // Exit while loop if successful
         } catch (error) {
           setError(error.message);
@@ -113,119 +229,198 @@ const InstituteListing = ({ searchResults = [] }) => {
     fetchData();
   }, [searchResults]);
 
+  useEffect(() => {
+    const fetchTuitionFeeRange = async () => {
+      try {
+        const response = await fetch(tuitionFeeAPIURL, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const tuitionFeeData = await response.json();
+        console.log("FEE:", tuitionFeeData.data);
+        setTuitionFee(tuitionFeeData.data);
+        if (tuitionFeeData.success) {
+          setMinTuitionFee(0);
+          setMaxTuitionFee(tuitionFeeData.data);
+        }
+      } catch (error) {
+        console.error("Error fetching tuition fee range:", error);
+      }
+    };
+
+    fetchTuitionFeeRange();
+  }, []);
+
+  const handleTuitionFeeChange = (e) => {
+    const { value } = e.target;
+    setTuitionFee(value);
+  };
+
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
 
   const handleLocationChange = (location) => {
-    if (locationFilters.includes(location)) {
-      setLocationFilters(locationFilters.filter((l) => l !== location));
+    if (locationFilters.includes(location.state_name)) {
+      setLocationFilters(
+        locationFilters.filter((item) => item !== location.state_name)
+      );
     } else {
-      setLocationFilters([...locationFilters, location]);
+      setLocationFilters([...locationFilters, location.state_name]);
     }
   };
 
-  const handleCategoryChange = (category) => {
-    if (categoryFilters.includes(category)) {
-      setCategoryFilters(categoryFilters.filter((c) => c !== category));
+  const handleCountryChange = async (country) => {
+    setSelectedCountry(country);
+    if (country) {
+      setLocationFilters(country.locations || []);
     } else {
-      setCategoryFilters([...categoryFilters, category]);
+      setLocationFilters([]);
+    }
+  };
+
+  const handleIntakeChange = (intake) => {
+    if (intakeFilters.includes(intake)) {
+      setIntakeFilters(intakeFilters.filter((i) => i !== intake));
+    } else {
+      setIntakeFilters([...intakeFilters, intake]);
     }
   };
 
   const handleModeChange = (mode) => {
-    if (modeFilters.includes(mode)) {
-      setModeFilters(modeFilters.filter((m) => m !== mode));
+    if (modeFilters.includes(mode.studyMode_name)) {
+      setModeFilters(modeFilters.filter((m) => m !== mode.studyMode_name));
     } else {
-      setModeFilters([...modeFilters, mode]);
+      setModeFilters([...modeFilters, mode.studyMode_name]);
     }
   };
 
-  const handleApplyNow = (program) => {
-    navigate("/applynow", { state: { program } }); // Navigate with state
+  const handleStudyLevelChange = (level) => {
+    if (studyLevelFilters.includes(level.id)) {
+      setStudyLevelFilters(studyLevelFilters.filter((l) => l !== level.id));
+    } else {
+      setStudyLevelFilters([...studyLevelFilters, level.id]);
+    }
   };
 
+  const handleKnowMoreInstitute = (institute) => {
+    navigate("/knowmoreinstitute", { state: { institute } }); // Navigate with state
+  };
+  // Ensure displayInstitutes is always an array
+  // const displayInstitutes =
+  //   Array.isArray(searchResults) && searchResults.length > 0
+  //     ? searchResults
+  //     : institutes;
   const displayInstitutes =
     searchResults.length > 0 ? searchResults : institutes;
 
-  const mappedInstitutes = displayInstitutes.map((program, index) => (
-    <div key={index} className="card mb-4 degree-card">
-      <div className="card-body d-flex flex-column flex-md-row align-items-start">
-        <div className="card-image mb-3 mb-md-0">
-          <h5 className="card-title">{program.name}</h5>
-          <div className="d-flex align-items-center">
-            <div>
-              <img
-                src={`${baseURL}storage/${program.category_icon}`}
-                alt={program.school_id}
-                width="100"
-              />
-            </div>
-            <div style={{ paddingLeft: "10px" }}>
-              <h5 className="card-text">{program.school_id}</h5>
-              <FontAwesomeIcon icon={faLocationDot} />
-              <span style={{ paddingLeft: "10px" }}>{program.location}</span>
-              <a href="#" className="map-link" style={{ paddingLeft: "5px" }}>
-                click and view on map
-              </a>
-            </div>
-          </div>
-        </div>
-        <div
-          className="details-div flex-grow-1"
-          style={{ paddingLeft: "80px" }}
+  const mappedInstitutes = displayInstitutes.map((institute, index) => (
+    <div
+      key={index}
+      className="card mb-4 institute-card"
+      style={{ height: "auto" }}
+    >
+      {institute.featured && (
+        <span
+          className="position-absolute top-0 end-0 translate-middle badge"
+          style={{
+            backgroundColor: "#B71A18",
+            height: "30px",
+            fontSize: "15px",
+            marginTop: "10px",
+          }}
         >
-          <div className="d-flex align-items-center flex-wrap">
-            <Col>
-              <div>
-                <Row>
-                  <div>
-                    <FontAwesomeIcon icon={faGraduationCap} />
-                    <span style={{ paddingLeft: "20px" }}>
-                      {program.qualification}
-                    </span>
-                  </div>
-                  <div>
-                    <FontAwesomeIcon icon={faCalendarCheck} />
-                    <span style={{ paddingLeft: "20px" }}>
-                      {program.period}
-                    </span>
-                  </div>
-                  <div>
-                    <FontAwesomeIcon icon={faClock} />
-                    <span style={{ paddingLeft: "20px" }}>
-                      {program.duration}
-                    </span>
-                  </div>
-                  <div>
-                    <FontAwesomeIcon icon={faCalendarAlt} />
-                    <span style={{ paddingLeft: "20px" }}>
-                      {program.intakes ? program.intakes.join(", ") : "N/A"}
-                    </span>
-                  </div>
-                </Row>
-              </div>
-            </Col>
-            <Col>
-              <Row className="align-items-center justify-content-end">
-                <div className="fee-apply ms-5">
-                  <div className="fee-info">
-                    <p>Estimate Fee</p>
-                    <span>{program.fee}</span>
-                  </div>
-                  <div className="apply-button">
-                    <button
-                      className="featured"
-                      onClick={() => handleApplyNow(program)}
-                    >
-                      Apply Now
-                    </button>
-                  </div>
+          FEATURED
+          <span className="visually-hidden">featured</span>
+        </span>
+      )}
+      <div className="card-body d-flex flex-column flex-md-row align-items-start">
+        <Row>
+          <Col md={6} lg={6}>
+            <div className="card-image mb-3 mb-md-0">
+              <h5 className="card-title" style={{ paddingLeft: "20px" }}>
+                {institute.name}
+              </h5>
+              <div className="d-flex align-items-center">
+                <div style={{ paddingLeft: "20px" }}>
+                  <img
+                    src={`${baseURL}storage/${institute.logo}`}
+                    alt={institute.name}
+                    width="100"
+                  />
                 </div>
-              </Row>
-            </Col>
-          </div>
-        </div>
+                <div style={{ paddingLeft: "10px" }}>
+                  <h5 className="card-text">{institute.category}</h5>
+                  <FontAwesomeIcon icon={faLocationDot} />
+                  <span style={{ paddingLeft: "10px" }}>
+                    {institute.city}, {institute.state}, {institute.country}
+                  </span>{" "}
+                  <a
+                    href="#"
+                    className="map-link"
+                    style={{ paddingLeft: "5px" }}
+                  >
+                    click and view on map
+                  </a>
+                  <p className="card-text mt-2">{institute.description}</p>
+                </div>
+              </div>
+            </div>
+          </Col>
+          <Col md={6} lg={6}>
+            <div className="d-flex flex-grow-1 justify-content-between">
+              <div className="details-div" style={{ width: "60%" }}>
+                <div className="d-flex align-items-center flex-wrap">
+                  <Col>
+                    <div>
+                      <Row>
+                        <div>
+                          <FontAwesomeIcon icon={faSchool} />
+                          <span style={{ paddingLeft: "20px" }}>
+                            {institute.category}
+                          </span>
+                        </div>
+                        <div>
+                          <FontAwesomeIcon icon={faGraduationCap} />
+                          <span style={{ paddingLeft: "20px" }}>
+                            {institute.id}
+                          </span>
+                        </div>
+                        <div>
+                          <FontAwesomeIcon icon={faBookOpen} />
+                          <span style={{ paddingLeft: "20px" }}>
+                            {institute.intakes
+                              ? institute.intakes.join(", ")
+                              : "N/A"}
+                          </span>
+                        </div>
+                      </Row>
+                    </div>
+                  </Col>
+                </div>
+              </div>
+              <div className="fee-apply">
+                <div
+                  className="fee-info text-right"
+                  style={{ marginTop: "25px" }}
+                >
+                  <p>Estimate Fee</p>
+                  <span>{institute.cost}</span>
+                </div>
+                <div className="knowmore-button mt-3">
+                  <button
+                    className="featured"
+                    onClick={() => handleKnowMoreInstitute(institute)}
+                  >
+                    Know More
+                  </button>
+                </div>
+              </div>
+            </div>
+          </Col>
+        </Row>
       </div>
     </div>
   ));
@@ -243,27 +438,42 @@ const InstituteListing = ({ searchResults = [] }) => {
             <div className="filter-group">
               <h5 style={{ marginTop: "10px" }}>Location</h5>
               <Form.Group>
-                {locations.map((location, index) => (
+                {locationFilters &&
+                  locationFilters.map((location, index) => (
+                    <Form.Check
+                      key={index}
+                      type="checkbox"
+                      label={location.state_name}
+                      checked={locationFilters.includes(location.state_name)}
+                      onChange={() => handleLocationChange(location)}
+                    />
+                  ))}
+              </Form.Group>
+            </div>
+            <div className="filter-group">
+              <h5 style={{ marginTop: "25px" }}>Study Level</h5>
+              <Form.Group>
+                {studyLevels.map((level, index) => (
                   <Form.Check
                     key={index}
                     type="checkbox"
-                    label={location}
-                    checked={locationFilters.includes(location)}
-                    onChange={() => handleLocationChange(location)}
+                    label={level.qualification_name}
+                    checked={studyLevelFilters.includes(level.id)}
+                    onChange={() => handleStudyLevelChange(level)}
                   />
                 ))}
               </Form.Group>
             </div>
             <div className="filter-group">
-              <h5 style={{ marginTop: "25px" }}>Category</h5>
+              <h5 style={{ marginTop: "25px" }}>Intakes</h5>
               <Form.Group>
-                {categories.map((category, index) => (
+                {Intakes.map((intake, index) => (
                   <Form.Check
                     key={index}
                     type="checkbox"
-                    label={category}
-                    checked={categoryFilters.includes(category)}
-                    onChange={() => handleCategoryChange(category)}
+                    label={intake}
+                    checked={intakeFilters.includes(intake)}
+                    onChange={() => handleIntakeChange(intake)}
                   />
                 ))}
               </Form.Group>
@@ -271,12 +481,12 @@ const InstituteListing = ({ searchResults = [] }) => {
             <div className="filter-group">
               <h5 style={{ marginTop: "25px" }}>Study Mode</h5>
               <Form.Group>
-                {modes.map((mode, index) => (
+                {studyModes.map((mode, index) => (
                   <Form.Check
                     key={index}
                     type="checkbox"
-                    label={mode}
-                    checked={modeFilters.includes(mode)}
+                    label={mode.studyMode_name}
+                    checked={modeFilters.includes(mode.studyMode_name)}
                     onChange={() => handleModeChange(mode)}
                   />
                 ))}
@@ -289,11 +499,11 @@ const InstituteListing = ({ searchResults = [] }) => {
                 <Form.Control
                   className="custom-range-input"
                   type="range"
-                  min="0"
-                  max="100000"
+                  min={minTuitionFee}
+                  max={maxTuitionFee}
                   step="500"
                   value={tuitionFee}
-                  onChange={(e) => setTuitionFee(e.target.value)}
+                  onChange={handleTuitionFeeChange}
                 />
               </Form.Group>
             </div>
@@ -307,37 +517,38 @@ const InstituteListing = ({ searchResults = [] }) => {
               </Accordion.Header>
               <Accordion.Body className="custom-accordion-body">
                 <Form.Group>
-                  {locations.map((location, index) => (
-                    <Form.Check
-                      key={index}
-                      type="checkbox"
-                      label={location}
-                      checked={locationFilters.includes(location)}
-                      onChange={() => handleLocationChange(location)}
-                    />
-                  ))}
+                  {locationFilters &&
+                    locationFilters.map((location, index) => (
+                      <Form.Check
+                        key={index}
+                        type="checkbox"
+                        label={location.state_name}
+                        checked={locationFilters.includes(location.state_name)}
+                        onChange={() => handleLocationChange(location)}
+                      />
+                    ))}
                 </Form.Group>
               </Accordion.Body>
             </Accordion.Item>
             <Accordion.Item eventKey="1">
               <Accordion.Header className="custom-accordion-header">
-                Category
+                Study Level
               </Accordion.Header>
               <Accordion.Body className="custom-accordion-body">
                 <Form.Group>
-                  {categories.map((category, index) => (
+                  {StudyLevel.map((level, index) => (
                     <Form.Check
                       key={index}
                       type="checkbox"
-                      label={category}
-                      checked={categoryFilters.includes(category)}
-                      onChange={() => handleCategoryChange(category)}
+                      label={level}
+                      checked={studyLevelFilters.includes(level)}
+                      onChange={() => handleStudyLevelChange(level)}
                     />
                   ))}
                 </Form.Group>
               </Accordion.Body>
             </Accordion.Item>
-            <Accordion.Item eventKey="2">
+            <Accordion.Item eventKey="3">
               <Accordion.Header className="custom-accordion-header">
                 Study Mode
               </Accordion.Header>
@@ -355,7 +566,25 @@ const InstituteListing = ({ searchResults = [] }) => {
                 </Form.Group>
               </Accordion.Body>
             </Accordion.Item>
-            <Accordion.Item eventKey="3">
+            <Accordion.Item eventKey="4">
+              <Accordion.Header className="custom-accordion-header">
+                Intakes
+              </Accordion.Header>
+              <Accordion.Body className="custom-accordion-body">
+                <Form.Group>
+                  {Intakes.map((intake, index) => (
+                    <Form.Check
+                      key={index}
+                      type="checkbox"
+                      label={intake}
+                      checked={intakeFilters.includes(intake)}
+                      onChange={() => handleIntakeChange(intake)}
+                    />
+                  ))}
+                </Form.Group>
+              </Accordion.Body>
+            </Accordion.Item>
+            <Accordion.Item eventKey="5">
               <Accordion.Header className="custom-accordion-header">
                 Tuition Fee
               </Accordion.Header>
@@ -365,11 +594,11 @@ const InstituteListing = ({ searchResults = [] }) => {
                   <Form.Control
                     className="custom-range-input"
                     type="range"
-                    min="0"
-                    max="100000"
+                    min={minTuitionFee}
+                    max={maxTuitionFee}
                     step="500"
                     value={tuitionFee}
-                    onChange={(e) => setTuitionFee(e.target.value)}
+                    onChange={handleTuitionFeeChange}
                   />
                 </Form.Group>
               </Accordion.Body>
@@ -390,7 +619,18 @@ const InstituteListing = ({ searchResults = [] }) => {
             <div>No institute available</div>
           )}
         </Col>
-        <Col xs={12} className="d-flex justify-content-end">
+        <Pagination className="d-flex justify-content-end">
+          <Pagination.Prev aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+          </Pagination.Prev>
+          <Pagination.Item active>{1}</Pagination.Item>
+          <Pagination.Item>{2}</Pagination.Item>
+          <Pagination.Item>{3}</Pagination.Item>
+          <Pagination.Next aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+          </Pagination.Next>
+        </Pagination>
+        {/* <Col xs={12} className="d-flex justify-content-end">
           <Pagination className="pagination">
             <Pagination.Prev
               aria-label="Previous"
@@ -412,7 +652,7 @@ const InstituteListing = ({ searchResults = [] }) => {
               disabled={currentPage === totalPages}
             />
           </Pagination>
-        </Col>
+        </Col> */}
       </Row>
     </Container>
   );

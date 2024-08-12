@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Carousel, Card } from "react-bootstrap";
+// import './UniversityRow.css';  // Import the CSS file
+import "../../css/student css/homePageStudent/UniversityRow.css";
 
 const itemsPerSlide = 4;
-const baseURL = import.meta.env.VITE_BASE_URL; // Using Vite environment variable
-const apiURL = import.meta.env.VITE_API_URL; // Using Vite environment variable
+const baseURL = import.meta.env.VITE_BASE_URL;
+const apiURL = import.meta.env.VITE_API_URL;
 
 const UniversityRow = () => {
   const [schools, setSchools] = useState([]);
@@ -25,7 +27,6 @@ const UniversityRow = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          // Add the necessary parameters for your POST request here
           schoolID: 1,
           schoolName: "updated School",
           schoolLogo: "schoolLogo/1721804035.png",
@@ -62,16 +63,15 @@ const UniversityRow = () => {
 
   return (
     <div>
-      {error && <div>Error: {error}</div>}
-      {loading && <div>Loading...</div>}
-      {!loading && schools.length > 0 && (
-        <div>
-          <h4>Featured Universities</h4>
-          <Container
-            className="universityimages-container my-6"
-            style={{ padding: "20px" }}
-          >
-            <Carousel controls={true} style={{ height: "auto" }}>
+      <h4 className="university-row-title" style={{ textAlign: "left" }}>
+        Featured Universities
+      </h4>
+      <div className="university-row-container" style={{ width: "100%" }}>
+        {error && <div>Error: {error}</div>}
+        {loading && <div>Loading...</div>}
+        {!loading && schools.length > 0 && (
+          <Container className="university-row-carousel" fluid>
+            <Carousel controls={false} style={{ height: "auto" }}>
               {Array.from({
                 length: Math.ceil(schools.length / itemsPerSlide),
               }).map((_, slideIndex) => (
@@ -99,9 +99,6 @@ const UniversityRow = () => {
                                 src={imgUrl}
                                 alt={school.schoolName}
                               />
-                              <Card.Body>
-                                <Card.Title>{school.schoolName}</Card.Title>
-                              </Card.Body>
                             </Card>
                           </Col>
                         );
@@ -111,8 +108,8 @@ const UniversityRow = () => {
               ))}
             </Carousel>
           </Container>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

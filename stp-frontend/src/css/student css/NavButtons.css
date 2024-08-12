@@ -38,7 +38,7 @@
 .navbutton-section {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: flex -end;
 }
 
 .navbutton-section .btn-group {
@@ -50,14 +50,18 @@
 }
 
 @media (max-width: 768px) {
+  .navbar-collapse {
+    text-align: left; /* Align text and buttons to the left */
+  }
+
   .nav-link-custom {
-    
+    display: block; /* Ensure links take full width */
     margin-bottom: 10px;
   }
 
   .navbutton-section {
-    flex-direction: column;
-    text-align: center;
+    display: block; /* Make nav buttons stack vertically */
+    text-align: left; /* Align nav buttons to the left */
   }
 
   .navbutton-section .btn-group {
@@ -65,3 +69,4 @@
     margin-bottom: 10px;
   }
 }
+

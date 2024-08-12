@@ -22,6 +22,7 @@ const countriesURL = "http://192.168.0.69:8000/api/student/countryList";
 const instituteURL = "http://192.168.0.69:8000/api/student/instituteType";
 
 const SearchInstitute = () => {
+  const [locationFilters, setLocationFilters] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -122,7 +123,7 @@ const SearchInstitute = () => {
 
         const result = await response.json();
 
-        setSearchResults(result.data); // Assuming result.data contains search results
+        setSearchResults(result.data.data); // Assuming result.data.data contains search results
         setTotalPages(result.totalPages); // Update total pages based on API response
       } catch (error) {
         console.error("Error fetching search results:", error);
@@ -132,7 +133,7 @@ const SearchInstitute = () => {
       }
     };
 
-    // Fetch data only if searchQuery is not empty
+    // Fetch data.data only if searchQuery is not empty
     if (searchQuery.trim()) {
       fetchData();
     }
@@ -146,8 +147,14 @@ const SearchInstitute = () => {
     setCurrentPage(1); // Reset to first page when search query changes
   };
 
-  const handleCountryChange = (country) => {
-    setSelectedCountry(country);
+  const handleCountryChange = async (countryID) => {
+    console.log("Country selected:", countryID);
+    setSelectedCountry(countryID);
+    if (countryID) {
+      setLocationFilters(countryID.locations || []);
+    } else {
+      setLocationFilters([]);
+    }
   };
 
   const handleInstituteChange = (institute) => {
@@ -173,6 +180,7 @@ const SearchInstitute = () => {
                     <Dropdown.Item
                       key={index}
                       className="dropdown"
+                      value={selectedCountry ? selectedCountry.country_id : ""}
                       onClick={() => handleCountryChange(country)}
                     >
                       <img

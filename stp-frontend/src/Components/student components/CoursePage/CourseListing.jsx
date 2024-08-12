@@ -6,6 +6,7 @@ import {
   Form,
   Pagination,
   Accordion,
+  Badge,
 } from "react-bootstrap";
 import "../../../css/student css/course page css/CoursesPage.css";
 import StudyPal from "../../../assets/student asset/coursepage image/StudyPal.png";
@@ -21,16 +22,142 @@ import { useNavigate } from "react-router-dom";
 
 const baseURL = import.meta.env.VITE_BASE_URL;
 const apiURL = "http://192.168.0.69:8000/api/student/courseList";
+const locationAPIURL =
+  "http://192.168.0.69:8000/api/student/locationFilterList";
+const studyModeAPIURL =
+  "http://192.168.0.69:8000/api/student/studyModeFilterlist";
+const categoryAPIURL =
+  "http://192.168.0.69:8000/api/student/categoryFilterList";
+const tuitionFeeAPIURL =
+  "http://192.168.0.69:8000/api/student/tuitionFeeFilterRange";
 
 const CourseListing = ({ searchResults = [] }) => {
   const [locationFilters, setLocationFilters] = useState([]);
   const [categoryFilters, setCategoryFilters] = useState([]);
   const [modeFilters, setModeFilters] = useState([]);
-  const [tuitionFee, setTuitionFee] = useState(0); // Initial state for tuition fee range
+  const [tuitionFee, setTuitionFee] = useState(0);
+  const [minTuitionFee, setMinTuitionFee] = useState(0);
+  const [maxTuitionFee, setMaxTuitionFee] = useState(100000);
   const [programs, setPrograms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const [locationsData, setLocationsData] = useState([]);
+  const [studyModes, setStudyModes] = useState([]);
+  const [categoriesData, setCategoriesData] = useState([]);
+  const [selectedCountry, setSelectedCountry] = useState(null);
+
+  // useEffect(() => {
+  //   const fetchLocations = async () => {
+  //     try {
+  //       const response = await fetch(locationAPIURL, {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify({
+  //           /* data to send to the API */
+  //         }),
+  //       });
+
+  //       if (!response.ok) {
+  //         throw new Error(`HTTP error! Status: ${response.status}`);
+  //       }
+
+  //       const locationsData = await response.json();
+  //       console.log("ERRORRRRRRR:", locationsData.data);
+
+  //       setLocationsData(locationsData.data);
+  //     } catch (error) {
+  //       console.error("Error fetching locations:", error);
+  //     }
+  //   };
+
+  //   fetchLocations();
+  // }, []);
+
+  useEffect(() => {
+    const fetchLocations = async (countryID) => {
+      if (!countryID) {
+        console.error("Country ID is not defined.");
+        return;
+      }
+
+      try {
+        console.log("Fetching locations for countryID:", countryID);
+
+        const response = await fetch(locationAPIURL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            countryID: countryID,
+          }),
+        });
+
+        const locationFilters = await response.json();
+
+        console.log("Location filters response:", locationFilters);
+
+        if (locationFilters.data) {
+          setLocationFilters(locationFilters.data);
+          console.log("Fetched location data:", locationFilters.data);
+        } else {
+          console.warn("No location data found.");
+        }
+      } catch (error) {
+        console.error("Error fetching locations:", error);
+      }
+    };
+
+    if (selectedCountry && selectedCountry.country_id) {
+      fetchLocations(selectedCountry.country_id);
+    } else if (!selectedCountry) {
+      // If selectedCountry is not defined, fetch locations with a default country ID
+      fetchLocations(); // Replace 1 with your default country ID
+    } else {
+      console.log("Country ID is not defined.");
+    }
+  }, [selectedCountry]);
+
+  useEffect(() => {
+    const fetchStudyModes = async () => {
+      try {
+        const response = await fetch(studyModeAPIURL, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const studyModesData = await response.json();
+        setStudyModes(studyModesData.data);
+      } catch (error) {
+        console.error("Error fetching study modes:", error);
+      }
+    };
+
+    fetchStudyModes();
+  }, []);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch(categoryAPIURL, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const categoriesData = await response.json();
+        setCategoriesData(categoriesData.data);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -89,6 +216,30 @@ const CourseListing = ({ searchResults = [] }) => {
     fetchData();
   }, [searchResults]);
 
+  useEffect(() => {
+    const fetchTuitionFeeRange = async () => {
+      try {
+        const response = await fetch(tuitionFeeAPIURL, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const tuitionFeeData = await response.json();
+        console.log("FEE:", tuitionFeeData.data);
+        setTuitionFee(tuitionFeeData.data);
+        if (tuitionFeeData.success) {
+          setMinTuitionFee(0);
+          setMaxTuitionFee(tuitionFeeData.data);
+        }
+      } catch (error) {
+        console.error("Error fetching tuition fee range:", error);
+      }
+    };
+
+    fetchTuitionFeeRange();
+  }, []);
+
   const locations = [
     "Johor",
     "Kedah",
@@ -121,27 +272,45 @@ const CourseListing = ({ searchResults = [] }) => {
   const modes = ["Full time", "Part time", "Remote"];
 
   const handleLocationChange = (location) => {
-    if (locationFilters.includes(location)) {
-      setLocationFilters(locationFilters.filter((l) => l !== location));
+    if (locationFilters.includes(location.state_name)) {
+      setLocationFilters(
+        locationFilters.filter((item) => item !== location.state_name)
+      );
     } else {
-      setLocationFilters([...locationFilters, location]);
+      setLocationFilters([...locationFilters, location.state_name]);
+    }
+  };
+
+  const handleCountryChange = async (country) => {
+    setSelectedCountry(country);
+    if (country) {
+      setLocationFilters(country.locations || []);
+    } else {
+      setLocationFilters([]);
     }
   };
 
   const handleCategoryChange = (category) => {
-    if (categoryFilters.includes(category)) {
-      setCategoryFilters(categoryFilters.filter((c) => c !== category));
+    if (categoryFilters.includes(category.category_name)) {
+      setCategoryFilters(
+        categoryFilters.filter((c) => c !== category.category_name)
+      );
     } else {
-      setCategoryFilters([...categoryFilters, category]);
+      setCategoryFilters([...categoryFilters, category.category_name]);
     }
   };
 
   const handleModeChange = (mode) => {
-    if (modeFilters.includes(mode)) {
-      setModeFilters(modeFilters.filter((m) => m !== mode));
+    if (modeFilters.includes(mode.studyMode_name)) {
+      setModeFilters(modeFilters.filter((m) => m !== mode.studyMode_name));
     } else {
-      setModeFilters([...modeFilters, mode]);
+      setModeFilters([...modeFilters, mode.studyMode_name]);
     }
+  };
+
+  const handleTuitionFeeChange = (e) => {
+    const { value } = e.target;
+    setTuitionFee(value);
   };
 
   const handleApplyNow = (program) => {
@@ -152,83 +321,118 @@ const CourseListing = ({ searchResults = [] }) => {
   const displayPrograms = searchResults.length > 0 ? searchResults : programs;
 
   const mappedPrograms = displayPrograms.map((program, index) => (
-    <div key={index} className="card mb-4 degree-card">
-      <div className="card-body d-flex flex-column flex-md-row align-items-start">
-        <div className="card-image mb-3 mb-md-0">
-          <h5 className="card-title">{program.name}</h5>
-          <div className="d-flex align-items-center">
-            <div>
-              <img
-                src={`${baseURL}storage/${program.category_icon}`}
-                alt={program.school_id}
-                width="100"
-              />
-            </div>
-            <div style={{ paddingLeft: "10px" }}>
-              <h5 className="card-text">{program.school_id}</h5>
-              <FontAwesomeIcon icon={faLocationDot} />
-              <span style={{ paddingLeft: "10px" }}>{program.location}</span>
-              <a href="#" className="map-link" style={{ paddingLeft: "5px" }}>
-                click and view on map
-              </a>
-            </div>
-          </div>
-        </div>
-        <div
-          className="details-div flex-grow-1"
-          style={{ paddingLeft: "80px" }}
+    <div
+      key={index}
+      className="card mb-4 degree-card"
+      style={{ height: "auto" }}
+    >
+      {program.featured && (
+        <span
+          className="position-absolute top-0 end-0 translate-middle badge"
+          style={{
+            backgroundColor: "#B71A18",
+            height: "30px",
+            fontSize: "15px",
+            marginTop: "10px",
+          }}
         >
-          <div className="d-flex align-items-center flex-wrap">
-            <Col>
-              <div>
-                <Row>
-                  <div>
-                    <FontAwesomeIcon icon={faGraduationCap} />
-                    <span style={{ paddingLeft: "20px" }}>
-                      {program.qualification}
-                    </span>
-                  </div>
-                  <div>
-                    <FontAwesomeIcon icon={faCalendarCheck} />
-                    <span style={{ paddingLeft: "20px" }}>
-                      {program.period}
-                    </span>
-                  </div>
-                  <div>
-                    <FontAwesomeIcon icon={faClock} />
-                    <span style={{ paddingLeft: "20px" }}>
-                      {program.duration}
-                    </span>
-                  </div>
-                  <div>
-                    <FontAwesomeIcon icon={faCalendarAlt} />
-                    <span style={{ paddingLeft: "20px" }}>
-                      {program.intakes ? program.intakes.join(", ") : "N/A"}
-                    </span>
-                  </div>
-                </Row>
-              </div>
-            </Col>
-            <Col>
-              <Row className="align-items-center justify-content-end">
-                <div className="fee-apply ms-5">
-                  <div className="fee-info">
-                    <p>estimate fee</p>
-                    <span>{program.fee}</span>
-                  </div>
-                  <div className="apply-button">
-                    <button
-                      className="featured"
-                      onClick={() => handleApplyNow(program)}
-                    >
-                      Apply Now
-                    </button>
-                  </div>
+          FEATURED
+          <span className="visually-hidden">featured</span>
+        </span>
+      )}
+      <div className="card-body d-flex flex-column flex-md-row align-items-start">
+        <Row>
+          <Col md={7} lg={7}>
+            <div className="card-image mb-3 mb-md-0">
+              <h5 className="card-title " style={{ paddingLeft: "20px" }}>
+                {program.name}
+              </h5>
+              <div className="d-flex align-items-center">
+                <div style={{ paddingLeft: "20px" }}>
+                  <img
+                    src={`${baseURL}storage/${program.logo}`}
+                    alt={program.school_id}
+                    width="100"
+                  />
                 </div>
-              </Row>
-            </Col>
-          </div>
-        </div>
+                <div style={{ paddingLeft: "30px" }}>
+                  <h5 className="card-text">{program.school_id}</h5>
+                  <FontAwesomeIcon icon={faLocationDot} />
+                  <span style={{ paddingLeft: "10px" }}>
+                    {program.location}
+                  </span>
+                  <a
+                    href="#"
+                    className="map-link"
+                    style={{ paddingLeft: "5px" }}
+                  >
+                    click and view on map
+                  </a>
+                </div>
+              </div>
+            </div>
+          </Col>
+          <Col md={5} lg={5}>
+            <div className="d-flex flex-grow-1 justify-content-between">
+              <div className="details-div" style={{ width: "60%" }}>
+                <div className="d-flex align-items-center flex-wrap">
+                  <Col>
+                    <div>
+                      <Row>
+                        <div>
+                          <FontAwesomeIcon icon={faGraduationCap} />
+                          <span style={{ paddingLeft: "20px" }}>
+                            {program.qualification}
+                          </span>
+                        </div>
+                        <div>
+                          <FontAwesomeIcon icon={faCalendarCheck} />
+                          <span style={{ paddingLeft: "20px" }}>
+                            {program.period}
+                          </span>
+                        </div>
+                        <div>
+                          <FontAwesomeIcon icon={faClock} />
+                          <span style={{ paddingLeft: "20px" }}>
+                            {program.duration}
+                          </span>
+                        </div>
+                        <div>
+                          <FontAwesomeIcon icon={faCalendarAlt} />
+                          <span style={{ paddingLeft: "20px" }}>
+                            {program.intakes
+                              ? program.intakes.join(", ")
+                              : "N/A"}
+                          </span>
+                        </div>
+                      </Row>
+                    </div>
+                  </Col>
+                </div>
+              </div>
+              <div className="fee-apply">
+                <div
+                  className="fee-info text-right"
+                  style={{ marginTop: "20px" }}
+                >
+                  <p>Estimate fee</p>
+                  <span>
+                    <strong>RM </strong>
+                    {program.cost}
+                  </span>
+                </div>
+                <div className="apply-button mt-3">
+                  <button
+                    className="featured"
+                    onClick={() => handleApplyNow(program)}
+                  >
+                    Apply Now
+                  </button>
+                </div>
+              </div>
+            </div>
+          </Col>
+        </Row>
       </div>
     </div>
   ));
@@ -246,26 +450,27 @@ const CourseListing = ({ searchResults = [] }) => {
             <div className="filter-group">
               <h5 style={{ marginTop: "10px" }}>Location</h5>
               <Form.Group>
-                {locations.map((location, index) => (
-                  <Form.Check
-                    key={index}
-                    type="checkbox"
-                    label={location}
-                    checked={locationFilters.includes(location)}
-                    onChange={() => handleLocationChange(location)}
-                  />
-                ))}
+                {locationFilters &&
+                  locationFilters.map((location, index) => (
+                    <Form.Check
+                      key={index}
+                      type="checkbox"
+                      label={location.state_name}
+                      checked={locationFilters.includes(location.state_name)}
+                      onChange={() => handleLocationChange(location)}
+                    />
+                  ))}
               </Form.Group>
             </div>
             <div className="filter-group">
               <h5 style={{ marginTop: "25px" }}>Category</h5>
               <Form.Group>
-                {categories.map((category, index) => (
+                {categoriesData.map((category, index) => (
                   <Form.Check
                     key={index}
                     type="checkbox"
-                    label={category}
-                    checked={categoryFilters.includes(category)}
+                    label={category.category_name}
+                    checked={categoryFilters.includes(category.category_name)}
                     onChange={() => handleCategoryChange(category)}
                   />
                 ))}
@@ -274,12 +479,12 @@ const CourseListing = ({ searchResults = [] }) => {
             <div className="filter-group">
               <h5 style={{ marginTop: "25px" }}>Study Mode</h5>
               <Form.Group>
-                {modes.map((mode, index) => (
+                {studyModes.map((mode, index) => (
                   <Form.Check
                     key={index}
                     type="checkbox"
-                    label={mode}
-                    checked={modeFilters.includes(mode)}
+                    label={mode.studyMode_name}
+                    checked={modeFilters.includes(mode.studyMode_name)}
                     onChange={() => handleModeChange(mode)}
                   />
                 ))}
@@ -292,11 +497,11 @@ const CourseListing = ({ searchResults = [] }) => {
                 <Form.Control
                   className="custom-range-input"
                   type="range"
-                  min="0"
-                  max="100000"
+                  min={minTuitionFee}
+                  max={maxTuitionFee}
                   step="500"
                   value={tuitionFee}
-                  onChange={(e) => setTuitionFee(e.target.value)}
+                  onChange={handleTuitionFeeChange}
                 />
               </Form.Group>
             </div>
@@ -310,15 +515,16 @@ const CourseListing = ({ searchResults = [] }) => {
               </Accordion.Header>
               <Accordion.Body className="custom-accordion-body">
                 <Form.Group>
-                  {locations.map((location, index) => (
-                    <Form.Check
-                      key={index}
-                      type="checkbox"
-                      label={location}
-                      checked={locationFilters.includes(location)}
-                      onChange={() => handleLocationChange(location)}
-                    />
-                  ))}
+                  {locationFilters &&
+                    locationFilters.map((location, index) => (
+                      <Form.Check
+                        key={index}
+                        type="checkbox"
+                        label={location.state_name}
+                        checked={locationFilters.includes(location.state_name)}
+                        onChange={() => handleLocationChange(location)}
+                      />
+                    ))}
                 </Form.Group>
               </Accordion.Body>
             </Accordion.Item>
@@ -328,12 +534,12 @@ const CourseListing = ({ searchResults = [] }) => {
               </Accordion.Header>
               <Accordion.Body className="custom-accordion-body">
                 <Form.Group>
-                  {categories.map((category, index) => (
+                  {categoriesData.map((category, index) => (
                     <Form.Check
                       key={index}
                       type="checkbox"
-                      label={category}
-                      checked={categoryFilters.includes(category)}
+                      label={category.category_name}
+                      checked={categoryFilters.includes(category.category_name)}
                       onChange={() => handleCategoryChange(category)}
                     />
                   ))}
@@ -346,12 +552,12 @@ const CourseListing = ({ searchResults = [] }) => {
               </Accordion.Header>
               <Accordion.Body className="custom-accordion-body">
                 <Form.Group>
-                  {modes.map((mode, index) => (
+                  {studyModes.map((mode, index) => (
                     <Form.Check
                       key={index}
                       type="checkbox"
-                      label={mode}
-                      checked={modeFilters.includes(mode)}
+                      label={mode.studyMode_name}
+                      checked={modeFilters.includes(mode.studyMode_name)}
                       onChange={() => handleModeChange(mode)}
                     />
                   ))}
@@ -368,11 +574,11 @@ const CourseListing = ({ searchResults = [] }) => {
                   <Form.Control
                     className="custom-range-input"
                     type="range"
-                    min="0"
-                    max="100000"
+                    min={minTuitionFee}
+                    max={maxTuitionFee}
                     step="500"
                     value={tuitionFee}
-                    onChange={(e) => setTuitionFee(e.target.value)}
+                    onChange={handleTuitionFeeChange}
                   />
                 </Form.Group>
               </Accordion.Body>

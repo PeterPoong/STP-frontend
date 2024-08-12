@@ -3,7 +3,7 @@ import Carousel from "react-bootstrap/Carousel";
 import { Form, FormControl, InputGroup, Button } from "react-bootstrap";
 import library from "../../assets/student asset/background image/library.jpg";
 import blurbg from "../../assets/student asset/background image/blurbg.png";
-import "../../css/student css/carousel css/FeaturedUni.css";
+import "../../css/student css/homePageStudent/FeaturedUni.css";
 
 const FeaturedUni = () => {
   return (
@@ -41,12 +41,14 @@ const FeaturedUni = () => {
           <button variant="outline-danger">Search</button>
         </Form>
         <div className="button-container mt-3 d-flex justify-content-center flex-wrap">
-          <button className="mb-2 mx-2 searchcourse-button" size="lg" active>
+          <button className="diploma-button mb-2 mx-2" size="lg">
             Diploma
           </button>
-          <button className="mb-2 mx-2">Degree</button>
-          <button className="mb-2 mx-2">Master</button>
-          <button className="mb-2 mx-2">Study in Malaysia</button>
+          <button className="degree1-button mb-2 mx-2">Degree</button>
+          <button className="master-button mb-2 mx-2">Master</button>
+          <button className="studyInMalaysia-button mb-2 mx-2">
+            Study in Malaysia
+          </button>
         </div>
       </div>
     </div>

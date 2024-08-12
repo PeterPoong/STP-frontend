@@ -1,4 +1,4 @@
-import "../../css/student css/carousel css/VideoCarousel.css";
+import "../../css/student css/homePageStudent/VideoCarousel.css";
 import React from "react";
 import { Carousel } from "react-bootstrap";
 import Vid1 from "../../assets/student asset/Videos/vid1.mp4";
