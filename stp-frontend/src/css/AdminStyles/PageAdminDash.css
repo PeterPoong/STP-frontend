@@ -1,0 +1,12 @@
+.PageContainer{
+    display: flex;
+}
+
+.SideNavContainer{
+    border: 1px solid #4A4A4A;
+}
+
+.HeadNavBarContainer{
+    width: 100%;
+    background: #d9d9d9;
+}

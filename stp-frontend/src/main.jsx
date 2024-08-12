@@ -18,7 +18,17 @@ import PersonalDetails from "./Pages/student pages/ApplyPage/PersonalDetails";
 // Admin Login Page
 import AdminSignup from "./Pages/AdminPages/AdminSignup";
 import AdminLogin from "./Pages/AdminPages/AdminLogin"
+import AdminForgetPass from "./Pages/AdminPages/AdminForgetPass";
+import AdminPassCode from "./Pages/AdminPages/AdminPassCode";
+import AdminResetPass from "./Pages/AdminPages/AdminResetPass";
 
+// Admin Dashboard Pages
+import AdminDashboard from "./Pages/AdminPages/AdminDashboard";
+import AdminSchool from "./Pages/AdminPages/AdminSchool";
+import AdminStudent from "./Pages/AdminPages/AdminStudent";
+import AdminCourses from "./Pages/AdminPages/AdminCourses";
+import AdminCategory from "./Pages/AdminPages/AdminCategory";
+import AdminSubject from "./Pages/AdminPages/AdminSubject";
 
 const router = createBrowserRouter([
   {
@@ -72,7 +82,53 @@ const router = createBrowserRouter([
   {
     path: "/adminLogin",
     element: <AdminLogin/>
-  }
+  },
+
+  {
+    path: "/adminForgetPass",
+    element: <AdminForgetPass/>
+  },
+
+  {
+    path: "/adminPassCode",
+    element: <AdminPassCode/>
+  },
+
+  {
+    path: "/adminResetPass",
+    element: <AdminResetPass/>
+  },
+
+  // Admin Dashboard Pages
+  {
+    path: "/adminDashboard",
+    element: <AdminDashboard/>
+  },
+
+  {
+    path: "/adminSchool",
+    element: <AdminSchool/>
+  },
+
+  {
+    path: "/adminStudent",
+    element: <AdminStudent/>
+  },
+
+  {
+    path: "/adminCourses",
+    element: <AdminCourses/>
+  },
+
+  {
+    path: "/adminCategory",
+    element: <AdminCategory/>
+  },
+
+  {
+    path: "/adminSubject",
+    element: <AdminSubject/>
+  },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
