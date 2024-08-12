@@ -1,0 +1,28 @@
+.add-table-row{
+    margin-top: 2%;
+    width: 100%;
+}
+
+.SearchBar{
+    width: 75%;
+}
+
+.EntryDropdown{
+    display: flex;
+    flex-direction: row;
+}
+
+.mr-2{
+    padding-left: 7.5%;
+    display: flex;
+    width: 60%;
+}
+
+.FilterDropDown{
+    width: 35%;
+}
+
+.AddBtn{
+    background-color: #D32F2F;
+    border-radius: 15px;
+}
