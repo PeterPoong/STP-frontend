@@ -29,7 +29,7 @@ const StudentPortalForgetPassword = () => {
           <Col md={6} className="d-flex align-items-center ">
             <Container>
               <Row className="justify-content-center">       
-                <Col md={8} lg={6}>
+                <Col md={8} lg={6} className="px-0">
                   <img 
                       src={StudentPortalLoginLogo}   
                       className="img-fluid  "                  

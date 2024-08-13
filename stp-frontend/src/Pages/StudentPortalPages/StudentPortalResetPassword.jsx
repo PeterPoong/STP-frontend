@@ -42,10 +42,10 @@ const StudentPortalResetPassword = () => {
           <Col md={6} className="d-flex align-items-center">
             <Container>
               <Row className="justify-content-center">       
-                <Col md={8} lg={6}>
+                <Col md={8} lg={6} className="px-0">
                   <img 
                     src={StudentPortalLoginLogo}   
-                    className="img-fluid mb-4"
+                    className="img-fluid mb-4 "
                     alt="StudyPal logo"
                   />
                   <h2 className="text-start mb-3 custom-color-title">Account exists.</h2>
@@ -65,7 +65,7 @@ const StudentPortalResetPassword = () => {
                         onClick={() => setShowNewPassword(!showNewPassword)}
                         className="bg-transparent border-start-0 password-toggle"
                       >
-                        {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                        {showNewPassword ? <Eye size={18} /> : <EyeOff size={18} />}
                       </InputGroup.Text>
                     </InputGroup>
                   </Form.Group>
@@ -83,7 +83,7 @@ const StudentPortalResetPassword = () => {
                         onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                         className="bg-transparent border-start-0 password-toggle"
                       >
-                        {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                        {showConfirmPassword ? <Eye size={18} /> : <EyeOff size={18} />}
                       </InputGroup.Text>
                     </InputGroup>
                   </Form.Group>

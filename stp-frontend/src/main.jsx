@@ -35,7 +35,7 @@ import StudentPortalLogin from "./Pages/StudentPortalPages/StudentPortalLogin";
 import StudentPortalForgetPassword from "./Pages/StudentPortalPages/StudentPortalForgetPassword";
 import StudentPortalResetPassword from "./Pages/StudentPortalPages/StudentPortalResetPassword";
 import StudentPortalSignUp from "./Pages/StudentPortalPages/StudentPortalSignUp";
-
+import StudentPortalBasicInformations from "./Pages/StudentPortalPages/StudentPortalBasicInformations";
 
 const router = createBrowserRouter([
   {
@@ -156,6 +156,11 @@ const router = createBrowserRouter([
   {
     path: "/studentPortalSignUp",
     element: <StudentPortalSignUp/>
+  },
+
+  {
+    path: "/studentPortalBasicInformations",
+    element: <StudentPortalBasicInformations/>
   },
 ]);
 

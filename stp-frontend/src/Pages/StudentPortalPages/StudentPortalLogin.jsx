@@ -33,10 +33,10 @@ const StudentPortalLogin = () => {
           <Col md={6} className="d-flex align-items-center ">
             <Container>
               <Row className="justify-content-center">       
-                <Col md={8} lg={6}>
+                <Col md={8} lg={6}  className="px-0">
                   <img 
                       src={StudentPortalLoginLogo}   
-                      className="img-fluid  "                  
+                      className="img-fluid d-flex justify-content-start "                  
                   />
                   <h2 className="text-start mb-2 custom-color-title">Login as Student</h2>
                   <p className="text-start mb-4 small custom-color-title">Log in to get started.</p>                 
@@ -55,6 +55,9 @@ const StudentPortalLogin = () => {
                           inputClass="form-control"
                           containerClass="phone-input-container"
                           buttonClass="btn btn-outline-secondary"
+                          dropdownClass="country-dropdown"
+                          countryCodeEditable={false}
+                          
                       />
                     </Form.Group>
                     <Form.Group controlId="formBasicPassword" className="mb-3">

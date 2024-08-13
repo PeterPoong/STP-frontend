@@ -1,0 +1,6 @@
+.boxshadow {
+    width: 18rem;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2), 0 12px 40px 0 rgba(0, 0, 0, 0.19);
+}

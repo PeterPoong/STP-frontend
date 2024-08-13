@@ -63,7 +63,7 @@ const StudentPortalSignUp = () => {
                     <div className="position-relative">
                       <Form.Control type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} required />
                       <span className="password-toggle" onClick={() => setShowPassword(!showPassword)}>
-                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                        {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
                       </span>
                     </div>
                   </Form.Group>
@@ -74,7 +74,7 @@ const StudentPortalSignUp = () => {
                     <div className="position-relative">
                       <Form.Control type={showConfirmPassword ? "text" : "password"} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
                       <span className="password-toggle" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
-                        {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                        {showConfirmPassword ? <Eye size={18} /> : <EyeOff size={18} />}
                       </span>
                     </div>
                   </Form.Group>
