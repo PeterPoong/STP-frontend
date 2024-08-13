@@ -101,7 +101,7 @@ const NavButtons = () => {
           </Dropdown.Toggle>
 
           <Dropdown.Menu>
-            <Dropdown.Item className="dropdown" as={Link} to="/login-student">
+            <Dropdown.Item className="dropdown" as={Link} to="/studentportallogin">
               Login as Student
             </Dropdown.Item>
             <Dropdown.Item as={Link} to="/login-school">

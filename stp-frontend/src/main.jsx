@@ -30,6 +30,13 @@ import AdminCourses from "./Pages/AdminPages/AdminCourses";
 import AdminCategory from "./Pages/AdminPages/AdminCategory";
 import AdminSubject from "./Pages/AdminPages/AdminSubject";
 
+//StudentPortal Page
+import StudentPortalLogin from "./Pages/StudentPortalPages/StudentPortalLogin";
+import StudentPortalForgetPassword from "./Pages/StudentPortalPages/StudentPortalForgetPassword";
+import StudentPortalResetPassword from "./Pages/StudentPortalPages/StudentPortalResetPassword";
+import StudentPortalSignUp from "./Pages/StudentPortalPages/StudentPortalSignUp";
+
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -128,6 +135,27 @@ const router = createBrowserRouter([
   {
     path: "/adminSubject",
     element: <AdminSubject/>
+  },
+
+  //Student Portal Page
+  {
+    path: "/studentPortalLogin",
+    element: <StudentPortalLogin/>
+  },
+
+  {
+    path: "/studentPortalForgetPassword",
+    element: <StudentPortalForgetPassword/>
+  },
+
+  {
+    path: "/studentPortalResetPassword",
+    element: <StudentPortalResetPassword/>
+  },
+
+  {
+    path: "/studentPortalSignUp",
+    element: <StudentPortalSignUp/>
   },
 ]);
 
