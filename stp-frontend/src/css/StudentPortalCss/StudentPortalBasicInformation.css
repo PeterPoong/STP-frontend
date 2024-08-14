@@ -1,6 +1,87 @@
-.boxshadow {
-    width: 18rem;
+.app-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: #F5F4F4;
+  }
+  
+  .main-content {
+    flex: 1;
+    padding-top: 150px; /* Adjust this value based on your navbar height */
+    padding-bottom: 20px;
+  }
+  
+  .content-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 1375px; /* Adjust as needed */
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+  
+  .profile-widget-container {
+    width: 100%;
+    max-width: 300px; /* Adjust width as needed */
+    margin: 0 auto;
+  }
+  
+  .content-area {
+    width: 100%;
+  }
+  
+  /* Responsive layout */
+  @media (min-width: 768px) {
+    .content-wrapper {
+      flex-direction: row;
+    }
+  
+    .profile-widget-container {
+      flex: 0 0 300px; /* Adjust width as needed */
+      margin: 0;
+    }
+  
+    .content-area {
+      flex: 1;
+    }
+  }
+  
+  /* Your existing styles */
+  .boxshadow {
+    width: 100%;
+    max-width: 18rem;
     border-radius: 15px;
     overflow: hidden;
     box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2), 0 12px 40px 0 rgba(0, 0, 0, 0.19);
-}
+  }
+  
+  .custom-list-group {
+    border: transparent;
+  }
+  
+  .custom-list-group .list-group-item {
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    border-bottom: none;
+  }
+  
+  .custom-list-group .list-group-item:last-child {
+    border-bottom: none;
+  }
+  
+  .custom-list-group .collapse .list-group-item {
+    background-color: #ffffff;
+    border-bottom: transparent;
+  }
+  
+  .custom-list-group .collapse .list-group-item:last-child {
+    border-bottom: none;
+  }
+  
+  .custom-list-group .transcript-item {
+    border-top: 1.5px solid #C1C1C1;
+    border-bottom: 1.5px solid #C1C1C1;
+  }
+
+  

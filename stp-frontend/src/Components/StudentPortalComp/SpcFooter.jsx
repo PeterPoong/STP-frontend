@@ -7,6 +7,7 @@ import "../../css/student css/Footer.css";
 import fb from "../../assets/student asset/logo/fblogo.png";
 import ig from "../../assets/student asset/logo/instalogo.png";
 import sms from "../../assets/student asset/logo/smslogo.png";
+import { Link } from "react-router-dom";
 
 const SpcFooter = () => {
   return (
@@ -48,7 +49,7 @@ const SpcFooter = () => {
           <p style={{ marginBottom: "5px", color:"#AAAAAA"  }}>Lot 3493, No.13 2nd Floor, Jalan Piasau, Piasau Commercial, 98000
           Miri, Sarawak</p>
         
-        <p style={{fontsize:"12px"}}>Copyright © 2024 iMedia Enterprise. Designed by <p style={{fontsize:"12px", color:"#EC3030"}}>iMedia.</p></p>
+        <p style={{fontsize:"12px"}}>Copyright © 2024 iMedia Enterprise. Designed by <Link to="/" style={{fontsize:"12px", color:"#EC3030"}}>iMedia.</Link></p>
         
       </div>
     </footer>

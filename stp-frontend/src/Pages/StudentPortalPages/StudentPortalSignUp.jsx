@@ -3,8 +3,8 @@ import { Link } from "react-router-dom";
 import { Form, Button, Container, Row, Col } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../css/StudentPortalCss/StudentPortalLoginForm.css";
-import StudentPortalLogin1 from "../../assets/StudentPortalAssets/StudentPortalLogin1.png";
-import StudentPortalLoginLogo from "../../assets/StudentPortalAssets/StudentPortalLoginLogo.png";
+import studentPortalLogin from "../../assets/StudentPortalAssets/studentPortalLogin.png";
+import studentPortalLoginLogo from "../../assets/StudentPortalAssets/studentPortalLoginLogo.png";
 import { Eye, EyeOff } from 'react-feather';
 
 const StudentPortalSignUp = () => {
@@ -26,11 +26,11 @@ const StudentPortalSignUp = () => {
     <Container fluid className="h-100">
       <Row className="h-100">
         <Col md={6} className="p-0">
-          <img src={StudentPortalLogin1} className="w-100 h-100 object-fit-cover" alt="Background" />
+          <img src={studentPortalLogin} className="w-100 h-100 object-fit-cover" alt="Background" />
         </Col>
         <Col md={6} className="d-flex align-items-center justify-content-center">
           <div className="w-100" style={{maxWidth: "400px"}}>
-            <img src={StudentPortalLoginLogo} className="img-fluid mb-4" alt="StudyPal Logo" />
+            <img src={studentPortalLoginLogo} className="img-fluid mb-4" alt="StudyPal Logo" />
             <h2 className="text-start mb-2 custom-color-title ">Start your journey here.</h2>
             <p className="text-start mb-4 custom-color-title small">Find the right university of your choice.</p>                 
             <Form onSubmit={handleSubmit}>

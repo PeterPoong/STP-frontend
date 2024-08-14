@@ -3,8 +3,8 @@ import { Link } from "react-router-dom";
 import { Form, Button, Container, Row, Col } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../css/StudentPortalCss/StudentPortalLoginForm.css";
-import StudentPortalLogin1 from "../../assets/StudentPortalAssets/StudentPortalLogin1.png";
-import StudentPortalLoginLogo from "../../assets/StudentPortalAssets/StudentPortalLoginLogo.png";
+import studentPortalLogin from "../../assets/StudentPortalAssets/studentPortalLogin.png";
+import studentPortalLoginLogo from "../../assets/StudentPortalAssets/studentPortalLoginLogo.png";
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import "../../css/StudentPortalCss/StudentPortalLoginForm.css";
@@ -22,7 +22,7 @@ const StudentPortalForgetPassword = () => {
         <Row className="h-50">
           <Col md={6} className="p-0">
             <img
-              src={StudentPortalLogin1} 
+              src={studentPortalLogin} 
               className="w-100 h-100 object-fit-cover "
             />
           </Col>
@@ -31,7 +31,7 @@ const StudentPortalForgetPassword = () => {
               <Row className="justify-content-center">       
                 <Col md={8} lg={6} className="px-0">
                   <img 
-                      src={StudentPortalLoginLogo}   
+                      src={studentPortalLoginLogo}   
                       className="img-fluid  "                  
                   />
                   <h2 className="text-start mb-3 custom-color-title">Forget your password?</h2>

@@ -3,11 +3,11 @@ import { Link } from "react-router-dom";
 import { Form, Button, Container, Row, Col, InputGroup } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../css/StudentPortalCss/StudentPortalLoginForm.css";
-import StudentPortalLogin1 from "../../assets/StudentPortalAssets/StudentPortalLogin1.png";
-import StudentPortalLoginLogo from "../../assets/StudentPortalAssets/StudentPortalLoginLogo.png";
+import studentPortalLogin from "../../assets/StudentPortalAssets/studentPortalLogin.png";
+import studentPortalLoginLogo from "../../assets/StudentPortalAssets/studentPortalLoginLogo.png";
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
-import "../../css/StudentPortalCss/StudentPortalLoginForm.css";
+
 import { Eye, EyeOff } from 'react-feather'; // Assuming you're using react-feather for icons
 
 
@@ -34,7 +34,7 @@ const StudentPortalResetPassword = () => {
         <Row className="h-50">
           <Col md={6} className="p-0">
             <img
-              src={StudentPortalLogin1} 
+              src={studentPortalLogin} 
               className="w-100 h-100 object-fit-cover"
               alt="Login background"
             />
@@ -44,7 +44,7 @@ const StudentPortalResetPassword = () => {
               <Row className="justify-content-center">       
                 <Col md={8} lg={6} className="px-0">
                   <img 
-                    src={StudentPortalLoginLogo}   
+                    src={studentPortalLoginLogo}   
                     className="img-fluid mb-4 "
                     alt="StudyPal logo"
                   />
