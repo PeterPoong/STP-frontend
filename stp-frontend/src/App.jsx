@@ -29,7 +29,7 @@ function App() {
         <main className="flex-grow-1">
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/knowmore" element={<KnowMore />} />
+            <Route path="/knowMoreInstitute/:id" element={<KnowMore />} />
             <Route path="/applynow" element={<ApplyNow />} />
             <Route path="/applyDetail/:id" element={<ApplyDetail />} />
 
@@ -40,10 +40,6 @@ function App() {
             <Route path="/videoslide" element={<VideoSlide />} />
             <Route path="/courses" element={<div>CoursesPage</div>} />
             <Route path="/institute" element={<div>InstitutePage</div>} />
-            <Route
-              path="/knowmoreinstitute"
-              element={<div>KnowMoreInstitute</div>}
-            />
             <Route path="/applycourse" element={<div>ApplyForm </div>} />
             <Route
               path="/personaldetails"

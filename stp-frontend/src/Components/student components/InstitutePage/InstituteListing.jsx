@@ -311,7 +311,9 @@ const InstituteListing = ({ searchResults = [] }) => {
   };
 
   const handleKnowMoreInstitute = (institute) => {
-    navigate("/knowmoreinstitute", { state: { institute } }); // Navigate with state
+    navigate(`/knowMoreInstitute/${institute.id}`, {
+      state: { institute: institute },
+    }); // Navigate with state
   };
   // Ensure displayInstitutes is always an array
   // const displayInstitutes =

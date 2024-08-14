@@ -111,3 +111,35 @@
   padding: 20px;
 }
 
+.map-responsive {
+  overflow: hidden;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  position: relative;
+  height: 0;
+}
+
+.map-responsive iframe {
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+}
+
+
+.image-gallery {
+  display:inline-block;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.gallery-image {
+  width: 100%;
+  max-width: 20%; /* Adjust this based on how many images you want to display per row */
+  height: auto;
+  object-fit: cover;
+}
+
+.gallery-image:last-child {
+  margin-right: 0;
+}

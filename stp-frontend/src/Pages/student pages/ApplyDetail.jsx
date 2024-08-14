@@ -1,8 +1,7 @@
 // src/Pages/ApplyDetail.js
 import React from "react";
 import { useParams } from "react-router-dom";
-import CourseDetail from "../../Components/student components/CourseDetail";
-
+import CourseDetail from "../../Components/student components/CoursePage/CourseDetail";
 const ApplyDetail = () => {
   // const { id } = useParams();
   return (

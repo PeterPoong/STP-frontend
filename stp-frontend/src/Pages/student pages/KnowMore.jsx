@@ -1,10 +1,10 @@
 import React from "react";
+import KnowMoreInstitute from "../../Components/student components/InstitutePage/KnowMoreInstitute";
 
 const KnowMore = () => {
   return (
     <div>
-      <h1>Know More</h1>
-      <p>Welcome to the Know More page.</p>
+      <KnowMoreInstitute />
     </div>
   );
 };

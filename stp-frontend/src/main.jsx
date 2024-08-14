@@ -21,7 +21,7 @@ const router = createBrowserRouter([
     errorElement: <NotFoundPage />,
   },
   {
-    path: "/knowmore",
+    path: "/knowMore",
     element: <KnowMore />,
   },
   {
@@ -49,8 +49,8 @@ const router = createBrowserRouter([
     element: <InstitutePage />,
   },
   {
-    path: "/knowmoreinstitute",
-    element: <KnowMoreInstitute />,
+    path: "/knowMoreInstitute/:id",
+    element: <KnowMore />,
   },
   {
     path: "/applycourse",
