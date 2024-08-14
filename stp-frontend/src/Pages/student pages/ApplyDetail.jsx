@@ -1,13 +1,14 @@
 // src/Pages/ApplyDetail.js
 import React from "react";
 import { useParams } from "react-router-dom";
+import CourseDetail from "../../Components/student components/CourseDetail";
 
 const ApplyDetail = () => {
-  const { applyId } = useParams();
+  // const { id } = useParams();
   return (
     <div>
-      <h2>Apply Now Detail for Application {applyId}</h2>
-      {/* Add more details as needed */}
+      {/* <h2>Apply Now Detail for Application {id}</h2> */}
+      <CourseDetail />
     </div>
   );
 };

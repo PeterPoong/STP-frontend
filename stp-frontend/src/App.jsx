@@ -13,6 +13,7 @@ import VideoSlide from "./Components/student components/VideoSlide";
 import Footer from "./css/student css/Footer.css";
 import Courses from "./Pages/student pages/CoursesPage";
 import ApplyForm from "./Pages/student pages/ApplyForm";
+import ApplyDetail from "./Pages/student pages/ApplyDetail";
 
 function App() {
   const style = {
@@ -30,6 +31,8 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/knowmore" element={<KnowMore />} />
             <Route path="/applynow" element={<ApplyNow />} />
+            <Route path="/applyDetail/:id" element={<ApplyDetail />} />
+
             <Route path="/login" element={<div>Login Page</div>} />
             <Route path="/school" element={<div>School Page</div>} />
             <Route path="/student" element={<div>Student Page</div>} />

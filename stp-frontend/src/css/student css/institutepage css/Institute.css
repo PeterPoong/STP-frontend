@@ -121,6 +121,24 @@
   margin-left: auto;
 }
 
+.featured-badge {
+  position: absolute;
+  top: 0;
+  right: 10px;
+  background-color: #B71A18; 
+  color: white;
+  padding: 5px 10px;
+  font-size: 12px;
+  text-align: center;
+  font-weight: bold;
+  text-transform: uppercase;
+  clip-path: polygon(0 0, 100% 0, 100% 75%, 100% 100%, 50% 70%, 0 100%);
+  z-index: 1;
+  width: 100px;
+  height: 40px;
+}
+
+
 /* .institute-card .details-div .d-flex {
   margin-bottom: 5px;
 } */

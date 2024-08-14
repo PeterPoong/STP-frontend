@@ -33,6 +33,10 @@ const router = createBrowserRouter([
     element: <ApplyDetail />,
   },
   {
+    path: "/applyDetail/:id",
+    element: <ApplyDetail />,
+  },
+  {
     path: "/login",
     element: <LoginPage />,
   },

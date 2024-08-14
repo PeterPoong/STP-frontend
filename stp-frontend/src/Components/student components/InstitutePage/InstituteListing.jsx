@@ -8,6 +8,11 @@ import {
   Accordion,
 } from "react-bootstrap";
 import "../../../css/student css/institutepage css/Institute.css";
+import SchoolIcon from "../../../assets/student asset/icons/SchoolIcon.png";
+import GraduationCapIcon from "../../../assets/student asset/icons/GraduationCapIcon.png";
+import BookOpenIcon from "../../../assets/student asset/icons/BookOpenIcon.png";
+import LocationIcon from "../../../assets/student asset/icons/LocationIcon.png";
+
 import StudyPal from "../../../assets/student asset/institute image/StudyPal.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -322,20 +327,7 @@ const InstituteListing = ({ searchResults = [] }) => {
       className="card mb-4 institute-card"
       style={{ height: "auto" }}
     >
-      {institute.featured && (
-        <span
-          className="position-absolute top-0 end-0 translate-middle badge"
-          style={{
-            backgroundColor: "#B71A18",
-            height: "30px",
-            fontSize: "15px",
-            marginTop: "10px",
-          }}
-        >
-          FEATURED
-          <span className="visually-hidden">featured</span>
-        </span>
-      )}
+      {institute.featured && <div className="featured-badge">Featured</div>}
       <div className="card-body d-flex flex-column flex-md-row align-items-start">
         <Row>
           <Col md={6} lg={6}>
@@ -353,17 +345,22 @@ const InstituteListing = ({ searchResults = [] }) => {
                 </div>
                 <div style={{ paddingLeft: "10px" }}>
                   <h5 className="card-text">{institute.category}</h5>
-                  <FontAwesomeIcon icon={faLocationDot} />
-                  <span style={{ paddingLeft: "10px" }}>
-                    {institute.city}, {institute.state}, {institute.country}
-                  </span>{" "}
-                  <a
-                    href="#"
-                    className="map-link"
-                    style={{ paddingLeft: "5px" }}
-                  >
-                    click and view on map
-                  </a>
+                  <div className="d-flex align-items-center">
+                    <img src={LocationIcon} alt="Location" width="40" />{" "}
+                    {/* Adjusted width */}
+                    <span style={{ paddingLeft: "10px" }}>
+                      {institute.city}, {institute.state}, {institute.country}
+                    </span>
+                  </div>
+                  <div>
+                    <a
+                      href="#"
+                      className="map-link"
+                      style={{ paddingLeft: "5px" }}
+                    >
+                      click and view on map
+                    </a>
+                  </div>
                   <p className="card-text mt-2">{institute.description}</p>
                 </div>
               </div>
@@ -375,21 +372,25 @@ const InstituteListing = ({ searchResults = [] }) => {
                 <div className="d-flex align-items-center flex-wrap">
                   <Col>
                     <div>
-                      <Row>
+                      <Row style={{ paddingTop: "20px" }}>
                         <div>
-                          <FontAwesomeIcon icon={faSchool} />
+                          <img src={SchoolIcon} alt="School" width="40" />
                           <span style={{ paddingLeft: "20px" }}>
                             {institute.category}
                           </span>
                         </div>
                         <div>
-                          <FontAwesomeIcon icon={faGraduationCap} />
+                          <img
+                            src={GraduationCapIcon}
+                            alt="Graduation Cap"
+                            width="40"
+                          />
                           <span style={{ paddingLeft: "20px" }}>
                             {institute.id}
                           </span>
                         </div>
                         <div>
-                          <FontAwesomeIcon icon={faBookOpen} />
+                          <img src={BookOpenIcon} alt="Book Open" width="40" />
                           <span style={{ paddingLeft: "20px" }}>
                             {institute.intakes
                               ? institute.intakes.join(", ")
@@ -402,17 +403,11 @@ const InstituteListing = ({ searchResults = [] }) => {
                 </div>
               </div>
               <div className="fee-apply">
-                <div
-                  className="fee-info text-right"
-                  style={{ marginTop: "25px" }}
-                >
-                  <p>Estimate Fee</p>
-                  <span>{institute.cost}</span>
-                </div>
-                <div className="knowmore-button mt-3">
+                <div className="knowmore-button">
                   <button
                     className="featured"
                     onClick={() => handleKnowMoreInstitute(institute)}
+                    style={{ marginTop: "90px", width: "150px" }}
                   >
                     Know More
                   </button>

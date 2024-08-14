@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+
 import {
   Container,
   Row,
@@ -9,6 +11,7 @@ import {
   Badge,
 } from "react-bootstrap";
 import "../../../css/student css/course page css/CoursesPage.css";
+import featuredBadge from "../../../assets/student asset/featuredBadge/featuredBadge.png";
 import StudyPal from "../../../assets/student asset/coursepage image/StudyPal.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -31,7 +34,7 @@ const categoryAPIURL =
 const tuitionFeeAPIURL =
   "http://192.168.0.69:8000/api/student/tuitionFeeFilterRange";
 
-const CourseListing = ({ searchResults = [] }) => {
+const CourseListing = ({ searchResults, countryID }) => {
   const [locationFilters, setLocationFilters] = useState([]);
   const [categoryFilters, setCategoryFilters] = useState([]);
   const [modeFilters, setModeFilters] = useState([]);
@@ -45,7 +48,61 @@ const CourseListing = ({ searchResults = [] }) => {
   const [locationsData, setLocationsData] = useState([]);
   const [studyModes, setStudyModes] = useState([]);
   const [categoriesData, setCategoriesData] = useState([]);
-  const [selectedCountry, setSelectedCountry] = useState(null);
+  const [selectedCountry, setSelectedCountry] = useState("");
+
+  useEffect(() => {
+    const fetchLocationFilters = async () => {
+      if (countryID) {
+        try {
+          const response = await fetch(
+            "http://192.168.0.69:8000/api/student/locationFilterList",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ countryID: countryID }),
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+
+          const locationFilters = await response.json();
+          //       console.log("Location data response:", locationFilters);
+
+          //       // Make sure locationData has data
+          //       if (locationFilters && locationFilters.data) {
+          //         setLocationFilters(locationFilters.data);
+          //         console.log("Location filters set:", locationFilters.data);
+          //       } else {
+          //         console.warn("No location data found.");
+          //       }
+          //     } catch (error) {
+          //       console.error("Error fetching locations:", error);
+          //     }
+          //   };
+          // const data = await response.json();
+
+          console.log("Fetched Location Filters:", locationFilters); // Debugging line
+
+          if (Array.isArray(locationFilters.data)) {
+            setLocationFilters(locationFilters.data);
+          } else {
+            setLocationFilters([]);
+          }
+        } catch (error) {
+          console.error("Error fetching locations:", error);
+          setLocationFilters([]);
+        }
+      } else {
+        setLocationFilters([]);
+      }
+    };
+
+    fetchLocationFilters();
+  }, [countryID]);
 
   // useEffect(() => {
   //   const fetchLocations = async () => {
@@ -76,50 +133,114 @@ const CourseListing = ({ searchResults = [] }) => {
   //   fetchLocations();
   // }, []);
 
-  useEffect(() => {
-    const fetchLocations = async (countryID) => {
-      if (!countryID) {
-        console.error("Country ID is not defined.");
-        return;
-      }
+  // hehe useEffect(() => {
+  //   const fetchLocations = async (countryID) => {
+  //     if (!countryID) {
+  //       console.error("Country ID is not defined.");
+  //       return;
+  //     }
 
-      try {
-        console.log("Fetching locations for countryID:", countryID);
+  //     try {
+  //       console.log("Fetching locations for country ID:", countryID);
 
-        const response = await fetch(locationAPIURL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            countryID: countryID,
-          }),
-        });
+  //       // const response = await fetch(
+  //       //   `${locationAPIURL}?countryID=${countryID}`,
+  //       //   {
+  //       //     method: "POST",
+  //       //     headers: {
+  //       //       "Content-Type": "application/json",
+  //       //     },
+  //       //     body: JSON.stringify({
+  //       //       countryID: countryID,
+  //       //     }),
+  //       //   }
+  //       // );
 
-        const locationFilters = await response.json();
+  //       const response = await fetch(locationAPIURL, {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify({
+  //           countryID: countryID,
+  //         }),
+  //       });
+  //       const locationFilters = await response.json();
+  //       console.log("Location data response:", locationFilters);
 
-        console.log("Location filters response:", locationFilters);
+  //       // Make sure locationData has data
+  //       if (locationFilters && locationFilters.data) {
+  //         setLocationFilters(locationFilters.data);
+  //         console.log("Location filters set:", locationFilters.data);
+  //       } else {
+  //         console.warn("No location data found.");
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching locations:", error);
+  //     }
+  //   };
 
-        if (locationFilters.data) {
-          setLocationFilters(locationFilters.data);
-          console.log("Fetched location data:", locationFilters.data);
-        } else {
-          console.warn("No location data found.");
-        }
-      } catch (error) {
-        console.error("Error fetching locations:", error);
-      }
-    };
+  //   if (selectedCountry && selectedCountry.country_id) {
+  //     fetchLocations(selectedCountry.country_id);
+  //   } else if (!selectedCountry) {
+  //     // If selectedCountry is not defined, fetch locations with a default country ID
+  //     fetchLocations(1); // Replace 1 with your default country ID
+  //   } else {
+  //     console.log("Country ID is not defined.");
+  //   }
+  // }, [selectedCountry]);
 
-    if (selectedCountry && selectedCountry.country_id) {
-      fetchLocations(selectedCountry.country_id);
-    } else if (!selectedCountry) {
-      // If selectedCountry is not defined, fetch locations with a default country ID
-      fetchLocations(); // Replace 1 with your default country ID
-    } else {
-      console.log("Country ID is not defined.");
-    }
-  }, [selectedCountry]);
+  // useEffect(() => {
+  //   const fetchLocations = async () => {
+  //     if (selectedCountry) {
+  //       try {
+  //         const response = await fetch(locationAPIURL, {
+  //           method: "POST",
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //           },
+  //           body: JSON.stringify({ countryId: countryID }),
+  //         });
+  //         const locationFilters = await response.json();
+  //         console.log("Location filters response:", locationFilters);
+  //         setLocationFilters(locationFilters.data);
+  //       } catch (error) {
+  //         console.error("Error fetching locations:", error);
+  //         setLocationFilters([]);
+  //       }
+  //     } else {
+  //       setLocationFilters([]);
+  //     }
+  //   };
+
+  //   fetchLocations();
+  // }, [selectedCountry]);
+
+  // useEffect(() => {
+  //   if (selectedCountry && selectedCountry.country_id) {
+  //     // use the selectedCountry prop here
+  //     const fetchLocations = async () => {
+  //       try {
+  //         const response = await fetch(`${locationAPIURL}`, {
+  //           method: "POST",
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //           },
+  //           body: JSON.stringify({
+  //             countryID: selectedCountry.country_id,
+  //           }),
+  //         });
+  //         const locationFilters = await response.json();
+  //         setLocationFilters(locationFilters.data);
+  //       } catch (error) {
+  //         console.error("Error fetching locations:", error);
+  //       }
+  //     };
+  //     fetchLocations();
+  //   } else {
+  //     setLocationFilters([]);
+  //   }
+  // }, [selectedCountry]);
 
   useEffect(() => {
     const fetchStudyModes = async () => {
@@ -240,36 +361,36 @@ const CourseListing = ({ searchResults = [] }) => {
     fetchTuitionFeeRange();
   }, []);
 
-  const locations = [
-    "Johor",
-    "Kedah",
-    "Melaka",
-    "Negeri Sembilan",
-    "Pahang",
-    "Penang",
-    "Perak",
-    "Sabah",
-    "Sarawak",
-    "Terengganu",
-    "Kuala Lumpur",
-    "Putrajaya",
-    "Labuan",
-  ];
+  // const locations = [
+  //   "Johor",
+  //   "Kedah",
+  //   "Melaka",
+  //   "Negeri Sembilan",
+  //   "Pahang",
+  //   "Penang",
+  //   "Perak",
+  //   "Sabah",
+  //   "Sarawak",
+  //   "Terengganu",
+  //   "Kuala Lumpur",
+  //   "Putrajaya",
+  //   "Labuan",
+  // ];
 
-  const categories = [
-    "Business & Marketing",
-    "Accounting",
-    "Agricultural",
-    "Architecture",
-    "Arts, Design & Multimedia",
-    "Aviation",
-    "Computer & Technology",
-    "Hospitality & Tourism",
-    "Language Studies",
-    "Mathematics & Actuarial",
-  ];
+  // const categories = [
+  //   "Business & Marketing",
+  //   "Accounting",
+  //   "Agricultural",
+  //   "Architecture",
+  //   "Arts, Design & Multimedia",
+  //   "Aviation",
+  //   "Computer & Technology",
+  //   "Hospitality & Tourism",
+  //   "Language Studies",
+  //   "Mathematics & Actuarial",
+  // ];
 
-  const modes = ["Full time", "Part time", "Remote"];
+  // const modes = ["Full time", "Part time", "Remote"];
 
   const handleLocationChange = (location) => {
     if (locationFilters.includes(location.state_name)) {
@@ -283,8 +404,8 @@ const CourseListing = ({ searchResults = [] }) => {
 
   const handleCountryChange = async (country) => {
     setSelectedCountry(country);
-    if (country) {
-      setLocationFilters(country.locations || []);
+    if (country && country.country_id) {
+      await fetchLocations(country.country_id); // Fetch locations when country changes
     } else {
       setLocationFilters([]);
     }
@@ -324,28 +445,23 @@ const CourseListing = ({ searchResults = [] }) => {
     <div
       key={index}
       className="card mb-4 degree-card"
-      style={{ height: "auto" }}
+      style={{ position: "relative", height: "auto" }}
     >
-      {program.featured && (
-        <span
-          className="position-absolute top-0 end-0 translate-middle badge"
-          style={{
-            backgroundColor: "#B71A18",
-            height: "30px",
-            fontSize: "15px",
-            marginTop: "10px",
-          }}
-        >
-          FEATURED
-          <span className="visually-hidden">featured</span>
-        </span>
-      )}
+      {program.featured && <div className="featured-badge">Featured</div>}
       <div className="card-body d-flex flex-column flex-md-row align-items-start">
         <Row>
           <Col md={7} lg={7}>
             <div className="card-image mb-3 mb-md-0">
-              <h5 className="card-title " style={{ paddingLeft: "20px" }}>
-                {program.name}
+              <h5 className="card-title" style={{ paddingLeft: "20px" }}>
+                <Link
+                  style={{ color: "black" }}
+                  to={{
+                    pathname: `/applyDetail/${program.id}`,
+                    state: { program: program },
+                  }}
+                >
+                  {program.name}
+                </Link>
               </h5>
               <div className="d-flex align-items-center">
                 <div style={{ paddingLeft: "20px" }}>
@@ -378,7 +494,7 @@ const CourseListing = ({ searchResults = [] }) => {
                 <div className="d-flex align-items-center flex-wrap">
                   <Col>
                     <div>
-                      <Row>
+                      <Row style={{ paddingTop: "20px" }}>
                         <div>
                           <FontAwesomeIcon icon={faGraduationCap} />
                           <span style={{ paddingLeft: "20px" }}>
@@ -413,7 +529,7 @@ const CourseListing = ({ searchResults = [] }) => {
               <div className="fee-apply">
                 <div
                   className="fee-info text-right"
-                  style={{ marginTop: "20px" }}
+                  style={{ marginTop: "25px" }}
                 >
                   <p>Estimate fee</p>
                   <span>

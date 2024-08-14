@@ -20,6 +20,8 @@ import CourseListing from "../../../Components/student components/CoursePage/Cou
 const apiURL = "http://192.168.0.69:8000/api/student/courseList";
 const countriesURL = "http://192.168.0.69:8000/api/student/countryList";
 const instituteURL = "http://192.168.0.69:8000/api/student/instituteType";
+const locationAPIURL =
+  "http://192.168.0.69:8000/api/student/locationFilterList";
 
 const SearchCourse = () => {
   const [locationFilters, setLocationFilters] = useState([]);
@@ -33,6 +35,52 @@ const SearchCourse = () => {
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [institutes, setInstitutes] = useState([]);
   const [selectedInstitute, setSelectedInstitute] = useState(null);
+
+  const handleCountryChange = (country) => {
+    setSelectedCountry(country);
+    console.log("Selected Country ID:", country?.id); // Debugging line
+  };
+
+  // Fetch countries from API
+  useEffect(() => {
+    fetch(countriesURL)
+      .then((response) => response.json())
+      .then((data) => setCountries(data))
+      .catch((error) => console.error("Error fetching countries:", error));
+  }, []);
+
+  // Fetch locations when a country is selected
+  useEffect(() => {
+    if (selectedCountry) {
+      fetch(locationAPIURL, {
+        method: "POST", // Change method to POST if that's what the API expects
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ countryID: selectedCountry.id }), // Send countryId in the request body
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then((data) => {
+          setLocationFilters(data);
+        })
+        .catch((error) => {
+          console.error("Error fetching locations:", error);
+          setLocationFilters([]); // Reset if there's an error
+        });
+    } else {
+      setLocationFilters([]); // Reset locations if no country is selected
+    }
+  }, [selectedCountry]);
+
+  // const handleCountryChange = (event) => {
+  //   const countryId = event.target.value;
+  //   setSelectedCountry(countryId);
+  // };
 
   // Fetch countries from API
   useEffect(() => {
@@ -109,6 +157,8 @@ const SearchCourse = () => {
           body: JSON.stringify({
             search: searchQuery,
             page: currentPage,
+            countryID: selectedCountry?.country_id,
+            instituteId: selectedInstitute?.id,
           }),
         });
 
@@ -147,15 +197,30 @@ const SearchCourse = () => {
     setCurrentPage(1); // Reset to first page when search query changes
   };
 
-  const handleCountryChange = async (countryID) => {
-    console.log("Country selected:", countryID);
-    setSelectedCountry(countryID);
-    if (countryID) {
-      setLocationFilters(countryID.locations || []);
-    } else {
-      setLocationFilters([]);
-    }
-  };
+  // const handleCountryChange = async (countryID) => {
+  //   console.log("Country selected:", countryID);
+  //   setSelectedCountry(countryID);
+  //   if (countryID) {
+  //     try {
+  //       const response = await fetch(
+  //         `${countriesURL}?countryID=${countryID.id}`,
+  //         {
+  //           method: "GET",
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //           },
+  //         }
+  //       );
+  //       const locationFilters = await response.json();
+  //       setLocationFilters(locationFilters.data);
+  //     } catch (error) {
+  //       console.error("Error fetching locations:", error);
+  //       setLocationFilters([]);
+  //     }
+  //   } else {
+  //     setLocationFilters([]);
+  //   }
+  // };
 
   const handleInstituteChange = (institute) => {
     setSelectedInstitute(institute);
@@ -164,7 +229,6 @@ const SearchCourse = () => {
   return (
     <Container>
       <h3 className="pt-3">Courses in Degree</h3>
-
       <Row className="align-items-center mb-3">
         <Col xs={12} sm={4} md={3} lg={2} className="mb-2 mb-sm-0">
           <ButtonGroup className="w-100">
@@ -280,7 +344,6 @@ const SearchCourse = () => {
           </Pagination>
         </Col>
       </Row>
-
       <Form>
         <InputGroup className="mb-3">
           <Form.Control
@@ -296,16 +359,17 @@ const SearchCourse = () => {
           </Button>
         </InputGroup>
       </Form>
-
       {loading && (
         <div className="d-flex justify-content-center">
           <Spinner animation="border" />
         </div>
       )}
-
       {error && <Alert variant="danger">{error}</Alert>}
 
-      <CourseListing searchResults={searchResults} />
+      <CourseListing
+        searchResults={searchResults}
+        countryID={selectedCountry?.id} // Make sure this is not undefined or null
+      />
     </Container>
   );
 };
