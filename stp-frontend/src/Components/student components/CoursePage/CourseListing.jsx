@@ -333,11 +333,18 @@ const CourseListing = ({ searchResults, countryID }) => {
     Array.isArray(searchResults) && searchResults.length > 0
       ? searchResults
       : Array.isArray(programs)
-      ? locationFilters.length > 0
-        ? programs.filter((program) =>
-            locationFilters.includes(program.location)
-          )
-        : programs
+      ? programs.filter((program) => {
+          const matchesLocation =
+            locationFilters.length === 0 ||
+            locationFilters.includes(program.location);
+          const matchesCategory =
+            categoryFilters.length === 0 ||
+            categoryFilters.includes(program.category);
+          const matchesMode =
+            modeFilters.length === 0 || modeFilters.includes(program.mode);
+          // const matchesFee = tuitionFee === 0 || program.cost <= tuitionFee&& matchesFee;
+          return matchesLocation && matchesCategory && matchesMode;
+        })
       : [];
 
   const mappedPrograms = displayPrograms.map((program, index) => (
