@@ -17,54 +17,54 @@ const StudentPortalForgetPassword = () => {
     // Handle login logic here
     console.log("Email:", email);
   };
-  return (   
-      <Container fluid className="h-100">
-        <Row className="h-50">
-          <Col md={6} className="p-0">
-            <img
-              src={studentPortalLogin} 
-              className="w-100 h-100 object-fit-cover "
-            />
-          </Col>
-          <Col md={6} className="d-flex align-items-center ">
-            <Container>
-              <Row className="justify-content-center">       
-                <Col md={8} lg={6} className="px-0">
-                  <img 
-                      src={studentPortalLoginLogo}   
-                      className="img-fluid  "                  
-                  />
-                  <h2 className="text-start mb-3 custom-color-title">Forget your password?</h2>
-                  <p className="text-start mb-4 small custom-color-title">Don't worry! it happens. Please enter the email associated with your account.</p>                 
-                  <Form onSubmit={handleSubmit}>                                      
-                    <Form.Group controlId="formBasicEmail">
-                        <Form.Label className="custom-label">Email address</Form.Label>
-                        <Form.Control
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                        />
-                    </Form.Group>
-                    <Row className="mb-3">               
-                    </Row>           
-                    <Button 
-                      variant="danger" 
-                      type="submit" 
-                      className="my-3 m-0"
-                      style={{ width: '100%', height: '40px' }} // Adjust height as needed
-                    >Send Codes
-                    </Button>      
-                    <div class="text-center text-lg-center m-5 pt-2">  
-                      <p class="small  pt-1 mb-0 text-secondary">Already have an account? <Link to="/studentPortalLogin" className="forgetpassword mx-2 ">Login now</Link></p>
-                    </div>      
-                  </Form>                 
-                </Col> 
-              </Row>
-            </Container>
-          </Col>
-        </Row>
-      </Container>
+  return (
+    <Container fluid className="h-100">
+      <Row className="h-50">
+        <Col md={6} className="p-0">
+          <img
+            src={studentPortalLogin}
+            className="w-100 h-100 object-fit-cover "
+          />
+        </Col>
+        <Col md={6} className="d-flex align-items-center ">
+          <Container>
+            <Row className="justify-content-center">
+              <Col md={8} lg={6} className="px-0">
+                <img
+                  src={studentPortalLoginLogo}
+                  className="img-fluid  "
+                />
+                <h2 className="text-start mb-3 custom-color-title">Forget your password?</h2>
+                <p className="text-start mb-4 small custom-color-title">Don't worry! it happens. Please enter the email associated with your account.</p>
+                <Form onSubmit={handleSubmit}>
+                  <Form.Group controlId="formBasicEmail">
+                    <Form.Label className="custom-label">Email address</Form.Label>
+                    <Form.Control
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                    />
+                  </Form.Group>
+                  <Row className="mb-3">
+                  </Row>
+                  <Button
+                    variant="danger"
+                    type="submit"
+                    className="my-3 m-0"
+                    style={{ width: '100%', height: '40px' }} // Adjust height as needed
+                  >Send Codes
+                  </Button>
+                  <div class="text-center text-lg-center m-5 pt-2">
+                    <p class="small  pt-1 mb-0 text-secondary">Already have an account? <Link to="/studentPortalLogin" className="forgetpassword mx-2 ">Login now</Link></p>
+                  </div>
+                </Form>
+              </Col>
+            </Row>
+          </Container>
+        </Col>
+      </Row>
+    </Container>
   );
 };
 

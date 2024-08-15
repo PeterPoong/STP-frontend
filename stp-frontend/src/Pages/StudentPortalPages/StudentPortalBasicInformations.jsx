@@ -5,18 +5,20 @@ import SpcFooter from "../../Components/StudentPortalComp/SpcFooter";
 import BasicInformationWidget from "../../Components/StudentPortalComp/BasicInformationWidget";
 import ManagePasswordWidget from "../../Components/StudentPortalComp/ManagePasswordWidget";
 import WidgetAccepted from "../../Components/StudentPortalComp/WidgetAccepted";
+import WidgetPending from "../../Components/StudentPortalComp/WidgetPending";
+import WidgetRejected from "../../Components/StudentPortalComp/WidgetRejected";
+import CollapsibleSections from "../../Components/StudentPortalComp/CollapsibleSections";
 import "aos/dist/aos.css";
 import "../../css/StudentPortalCss/StudentPortalBasicInformation.css";
 
 const StudentPortalBasicInformations = () => {
   const [selectedContent, setSelectedContent] = useState('basicInfo');
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-
   const openPopup = () => setIsPopupOpen(true);
   const closePopup = () => setIsPopupOpen(false);
 
   const renderContent = () => {
-    switch(selectedContent) {
+    switch (selectedContent) {
       case 'basicInfo':
         return (
           <div>
@@ -27,9 +29,9 @@ const StudentPortalBasicInformations = () => {
           </div>
         );
       case 'managePassword':
-        return <ManagePasswordWidget/>;
+        return <ManagePasswordWidget />;
       case 'transcript':
-        return <TranscriptWidget />;
+        return <CollapsibleSections/>;
       case 'appliedCoursesPending':
         return <AppliedCoursesWidget status="pending" />;
       case 'appliedCoursesHistory':
@@ -42,25 +44,21 @@ const StudentPortalBasicInformations = () => {
   return (
     <div className="app-container">
       <NavButtons />
-      
       <main className="main-content">
         <div className="content-wrapper">
           <div className="profile-widget-container">
             <MyProfileWidget onSelectContent={setSelectedContent} />
           </div>
-          
           <div className="content-area">
             {renderContent()}
           </div>
         </div>
       </main>
-
-      <WidgetAccepted
+      <WidgetRejected
         isOpen={isPopupOpen}
         onClose={closePopup}
         date="February 20th, 2024"
       />
-
       <SpcFooter />
     </div>
   );

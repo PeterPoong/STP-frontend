@@ -1,31 +1,14 @@
 import React from "react";
-import { Container, Row, Col } from "react-bootstrap";
+import {Row} from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-// import "../css/student css/Footer.css"; // Ensure this path is correct
 import "../../css/student css/Footer.css";
-// import fb from "../assets/student asset/logo/fblogo.png";
-import fb from "../../assets/student asset/logo/fblogo.png";
-import ig from "../../assets/student asset/logo/instalogo.png";
-import sms from "../../assets/student asset/logo/smslogo.png";
 import { Link } from "react-router-dom";
 
 const SpcFooter = () => {
   return (
     <footer
-      style={{
-        backgroundColor: "#202220",
-        color: "white",
-        textAlign: "center",
-        padding: "10px 0",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
-      >
+      style={{backgroundColor: "#202220", color: "white", textAlign: "center", padding: "10px 0",}}>
+      <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
         <div style={{ marginBottom: "5px", marginTop : "5px"}}>
           <Row>
             <button type="button" className="btn btn-outline-primary rounded-circle p-0 social-btn facebook-btn" style={{width: '40px', height: '40px', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
@@ -45,12 +28,9 @@ const SpcFooter = () => {
             </button>
           </Row>
         </div>
-
-          <p style={{ marginBottom: "5px", color:"#AAAAAA"  }}>Lot 3493, No.13 2nd Floor, Jalan Piasau, Piasau Commercial, 98000
-          Miri, Sarawak</p>
-        
-        <p style={{fontsize:"12px"}}>Copyright © 2024 iMedia Enterprise. Designed by <Link to="/" style={{fontsize:"12px", color:"#EC3030"}}>iMedia.</Link></p>
-        
+        <p style={{ marginBottom: "5px", color:"#AAAAAA"  }}>Lot 3493, No.13 2nd Floor, Jalan Piasau, Piasau Commercial, 98000
+        Miri, Sarawak</p>
+        <p style={{fontsize:"12px"}}>Copyright © 2024 iMedia Enterprise. Designed by <Link to="https://imedia.my" style={{fontsize:"12px", color:"#EC3030"}}>iMedia.</Link></p>  
       </div>
     </footer>
   );

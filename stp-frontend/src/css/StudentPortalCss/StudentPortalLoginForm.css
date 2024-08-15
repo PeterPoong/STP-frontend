@@ -16,6 +16,22 @@
   
   .phone-input-container {
     display: flex;
+    width:100%;
+  }
+  .react-tel-input {
+    width: 100%;
+  }
+  
+  .react-tel-input .form-control {
+    width: 100% !important;
+    max-width: none !important;
+  }
+  
+  @media (max-width: 767px) {
+    .phone-input-container,
+    .react-tel-input {
+      max-width: 100%;
+    }
   }
 
   .react-tel-input .country-list {
@@ -63,8 +79,10 @@
   }
   .phone-input-container .form-control {
     flex-grow: 1;
+    width:auto;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
+    padding-left: 50px ;
   }
   
   .phone-input-container .flag-dropdown {
