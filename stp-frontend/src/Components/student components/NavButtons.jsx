@@ -30,6 +30,7 @@ const NavigationBar = () => {
               as={Link}
               to="/courses"
               className="nav-link-custom"
+              style={{ marginLeft: "20px" }}
             >
               Courses
             </Button>
@@ -38,6 +39,7 @@ const NavigationBar = () => {
               as={Link}
               to="/institute"
               className="nav-link-custom"
+              style={{ marginLeft: "10px" }}
             >
               Schools
             </Button>
@@ -45,6 +47,7 @@ const NavigationBar = () => {
               title="Scholarships"
               id="scholarship-nav-dropdown"
               className="nav-dropdown-custom"
+              style={{ marginLeft: "10px" }}
             >
               <NavDropdown.Item as={Link} to="#action/3.1">
                 Action
@@ -64,6 +67,7 @@ const NavigationBar = () => {
               title="Study Guides"
               id="study-guide-nav-dropdown"
               className="nav-dropdown-custom"
+              style={{ marginLeft: "10px" }}
             >
               <NavDropdown.Item as={Link} to="#action/3.1">
                 Action
@@ -91,7 +95,7 @@ const NavigationBar = () => {
 
 const NavButtons = () => {
   return (
-    <Nav className="ms-auto" style={{ paddingLeft: "90px" }} expand="lg">
+    <Nav className="ms-auto" style={{ paddingLeft: "60px" }} expand="lg">
       <ButtonGroup>
         <Dropdown as={ButtonGroup}>
           <Dropdown.Toggle className="nav-button" id="dropdown-custom-1">

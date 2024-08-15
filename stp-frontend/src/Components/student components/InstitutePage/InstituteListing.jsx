@@ -332,7 +332,7 @@ const InstituteListing = ({ searchResults = [] }) => {
       {institute.featured && <div className="featured-badge">Featured</div>}
       <div className="card-body d-flex flex-column flex-md-row align-items-start">
         <Row>
-          <Col md={6} lg={6}>
+          <Col md={7} lg={7}>
             <div className="card-image mb-3 mb-md-0">
               <h5 className="card-title" style={{ paddingLeft: "20px" }}>
                 {institute.name}
@@ -368,7 +368,7 @@ const InstituteListing = ({ searchResults = [] }) => {
               </div>
             </div>
           </Col>
-          <Col md={6} lg={6}>
+          <Col md={5} lg={5}>
             <div className="d-flex flex-grow-1 justify-content-between">
               <div className="details-div" style={{ width: "60%" }}>
                 <div className="d-flex align-items-center flex-wrap">
