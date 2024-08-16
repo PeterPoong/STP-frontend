@@ -8,6 +8,7 @@ import studentPortalLogin from "../../assets/StudentPortalAssets/studentPortalLo
 import studentPortalLoginLogo from "../../assets/StudentPortalAssets/studentPortalLoginLogo.png";
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
+import moment from 'moment';
 
 const StudentPortalLogin = () => {
   const [password, setPassword] = useState("");
@@ -46,7 +47,8 @@ const StudentPortalLogin = () => {
           console.log('Login successful:', response.data);
           setLoginStatus('success');
           sessionStorage.setItem('token', response.data.data.token)
-          setTimeout(() => navigate('/studentPortalBasicInformations'), 1500);
+          sessionStorage.setItem('loginTimestamp', moment().toISOString());
+          setTimeout(() => navigate('/studentPortalBasicInformations'), 100);
         } else {
           console.error('Login failed:', response.data);
           setLoginStatus('failed');
