@@ -33,7 +33,7 @@ const CollapsibleSections = () => {
       onOpening={() => handleTriggerClick(section)}
       onClosing={() => handleTriggerClick(section)}
     >
-      <div className="p-3">
+      <div className="p-0">
         {content}
       </div>
     </Collapsible>
