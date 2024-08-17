@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Form, Button, Container, Row, Col, Alert } from "react-bootstrap";
+import { Form, Button, Container, Row, Col, Alert, InputGroup } from "react-bootstrap";
 import axios from 'axios';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../css/StudentPortalCss/StudentPortalLoginForm.css";
@@ -9,14 +9,17 @@ import studentPortalLoginLogo from "../../assets/StudentPortalAssets/studentPort
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import moment from 'moment';
+import { Eye, EyeOff } from 'react-feather';
 
 const StudentPortalLogin = () => {
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [phone, setPhone] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [countryCodes, setCountryCodes] = useState([]);
   const [loginStatus, setLoginStatus] = useState(null);
   const navigate = useNavigate();
+
   useEffect(() => {
     axios.get('http://192.168.0.69:8000/api/countryCode')
       .then(response => {
@@ -28,6 +31,7 @@ const StudentPortalLogin = () => {
         console.error('Error fetching country codes:', error);
       });
   }, []);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     setLoginStatus(null);
@@ -48,7 +52,7 @@ const StudentPortalLogin = () => {
           setLoginStatus('success');
           sessionStorage.setItem('token', response.data.data.token)
           sessionStorage.setItem('loginTimestamp', moment().toISOString());
-          setTimeout(() => navigate('/studentPortalBasicInformations'), 100);
+          setTimeout(() => navigate('/studentPortalBasicInformations'), 6000);
         } else {
           console.error('Login failed:', response.data);
           setLoginStatus('failed');
@@ -68,6 +72,7 @@ const StudentPortalLogin = () => {
         }
       });
   };
+
   return (
     <Container fluid className="h-100">
       <Row className="h-50">
@@ -119,13 +124,25 @@ const StudentPortalLogin = () => {
                   </Form.Group>
                   <Form.Group controlId="formBasicPassword" className="mb-3">
                     <Form.Label className="custom-label">Password</Form.Label>
-                    <Form.Control
-                      type="password"
-                      placeholder="Password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                    />
+                    <InputGroup>
+                      <Form.Control
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                        className="pe-5"
+                      />
+                      <div className="position-absolute top-50 end-0 translate-middle-y pe-3" style={{ zIndex: 10 }}>
+                        <span
+                          className="password-toggle"
+                          onClick={() => setShowPassword(!showPassword)}
+                          style={{ cursor: 'pointer' }}
+                        >
+                          {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+                        </span>
+                      </div>
+                    </InputGroup>
                   </Form.Group>
                   <Row className="mb-3">
                     <Col>

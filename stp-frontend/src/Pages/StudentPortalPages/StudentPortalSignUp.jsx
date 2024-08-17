@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Form, Button, Container, Row, Col, Alert, Modal } from "react-bootstrap";
+import { Form, Button, Container, Row, Col, Alert, Modal, InputGroup } from "react-bootstrap";
 import axios from 'axios';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../css/StudentPortalCss/StudentPortalLoginForm.css";
@@ -21,20 +21,41 @@ const StudentPortalSignUp = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [signupStatus, setSignupStatus] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [isFormValid, setIsFormValid] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const isValid = name.trim() !== "" &&
+      phone.length >= 10 &&
+      identityCard.trim() !== "" &&
+      email.trim() !== "" &&
+      password.length >= 8 &&
+      confirmPassword === password;
+    setIsFormValid(isValid);
+  }, [name, phone, identityCard, email, password, confirmPassword]);
+
   const handlePhoneChange = (value, country, event, formattedValue) => {
     const digitsOnly = value.replace(/\D/g, '');
     setPhone(digitsOnly);
   };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     setSignupStatus(null);
+
     if (password !== confirmPassword) {
       setSignupStatus('password_mismatch');
       return;
     }
+
+    if (password.length < 8) {
+      setSignupStatus('password_too_short');
+      return;
+    }
+
     const countryCode = phone.slice(0, phone.length - 10);
     const contactNumber = phone.slice(-10);
+
     const formData = {
       name: name,
       email: email,
@@ -44,7 +65,9 @@ const StudentPortalSignUp = () => {
       country_code: countryCode.startsWith('+') ? countryCode : `+${countryCode}`,
       contact_number: contactNumber,
     };
+
     console.log('Sending signup data:', formData);
+
     axios.post('http://192.168.0.69:8000/api/student/register', formData)
       .then(response => {
         console.log('Full API response:', response);
@@ -73,6 +96,7 @@ const StudentPortalSignUp = () => {
         }
       });
   };
+
   return (
     <Container fluid className="h-100">
       <Row className="h-100">
@@ -96,9 +120,12 @@ const StudentPortalSignUp = () => {
             {signupStatus === 'password_mismatch' && (
               <Alert variant="danger">Passwords do not match. Please try again.</Alert>
             )}
+            {signupStatus === 'password_too_short' && (
+              <Alert variant="danger">Password must be at least 8 characters long.</Alert>
+            )}
             <Form onSubmit={handleSubmit}>
               <Form.Group className="mb-3">
-                <Form.Label className="custom-label ">Name</Form.Label>
+                <Form.Label className="custom-label">Name</Form.Label>
                 <Form.Control type="text" placeholder="Your Name" value={name} onChange={(e) => setName(e.target.value)} required />
               </Form.Group>
               <Row>
@@ -133,34 +160,70 @@ const StudentPortalSignUp = () => {
                 </Col>
               </Row>
               <Form.Group className="mb-3">
-                <Form.Label className="custom-label ">Email Address</Form.Label>
+                <Form.Label className="custom-label">Email Address</Form.Label>
                 <Form.Control type="email" placeholder="mail123@gmail.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
               </Form.Group>
               <Row>
                 <Col>
                   <Form.Group className="mb-3">
-                    <Form.Label className="custom-label ">Password</Form.Label>
-                    <div className="position-relative">
-                      <Form.Control type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} required />
-                      <span className="password-toggle" onClick={() => setShowPassword(!showPassword)}>
-                        {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
-                      </span>
-                    </div>
+                    <Form.Label className="custom-label">Password</Form.Label>
+                    <InputGroup hasValidation>
+                      <Form.Control
+                        type={showPassword ? "text" : "password"}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                        isInvalid={password.length > 0 && password.length < 8}
+                        className="pe-5"
+                      />
+                      {(password.length === 0 || password.length >= 8) && (
+                        <div className="position-absolute top-50 end-0 translate-middle-y pe-3" style={{ zIndex: 10 }}>
+                          <span
+                            className="password-toggle"
+                            onClick={() => setShowPassword(!showPassword)}
+                            style={{ cursor: 'pointer' }}
+                          >
+                            {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+                          </span>
+                        </div>
+                      )}
+                      <Form.Control.Feedback type="invalid">
+                        Password must be at least 8 characters long.
+                      </Form.Control.Feedback>
+                    </InputGroup>
                   </Form.Group>
                 </Col>
                 <Col>
                   <Form.Group className="mb-3">
-                    <Form.Label className="custom-label ">Confirm Password</Form.Label>
-                    <div className="position-relative">
-                      <Form.Control type={showConfirmPassword ? "text" : "password"} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
-                      <span className="password-toggle" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
-                        {showConfirmPassword ? <Eye size={18} /> : <EyeOff size={18} />}
-                      </span>
-                    </div>
+                    <Form.Label className="custom-label">Confirm Password</Form.Label>
+                    <InputGroup hasValidation>
+                      <Form.Control
+                        type={showConfirmPassword ? "text" : "password"}
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        required
+                        isInvalid={confirmPassword.length > 0 && confirmPassword !== password}
+                        className="pe-5"
+                      />
+                      {(confirmPassword.length === 0 || (confirmPassword === password && password.length >= 8)) && (
+                        <div className="position-absolute top-50 end-0 translate-middle-y pe-3" style={{ zIndex: 10 }}>
+                          <span
+                            className="password-toggle"
+                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            style={{ cursor: 'pointer' }}
+                          >
+                            {showConfirmPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+                          </span>
+                        </div>
+                      )}
+                      <Form.Control.Feedback type="invalid">
+                        Passwords do not match.
+                      </Form.Control.Feedback>
+                    </InputGroup>
                   </Form.Group>
                 </Col>
               </Row>
-              <Button variant="danger" type="submit" className="w-100 mt-3 mb-3 m-0">Sign Up</Button>
+              <Button variant="danger" type="submit" className="w-100 mt-3 mb-3 m-0" disabled={!isFormValid}>Sign Up</Button>
               <p className="text-center text-muted small">or Login/Sign Up using</p>
               <Row className="justify-content-center">
                 <Col xs="auto">

@@ -71,7 +71,7 @@ const StudentPortalBasicInformations = () => {
   };
 
   const checkSessionTimeout = (loginTimestamp) => {
-    const sessionDuration = moment.duration(1, 'minutes'); // Set session duration to 30 minutes
+    const sessionDuration = moment.duration(60, 'minutes'); // Set session duration to 30 minutes
     const loginTime = moment(loginTimestamp);
     const currentTime = moment();
     const timeSinceLogin = moment.duration(currentTime.diff(loginTime));
