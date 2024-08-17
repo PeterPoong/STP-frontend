@@ -22,6 +22,7 @@ import studypal11 from "../../../assets/student asset/coursepage image/StudyPal1
 import Footer from "../Footer";
 
 const baseURL = import.meta.env.VITE_BASE_URL;
+
 const CourseDetail = () => {
   const { id } = useParams();
   const location = useLocation();
@@ -42,9 +43,10 @@ const CourseDetail = () => {
       })
         .then((response) => response.json())
         .then((data) => {
-          console.log("Fetched Data:", data);
-          if (data && data.data && Array.isArray(data.data)) {
-            const selectedProgram = data.data.find(
+          console.log("Fetched Data:", data.data);
+          if (data && data.data && Array.isArray(data.data.data)) {
+            const selectedProgram = data.data.data.find(
+              //add .data
               (item) => item.id === parseInt(id)
             );
             console.log("Selected Program:", selectedProgram);

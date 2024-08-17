@@ -20,6 +20,8 @@ import InstituteListing from "./InstituteListing";
 const apiURL = "http://192.168.0.69:8000/api/student/schoolList";
 const countriesURL = "http://192.168.0.69:8000/api/student/countryList";
 const instituteURL = "http://192.168.0.69:8000/api/student/instituteType";
+const locationAPIURL =
+  "http://192.168.0.69:8000/api/student/locationFilterList";
 
 const SearchInstitute = () => {
   const [locationFilters, setLocationFilters] = useState([]);
@@ -34,9 +36,50 @@ const SearchInstitute = () => {
   const [institutes, setInstitutes] = useState([]);
   const [selectedInstitute, setSelectedInstitute] = useState(null);
 
+  const handleCountryChange = (country) => {
+    setSelectedCountry(country);
+    console.log("Selected Country ID:", country?.id); // Debugging line
+  };
+
   // Fetch countries from API
   useEffect(() => {
-    const fetchCountries = async () => {
+    fetch(countriesURL)
+      .then((response) => response.json())
+      .then((data) => setCountries(data))
+      .catch((error) => console.error("Error fetching countries:", error));
+  }, []);
+
+  // Fetch locations when a country is selected
+  useEffect(() => {
+    if (selectedCountry) {
+      fetch(locationAPIURL, {
+        method: "POST", // Change method to POST if that's what the API expects
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ countryID: selectedCountry.id }), // Send countryId in the request body
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then((data) => {
+          setLocationFilters(data);
+        })
+        .catch((error) => {
+          console.error("Error fetching locations:", error);
+          setLocationFilters([]); // Reset if there's an error
+        });
+    } else {
+      setLocationFilters([]); // Reset locations if no country is selected
+    }
+  }, [selectedCountry]);
+
+  // Fetch countries from API
+  useEffect(() => {
+    const fetchCountries = async (countryID) => {
       try {
         const response = await fetch(countriesURL, {
           method: "GET",
@@ -109,6 +152,8 @@ const SearchInstitute = () => {
           body: JSON.stringify({
             search: searchQuery,
             page: currentPage,
+            countryID: selectedCountry?.country_id,
+            instituteId: selectedInstitute?.id,
           }),
         });
 
@@ -147,15 +192,15 @@ const SearchInstitute = () => {
     setCurrentPage(1); // Reset to first page when search query changes
   };
 
-  const handleCountryChange = async (countryID) => {
-    console.log("Country selected:", countryID);
-    setSelectedCountry(countryID);
-    if (countryID) {
-      setLocationFilters(countryID.locations || []);
-    } else {
-      setLocationFilters([]);
-    }
-  };
+  // const handleCountryChange = async (countryID) => {
+  //   console.log("Country selected:", countryID);
+  //   setSelectedCountry(countryID);
+  //   if (countryID) {
+  //     setLocationFilters(countryID.locations || []);
+  //   } else {
+  //     setLocationFilters([]);
+  //   }
+  // };
 
   const handleInstituteChange = (institute) => {
     setSelectedInstitute(institute);
@@ -231,6 +276,27 @@ const SearchInstitute = () => {
           </ButtonGroup>
         </Col>
 
+        <Col xs={12} sm={4} md={3} lg={2} className="mb-2 mb-sm-0">
+          <ButtonGroup className="w-100">
+            <Dropdown as={ButtonGroup} className="w-100">
+              <Dropdown.Toggle
+                className="degree-button w-100"
+                id="dropdown-degree"
+              >
+                Education
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                <Dropdown.Item className="dropdown" as={Link} to="/country">
+                  Diploma
+                </Dropdown.Item>
+                <Dropdown.Item className="dropdown" as={Link} to="/country">
+                  Degree
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+          </ButtonGroup>
+        </Col>
+
         <Col className="d-flex justify-content-end">
           <Pagination className="ml-auto mb-2 mb-md-0">
             <Pagination.Prev
@@ -284,7 +350,10 @@ const SearchInstitute = () => {
 
       {error && <Alert variant="danger">{error}</Alert>}
 
-      <InstituteListing searchResults={searchResults} />
+      <InstituteListing
+        searchResults={searchResults}
+        countryID={selectedCountry?.id} // Make sure this is not undefined or null
+      />
     </Container>
   );
 };

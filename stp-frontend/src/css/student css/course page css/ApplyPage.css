@@ -13,6 +13,7 @@
   .apply-now-container {
     position: relative;
     top: -5px; /* Adjust this value to control the overlap */
+    
   }
   
   .apply-now-row {

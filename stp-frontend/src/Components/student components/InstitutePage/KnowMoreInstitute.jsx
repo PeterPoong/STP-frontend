@@ -71,81 +71,6 @@ const KnowMoreInstitute = () => {
     );
   }
 
-  // useEffect(() => {
-  //   if (!institute) {
-  //     // If no institute is passed, redirect back to the previous page
-  //     navigate(-1);
-  //   }
-  // }, [institute, navigate]);
-
-  // if (!institute) {
-  //   return (
-  //     <p>No institute selected. Please go back and choose an institute.</p>
-  //   );
-  // }
-  // const filteredPrograms = [
-  //   {
-  //     image: image1,
-  //     title: "Degree of Business Management",
-  //     university: "Swinburne University (Sarawak)",
-  //     location: "Sarawak",
-  //     enrollment: "Full time",
-  //     duration: "30 months",
-  //     intakes: ["January", "July", "September"],
-  //     fee: "RM 28,000",
-  //   },
-  //   {
-  //     image: image7,
-  //     title: "Degree of Multimedia Computing",
-  //     university: "Curtin University (Sarawak)",
-  //     location: "Sarawak",
-  //     enrollment: "Full time",
-  //     duration: "30 months",
-  //     intakes: ["January", "July"],
-  //     fee: "RM 27,000",
-  //   },
-  //   {
-  //     image: image5,
-  //     title: "Degree of Advance Information Technology",
-  //     university: "Universiti Teknikal Malaysia Melaka",
-  //     location: "Melaka",
-  //     enrollment: "Full time",
-  //     duration: "28 months",
-  //     intakes: ["January", "July", "September"],
-  //     fee: "RM 27,000",
-  //   },
-  //   {
-  //     image: image1,
-  //     title: "Degree of Medicine",
-  //     university: "Swinburne University (Sarawak)",
-  //     location: "Sarawak",
-  //     enrollment: "Full time",
-  //     duration: "28 months",
-  //     intakes: ["January", "July", "September"],
-  //     fee: "RM 27,000",
-  //   },
-  //   {
-  //     image: image1,
-  //     title: "Degree of Computer Science",
-  //     university: "Swinburne University (Sarawak)",
-  //     location: "Sarawak",
-  //     enrollment: "Full time",
-  //     duration: "28 months",
-  //     intakes: ["January", "July", "September"],
-  //     fee: "RM 27,000",
-  //   },
-  //   {
-  //     image: image1,
-  //     title: "Degree of Advance Information Technology",
-  //     university: "Swinburne University (Sarawak)",
-  //     location: "Sarawak",
-  //     enrollment: "Full time",
-  //     duration: "28 months",
-  //     intakes: ["January", "July", "September"],
-  //     fee: "RM 27,000",
-  //   },
-  // ];
-
   const handleApplyNow = (program) => {
     navigate("/applynow", { state: { program } }); // Navigate with state
   };
@@ -183,6 +108,13 @@ const KnowMoreInstitute = () => {
                       <span style={{ paddingLeft: "10px" }}>
                         {institute.city}, {institute.state}, {institute.country}
                       </span>
+                      <FontAwesomeIcon
+                        icon={faGraduationCap}
+                        style={{ paddingLeft: "20px" }}
+                      />
+                      <span style={{ paddingLeft: "10px" }}>
+                        {institute.category}
+                      </span>
                       <a
                         href="https://maps.google.com"
                         style={{ paddingLeft: "15px" }}
@@ -196,7 +128,7 @@ const KnowMoreInstitute = () => {
                   md={3}
                   className="d-flex align-items-center justify-content-center"
                 >
-                  <Button
+                  {/* <Button
                     style={{
                       backgroundColor: "#B71A18",
                       border: "none",
@@ -206,6 +138,17 @@ const KnowMoreInstitute = () => {
                     }}
                   >
                     {institute.category}
+                  </Button> */}
+                  <Button
+                    style={{
+                      backgroundColor: "#FFA500",
+                      border: "none",
+                      width: "180px",
+                      height: "50px",
+                      marginTop: "20px",
+                    }}
+                  >
+                    Contact School
                   </Button>
                 </Col>
               </Row>

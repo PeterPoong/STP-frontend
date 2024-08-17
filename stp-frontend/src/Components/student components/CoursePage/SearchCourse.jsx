@@ -245,6 +245,7 @@ const SearchCourse = () => {
                     <Dropdown.Item
                       key={index}
                       className="dropdown"
+                      value={selectedCountry ? selectedCountry.country_id : ""}
                       onClick={() => handleCountryChange(country)}
                     >
                       <img

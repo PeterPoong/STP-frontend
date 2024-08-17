@@ -49,8 +49,12 @@ const CourseListing = ({ searchResults, countryID }) => {
   const [locationsData, setLocationsData] = useState([]);
   const [studyModes, setStudyModes] = useState([]);
   const [categoriesData, setCategoriesData] = useState([]);
-  const [selectedCountry, setSelectedCountry] = useState("");
+  // const [selectedCountry, setSelectedCountry] = useState("");
   const [filteredPrograms, setFilteredPrograms] = useState([]);
+  const [intakeFilters, setIntakeFilters] = useState([]);
+  const [selectedCountry, setSelectedCountry] = useState({});
+
+  const Intakes = ["MARCH", "AUGUST", "OCTOBER", "SEPTEMBER"];
 
   useEffect(() => {
     const fetchLocationFilters = async () => {
@@ -71,20 +75,24 @@ const CourseListing = ({ searchResults, countryID }) => {
             throw new Error(`HTTP error! Status: ${response.status}`);
           }
 
-          const locationFilters = await response.json();
-          console.log("Fetched Location Filters:", locationFilters); // Debugging line
+          const locationData = await response.json();
+          console.log("Fetched Location Filters:", locationData);
 
-          if (Array.isArray(locationFilters.data)) {
-            setLocationFilters(locationFilters.data);
+          // Check if the fetched data is an array and has elements
+          if (
+            Array.isArray(locationData.data) &&
+            locationData.data.length > 0
+          ) {
+            setLocationFilters(locationData.data); // Populate location filters
           } else {
-            setLocationFilters([]);
+            setLocationFilters([]); // Set to empty array if no data
           }
         } catch (error) {
           console.error("Error fetching locations:", error);
-          setLocationFilters([]);
+          setLocationFilters([]); // Set to empty array in case of error
         }
       } else {
-        setLocationFilters([]);
+        setLocationFilters([]); // Reset location filters if no countryID is selected
       }
     };
 
@@ -295,7 +303,20 @@ const CourseListing = ({ searchResults, countryID }) => {
   const handleCountryChange = async (country) => {
     setSelectedCountry(country);
     if (country && country.country_id) {
-      await fetchLocations(country.country_id); // Fetch locations when country changes
+      const response = await fetch(locationAPIURL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ countryID: country.country_id }),
+      });
+
+      if (response.ok) {
+        const locationData = await response.json();
+        setLocationFilters(locationData.data);
+      } else {
+        setLocationFilters([]);
+      }
     } else {
       setLocationFilters([]);
     }
@@ -308,6 +329,14 @@ const CourseListing = ({ searchResults, countryID }) => {
       );
     } else {
       setCategoryFilters([...categoryFilters, category.category_name]);
+    }
+  };
+
+  const handleIntakeChange = (intake) => {
+    if (intakeFilters.includes(intake)) {
+      setIntakeFilters(intakeFilters.filter((i) => i !== intake));
+    } else {
+      setIntakeFilters([...intakeFilters, intake]);
     }
   };
 
@@ -472,7 +501,7 @@ const CourseListing = ({ searchResults, countryID }) => {
             <div className="filter-group">
               <h5 style={{ marginTop: "10px" }}>Location</h5>
               <Form.Group>
-                {locationFilters &&
+                {locationFilters.length > 0 ? (
                   locationFilters.map((location, index) => (
                     <Form.Check
                       key={index}
@@ -481,7 +510,10 @@ const CourseListing = ({ searchResults, countryID }) => {
                       checked={locationFilters.includes(location.state_name)}
                       onChange={() => handleLocationChange(location)}
                     />
-                  ))}
+                  ))
+                ) : (
+                  <p>No location available</p>
+                )}
               </Form.Group>
             </div>
             <div className="filter-group">
@@ -494,6 +526,20 @@ const CourseListing = ({ searchResults, countryID }) => {
                     label={category.category_name}
                     checked={categoryFilters.includes(category.category_name)}
                     onChange={() => handleCategoryChange(category)}
+                  />
+                ))}
+              </Form.Group>
+            </div>
+            <div className="filter-group">
+              <h5 style={{ marginTop: "25px" }}>Intakes</h5>
+              <Form.Group>
+                {Intakes.map((intake, index) => (
+                  <Form.Check
+                    key={index}
+                    type="checkbox"
+                    label={intake}
+                    checked={intakeFilters.includes(intake)}
+                    onChange={() => handleIntakeChange(intake)}
                   />
                 ))}
               </Form.Group>

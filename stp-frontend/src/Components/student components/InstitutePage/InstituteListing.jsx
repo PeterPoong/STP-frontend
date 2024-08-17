@@ -36,14 +36,17 @@ const studyModeAPIURL =
   "http://192.168.0.69:8000/api/student/studyModeFilterlist";
 const tuitionFeeAPIURL =
   "http://192.168.0.69:8000/api/student/tuitionFeeFilterRange";
+const categoryAPIURL =
+  "http://192.168.0.69:8000/api/student/categoryFilterList";
 
-const InstituteListing = ({ searchResults = [] }) => {
+const InstituteListing = ({ searchResults, countryID }) => {
   const [locationFilters, setLocationFilters] = useState([]);
   const [categoryFilters, setCategoryFilters] = useState([]);
   const [studyLevelFilters, setStudyLevelFilters] = useState([]);
   const [intakeFilters, setIntakeFilters] = useState([]);
   const [modeFilters, setModeFilters] = useState([]);
   const [institutes, setInstitutes] = useState([]);
+  const [categoriesData, setCategoriesData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -55,87 +58,55 @@ const InstituteListing = ({ searchResults = [] }) => {
   const [locations, setLocations] = useState([]); // New state for locations
   const [studyLevels, setStudyLevels] = useState([]);
   const [studyModes, setStudyModes] = useState([]);
-  const [selectedCountry, setSelectedCountry] = useState(null);
-
-  const locationOptions = [
-    "Johor",
-    "Kedah",
-    "Melaka",
-    "Negeri Sembilan",
-    "Pahang",
-    "Penang",
-    "Perak",
-    "Sabah",
-    "Sarawak",
-    "Terengganu",
-    "Kuala Lumpur",
-    "Putrajaya",
-    "Labuan",
-  ];
+  const [selectedCountry, setSelectedCountry] = useState(countryID);
+  const [filteredPrograms, setFilteredPrograms] = useState([]);
 
   const StudyLevel = ["PRE UNIVERSITY", "DIPLOMA", "DEGREE", "MASTER", "PHD"];
-
-  // const categories = [
-  //   "Business & Marketing",
-  //   "Accounting",
-  //   "Agricultural",
-  //   "Architecture",
-  //   "Arts, Design & Multimedia",
-  //   "Aviation",
-  //   "Computer & Technology",
-  //   "Hospitality & Tourism",
-  //   "Language Studies",
-  //   "Mathematics & Actuarial",
-  // ];
 
   const Intakes = ["MARCH", "AUGUST", "OCTOBER", "SEPTEMBER"];
 
   const modes = ["Full time", "Part time", "Remote"];
 
   useEffect(() => {
-    const fetchLocations = async (countryID) => {
-      if (!countryID) {
-        console.error("Country ID is not defined.");
-        return;
-      }
+    const fetchLocationFilters = async () => {
+      if (countryID) {
+        try {
+          const response = await fetch(
+            "http://192.168.0.69:8000/api/student/locationFilterList",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ countryID: countryID }),
+            }
+          );
 
-      try {
-        console.log("Fetching locations for countryID:", countryID);
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
 
-        const response = await fetch(locationAPIURL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            countryID: countryID,
-          }),
-        });
-
-        const locationFilters = await response.json();
-
-        console.log("Location filters response:", locationFilters);
-
-        if (locationFilters.data) {
-          setLocationFilters(locationFilters.data);
-          console.log("Fetched location data:", locationFilters.data);
-        } else {
-          console.warn("No location data found.");
+          const locationData = await response.json();
+          console.log("Fetched Location Filters:", locationData); // Debugging line
+          if (
+            Array.isArray(locationData.data) &&
+            locationData.data.length > 0
+          ) {
+            setLocationFilters(locationData.data); // Populate location filters
+          } else {
+            setLocationFilters([]); // Set to empty array if no data
+          }
+        } catch (error) {
+          console.error("Error fetching locations:", error);
+          setLocationFilters([]); // Set to empty array in case of error
         }
-      } catch (error) {
-        console.error("Error fetching locations:", error);
+      } else {
+        setLocationFilters([]); // Reset location filters if no countryID is selected
       }
     };
 
-    if (selectedCountry && selectedCountry.country_id) {
-      fetchLocations(selectedCountry.country_id);
-    } else if (!selectedCountry) {
-      // If selectedCountry is not defined, fetch locations with a default country ID
-      fetchLocations(1); // Replace 1 with your default country ID
-    } else {
-      console.log("Country ID is not defined.");
-    }
-  }, [selectedCountry]);
+    fetchLocationFilters();
+  }, [countryID]);
 
   useEffect(() => {
     const fetchStudyLevels = async () => {
@@ -176,6 +147,25 @@ const InstituteListing = ({ searchResults = [] }) => {
   }, []);
 
   useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch(categoryAPIURL, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const categoriesData = await response.json();
+        setCategoriesData(categoriesData.data);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       setError(null);
@@ -191,7 +181,14 @@ const InstituteListing = ({ searchResults = [] }) => {
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({}),
+            body: JSON.stringify({
+              // countryID: selectedCountry,
+
+              locationFilters: locationFilters,
+              categoryFilters: categoryFilters,
+              modeFilters: modeFilters,
+              tuitionFee: tuitionFee,
+            }),
           });
 
           if (response.status === 429) {
@@ -211,20 +208,20 @@ const InstituteListing = ({ searchResults = [] }) => {
           }
 
           const result = await response.json();
-          // console.log(result);
-          setInstitutes(result.data); // access the inner data property
-          // setTotalPages(result.data.last_page); // set the total pages
+          setInstitutes(result.data);
+          filterPrograms(
+            searchResults,
+            locationFilters,
+            categoryFilters,
+            modeFilters,
+            tuitionFee
+          );
 
-          if (result.data) {
-            console.log("Fetched courses:", result.data);
-          } else {
-            throw new Error("Invalid API response structure");
-          }
           break; // Exit while loop if successful
         } catch (error) {
           setError(error.message);
-          console.error("Error fetching institutes:", error);
-          if (response.status !== 429) break; // Exit while loop if an error occurs other than 429
+          console.error("Error fetching course data:", error);
+          break; // Exit while loop if an error occurs
         }
       }
 
@@ -232,7 +229,13 @@ const InstituteListing = ({ searchResults = [] }) => {
     };
 
     fetchData();
-  }, [searchResults]);
+  }, [
+    locationFilters,
+    categoryFilters,
+    modeFilters,
+    tuitionFee,
+    searchResults,
+  ]);
 
   useEffect(() => {
     const fetchTuitionFeeRange = async () => {
@@ -268,21 +271,98 @@ const InstituteListing = ({ searchResults = [] }) => {
   };
 
   const handleLocationChange = (location) => {
-    if (locationFilters.includes(location.state_name)) {
-      setLocationFilters(
-        locationFilters.filter((item) => item !== location.state_name)
+    const locationName = location.state;
+    let updatedLocations;
+
+    if (locationFilters.includes(locationName)) {
+      updatedLocations = locationFilters.filter(
+        (item) => item !== locationName
       );
     } else {
-      setLocationFilters([...locationFilters, location.state_name]);
+      updatedLocations = [...locationFilters, locationName];
     }
+
+    setLocationFilters(updatedLocations);
+    filterPrograms(
+      updatedLocations.length > 0 ? updatedLocations : [],
+      categoryFilters,
+      modeFilters,
+      tuitionFee,
+      institutes
+    );
+  };
+
+  const filterPrograms = (
+    locations,
+    categories,
+    modes,
+    fee,
+    allPrograms = institutes
+  ) => {
+    if (!allPrograms) {
+      console.error("allPrograms is null or undefined");
+      return;
+    }
+
+    if (!Array.isArray(allPrograms)) {
+      console.error("allPrograms is not an array");
+      return;
+    }
+
+    let filtered = allPrograms;
+
+    // Apply location filter only if locations array is not empty
+    if (locations.length > 0) {
+      filtered = filtered.filter((institute) =>
+        locations.includes(institute.location)
+      );
+    }
+
+    // Apply category filter
+    if (categories.length > 0) {
+      filtered = filtered.filter((institute) =>
+        institute.includes(institute.category)
+      );
+    }
+
+    // Apply study mode filter
+    if (modes.length > 0) {
+      filtered = filtered.filter((institute) => modes.includes(institute.mode));
+    }
+
+    // Apply tuition fee filter
+    if (fee > 0) {
+      filtered = filtered.filter((institute) => institute.cost <= fee);
+    }
+
+    // Set the filtered programs
+    setFilteredPrograms(filtered);
   };
 
   const handleCountryChange = async (country) => {
     setSelectedCountry(country);
     if (country) {
-      setLocationFilters(country.locations || []);
+      const response = await fetch(locationAPIURL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ countryID: countryID }),
+      });
+      const locationFiltersData = await response.json();
+      setLocationFilters(locationFiltersData.data);
     } else {
       setLocationFilters([]);
+    }
+  };
+
+  const handleCategoryChange = (category) => {
+    if (categoryFilters.includes(category.category_name)) {
+      setCategoryFilters(
+        categoryFilters.filter((c) => c !== category.category_name)
+      );
+    } else {
+      setCategoryFilters([...categoryFilters, category.category_name]);
     }
   };
 
@@ -315,13 +395,29 @@ const InstituteListing = ({ searchResults = [] }) => {
       state: { institute: institute },
     }); // Navigate with state
   };
+
   // Ensure displayInstitutes is always an array
   // const displayInstitutes =
   //   Array.isArray(searchResults) && searchResults.length > 0
   //     ? searchResults
   //     : institutes;
   const displayInstitutes =
-    searchResults.length > 0 ? searchResults : institutes;
+    Array.isArray(searchResults) && searchResults.length > 0
+      ? searchResults
+      : Array.isArray(institutes)
+      ? institutes.filter((institute) => {
+          const matchesLocation =
+            locationFilters.length === 0 ||
+            locationFilters.includes(institute.location);
+          const matchesCategory =
+            categoryFilters.length === 0 ||
+            categoryFilters.includes(institute.category);
+          const matchesMode =
+            modeFilters.length === 0 || modeFilters.includes(institute.mode);
+          // const matchesFee = tuitionFee === 0 || program.cost <= tuitionFee&& matchesFee;
+          return matchesLocation && matchesCategory && matchesMode;
+        })
+      : [];
 
   const mappedInstitutes = displayInstitutes.map((institute, index) => (
     <div
@@ -440,11 +536,25 @@ const InstituteListing = ({ searchResults = [] }) => {
                     <Form.Check
                       key={index}
                       type="checkbox"
-                      label={location.state_name}
-                      checked={locationFilters.includes(location.state_name)}
+                      label={location.state}
+                      checked={locationFilters.includes(location.state)}
                       onChange={() => handleLocationChange(location)}
                     />
                   ))}
+              </Form.Group>
+            </div>
+            <div className="filter-group">
+              <h5 style={{ marginTop: "25px" }}>Category</h5>
+              <Form.Group>
+                {categoriesData.map((category, index) => (
+                  <Form.Check
+                    key={index}
+                    type="checkbox"
+                    label={category.category_name}
+                    checked={categoryFilters.includes(category.category_name)}
+                    onChange={() => handleCategoryChange(category)}
+                  />
+                ))}
               </Form.Group>
             </div>
             <div className="filter-group">
@@ -540,6 +650,24 @@ const InstituteListing = ({ searchResults = [] }) => {
                       label={level}
                       checked={studyLevelFilters.includes(level)}
                       onChange={() => handleStudyLevelChange(level)}
+                    />
+                  ))}
+                </Form.Group>
+              </Accordion.Body>
+            </Accordion.Item>
+            <Accordion.Item eventKey="2">
+              <Accordion.Header className="custom-accordion-header">
+                Category
+              </Accordion.Header>
+              <Accordion.Body className="custom-accordion-body">
+                <Form.Group>
+                  {categoriesData.map((category, index) => (
+                    <Form.Check
+                      key={index}
+                      type="checkbox"
+                      label={category.category_name}
+                      checked={categoryFilters.includes(category.category_name)}
+                      onChange={() => handleCategoryChange(category)}
                     />
                   ))}
                 </Form.Group>
