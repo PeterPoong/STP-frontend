@@ -1,23 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Form, Button, Container, Row, Col, Alert, InputGroup } from "react-bootstrap";
-import axios from 'axios';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../css/StudentPortalCss/StudentPortalLoginForm.css";
 import studentPortalLogin from "../../assets/StudentPortalAssets/studentPortalLogin.png";
 import studentPortalLoginLogo from "../../assets/StudentPortalAssets/studentPortalLoginLogo.png";
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
-import moment from 'moment';
 import { Eye, EyeOff } from 'react-feather';
 
 const StudentPortalLogin = () => {
-   const [password, setPassword] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [phone, setPhone] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [countryCodes, setCountryCodes] = useState([]);
   const [loginStatus, setLoginStatus] = useState(null);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -25,6 +24,16 @@ const StudentPortalLogin = () => {
     if (token) {
       navigate('/studentPortalBasicInformations');
     }
+
+    // Add event listener for tab closing
+    const handleTabClosing = () => {
+      if (!JSON.parse(localStorage.getItem('rememberMe'))) {
+        sessionStorage.removeItem('token');
+        localStorage.removeItem('token');
+      }
+    };
+
+    window.addEventListener('beforeunload', handleTabClosing);
 
     fetch('http://192.168.0.69:8000/api/countryCode')
       .then(response => response.json())
@@ -45,11 +54,17 @@ const StudentPortalLogin = () => {
       setPassword(rememberedPassword);
       setRememberMe(true);
     }
+
+    // Cleanup function
+    return () => {
+      window.removeEventListener('beforeunload', handleTabClosing);
+    };
   }, [navigate]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setLoginStatus(null);
+    setError("");
     const countryCode = phone.slice(0, phone.length - 10);
     const contactNumber = phone.slice(-10);
     const formattedCountryCode = countryCode.startsWith('+') ? countryCode : `+${countryCode}`;
@@ -66,7 +81,12 @@ const StudentPortalLogin = () => {
       },
       body: JSON.stringify(formData),
     })
-      .then(response => response.json())
+      .then(response => {
+        if (!response.ok) {
+          return response.json().then(err => Promise.reject(err));
+        }
+        return response.json();
+      })
       .then(data => {
         console.log('Full API response:', data);
         if (data.true === true) {
@@ -75,6 +95,9 @@ const StudentPortalLogin = () => {
           
           // Store token in sessionStorage
           sessionStorage.setItem('token', data.data.token);
+
+          // Store rememberMe preference
+          localStorage.setItem('rememberMe', JSON.stringify(rememberMe));
 
           // If "Remember Me" is checked, also store token in localStorage
           if (rememberMe) {
@@ -91,13 +114,20 @@ const StudentPortalLogin = () => {
         } else {
           console.error('Login failed:', data);
           setLoginStatus('failed');
+          setError(data.message || "Login failed. Please check your credentials.");
         }
       })
       .catch(error => {
         console.error('Error during login:', error);
+        if (error.message) {
+          setError(error.message);
+        } else {
+          setError("An error occurred. Please try again later.");
+        }
         setLoginStatus('error');
       });
   };
+
   return (
     <Container fluid className="h-100">
       <Row className="h-50">
@@ -112,17 +142,17 @@ const StudentPortalLogin = () => {
           <Container>
             <Row className="justify-content-center">
               <Col md={8} lg={6} className="px-0">
-              <img src={studentPortalLoginLogo} className=" mb-4" alt="StudyPal Logo" />
+                <img src={studentPortalLoginLogo} className="mb-4" alt="StudyPal Logo" />
                 <h2 className="text-start mb-2 custom-color-title">Login as Student</h2>
                 <p className="text-start mb-4 small custom-color-title">Log in to get started.</p>
                 {loginStatus === 'success' && (
                   <Alert variant="success">Login successful! Redirecting...</Alert>
                 )}
                 {loginStatus === 'failed' && (
-                  <Alert variant="danger">Login failed. Please check your credentials.</Alert>
+                  <Alert variant="danger">{error || "Login failed. Please check your credentials."}</Alert>
                 )}
                 {loginStatus === 'error' && (
-                  <Alert variant="danger">An error occurred. Please try again later.</Alert>
+                  <Alert variant="danger">{error || "An error occurred. Please try again later."}</Alert>
                 )}
                 <Form onSubmit={handleSubmit}>
                   <Form.Group controlId="formBasicPhone" className="mb-3">
