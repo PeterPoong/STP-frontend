@@ -13,6 +13,7 @@ const StudentPortalLogin = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [phone, setPhone] = useState('');
+  const [countryCode, setCountryCode] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [countryCodes, setCountryCodes] = useState([]);
   const [loginStatus, setLoginStatus] = useState(null);
@@ -25,7 +26,6 @@ const StudentPortalLogin = () => {
       navigate('/studentPortalBasicInformations');
     }
 
-    // Add event listener for tab closing
     const handleTabClosing = () => {
       if (!JSON.parse(localStorage.getItem('rememberMe'))) {
         sessionStorage.removeItem('token');
@@ -46,7 +46,6 @@ const StudentPortalLogin = () => {
         console.error('Error fetching country codes:', error);
       });
 
-    // Load remembered credentials
     const rememberedPhone = localStorage.getItem('rememberedPhone');
     const rememberedPassword = localStorage.getItem('rememberedPassword');
     if (rememberedPhone && rememberedPassword) {
@@ -55,24 +54,27 @@ const StudentPortalLogin = () => {
       setRememberMe(true);
     }
 
-    // Cleanup function
     return () => {
       window.removeEventListener('beforeunload', handleTabClosing);
     };
   }, [navigate]);
 
+  const handlePhoneChange = (value, country, e, formattedValue) => {
+    setPhone(value);
+    setCountryCode(country.dialCode);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     setLoginStatus(null);
     setError("");
-    const countryCode = phone.slice(0, phone.length - 10);
-    const contactNumber = phone.slice(-10);
-    const formattedCountryCode = countryCode.startsWith('+') ? countryCode : `+${countryCode}`;
+
     const formData = {
       password: password,
-      country_code: formattedCountryCode,
-      contact_number: contactNumber,
+      country_code: `+${countryCode}`,
+      contact_number: phone.slice(countryCode.length),
     };
+
     console.log('Sending login data:', formData);
     fetch('http://192.168.0.69:8000/api/student/login', {
       method: 'POST',
@@ -93,13 +95,9 @@ const StudentPortalLogin = () => {
           console.log('Login successful:');
           setLoginStatus('success');
           
-          // Store token in sessionStorage
           sessionStorage.setItem('token', data.data.token);
-
-          // Store rememberMe preference
           localStorage.setItem('rememberMe', JSON.stringify(rememberMe));
 
-          // If "Remember Me" is checked, also store token in localStorage
           if (rememberMe) {
             localStorage.setItem('token', data.data.token);
             localStorage.setItem('rememberedPhone', phone);
@@ -160,7 +158,7 @@ const StudentPortalLogin = () => {
                     <PhoneInput
                       country={'my'}
                       value={phone}
-                      onChange={(value) => setPhone(value)}
+                      onChange={handlePhoneChange}
                       inputProps={{
                         name: 'phone',
                         required: true,
@@ -185,7 +183,7 @@ const StudentPortalLogin = () => {
                         required
                         className="pe-5"
                       />
-                      <div className="position-absolute top-50 end-0 translate-middle-y pe-3" style={{ zIndex: 10 }}>
+                      <div className="position-absolute top-50 end-0 translate-middle-y pe-3" style={{ zIndex: 0 }}>
                         <span
                           className="password-toggle"
                           onClick={() => setShowPassword(!showPassword)}

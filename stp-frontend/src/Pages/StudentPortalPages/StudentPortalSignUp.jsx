@@ -12,6 +12,7 @@ import 'react-phone-input-2/lib/style.css';
 const StudentPortalSignUp = () => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState('');
+  const [countryCode, setCountryCode] = useState('');
   const [identityCard, setIdentityCard] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -39,11 +40,10 @@ const StudentPortalSignUp = () => {
       confirmPassword === password;
     setIsFormValid(isValid);
   }, [name, phone, identityCard, email, password, confirmPassword]);
-  
 
-  const handlePhoneChange = (value, country, event, formattedValue) => {
-    const digitsOnly = value.replace(/\D/g, '');
-    setPhone(digitsOnly);
+  const handlePhoneChange = (value, country) => {
+    setPhone(value);
+    setCountryCode(country.dialCode);
   };
 
   const handleSubmit = (e) => {
@@ -60,17 +60,14 @@ const StudentPortalSignUp = () => {
       return;
     }
   
-    const countryCode = phone.slice(0, phone.length - 10);
-    const contactNumber = phone.slice(-10);
-  
     const formData = {
       name: name,
       email: email,
       password: password,
       confirm_password: confirmPassword,
       type: "student",
-      country_code: countryCode.startsWith('+') ? countryCode : `+${countryCode}`,
-      contact_number: contactNumber,
+      country_code: `+${countryCode}`,
+      contact_number: phone.slice(countryCode.length),
     };
   
     console.log('Sending signup data:', formData);
@@ -167,7 +164,8 @@ const StudentPortalSignUp = () => {
                       onChange={handlePhoneChange}
                       inputProps={{
                         name: 'phone',
-                        placeholder: 'Enter phone number',
+                        required: true,
+                        placeholder: 'Enter phone number'
                       }}
                       inputClass="form-control"
                       containerClass="phone-input-container"
