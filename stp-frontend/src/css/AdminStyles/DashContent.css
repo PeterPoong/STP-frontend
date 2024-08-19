@@ -1,0 +1,22 @@
+.CardsContainer{
+    display: flex;
+    justify-content: space-between;
+    text-align: center;
+}
+
+.CardsContainer span{
+    display: flex;
+    flex-direction: column;
+}
+
+.InfoCard{
+    display: flex;
+}
+
+.BarChartContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 5%;
+
+  }

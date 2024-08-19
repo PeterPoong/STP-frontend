@@ -1,0 +1,155 @@
+  /*↓ Password Eye ↓*/
+  .password-container {
+    position: relative;
+  }
+  
+  .password-icon {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    cursor: pointer;
+  }
+  /*↑ Password Eye ↑*/
+  
+  .login-page {
+    background-color:#d9d9d9 ;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+  }
+  
+  .logo-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  
+  .logo-image {
+    width: 450px;
+    height: 150px;
+  }
+  
+  .login-card {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+  
+  .login-container {
+    background-color: #ffffff;
+    border: none;
+    border-radius: 15px;
+    padding: 2rem;
+    width: 400px;
+    margin-bottom: 5%;
+  }
+  
+  .login-title {
+    text-align: center;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .signup-button {
+    width: 95%;
+    margin-top: 1rem;
+    background-color: #000;
+    border: none;
+  }
+  
+  .signup-button:hover {
+    background-color: #333;
+  }
+  
+  .login-footer {
+    text-align: center;
+    margin-top: 1rem;
+  }
+  
+  .login-footer a {
+    color: #000;
+    text-decoration: none;
+  }
+  
+  .login-footer a:hover {
+    text-decoration: underline;
+  }
+  
+  .social-login {
+    text-align: center;
+    margin-top: 1rem;
+  }
+  
+  .social-login p {
+    margin: 0.5rem 0;
+  }
+  
+  .social-button {
+    width: 100%;
+    margin-top: 0.5rem;
+    background-color: #ffffff;
+    border: 1px solid #000;
+    color: #000;
+  }
+  
+  .social-button:hover {
+    background-color: #f8f9fa;
+  }
+
+  .forgot-password {
+    color: #000;
+    text-decoration: none;
+  }
+  
+  .forgot-password:hover {
+    text-decoration: underline;
+  }
+
+  /* Forget Password Page */
+  .FGP-email{
+    padding-top: 5% ;
+    font-weight: bold;
+  }
+
+  /* New Password Code */
+  .code-inputs {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+  
+  .code-input {
+    width: 3rem;
+    height: 3rem;
+    text-align: center;
+    font-size: 1.5rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .timer {
+    font-weight: bold;
+    color: #000;
+  }
+
+  .spanHolder{
+    text-align: center;
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .resend-button {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  .resend-button:disabled {
+    color: #999;
+    cursor: not-allowed;
+  }
+  
