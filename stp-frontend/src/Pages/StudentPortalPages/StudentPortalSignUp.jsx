@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Form, Button, Container, Row, Col, Alert, Modal, InputGroup } from "react-bootstrap";
-import axios from 'axios';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../css/StudentPortalCss/StudentPortalLoginForm.css";
 import studentPortalLogin from "../../assets/StudentPortalAssets/studentPortalLogin.png";
@@ -42,20 +41,20 @@ const StudentPortalSignUp = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setSignupStatus(null);
-
+  
     if (password !== confirmPassword) {
       setSignupStatus('password_mismatch');
       return;
     }
-
+  
     if (password.length < 8) {
       setSignupStatus('password_too_short');
       return;
     }
-
+  
     const countryCode = phone.slice(0, phone.length - 10);
     const contactNumber = phone.slice(-10);
-
+  
     const formData = {
       name: name,
       email: email,
@@ -65,9 +64,9 @@ const StudentPortalSignUp = () => {
       country_code: countryCode.startsWith('+') ? countryCode : `+${countryCode}`,
       contact_number: contactNumber,
     };
-
+  
     console.log('Sending signup data:', formData);
-
+  
     fetch('http://192.168.0.69:8000/api/student/register', {
       method: 'POST',
       headers: {
@@ -75,7 +74,14 @@ const StudentPortalSignUp = () => {
       },
       body: JSON.stringify(formData),
     })
-      .then(response => response.json())
+      .then(response => {
+        if (!response.ok) {
+          return response.json().then(errorData => {
+            throw errorData;
+          });
+        }
+        return response.json();
+      })
       .then(data => {
         console.log('Full API response:', data);
         if (data.success === true) {
@@ -92,17 +98,20 @@ const StudentPortalSignUp = () => {
       })
       .catch(error => {
         console.error('Error during signup:', error);
-        if (error.response && error.response.data && error.response.data.message) {
-          if (error.response.data.message.includes("already registered")) {
-            setShowModal(true);
+        if (error.errors) {
+          if (error.errors.email) {
+            setSignupStatus('email_exists');
+          } else if (error.errors.contact_number) {
+            setSignupStatus('phone_exists');
           } else {
-            setSignupStatus('error');
+            setSignupStatus('validation_error');
           }
         } else {
           setSignupStatus('error');
         }
       });
   };
+
   return (
     <Container fluid className="h-100">
       <Row className="h-100">
@@ -128,6 +137,12 @@ const StudentPortalSignUp = () => {
             )}
             {signupStatus === 'password_too_short' && (
               <Alert variant="danger">Password must be at least 8 characters long.</Alert>
+            )}
+            {signupStatus === 'email_exists' && (
+              <Alert variant="warning">This email is already registered. Please use a different email or try logging in.</Alert>
+            )}
+            {signupStatus === 'phone_exists' && (
+              <Alert variant="warning">This contact number is already registered. Please use a different number or try logging in.</Alert>
             )}
             <Form onSubmit={handleSubmit}>
               <Form.Group className="mb-3">

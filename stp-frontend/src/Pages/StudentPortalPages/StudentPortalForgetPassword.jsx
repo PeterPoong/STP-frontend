@@ -1,17 +1,20 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Form, Button, Container, Row, Col, Alert } from "react-bootstrap";
+import { Form, Button, Container, Row, Col, Alert,InputGroup } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../css/StudentPortalCss/StudentPortalLoginForm.css";
 import studentPortalLogin from "../../assets/StudentPortalAssets/studentPortalLogin.png";
 import studentPortalLoginLogo from "../../assets/StudentPortalAssets/studentPortalLoginLogo.png";
 import 'react-phone-input-2/lib/style.css';
+import { Eye, EyeOff } from 'react-feather';
 
 const StudentPortalForgetPassword = () => {
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [step, setStep] = useState(1);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -127,7 +130,7 @@ const StudentPortalForgetPassword = () => {
       if (response.ok) {
         console.log("Password reset successful");
         setSuccess("Password reset successfully. You can now login with your new password.");
-        setTimeout(() => navigate('/studentPortalLogin'), 3000);
+        setTimeout(() => navigate('/studentPortalLogin'), 500);
       } else {
         console.error("Failed to reset password:", responseText);
         setError(responseText || "Failed to reset password. Please try again.");
@@ -153,7 +156,7 @@ const StudentPortalForgetPassword = () => {
               <Col md={8} lg={6} className="px-0">
                 <img
                   src={studentPortalLoginLogo}
-                  className="img-fluid"
+                  
                   alt="StudyPal logo"
                 />
                 <h2 className="text-start mb-3 custom-color-title">Forget your password?</h2>
@@ -206,21 +209,47 @@ const StudentPortalForgetPassword = () => {
                   <Form onSubmit={handleResetPassword}>
                     <Form.Group controlId="formNewPassword">
                       <Form.Label className="custom-label">New Password</Form.Label>
+                      <InputGroup>
                       <Form.Control
-                        type="password"
+                        type={showNewPassword ? "text" : "password"}
+                        placeholder="Password"
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
                         required
+                        className="pe-5"
                       />
+                      <div className="position-absolute top-50 end-0 translate-middle-y pe-3" style={{ zIndex: 10 }}>
+                        <span
+                          className="password-toggle"
+                          onClick={() => setShowNewPassword(!showNewPassword)}
+                          style={{ cursor: 'pointer' }}
+                        >
+                          {showNewPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+                        </span>
+                      </div>
+                    </InputGroup>
                     </Form.Group>
                     <Form.Group controlId="formConfirmPassword">
                       <Form.Label className="custom-label">Confirm New Password</Form.Label>
+                      <InputGroup>
                       <Form.Control
-                        type="password"
+                        type={showConfirmPassword ? "text" : "password"}
+                        placeholder="Password"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         required
+                        className="pe-5"
                       />
+                      <div className="position-absolute top-50 end-0 translate-middle-y pe-3" style={{ zIndex: 10 }}>
+                        <span
+                          className="password-toggle"
+                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          style={{ cursor: 'pointer' }}
+                        >
+                          {showConfirmPassword? <Eye size={18} /> : <EyeOff size={18} />}
+                        </span>
+                      </div>
+                    </InputGroup>
                     </Form.Group>
                     <Button
                       variant="danger"

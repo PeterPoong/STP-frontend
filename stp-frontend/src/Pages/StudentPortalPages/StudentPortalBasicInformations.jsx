@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import NavButtons from "../../Components/student components/NavButtons";
+import NavButtonsSP from "../../Components/StudentPortalComp/NavButtonsSP";
 import MyProfileWidget from "../../Components/StudentPortalComp/MyProfileWidget";
 import SpcFooter from "../../Components/StudentPortalComp/SpcFooter";
 import BasicInformationWidget from "../../Components/StudentPortalComp/BasicInformationWidget";
@@ -11,7 +11,6 @@ import WidgetRejected from "../../Components/StudentPortalComp/WidgetRejected";
 import CollapsibleSections from "../../Components/StudentPortalComp/CollapsibleSections";
 import "aos/dist/aos.css";
 import "../../css/StudentPortalCss/StudentPortalBasicInformation.css";
-import axios from 'axios';
 import moment from 'moment';
 
 const StudentPortalBasicInformations = () => {
@@ -39,13 +38,22 @@ const StudentPortalBasicInformations = () => {
   const verifyToken = async (token) => {
     try {
       console.log('Verifying token:', token);
-      const response = await axios.get('http://192.168.0.69:8000/api/validateToken', {
-        headers: { Authorization: `Bearer ${token}` }
+      const response = await fetch('http://192.168.0.69:8000/api/validateToken', {
+        method: 'GET',
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       });
-      console.log('Token validation response:', response.data);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('Token validation response:', data);
       
-      // Check if the response has the expected structure
-      if (response.data && response.data.success === true) {
+      if (data && data.success === true) {
         console.log('Token is valid');
         setIsAuthenticated(true);
       } else {
@@ -54,15 +62,6 @@ const StudentPortalBasicInformations = () => {
       }
     } catch (error) {
       console.error('Error during token verification:', error);
-      if (error.response) {
-        console.error('Error response from server:', error.response.data);
-        console.error('Error status:', error.response.status);
-        console.error('Error headers:', error.response.headers);
-      } else if (error.request) {
-        console.error('No response received:', error.request);
-      } else {
-        console.error('Error message:', error.message);
-      }
       sessionStorage.removeItem('token');
       navigate('/studentPortalLogin');
     } finally {
@@ -71,7 +70,7 @@ const StudentPortalBasicInformations = () => {
   };
 
   const checkSessionTimeout = (loginTimestamp) => {
-    const sessionDuration = moment.duration(1, 'minutes'); // Set session duration to 30 minutes
+    const sessionDuration = moment.duration(1, 'minutes'); // Set session duration to 1 minute
     const loginTime = moment(loginTimestamp);
     const currentTime = moment();
     const timeSinceLogin = moment.duration(currentTime.diff(loginTime));
@@ -102,7 +101,6 @@ const StudentPortalBasicInformations = () => {
       }
     };
   }, [sessionTimeout]);
-
 
   const openPopup = () => setIsPopupOpen(true);
   const closePopup = () => setIsPopupOpen(false);
@@ -141,7 +139,7 @@ const StudentPortalBasicInformations = () => {
 
   return (
     <div className="app-container">
-      <NavButtons />
+      <NavButtonsSP />
       <main className="main-content">
         <div className="content-wrapper">
           <div className="profile-widget-container">

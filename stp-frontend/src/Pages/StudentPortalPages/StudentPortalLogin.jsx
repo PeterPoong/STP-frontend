@@ -114,11 +114,7 @@ const StudentPortalLogin = () => {
           <Container>
             <Row className="justify-content-center">
               <Col md={8} lg={6} className="px-0">
-                <img
-                  src={studentPortalLoginLogo}
-                  alt="Student Portal Login Logo"
-                  className="img-fluid d-flex justify-content-start"
-                />
+              <img src={studentPortalLoginLogo} className=" mb-4" alt="StudyPal Logo" />
                 <h2 className="text-start mb-2 custom-color-title">Login as Student</h2>
                 <p className="text-start mb-4 small custom-color-title">Log in to get started.</p>
                 {loginStatus === 'success' && (
