@@ -11,7 +11,6 @@ import WidgetRejected from "../../Components/StudentPortalComp/WidgetRejected";
 import CollapsibleSections from "../../Components/StudentPortalComp/CollapsibleSections";
 import "aos/dist/aos.css";
 import "../../css/StudentPortalCss/StudentPortalBasicInformation.css";
-import moment from 'moment';
 
 const StudentPortalBasicInformations = () => {
   const [selectedContent, setSelectedContent] = useState('basicInfo');
@@ -19,19 +18,15 @@ const StudentPortalBasicInformations = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
-  const [sessionTimeout, setSessionTimeout] = useState(null);
 
   useEffect(() => {
-    const token = sessionStorage.getItem('token');
-    const loginTimestamp = sessionStorage.getItem('loginTimestamp');
-    console.log('Token from sessionStorage:', token);
-    console.log('Login timestamp:', loginTimestamp);
+    const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+    console.log('Token found:', token ? 'Yes' : 'No');
     if (!token) {
       console.log('No token found, redirecting to login');
       navigate('/studentPortalLogin');
     } else {
       verifyToken(token);
-      checkSessionTimeout(loginTimestamp);
     }
   }, [navigate]);
 
@@ -63,44 +58,12 @@ const StudentPortalBasicInformations = () => {
     } catch (error) {
       console.error('Error during token verification:', error);
       sessionStorage.removeItem('token');
+      localStorage.removeItem('token');
       navigate('/studentPortalLogin');
     } finally {
       setIsLoading(false);
     }
   };
-
-  const checkSessionTimeout = (loginTimestamp) => {
-    const sessionDuration = moment.duration(1, 'minutes'); // Set session duration to 1 minute
-    const loginTime = moment(loginTimestamp);
-    const currentTime = moment();
-    const timeSinceLogin = moment.duration(currentTime.diff(loginTime));
-
-    if (timeSinceLogin > sessionDuration) {
-      console.log('Session expired');
-      sessionStorage.removeItem('token');
-      sessionStorage.removeItem('loginTimestamp');
-      navigate('/studentPortalLogin');
-    } else {
-      const timeoutDuration = sessionDuration.asMilliseconds() - timeSinceLogin.asMilliseconds();
-      const timeout = setTimeout(() => {
-        console.log('Session timeout');
-        sessionStorage.removeItem('token');
-        sessionStorage.removeItem('loginTimestamp');
-        navigate('/studentPortalLogin');
-      }, timeoutDuration);
-
-      setSessionTimeout(timeout);
-    }
-  };
-
-  // Clear the timeout when the component unmounts
-  useEffect(() => {
-    return () => {
-      if (sessionTimeout) {
-        clearTimeout(sessionTimeout);
-      }
-    };
-  }, [sessionTimeout]);
 
   const openPopup = () => setIsPopupOpen(true);
   const closePopup = () => setIsPopupOpen(false);
@@ -139,7 +102,7 @@ const StudentPortalBasicInformations = () => {
 
   return (
     <div className="app-container">
-      <NavButtonsSP />
+      <NavButtonsSP/>
       <main className="main-content">
         <div className="content-wrapper">
           <div className="profile-widget-container">

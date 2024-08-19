@@ -24,6 +24,13 @@ const StudentPortalSignUp = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+    if (token) {
+      navigate('/studentPortalBasicInformations');
+    }
+  }, [navigate]);
+
+  useEffect(() => {
     const isValid = name.trim() !== "" &&
       phone.length >= 10 &&
       identityCard.trim() !== "" &&
@@ -32,6 +39,7 @@ const StudentPortalSignUp = () => {
       confirmPassword === password;
     setIsFormValid(isValid);
   }, [name, phone, identityCard, email, password, confirmPassword]);
+  
 
   const handlePhoneChange = (value, country, event, formattedValue) => {
     const digitsOnly = value.replace(/\D/g, '');
@@ -101,7 +109,7 @@ const StudentPortalSignUp = () => {
         if (error.errors) {
           if (error.errors.email) {
             setSignupStatus('email_exists');
-          } else if (error.errors.contact_number) {
+          } else if (error.errors.contact_no) {
             setSignupStatus('phone_exists');
           } else {
             setSignupStatus('validation_error');

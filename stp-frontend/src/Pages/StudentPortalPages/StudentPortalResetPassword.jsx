@@ -40,7 +40,6 @@ const StudentPortalResetPassword = () => {
               <Col md={8} lg={6} className="px-0">
                 <img
                   src={studentPortalLoginLogo}
-                  className="img-fluid mb-4 "
                   alt="StudyPal logo"
                 />
                 <h2 className="text-start mb-3 custom-color-title">Account exists.</h2>

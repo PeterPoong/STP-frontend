@@ -12,7 +12,7 @@ import moment from 'moment';
 import { Eye, EyeOff } from 'react-feather';
 
 const StudentPortalLogin = () => {
-  const [password, setPassword] = useState("");
+   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [phone, setPhone] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
@@ -21,6 +21,11 @@ const StudentPortalLogin = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+    if (token) {
+      navigate('/studentPortalBasicInformations');
+    }
+
     fetch('http://192.168.0.69:8000/api/countryCode')
       .then(response => response.json())
       .then(data => {
@@ -40,7 +45,7 @@ const StudentPortalLogin = () => {
       setPassword(rememberedPassword);
       setRememberMe(true);
     }
-  }, []);
+  }, [navigate]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -67,39 +72,32 @@ const StudentPortalLogin = () => {
         if (data.true === true) {
           console.log('Login successful:');
           setLoginStatus('success');
-          sessionStorage.setItem('token', data.data.token)
-          sessionStorage.setItem('loginTimestamp', moment().toISOString());
+          
+          // Store token in sessionStorage
+          sessionStorage.setItem('token', data.data.token);
 
-          // Save credentials if "Remember Me" is checked
+          // If "Remember Me" is checked, also store token in localStorage
           if (rememberMe) {
+            localStorage.setItem('token', data.data.token);
             localStorage.setItem('rememberedPhone', phone);
             localStorage.setItem('rememberedPassword', password);
           } else {
+            localStorage.removeItem('token');
             localStorage.removeItem('rememberedPhone');
             localStorage.removeItem('rememberedPassword');
           }
 
           setTimeout(() => navigate('/studentPortalBasicInformations'), 500);
         } else {
-          console.error('Login failed:', response.data);
+          console.error('Login failed:', data);
           setLoginStatus('failed');
         }
       })
       .catch(error => {
         console.error('Error during login:', error);
         setLoginStatus('error');
-        if (error.response) {
-          console.error('Error response from server:', error.response.data);
-          console.error('Error status:', error.response.status);
-          console.error('Error headers:', error.response.headers);
-        } else if (error.request) {
-          console.error('No response received:', error.request);
-        } else {
-          console.error('Error message:', error.message);
-        }
       });
   };
-
   return (
     <Container fluid className="h-100">
       <Row className="h-50">

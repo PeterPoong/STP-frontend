@@ -1,5 +1,5 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
 import NavDropdown from "react-bootstrap/NavDropdown";
@@ -11,6 +11,27 @@ import logo from "../../assets/student asset/nav logo/logo.png";
 import "../../css/student css/NavButtons.css";
 
 const NavigationBar = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userName, setUserName] = useState("");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+    if (token) {
+      setIsLoggedIn(true);
+      // You should fetch the user's name here from your API or local storage
+      setUserName("David Lim"); // Replace with actual user name
+    }
+  }, []);
+
+  const handleLogout = () => {
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('loginTimestamp');
+    localStorage.removeItem('token');
+    setIsLoggedIn(false);
+    navigate('/');
+  };
+
   return (
     <Navbar
       expand="lg"
@@ -49,19 +70,7 @@ const NavigationBar = () => {
               className="nav-dropdown-custom"
               style={{ marginLeft: "10px" }}
             >
-              <NavDropdown.Item as={Link} to="#action/3.1">
-                Action
-              </NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="#action/3.2">
-                Another action
-              </NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="#action/3.3">
-                Something
-              </NavDropdown.Item>
-              <NavDropdown.Divider />
-              <NavDropdown.Item as={Link} to="#action/3.4">
-                Separated link
-              </NavDropdown.Item>
+              {/* Scholarship dropdown items */}
             </NavDropdown>
             <NavDropdown
               title="Study Guides"
@@ -69,23 +78,19 @@ const NavigationBar = () => {
               className="nav-dropdown-custom"
               style={{ marginLeft: "10px" }}
             >
-              <NavDropdown.Item as={Link} to="#action/3.1">
-                Action
-              </NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="#action/3.2">
-                Another action
-              </NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="#action/3.3">
-                Something
-              </NavDropdown.Item>
-              <NavDropdown.Divider />
-              <NavDropdown.Item as={Link} to="#action/3.4">
-                Separated link
-              </NavDropdown.Item>
+              {/* Study Guides dropdown items */}
             </NavDropdown>
           </Nav>
           <div className="ml-auto navbutton-section">
-            <NavButtonsSP />
+            {isLoggedIn ? (
+              <>
+                <Button variant="danger" className="me-2">Hi !</Button>
+                <Button variant="outline-secondary" className="me-2">{userName}</Button>
+                <Button variant="danger" onClick={handleLogout}>Logout</Button>
+              </>
+            ) : (
+              <NavButtonsSP />
+            )}
           </div>
         </Navbar.Collapse>
       </Container>
@@ -101,7 +106,6 @@ const NavButtonsSP = () => {
           <Dropdown.Toggle className="nav-button" id="dropdown-custom-1">
             Login
           </Dropdown.Toggle>
-
           <Dropdown.Menu>
             <Dropdown.Item className="dropdown" as={Link} to="/studentPortalLogin">
               Login as Student
@@ -117,7 +121,6 @@ const NavButtonsSP = () => {
           <Dropdown.Toggle className="nav-button" id="dropdown-custom-1">
             Register
           </Dropdown.Toggle>
-
           <Dropdown.Menu>
             <Dropdown.Item as={Link} to="/studentPortalSignUp">
               Register as Student
