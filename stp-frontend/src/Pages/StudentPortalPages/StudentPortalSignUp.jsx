@@ -68,18 +68,25 @@ const StudentPortalSignUp = () => {
 
     console.log('Sending signup data:', formData);
 
-    axios.post('http://192.168.0.69:8000/api/student/register', formData)
-      .then(response => {
-        console.log('Full API response:', response);
-        if (response.data.success === true) {
-          console.log('Signup successful:', response.data);
+    fetch('http://192.168.0.69:8000/api/student/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData),
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Full API response:', data);
+        if (data.success === true) {
+          console.log('Signup successful:', data);
           setSignupStatus('success');
-          if (response.data.data && response.data.data.token) {
-            sessionStorage.setItem('token', response.data.data.token);
+          if (data.data && data.data.token) {
+            sessionStorage.setItem('token', data.data.token);
           }
           setTimeout(() => navigate('/studentPortalBasicInformations'), 1500);
         } else {
-          console.error('Signup failed:', response.data);
+          console.error('Signup failed:', data);
           setSignupStatus('failed');
         }
       })
@@ -96,7 +103,6 @@ const StudentPortalSignUp = () => {
         }
       });
   };
-
   return (
     <Container fluid className="h-100">
       <Row className="h-100">
@@ -133,12 +139,11 @@ const StudentPortalSignUp = () => {
                   <Form.Group controlId="formBasicPhone" className="mb-3">
                     <Form.Label className="custom-label">Contact Number</Form.Label>
                     <PhoneInput
-                      country={'us'}
+                      country={'my'}
                       value={phone}
                       onChange={handlePhoneChange}
                       inputProps={{
                         name: 'phone',
-                        required: true,
                         placeholder: 'Enter phone number',
                       }}
                       inputClass="form-control"
@@ -148,7 +153,7 @@ const StudentPortalSignUp = () => {
                       countryCodeEditable={false}
                       disableCountryCode={false}
                       disableDropdown={false}
-                      autoFormat={false}
+                      autoFormat={true}
                     />
                   </Form.Group>
                 </Col>
@@ -177,7 +182,7 @@ const StudentPortalSignUp = () => {
                         className="pe-5"
                       />
                       {(password.length === 0 || password.length >= 8) && (
-                        <div className="position-absolute top-50 end-0 translate-middle-y pe-3" style={{ zIndex: 10 }}>
+                        <div className="position-absolute top-50 end-0 translate-middle-y pe-3" style={{ zIndex: 0 }}>
                           <span
                             className="password-toggle"
                             onClick={() => setShowPassword(!showPassword)}
@@ -223,7 +228,7 @@ const StudentPortalSignUp = () => {
                   </Form.Group>
                 </Col>
               </Row>
-              <Button variant="danger" type="submit" className="w-100 mt-3 mb-3 m-0" disabled={!isFormValid}>Sign Up</Button>
+              <Button variant="danger" type="submit" className="w-100 mt-3 mb-3 m-0" >Sign Up</Button>
               <p className="text-center text-muted small">or Login/Sign Up using</p>
               <Row className="justify-content-center">
                 <Col xs="auto">

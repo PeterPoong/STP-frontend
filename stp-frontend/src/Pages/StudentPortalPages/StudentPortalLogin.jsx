@@ -21,15 +21,25 @@ const StudentPortalLogin = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get('http://192.168.0.69:8000/api/countryCode')
-      .then(response => {
-        if (response.data.success) {
-          setCountryCodes(response.data.data);
+    fetch('http://192.168.0.69:8000/api/countryCode')
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          setCountryCodes(data.data);
         }
       })
       .catch(error => {
         console.error('Error fetching country codes:', error);
       });
+
+    // Load remembered credentials
+    const rememberedPhone = localStorage.getItem('rememberedPhone');
+    const rememberedPassword = localStorage.getItem('rememberedPassword');
+    if (rememberedPhone && rememberedPassword) {
+      setPhone(rememberedPhone);
+      setPassword(rememberedPassword);
+      setRememberMe(true);
+    }
   }, []);
 
   const handleSubmit = (e) => {
@@ -44,15 +54,32 @@ const StudentPortalLogin = () => {
       contact_number: contactNumber,
     };
     console.log('Sending login data:', formData);
-    axios.post('http://192.168.0.69:8000/api/student/login', formData)
-      .then(response => {
-        console.log('Full API response:', response);
-        if (response.data.true === true) {
-          console.log('Login successful:', response.data);
+    fetch('http://192.168.0.69:8000/api/student/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData),
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Full API response:', data);
+        if (data.true === true) {
+          console.log('Login successful:');
           setLoginStatus('success');
-          sessionStorage.setItem('token', response.data.data.token)
+          sessionStorage.setItem('token', data.data.token)
           sessionStorage.setItem('loginTimestamp', moment().toISOString());
-          setTimeout(() => navigate('/studentPortalBasicInformations'), 6000);
+
+          // Save credentials if "Remember Me" is checked
+          if (rememberMe) {
+            localStorage.setItem('rememberedPhone', phone);
+            localStorage.setItem('rememberedPassword', password);
+          } else {
+            localStorage.removeItem('rememberedPhone');
+            localStorage.removeItem('rememberedPassword');
+          }
+
+          setTimeout(() => navigate('/studentPortalBasicInformations'), 500);
         } else {
           console.error('Login failed:', response.data);
           setLoginStatus('failed');
@@ -107,7 +134,7 @@ const StudentPortalLogin = () => {
                   <Form.Group controlId="formBasicPhone" className="mb-3">
                     <Form.Label className="custom-label">Contact Number</Form.Label>
                     <PhoneInput
-                      country={'us'}
+                      country={'my'}
                       value={phone}
                       onChange={(value) => setPhone(value)}
                       inputProps={{
@@ -119,7 +146,8 @@ const StudentPortalLogin = () => {
                       containerClass="phone-input-container"
                       buttonClass="btn btn-outline-secondary"
                       dropdownClass="country-dropdown custom-dropdown"
-                      countryCodeEditable={true}
+                      countryCodeEditable={false}
+                      required
                     />
                   </Form.Group>
                   <Form.Group controlId="formBasicPassword" className="mb-3">

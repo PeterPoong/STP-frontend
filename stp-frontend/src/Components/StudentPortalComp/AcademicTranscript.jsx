@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Edit2, Trash2, Eye, Plus, Search,GripVertical, ChevronDown } from 'lucide-react';
+import { Edit2, Trash2, Eye, Plus, Search, GripVertical, ChevronDown, Info } from 'lucide-react';
 import Carousel from 'react-material-ui-carousel';
-import { Paper, Button } from '@mui/material';
+import { Paper, Button, Tooltip } from '@mui/material';
 import SelectSearch from 'react-select-search';
 import 'react-select-search/style.css';
+
 
 const ExamSelector = ({ exams, selectedExam, setSelectedExam }) => {
   const itemsPerPage = 5;
@@ -15,27 +16,27 @@ const ExamSelector = ({ exams, selectedExam, setSelectedExam }) => {
   return (
     <Carousel
       height="6rem"
-      animation ="slide"
-      autoPlay = {false}
+      animation="slide"
+      autoPlay={false}
       navButtonsAlwaysVisible
       navButtonsProps={{
         style: {
           backgroundColor: '#f3f4f6',
           borderRadius: 0,
           color: '#4b5563',
-          margin:0,
-          padding:0,
+          margin: 0,
+          padding: 0,
         }
       }}
       indicatorContainerProps={{
         style: {
-        display: 'none', 
+          display: 'none',
           // Hide the indicators
         }
       }}
     >
       {pages.map((page, index) => (
-        <Paper key={index} elevation={0} style={{ display: 'flex', justifyContent: 'center', backgroundColor: 'transparent',margin:"0em" }}>
+        <Paper key={index} elevation={0} style={{ display: 'flex', justifyContent: 'center', backgroundColor: 'transparent', margin: "0em" }}>
           {page.map((exam) => (
             <Button
               key={exam}
@@ -48,8 +49,8 @@ const ExamSelector = ({ exams, selectedExam, setSelectedExam }) => {
                 borderRadius: '0px',
                 backgroundColor: selectedExam === exam ? 'white' : 'transparent',
                 color: selectedExam === exam ? '#4b5563' : '#4b5563',
-                borderColor: selectedExam ===exam? 'transparent': 'transparent',
-                borderbottom: selectedExam ===exam? 'red' : 'transparent',
+                borderColor: selectedExam === exam ? 'transparent' : 'transparent',
+                borderbottom: selectedExam === exam ? 'red' : 'transparent',
               }}
             >
               {exam}
@@ -153,8 +154,8 @@ const SubjectBasedExam = ({ examType, subjects }) => {
             placeholder="Enter subject name"
             readOnly
           />
-          <ChevronDown 
-            size={20} 
+          <ChevronDown
+            size={20}
             className={`chevron-icon ${isOpen ? 'open' : ''}`}
           />
         </div>
@@ -171,27 +172,26 @@ const SubjectBasedExam = ({ examType, subjects }) => {
       </button>
     );
   };
-  
+
   return (
     <div>
       <style>{customStyles}</style>
       <div className="space-y-2 mb-4">
         {subjects.map((subject, index) => (
           <div key={index} className="d-flex align-items-center justify-content-between bg-white p-2 mb-2 rounded border">
-          <div className="d-flex align-items-center flex-grow-1">
-            <GripVertical className="me-3" size={20} />
-            <span className="fw-medium h6 mb-0 me-3">{subject.name}</span>
-            <span className={`badge rounded-pill ${
-              subject.grade.includes('A') ? 'bg-success' :
-              subject.grade.includes('B') ? 'bg-danger' :
-              subject.grade.includes('C') ? 'bg-warning text-dark' :
-              'bg-secondary'
-            }`}>
-              GRADE: {subject.grade}
-            </span>
+            <div className="d-flex align-items-center flex-grow-1">
+              <GripVertical className="me-3" size={20} />
+              <span className="fw-medium h6 mb-0 me-3">{subject.name}</span>
+              <span className={`badge rounded-pill ${subject.grade.includes('A') ? 'bg-success' :
+                  subject.grade.includes('B') ? 'bg-danger' :
+                    subject.grade.includes('C') ? 'bg-warning text-dark' :
+                      'bg-secondary'
+                }`}>
+                GRADE: {subject.grade}
+              </span>
+            </div>
+            <Edit2 className="text-secondary cursor-pointer" size={20} />
           </div>
-          <Edit2 className="text-secondary cursor-pointer" size={20} />
-        </div>
         ))}
       </div>
       <div className="mb-4">
@@ -205,7 +205,7 @@ const SubjectBasedExam = ({ examType, subjects }) => {
           renderOption={renderOption}
         />
       </div>
-      
+
       <div className="mb-4">
         <label className="fw-bold small formlabel">Search for a subject:</label>
         <div className="mt-1 flex rounded-md shadow-sm">
@@ -225,7 +225,7 @@ const ProgramBasedExam = ({ examType, defaultSubjects }) => {
       <div className="mb-4">
         <div className="flex space-x-4">
           <div className="w-1/2">
-            <label className="block text-sm font-medium text-gray-700">Programme Name *</label>
+            <label className="fw-bold small formlabel">Programme Name *</label>
             <input type="text" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm" />
           </div>
           <div className="w-1/2">
@@ -307,29 +307,49 @@ const AcademicTranscript = () => {
         selectedExam={selectedExam}
         setSelectedExam={setSelectedExam}
       />
-    <div className="p-5 pt-0">
-      
-      {renderExamComponent()}
+      <div className="p-5 pt-0">
+        {renderExamComponent()}
 
-      <div className="mb-4">
-        <p className="text-sm text-gray-600">Upload {selectedExam} Result Slips</p>
-        <input type="file" className="hidden" id="file-upload" />
-        <label htmlFor="file-upload" className="cursor-pointer text-sm text-blue-500">
-          Please upload trial results if full results not yet released
-        </label>
-      </div>
-
-      <div className="mb-4">
-        <div className="flex justify-between items-center mb-2">
-          <div className="flex items-center">
-            <span className="mr-2">Show</span>
-            <select className="border rounded p-1">
-              <option>10</option>
-            </select>
-            <span className="ml-2">entries</span>
+        <div className="mb-4">
+          <div className="flex items-center justify-between">
+            <p className="font-bold text-sm">Upload {selectedExam} Result Slips
+              <Tooltip title="Please upload trial results if full results not yet released" arrow>
+                <Info size={16} className="mx-3 text-danger cursor-help" />
+              </Tooltip>
+            </p>
           </div>
-          <input type="text" placeholder="Search..." className="p-1 border rounded" />
         </div>
+
+        {/* Updated search bar section */}
+        <div className="mb-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <span className="mr-2">Show</span>
+              <select className="border rounded p-1 bg-white">
+                <option>10</option>
+                <option>20</option>
+                <option>50</option>
+              </select>
+              <span className="ml-2">entries</span>
+            </div>
+            <div className="relative flex-grow mx-4">
+              <input 
+                type="text" 
+                placeholder="Search..." 
+                className="w-full pl-10 pr-4 py-2 border rounded-md"
+              />
+              <Search 
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" 
+                size={20} 
+              />
+            </div>
+            <button className="px-4 py-2 bg-red-600 text-white rounded-md flex items-center">
+              <Plus size={20} className="mr-2" />
+              ADD NEW
+            </button>
+          </div>
+        </div>
+
         <table className="w-full border-collapse border">
           <thead>
             <tr className="bg-gray-100">
@@ -359,13 +379,11 @@ const AcademicTranscript = () => {
             </tr>
           </tbody>
         </table>
-      </div>
 
-      <div className="flex justify-between">
-        <button className="px-4 py-2 bg-red-500 text-white rounded">ADD NEW</button>
-        <button className="px-4 py-2 bg-red-500 text-white rounded">SAVE</button>
+        <div className="flex justify-end mt-4">
+          <button className="px-4 py-2 bg-red-600 text-white rounded">SAVE</button>
+        </div>
       </div>
-    </div>
     </div>
   );
 };

@@ -20,6 +20,7 @@
   }
   .react-tel-input {
     width: 100%;
+    background-color: white;
   }
   
   .react-tel-input .form-control {
@@ -38,7 +39,8 @@
     width: 300px;
     max-height: 200px;
     overflow-y: scroll;
-    background: #fff;
+    background: #ffffff;
+    z-index: 1000;
   }
   
   .react-tel-input .country-list::-webkit-scrollbar-track {
@@ -217,3 +219,41 @@ body, html {
   border-color: #495057;
 }
 
+/* Add these styles to your existing CSS file */
+
+.h-100 {
+  min-height: 100vh;
+}
+
+.h-50 {
+  min-height: 100vh;
+}
+
+.object-fit-cover {
+  object-fit: cover;
+  height: 100%;
+}
+
+@media (max-width: 767px) {
+  .h-50 {
+    min-height: auto;
+  }
+  
+  .object-fit-cover {
+    height: 300px; /* Adjust this value as needed */
+  }
+  
+  .d-flex.align-items-center {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+}
+
+/* Ensure the form content is scrollable on small screens */
+@media (max-width: 575px) {
+  .d-flex.align-items-center {
+    align-items: flex-start !important;
+    overflow-y: auto;
+    max-height: 100vh;
+  }
+}
