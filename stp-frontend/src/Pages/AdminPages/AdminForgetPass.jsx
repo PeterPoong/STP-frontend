@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate for redirect
-import { Container, Form, Button, Card, CardBody } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
+import { Container, Form, Button, Card } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../../css/AdminStyles/AdminLoginStyles.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 // Images
 import logo from '../../assets/AdminAssets/Images/logo.png';
 
@@ -24,9 +22,8 @@ const AdminForgetPass = () => {
         try {
             const response = await axios.post('http://192.168.0.69:8000/api/sendOtp', data);
             if (response.status === 200) {
-                // Handle success, maybe redirect or show a success message
-                alert('OTP sent successfully!');
-                navigate('/somePage'); // Redirect to a different page after success
+                // Redirect to /adminPassCode with the email as state
+                navigate('/adminPassCode', { state: { email: email } });
             }
         } catch (error) {
             // Handle errors, e.g., show an error message

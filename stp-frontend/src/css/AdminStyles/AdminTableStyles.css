@@ -1,5 +1,5 @@
 .AdminTable {
-    margin-top: 5%;
+    margin-top: 2.5%;
     width: 90%;
     border-collapse: separate; /* This allows the border-radius to be respected */
     border-spacing: 0; /* Removes the gap between cells */
@@ -24,7 +24,7 @@
 }
 
 .TableContainer{
-    display: flex;
+    /* display: flex; */
     flex-direction: column;
     align-items: center;
 }
