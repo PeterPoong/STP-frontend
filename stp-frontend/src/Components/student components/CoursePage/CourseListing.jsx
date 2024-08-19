@@ -34,11 +34,17 @@ const categoryAPIURL =
   "http://192.168.0.69:8000/api/student/categoryFilterList";
 const tuitionFeeAPIURL =
   "http://192.168.0.69:8000/api/student/tuitionFeeFilterRange";
+const intakeAPIURL = "http://192.168.0.69:8000/api/student/intakeFilterList";
 
 const CourseListing = ({ searchResults, countryID }) => {
   const [locationFilters, setLocationFilters] = useState([]);
+  const [locationsData, setLocationsData] = useState([]);
   const [categoryFilters, setCategoryFilters] = useState([]);
+  const [categoriesData, setCategoriesData] = useState([]);
+  const [intakeFilters, setIntakeFilters] = useState([]);
+  const [intakeData, setIntakeData] = useState({ data: [] });
   const [modeFilters, setModeFilters] = useState([]);
+  const [studyModes, setStudyModes] = useState([]);
   const [tuitionFee, setTuitionFee] = useState(0);
   const [minTuitionFee, setMinTuitionFee] = useState(0);
   const [maxTuitionFee, setMaxTuitionFee] = useState(100000);
@@ -46,57 +52,56 @@ const CourseListing = ({ searchResults, countryID }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const [locationsData, setLocationsData] = useState([]);
-  const [studyModes, setStudyModes] = useState([]);
-  const [categoriesData, setCategoriesData] = useState([]);
-  // const [selectedCountry, setSelectedCountry] = useState("");
-  const [filteredPrograms, setFilteredPrograms] = useState([]);
-  const [intakeFilters, setIntakeFilters] = useState([]);
-  const [selectedCountry, setSelectedCountry] = useState({});
 
-  const Intakes = ["MARCH", "AUGUST", "OCTOBER", "SEPTEMBER"];
+  const [filteredPrograms, setFilteredPrograms] = useState([]);
+  const [selectedCountry, setSelectedCountry] = useState({});
+  const [locationOptions, setLocationOptions] = useState([]); // This will hold the locations for the selected country
+
+  // const Intakes = [];
 
   useEffect(() => {
+    console.log("Country ID changed:", countryID);
     const fetchLocationFilters = async () => {
-      if (countryID) {
-        try {
-          const response = await fetch(
-            "http://192.168.0.69:8000/api/student/locationFilterList",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ countryID: countryID }),
-            }
-          );
+      if (!countryID) {
+        // setLocationFilters([]);
+        return;
+      }
 
-          if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
+      try {
+        console.log("Country ID received in CourseListing:", countryID);
+        const response = await fetch(
+          "http://192.168.0.69:8000/api/student/locationFilterList",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ countryID: countryID }),
           }
+        );
 
-          const locationData = await response.json();
-          console.log("Fetched Location Filters:", locationData);
-
-          // Check if the fetched data is an array and has elements
-          if (
-            Array.isArray(locationData.data) &&
-            locationData.data.length > 0
-          ) {
-            setLocationFilters(locationData.data); // Populate location filters
-          } else {
-            setLocationFilters([]); // Set to empty array if no data
-          }
-        } catch (error) {
-          console.error("Error fetching locations:", error);
-          setLocationFilters([]); // Set to empty array in case of error
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
         }
-      } else {
-        setLocationFilters([]); // Reset location filters if no countryID is selected
+
+        const locationData = await response.json();
+        console.log("Fetched Location Filters:", locationData);
+
+        // Check if the fetched data is an array and has elements
+        if (Array.isArray(locationData.data) && locationData.data.length > 0) {
+          setLocationFilters(locationData.data); // Populate location filters
+        } else {
+          setLocationFilters([]); // Set to empty array if no data
+        }
+      } catch (error) {
+        console.error("Error fetching locations:", error);
+        setLocationFilters([]); // Set to empty array in case of error
       }
     };
 
-    fetchLocationFilters();
+    setTimeout(() => {
+      fetchLocationFilters();
+    }, 100);
   }, [countryID]);
 
   useEffect(() => {
@@ -231,6 +236,26 @@ const CourseListing = ({ searchResults, countryID }) => {
     fetchTuitionFeeRange();
   }, []);
 
+  useEffect(() => {
+    const fetchIntakes = async () => {
+      try {
+        const response = await fetch(intakeAPIURL, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const intakeData = await response.json();
+        console.log("Intakes: ", intakeData.data);
+        setIntakeData(intakeData.data);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+
+    fetchIntakes();
+  }, []);
+
   const handleLocationChange = (location) => {
     const locationName = location.state_name;
     let updatedLocations;
@@ -261,16 +286,26 @@ const CourseListing = ({ searchResults, countryID }) => {
     allPrograms = programs
   ) => {
     if (!allPrograms) {
-      console.error("allPrograms is null or undefined");
+      // console.error("allPrograms is null or undefined");
       return;
     }
 
     if (!Array.isArray(allPrograms)) {
-      console.error("allPrograms is not an array");
-      return;
+      // console.error("allPrograms is not an array");
+      return [];
     }
 
-    let filtered = allPrograms;
+    if (
+      locations.length === 0 &&
+      categories.length === 0 &&
+      modes.length === 0 &&
+      fee === 0
+    ) {
+      // If no filters are selected, return all programs
+      return allPrograms;
+    }
+
+    let filtered = [...allPrograms];
 
     // Apply location filter only if locations array is not empty
     if (locations.length > 0) {
@@ -334,9 +369,9 @@ const CourseListing = ({ searchResults, countryID }) => {
 
   const handleIntakeChange = (intake) => {
     if (intakeFilters.includes(intake)) {
-      setIntakeFilters(intakeFilters.filter((i) => i !== intake));
+      setIntakeFilters(intakeFilters.filter((i) => i !== intake.month));
     } else {
-      setIntakeFilters([...intakeFilters, intake]);
+      setIntakeFilters([...intakeFilters, intake.month]);
     }
   };
 
@@ -366,13 +401,21 @@ const CourseListing = ({ searchResults, countryID }) => {
           const matchesLocation =
             locationFilters.length === 0 ||
             locationFilters.includes(program.location);
+
           const matchesCategory =
             categoryFilters.length === 0 ||
             categoryFilters.includes(program.category);
+
           const matchesMode =
             modeFilters.length === 0 || modeFilters.includes(program.mode);
-          // const matchesFee = tuitionFee === 0 || program.cost <= tuitionFee&& matchesFee;
-          return matchesLocation && matchesCategory && matchesMode;
+
+          const matchesIntake =
+            intakeFilters.length === 0 ||
+            intakeFilters.includes(program.intake); // Ensure this uses the state variable intakeFilters
+
+          return (
+            matchesLocation && matchesCategory && matchesMode && matchesIntake
+          );
         })
       : [];
 
@@ -533,15 +576,21 @@ const CourseListing = ({ searchResults, countryID }) => {
             <div className="filter-group">
               <h5 style={{ marginTop: "25px" }}>Intakes</h5>
               <Form.Group>
-                {Intakes.map((intake, index) => (
-                  <Form.Check
-                    key={index}
-                    type="checkbox"
-                    label={intake}
-                    checked={intakeFilters.includes(intake)}
-                    onChange={() => handleIntakeChange(intake)}
-                  />
-                ))}
+                {/* Check if intakeData and intakeData.data are defined */}
+                {intakeData && intakeData.data && intakeData.data.length > 0 ? (
+                  intakeData.data.map((intake) => (
+                    <Form.Check
+                      key={intake.id || intake.month} // Use a unique key if available
+                      type="checkbox"
+                      label={intake.month}
+                      checked={intakeFilters.includes(intake.month)}
+                      onChange={() => handleIntakeChange(intake)}
+                      aria-label={`Filter by intake month: ${intake.month}`} // Accessibility improvement
+                    />
+                  ))
+                ) : (
+                  <p>No intakes available</p> // Display a message if no data is available
+                )}
               </Form.Group>
             </div>
             <div className="filter-group">
