@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Container, Table } from "react-bootstrap";
-import '../../css/AdminStyles/AdminTableStyles.css'
+import { Container } from "react-bootstrap";
+import { DataGrid, GridToolbar } from '@mui/x-data-grid';
+import Button from '@mui/material/Button';
+import '../../css/AdminStyles/AdminTableStyles.css';
 
 const AdminSchoolContent = () => {
     const [schools, setSchools] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const token = sessionStorage.getItem('token');
+    const Authenticate = `Bearer ${token}`;
+    console.log("Authorization Header Value:", Authenticate);
 
     useEffect(() => {
         const fetchSchools = async () => {
@@ -14,7 +19,7 @@ const AdminSchoolContent = () => {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
-                        "Authorization": "Bearer 1|DRHGDVlFQDDqAkw74VHXVzRXyKZhC1h5eBTdwePW882ca2b8",
+                        "Authorization": Authenticate,
                     },
                     body: JSON.stringify({ /* Add any additional body data if required */ })
                 });
@@ -25,11 +30,10 @@ const AdminSchoolContent = () => {
 
                 const result = await response.json();
 
-                // Accessing the schools data from the nested structure
                 if (result && Array.isArray(result) && result[0].data) {
-                    setSchools(result[0].data);  // Set schools from the nested 'data' array
+                    setSchools(result[0].data);
                 } else {
-                    setSchools([]);  // Default to empty array if no data is found
+                    setSchools([]);
                 }
             } catch (error) {
                 setError(error.message);
@@ -50,40 +54,73 @@ const AdminSchoolContent = () => {
         return <Container>Error: {error}</Container>;
     }
 
+    // Define the columns for the DataGrid
+    const columns = [
+        { field: 'name', headerName: 'Name', flex: 1 },
+        { field: 'email', headerName: 'Email', flex: 1 },
+        { field: 'contact', headerName: 'Contact No.', flex: 1 },
+        { field: 'category', headerName: 'Category', flex: 1 },
+        { 
+            field: 'status', 
+            headerName: 'Status', 
+            flex: 1 
+        },
+        { 
+            field: 'action', 
+            headerName: 'Action', 
+            flex: 1,
+            renderCell: (params) => {
+                if (!params.row) return null; // Guard clause to handle null rows
+                return (
+                    <div>
+                        <Button 
+                            variant="contained" 
+                            color="primary" 
+                            size="small" 
+                            style={{ marginRight: 8 }}
+                            onClick={() => handleEdit(params.row.id)}
+                        >
+                            Edit
+                        </Button>
+                        <Button 
+                            variant="contained" 
+                            color="secondary" 
+                            size="small" 
+                            onClick={() => handleDelete(params.row.id)}
+                        >
+                            Delete
+                        </Button>
+                    </div>
+                );
+            }
+        },
+    ];
+
+    // Handlers for Edit and Delete actions
+    const handleEdit = (id) => {
+        console.log(`Edit school with ID: ${id}`);
+        // Implement edit functionality here
+    };
+
+    const handleDelete = (id) => {
+        console.log(`Delete school with ID: ${id}`);
+        // Implement delete functionality here
+    };
+
     return (
         <Container fluid>
-            <div className="TableContainer">
-                <Table className="AdminTable" striped hover>
-                    <thead className="AdminTableHead">
-                        <tr>
-                            <th className="LeftTableCorner">Name</th>
-                            <th>Email</th>
-                            <th>Contact No.</th>
-                            <th>Category</th>
-                            <th>Status</th>
-                            <th className="RightTableCorner">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody className="AdminTableBody">
-                        {schools.length > 0 ? (
-                            schools.map((school) => (
-                                <tr key={school.id}>
-                                    <td>{school.name}</td>
-                                    <td>{school.email}</td>
-                                    <td>{school.contact}</td>
-                                    <td>{school.category}</td>
-                                    <td>{school.status || "N/A"}</td>
-                                    <td>TBA</td>
-                                </tr>
-                            ))
-                        ) : (
-                            <tr>
-                                <td colSpan="6">No schools found.</td>
-                            </tr>
-                        )}
-                    </tbody>
-                </Table>
-            </div>           
+            <div className="TableContainer" style={{ height: 600, width: '100%' }}>
+                <DataGrid
+                    rows={schools}
+                    columns={columns}
+                    slots={{ toolbar: GridToolbar }}
+                    pageSize={5}
+                    rowsPerPageOptions={[5, 10, 20]}
+                    disableSelectionOnClick
+                    getRowId={(row) => row.id}
+                    
+                />
+            </div>
         </Container>
     );
 };

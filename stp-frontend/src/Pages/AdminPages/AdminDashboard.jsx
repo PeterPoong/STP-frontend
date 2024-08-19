@@ -11,6 +11,9 @@ import AdminCategoryContent from '../../Components/AdminComp/AdminCategoryConten
 import AdminCoursesContent from '../../Components/AdminComp/AdminCoursesContent';
 import AdminSubjectContent from '../../Components/AdminComp/AdminSubjectContent';
 import AdminStudentContent from '../../Components/AdminComp/AdminStudentContent';
+
+// Forms Page Content
+import AddSubjectForm from '../../Components/AdminComp/AdminAddSubject';
 import '../../css/AdminStyles/PageAdminDash.css';
 
 const AdminDashboard = () => {
@@ -23,7 +26,7 @@ const AdminDashboard = () => {
       <div className='HeadNavBarContainer'>
         <HeadNavBar />
         <div>
-          <AdminDashContent />
+          <AddSubjectForm />
         </div>
       </div>
     </div>

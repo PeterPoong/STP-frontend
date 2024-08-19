@@ -8,6 +8,8 @@ const AdminSubjectContent = () => {
     const [subjects, setSubjects] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const token = sessionStorage.getItem('token'); // Retrieve the token from sessionStorage
+    const Authenticate = `Bearer ${token}`;
 
     useEffect(() => {
         const fetchSubjects = async () => {
@@ -16,7 +18,7 @@ const AdminSubjectContent = () => {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': 'Bearer 1|DRHGDVlFQDDqAkw74VHXVzRXyKZhC1h5eBTdwePW882ca2b8',
+                        'Authorization': Authenticate,
                     },
                 });
 
@@ -25,16 +27,29 @@ const AdminSubjectContent = () => {
                 }
 
                 const result = await response.json();
-                setSubjects(result.data); // Assuming 'data' contains the array of subjects
+                setSubjects(result.data || []); // Ensure subjects is always an array
             } catch (error) {
                 setError(error.message);
+                setSubjects([]); // Set subjects to empty array on error to avoid undefined
             } finally {
                 setLoading(false);
             }
         };
 
         fetchSubjects();
-    }, []);
+    }, [Authenticate]);
+
+    // Define handleEdit function
+    const handleEdit = (subjectId) => {
+        // Implement edit functionality here
+        console.log(`Edit subject with ID: ${subjectId}`);
+    };
+
+    // Define handleDelete function
+    const handleDelete = (subjectId) => {
+        // Implement delete functionality here
+        console.log(`Delete subject with ID: ${subjectId}`);
+    };
 
     return (
         <Container fluid>

@@ -8,6 +8,9 @@ const AdminStudentContent = () => {
     const [students, setStudents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const token = sessionStorage.getItem('token');
+    const Authenticate = `Bearer ${token}`;
+    console.log("Authorization Header Value:", Authenticate);
 
     useEffect(() => {
         const fetchStudents = async () => {
@@ -16,7 +19,7 @@ const AdminStudentContent = () => {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': 'Bearer 1|DRHGDVlFQDDqAkw74VHXVzRXyKZhC1h5eBTdwePW882ca2b8',
+                        'Authorization': Authenticate,
                     },
                 });
                 
