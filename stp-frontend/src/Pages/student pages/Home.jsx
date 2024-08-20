@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import ButtonGroup from "../../Components/student components/ButtonGroup";
 // import NavButtons from "../../../Components/student components/NavButtons";
-import NavButtons from "../../Components/student components/NavButtons";
+import NavButtonsSP from "../../Components/StudentPortalComp/NavButtonsSP";
 import FeaturedUni from "../../Components/student components/FeaturedUni";
 import UniversityRow from "../../Components/student components/UniversityRow";
 import WhyStudyPal from "../../Components/student components/WhyStudyPal";
@@ -17,7 +17,7 @@ import "aos/dist/aos.css";
 const Home = () => {
   return (
     <div className="app-container" style={{ backgroundColor: " #F5F4F4" }}>
-      <NavButtons />
+      <NavButtonsSP />
       <main>
         <div className="home-container">
           <div className="featured-uni-section">

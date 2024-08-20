@@ -4,7 +4,7 @@ import Carousel from 'react-material-ui-carousel';
 import { Paper, Button, Tooltip } from '@mui/material';
 import SelectSearch from 'react-select-search';
 import 'react-select-search/style.css';
-
+import "../../css/StudentPortalStyles/StudentPortalAcademicTranscript.css";
 
 const ExamSelector = ({ exams, selectedExam, setSelectedExam }) => {
   const itemsPerPage = 5;
@@ -63,61 +63,6 @@ const ExamSelector = ({ exams, selectedExam, setSelectedExam }) => {
 };
 
 
-const customStyles = `
-  .select-search-container {
-    width: 100%;
-    position: relative;
-  }
-  .select-search-input {
-    width: 100%;
-    height: 38px;
-    padding: 0.375rem 0.75rem;
-    padding-right: 40px;
-    font-size: 1rem;
-    line-height: 1.5;
-    color: #495057;
-    background-color: #fff;
-    background-clip: padding-box;
-    border: 1px solid #ced4da;
-    border-radius: 0.25rem;
-    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-  }
-  .select-search-input:focus {
-    border-color: #80bdff;
-    outline: 0;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-  }
-  .add-subject-button {
-    position: absolute;
-    right: 0px;
-    top: 0px;
-    bottom: 0px;
-    width: 68px;
-    background-color: #dc3545;
-    border: none;
-    border-top-right-radius: 0.25rem;
-    border-bottom-right-radius: 0.25rem;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-  }
-  .add-subject-button:hover {
-    background-color: #c82333;
-  }
-  .select-search-option {
-    padding: 0.375rem 0.75rem;
-    cursor: pointer;
-  }
-  .select-search-option:hover {
-    background-color: #f8f9fa;
-  }
-  .select-search-option.is-selected {
-    background-color: #007bff;
-    color: #fff;
-  }
-`;
 
 const SubjectBasedExam = ({ examType, subjects }) => {
   const [selectedSubject, setSelectedSubject] = useState('');
@@ -175,7 +120,7 @@ const SubjectBasedExam = ({ examType, subjects }) => {
 
   return (
     <div>
-      <style>{customStyles}</style>
+     
       <div className="space-y-2 mb-4">
         {subjects.map((subject, index) => (
           <div key={index} className="d-flex align-items-center justify-content-between bg-white p-2 mb-2 rounded border">
@@ -183,9 +128,9 @@ const SubjectBasedExam = ({ examType, subjects }) => {
               <GripVertical className="me-3" size={20} />
               <span className="fw-medium h6 mb-0 me-3">{subject.name}</span>
               <span className={`badge rounded-pill ${subject.grade.includes('A') ? 'bg-success' :
-                  subject.grade.includes('B') ? 'bg-danger' :
-                    subject.grade.includes('C') ? 'bg-warning text-dark' :
-                      'bg-secondary'
+                subject.grade.includes('B') ? 'bg-danger' :
+                  subject.grade.includes('C') ? 'bg-warning text-dark' :
+                    'bg-secondary'
                 }`}>
                 GRADE: {subject.grade}
               </span>
@@ -312,7 +257,7 @@ const AcademicTranscript = () => {
 
         <div className="mb-4">
           <div className="flex items-center justify-between">
-            <p className="font-bold text-sm">Upload {selectedExam} Result Slips
+            <p className="fw-bold small formlabel">Upload {selectedExam} Result Slips
               <Tooltip title="Please upload trial results if full results not yet released" arrow>
                 <Info size={16} className="mx-3 text-danger cursor-help" />
               </Tooltip>
@@ -322,31 +267,23 @@ const AcademicTranscript = () => {
 
         {/* Updated search bar section */}
         <div className="mb-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <span className="mr-2">Show</span>
-              <select className="border rounded p-1 bg-white">
-                <option>10</option>
-                <option>20</option>
-                <option>50</option>
-              </select>
-              <span className="ml-2">entries</span>
-            </div>
-            <div className="relative flex-grow mx-4">
-              <input 
-                type="text" 
-                placeholder="Search..." 
-                className="w-full pl-10 pr-4 py-2 border rounded-md"
-              />
-              <Search 
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" 
-                size={20} 
-              />
-            </div>
-            <button className="px-4 py-2 bg-red-600 text-white rounded-md flex items-center">
-              <Plus size={20} className="mr-2" />
-              ADD NEW
-            </button>
+          <div className="d-flex justify-content-around align-item-centger ">
+            <span >Show</span>
+            <select className="show-option-table">
+              <option>10</option>
+              <option>20</option>
+              <option>50</option>
+            </select>
+            <span >entries</span>
+            <input
+              type="text"
+              placeholder="Search..."
+              className="search-filter-table"
+            />
+            <Search
+              size={30}
+            />
+            <button className=" button-table">ADD NEW</button>
           </div>
         </div>
 

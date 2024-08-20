@@ -8,19 +8,21 @@ import Button from "react-bootstrap/Button";
 import Dropdown from "react-bootstrap/Dropdown";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import logo from "../../assets/student asset/nav logo/logo.png";
-import "../../css/student css/NavButtons.css";
+import "../../css/StudentPortalStyles/StudentNavBar.css";
 
 const NavigationBar = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [hasToken, setHasToken] = useState(false);
   const [userName, setUserName] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
     const token = sessionStorage.getItem('token') || localStorage.getItem('token');
     if (token) {
-      setIsLoggedIn(true);
+      setHasToken(true);
       // You should fetch the user's name here from your API or local storage
       setUserName("David Lim"); // Replace with actual user name
+    } else {
+      setHasToken(false);
     }
   }, []);
 
@@ -28,8 +30,22 @@ const NavigationBar = () => {
     sessionStorage.removeItem('token');
     sessionStorage.removeItem('loginTimestamp');
     localStorage.removeItem('token');
-    setIsLoggedIn(false);
+    setHasToken(false);
     navigate('/');
+  };
+
+  const handleRoute = () => {
+    navigate('/studentPortalBasicInformations');
+  };
+
+  const handleLoginAsSchool = () => {
+    // Add logic for logging in as school
+    navigate('/login-school');
+  };
+
+  const handleLoginAsStudent = () => {
+    // Add logic for logging in as student
+    navigate('/studentPortalLogin');
   };
 
   return (
@@ -81,57 +97,25 @@ const NavigationBar = () => {
               {/* Study Guides dropdown items */}
             </NavDropdown>
           </Nav>
-          <div className="ml-auto navbutton-section">
-            {isLoggedIn ? (
+          <div className="m-10 navbutton-section">
+            {hasToken ? (
               <>
-                <Button variant="danger" className="me-2">Hi !</Button>
-                <Button variant="outline-secondary" className="me-2">{userName}</Button>
-                <Button variant="danger" onClick={handleLogout}>Logout</Button>
+                <Button className="m-0 btnfirst">Hi !</Button>
+                <Button className="m-0 btnsecond" onClick={handleRoute}>{userName}</Button>
+                <Button className="m-0 btnfirst" onClick={handleLogout}>Logout</Button>
               </>
             ) : (
-              <NavButtonsSP />
+              <>
+                <Button className="m-0 btnfirst">Hi !</Button>
+                <Button className="m-0 btnsecond" onClick={handleLoginAsStudent}>Login as student</Button>
+                <Button className="m-0 btnsecond" onClick={handleLoginAsSchool}>Login as school</Button>
+                <Button className="m-0 btnfirst" onClick={handleLogout}>Logout</Button>
+              </>
             )}
           </div>
         </Navbar.Collapse>
       </Container>
     </Navbar>
-  );
-};
-
-const NavButtonsSP = () => {
-  return (
-    <Nav className="ms-auto" style={{ paddingLeft: "60px" }} expand="lg">
-      <ButtonGroup>
-        <Dropdown as={ButtonGroup}>
-          <Dropdown.Toggle className="nav-button" id="dropdown-custom-1">
-            Login
-          </Dropdown.Toggle>
-          <Dropdown.Menu>
-            <Dropdown.Item className="dropdown" as={Link} to="/studentPortalLogin">
-              Login as Student
-            </Dropdown.Item>
-            <Dropdown.Item as={Link} to="/login-school">
-              Login as School
-            </Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
-      </ButtonGroup>
-      <ButtonGroup>
-        <Dropdown as={ButtonGroup}>
-          <Dropdown.Toggle className="nav-button" id="dropdown-custom-1">
-            Register
-          </Dropdown.Toggle>
-          <Dropdown.Menu>
-            <Dropdown.Item as={Link} to="/studentPortalSignUp">
-              Register as Student
-            </Dropdown.Item>
-            <Dropdown.Item as={Link} to="/register-school">
-              Register as School
-            </Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
-      </ButtonGroup>
-    </Nav>
   );
 };
 

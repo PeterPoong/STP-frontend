@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Form, Button, Container, Row, Col, Alert,InputGroup } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../../css/StudentPortalCss/StudentPortalLoginForm.css";
+import "../../css/StudentPortalStyles/StudentPortalLoginForm.css";
 import studentPortalLogin from "../../assets/StudentPortalAssets/studentPortalLogin.png";
 import studentPortalLoginLogo from "../../assets/StudentPortalAssets/studentPortalLoginLogo.png";
 import 'react-phone-input-2/lib/style.css';
@@ -50,7 +50,10 @@ const StudentPortalForgetPassword = () => {
         setStep(2); // Move to OTP input step
       } else {
         console.error("Failed to send reset request:", responseText);
-        setError(responseText || "Failed to send reset request. Please try again.");
+        const response = JSON.parse(responseText);
+        const errorMessage = response.error?.email?.[0]||"Failed to send reset request. Please try again";
+        setError(errorMessage);
+        
       }
     } catch (error) {
       console.error("Error in sending reset request:", error);
@@ -85,7 +88,7 @@ const StudentPortalForgetPassword = () => {
         console.log("OTP verified successfully");
         setSuccess("OTP verified successfully. Please set your new password.");
         setStep(3); // Move to password reset step
-      } else if (response.status === 404) {
+      } else if (response.status === 500) {
         console.error("Verify OTP endpoint not found");
         setError("The OTP verification service is currently unavailable. Please try again later or contact support.");
       } else {

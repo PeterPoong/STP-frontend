@@ -10,7 +10,7 @@ import WidgetPending from "../../Components/StudentPortalComp/WidgetPending";
 import WidgetRejected from "../../Components/StudentPortalComp/WidgetRejected";
 import CollapsibleSections from "../../Components/StudentPortalComp/CollapsibleSections";
 import "aos/dist/aos.css";
-import "../../css/StudentPortalCss/StudentPortalBasicInformation.css";
+import "../../css/StudentPortalStyles/StudentPortalBasicInformation.css";
 
 const StudentPortalBasicInformations = () => {
   const [selectedContent, setSelectedContent] = useState('basicInfo');

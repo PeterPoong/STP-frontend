@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
-import "../../css/StudentPortalCss/StudentPortalLoginForm.css";
-import PhoneInput from 'react-phone-input-2';
-import "../../css/StudentPortalCss/StudentPortalLoginForm.css";
+import "../../css/StudentPortalStyles/StudentPortalLoginForm.css";
 import { Eye, EyeOff } from 'react-feather';
-import { Form, Button, Container, Row, Col, InputGroup, Card } from "react-bootstrap";
+import { Form, Button, Container, Row, Col, InputGroup, Card, Alert } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const ManagePasswordWidget = () => {
@@ -13,27 +11,73 @@ const ManagePasswordWidget = () => {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [passwordError, setPasswordError] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+    setSuccess("");
+
+    // Check if new password is same as current password
+    if (newPassword === currentPassword) {
+      setError("New password must be different from the current password");
+      return;
+    }
+
+    // Check if new password and confirm password match
     if (newPassword !== confirmPassword) {
-      setPasswordError("Passwords do not match");
-    } else {
-      setPasswordError("");
-      // Handle password reset logic here
-      console.log("New Password:", newPassword);
+      setError("New password and confirm password do not match");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      const response = await fetch('http://192.168.0.69:8000/api/student/resetStudentPassword', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          currentPassword: currentPassword,
+          newPassword: newPassword,
+          confirmPassword: confirmPassword
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSuccess("Password updated successfully!");
+        // Clear the form
+        setCurrentPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+      } else {
+        setError(data.message || "Failed to update password. Please try again.");
+      }
+    } catch (error) {
+      setError("An error occurred. Please try again later.");
+    } finally {
+      setIsLoading(false);
     }
   };
+
   return (
     <div>
       <h4 className="title-widget">David Lim's Profile</h4>
-      <Card className="mb-4 ">
+      <Card className="mb-4">
         <Card.Body className="mx-4">
-          <div className="border-bottom  mb-4">
-            <h2 className=" fw-light title-widgettwo" style={{ color: "black" }}>Basic Information</h2>
+          <div className="border-bottom mb-4">
+            <h2 className="fw-light title-widgettwo" style={{ color: "black" }}>Basic Information</h2>
           </div>
-          <Form onSubmit={handleSubmit} className="w-0 ">
+          {error && <Alert variant="danger">{error}</Alert>}
+          {success && <Alert variant="success">{success}</Alert>}
+          <Form onSubmit={handleSubmit} className="w-100 px-4">
             <Form.Group className="mb-3" controlId="formCurrentPassword">
               <Form.Label className="fw-bold small formlabel">Current Password<span className="text-danger">    *</span></Form.Label>
               <InputGroup className="password-input-group">
@@ -59,7 +103,6 @@ const ManagePasswordWidget = () => {
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   required
-
                 />
                 <InputGroup.Text
                   onClick={() => setShowNewPassword(!showNewPassword)}
@@ -70,7 +113,7 @@ const ManagePasswordWidget = () => {
               </InputGroup>
             </Form.Group>
             <Form.Group className="mb-3" controlId="formConfirmPassword">
-              <Form.Label className="fw-bold small formlabel">Comfirm New Password<span className="text-danger">    *</span></Form.Label>
+              <Form.Label className="fw-bold small formlabel">Confirm New Password<span className="text-danger">    *</span></Form.Label>
               <InputGroup className="password-input-group">
                 <Form.Control
                   type={showConfirmPassword ? "text" : "password"}
@@ -86,11 +129,15 @@ const ManagePasswordWidget = () => {
                 </InputGroup.Text>
               </InputGroup>
             </Form.Group>
-            {passwordError && <p className="text-danger">{passwordError}</p>}
-            <div className="d-flex justify-content-end mt-3">
-              <div className="w-25">
-                <Button variant="danger" type="submit" className="m-0 w-100 fw-bold rounded-pill">
-                  Save
+            <div className="d-flex justify-content-end my-4">
+              <div className="d-flex justify-content-end w-50 ">
+                <Button 
+                  variant="danger" 
+                  type="submit" 
+                  className="mpbtndiv fw-bold rounded-pill mx-0"
+                  disabled={isLoading}
+                >
+                  {isLoading ? 'Saving...' : 'Save'}
                 </Button>
               </div>
             </div>

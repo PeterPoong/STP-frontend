@@ -2,12 +2,13 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Form, Button, Container, Row, Col, Alert, InputGroup } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../../css/StudentPortalCss/StudentPortalLoginForm.css";
+
 import studentPortalLogin from "../../assets/StudentPortalAssets/studentPortalLogin.png";
 import studentPortalLoginLogo from "../../assets/StudentPortalAssets/studentPortalLoginLogo.png";
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import { Eye, EyeOff } from 'react-feather';
+import "../../css/StudentPortalStyles/StudentPortalLoginForm.css";
 
 const StudentPortalLogin = () => {
   const [password, setPassword] = useState("");
@@ -21,19 +22,20 @@ const StudentPortalLogin = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-    if (token) {
-      navigate('/studentPortalBasicInformations');
+   const rememberMe = JSON.parse(localStorage.getItem('rememberMe') || 'false');
+  const token = rememberMe ? localStorage.getItem('token') : sessionStorage.getItem('token');
+
+  if (token) {
+    navigate('/studentPortalBasicInformations');
+  }
+
+  const handleTabClosing = () => {
+    if (!rememberMe) {
+      sessionStorage.removeItem('token');
     }
+  };
 
-    const handleTabClosing = () => {
-      if (!JSON.parse(localStorage.getItem('rememberMe'))) {
-        sessionStorage.removeItem('token');
-        localStorage.removeItem('token');
-      }
-    };
-
-    window.addEventListener('beforeunload', handleTabClosing);
+  window.addEventListener('beforeunload', handleTabClosing);
 
     fetch('http://192.168.0.69:8000/api/countryCode')
       .then(response => response.json())
@@ -63,18 +65,18 @@ const StudentPortalLogin = () => {
     setPhone(value);
     setCountryCode(country.dialCode);
   };
-
+  
   const handleSubmit = (e) => {
     e.preventDefault();
     setLoginStatus(null);
     setError("");
-
+  
     const formData = {
       password: password,
       country_code: `+${countryCode}`,
       contact_number: phone.slice(countryCode.length),
     };
-
+  
     console.log('Sending login data:', formData);
     fetch('http://192.168.0.69:8000/api/student/login', {
       method: 'POST',
@@ -84,6 +86,9 @@ const StudentPortalLogin = () => {
       body: JSON.stringify(formData),
     })
       .then(response => {
+        if (response.status === 429) {
+          throw new Error("The website is currently busy, please try again later.");
+        }
         if (!response.ok) {
           return response.json().then(err => Promise.reject(err));
         }
@@ -91,24 +96,41 @@ const StudentPortalLogin = () => {
       })
       .then(data => {
         console.log('Full API response:', data);
+        console.log('Raw API response:', JSON.stringify(data, null, 2));
         if (data.true === true) {
-          console.log('Login successful:');
+          console.log('Login successful:', data);
           setLoginStatus('success');
           
-          sessionStorage.setItem('token', data.data.token);
-          localStorage.setItem('rememberMe', JSON.stringify(rememberMe));
-
-          if (rememberMe) {
-            localStorage.setItem('token', data.data.token);
-            localStorage.setItem('rememberedPhone', phone);
-            localStorage.setItem('rememberedPassword', password);
+          if (data.data && data.data.token) {
+            sessionStorage.setItem('token', data.data.token);
+            localStorage.setItem('rememberMe', JSON.stringify(rememberMe));
+  
+            if (rememberMe) {
+              localStorage.setItem('token', data.data.token);
+              localStorage.setItem('rememberedPhone', phone);
+              localStorage.setItem('rememberedPassword', password);
+            } else {
+              localStorage.removeItem('token');
+              localStorage.removeItem('rememberedPhone');
+              localStorage.removeItem('rememberedPassword');
+            }
+  
+            const userId = data.data?.id || data.id || data.data?.user?.id;
+            if (userId) {
+              const id = userId.toString();
+              sessionStorage.setItem('id', id);
+              if (rememberMe) {
+                localStorage.setItem('id', id);
+              }
+            } else {
+              console.error('User ID not found in response:', data);
+            }
+  
+            setTimeout(() => navigate('/studentPortalBasicInformations'), 500);
           } else {
-            localStorage.removeItem('token');
-            localStorage.removeItem('rememberedPhone');
-            localStorage.removeItem('rememberedPassword');
+            console.error('Token not found in response');
+            setError("Login successful, but token not received. Please try again.");
           }
-
-          setTimeout(() => navigate('/studentPortalBasicInformations'), 500);
         } else {
           console.error('Login failed:', data);
           setLoginStatus('failed');
@@ -117,15 +139,10 @@ const StudentPortalLogin = () => {
       })
       .catch(error => {
         console.error('Error during login:', error);
-        if (error.message) {
-          setError(error.message);
-        } else {
-          setError("An error occurred. Please try again later.");
-        }
+        setError(error.message || "An error occurred. Please try again later.");
         setLoginStatus('error');
       });
   };
-
   return (
     <Container fluid className="h-100">
       <Row className="h-50">

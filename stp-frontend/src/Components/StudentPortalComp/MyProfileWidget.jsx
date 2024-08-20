@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Card, ListGroup, Collapse } from 'react-bootstrap';
 import { PlusCircle, MinusCircle } from 'react-feather';
 import sampleprofile from "../../assets/StudentPortalAssets/sampleprofile.png";
-import "../../css/StudentPortalCss/StudentPortalBasicInformation.css";
+import "../../css/StudentPortalStyles/StudentPortalBasicInformation.css";
 
 const MyProfileWidget = ({ onSelectContent }) => {
     const [isProfileExpanded, setIsProfileExpanded] = useState(false);
