@@ -17,7 +17,7 @@ import PersonalDetails from "./Pages/student pages/ApplyPage/PersonalDetails";
 
 // Admin Login Page
 import AdminSignup from "./Pages/AdminPages/AdminSignup";
-import AdminLogin from "./Pages/AdminPages/AdminLogin"
+import AdminLogin from "./Pages/AdminPages/AdminLogin";
 import AdminForgetPass from "./Pages/AdminPages/AdminForgetPass";
 import AdminPassCode from "./Pages/AdminPages/AdminPassCode";
 import AdminResetPass from "./Pages/AdminPages/AdminResetPass";
@@ -36,6 +36,13 @@ import StudentPortalForgetPassword from "./Pages/StudentPortalPages/StudentPorta
 import StudentPortalResetPassword from "./Pages/StudentPortalPages/StudentPortalResetPassword";
 import StudentPortalSignUp from "./Pages/StudentPortalPages/StudentPortalSignUp";
 import StudentPortalBasicInformations from "./Pages/StudentPortalPages/StudentPortalBasicInformations";
+
+//schoolPortal Page
+import SchoolPortalLogin from "./Pages/SchoolPages/SchoolPortalLogin";
+import SchoolPortalSignup from "./Pages/SchoolPages/SchoolPortalSignup";
+import SchoolDashboard from "./Pages/SchoolPages/SchoolDashboard";
+import SchoolPortalForgetPassword from "./Pages/SchoolPages/schoolPortalForgetPassword";
+import ExistSchool from "./Pages/SchoolPages/ExistSchool";
 
 const router = createBrowserRouter([
   {
@@ -87,84 +94,104 @@ const router = createBrowserRouter([
   // Admin Logins
   {
     path: "/adminSignup",
-    element: <AdminSignup/>
+    element: <AdminSignup />,
   },
 
   {
     path: "/adminLogin",
-    element: <AdminLogin/>
+    element: <AdminLogin />,
   },
 
   {
     path: "/adminForgetPass",
-    element: <AdminForgetPass/>
+    element: <AdminForgetPass />,
   },
 
   {
     path: "/adminPassCode",
-    element: <AdminPassCode/>
+    element: <AdminPassCode />,
   },
 
   {
     path: "/adminResetPass",
-    element: <AdminResetPass/>
+    element: <AdminResetPass />,
   },
 
   // Admin Dashboard Pages
   {
     path: "/adminDashboard",
-    element: <AdminDashboard/>
+    element: <AdminDashboard />,
   },
 
   {
     path: "/adminSchool",
-    element: <AdminSchool/>
+    element: <AdminSchool />,
   },
 
   {
     path: "/adminStudent",
-    element: <AdminStudent/>
+    element: <AdminStudent />,
   },
 
   {
     path: "/adminCourses",
-    element: <AdminCourses/>
+    element: <AdminCourses />,
   },
 
   {
     path: "/adminCategory",
-    element: <AdminCategory/>
+    element: <AdminCategory />,
   },
 
   {
     path: "/adminSubject",
-    element: <AdminSubject/>
+    element: <AdminSubject />,
   },
 
   //Student Portal Page
   {
     path: "/studentPortalLogin",
-    element: <StudentPortalLogin/>
+    element: <StudentPortalLogin />,
   },
 
   {
     path: "/studentPortalForgetPassword",
-    element: <StudentPortalForgetPassword/>
+    element: <StudentPortalForgetPassword />,
   },
 
   {
     path: "/studentPortalResetPassword",
-    element: <StudentPortalResetPassword/>
+    element: <StudentPortalResetPassword />,
   },
 
   {
     path: "/studentPortalSignUp",
-    element: <StudentPortalSignUp/>
+    element: <StudentPortalSignUp />,
   },
 
   {
     path: "/studentPortalBasicInformations",
-    element: <StudentPortalBasicInformations/>
+    element: <StudentPortalBasicInformations />,
+  },
+  {
+    path: "/schoolPortalLogin",
+    element: <SchoolPortalLogin />,
+  },
+  {
+    path: "/schoolPortalSignUp",
+    element: <SchoolPortalSignup />,
+  },
+  {
+    path: "/schoolPortalForgetPassword",
+    element: <SchoolPortalForgetPassword />,
+  },
+  {
+    path: "/schoolPortalDashboard",
+    element: <SchoolDashboard />,
+  },
+  {
+    path: "/schoolExistingAccount",
+    element: <ExistSchool />,
   },
 ]);
 
