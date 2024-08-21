@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import NavButtons from "../../Components/student components/NavButtons";
+import NavButtons from "../../Components/StudentComp/NavButtons";
 import MyProfileWidget from "../../Components/StudentPortalComp/MyProfileWidget";
 import SpcFooter from "../../Components/StudentPortalComp/SpcFooter";
 import BasicInformationWidget from "../../Components/StudentPortalComp/BasicInformationWidget";
@@ -11,11 +11,11 @@ import WidgetRejected from "../../Components/StudentPortalComp/WidgetRejected";
 import CollapsibleSections from "../../Components/StudentPortalComp/CollapsibleSections";
 import "aos/dist/aos.css";
 import "../../css/StudentPortalCss/StudentPortalBasicInformation.css";
-import axios from 'axios';
-import moment from 'moment';
+import axios from "axios";
+import moment from "moment";
 
 const StudentPortalBasicInformations = () => {
-  const [selectedContent, setSelectedContent] = useState('basicInfo');
+  const [selectedContent, setSelectedContent] = useState("basicInfo");
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -23,13 +23,13 @@ const StudentPortalBasicInformations = () => {
   const [sessionTimeout, setSessionTimeout] = useState(null);
 
   useEffect(() => {
-    const token = sessionStorage.getItem('token');
-    const loginTimestamp = sessionStorage.getItem('loginTimestamp');
-    console.log('Token from sessionStorage:', token);
-    console.log('Login timestamp:', loginTimestamp);
+    const token = sessionStorage.getItem("token");
+    const loginTimestamp = sessionStorage.getItem("loginTimestamp");
+    console.log("Token from sessionStorage:", token);
+    console.log("Login timestamp:", loginTimestamp);
     if (!token) {
-      console.log('No token found, redirecting to login');
-      navigate('/studentPortalLogin');
+      console.log("No token found, redirecting to login");
+      navigate("/studentPortalLogin");
     } else {
       verifyToken(token);
       checkSessionTimeout(loginTimestamp);
@@ -38,56 +38,60 @@ const StudentPortalBasicInformations = () => {
 
   const verifyToken = async (token) => {
     try {
-      console.log('Verifying token:', token);
-      const response = await axios.get('http://192.168.0.69:8000/api/validateToken', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      console.log('Token validation response:', response.data);
-      
+      console.log("Verifying token:", token);
+      const response = await axios.get(
+        "http://192.168.0.69:8000/api/validateToken",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      console.log("Token validation response:", response.data);
+
       // Check if the response has the expected structure
       if (response.data && response.data.success === true) {
-        console.log('Token is valid');
+        console.log("Token is valid");
         setIsAuthenticated(true);
       } else {
-        console.log('Token is invalid based on response structure');
-        throw new Error('Token validation failed');
+        console.log("Token is invalid based on response structure");
+        throw new Error("Token validation failed");
       }
     } catch (error) {
-      console.error('Error during token verification:', error);
+      console.error("Error during token verification:", error);
       if (error.response) {
-        console.error('Error response from server:', error.response.data);
-        console.error('Error status:', error.response.status);
-        console.error('Error headers:', error.response.headers);
+        console.error("Error response from server:", error.response.data);
+        console.error("Error status:", error.response.status);
+        console.error("Error headers:", error.response.headers);
       } else if (error.request) {
-        console.error('No response received:', error.request);
+        console.error("No response received:", error.request);
       } else {
-        console.error('Error message:', error.message);
+        console.error("Error message:", error.message);
       }
-      sessionStorage.removeItem('token');
-      navigate('/studentPortalLogin');
+      sessionStorage.removeItem("token");
+      navigate("/studentPortalLogin");
     } finally {
       setIsLoading(false);
     }
   };
 
   const checkSessionTimeout = (loginTimestamp) => {
-    const sessionDuration = moment.duration(1, 'minutes'); // Set session duration to 30 minutes
+    const sessionDuration = moment.duration(1, "minutes"); // Set session duration to 30 minutes
     const loginTime = moment(loginTimestamp);
     const currentTime = moment();
     const timeSinceLogin = moment.duration(currentTime.diff(loginTime));
 
     if (timeSinceLogin > sessionDuration) {
-      console.log('Session expired');
-      sessionStorage.removeItem('token');
-      sessionStorage.removeItem('loginTimestamp');
-      navigate('/studentPortalLogin');
+      console.log("Session expired");
+      sessionStorage.removeItem("token");
+      sessionStorage.removeItem("loginTimestamp");
+      navigate("/studentPortalLogin");
     } else {
-      const timeoutDuration = sessionDuration.asMilliseconds() - timeSinceLogin.asMilliseconds();
+      const timeoutDuration =
+        sessionDuration.asMilliseconds() - timeSinceLogin.asMilliseconds();
       const timeout = setTimeout(() => {
-        console.log('Session timeout');
-        sessionStorage.removeItem('token');
-        sessionStorage.removeItem('loginTimestamp');
-        navigate('/studentPortalLogin');
+        console.log("Session timeout");
+        sessionStorage.removeItem("token");
+        sessionStorage.removeItem("loginTimestamp");
+        navigate("/studentPortalLogin");
       }, timeoutDuration);
 
       setSessionTimeout(timeout);
@@ -103,13 +107,12 @@ const StudentPortalBasicInformations = () => {
     };
   }, [sessionTimeout]);
 
-
   const openPopup = () => setIsPopupOpen(true);
   const closePopup = () => setIsPopupOpen(false);
 
   const renderContent = () => {
     switch (selectedContent) {
-      case 'basicInfo':
+      case "basicInfo":
         return (
           <div>
             <BasicInformationWidget />
@@ -118,13 +121,13 @@ const StudentPortalBasicInformations = () => {
             </button>
           </div>
         );
-      case 'managePassword':
+      case "managePassword":
         return <ManagePasswordWidget />;
-      case 'transcript':
-        return <CollapsibleSections/>;
-      case 'appliedCoursesPending':
+      case "transcript":
+        return <CollapsibleSections />;
+      case "appliedCoursesPending":
         return <AppliedCoursesWidget status="pending" />;
-      case 'appliedCoursesHistory':
+      case "appliedCoursesHistory":
         return <AppliedCoursesWidget status="history" />;
       default:
         return <BasicInformationWidget />;
@@ -147,9 +150,7 @@ const StudentPortalBasicInformations = () => {
           <div className="profile-widget-container">
             <MyProfileWidget onSelectContent={setSelectedContent} />
           </div>
-          <div className="content-area">
-            {renderContent()}
-          </div>
+          <div className="content-area">{renderContent()}</div>
         </div>
       </main>
       <WidgetRejected

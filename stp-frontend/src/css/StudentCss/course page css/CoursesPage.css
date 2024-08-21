@@ -1,0 +1,352 @@
+.masthead {
+  position: relative;
+  width: 100%;
+  height: auto;
+}
+
+.header-image {
+  width: 100%;
+  height: 300px;
+  display: block;
+  object-fit: cover;
+}
+
+.country-button,
+.university-button,
+.degree-button
+ {
+  background-color: #ffffff;
+  color: #B71A18;
+  border: 1px solid;
+  min-width: 200px;
+  margin-top: 35px;
+}
+
+.pagination .page-item .page-link {
+  background-color: #B71A18; /* Your desired background color */
+  color: white; /* Your desired text color */
+  border: none; /* Remove border if desired */
+  margin-top: 30px;
+}
+
+.pagination .page-item.active .page-link {
+  background-color: #8B0000; /* Your desired active background color */
+  color: white; /* Your desired active text color */
+}
+
+.pagination .page-item .page-link:hover {
+  background-color: #ff6347; /* Your desired hover background color */
+  color: white; /* Your desired hover text color */
+}
+
+.country-button:hover,
+.university-button:hover,
+.degree-button:hover{
+  background-color: #9c1515;
+  color: #ffffff;
+  border: none;
+}
+
+.mr-2 {
+  margin-right: 0.5rem;
+}
+
+.ml-auto {
+  margin-left: auto;
+}
+
+.location-container {
+  width: 250px;
+}
+
+.flex-grow-1 {
+  flex-grow: 1;
+}
+
+.studypal-image {
+  width: 1045px;
+  height: 150px;
+  display: block;
+  object-fit: cover;
+  margin-bottom: 40px;
+}
+
+.location-container {
+  border: 1px solid #dadada;
+  border-radius: 10px;
+  height: 1200px;
+}
+
+.degree-card {
+  display: flex;
+  flex-direction: column;
+  width: 1045px;
+  height: auto;
+  border-color: #B71A18;
+  border-radius: 10px;
+  margin-bottom: 20px; /* Add spacing between cards */
+}
+
+.degree-card .card-title {
+  background-color: #efefef;
+}
+
+.degree-card .card-body {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  position: relative;
+}
+
+.degree-card .card-image {
+  flex-shrink: 0;
+  margin-right: 20px;
+  margin-bottom: 10px; /* Adjusted for smaller screens */
+}
+
+.degree-card .card-image img {
+  max-width: 100px;
+  height: auto;
+  display: block;
+}
+
+.degree-card .card-content {
+  flex-grow: 1;
+  margin-right: 20px;
+}
+
+.degree-card .card-text {
+  margin-bottom: 10px;
+}
+
+.degree-card .details-div {
+  flex-grow: 1;
+}
+
+/* .degree-card .details-div .d-flex {
+  margin-bottom: 5px;
+} */
+
+.degree-card .apply-button  {
+  margin-top: 20px;
+  text-align: right;
+}
+
+.degree-card .fee-apply {
+  margin-left: 100px; /* Pushes the fee-apply div to the right side */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+}
+
+
+.btn-danger {
+  background-color: #c00;
+}
+
+.fee-info {
+  text-align: right;
+  margin-right: 10px; /* Adjust margin to bring the text closer */
+
+}
+
+.apply-button .featured {
+  margin-left: 10px;
+  background-color: #B71A18;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 150px;
+}
+
+.featured-badge {
+  position: absolute;
+  top: 0;
+  right: 10px;
+  background-color: #B71A18; 
+  color: white;
+  padding: 5px 10px;
+  font-size: 12px;
+  text-align: center;
+  font-weight: bold;
+  text-transform: uppercase;
+  clip-path: polygon(0 0, 100% 0, 100% 75%, 100% 100%, 50% 70%, 0 100%);
+  z-index: 1;
+  width: 100px;
+  height: 40px;
+}
+
+
+.featured:hover {
+  background-color: #9c1515;
+}
+
+.align-items-center {
+  display: flex;
+  align-items: center;
+}
+
+.justify-content-end {
+  justify-content: flex-end;
+}
+
+@media (max-width: 992px) {
+  .country-button,
+  .university-button,
+  .degree-button {
+    width: 100%;
+    min-width: 160px; /* Remove fixed min-width */
+  }
+}
+
+/* Ensure buttons stack vertically on larger screens and horizontally on smaller screens */
+@media (max-width: 767px) {
+  .dropdown-button-group {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+@media (min-width: 768px) {
+  .dropdown-button-group {
+    display: flex;
+    flex-direction: row;
+  }
+}
+
+
+@media (max-width: 576px) {
+  .country-button,
+  .university-button,
+  .degree-button {
+    width: 100%;
+  }
+  .location-container {
+    width: 100%;
+  }
+  .degree-card {
+    flex-direction: column;
+    width: 100%;
+    height: auto;
+  }
+  .degree-card .card-body {
+    flex-direction: row;
+  }
+  
+  .degree-card .details-div, .degree-card .fee-apply {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .degree-card .fee-apply {
+    text-align: right;
+  }
+
+  .card-body {
+    flex-direction: column;
+    
+  }
+  .studypal-image {
+    width: 100%;
+  }
+}
+
+.justify-content-end {
+  justify-content: flex-end;
+}
+
+@media (max-width: 768px) {
+  .search-course-container {
+    padding: 0 15px;
+  }
+  .degree-card .card-body {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .degree-card .card-image {
+    margin-bottom: 15px;
+  }
+
+  .degree-card .details-div,
+  .degree-card .fee-apply {
+    width: 100%;
+    text-align: left; /* Adjusted for smaller screens */
+  }
+
+  .degree-card .fee-apply {
+    align-items: flex-start;
+    margin-top: 15px;
+    text-align: right;
+  }
+
+  .degree-card .apply-button .featured {
+    width: 100%; /* Make the button full width on smaller screens */
+  }
+}
+
+.search-button {
+  background-color: #B71A18;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 0 5px 5px 0; /* Ensure the button aligns with the input */
+  cursor: pointer;
+  height: 100%; /* Make sure the button height matches the input height */
+}
+
+.search-button:hover {
+  background-color: #9c1515;
+}
+
+/* Default state for larger screens */
+.custom-accordion {
+  display: none;
+}
+
+/* Filters are always visible on larger screens */
+.filters-container {
+  display: block;
+}
+
+/* Media query for smaller screens */
+@media (max-width: 767px) {
+  .custom-accordion {
+    display: block;
+  }
+  
+  .filters-container {
+    display: none;
+  }
+}
+
+/* Style for the Accordion Header */
+.custom-accordion-header {
+  /* background-color: #b71a18; */
+  color: white;
+  font-weight: bold;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+/* Style for the Accordion Body */
+.custom-accordion-body {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border: 1px solid #dee2e6;
+  border-radius: 5px;
+}
+
+/* Additional Custom Styles */
+.custom-range-label {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.custom-range-input {
+  color: #b71a18;
+}
+
