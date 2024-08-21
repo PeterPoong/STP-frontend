@@ -1,5 +1,5 @@
-
 @import url('https://fonts.googleapis.com/css?family=Quicksand');
+
 .popup-overlay {
   position: fixed;
   top: 0;
@@ -53,7 +53,7 @@
   right: 10px;
   background: none;
   border: none;
-  color: white;
+  color: #CACACA;
   font-size: 24px;
   cursor: pointer;
   z-index: 2;
@@ -67,8 +67,8 @@
 }
 
 .close-button:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  color:white;
+  background-color: rgba(202, 202, 202, 0.325);
+  color: white;
   transition: 0.3s ease-in;
 }
 
@@ -100,10 +100,10 @@ p {
   background-color: rgba(255, 255, 255, 0.2);
   position: relative;
   margin-top: 0;
-  padding:2.5rem 1rem 1.5rem 1rem;
-  min-height:200px;
+  padding: 2.5rem 1rem 1.5rem 1rem;
+  min-height: 200px;
 
-  
+
 }
 
 .feedback-scroll {
@@ -123,13 +123,15 @@ p {
   background-color: rgba(255, 255, 255, 0.5);
   border-radius: 3px;
 }
+
 .feedback-label {
   position: absolute;
   top: 0px;
   right: 0px;
   background-color: #0E4A10;
   color: white;
-  font-size: 15px !important; /* Increased from 5px and added !important */
+  font-size: 15px !important;
+  /* Increased from 5px and added !important */
   font-weight: 300 !important;
   font-family: "Quicksand", sans-serif !important;
   z-index: 2;
@@ -143,7 +145,8 @@ p {
   right: 0px;
   background-color: #D95117;
   color: white;
-  font-size: 15px !important; /* Increased from 5px and added !important */
+  font-size: 15px !important;
+  /* Increased from 5px and added !important */
   font-weight: 300 !important;
   font-family: "Quicksand", sans-serif !important;
   z-index: 2;
@@ -157,7 +160,8 @@ p {
   right: 0px;
   background-color: #7B0F0D;
   color: white;
-  font-size: 15px !important; /* Increased from 5px and added !important */
+  font-size: 15px !important;
+  /* Increased from 5px and added !important */
   font-weight: 300 !important;
   font-family: "Quicksand", sans-serif !important;
   z-index: 2;
@@ -166,19 +170,17 @@ p {
 }
 
 
-.buttonpending
-{
+.buttonpending {
   background-color: #D95117;
   position: absolute;
-  bottom:1px;
-  right:1px;
-  border-radius:2rem;
+  bottom: 1px;
+  right: 1px;
+  border-radius: 2rem;
   font-weight: 400;
   transition: 0.5s ease-out;
 }
 
-.buttonpending:hover
-{
+.buttonpending:hover {
   border-color: transparent;
   transition: 0.5s ease-in;
   color: #D95117;
@@ -202,11 +204,11 @@ p {
     width: 95%;
     padding: 20px;
   }
-  
+
   h1 {
     font-size: 24px;
   }
-  
+
   .trophy-image {
     width: 100px;
     height: 100px;
@@ -222,4 +224,510 @@ p {
     font-size: 14px;
     padding: 3px 15px;
   }
+}
+
+.delete-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.delete-popup-content {
+  background-color: #242C32;
+  border-radius: 1rem;
+  padding: 3rem 1rem 1rem 1rem;
+  width: 90%;
+  max-width: 27.5rem;
+}
+
+.delete-popup-header {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.delete-popup-icon {
+  background-color: #dc3545;
+  color: white;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.delete-popup-icon-wrap {
+  background-color: #fff;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: bold;
+  margin-right: 1.5rem;
+  margin-top: 1rem;
+  flex-shrink: 0;
+}
+
+.delete-popup-text {
+  text-align: left;
+}
+
+.delete-popup-title {
+  color: white;
+  font-size: 1rem;
+  margin-bottom: 0.2rem;
+  font-weight: bold;
+}
+
+.delete-popup-message {
+  color: #C8C5C5;
+  font-size: 0.85rem;
+  margin: 0;
+  line-height: 1rem;
+}
+
+.delete-popup-buttons {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.4rem;
+}
+
+.delete-popup-confirm,
+.delete-popup-cancel {
+  padding: 0.2rem 2rem;
+  border: none;
+  border-radius: 2rem;
+  cursor: pointer;
+  font-weight: light;
+  font-size: 0.75rem;
+  margin-left: 1rem;
+}
+
+.delete-popup-confirm {
+  background-color: #dc3545;
+  color: white;
+}
+
+.delete-popup-cancel {
+  background-color: white;
+  color: #333;
+}
+
+.upload-widget-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Add this to your existing CSS */
+
+.upload-title-input {
+  margin-bottom: 1rem;
+}
+
+.file-title-input {
+  width: 100%;
+  padding: 0.5rem;
+  background-color: transparent;
+  border: none;
+  border-bottom: 0.09rem solid black;
+  outline: none;
+  font-size: 1rem;
+  color: black;
+}
+
+.file-title-input:focus {
+  outline: none;
+  border-color: #dc3545;
+}
+
+/* Ensure this style is included or updated */
+.upload-widget-popup {
+  background-color: white;
+  border-radius: 0.875rem;
+  padding: 1.25rem;
+  width: 25rem;
+  position: relative;
+}
+
+/* Rest of your existing CSS */
+
+.upload-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.875rem;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+
+
+.upload-area {
+  border: 0.1rem dashed #ddd;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  text-align: center;
+  cursor: pointer;
+}
+
+.upload-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #B71A18;
+  font-weight: 500;
+}
+
+.upload-label span {
+  margin-top: 0.75rem;
+}
+
+.file-size-limit {
+  font-size: 0.75rem;
+  color: #353535;
+  font-weight: 400;
+}
+
+.file-uploaded {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #f8f8f8;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.file-info {
+  display: flex;
+  align-items: flex-start;
+  flex-grow:1;
+}
+
+.file-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 10rem;
+}
+
+
+.file-details {
+  display: flex;
+  flex-direction: column;
+  margin-left: 0.875rem;
+}
+
+.view-button {
+  background-color: transparent;
+  border: none;
+  color: #dc3545;
+  cursor: pointer;
+  font-size: 0.75rem;
+  padding: 0;
+  margin:0.125rem 0 0 0;
+  text-align: left;
+}
+.view-button:hover {
+  background-color: transparent;
+}
+
+
+
+.delete-button {
+  background-color: transparent;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  transition:0.25s ease-in;
+}
+
+.delete-button:hover
+{
+  background-color: rgba(255, 255, 255, 0.9);
+  transition: 0.25s ease-out;
+}
+
+.save-button-container {
+  margin-top: 1.25rem;
+  text-align: right;
+}
+
+.save-button {
+  background-color: #dc3545;
+  color: white;
+  border-color: none;
+  border-radius: 2rem;
+  padding: 0.25rem 2.75rem;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.save-button-club {
+  border-color: #dc3545;
+}
+
+.club-widget-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.club-widget-popup {
+  background-color: #B71A18;
+  border-radius: 2rem;
+  padding: 1rem 1.5rem;
+  width: 100%;
+  max-width: 22.5rem;
+  color: white;
+  position: relative;
+}
+
+.close-button-club {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: transparent;
+  cursor: pointer;
+  transition: 0.3s ease-in;
+  border-radius: 1rem;
+}
+
+.close-button-club:hover
+{
+  transition: 0.3s ease-out;
+  background-color:rgba(255, 255, 255, 0.1) ;
+  border-radius: 1rem;
+}
+
+
+.club-title {
+  font-size: 1.75rem;
+  margin-bottom: 3.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+
+.input-group-club {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 15px;
+}
+
+.input-field-club {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.label-club {
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+  font-weight: bold;
+}
+
+.input-club, .select-club {
+  background-color: transparent;
+  border: none;
+  border-bottom: 1px solid white;
+  color: white;
+  padding: 1rem 0;
+  font-size: 1rem;
+}
+
+.input-club::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.select-club {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23FFFFFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: right .7em top 50%;
+  background-size: .65em auto;
+}
+
+.save-button-club {
+  background-color: white;
+  color: #DC3545;
+  padding: 10px 0;
+  width: 100%;
+  border-radius: 0.25rem !important;
+  margin: 0 0 1rem 0;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+
+.input-club:focus, .select-club:focus {
+  outline: none;
+  border-bottom: 2px solid white;
+}
+
+.club-widget-popup .save-button-club {
+ 
+  color: #DC3545;
+  border: none;
+  border-radius: 25px;
+  padding: 10px 0;
+  width: 100%;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 20px;
+}
+.achievement-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.achievement-popup {
+  background-color: #B71A18;
+  border-radius: 15px;
+  padding: 20px;
+  width: 100%;
+  max-width: 45rem;
+  color: white;
+  position: relative;
+}
+
+.achievement-close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.achievement-title {
+  font-size: 24px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.achievement-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.achievement-input-group {
+  display: flex;
+  gap: 1rem;
+}
+
+.achievement-input-field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.achievement-label {
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.achievement-input, .achievement-date-input, .achievement-select-input {
+  background-color: transparent;
+  border: none;
+  border-bottom: 1px solid white;
+  color: white;
+  padding: 5px 0;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+}
+
+.achievement-date-input input, .achievement-select-input input {
+  flex: 1;
+  background-color: transparent;
+  border: none;
+  color: white;
+  font-size: 16px;
+}
+
+.achievement-upload-section {
+  margin-top: 20px;
+}
+
+.achievement-upload-area {
+  background-color: white;
+  border: 2px dashed #B71A18;
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.achievement-upload-area span {
+  color: #B71A18;
+}
+
+.achievement-file-limit {
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.achievement-save-btn {
+  background-color: white;
+  color: #B71A18;
+  border: none;
+  border-radius: 25px;
+  padding: 10px 0;
+  width: 100%;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 20px;
 }

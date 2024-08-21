@@ -109,7 +109,7 @@ const NavigationBar = () => {
                 <Button className="m-0 btnfirst">Hi !</Button>
                 <Button className="m-0 btnsecond" onClick={handleLoginAsStudent}>Login as student</Button>
                 <Button className="m-0 btnsecond" onClick={handleLoginAsSchool}>Login as school</Button>
-                <Button className="m-0 btnfirst" onClick={handleLogout}>Logout</Button>
+                <Button className="m-0 btnfirst" >Welcome</Button>
               </>
             )}
           </div>

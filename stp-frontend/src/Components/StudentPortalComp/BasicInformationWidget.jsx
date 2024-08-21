@@ -79,6 +79,9 @@ const BasicInformationWidget = () => {
         body: JSON.stringify({ id: id })
       });
 
+      if (response.status === 429) {
+        throw new Error('Too many requests. Please wait a moment and try again.');
+      } 
       if (!response.ok) {
         throw new Error(`Failed to fetch student details. Status: ${response.status}`);
       }

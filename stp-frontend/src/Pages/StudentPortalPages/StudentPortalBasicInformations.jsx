@@ -8,6 +8,10 @@ import ManagePasswordWidget from "../../Components/StudentPortalComp/ManagePassw
 import WidgetAccepted from "../../Components/StudentPortalComp/WidgetAccepted";
 import WidgetPending from "../../Components/StudentPortalComp/WidgetPending";
 import WidgetRejected from "../../Components/StudentPortalComp/WidgetRejected";
+import WidgetPopUpDelete from "../../Components/StudentPortalComp/WidgetPopUpDelete";
+import WidgetFileUpload from "../../Components/StudentPortalComp/WidgetFileUpload";
+import WidgetClub from "../../Components/StudentPortalComp/WidgetClub";
+import WidgetAchievement from "../../Components/StudentPortalComp/WidgetAchievement";
 import CollapsibleSections from "../../Components/StudentPortalComp/CollapsibleSections";
 import "aos/dist/aos.css";
 import "../../css/StudentPortalStyles/StudentPortalBasicInformation.css";
@@ -113,7 +117,7 @@ const StudentPortalBasicInformations = () => {
           </div>
         </div>
       </main>
-      <WidgetRejected
+      <WidgetAchievement
         isOpen={isPopupOpen}
         onClose={closePopup}
         date="February 20th, 2024"
