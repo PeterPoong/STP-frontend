@@ -10,6 +10,9 @@ import 'react-phone-input-2/lib/style.css';
 import { Eye, EyeOff } from 'react-feather';
 import "../../css/StudentPortalStyles/StudentPortalLoginForm.css";
 
+const stuURL = import.meta.env.VITE_STUDENT_LOGIN_URL;
+
+
 const StudentPortalLogin = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -78,30 +81,37 @@ const StudentPortalLogin = () => {
     };
   
     console.log('Sending login data:', formData);
-    fetch('http://192.168.0.69:8000/api/student/login', {
+    fetch(stuURL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(formData),
     })
-      .then(response => {
-        if (response.status === 429) {
-          throw new Error("The website is currently busy, please try again later.");
-        }
-        if (!response.ok) {
-          return response.json().then(err => Promise.reject(err));
-        }
-        return response.json();
-      })
-      .then(data => {
-        console.log('Full API response:', data);
-        console.log('Raw API response:', JSON.stringify(data, null, 2));
-        if (data.true === true) {
-          console.log('Login successful:', data);
-          setLoginStatus('success');
-          
-          if (data.data && data.data.token) {
+    .then(response => {
+      if (response.status === 429) {
+        throw new Error("The website is currently busy, please try again later.");
+      }
+      if (!response.ok) {
+        return response.json().then(err => Promise.reject(err));
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log('Full API response:', data);
+      if (data.true === true && data.data && data.data.user) {
+        console.log('Login successful:', data);
+        setLoginStatus('success');
+        
+        const studentStatus = data.data.user.student_status;
+        const userEmail = data.data.user.student_email;
+        
+        if (studentStatus === 2) {
+          // Redirect to password reset page
+          navigate('/studentPortalResetPassword', { state: { userId: data.data.user.id,email:userEmail } });
+        } else {
+          // Existing login logic
+          if (data.data.token) {
             sessionStorage.setItem('token', data.data.token);
             localStorage.setItem('rememberMe', JSON.stringify(rememberMe));
   
@@ -115,7 +125,7 @@ const StudentPortalLogin = () => {
               localStorage.removeItem('rememberedPassword');
             }
   
-            const userId = data.data?.id || data.id || data.data?.user?.id;
+            const userId = data.data.user.id;
             if (userId) {
               const id = userId.toString();
               sessionStorage.setItem('id', id);
@@ -131,18 +141,19 @@ const StudentPortalLogin = () => {
             console.error('Token not found in response');
             setError("Login successful, but token not received. Please try again.");
           }
-        } else {
-          console.error('Login failed:', data);
-          setLoginStatus('failed');
-          setError(data.message || "Login failed. Please check your credentials.");
         }
-      })
-      .catch(error => {
-        console.error('Error during login:', error);
-        setError(error.message || "An error occurred. Please try again later.");
-        setLoginStatus('error');
-      });
-  };
+      } else {
+        console.error('Login failed:', data);
+        setLoginStatus('failed');
+        setError(data.message || "Login failed. Please check your credentials.");
+      }
+    })
+    .catch(error => {
+      console.error('Error during login:', error);
+      setError(error.message || "An error occurred. Please try again later.");
+      setLoginStatus('error');
+    });
+};
   return (
     <Container fluid className="h-100">
       <Row className="h-50">

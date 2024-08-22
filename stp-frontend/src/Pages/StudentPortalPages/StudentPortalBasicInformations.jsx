@@ -13,6 +13,8 @@ import WidgetFileUpload from "../../Components/StudentPortalComp/WidgetFileUploa
 import WidgetClub from "../../Components/StudentPortalComp/WidgetClub";
 import WidgetAchievement from "../../Components/StudentPortalComp/WidgetAchievement";
 import CollapsibleSections from "../../Components/StudentPortalComp/CollapsibleSections";
+import AppliedCoursesHistory from "../../Components/StudentPortalComp/AppliedCoursesHistory";
+import AppliedCoursesPending from "../../Components/StudentPortalComp/AppliedCoursesPending";
 import "aos/dist/aos.css";
 import "../../css/StudentPortalStyles/StudentPortalBasicInformation.css";
 
@@ -88,9 +90,9 @@ const StudentPortalBasicInformations = () => {
       case 'transcript':
         return <CollapsibleSections/>;
       case 'appliedCoursesPending':
-        return <AppliedCoursesWidget status="pending" />;
+        return <AppliedCoursesPending status="pending" />;
       case 'appliedCoursesHistory':
-        return <AppliedCoursesWidget status="history" />;
+        return <AppliedCoursesHistory status="history" />;
       default:
         return <BasicInformationWidget />;
     }

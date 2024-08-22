@@ -554,12 +554,15 @@ p {
   flex: 1;
   display: flex;
   flex-direction: column;
+  align-items:stretch;
+  justify-content: space-between;
 }
 
 .label-club {
   font-size: 1rem;
   margin-bottom: 0.75rem;
   font-weight: bold;
+  
 }
 
 .input-club, .select-club {
@@ -569,10 +572,13 @@ p {
   color: white;
   padding: 1rem 0;
   font-size: 1rem;
+  
 }
+
 
 .input-club::placeholder {
   color: rgba(255, 255, 255, 0.7);
+  
 }
 
 .select-club {
@@ -582,6 +588,8 @@ p {
   background-position: right .7em top 50%;
   background-size: .65em auto;
 }
+
+
 
 .save-button-club {
   background-color: white;
@@ -631,7 +639,7 @@ p {
   border-radius: 15px;
   padding: 20px;
   width: 100%;
-  max-width: 45rem;
+  max-width: 50rem;
   color: white;
   position: relative;
 }
@@ -662,12 +670,14 @@ p {
 .achievement-input-group {
   display: flex;
   gap: 1rem;
+  
 }
 
 .achievement-input-field {
   flex: 1;
   display: flex;
-  flex-direction: column;
+  flex-direction: column; align-items:stretch;
+  justify-content: space-between;
 }
 
 .achievement-label {
@@ -700,15 +710,22 @@ p {
 
 .achievement-upload-area {
   background-color: white;
+  border-radius: 0.75rem;
+  padding: 1rem;
+}
+
+.achievement-upload-area-area {
+  background-color: white;
   border: 2px dashed #B71A18;
-  border-radius: 10px;
-  padding: 20px;
+  border-radius: 0.75rem;
+  padding: 2rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   cursor: pointer;
 }
+
 
 .achievement-upload-area span {
   color: #B71A18;
@@ -730,4 +747,198 @@ p {
   font-weight: bold;
   cursor: pointer;
   margin-top: 20px;
+  margin:1rem 0 0.5rem 0;
+}
+
+.achievement-title-input {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid white;
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin-right: 10px;
+  padding: 5px;
+  width:10rem;
+  /*width: calc(100% - 0.1rem);*/
+}
+
+.achievement-title-input:focus {
+  outline: none;
+}
+
+
+.buttoneditam, .buttonsaveam
+{
+  padding: 0;
+  height: 1.5rem;
+  width: 3rem;
+  margin: 0;
+  transition: 0.3s ease-out;
+}
+
+.buttoneditam:hover, .buttonsaveam:hover
+{
+  background-color: rgba(0, 0, 0, 0.1);
+  height: 1.5rem;
+  width: 3rem;
+  margin:0;
+  transition: 0.5s ease-in;
+  border-radius: 0.725rem;
+}
+
+/*applied courses pending css*/
+.acp-container {
+    padding: 20px;
+}
+
+.acp-main-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.acp-section-title {
+    font-size: 20px;
+    font-weight: normal;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.acp-application-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+}
+
+.acp-application-body {
+    display: flex;
+    padding: 15px;
+}
+
+.acp-status-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: #FF6B00;
+    color: white;
+    padding:0rem 3.5rem 0.125rem 3.5rem;
+    border-radius: 0;
+    border-bottom-left-radius: 2rem;
+    font-size:1.25rem;
+}
+
+.acp-left-section {
+    width: 50%;
+    padding-right: 15px;
+}
+
+.acp-middle-section {
+    width: 30%;
+    padding: 0 1rem;
+    border-left: 1px solid #e0e0e0;
+    border-right: 1px solid #e0e0e0;
+}
+
+.acp-right-section {
+    width: 20%;
+    padding:0 2rem 0 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.acp-degree-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    background-color: #F2F2F2;
+}
+
+.acp-university-info {
+    display: flex;
+    align-items: flex-start;
+}
+
+.acp-university-logo {
+    width: 5rem;
+    height: 5rem;
+    object-fit: contain;
+    margin-right: 1.5rem;
+}
+
+.acp-university-name {
+    font-size: 1rem;
+    margin-bottom: 0.4rem;
+}
+
+.acp-location {
+    font-size: 0.75rem;
+    color: #514E4E;
+    display: flex;
+    align-items: center;
+}
+
+.acp-link {
+    color: #007bff;
+    cursor: pointer;
+    margin-left: 0.825rem;
+}
+
+.acp-detail-item {
+    display: flex;
+    align-items: center;
+    font-size: 0.825rem;
+    color: #514E4E;
+    margin-bottom: 0.825rem;
+    margin-left: 0.825rem;
+   
+}
+
+.acp-icon {
+    margin-right: 0.5rem;
+}
+
+.acp-action-buttons {
+    display: flex;
+    flex-direction: column;
+    margin-top: 1.5rem;
+}
+
+.acp-view-btn, .acp-withdraw-btn {
+    min-width: 1rem;
+    max-width:6rem;
+    margin-top: 0.5rem;
+}
+
+.acp-view-btn,.acp-withdraw-btn {
+    border-color: #B71A18;
+    color: #B71A18;
+    border-radius:2rem;
+    background-color: transparent;
+}
+
+.acp-view-btn:hover,.acp-withdraw-btn:hover {
+    border-color: #B71A18;
+    background-color: #B71A18;
+    color: white;
+    border-radius:2rem;
+}
+
+.acp-status-accepted {
+  background-color: #28a745;
+  color: white;
+}
+
+.acp-status-rejected {
+  background-color: #dc3545;
+  color: white;
+}
+
+.acp-status-withdrawn {
+  background-color: #6c757d;
+  color: white;
 }

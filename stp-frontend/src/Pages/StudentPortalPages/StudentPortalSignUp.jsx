@@ -9,6 +9,10 @@ import { Eye, EyeOff } from 'react-feather';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 
+
+const stusuURL = import.meta.env.VITE_STUDENT_SIGNUP_URL;
+
+
 const StudentPortalSignUp = () => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState('');
@@ -72,7 +76,7 @@ const StudentPortalSignUp = () => {
   
     console.log('Sending signup data:', formData);
   
-    fetch('http://192.168.0.69:8000/api/student/register', {
+    fetch(stusuURL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

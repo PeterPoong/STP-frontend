@@ -217,23 +217,94 @@ th {
 .add-button:hover {
   background-color: #c82333;
 }
-
 .fade-enter {
   opacity: 0;
-  transform: translateY(-10px);
+  transform: translateX(100%);
 }
+
 .fade-enter-active {
   opacity: 1;
-  transform: translateY(0);
-  transition: opacity 500ms cubic-bezier(0.25, 0.1, 0.25, 1), 
+  transform: translateX(0);
+  transition: opacity 500ms cubic-bezier(0.25, 0.1, 0.25, 1),
               transform 500ms cubic-bezier(0.25, 0.1, 0.25, 1);
 }
+
 .fade-exit {
   opacity: 1;
+  transform: translateX(0);
 }
+
 .fade-exit-active {
   opacity: 0;
-  transform: translateY(-10px);
-  transition: opacity 500ms cubic-bezier(0.25, 0.1, 0.25, 1), 
+  transform: translateX(-100%);
+  transition: opacity 500ms cubic-bezier(0.25, 0.1, 0.25, 1),
               transform 500ms cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  font-size: 1rem;
+  
+}
+
+.pagination button {
+  margin: 0 0.325rem;
+  padding: 0.325rem 0.725rem;
+  border: 1px solid #DFE3E8;
+  background-color: white;
+  color: #212529;
+  cursor: pointer;
+}
+
+.pagination button.active {
+  background-color: white;
+  color: #B71A18;
+  border:0.11rem solid #B71A18;
+  border-radius:0.2rem;
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  color: white;
+  background-color: #B71A18;
+  border-radius:0.2rem;
+  cursor: not-allowed;
+}
+/* Enter Transition (right to left slide in) */
+.row-enter {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+.row-enter-active {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 500ms cubic-bezier(0.25, 0.1, 0.25, 1),
+              transform 500ms cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+/* Exit Transition (left to right slide out) */
+.row-exit {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.row-exit-active {
+  opacity: 0;
+  transform: translateX(100%); /* Changed from -100% to 100% */
+  transition: opacity 500ms cubic-bezier(0.25, 0.1, 0.25, 1),
+              transform 500ms cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+/* Ensure the table layout doesn't break during transitions */
+.row-enter, .row-exit {
+  position: absolute;
+  width: 100%;
+}
+
+/* Prevent layout shifts during transitions */
+tbody {
+  position: relative;
 }

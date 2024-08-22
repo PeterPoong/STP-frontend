@@ -6,6 +6,8 @@ import { Paper, Button, Tooltip } from '@mui/material';
 import SelectSearch from 'react-select-search';
 import 'react-select-search/style.css';
 import "../../css/StudentPortalStyles/StudentPortalAcademicTranscript.css";
+import WidgetFileUpload from "../../Components/StudentPortalComp/WidgetFileUpload";
+import WidgetPopUpDelete from "../../Components/StudentPortalComp/WidgetPopUpDelete";
 
 const ExamSelector = ({ exams, selectedExam, setSelectedExam }) => {
   const itemsPerPage = 5;
@@ -136,7 +138,7 @@ const SubjectBasedExam = ({ examType, subjects }) => {
                 GRADE: {subject.grade}
               </span>
             </div>
-            <Trash2 className="iconat-trash"/>
+            <Trash2 className="iconat-trash" />
             <Edit2 className="iconat" />
           </div>
         ))}
@@ -164,7 +166,7 @@ const SubjectBasedExam = ({ examType, subjects }) => {
       </div>
     </div>
   );
-};const ProgramBasedExam = ({ examType, defaultSubjects }) => {
+}; const ProgramBasedExam = ({ examType, defaultSubjects }) => {
   const [subjects, setSubjects] = useState(defaultSubjects.map(subject => ({ name: subject, grade: '' })));
   const [newSubject, setNewSubject] = useState('');
   const nodeRef = useRef(null);
@@ -300,7 +302,7 @@ const AcademicTranscript = () => {
   };
 
   const programBasedExams = {
-   'A-Level': ['Mathematics', 'Physics', 'Chemistry'],
+    'A-Level': ['Mathematics', 'Physics', 'Chemistry'],
     'STPM': ['Pengajian Am', 'Mathematics (T)', 'Physics', 'Chemistry'],
     'Foundation': ['Mathematics', 'Physics', 'Chemistry', 'Biology'],
     'Diploma': ['Mathematics', 'Computer Science', 'Database Management', 'Programming'],
@@ -314,6 +316,62 @@ const AcademicTranscript = () => {
     }
     return <div>Exam type not implemented yet</div>;
   };
+
+  const [files, setFiles] = useState([
+    { id: 1, title: 'Trial 1 Result', date: 'Thu Nov 23 2023 18:00', filename: 'example_filename3.pdf' }
+  ]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isFileUploadOpen, setIsFileUploadOpen] = useState(false);
+  const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
+  const [fileToDelete, setFileToDelete] = useState(null);
+
+  // Filter files based on search term
+  const filteredFiles = files.filter(file =>
+    file.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    file.filename.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Calculate pagination
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentFiles = filteredFiles.slice(indexOfFirstItem, indexOfLastItem);
+
+  // Change page
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  // Generate page numbers
+  const pageNumbers = [];
+  for (let i = 1; i <= Math.ceil(filteredFiles.length / itemsPerPage); i++) {
+    pageNumbers.push(i);
+  }
+
+  // Function to add new file
+  // Update the addFile function
+  const addFile = (newFile) => {
+    setFiles(prevFiles => [...prevFiles, { ...newFile, id: Date.now() }]);
+    setIsFileUploadOpen(false);
+  };
+  // Function to delete file
+  const deleteFile = () => {
+    setFiles(files.filter(file => file.id !== fileToDelete.id));
+    setIsDeletePopupOpen(false);
+    setFileToDelete(null);
+  };
+
+  // Function to open delete popup
+  const openDeletePopup = (file) => {
+    setFileToDelete(file);
+    setIsDeletePopupOpen(true);
+  };
+
+  // Function to view file (placeholder)
+  const viewFile = (file) => {
+    console.log("Viewing file:", file);
+    // Implement file viewing logic here
+  };
+
 
   return (
     <div className='p-0'>
@@ -335,68 +393,103 @@ const AcademicTranscript = () => {
           </div>
         </div>
 
-        {/* Updated search bar section */}
         <div className="mb-4">
           <div className="d-flex justify-content-start align-item-centger flex-wrap ">
-            <span className="me-3 align-self-center" >Show</span>
-            <select className="show-option-table me-3">
-              <option>10</option>
-              <option>20</option>
-              <option>50</option>
-              <option>10</option>
-              <option>20</option>
-              <option>50</option>
-              <option>10</option>
-              <option>20</option>
-              <option>50</option>
-              <option>10</option>
-              <option>20</option>
-              <option>50</option>
+            <span className="me-3 align-self-center">Show</span>
+            <select
+              className="show-option-table me-3"
+              value={itemsPerPage}
+              onChange={(e) => setItemsPerPage(Number(e.target.value))}
+            >
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+              <option value={50}>50</option>
             </select>
-            <span class="me-2 align-self-center">entries</span>
+            <span className="me-2 align-self-center">entries</span>
             <input
-              class="search"
+              className="search"
               type="search"
               placeholder="Search..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <button className=" button-table w-25 px-5 ml-auto">ADD NEW</button>
+            <button className="button-table w-25 px-5 ml-auto" onClick={() => setIsFileUploadOpen(true)}>ADD NEW</button>
           </div>
         </div>
 
-        <table className="w-100 ">
+        <table className="w-100  justify-content-around">
           <thead>
-            <tr className>
+            <tr>
               <th className="border-bottom p-2">Files</th>
               <th className="border-bottom p-2 text-end">Filename</th>
               <th className="border-bottom p-2 text-end">Actions</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td className="border-bottom p-2">
-                <div className="d-flex align-items-center">
-                  <FileText className="file-icon me-2" />
-                  <div>
-                    <div className="file-title">Trial 1 Result</div>
-                    <div className="file-date">Thu Nov 23 2023 18:00</div>
-                  </div>
-                </div>
-              </td>
-              <td className="border-bottom  p-2 text-end">example_filename3.pdf</td>
-              <td className="border-bottom  p-2 d-flex justify-content-end ">
-                <Trash2 className="iconat-trash " />
-                <Edit2 className="iconat" />
-                <Eye className="iconat " />
-              </td>
-            </tr>
-
+            <TransitionGroup component={null}>
+              {currentFiles.map((file) => (
+                <CSSTransition key={file.id} timeout={500} classNames="fade">
+                  <tr>
+                    <td className="border-bottom p-2">
+                      <div className="d-flex align-items-center">
+                        <FileText className="file-icon me-2" />
+                        <div>
+                          <div className="file-title">{file.title}</div>
+                          <div className="file-date">{file.date}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="border-bottom p-2 text-end">{file.filename}</td>
+                    <td className="border-bottom p-2">
+                      <div className="d-flex justify-content-end align-items-center">
+                        <Trash2 className="iconat-trash" onClick={() => openDeletePopup(file)} />
+                        <Eye className="iconat" onClick={() => viewFile(file)} />
+                      </div>
+                    </td>
+                  </tr>
+                </CSSTransition>
+              ))}
+            </TransitionGroup>
           </tbody>
         </table>
+
+        <div className="pagination">
+          <button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1}>
+            &lt;
+          </button>
+          {pageNumbers.map(number => (
+            <button
+              key={number}
+              onClick={() => paginate(number)}
+              className={currentPage === number ? 'active' : ''}
+            >
+              {number}
+            </button>
+          ))}
+          <button onClick={() => paginate(currentPage + 1)} disabled={currentPage === pageNumbers.length}>
+            &gt;
+          </button>
+        </div>
 
         <div className="d-flex justify-content-end mt-4">
           <button className="button-table w-25 px-5 text-center">SAVE</button>
         </div>
       </div>
+
+      <WidgetFileUpload
+        isOpen={isFileUploadOpen}
+        onClose={() => setIsFileUploadOpen(false)}
+        onSave={addFile}
+      />
+
+      <WidgetPopUpDelete
+        isOpen={isDeletePopupOpen}
+        onClose={() => {
+          setIsDeletePopupOpen(false);
+          setFileToDelete(null);
+        }}
+        onConfirm={deleteFile}
+      />
     </div>
   );
 };

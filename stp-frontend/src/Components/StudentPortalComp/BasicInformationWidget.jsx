@@ -5,6 +5,8 @@ import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import { Country, State, City } from 'country-state-city';
 
+const stubiURL = import.meta.env.VITE_STUDENT_BASICINFO_URL;
+
 const BasicInformationWidget = () => {
   const [studentData, setStudentData] = useState({
     id: '',

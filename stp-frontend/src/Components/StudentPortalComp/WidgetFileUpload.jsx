@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { X, Upload, FileText, Trash2 } from 'lucide-react';
 import "../../css/StudentPortalStyles/StudentPortalWidget.css";
 
-const WidgetFileUpload = ({ isOpen, onClose }) => {
+const WidgetFileUpload = ({ isOpen, onClose, onSave }) => {
   const [file, setFile] = useState(null);
   const [fileTitle, setFileTitle] = useState('');
 
@@ -20,10 +20,20 @@ const WidgetFileUpload = ({ isOpen, onClose }) => {
   };
 
   const handleSave = () => {
-    // Implement save functionality here
-    console.log("Saving file:", file);
-    console.log("File title:", fileTitle);
-    onClose(); // Close the popup after saving
+    if (file && fileTitle) {
+      const newFile = {
+        title: fileTitle,
+        filename: file.name,
+        date: new Date().toLocaleString(),
+        file: file  // You might want to handle the actual file upload differently
+      };
+      onSave(newFile);
+      setFile(null);
+      setFileTitle('');
+      onClose();
+    } else {
+      alert("Please provide both a file title and upload a file.");
+    }
   };
 
   return (
@@ -58,7 +68,7 @@ const WidgetFileUpload = ({ isOpen, onClose }) => {
             </label>
           </div>
         ) : (
-            <div className="file-uploaded">
+          <div className="file-uploaded">
             <div className="file-info">
               <FileText size={18} />
               <div className="file-details">
