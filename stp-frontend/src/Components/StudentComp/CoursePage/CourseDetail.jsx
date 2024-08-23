@@ -4,7 +4,14 @@ import NavButtons from "../NavButtons";
 // import headerImage from "../../assets/StudentAssets/coursepage image/StudyPal10.png";
 import headerImage from "../../../assets/StudentAssets/coursepage image/StudyPal10.png";
 import "../../../css/StudentCss/course page css/ApplyPage.css";
-import { Container, Row, Col, Button, Carousel } from "react-bootstrap";
+import {
+  Container,
+  Row,
+  Col,
+  Collapse,
+  Button,
+  Carousel,
+} from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faGraduationCap,
@@ -24,6 +31,10 @@ import Footer from "../Footer";
 const baseURL = import.meta.env.VITE_BASE_URL;
 
 const CourseDetail = () => {
+  const [openDescription, setOpenDescription] = useState(false); //for Collapse Description
+  const [openRequirement, setOpenRequirement] = useState(false); //for Collapse Requirement
+  const [openAboutInstitute, setOpenAboutInstitute] = useState(false); // for Collapse About Institute
+
   const { id } = useParams();
   const location = useLocation();
   const [programs, setPrograms] = useState(location.state?.program || []);
@@ -129,6 +140,7 @@ const CourseDetail = () => {
                       width: "180px",
                       height: "50px",
                       marginBottom: "20px",
+                      marginLeft: "130px",
                     }}
                   >
                     Apply Now
@@ -161,7 +173,7 @@ const CourseDetail = () => {
                     <div>
                       <FontAwesomeIcon icon={faCalendarCheck} />
                       <span style={{ paddingLeft: "20px" }}>
-                        {program.period}
+                        {program.mode}
                       </span>
                     </div>
                   </Col>
@@ -169,15 +181,16 @@ const CourseDetail = () => {
                     <div style={{ marginBottom: "10px" }}>
                       <FontAwesomeIcon icon={faClock} />
                       <span style={{ paddingLeft: "20px" }}>
-                        {program.duration}
+                        {program.period}
                       </span>
                     </div>
                     <div>
                       <FontAwesomeIcon icon={faCalendarAlt} />
                       <span style={{ paddingLeft: "20px" }}>
-                        {Array.isArray(program.intakes)
-                          ? program.intakes.join(", ")
-                          : "N/A"}
+                        {Array.isArray(program.intake) &&
+                        program.intake.length > 0
+                          ? program.intake.join(", ")
+                          : "N/A"}{" "}
                       </span>
                     </div>
                   </Col>
@@ -216,26 +229,8 @@ const CourseDetail = () => {
                   </Col>
                   <Col md={12}>
                     <p>{program.description}</p>
-                    <p>{program.description}</p>
-                    <p>{program.description}</p>
-                    <div className="d-flex justify-content-center mt-auto">
-                      {" "}
-                      <Button
-                        className="viewmore-button"
-                        style={{
-                          color: "blue",
-                          backgroundColor: "transparent",
-                        }}
-                        data-bs-toggle="collapse"
-                        data-bs-target="#collapseExample"
-                        aria-expanded="false"
-                        aria-controls="collapseExample"
-                      >
-                        View More
-                      </Button>
-                    </div>
-                    <div className="collapse" id="collapseExample">
-                      <div className="card card-body">
+                    <Collapse in={openDescription}>
+                      <div id="collapse-description">
                         {program.description}
                         <p>
                           The purpose of this programme is to produce graduates
@@ -245,7 +240,19 @@ const CourseDetail = () => {
                           who demonstrate those aspects.
                         </p>
                       </div>
-                    </div>
+                    </Collapse>
+                  </Col>
+                  <Col className="d-flex justify-content-center">
+                    {" "}
+                    <Button
+                      onClick={() => setOpenDescription(!openDescription)}
+                      aria-controls="collapse-description"
+                      aria-expanded={openDescription}
+                      style={{ textDecoration: "none" }}
+                      variant="link"
+                    >
+                      {openDescription ? "View Less" : "View More"}
+                    </Button>
                   </Col>
                 </Row>
               </div>
@@ -258,22 +265,32 @@ const CourseDetail = () => {
                       <h5 className="card-title">Entry Requirement</h5>
                     </div>
                   </Col>
-                  <div>
-                    <ul>
-                      <li>{program.requirement}</li>
-                      <li>{program.requirement}</li>
-                      <li>{program.requirement}</li>
-                      <li>{program.requirement}</li>
-                    </ul>
-                  </div>
-                  <Col className="d-flex justify-content-center">
-                    <Button
-                      style={{ textDecoration: "none" }}
-                      variant="link"
-                      href="https://www.example.com"
-                    >
-                      View More{" "}
-                    </Button>
+                  <Col md={12}>
+                    <p>{program.requirement}</p>
+
+                    <Collapse in={openRequirement}>
+                      <div id="collapse-requirement">
+                        {program.requirement}
+                        <p>
+                          The purpose of this programme is to produce graduates
+                          with in-depth knowledge of Arabic linguistics. From
+                          the aspects of national aspiration and global
+                          importance, this programme aims to produce graduates
+                          who demonstrate those aspects.
+                        </p>
+                      </div>
+                    </Collapse>
+                    <Col className="d-flex justify-content-center">
+                      <Button
+                        onClick={() => setOpenRequirement(!openRequirement)}
+                        aria-controls="collapse-requirement"
+                        aria-expanded={openRequirement}
+                        style={{ textDecoration: "none" }}
+                        variant="link"
+                      >
+                        {openRequirement ? "View Less" : "View More"}
+                      </Button>
+                    </Col>
                   </Col>
                 </Row>
               </div>
@@ -308,6 +325,7 @@ const CourseDetail = () => {
                     </div>
                   </Col>
                   <div>
+                    {" "}
                     <p>
                       The purpose of this programme is to produce graduates with
                       in-depth knowledge of Arabic linguistics. From the aspects
@@ -315,56 +333,49 @@ const CourseDetail = () => {
                       programme aims to produce graduates who demonstrate those
                       aspects.
                     </p>
-                    <p>
-                      Having the ability to apply their knowledge and skills as
-                      well as communicate well in Arabic would further enable
-                      them to contribute at the international stage and realise
-                      the features of a Malaysian society as envisioned in
-                      Vision 2020.
-                    </p>
                   </div>
+                  <Col md={12}>
+                    <Collapse in={openAboutInstitute}>
+                      <div id="collapse-about-institute">
+                        <p>
+                          The purpose of this programme is to produce graduates
+                          with in-depth knowledge of Arabic linguistics. From
+                          the aspects of national aspiration and global
+                          importance, this programme aims to produce graduates
+                          who demonstrate those aspects.
+                        </p>
+                        <p>
+                          Having the ability to apply their knowledge and skills
+                          as well as communicate well in Arabic would further
+                          enable them to contribute at the international stage
+                          and realise the features of a Malaysian society as
+                          envisioned in Vision 2020.
+                        </p>
+                      </div>
+                    </Collapse>
+                  </Col>
                   <Col className="d-flex justify-content-center">
                     <Button
                       style={{ textDecoration: "none" }}
                       variant="link"
-                      href="https://www.example.com"
+                      onClick={() => setOpenAboutInstitute(!openAboutInstitute)}
+                      aria-controls="collapse-about-institute"
+                      aria-expanded={openAboutInstitute}
                     >
-                      View More{" "}
+                      {openAboutInstitute ? "View Less" : "View More"}
                     </Button>
                   </Col>
                 </Row>
               </div>
             </div>
-            <Carousel className="random-images-carousel">
-              <Carousel.Item>
-                <img
-                  className="d-block w-100"
-                  src={studypal1}
-                  alt="First slide"
-                />
-              </Carousel.Item>
-              <Carousel.Item>
-                <img
-                  className="d-block w-100"
-                  src={studypal2}
-                  alt="Second slide"
-                />
-              </Carousel.Item>
-              <Carousel.Item>
-                <img
-                  className="d-block w-100"
-                  src={studypal3}
-                  alt="First slide"
-                />
-              </Carousel.Item>
-              <Carousel.Item>
-                <img
-                  className="d-block w-100"
-                  src={studypal4}
-                  alt="First slide"
-                />
-              </Carousel.Item>
-            </Carousel>
+            <div className="image-gallery-course" style={{ marginTop: "40px" }}>
+              <img src={studypal1} className="gallery-image" alt="Slide 1" />
+              <img src={studypal2} className="gallery-image" alt="Slide 2" />
+              <img src={studypal3} className="gallery-image" alt="Slide 3" />
+              <img src={studypal4} className="gallery-image" alt="Slide 4" />
+              <img src={studypal1} className="gallery-image" alt="Slide 1" />
+            </div>
+
             <div className="d-flex justify-content-center">
               <Button
                 style={{

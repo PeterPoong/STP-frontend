@@ -39,7 +39,7 @@ const tuitionFeeAPIURL =
 const categoryAPIURL =
   "http://192.168.0.69:8000/api/student/categoryFilterList";
 
-const InstituteListing = ({ searchResults, countryID }) => {
+const InstituteListing = ({ searchResults, countryID, selectedInstitute }) => {
   const [locationFilters, setLocationFilters] = useState([]);
   const [categoryFilters, setCategoryFilters] = useState([]);
   const [studyLevelFilters, setStudyLevelFilters] = useState([]);
@@ -48,25 +48,96 @@ const InstituteListing = ({ searchResults, countryID }) => {
   const [modeFilters, setModeFilters] = useState([]);
   const [institutes, setInstitutes] = useState([]);
   const [categoriesData, setCategoriesData] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  // const [currentPage, setCurrentPage] = useState(1);
+  // const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [tuitionFee, setTuitionFee] = useState(0);
   const [minTuitionFee, setMinTuitionFee] = useState(0);
   const [maxTuitionFee, setMaxTuitionFee] = useState(100000);
-  const navigate = useNavigate(); // Initialize useNavigate
-  const [locations, setLocations] = useState([]); // New state_name for locations
+  const navigate = useNavigate();
+  const [locations, setLocations] = useState([]);
   const [studyLevels, setStudyLevels] = useState([]);
   const [studyModes, setStudyModes] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState(countryID);
   const [filteredPrograms, setFilteredPrograms] = useState([]);
 
-  // const StudyLevel = ["PRE UNIVERSITY", "DIPLOMA", "DEGREE", "MASTER", "PHD"];
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10); // Adjust the number of items per page as needed
+  const [totalPages, setTotalPages] = useState(1);
 
-  // const Intakes = ["MARCH", "AUGUST", "OCTOBER", "SEPTEMBER"];
+  // Pagination
+  useEffect(() => {
+    setTotalPages(Math.ceil(institutes.length / itemsPerPage));
+  }, [institutes, itemsPerPage]);
 
-  // const modes = ["Full time", "Part time", "Remote"];
+  const paginatedInstitutes = filteredPrograms.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handlePageChange = (page) => {
+    if (page > 0 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
+  /* ----------------------University Dropdown--------------------------- */
+
+  useEffect(() => {
+    if (selectedInstitute) {
+      fetchCoursesForInstitute(selectedInstitute);
+    }
+  }, [selectedInstitute]);
+
+  const fetchCoursesForInstitute = async (institute) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(
+        `http://192.168.0.69:8000/api/student/schoolList`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({}),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      const courses = result.data;
+      setInstitutes(courses);
+    } catch (error) {
+      console.error("Error fetching institutes:", error);
+      setError("Failed to fetch institutes. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (institutes.length > 0) {
+      console.log("Programs before filtering:", institutes);
+      const filtered = institutes.filter((institute) => {
+        console.log(
+          `Program: ${institute.name}, Institute Category: ${institute.category}`
+        );
+        return institute.category === selectedInstitute;
+      });
+      console.log("Filtered Programs:", filtered);
+      setFilteredPrograms(filtered);
+    } else {
+      console.log("No institutes available to filter.");
+    }
+  }, [institutes, selectedInstitute]);
+
+  /* --------------------End of University Dropdown------------------------ */
 
   useEffect(() => {
     console.log("Country ID changed:", countryID);
@@ -294,9 +365,9 @@ const InstituteListing = ({ searchResults, countryID }) => {
     setTuitionFee(value);
   };
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
+  // const handlePageChange = (page) => {
+  //   setCurrentPage(page);
+  // };
 
   const handleLocationChange = (location) => {
     const locationName = location.state_name;
@@ -320,61 +391,54 @@ const InstituteListing = ({ searchResults, countryID }) => {
       institutes
     );
   };
+  const filterPrograms = () => {
+    const filtered = institutes.filter((institute) => {
+      const matchesLocation =
+        locationFilters.length === 0 ||
+        locationFilters.includes(institute.state);
 
-  const filterPrograms = (
-    locations,
-    categories,
-    intakes,
-    modes,
-    fee,
-    allPrograms = institutes
-  ) => {
-    if (!allPrograms) {
-      console.error("allPrograms is null or undefined");
-      return;
-    }
+      const matchesCategory =
+        categoryFilters.length === 0 ||
+        categoryFilters.includes(institute.category);
 
-    if (!Array.isArray(allPrograms)) {
-      console.error("allPrograms is not an array");
-      return;
-    }
+      const matchesIntake =
+        intakeFilters.length === 0 ||
+        intakeFilters.some((intake) => institute.intake.includes(intake));
 
-    let filtered = allPrograms;
+      const matchesMode =
+        modeFilters.length === 0 || modeFilters.includes(institute.mode);
 
-    // Apply location filter only if locations array is not empty
-    if (locations.length > 0) {
-      filtered = filtered.filter((institute) =>
-        locations.includes(institute.location)
+      const matchesInstitute =
+        !selectedInstitute || institute.category === selectedInstitute;
+
+      // const matchesQualification =
+      //   !selectedQualification ||
+      //   institute.qualification === selectedQualification;
+
+      return (
+        matchesLocation &&
+        matchesCategory &&
+        matchesIntake &&
+        matchesMode &&
+        matchesInstitute
+        // matchesQualification
       );
-    }
+    });
 
-    // Apply category filter
-    if (categories.length > 0) {
-      filtered = filtered.filter((institute) =>
-        institute.includes(institute.category)
-      );
-    }
-
-    // Apply intake filter
-    if (intakes.length > 0) {
-      filtered = filtered.filter((institute) =>
-        intakes.includes(institute.intake)
-      );
-    }
-
-    // Apply study mode filter
-    if (modes.length > 0) {
-      filtered = filtered.filter((institute) => modes.includes(institute.mode));
-    }
-
-    // Apply tuition fee filter
-    if (fee > 0) {
-      filtered = filtered.filter((institute) => institute.cost <= fee);
-    }
-
-    // Set the filtered programs
     setFilteredPrograms(filtered);
   };
+
+  useEffect(() => {
+    filterPrograms();
+  }, [
+    institutes,
+    locationFilters,
+    categoryFilters,
+    intakeFilters,
+    modeFilters,
+    tuitionFee,
+    selectedInstitute,
+  ]);
 
   const handleCountryChange = async (country) => {
     setSelectedCountry(country);
@@ -443,31 +507,31 @@ const InstituteListing = ({ searchResults, countryID }) => {
   //   Array.isArray(searchResults) && searchResults.length > 0
   //     ? searchResults
   //     : institutes;
-  const displayInstitutes =
-    Array.isArray(searchResults) && searchResults.length > 0
-      ? searchResults
-      : Array.isArray(institutes)
-      ? institutes.filter((institute) => {
-          const matchesLocation =
-            locationFilters.length === 0 ||
-            locationFilters.includes(institute.location);
-          const matchesCategory =
-            categoryFilters.length === 0 ||
-            categoryFilters.includes(institute.category);
-          const matchesMode =
-            modeFilters.length === 0 || modeFilters.includes(institute.mode);
-          // const matchesFee = tuitionFee === 0 || program.cost <= tuitionFee&& matchesFee;
-          const matchesIntake =
-            intakeFilters.length === 0 ||
-            intakeFilters.includes(institute.intake); // Ensure this uses the state_name variable intakeFilters
+  // const displayInstitutes =
+  //   Array.isArray(searchResults) && searchResults.length > 0
+  //     ? searchResults
+  //     : Array.isArray(institutes)
+  //     ? institutes.filter((institute) => {
+  //         const matchesLocation =
+  //           locationFilters.length === 0 ||
+  //           locationFilters.includes(institute.location);
+  //         const matchesCategory =
+  //           categoryFilters.length === 0 ||
+  //           categoryFilters.includes(institute.category);
+  //         const matchesMode =
+  //           modeFilters.length === 0 || modeFilters.includes(institute.mode);
+  //         // const matchesFee = tuitionFee === 0 || institute.cost <= tuitionFee&& matchesFee;
+  //         const matchesIntake =
+  //           intakeFilters.length === 0 ||
+  //           intakeFilters.includes(institute.intake); // Ensure this uses the state_name variable intakeFilters
 
-          return (
-            matchesLocation && matchesCategory && matchesMode && matchesIntake
-          );
-        })
-      : [];
+  //         return (
+  //           matchesLocation && matchesCategory && matchesMode && matchesIntake
+  //         );
+  //       })
+  //     : [];
 
-  const mappedInstitutes = displayInstitutes.map((institute, index) => (
+  const mappedInstitutes = filteredPrograms.map((institute, index) => (
     <div
       key={index}
       className="card mb-4 institute-card"
@@ -490,7 +554,7 @@ const InstituteListing = ({ searchResults, countryID }) => {
                   />
                 </div>
                 <div style={{ paddingLeft: "10px" }}>
-                  <h5 className="card-text">{institute.category}</h5>
+                  {/* <h5 className="card-text">{institute.category}</h5> */}
                   <div className="d-flex align-items-center">
                     <img src={LocationIcon} alt="Location" width="40" />{" "}
                     {/* Adjusted width */}
@@ -507,7 +571,9 @@ const InstituteListing = ({ searchResults, countryID }) => {
                       click and view on map
                     </a>
                   </div>
-                  <p className="card-text mt-2">{institute.description}</p>
+                  <p className="card-text mt-2" style={{ paddingLeft: "10px" }}>
+                    {institute.description}
+                  </p>
                 </div>
               </div>
             </div>
@@ -782,7 +848,7 @@ const InstituteListing = ({ searchResults, countryID }) => {
             </Accordion.Item>
           </Accordion>
         </Col>
-        <Col xs={12} md={8} className="degreeprograms-division">
+        <Col xs={12} md={8} className="degreeinstitutes-division">
           <div>
             <img src={StudyPal} alt="Study Pal" className="studypal-image" />
           </div>
@@ -796,18 +862,7 @@ const InstituteListing = ({ searchResults, countryID }) => {
             <div>No institute available</div>
           )}
         </Col>
-        <Pagination className="d-flex justify-content-end">
-          <Pagination.Prev aria-label="Previous">
-            <span aria-hidden="true">&laquo;</span>
-          </Pagination.Prev>
-          <Pagination.Item active>{1}</Pagination.Item>
-          <Pagination.Item>{2}</Pagination.Item>
-          <Pagination.Item>{3}</Pagination.Item>
-          <Pagination.Next aria-label="Next">
-            <span aria-hidden="true">&raquo;</span>
-          </Pagination.Next>
-        </Pagination>
-        {/* <Col xs={12} className="d-flex justify-content-end">
+        <Col xs={12} className="d-flex justify-content-end">
           <Pagination className="pagination">
             <Pagination.Prev
               aria-label="Previous"
@@ -829,7 +884,7 @@ const InstituteListing = ({ searchResults, countryID }) => {
               disabled={currentPage === totalPages}
             />
           </Pagination>
-        </Col> */}
+        </Col>
       </Row>
     </Container>
   );

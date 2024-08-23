@@ -169,6 +169,7 @@ button:focus-visible {
 }
 .navbar-nav .nav-dropdown-custom .nav-link:hover{
   color: #B71A18;
+  background-color: transparent;
   text-decoration: none;
   transform: translateY(-5px);
 }

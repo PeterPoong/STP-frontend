@@ -22,6 +22,9 @@ const instituteURL = "http://192.168.0.69:8000/api/student/instituteType";
 const locationAPIURL =
   "http://192.168.0.69:8000/api/student/locationFilterList";
 
+const qualificationURL =
+  "http://192.168.0.69:8000/api/student/qualificationFilterList";
+
 const SearchCourse = () => {
   const [locationFilters, setLocationFilters] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -34,6 +37,29 @@ const SearchCourse = () => {
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [institutes, setInstitutes] = useState([]);
   const [selectedInstitute, setSelectedInstitute] = useState(null);
+  const [qualifications, setQualifications] = useState([]);
+  const [selectedQualification, setSelectedQualification] = useState(null);
+
+  // Fetch qualification from API
+  useEffect(() => {
+    const fetchQualifications = async () => {
+      try {
+        const response = await fetch(qualificationURL);
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const result = await response.json();
+        setQualifications(result.data || []);
+      } catch (error) {
+        console.error("Error fetching qualifications:", error);
+        setQualifications([]);
+      }
+    };
+
+    fetchQualifications();
+  }, []);
 
   // Fetch countries from API
   useEffect(() => {
@@ -169,6 +195,11 @@ const SearchCourse = () => {
     console.log("Selected University ID:", institute);
   };
 
+  const handleQualificationChange = (qualification) => {
+    setSelectedQualification(qualification);
+    console.log("Selected Qualification ID:", qualification?.id);
+  };
+
   return (
     <Container>
       <h3 className="pt-3">Courses in Degree</h3>
@@ -238,7 +269,7 @@ const SearchCourse = () => {
           </ButtonGroup>
         </Col>
 
-        {/* Degree Dropdown */}
+        {/* Qualification Dropdown */}
         <Col xs={12} sm={4} md={3} lg={2} className="mb-2 mb-sm-0">
           <ButtonGroup className="w-100">
             <Dropdown as={ButtonGroup} className="w-100">
@@ -246,15 +277,23 @@ const SearchCourse = () => {
                 className="degree-button w-100"
                 id="dropdown-degree"
               >
-                Education
+                {selectedQualification
+                  ? selectedQualification.qualification_name
+                  : "Qualification"}
               </Dropdown.Toggle>
               <Dropdown.Menu>
-                <Dropdown.Item className="dropdown" as={Link} to="/country">
-                  Diploma
-                </Dropdown.Item>
-                <Dropdown.Item className="dropdown" as={Link} to="/country">
-                  Degree
-                </Dropdown.Item>
+                {qualifications.length > 0 ? (
+                  qualifications.map((qualification, index) => (
+                    <Dropdown.Item
+                      key={index}
+                      onClick={() => handleQualificationChange(qualification)}
+                    >
+                      {qualification.qualification_name}
+                    </Dropdown.Item>
+                  ))
+                ) : (
+                  <Dropdown.Item>No qualifications available</Dropdown.Item>
+                )}
               </Dropdown.Menu>
             </Dropdown>
           </ButtonGroup>
@@ -314,6 +353,7 @@ const SearchCourse = () => {
         searchResults={searchResults}
         countryID={selectedCountry?.id}
         selectedInstitute={selectedInstitute?.core_metaName}
+        selectedQualification={selectedQualification?.qualification_name}
       />
     </Container>
   );

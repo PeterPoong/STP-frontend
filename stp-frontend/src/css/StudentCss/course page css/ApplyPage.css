@@ -60,7 +60,12 @@
     margin-top: 15px;
   }
 
-  
+  .image-gallery-course {
+    display:inline-block;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 50px;
+  }
   /* .carousel-item .text-center {
     display: flex;
     justify-content: center;

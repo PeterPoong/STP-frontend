@@ -149,7 +149,8 @@
 }
 
 .knowmore-button .featured {
-  background-color: #FFA500;
+  background-color: #FF6B00;
+  font-weight: bold;
   color: #ffffff;
   border: none;
   padding: 10px 20px;

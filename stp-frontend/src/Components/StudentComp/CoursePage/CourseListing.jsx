@@ -36,7 +36,12 @@ const tuitionFeeAPIURL =
   "http://192.168.0.69:8000/api/student/tuitionFeeFilterRange";
 const intakeAPIURL = "http://192.168.0.69:8000/api/student/intakeFilterList";
 
-const CourseListing = ({ searchResults, countryID, selectedInstitute }) => {
+const CourseListing = ({
+  searchResults,
+  countryID,
+  selectedInstitute,
+  selectedQualification,
+}) => {
   const [locationFilters, setLocationFilters] = useState([]);
   const [locationsData, setLocationsData] = useState([]);
   const [categoryFilters, setCategoryFilters] = useState([]);
@@ -56,6 +61,8 @@ const CourseListing = ({ searchResults, countryID, selectedInstitute }) => {
   const [filteredPrograms, setFilteredPrograms] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState({});
   const [locationOptions, setLocationOptions] = useState([]); // This will hold the locations for the selected country
+
+  /* ----------------------University Dropdown--------------------------- */
 
   useEffect(() => {
     if (selectedInstitute) {
@@ -110,6 +117,62 @@ const CourseListing = ({ searchResults, countryID, selectedInstitute }) => {
     }
   }, [programs, selectedInstitute]);
 
+  /* --------------------End of University Dropdown------------------------ */
+
+  /* ---------------Qualification Dropdown-------------------------------- */
+  useEffect(() => {
+    if (selectedQualification) {
+      fetchCoursesForQualification(selectedQualification);
+    }
+  }, [selectedQualification]);
+
+  const fetchCoursesForQualification = async (qualification) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(
+        `http://192.168.0.69:8000/api/student/courseList`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({}),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      const courses = result.data.data;
+      setPrograms(courses);
+    } catch (error) {
+      console.error("Error fetching courses:", error);
+      setError("Failed to fetch courses. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (programs.length > 0) {
+      console.log("Programs before filtering qualification: ", programs);
+      const filtered = programs.filter((program) => {
+        console.log(
+          `Program: ${program.name}, Course Qualification: ${program.qualification}`
+        );
+        return program.qualification === selectedQualification;
+      });
+      console.log("Filtered Qualification Programs:", filtered);
+      setFilteredPrograms(filtered);
+    }
+  }, [programs, selectedQualification]);
+
+  /* ----------------------- End of Qualification Dropdown --------------- */
+
   useEffect(() => {
     console.log("Country ID changed:", countryID);
     const fetchLocationFilters = async () => {
@@ -138,11 +201,11 @@ const CourseListing = ({ searchResults, countryID, selectedInstitute }) => {
         const locationData = await response.json();
         console.log("Fetched Location Filters:", locationData);
         setLocationFilters(locationData.data);
-        // Check if the fetched data is an array and has elements
+
         if (Array.isArray(locationData.data) && locationData.data.length > 0) {
-          setLocationFilters(locationData.data); // Populate location filters
+          setLocationFilters(locationData.data);
         } else {
-          setLocationFilters([]); // Set to empty array if no data
+          setLocationFilters([]);
         }
       } catch (error) {
         console.error("Error fetching locations:", error);
@@ -311,26 +374,26 @@ const CourseListing = ({ searchResults, countryID, selectedInstitute }) => {
   }, []);
 
   const handleLocationChange = (location) => {
-    const locationName = location.state_name;
+    const locationName = location.state_name.trim(); // Ensure no extra spaces
     let updatedLocations;
 
     if (locationFilters.includes(locationName)) {
       updatedLocations = locationFilters.filter(
-        (item) => item !== locationName
+        (item) => item !== locationName && item !== ""
       );
-    } else {
+    } else if (locationName !== "") {
       updatedLocations = [...locationFilters, locationName];
     }
 
     setLocationFilters(updatedLocations);
-    filterPrograms(
-      updatedLocations.length > 0 ? updatedLocations : [],
-      categoryFilters,
-      intakeFilters,
-      modeFilters,
-      tuitionFee,
-      programs
-    );
+    // filterPrograms(
+    //   updatedLocations.length > 0 ? updatedLocations : [],
+    //   categoryFilters,
+    //   intakeFilters,
+    //   modeFilters,
+    //   tuitionFee,
+    //   programs
+    // );
   };
 
   const filterPrograms = () => {
@@ -344,8 +407,7 @@ const CourseListing = ({ searchResults, countryID, selectedInstitute }) => {
         categoryFilters.includes(program.category);
 
       const matchesIntake =
-        intakeFilters.length === 0 ||
-        intakeFilters.some((intake) => program.intake.includes(intake));
+        intakeFilters.length === 0 || intakeFilters.includes(program.intake);
 
       const matchesMode =
         modeFilters.length === 0 || modeFilters.includes(program.mode);
@@ -353,17 +415,34 @@ const CourseListing = ({ searchResults, countryID, selectedInstitute }) => {
       const matchesInstitute =
         !selectedInstitute || program.institute_category === selectedInstitute;
 
+      const matchesQualification =
+        !selectedQualification ||
+        program.qualification === selectedQualification;
+
       return (
         matchesLocation &&
         matchesCategory &&
         matchesIntake &&
         matchesMode &&
-        matchesInstitute
+        matchesInstitute &&
+        matchesQualification
       );
     });
 
     setFilteredPrograms(filtered);
   };
+
+  useEffect(() => {
+    filterPrograms();
+  }, [
+    programs,
+    locationFilters,
+    categoryFilters,
+    intakeFilters,
+    modeFilters,
+    tuitionFee,
+    selectedInstitute,
+  ]);
 
   useEffect(() => {
     filterPrograms();
@@ -400,34 +479,41 @@ const CourseListing = ({ searchResults, countryID, selectedInstitute }) => {
   };
 
   const handleCategoryChange = (category) => {
-    if (categoryFilters.includes(category.category_name)) {
-      setCategoryFilters(
-        categoryFilters.filter((c) => c !== category.category_name)
+    const categoryName = category.category_name;
+    let updatedCategory;
+
+    if (categoryFilters.includes(categoryName)) {
+      updatedCategory = categoryFilters.filter(
+        (c) => c !== category.category_name
       );
     } else {
-      setCategoryFilters([...categoryFilters, category.category_name]);
+      updatedCategory = [...categoryFilters, categoryName];
     }
+    setCategoryFilters(updatedCategory);
+    filterPrograms(
+      updatedLocations.length > 0 ? updatedLocations : [],
+      updatedCategory.length > 0 ? updatedCategory : [],
+      intakeFilters,
+      modeFilters,
+      tuitionFee,
+      programs
+    );
   };
-
-  // const handleIntakeChange = (intake) => {
-  //   if (intakeFilters.includes(intake.month)) {
-  //     setIntakeFilters(intakeFilters.filter((i) => i !== intake.month));
-  //   } else {
-  //     setIntakeFilters([...intakeFilters, intake.month]);
-  //   }
-
-  //   console.log("Selected Intake Filters:", intakeFilters); // Log selected filters
-  // };
 
   const handleIntakeChange = (intake) => {
     const intakeMonth = intake.month;
+    console.log("Selected Intake Month:", intakeMonth);
+
     const updatedIntakeFilters = [...intakeFilters];
+    console.log("Current Intake Filters before update:", updatedIntakeFilters);
 
     if (updatedIntakeFilters.includes(intakeMonth)) {
       updatedIntakeFilters.splice(updatedIntakeFilters.indexOf(intakeMonth), 1);
     } else {
       updatedIntakeFilters.push(intakeMonth);
     }
+
+    console.log("Updated Intake Filters:", updatedIntakeFilters);
 
     setIntakeFilters(updatedIntakeFilters);
     filterPrograms(
@@ -460,40 +546,6 @@ const CourseListing = ({ searchResults, countryID, selectedInstitute }) => {
   const handleInstituteChange = (institute) => {
     setSelectedInstitute(institute);
   };
-
-  // Use searchResults prop if provided
-  const displayPrograms =
-    Array.isArray(searchResults) && searchResults.length > 0
-      ? searchResults
-      : Array.isArray(programs)
-      ? programs.filter((program) => {
-          const matchesLocation =
-            locationFilters.length === 0 ||
-            locationFilters.includes(program.location);
-
-          const matchesCategory =
-            categoryFilters.length === 0 ||
-            categoryFilters.includes(program.category);
-
-          const matchesIntake =
-            intakeFilters.length === 0 ||
-            intakeFilters.includes(program.intake);
-
-          const matchesMode =
-            modeFilters.length === 0 || modeFilters.includes(program.mode);
-
-          const matchesInstitute =
-            !selectedInstitute || program.institute === selectedInstitute.id;
-
-          return (
-            matchesLocation &&
-            matchesCategory &&
-            matchesIntake &&
-            matchesMode &&
-            matchesInstitute
-          );
-        })
-      : [];
 
   const mappedPrograms = filteredPrograms.map((program, index) => (
     <div
@@ -536,7 +588,7 @@ const CourseListing = ({ searchResults, countryID, selectedInstitute }) => {
                     className="map-link"
                     style={{ paddingLeft: "5px" }}
                   >
-                    click and view on map
+                    Click and view on map
                   </a>
                 </div>
               </div>
@@ -622,15 +674,21 @@ const CourseListing = ({ searchResults, countryID, selectedInstitute }) => {
               <h5 style={{ marginTop: "10px" }}>Location</h5>
               <Form.Group>
                 {locationFilters.length > 0 ? (
-                  locationFilters.map((location, index) => (
-                    <Form.Check
-                      key={index}
-                      type="checkbox"
-                      label={location.state_name}
-                      checked={locationFilters.includes(location.state_name)}
-                      onChange={() => handleLocationChange(location)}
-                    />
-                  ))
+                  locationFilters.map(
+                    (location, index) =>
+                      location.state_name &&
+                      location.state_name.trim() !== "" && (
+                        <Form.Check
+                          key={index}
+                          type="checkbox"
+                          label={location.state_name}
+                          checked={locationFilters.includes(
+                            location.state_name
+                          )}
+                          onChange={() => handleLocationChange(location)}
+                        />
+                      )
+                  )
                 ) : (
                   <p>No location available</p>
                 )}
@@ -744,13 +802,10 @@ const CourseListing = ({ searchResults, countryID, selectedInstitute }) => {
               </Accordion.Header>
               <Accordion.Body className="custom-accordion-body">
                 <Form.Group>
-                  {/* Check if intakeData and intakeData.data are defined */}
-                  {intakeData &&
-                  intakeData.data &&
-                  intakeData.data.length > 0 ? (
-                    intakeData.data.map((intake) => (
+                  {intakeData.length > 0 ? (
+                    intakeData.map((intake, index) => (
                       <Form.Check
-                        key={intake.month} // Use a unique key if available
+                        key={index} // Use a unique key if available
                         type="checkbox"
                         label={intake.month}
                         checked={intakeFilters.includes(intake.month)}

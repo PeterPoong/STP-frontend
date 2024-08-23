@@ -23,6 +23,9 @@ const instituteURL = "http://192.168.0.69:8000/api/student/instituteType";
 const locationAPIURL =
   "http://192.168.0.69:8000/api/student/locationFilterList";
 
+const qualificationURL =
+  "http://192.168.0.69:8000/api/student/qualificationFilterList";
+
 const SearchInstitute = () => {
   const [locationFilters, setLocationFilters] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -35,11 +38,29 @@ const SearchInstitute = () => {
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [institutes, setInstitutes] = useState([]);
   const [selectedInstitute, setSelectedInstitute] = useState(null);
+  // const [qualifications, setQualifications] = useState([]);
+  // const [selectedQualification, setSelectedQualification] = useState(null);
 
-  const handleCountryChange = (country) => {
-    setSelectedCountry(country);
-    console.log("Selected Country ID:", country?.id); // Debugging line
-  };
+  // // Fetch qualification from API
+  // useEffect(() => {
+  //   const fetchQualifications = async () => {
+  //     try {
+  //       const response = await fetch(qualificationURL);
+
+  //       if (!response.ok) {
+  //         throw new Error(`HTTP error! Status: ${response.status}`);
+  //       }
+
+  //       const result = await response.json();
+  //       setQualifications(result.data || []);
+  //     } catch (error) {
+  //       console.error("Error fetching qualifications:", error);
+  //       setQualifications([]);
+  //     }
+  //   };
+
+  //   fetchQualifications();
+  // }, []);
 
   // Fetch countries from API
   useEffect(() => {
@@ -192,26 +213,27 @@ const SearchInstitute = () => {
     setCurrentPage(1); // Reset to first page when search query changes
   };
 
-  // const handleCountryChange = async (countryID) => {
-  //   console.log("Country selected:", countryID);
-  //   setSelectedCountry(countryID);
-  //   if (countryID) {
-  //     setLocationFilters(countryID.locations || []);
-  //   } else {
-  //     setLocationFilters([]);
-  //   }
-  // };
+  const handleCountryChange = (country) => {
+    setSelectedCountry(country);
+    console.log("Selected Country ID:", country?.id); // Debugging line
+  };
 
   const handleInstituteChange = (institute) => {
     setSelectedInstitute(institute);
+    console.log("Selected University ID:", institute);
   };
+
+  // const handleQualificationChange = (qualification) => {
+  //   setSelectedQualification(qualification);
+  //   console.log("Selected Qualification ID:", qualification?.id);
+  // };
 
   return (
     <Container>
       <h3 style={{ textAlign: "left", paddingTop: "15px" }}>
         Institute in Malaysia
       </h3>
-
+      {/* Country Dropdown */}
       <Row className="align-items-center mb-3">
         <Col xs={12} sm={4} md={3} lg={2} className="mb-2 mb-sm-0">
           <ButtonGroup>
@@ -246,6 +268,7 @@ const SearchInstitute = () => {
           </ButtonGroup>
         </Col>
 
+        {/* University Dropdown */}
         <Col xs={12} sm={4} md={3} lg={2} className="mb-2 mb-sm-0">
           <ButtonGroup>
             <Dropdown as={ButtonGroup}>
@@ -276,6 +299,7 @@ const SearchInstitute = () => {
           </ButtonGroup>
         </Col>
 
+        {/* Qualification Dropdown
         <Col xs={12} sm={4} md={3} lg={2} className="mb-2 mb-sm-0">
           <ButtonGroup className="w-100">
             <Dropdown as={ButtonGroup} className="w-100">
@@ -283,19 +307,27 @@ const SearchInstitute = () => {
                 className="degree-button w-100"
                 id="dropdown-degree"
               >
-                Education
+                {selectedQualification
+                  ? selectedQualification.qualification_name
+                  : "Qualification"}
               </Dropdown.Toggle>
               <Dropdown.Menu>
-                <Dropdown.Item className="dropdown" as={Link} to="/country">
-                  Diploma
-                </Dropdown.Item>
-                <Dropdown.Item className="dropdown" as={Link} to="/country">
-                  Degree
-                </Dropdown.Item>
+                {qualifications.length > 0 ? (
+                  qualifications.map((qualification, index) => (
+                    <Dropdown.Item
+                      key={index}
+                      onClick={() => handleQualificationChange(qualification)}
+                    >
+                      {qualification.qualification_name}
+                    </Dropdown.Item>
+                  ))
+                ) : (
+                  <Dropdown.Item>No qualifications available</Dropdown.Item>
+                )}
               </Dropdown.Menu>
             </Dropdown>
           </ButtonGroup>
-        </Col>
+        </Col> */}
 
         <Col className="d-flex justify-content-end">
           <Pagination className="ml-auto mb-2 mb-md-0">
@@ -353,6 +385,8 @@ const SearchInstitute = () => {
       <InstituteListing
         searchResults={searchResults}
         countryID={selectedCountry?.id} // Make sure this is not undefined or null
+        selectedInstitute={selectedInstitute?.core_metaName}
+        // selectedQualification={selectedQualification?.qualification_name}
       />
     </Container>
   );
