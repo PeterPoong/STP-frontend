@@ -15,7 +15,17 @@ const Achievements = () => {
     const [itemToDelete, setItemToDelete] = useState(null);
     const [data, setData] = useState([
         { id: 1, events: 'ASC 2021', university: 'UCSI University', titleObtained: 'Champion', dateOfAchievement: '01/02/2021', uploads: 'certificate.pdf' },
-        // ... other initial data ...
+        { id: 2, events: 'National Robotics Championship 2020', university: 'University of Malaya', titleObtained: 'First Runner-Up', dateOfAchievement: '12/08/2020', uploads: 'certificate2.pdf' },
+        { id: 3, events: 'Engineering Innovation Award 2022', university: 'Universiti Teknologi Malaysia', titleObtained: 'Winner', dateOfAchievement: '18/03/2022', uploads: 'certificate3.pdf' },
+        { id: 5, events: 'ASEAN Data Science Challenge 2020', university: 'Sunway University', titleObtained: 'Champion', dateOfAchievement: '14/09/2020', uploads: 'certificate5.pdf' },
+        { id: 6, events: 'International Software Design Competition 2021', university: 'Monash University Malaysia', titleObtained: 'Second Runner-Up', dateOfAchievement: '03/11/2021', uploads: 'certificate6.pdf' },
+        { id: 7, events: 'Mathematics Olympiad 2019', university: 'HELP University', titleObtained: 'Bronze Medalist', dateOfAchievement: '20/06/2019', uploads: 'certificate7.pdf' },
+        { id: 8, events: 'Cybersecurity Challenge 2022', university: 'Universiti Sains Malaysia', titleObtained: 'Winner', dateOfAchievement: '10/10/2022', uploads: 'certificate8.pdf' },
+        { id: 9, events: 'Green Energy Innovation Contest 2021', university: 'INTI International University', titleObtained: 'Champion', dateOfAchievement: '05/04/2021', uploads: 'certificate9.pdf' },
+        { id: 10, events: 'Young Entrepreneurs Forum 2023', university: 'UCSI University', titleObtained: 'Best Pitch Award', dateOfAchievement: '12/07/2023', uploads: 'certificate10.pdf' },
+        { id: 11, events: 'International Robotics Championship 2022', university: 'Universiti Kebangsaan Malaysia', titleObtained: 'First Runner-Up', dateOfAchievement: '30/08/2022', uploads: 'certificate11.pdf' },
+        { id: 12, events: 'National Science Fair 2020', university: 'Universiti Putra Malaysia', titleObtained: 'Champion', dateOfAchievement: '23/09/2020', uploads: 'certificate12.pdf' },
+        { id: 13, events: 'ASEAN Robotics Challenge 2023', university: 'Universiti Teknologi PETRONAS', titleObtained: 'Second Runner-Up', dateOfAchievement: '15/02/2023', uploads: 'certificate13.pdf' },
     ]);
 
     // Filter data based on search term

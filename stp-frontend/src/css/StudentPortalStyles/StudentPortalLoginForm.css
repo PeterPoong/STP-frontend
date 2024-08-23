@@ -30,7 +30,7 @@
 
   .mpbtndiv
   {
-    width: 50%;
+    width: 100%;
   }
 
   @media (max-width: 575.98px) { 
@@ -42,7 +42,7 @@
   @media (min-width: 576px) and (max-width: 767.98px) {
     .mpbtndiv
     {
-      width: 70% !important;
+      width: 100% !important;
     }
     .phone-input-container,
     .react-tel-input {
@@ -53,21 +53,21 @@
   @media (min-width: 768px) and (max-width: 991.98px) {
     .mpbtndiv
     {
-      width:60%;
+      width:95%;
     } }
   
   
   @media (min-width: 992px) and (max-width: 1199.98px) { 
     .mpbtndiv
     {
-      width: 55%;
+      width: 85%;
     } }
   
  
   @media (min-width: 1200px) { 
     .mpbtndiv
     {
-      width: 50%;
+      width: 80%;
     } }
   
   @media (max-width: 767px) {

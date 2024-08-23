@@ -5,6 +5,7 @@ import AcademicTranscript from "../../Components/StudentPortalComp/AcademicTrans
 import CoCurriculum from "../../Components/StudentPortalComp/CoCurriculum";
 import Achievements from '../../Components/StudentPortalComp/Achievements';
 import OtherCertDoc from '../../Components/StudentPortalComp/OtherCertDoc'
+import "../../css/StudentPortalStyles/StudentPortalBasicInformation.css";
 
 const CollapsibleSections = () => {
   const [openSections, setOpenSections] = useState({

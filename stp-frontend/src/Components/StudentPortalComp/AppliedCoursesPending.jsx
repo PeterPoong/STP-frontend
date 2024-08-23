@@ -125,8 +125,8 @@ const AppliedCoursesPending = () => {
                                 <div className="acp-right-section">
                                     <span className="acp-status-badge">Pending</span>
                                     <div className="acp-action-buttons">
-                                    <Button className="acp-view-btn" onClick={() => setIsPendingOpen(true)}>View</Button>
-                                        <Button className="acp-withdraw-btn">Withdraw</Button>
+                                    <Button className="acp-view-btn danger btn-danger" onClick={() => setIsPendingOpen(true)}>View</Button>
+                                        <Button className="acp-withdraw-btn btn-danger">Withdraw</Button>
                                     </div>
                                 </div>
                             </Card.Body>

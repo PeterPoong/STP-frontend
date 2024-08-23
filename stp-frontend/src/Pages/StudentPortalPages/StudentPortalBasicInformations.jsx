@@ -5,13 +5,6 @@ import MyProfileWidget from "../../Components/StudentPortalComp/MyProfileWidget"
 import SpcFooter from "../../Components/StudentPortalComp/SpcFooter";
 import BasicInformationWidget from "../../Components/StudentPortalComp/BasicInformationWidget";
 import ManagePasswordWidget from "../../Components/StudentPortalComp/ManagePasswordWidget";
-import WidgetAccepted from "../../Components/StudentPortalComp/WidgetAccepted";
-import WidgetPending from "../../Components/StudentPortalComp/WidgetPending";
-import WidgetRejected from "../../Components/StudentPortalComp/WidgetRejected";
-import WidgetPopUpDelete from "../../Components/StudentPortalComp/WidgetPopUpDelete";
-import WidgetFileUpload from "../../Components/StudentPortalComp/WidgetFileUpload";
-import WidgetClub from "../../Components/StudentPortalComp/WidgetClub";
-import WidgetAchievement from "../../Components/StudentPortalComp/WidgetAchievement";
 import CollapsibleSections from "../../Components/StudentPortalComp/CollapsibleSections";
 import AppliedCoursesHistory from "../../Components/StudentPortalComp/AppliedCoursesHistory";
 import AppliedCoursesPending from "../../Components/StudentPortalComp/AppliedCoursesPending";
@@ -20,7 +13,7 @@ import "../../css/StudentPortalStyles/StudentPortalBasicInformation.css";
 
 const StudentPortalBasicInformations = () => {
   const [selectedContent, setSelectedContent] = useState('basicInfo');
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
+
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
@@ -41,7 +34,7 @@ const StudentPortalBasicInformations = () => {
       console.log('Verifying token:', token);
       const response = await fetch('http://192.168.0.69:8000/api/validateToken', {
         method: 'GET',
-        headers: { 
+        headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
@@ -53,7 +46,7 @@ const StudentPortalBasicInformations = () => {
 
       const data = await response.json();
       console.log('Token validation response:', data);
-      
+
       if (data && data.success === true) {
         console.log('Token is valid');
         setIsAuthenticated(true);
@@ -71,24 +64,18 @@ const StudentPortalBasicInformations = () => {
     }
   };
 
-  const openPopup = () => setIsPopupOpen(true);
-  const closePopup = () => setIsPopupOpen(false);
-
   const renderContent = () => {
     switch (selectedContent) {
       case 'basicInfo':
         return (
           <div>
             <BasicInformationWidget />
-            <button onClick={openPopup} className="btn btn-primary mt-3">
-              Open Accepted Widget
-            </button>
           </div>
         );
       case 'managePassword':
         return <ManagePasswordWidget />;
       case 'transcript':
-        return <CollapsibleSections/>;
+        return <CollapsibleSections />;
       case 'appliedCoursesPending':
         return <AppliedCoursesPending status="pending" />;
       case 'appliedCoursesHistory':
@@ -108,7 +95,7 @@ const StudentPortalBasicInformations = () => {
 
   return (
     <div className="app-container">
-      <NavButtonsSP/>
+      <NavButtonsSP />
       <main className="main-content">
         <div className="content-wrapper">
           <div className="profile-widget-container">
@@ -119,11 +106,6 @@ const StudentPortalBasicInformations = () => {
           </div>
         </div>
       </main>
-      <WidgetAchievement
-        isOpen={isPopupOpen}
-        onClose={closePopup}
-        date="February 20th, 2024"
-      />
       <SpcFooter />
     </div>
   );

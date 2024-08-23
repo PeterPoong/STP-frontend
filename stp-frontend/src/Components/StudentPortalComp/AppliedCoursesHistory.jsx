@@ -145,7 +145,7 @@ const AppliedCoursesHistory = () => {
                                 <div className="acp-right-section">
                                     <span className={`acp-status-badge acp-status-${app.status.toLowerCase()}`}>{app.status}</span>
                                     <div className="acp-action-buttons">
-                                        <Button className="acp-view-btn" onClick={() => handleView(app.status)}>Review</Button>
+                                        <Button className="acp-view-btn btn-danger" onClick={() => handleView(app.status)}>Review</Button>
                                     </div>
                                 </div>
                             </Card.Body>

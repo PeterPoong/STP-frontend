@@ -8,6 +8,10 @@ import studentPortalLoginLogo from "../../assets/StudentPortalAssets/studentPort
 import 'react-phone-input-2/lib/style.css';
 import { Eye, EyeOff } from 'react-feather';
 
+const stuResetPasswordURL = import.meta.env.VITE_STUDENT_RESETPASSWORD_URL;
+const stuValidatePasswordURL = import.meta.env.VITE_STUDENT_VALIDATEOTP_URL;
+const stuSendPasswordURL = import.meta.env.VITE_STUDENT_SENDOTP_URL;
+
 const StudentPortalForgetPassword = () => {
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
@@ -27,8 +31,8 @@ const StudentPortalForgetPassword = () => {
     console.log("Initiating password reset request for email:", email);
     
     try {
-      console.log("Sending request to:", 'http://192.168.0.69:8000/api/sendOtp');
-      const response = await fetch('http://192.168.0.69:8000/api/sendOtp', {
+      console.log("Sending request to:", stuSendPasswordURL);
+      const response = await fetch(stuSendPasswordURL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -68,7 +72,7 @@ const StudentPortalForgetPassword = () => {
     console.log("Verifying OTP for email:", email);
   
     try {
-      const response = await fetch('http://192.168.0.69:8000/api/validateOtp', {
+      const response = await fetch(stuValidatePasswordURL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -112,8 +116,8 @@ const StudentPortalForgetPassword = () => {
     console.log("Initiating password reset for email:", email);
   
     try {
-      console.log("Sending request to:", 'http://192.168.0.69:8000/api/resetPassword');
-      const response = await fetch('http://192.168.0.69:8000/api/resetPassword', {
+      console.log("Sending request to:", stuResetPasswordURL);
+      const response = await fetch(stuResetPasswordURL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

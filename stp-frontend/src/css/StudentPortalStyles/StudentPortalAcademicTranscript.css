@@ -308,3 +308,17 @@ th {
 tbody {
   position: relative;
 }
+
+
+.editingplaceholder 
+{
+  background-color: transparent;
+  color: black;
+  margin:0 1rem 0 0;
+  border-color: transparent;
+  border-bottom-color:black;
+  font-weight: 500;
+  padding: 0;
+  max-width:12.5rem;
+  outline: none;
+}

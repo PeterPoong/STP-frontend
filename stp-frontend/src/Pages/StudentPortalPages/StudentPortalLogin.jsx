@@ -11,7 +11,7 @@ import { Eye, EyeOff } from 'react-feather';
 import "../../css/StudentPortalStyles/StudentPortalLoginForm.css";
 
 const stuURL = import.meta.env.VITE_STUDENT_LOGIN_URL;
-
+const stuCountryCodeURL = import.meta.env.VITE_STUDENT_COUNTRYCODE_URL;
 
 const StudentPortalLogin = () => {
   const [password, setPassword] = useState("");
@@ -40,7 +40,7 @@ const StudentPortalLogin = () => {
 
   window.addEventListener('beforeunload', handleTabClosing);
 
-    fetch('http://192.168.0.69:8000/api/countryCode')
+    fetch(stuCountryCodeURL)
       .then(response => response.json())
       .then(data => {
         if (data.success) {

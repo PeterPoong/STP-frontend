@@ -1,6 +1,6 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
-import { Edit2, Trash2, Eye, Plus, Search, GripVertical, ChevronDown, Info, FileText } from 'lucide-react';
+import { Edit2, Trash2, Eye, Plus, Search, GripVertical, ChevronDown, Info, FileText, X, Check } from 'lucide-react';
 import Carousel from 'react-material-ui-carousel';
 import { Paper, Button, Tooltip } from '@mui/material';
 import SelectSearch from 'react-select-search';
@@ -65,116 +65,34 @@ const ExamSelector = ({ exams, selectedExam, setSelectedExam }) => {
   );
 };
 
-
-
-const SubjectBasedExam = ({ examType, subjects }) => {
-  const [selectedSubject, setSelectedSubject] = useState('');
-  const [isOpen, setIsOpen] = useState(false);
-
-  const subjectOptions = subjects.map(subject => ({
-    name: subject.name,
-    value: subject.name
-  }));
-
-  const handleSubjectSelect = (selectedValue) => {
-    setSelectedSubject(selectedValue);
-    setIsOpen(false);
-  };
-
-  const handleAddSubject = () => {
-    if (selectedSubject) {
-      console.log('Adding subject:', selectedSubject);
-      // Add your logic here to handle adding the subject
-      setSelectedSubject('');
-    }
-  };
-
-  const toggleDropdown = () => {
-    setIsOpen(!isOpen);
-  };
-  const renderValue = (valueProps, snapshot, className) => {
-    return (
-      <div className="select-search-container" onClick={toggleDropdown}>
-        <div className="select-search-header">
-          <input
-            {...valueProps}
-            className="select-search-input"
-            placeholder="Enter subject name"
-            readOnly
-          />
-          <ChevronDown
-            size={20}
-            className={`chevron-icon ${isOpen ? 'open' : ''}`}
-          />
-        </div>
-        <button className="add-subject-button" onClick={handleAddSubject}>
-          <Plus size={16} />
-        </button>
-      </div>
-    );
-  };
-  const renderOption = (optionProps, optionData, optionSnapshot, className) => {
-    return (
-      <button {...optionProps} className={`select-search-option ${className}`}>
-        {optionData.name}
-      </button>
-    );
-  };
-
-  return (
-    <div>
-
-      <div className="space-y-2 mb-4">
-        {subjects.map((subject, index) => (
-          <div key={index} className="d-flex align-items-center justify-content-between bg-white p-2 mb-2 rounded border">
-            <div className="d-flex align-items-center flex-grow-1">
-              <GripVertical className="me-3" size={20} />
-              <span className="fw-medium h6 mb-0 me-3">{subject.name}</span>
-              <span className={`badge rounded-pill ${subject.grade.includes('A') ? 'bg-success' :
-                subject.grade.includes('B') ? 'bg-danger' :
-                  subject.grade.includes('C') ? 'bg-warning text-dark' :
-                    'bg-secondary'
-                }`}>
-                GRADE: {subject.grade}
-              </span>
-            </div>
-            <Trash2 className="iconat-trash" />
-            <Edit2 className="iconat" />
-          </div>
-        ))}
-      </div>
-      <div className="mb-4">
-        <label className="fw-bold small formlabel">Insert a subject/course:</label>
-        <SelectSearch
-          options={subjectOptions}
-          value={selectedSubject}
-          onChange={handleSubjectSelect}
-          search
-          renderValue={renderValue}
-          renderOption={renderOption}
-        />
-      </div>
-
-      <div className="mb-4">
-        <label className="fw-bold small formlabel">Search for a subject:</label>
-        <div className="mt-1 flex rounded-md shadow-sm">
-          <input type="text" className="flex-1 block w-full rounded-none rounded-l-md border-gray-300" placeholder="Search subjects" />
-          <button className="inline-flex items-center px-3 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-500">
-            <Search size={20} />
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}; const ProgramBasedExam = ({ examType, defaultSubjects }) => {
-  const [subjects, setSubjects] = useState(defaultSubjects.map(subject => ({ name: subject, grade: '' })));
-  const [newSubject, setNewSubject] = useState('');
-  const nodeRef = useRef(null);
+const SubjectBasedExam = ({ examType, subjects, onSubjectsChange }) => {
+  const [editingIndex, setEditingIndex] = useState(null);
 
   const handleGradeChange = (index, grade) => {
-    const updatedSubjects = [...subjects];
-    updatedSubjects[index].grade = grade;
-    setSubjects(updatedSubjects);
+    const updatedSubjects = subjects.map((subject, i) =>
+      i === index ? { ...subject, grade } : subject
+    );
+    onSubjectsChange(examType, updatedSubjects);
+  };
+
+  const handleNameChange = (index, name) => {
+    const updatedSubjects = subjects.map((subject, i) =>
+      i === index ? { ...subject, name } : subject
+    );
+    onSubjectsChange(examType, updatedSubjects);
+  };
+
+  const handleEdit = (index) => {
+    setEditingIndex(index);
+  };
+
+  const handleSave = () => {
+    setEditingIndex(null);
+  };
+
+  const handleDelete = (index) => {
+    const updatedSubjects = subjects.filter((_, i) => i !== index);
+    onSubjectsChange(examType, updatedSubjects);
   };
 
   const getGradeColor = (grade) => {
@@ -184,12 +102,96 @@ const SubjectBasedExam = ({ examType, subjects }) => {
     return 'bg-secondary';
   };
 
+  return (
+    <div className="space-y-2 mb-4">
+      {subjects.map((subject, index) => (
+        <div key={index} className="d-flex align-items-center justify-content-between bg-white p-2 mb-2 rounded border">
+          <div className="d-flex align-items-center flex-grow-1">
+            <GripVertical className="me-3" size={20} />
+            {editingIndex === index ? (
+              <input
+                type="text"
+                value={subject.name}
+                onChange={(e) => handleNameChange(index, e.target.value)}
+                className="editingplaceholder"
+                placeholder="Please enter you subjectname"
+              />
+            ) : (
+              <span className="fw-medium h6 mb-0 me-3">{subject.name}</span>
+            )}
+            {editingIndex === index ? (
+              <input
+                type="text"
+                value={subject.grade}
+                onChange={(e) => handleGradeChange(index, e.target.value)}
+                className="editingplaceholder"
+                placeholder="Please enter you grade"
+              />
+            ) : (
+              <span className={`badge rounded-pill ${getGradeColor(subject.grade)}`}>
+                GRADE: {subject.grade}
+              </span>
+            )}
+          </div>
+          <div>
+            {editingIndex === index ? (
+              <Check onClick={handleSave} className="text-success cursor-pointer me-2" />
+            ) : (
+              <Edit2 className="iconat me-2" onClick={() => handleEdit(index)} />
+            )}
+            <Trash2 className="iconat-trash" onClick={() => handleDelete(index)} />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const ProgramBasedExam = ({ examType, subjects, onSubjectsChange }) => {
+  const [newSubject, setNewSubject] = useState('');
+  const [editingIndex, setEditingIndex] = useState(null);
+
+  const handleGradeChange = (index, grade) => {
+    const updatedSubjects = subjects.map((subject, i) =>
+      i === index ? { ...subject, grade } : subject
+    );
+    onSubjectsChange(examType, updatedSubjects);
+  };
+
+  const handleNameChange = (index, name) => {
+    const updatedSubjects = subjects.map((subject, i) =>
+      i === index ? { ...subject, name } : subject
+    );
+    onSubjectsChange(examType, updatedSubjects);
+  };
+
   const handleAddSubject = (e) => {
     e.preventDefault();
     if (newSubject.trim() !== '') {
-      setSubjects(prevSubjects => [...prevSubjects, { name: newSubject, grade: '' }]);
+      const updatedSubjects = [...subjects, { name: newSubject, grade: '' }];
+      onSubjectsChange(examType, updatedSubjects);
       setNewSubject('');
     }
+  };
+
+  const handleEdit = (index) => {
+    setEditingIndex(index);
+  };
+
+  const handleSave = () => {
+    setEditingIndex(null);
+  };
+
+  const handleDelete = (index) => {
+    const updatedSubjects = subjects.filter((_, i) => i !== index);
+    onSubjectsChange(examType, updatedSubjects);
+  };
+
+  const getGradeColor = (grade) => {
+    if (grade.includes('A')) return 'bg-success';
+    if (grade.includes('B')) return 'bg-danger';
+    if (grade.includes('C')) return 'bg-warning text-dark';
+    return 'bg-secondary';
   };
 
   return (
@@ -208,26 +210,41 @@ const SubjectBasedExam = ({ examType, subjects }) => {
       </div>
       <TransitionGroup className="space-y-2 mb-4">
         {subjects.map((subject, index) => (
-          <CSSTransition key={index} classNames="fade" timeout={300} nodeRef={nodeRef}>
-            <div ref={nodeRef} className="d-flex align-items-center justify-content-between bg-white p-2 mb-2 rounded border">
+          <CSSTransition key={index} classNames="fade" timeout={300}>
+            <div className="d-flex align-items-center justify-content-between bg-white p-2 mb-2 rounded border">
               <div className="d-flex align-items-center flex-grow-1">
                 <GripVertical className="me-3" size={20} />
-                <span className="fw-medium h6 mb-0 me-3">{subject.name}</span>
-                <input
-                  type="text"
-                  placeholder="Enter grade"
-                  className="border rounded px-2 py-1 w-20"
-                  value={subject.grade}
-                  onChange={(e) => handleGradeChange(index, e.target.value)}
-                />
-                {subject.grade && (
-                  <span className={`badge rounded-pill ms-2 ${getGradeColor(subject.grade)}`}>
-                    GRADE: {subject.grade}
-                  </span>
+                {editingIndex === index ? (
+                  <input
+                    type="text"
+                    value={subject.name}
+                    onChange={(e) => handleNameChange(index, e.target.value)}
+                    className="editingplaceholder"
+                    placeholder="Please enter you subjectname" F
+                  />
+                ) : (
+                  <span className="fw-medium h6 mb-0 me-3">{subject.name}</span>
                 )}
+                {editingIndex === index ? (
+                  <input
+                    type="text"
+                    className="editingplaceholder"
+                    placeholder="Please enter you grade"
+                    value={subject.grade}
+                    onChange={(e) => handleGradeChange(index, e.target.value)}
+                  />) : (
+                  subject.grade && (
+                    <span className={`badge rounded-pill ms-2 ${getGradeColor(subject.grade)}`}>
+                      GRADE: {subject.grade}
+                    </span>
+                  ))}
               </div>
-              <Trash2 className="iconat-trash" />
-              <Edit2 className="iconat" />
+              {editingIndex === index ? (
+                <Check onClick={handleSave} className="text-success cursor-pointer me-2" />
+              ) : (
+                <Edit2 className="iconat" onClick={() => handleEdit(index)} />
+              )}
+              <Trash2 className="iconat-trash" onClick={() => handleDelete(index)} />
             </div>
           </CSSTransition>
         ))}
@@ -251,12 +268,11 @@ const SubjectBasedExam = ({ examType, subjects }) => {
   );
 };
 
-
 const AcademicTranscript = () => {
   const [selectedExam, setSelectedExam] = useState('SPM');
   const exams = ['SPM', 'O-Level', 'GCSE', 'IGCSE', 'SSCE', 'A-Level', 'STPM', 'Foundation', 'Diploma', 'UEC', 'SAT / ACT'];
 
-  const subjectBasedExams = {
+  const [examData, setExamData] = useState({
     'SPM': [
       { name: 'Bahasa Melayu', grade: 'A+' },
       { name: 'Bahasa Inggeris', grade: 'A+' },
@@ -299,20 +315,54 @@ const AcademicTranscript = () => {
       { name: 'SAT Evidence-Based Reading and Writing', grade: '750' },
       { name: 'ACT Composite Score', grade: '34' },
     ],
-  };
+    'A-Level': [
+      { name: 'Mathematics', grade: 'A' },
+      { name: 'Physics', grade: 'z' },
+      { name: 'Chemistry', grade: 'C' },
+    ],
+    'STPM': [
+      { name: 'Pengajian Am', grade: 'B' },
+      { name: 'Mathematics (T)', grade: 'B' },
+      { name: 'Physics', grade: 'B' },
+      { name: 'Chemistry', grade: 'B' },
+    ],
+    'Foundation': [
+      { name: 'Mathematics', grade: 'A' },
+      { name: 'Physics', grade: 'A' },
+      { name: 'Chemistry', grade: 'A' },
+      { name: 'Biology', grade: 'A' },
+    ],
+    'Diploma': [
+      { name: 'Mathematics', grade: 'D' },
+      { name: 'Computer Science', grade: 'D' },
+      { name: 'Database Management', grade: 'A' },
+      { name: 'Programming', grade: 'C' },
+    ],
+  });
 
-  const programBasedExams = {
-    'A-Level': ['Mathematics', 'Physics', 'Chemistry'],
-    'STPM': ['Pengajian Am', 'Mathematics (T)', 'Physics', 'Chemistry'],
-    'Foundation': ['Mathematics', 'Physics', 'Chemistry', 'Biology'],
-    'Diploma': ['Mathematics', 'Computer Science', 'Database Management', 'Programming'],
-  };
+  const handleSubjectsChange = useCallback((examType, updatedSubjects) => {
+    setExamData(prevData => ({
+      ...prevData,
+      [examType]: updatedSubjects
+    }));
+  }, []);
+
+  const isSubjectBased = ['SPM', 'UEC', 'O-Level', 'GCSE', 'IGCSE', 'SSCE', 'SAT / ACT'].includes(selectedExam);
+  const isProgramBased = ['A-Level', 'STPM', 'Foundation', 'Diploma'].includes(selectedExam);
 
   const renderExamComponent = () => {
-    if (Object.keys(subjectBasedExams).includes(selectedExam)) {
-      return <SubjectBasedExam examType={selectedExam} subjects={subjectBasedExams[selectedExam]} />;
-    } else if (Object.keys(programBasedExams).includes(selectedExam)) {
-      return <ProgramBasedExam examType={selectedExam} defaultSubjects={programBasedExams[selectedExam]} />;
+    if (isSubjectBased) {
+      return <SubjectBasedExam
+        examType={selectedExam}
+        subjects={examData[selectedExam]}
+        onSubjectsChange={handleSubjectsChange}
+      />;
+    } else if (isProgramBased) {
+      return <ProgramBasedExam
+        examType={selectedExam}
+        subjects={examData[selectedExam]}
+        onSubjectsChange={handleSubjectsChange}
+      />;
     }
     return <div>Exam type not implemented yet</div>;
   };

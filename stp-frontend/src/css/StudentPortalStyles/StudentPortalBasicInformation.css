@@ -90,8 +90,10 @@
 .collapsible-sections
 {
   
-  font-family: "Ubuntu";
+  font-family: "Ubuntu" !important;
   font-size: 1rem !important;
+  font-weight: normal;
+  color: #000000;
 }  
   .collapsible-sections .Collapsible {
     border-radius: 5px;
@@ -134,3 +136,4 @@
 {
   font-family: "Ubuntu";
 }
+

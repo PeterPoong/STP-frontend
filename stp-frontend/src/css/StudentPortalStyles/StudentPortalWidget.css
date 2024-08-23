@@ -16,7 +16,7 @@
 .popup-content {
   background-color: #146A17;
   border-radius: 15px;
-  padding: 30px;
+  padding: 0 1.75rem 1.75rem 1.75rem;
   width: 100%;
   max-width: 1000px;
   color: white;
@@ -46,6 +46,7 @@
   position: relative;
   overflow: hidden;
 }
+
 
 .close-button {
   position: absolute;
@@ -190,10 +191,12 @@ p {
 
 .trophy-image {
   position: absolute;
-  top: 20px;
-  right: 20px;
-  width: 150px;
-  height: 150px;
+  padding: 0;
+  margin: 0;
+  top: 0;
+  left:35rem;
+  width: 80rem;
+  height: 10.125rem;
   background-image: url("../../assets/StudentPortalAssets/menChampion.png");
   background-size: contain;
   background-repeat: no-repeat;
@@ -593,7 +596,7 @@ p {
 
 .save-button-club {
   background-color: white;
-  color: #DC3545;
+  color: #49416D !important;
   padding: 10px 0;
   width: 100%;
   border-radius: 0.25rem !important;
@@ -714,7 +717,12 @@ p {
   padding: 1rem;
 }
 
-.achievement-upload-area-area {
+
+.achievement-upload-area span {
+  color: #B71A18;
+}
+
+.achievement-upload-label {
   background-color: white;
   border: 2px dashed #B71A18;
   border-radius: 0.75rem;
@@ -726,23 +734,62 @@ p {
   cursor: pointer;
 }
 
+.achievement-file-uploaded {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f8f9fa;
+  padding: 10px;
+  border-radius: 4px;
+}
 
-.achievement-upload-area span {
+.achievement-file-info {
+  display: flex;
+  align-items: center;
+}
+
+.achievement-file-details {
+  margin-left: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.achievement-file-name {
+  font-weight:500;
+  color: #353535;
+}
+
+.achievement-view-button {
+  background: none;
+  padding: 0;
+  margin: 0;
+  align-self: flex-start;
+  border: none;
+  font-size: 0.825rem !important;
   color: #B71A18;
+  cursor: pointer;
+}
+
+.achievement-delete-button {
+  background: none;
+  border: none;
+  color: #dc3545;
+  cursor: pointer;
 }
 
 .achievement-file-limit {
   font-size: 12px;
   margin-top: 5px;
+  color:#353535 !important;
 }
 
 .achievement-save-btn {
   background-color: white;
-  color: #B71A18;
+  color: #49416D !important;
   border: none;
-  border-radius: 25px;
+  border-radius: 0.5rem;
   padding: 10px 0;
-  width: 100%;
+  width: 50%;
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
