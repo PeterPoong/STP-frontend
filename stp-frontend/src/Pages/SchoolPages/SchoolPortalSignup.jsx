@@ -20,104 +20,104 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 
 const SchoolPortalSignup = () => {
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [identityCard, setIdentityCard] = useState("");
-  const [email, setEmail] = useState("");
+  const [schoolName, setSchoolName] = useState("");
+  const [schoolContact, setSchoolContact] = useState("");
+  const [schoolCountryCode, setSchoolCountryCode] = useState("");
+  const [schoolWebsite, setSchoolWebsite] = useState("");
+  const [schoolEmail, setSchoolEmail] = useState("");
+  const [schoolAddress, setSchoolAddress] = useState("");
+
+  const [personInChargeName, setPersonInChargeName] = useState("");
+  const [personInChargeContact, setPersonInChargeContact] = useState("");
+  const [personInChargeEmail, setPersonInChargeEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [signupStatus, setSignupStatus] = useState(null);
+
+  const [schoolNameErrorMessage, setSchoolNameErrorMessage] = useState("");
+  const [emailErrorMessage, setEmailErrorMessage] = useState("");
+  const [schoolContactErrorMessage, setSchoolContactErrorMessage] =
+    useState("");
+
+  const [signupStatus, setSignupStatus] = useState("failed");
   const [showModal, setShowModal] = useState(false);
   const [isFormValid, setIsFormValid] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const isValid =
-      name.trim() !== "" &&
-      phone.length >= 10 &&
-      identityCard.trim() !== "" &&
-      email.trim() !== "" &&
-      password.length >= 8 &&
-      confirmPassword === password;
-    setIsFormValid(isValid);
-  }, [name, phone, identityCard, email, password, confirmPassword]);
+  // useEffect(() => {
+  //   const isValid =
+  //     name.trim() !== "" &&
+  //     phone.length >= 10 &&
+  //     identityCard.trim() !== "" &&
+  //     email.trim() !== "" &&
+  //     password.length >= 8 &&
+  //     confirmPassword === password;
+  //   setIsFormValid(isValid);
+  // }, [name, phone, identityCard, email, password, confirmPassword]);
 
-  const handlePhoneChange = (value, country, event, formattedValue) => {
-    const digitsOnly = value.replace(/\D/g, "");
-    setPhone(digitsOnly);
+  // const handlePhoneChange = (value, country, event, formattedValue) => {
+  //   const digitsOnly = value.replace(/\D/g, "");
+  //   setSchoolContact(digitsOnly);
+  // };
+
+  const handlePhoneChange = (value, country) => {
+    const dialCode = country.dialCode;
+    setSchoolContact(value); // Set the contact number without the dial code
+    setSchoolCountryCode(dialCode); // Set the dial code separately
   };
 
-  const handleSubmit = (e) => {
+  const handlePersonPhoneChange = (value, country) => {
+    setPersonInChargeContact(value); // Set the contact number without the dial code
+  };
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSignupStatus(null);
-
-    if (password !== confirmPassword) {
-      setSignupStatus("password_mismatch");
-      return;
-    }
-
-    if (password.length < 8) {
-      setSignupStatus("password_too_short");
-      return;
-    }
-
-    const countryCode = phone.slice(0, phone.length - 10);
-    const contactNumber = phone.slice(-10);
 
     const formData = {
-      name: name,
-      email: email,
+      name: schoolName,
+      email: schoolEmail,
+      country_code: schoolCountryCode.startsWith("+")
+        ? schoolCountryCode
+        : `+${schoolCountryCode}`,
+      contact_number: schoolContact.slice(schoolCountryCode.length),
       password: password,
       confirm_password: confirmPassword,
-      type: "student",
-      country_code: countryCode.startsWith("+")
-        ? countryCode
-        : `+${countryCode}`,
-      contact_number: contactNumber,
+      school_address: schoolAddress,
+      school_website: schoolWebsite,
+      person_in_charge_name: personInChargeName,
+      person_in_charge_contact: personInChargeContact,
+      person_in_charge_email: personInChargeEmail,
     };
-
     console.log("Sending signup data:", formData);
+    console.log("codeLength", schoolCountryCode.length);
+    console.log("contact", schoolContact.slice(2));
 
-    fetch("http://192.168.0.69:8000/api/student/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Full API response:", data);
-        if (data.success === true) {
-          console.log("Signup successful:", data);
-          setSignupStatus("success");
-          if (data.data && data.data.token) {
-            sessionStorage.setItem("token", data.data.token);
-          }
-          setTimeout(() => navigate("/studentPortalBasicInformations"), 1500);
-        } else {
-          console.error("Signup failed:", data);
-          setSignupStatus("failed");
-        }
-      })
-      .catch((error) => {
-        console.error("Error during signup:", error);
-        if (
-          error.response &&
-          error.response.data &&
-          error.response.data.message
-        ) {
-          if (error.response.data.message.includes("already registered")) {
-            setShowModal(true);
-          } else {
-            setSignupStatus("error");
-          }
-        } else {
-          setSignupStatus("error");
-        }
-      });
+    const response = await fetch(
+      `${import.meta.env.VITE_BASE_URL}school/register`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      }
+    );
+
+    if (response.ok) {
+      setEmailErrorMessage("");
+      setSchoolNameErrorMessage("");
+      setSchoolContactErrorMessage("");
+      setSignupStatus("success");
+      setTimeout(() => navigate("/schoolPortalLogin"), 500);
+    } else if (response.status == 422) {
+      setSignupStatus("failed");
+      const errorData = await response.json();
+      setEmailErrorMessage(errorData.errors.email);
+      setSchoolNameErrorMessage(errorData.errors.name);
+      setSchoolContactErrorMessage(errorData.errors.contact_no);
+      console.log("emailError", errorData.errors.email);
+      console.log(errorData);
+    }
   };
   return (
     <Container fluid className="h-100">
@@ -132,16 +132,16 @@ const SchoolPortalSignup = () => {
               className="img-fluid mb-4"
               alt="StudyPal Logo"
             />
-            <h2 className="text-start mb-2 custom-color-title ">
-              Start your journey here.
-            </h2>
+            <h3 className="text-start mb-2 custom-color-title ">
+              Connect with Students Worldwide
+            </h3>
             <p className="text-start mb-4 custom-color-title small">
-              Find the right university of your choice.
+              Engage with students everywhere.
             </p>
             {signupStatus === "success" && (
               <Alert variant="success">Signup successful! Redirecting...</Alert>
             )}
-            {signupStatus === "failed" && (
+            {/* {signupStatus === "failed" && (
               <Alert variant="danger">Signup failed. Please try again.</Alert>
             )}
             {signupStatus === "error" && (
@@ -158,18 +158,26 @@ const SchoolPortalSignup = () => {
               <Alert variant="danger">
                 Password must be at least 8 characters long.
               </Alert>
-            )}
+            )} */}
             <Form onSubmit={handleSubmit}>
               <Form.Group className="mb-3">
-                <Form.Label className="custom-label">Name</Form.Label>
+                <Form.Label className="custom-label">Institute Name</Form.Label>
                 <Form.Control
                   type="text"
-                  placeholder="Your Name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Institute Name"
+                  value={schoolName}
+                  onChange={(e) => setSchoolName(e.target.value)}
                   required
                 />
+                {schoolNameErrorMessage && (
+                  <div style={{ color: "red", marginTop: "0.5rem" }}>
+                    {schoolNameErrorMessage.map((error, index) => (
+                      <div key={index}>{error}</div>
+                    ))}
+                  </div>
+                )}
               </Form.Group>
+
               <Row>
                 <Col xs={12} md={6}>
                   <Form.Group controlId="formBasicPhone" className="mb-3">
@@ -178,8 +186,103 @@ const SchoolPortalSignup = () => {
                     </Form.Label>
                     <PhoneInput
                       country={"my"}
-                      value={phone}
+                      value={schoolContact}
                       onChange={handlePhoneChange}
+                      inputProps={{
+                        name: "phone",
+                        placeholder: "Enter phone number",
+                      }}
+                      inputClass="form-control"
+                      containerClass="phone-input-container"
+                      buttonClass="btn btn-outline-secondary"
+                      dropdownClass="country-dropdown custom-dropdown"
+                      countryCodeEditable={false}
+                      disableCountryCode={false}
+                      disableDropdown={false}
+                      autoFormat={true}
+                    />
+                    {schoolContactErrorMessage && (
+                      <div style={{ color: "red", marginTop: "0.5rem" }}>
+                        {schoolContactErrorMessage.map((error, index) => (
+                          <div key={index}>{error}</div>
+                        ))}
+                      </div>
+                    )}
+                  </Form.Group>
+                </Col>
+
+                <Col xs={12} md={6}>
+                  <Form.Group className="mb-3">
+                    <Form.Label className="custom-label">
+                      Institute Website
+                    </Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder="Institute Website"
+                      value={schoolWebsite}
+                      onChange={(e) => setSchoolWebsite(e.target.value)}
+                      required
+                    />
+                  </Form.Group>
+                </Col>
+              </Row>
+
+              <Form.Group className="mb-3">
+                <Form.Label className="custom-label">Email Address</Form.Label>
+                <Form.Control
+                  type="email"
+                  placeholder="Institute Email"
+                  value={schoolEmail}
+                  onChange={(e) => setSchoolEmail(e.target.value)}
+                  required
+                />
+                {emailErrorMessage && (
+                  <div style={{ color: "red", marginTop: "0.5rem" }}>
+                    {emailErrorMessage.map((error, index) => (
+                      <div key={index}>{error}</div>
+                    ))}
+                  </div>
+                )}
+              </Form.Group>
+
+              <Form.Group className="mb-3">
+                <Form.Label className="custom-label">
+                  Institute Address
+                </Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Institute Address"
+                  value={schoolAddress}
+                  onChange={(e) => setSchoolAddress(e.target.value)}
+                  required
+                />
+              </Form.Group>
+
+              <Row>
+                <Col>
+                  <Form.Group className="mb-3">
+                    <Form.Label className="custom-label">
+                      Person-In-Charge's Name
+                    </Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder="Person-In-Charge's Name"
+                      value={personInChargeName}
+                      onChange={(e) => setPersonInChargeName(e.target.value)}
+                      required
+                    />
+                  </Form.Group>
+                </Col>
+
+                <Col>
+                  <Form.Group controlId="formBasicPhone" className="mb-3">
+                    <Form.Label className="custom-label">
+                      Person-In-Charge's Contact
+                    </Form.Label>
+                    <PhoneInput
+                      country={"my"}
+                      value={personInChargeContact}
+                      onChange={handlePersonPhoneChange}
                       inputProps={{
                         name: "phone",
                         placeholder: "Enter phone number",
@@ -195,31 +298,24 @@ const SchoolPortalSignup = () => {
                     />
                   </Form.Group>
                 </Col>
-                <Col xs={12} md={6}>
-                  <Form.Group className="mb-3">
-                    <Form.Label className="custom-label">
-                      Identity Card Number
-                    </Form.Label>
-                    <Form.Control
-                      type="text"
-                      placeholder="XXXXXXXX"
-                      value={identityCard}
-                      onChange={(e) => setIdentityCard(e.target.value)}
-                      required
-                    />
-                  </Form.Group>
-                </Col>
               </Row>
-              <Form.Group className="mb-3">
-                <Form.Label className="custom-label">Email Address</Form.Label>
-                <Form.Control
-                  type="email"
-                  placeholder="mail123@gmail.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </Form.Group>
+
+              <Row>
+                <Form.Group className="mb-3">
+                  <Form.Label className="custom-label">
+                    Person-In-Charge's Email Address
+                  </Form.Label>
+                  <Form.Control
+                    type="email"
+                    placeholder="Person-In-Charge's Email"
+                    value={personInChargeEmail}
+                    onChange={(e) => setPersonInChargeEmail(e.target.value)}
+                    required
+                    style={{ "::placeholder": { color: "rgba(0, 0, 0, 0.5)" } }}
+                  />
+                </Form.Group>
+              </Row>
+
               <Row>
                 <Col>
                   <Form.Group className="mb-3">
@@ -363,7 +459,7 @@ const SchoolPortalSignup = () => {
               </Row>
               <p className="text-center small mb-0">
                 Already have an account?{" "}
-                <Link to="/studentPortalLogin" className="text-danger">
+                <Link to="/schoolPortalLogin" className="text-danger">
                   Login now
                 </Link>
               </p>

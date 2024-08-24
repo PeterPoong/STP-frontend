@@ -1,0 +1,85 @@
+/* Premium Button Css */
+/* Adjust border radius for the button with gradient */
+.custom-border-gradient-button {
+  background: #fff;
+  border: 2px solid transparent;
+  border-image: linear-gradient(to right, #5E5CE6 0%, #FF375F 53%, #FF9F0A 100%);
+  border-image-slice: 1;
+  color: #000;
+  border-radius: 12px; /* Proper border radius */
+}
+
+/* Hover effect for the custom button */
+.custom-border-gradient-button:hover {
+  background-color: rgba(183, 26, 24, 0.20);
+}
+
+/* SideBar css */
+/* General Nav Link */
+.nav-link {
+  font-size: 16px;
+  transition: background-color 0.3s, color 0.3s; /* Smooth transition */
+}
+
+/* Regular Nav Link Hover */
+.nav-link:hover {
+  background-color: rgba(183, 26, 24, 0.20); /* Background color with 20% opacity */
+  color: #B71A18; /* Change font color on hover */
+  border-left: 4px solid #B71A18; /* 4px solid left border with the desired color */
+}
+
+/* DropDown */
+/* Custom Styles for the Dropdown Toggle (My Profile) */
+.nav-link.dropdown-toggle {
+  background-color: transparent; /* Ensure no background fill */
+}
+
+/* Remove background fill and highlight text in red on hover */
+.nav-link.dropdown-toggle:hover {
+  background-color: transparent;
+  color: #B71A18 !important; /* Force the red color with !important */
+  border-left: none; /* Remove the left border for dropdown items */
+}
+
+/* Remove background fill for dropdown items */
+.profile-dropdown .nav-link {
+  background-color: transparent;
+  color: #000; /* Default font color */
+}
+
+/* Highlight text in red on hover for dropdown items without background fill */
+.profile-dropdown .nav-link:hover {
+  color: #B71A18 !important; /* Force the red color with !important */
+  background-color: transparent; /* No background fill */
+  border-left: none;
+}
+
+/* Dropdown Animation */
+.profile-dropdown {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s ease-out, opacity 0.3s ease-out; /* Smooth animation for both height and opacity */
+  opacity: 0;
+}
+
+.profile-dropdown.open {
+  max-height: 200px; /* Set a height that can fit the content */
+  opacity: 1;
+}
+
+.small-text {
+  font-size: 14px; /* Adjust the font size as needed */
+}
+
+/* Selected Tab */
+.selected-tab {
+  background-color: rgba(183, 26, 24, 0.20); /* Background color with 20% opacity */
+  border-left: 4px solid #B71A18; /* 4px solid left border with the desired color */
+  color: #B71A18; /* Font color for the selected tab */
+}
+
+
+.profile-dropdown .selected-tab {
+  color: #B71A18 !important; /* Change font color for selected dropdown item */
+  border-left: none !important;
+}
