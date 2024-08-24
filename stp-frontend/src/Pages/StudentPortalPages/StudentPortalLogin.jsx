@@ -104,12 +104,13 @@ const StudentPortalLogin = () => {
         setLoginStatus('success');
         
         const studentStatus = data.data.user.student_status;
-        const userEmail = data.data.user.student_email;
+        const token = data.data.token;
+        const userId = data.data.user.id;
         
-        if (studentStatus === 2) {
-          // Redirect to password reset page
-          navigate('/studentPortalResetPassword', { state: { userId: data.data.user.id,email:userEmail } });
-        } else {
+        if (studentStatus === 3) {
+          // Redirect to password reset page with token and user ID
+          navigate('/studentPortalResetPassword', { state: { token: token, userId: userId } });
+        }  else {
           // Existing login logic
           if (data.data.token) {
             sessionStorage.setItem('token', data.data.token);

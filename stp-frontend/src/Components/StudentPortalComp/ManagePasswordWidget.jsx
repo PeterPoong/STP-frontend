@@ -114,8 +114,13 @@ const ManagePasswordWidget = () => {
 
       const data = await response.json();
 
-      if (response.ok) {
-        setSuccess("Password updated successfully!");
+      console.log('API Response:', response);
+      console.log('Response status:', response.status);
+      console.log('Response data:', data);
+
+      if (data.success) {
+        console.log('Password reset successful');
+        setSuccess(data.data.messenger || "Password updated successfully!");
         // Clear the form
         setCurrentPassword("");
         setNewPassword("");
@@ -124,15 +129,21 @@ const ManagePasswordWidget = () => {
         setPasswordFeedback([]);
         setIsSameAsCurrentPassword(false);
       } else {
-        setError(data.message || "Failed to update password. Please try again.");
-        
+        console.log('Password reset failed');
+        if (data.message === "Validation Error" && data.error && data.error[0]) {
+          setError(data.error[0][0] || "Failed to update password. Please check your current password and try again.");
+        } else {
+          setError(data.message || "Failed to update password. Please try again.");
+        }
       }
     } catch (error) {
+      console.error('Error in API call:', error);
       setError("An error occurred. Please try again later.");
     } finally {
       setIsLoading(false);
     }
   };
+
 
   return (
     <div>

@@ -14,8 +14,8 @@ const BasicInformationWidget = () => {
     contact: '',
     country_code: '',
     email: '',
-    firstName: '',
-    lastName: '',
+    first_name: '',
+    last_name: '',
     country: '',
     city: '',
     state: '',
@@ -31,9 +31,11 @@ const BasicInformationWidget = () => {
   const [countries, setCountries] = useState([]);
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
+  const [genderList, setGenderList] = useState([]);
 
   useEffect(() => {
     fetchStudentDetails();
+    fetchGenderList();
     setCountries(Country.getAllCountries());
   }, []);
 
@@ -59,6 +61,31 @@ const BasicInformationWidget = () => {
     }
   }, [studentData]);
 
+  const fetchGenderList = async () => {
+    try {
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      const response = await fetch('http://192.168.0.69:8000/api/student/genderList', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch gender list. Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setGenderList(data.data || []);
+    } catch (error) {
+      console.error('Error fetching gender list:', error);
+      setError('Failed to load gender options. Please try again later.');
+    }
+  };
+
+
+
   const fetchStudentDetails = async () => {
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
@@ -83,7 +110,7 @@ const BasicInformationWidget = () => {
 
       if (response.status === 429) {
         throw new Error('Too many requests. Please wait a moment and try again.');
-      } 
+      }
       if (!response.ok) {
         throw new Error(`Failed to fetch student details. Status: ${response.status}`);
       }
@@ -126,9 +153,9 @@ const BasicInformationWidget = () => {
     const countryData = Country.getAllCountries().find(c => c.name === value);
     setStudentData(prevData => ({
       ...prevData,
-      country: countryData ? countryData.isoCode : '',
-      state: '',
-      city: ''
+      country: '1',
+      state: '1',
+      city: '1'
     }));
     if (countryData) {
       setStates(State.getStatesOfCountry(countryData.isoCode));
@@ -158,15 +185,27 @@ const BasicInformationWidget = () => {
       city: cityData ? cityData.id : ''
     }));
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSuccess('');
 
+    // Create a new object with only the fields we want to send
     const submissionData = {
-      ...studentData,
-      gender: studentData.gender === 'male' ? 1 : studentData.gender === 'female' ? 2 : 3,
+      id: studentData.id,
+      username: studentData.username,
+      first_name: studentData.first_name,
+      last_name: studentData.last_name,
+      ic: studentData.ic,
+      email: studentData.email,
+      contact: studentData.contact,
+      gender: studentData.gender,
+      address: studentData.address,
+      country: '1',  // Set default value
+      state: '1',    // Set default value
+      city: '1',     // Set default value
+      postcode: studentData.postcode,
+      country_code: studentData.country_code
     };
 
     console.log('Data to be sent to the API:', JSON.stringify(submissionData, null, 2));
@@ -195,6 +234,8 @@ const BasicInformationWidget = () => {
 
       if (responseData.success) {
         setSuccess('Student details updated successfully!');
+        // Optionally, you can refetch the student details here to update the form with the latest data
+        // fetchStudentDetails();
       } else {
         setError(responseData.message || 'Failed to update student details');
       }
@@ -244,28 +285,28 @@ const BasicInformationWidget = () => {
             </Row>
             <Row className="mb-3">
               <Col md={6}>
-                <Form.Group controlId="firstName">
+                <Form.Group controlId="first_name">
                   <Form.Label className="fw-bold small formlabel">First Name <span className="text-danger">*</span></Form.Label>
                   <Form.Control
                     className="w-75"
                     type="text"
                     required
-                    name="firstName"
-                    value={studentData.firstName || ''}
+                    name="first_name"
+                    value={studentData.first_name || ''}
                     onChange={handleInputChange}
                     placeholder="Enter first name"
                   />
                 </Form.Group>
               </Col>
               <Col md={6}>
-                <Form.Group controlId="lastName">
+                <Form.Group controlId="last_name">
                   <Form.Label className="fw-bold small formlabel">Last Name <span className="text-danger">*</span></Form.Label>
                   <Form.Control
                     type="text"
                     required
                     className="w-75"
-                    name="lastName"
-                    value={studentData.lastName || ''}
+                    name="last_name"
+                    value={studentData.last_name || ''}
                     onChange={handleInputChange}
                     placeholder="Enter last name"
                   />
@@ -298,9 +339,11 @@ const BasicInformationWidget = () => {
                     onChange={handleInputChange}
                   >
                     <option value="">Select gender</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
+                    {genderList.map((gender) => (
+                      <option key={gender.id} value={gender.id}>
+                        {gender.name}
+                      </option>
+                    ))}
                   </Form.Select>
                 </Form.Group>
               </Col>
@@ -360,7 +403,7 @@ const BasicInformationWidget = () => {
                 <Form.Group controlId="country">
                   <Form.Label className="fw-bold small formlabel">Country <span className="text-danger">*</span></Form.Label>
                   <Form.Select
-                    required
+                    /*required*/
                     className="w-75"
                     name="country"
                     value={Country.getAllCountries().find(c => c.isoCode === studentData.country)?.name || ''}
@@ -379,7 +422,7 @@ const BasicInformationWidget = () => {
                 <Form.Group controlId="state">
                   <Form.Label className="fw-bold small formlabel">State <span className="text-danger">*</span></Form.Label>
                   <Form.Select
-                    required
+                    /*required*/
                     className="w-75"
                     name="state"
                     value={State.getStatesOfCountry(studentData.country).find(s => s.isoCode === studentData.state)?.name || ''}
@@ -400,7 +443,7 @@ const BasicInformationWidget = () => {
                 <Form.Group controlId="city">
                   <Form.Label className="fw-bold small formlabel">City <span className="text-danger">*</span></Form.Label>
                   <Form.Select
-                    required
+                    /*required*/
                     className="w-75"
                     name="city"
                     value={cities.find(c => c.id === studentData.city)?.name || ''}

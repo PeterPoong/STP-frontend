@@ -36,7 +36,7 @@ import StudentPortalForgetPassword from "./Pages/StudentPortalPages/StudentPorta
 import StudentPortalResetPassword from "./Pages/StudentPortalPages/StudentPortalResetPassword";
 import StudentPortalSignUp from "./Pages/StudentPortalPages/StudentPortalSignUp";
 import StudentPortalBasicInformations from "./Pages/StudentPortalPages/StudentPortalBasicInformations";
-
+import StudentApplyCourse from "./Pages/StudentPortalPages/StudentApplyCourse";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -166,6 +166,12 @@ const router = createBrowserRouter([
     path: "/studentPortalBasicInformations",
     element: <StudentPortalBasicInformations/>
   },
+
+  {
+    path: "/studentApplyCourse",
+    element: <StudentApplyCourse/>
+  },
+  
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(

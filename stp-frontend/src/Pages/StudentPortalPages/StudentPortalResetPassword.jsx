@@ -8,6 +8,7 @@ import studentPortalLoginLogo from "../../assets/StudentPortalAssets/studentPort
 import 'react-phone-input-2/lib/style.css';
 import { Eye, EyeOff } from 'react-feather';
 
+
 const StudentPortalResetPassword = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -15,15 +16,12 @@ const StudentPortalResetPassword = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [email, setEmail] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    if (location.state && location.state.email) {
-      setEmail(location.state.email);
-    } else {
-      setError("No email provided. Please log in first.");
+    if (!location.state || !location.state.token || !location.state.userId) {
+      setError("No authentication token or user ID provided. Please log in first.");
       setTimeout(() => navigate('/studentPortalLogin'), 3000);
     }
   }, [location.state, navigate]);
@@ -37,22 +35,24 @@ const StudentPortalResetPassword = () => {
       return;
     }
 
-    if (!email) {
-      setError("No email associated with this reset. Please log in again.");
+    const token = location.state?.token;
+    const userId = location.state?.userId;
+    if (!token || !userId) {
+      setError("No authentication token or user ID found. Please log in again.");
       return;
     }
 
     try {
-      const response = await fetch('http://192.168.0.69:8000/api/resetPassword', {
+      const response = await fetch('http://192.168.0.69:8000/api/student/resetDummyAccountPassword', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({ 
-          email: email,
+          id: userId,
           newPassword: newPassword,
           confirmPassword: confirmPassword,
-          type: "student"
         }),
       });
       
