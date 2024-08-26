@@ -27,7 +27,7 @@ const AdminSignup = () => {
     const togglePasswordConfirm = () => setShowPasswordConfirm(!showPasswordConfirm);
 
     useEffect(() => {
-        fetch('http://192.168.0.69:8000/api/countryCode')
+        fetch(`${import.meta.env.VITE_BASE_URL}api/countryCode`)
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
@@ -57,7 +57,7 @@ const AdminSignup = () => {
             contact_number: phone.slice(countryCode.length),
         };
 
-        fetch('http://192.168.0.69:8000/api/admin/register', {
+        fetch(`${import.meta.env.VITE_BASE_URL}api/admin/register`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
