@@ -1,78 +1,84 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Container, Form, Button, Card } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
+import { Container, Form, Button, Card, Alert } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../../css/AdminStyles/AdminLoginStyles.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
 // Images
 import logo from '../../assets/AdminAssets/Images/logo.png';
 
 const AdminSignup = () => {
+    const navigate = useNavigate();
 
-    // State for storing fetched country codes
-    const [countryCodes, setCountryCodes] = useState([]);
-
-    // State for form inputs
+    const [countryCode, setCountryCode] = useState('');
+    const [phone, setPhone] = useState('');
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
-    const [countryCode, setCountryCode] = useState('');
-    const [contactNumber, setContactNumber] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-
-    // Toggleable Password Field
+    const [errorMessage, setErrorMessage] = useState('');
     const [showPasswordCreate, setShowPasswordCreate] = useState(false);
     const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
 
     const togglePasswordCreate = () => setShowPasswordCreate(!showPasswordCreate);
     const togglePasswordConfirm = () => setShowPasswordConfirm(!showPasswordConfirm);
 
-    // useEffect hook to fetch country codes when the component mounts
     useEffect(() => {
-      // Function to fetch country codes from the API
-      axios.get('http://192.168.0.69:8000/api/countryCode')
-          .then(response => {
-              if (response.data.success) { // Check if the API call was successful
-                  setCountryCodes(response.data.data); // Update the state with fetched data
-              }
-          })
-          .catch(error => {
-              console.error('Error fetching country codes:', error); // Handle any errors during the API call
-          });
-    }, []); // Empty dependency array ensures this runs only once when the component mounts
+        fetch('http://192.168.0.69:8000/api/countryCode')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    setCountryCodes(data.data);
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching country codes:', error);
+            });
+    }, []);
 
-    // Handle form submission
-const handleSubmit = (e) => {
-  e.preventDefault();
+    const handlePhoneChange = (value, country) => {
+        setPhone(value);
+        setCountryCode(country.dialCode);
+    };
 
-  // Prepare form data
-  const formData = {
-      name,
-      email,
-      password,
-      confirm_password: confirmPassword,  // Check if API expects 'confirm_password' or 'confirmPassword'
-      country_code: countryCode,
-      contact_number: contactNumber,  // Ensure the format matches API expectations
-  };
+    const handleSubmit = (e) => {
+        e.preventDefault();
 
-  // Make POST request to register endpoint
-  axios.post('http://192.168.0.69:8000/api/admin/register', formData)
-      .then(response => {
-          if (response.data.success) {
-              // Handle successful registration
-              console.log('Registration successful:', response.data);
-          } else {
-              // Handle registration failure
-              console.error('Registration failed:', response.data);
-          }
-      })
-      .catch(error => {
-          // Log detailed error response
-          console.error('Error during registration:', error.response?.data || error.message);
-      });
-};
+        const formData = {
+            name: name,
+            email: email,
+            password: password,
+            confirm_password: confirmPassword,
+            type: "admin",
+            country_code: `+${countryCode}`,
+            contact_number: phone.slice(countryCode.length),
+        };
 
+        fetch('http://192.168.0.69:8000/api/admin/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData),
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('Registration successful:', data);
+                    navigate('/adminLogin'); // Redirect to login page
+                } else {
+                    setErrorMessage(`Registration failed: ${data.message}`);
+                    console.error('Registration failed:', data);
+                }
+            })
+            .catch(error => {
+                setErrorMessage('An error occurred during registration. Please try again later.');
+                console.error('Error during registration:', error);
+            });
+    };
 
     return (
         <div className="login-page">
@@ -84,6 +90,10 @@ const handleSubmit = (e) => {
                 <Card className="login-container">
                     <Card.Body>
                         <Card.Title className="login-title">Sign Up</Card.Title>
+
+                        {/* Display error message */}
+                        {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
+
                         <Form onSubmit={handleSubmit}>
                             {/* Name field */}
                             <Form.Group controlId="name">
@@ -108,32 +118,26 @@ const handleSubmit = (e) => {
                             </Form.Group>
 
                             {/* Mobile Number field */}
-                            <Form.Group controlId="phone">
-                                <Form.Label>Mobile Number</Form.Label>
-                                <div className="phone-container" style={{ display: 'flex', alignItems: 'center' }}>
-                                    {/* Dropdown for country codes */}
-                                    <Form.Control
-                                        as="select"
-                                        className="country-code"
-                                        style={{ maxWidth: '80px', marginRight: '10px' }}
-                                        value={countryCode}
-                                        onChange={(e) => setCountryCode(e.target.value)} // Update countryCode state
-                                    >
-                                        <option value=""> </option> {/* Default placeholder option */}
-                                        {countryCodes.map(code => (
-                                            <option key={code.id} value={code.country_code}>
-                                                {code.country_code}
-                                            </option>
-                                        ))}
-                                    </Form.Control>
-                                    {/* Input field for phone number */}
-                                    <Form.Control
-                                        type="tel"
-                                        placeholder="1234567890"
-                                        value={contactNumber}
-                                        onChange={(e) => setContactNumber(e.target.value)}
-                                    />
-                                </div>
+                            <Form.Group controlId="formBasicPhone" className="mb-3">
+                                <Form.Label className="custom-label">Contact Number</Form.Label>
+                                <PhoneInput
+                                    country={'my'}
+                                    value={phone}
+                                    onChange={handlePhoneChange}
+                                    inputProps={{
+                                        name: 'phone',
+                                        required: true,
+                                        placeholder: 'Enter phone number'
+                                    }}
+                                    inputClass="form-control"
+                                    containerClass="phone-input-container"
+                                    buttonClass="btn btn-outline-secondary"
+                                    dropdownClass="country-dropdown custom-dropdown"
+                                    countryCodeEditable={false}
+                                    disableCountryCode={false}
+                                    disableDropdown={false}
+                                    autoFormat={true}
+                                />
                             </Form.Group>
 
                             {/* Password creation field */}
@@ -142,7 +146,7 @@ const handleSubmit = (e) => {
                                 <div className="password-container">
                                     <Form.Control
                                         type={showPasswordCreate ? 'text' : 'password'}
-                                        placeholder="must be 8 characters"
+                                        placeholder="Password must be 8 characters"
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                     />
@@ -158,7 +162,7 @@ const handleSubmit = (e) => {
                                 <div className="password-container">
                                     <Form.Control
                                         type={showPasswordConfirm ? 'text' : 'password'}
-                                        placeholder="repeat password"
+                                        placeholder="Repeat password"
                                         value={confirmPassword}
                                         onChange={(e) => setConfirmPassword(e.target.value)}
                                     />

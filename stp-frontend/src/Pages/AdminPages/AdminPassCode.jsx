@@ -89,7 +89,7 @@ const AdminPassCode = () => {
             if (response.status === 200) {
                 // Handle success, redirect to reset password page
                 alert('OTP validated successfully!');
-                navigate('/adminResetPass');
+                navigate('/adminResetPass', { state: { email: email, type: 'admin' } });
             }
         } catch (error) {
             // Handle errors, e.g., show an error message

@@ -63,9 +63,6 @@ const StudentPortalSignUp = () => {
       return;
     }
 
-    const countryCode = phone.slice(0, phone.length - 10);
-    const contactNumber = phone.slice(-10);
-
     const formData = {
       name: name,
       email: email,
@@ -119,6 +116,7 @@ const StudentPortalSignUp = () => {
         }
       });
   };
+
   return (
     <Container fluid className="h-100">
       <Row className="h-100">
@@ -164,6 +162,18 @@ const StudentPortalSignUp = () => {
             {signupStatus === "password_too_short" && (
               <Alert variant="danger">
                 Password must be at least 8 characters long.
+              </Alert>
+            )}
+            {signupStatus === "email_exists" && (
+              <Alert variant="warning">
+                This email is already registered. Please use a different email
+                or try logging in.
+              </Alert>
+            )}
+            {signupStatus === "phone_exists" && (
+              <Alert variant="warning">
+                This contact number is already registered. Please use a
+                different number or try logging in.
               </Alert>
             )}
             <Form onSubmit={handleSubmit}>

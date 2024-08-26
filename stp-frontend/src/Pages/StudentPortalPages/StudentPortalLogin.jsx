@@ -26,6 +26,7 @@ const StudentPortalLogin = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [countryCodes, setCountryCodes] = useState([]);
   const [loginStatus, setLoginStatus] = useState(null);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -48,7 +49,16 @@ const StudentPortalLogin = () => {
       setPassword(rememberedPassword);
       setRememberMe(true);
     }
-  }, []);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleTabClosing);
+    };
+  }, [navigate]);
+
+  const handlePhoneChange = (value, country, e, formattedValue) => {
+    setPhone(value);
+    setCountryCode(country.dialCode);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -60,8 +70,8 @@ const StudentPortalLogin = () => {
       : `+${countryCode}`;
     const formData = {
       password: password,
-      country_code: formattedCountryCode,
-      contact_number: contactNumber,
+      country_code: `+${countryCode}`,
+      contact_number: phone.slice(countryCode.length),
     };
     console.log("Sending login data:", formData);
     fetch("http://192.168.0.69:8000/api/student/login", {
@@ -80,7 +90,6 @@ const StudentPortalLogin = () => {
           sessionStorage.setItem("token", data.data.token);
           sessionStorage.setItem("loginTimestamp", moment().toISOString());
 
-          // Save credentials if "Remember Me" is checked
           if (rememberMe) {
             localStorage.setItem("rememberedPhone", phone);
             localStorage.setItem("rememberedPassword", password);
@@ -107,6 +116,7 @@ const StudentPortalLogin = () => {
         } else {
           console.error("Error message:", error.message);
         }
+        setLoginStatus("error");
       });
   };
 
@@ -158,7 +168,7 @@ const StudentPortalLogin = () => {
                     <PhoneInput
                       country={"my"}
                       value={phone}
-                      onChange={(value) => setPhone(value)}
+                      onChange={handlePhoneChange}
                       inputProps={{
                         name: "phone",
                         required: true,
