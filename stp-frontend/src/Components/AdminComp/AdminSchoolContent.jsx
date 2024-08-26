@@ -1,27 +1,32 @@
 import React, { useEffect, useState } from "react";
-import { Container } from "react-bootstrap";
-import { DataGrid, GridToolbar } from '@mui/x-data-grid';
-import Button from '@mui/material/Button';
+import { Container, Table, Dropdown, Form, Button, Modal } from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEdit, faTrash, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
 import '../../css/AdminStyles/AdminTableStyles.css';
+import TableWithControls from './TableWithControls'; // Adjust the path accordingly
 
 const AdminSchoolContent = () => {
     const [schools, setSchools] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [sortColumn, setSortColumn] = useState(null); // No initial sorting
+    const [sortDirection, setSortDirection] = useState(null); // No initial sorting
+    const [showModal, setShowModal] = useState(false);
+    const [deleteId, setDeleteId] = useState(null);
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`;
-    console.log("Authorization Header Value:", Authenticate);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchSchools = async () => {
             try {
-                const response = await fetch("http://192.168.0.69:8000/api/admin/schoolList", {
+                const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/schoolList`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                         "Authorization": Authenticate,
                     },
-                    body: JSON.stringify({ /* Add any additional body data if required */ })
                 });
 
                 if (!response.ok) {
@@ -29,7 +34,6 @@ const AdminSchoolContent = () => {
                 }
 
                 const result = await response.json();
-
                 if (result && Array.isArray(result) && result[0].data) {
                     setSchools(result[0].data);
                 } else {
@@ -44,59 +48,8 @@ const AdminSchoolContent = () => {
         };
 
         fetchSchools();
-    }, []);
+    }, [Authenticate]);
 
-    if (loading) {
-        return <Container>Loading...</Container>;
-    }
-
-    if (error) {
-        return <Container>Error: {error}</Container>;
-    }
-
-    // Define the columns for the DataGrid
-    const columns = [
-        { field: 'name', headerName: 'Name', flex: 1 },
-        { field: 'email', headerName: 'Email', flex: 1 },
-        { field: 'contact', headerName: 'Contact No.', flex: 1 },
-        { field: 'category', headerName: 'Category', flex: 1 },
-        { 
-            field: 'status', 
-            headerName: 'Status', 
-            flex: 1 
-        },
-        { 
-            field: 'action', 
-            headerName: 'Action', 
-            flex: 1,
-            renderCell: (params) => {
-                if (!params.row) return null; // Guard clause to handle null rows
-                return (
-                    <div>
-                        <Button 
-                            variant="contained" 
-                            color="primary" 
-                            size="small" 
-                            style={{ marginRight: 8 }}
-                            onClick={() => handleEdit(params.row.id)}
-                        >
-                            Edit
-                        </Button>
-                        <Button 
-                            variant="contained" 
-                            color="secondary" 
-                            size="small" 
-                            onClick={() => handleDelete(params.row.id)}
-                        >
-                            Delete
-                        </Button>
-                    </div>
-                );
-            }
-        },
-    ];
-
-    // Handlers for Edit and Delete actions
     const handleEdit = (id) => {
         console.log(`Edit school with ID: ${id}`);
         // Implement edit functionality here
@@ -104,24 +57,161 @@ const AdminSchoolContent = () => {
 
     const handleDelete = (id) => {
         console.log(`Delete school with ID: ${id}`);
+        setDeleteId(id);
+        setShowModal(true);
         // Implement delete functionality here
     };
 
+    const confirmDelete = async () => {
+        try {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/editSchoolStatus`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": Authenticate,
+                },
+                body: JSON.stringify({
+                    id: deleteId,
+                    type: 'disable' // what status you want to pass to the backend
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            if (result.success) {
+                // Update local state to remove deleted school
+                setSchools(schools.filter(school => school.id !== deleteId));
+            } else {
+                console.error(result.message);
+            }
+        } catch (error) {
+            console.error("Error deleting the school:", error);
+        } finally {
+            setShowModal(false);
+        }
+    };
+
+    const handleAddSchool = () => {
+        sessionStorage.setItem('token', Authenticate);
+        navigate('/adminAddSchool'); // Redirect to AdminAddSchool page
+    };
+
+    const getStatusClass = (status) => {
+        switch (status) {
+            case 'Disable':
+                return 'status-disable'; // Red
+            case 'Active':
+                return 'status-active';  // Green
+            case 'Pending':
+                return 'status-pending'; // Yellow
+            case 'Temporary':
+                return 'status-temporary'; // Gray
+            default:
+                return '';
+        }
+    };
+
+    const handleSort = (column) => {
+        // Toggle sort direction if the same column is clicked
+        const newDirection = sortColumn === column && sortDirection === "asc" ? "desc" : "asc";
+        setSortColumn(column);
+        setSortDirection(newDirection);
+    };
+
+    const sortedSchools = (() => {
+        if (!sortColumn || !sortDirection) return schools; // No sorting if column or direction is not set
+
+        return [...schools].sort((a, b) => {
+            const aValue = a[sortColumn].toString().toLowerCase();
+            const bValue = b[sortColumn].toString().toLowerCase();
+
+            if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
+            if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
+            return 0;
+        });
+    })();
+
+    // Thead content
+    const theadContent = (
+        <tr>
+            <th onClick={() => handleSort("name")}>
+                Name {sortColumn === "name" && (sortDirection === "asc" ? "↑" : "↓")}
+            </th>
+            <th onClick={() => handleSort("email")}>
+                Email {sortColumn === "email" && (sortDirection === "asc" ? "↑" : "↓")}
+            </th>
+            <th onClick={() => handleSort("contact")}>
+                Contact No. {sortColumn === "contact" && (sortDirection === "asc" ? "↑" : "↓")}
+            </th>
+            <th onClick={() => handleSort("category")}>
+                Category {sortColumn === "category" && (sortDirection === "asc" ? "↑" : "↓")}
+            </th>
+            <th onClick={() => handleSort("status")}>
+                Status {sortColumn === "status" && (sortDirection === "asc" ? "↑" : "↓")}
+            </th>
+            <th>Action</th>
+        </tr>
+    );
+
+    // Tbody content
+    const tbodyContent = sortedSchools.map((school) => (
+        <tr key={school.id}>
+            <td>{school.name}</td>
+            <td>{school.email}</td>
+            <td>{school.contact}</td>
+            <td>{school.category}</td>
+            <td className={getStatusClass(school.status)}>
+                {school.status}
+            </td>
+            <td>
+                <div style={{ display: 'flex', justifyContent: 'space-evenly', alignItems: 'center' }}>
+                    <FontAwesomeIcon
+                        className="icon-color-edit"
+                        title="Edit"
+                        icon={faEdit}
+                        style={{ marginRight: '8px', color: '#691ED2', cursor: 'pointer' }}
+                        onClick={() => handleEdit(school.id)}
+                    />
+                    {school.status !== 'Disable' && (
+                        <FontAwesomeIcon
+                            className="icon-color-delete"
+                            title="Delete"
+                            icon={faTrash}
+                            style={{ marginRight: '8px', color: '#dc3545', cursor: 'pointer' }}
+                            onClick={() => handleDelete(school.id)}
+                        />
+                    )}
+                </div>
+            </td>
+        </tr>
+    ));
+
     return (
-        <Container fluid>
-            <div className="TableContainer" style={{ height: 600, width: '100%' }}>
-                <DataGrid
-                    rows={schools}
-                    columns={columns}
-                    slots={{ toolbar: GridToolbar }}
-                    pageSize={5}
-                    rowsPerPageOptions={[5, 10, 20]}
-                    disableSelectionOnClick
-                    getRowId={(row) => row.id}
-                    
-                />
-            </div>
-        </Container>
+        <>
+        <TableWithControls
+            theadContent={theadContent}
+            tbodyContent={tbodyContent}
+            onAddButtonClick={handleAddSchool}
+            onSort={handleSort} // Pass handleSort to TableWithControls
+        />
+        <Modal show={showModal} onHide={() => setShowModal(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Confirm Deletion</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>Are you sure you want to delete this school?</Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowModal(false)}>
+                        Cancel
+                    </Button>
+                    <Button variant="primary" onClick={confirmDelete}>
+                        Confirm
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+        </>
     );
 };
 

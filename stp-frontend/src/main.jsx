@@ -29,6 +29,7 @@ import AdminStudent from "./Pages/AdminPages/AdminStudent";
 import AdminCourses from "./Pages/AdminPages/AdminCourses";
 import AdminCategory from "./Pages/AdminPages/AdminCategory";
 import AdminSubject from "./Pages/AdminPages/AdminSubject";
+import AdminAddSchool from "./Pages/AdminPages/AdminAddSchool";
 
 //StudentPortal Page
 import StudentPortalLogin from "./Pages/StudentPortalPages/StudentPortalLogin";
@@ -119,6 +120,11 @@ const router = createBrowserRouter([
   {
     path: "/adminSchool",
     element: <AdminSchool/>
+  },
+
+  {
+    path: "/adminAddSchool",
+    element: <AdminAddSchool/>
   },
 
   {

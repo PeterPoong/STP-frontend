@@ -15,7 +15,7 @@ const AdminStudentContent = () => {
     useEffect(() => {
         const fetchStudents = async () => {
             try {
-                const response = await fetch('http://192.168.0.69:8000/api/admin/studentList', {
+                const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/studentList`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -74,7 +74,7 @@ const AdminStudentContent = () => {
                                         <div style={{ display: 'flex', justifyContent: 'space-evenly' }}>
                                             <FontAwesomeIcon
                                                 icon={faEdit}
-                                                className="action-icon edit-icon"
+                                                className="action-icon edit-icon icon-color-edit"
                                                 title="Edit"
                                                 onClick={() => handleEdit(student.id)}
                                             />

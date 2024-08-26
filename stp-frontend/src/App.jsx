@@ -5,7 +5,6 @@ import "slick-carousel/slick/slick-theme.css";
 import Home from "./Pages/student pages/Home";
 import KnowMore from "./Pages/student pages/KnowMore";
 import ApplyNow from "./Pages/student pages/ApplyNow";
-
 import NavButtons from "./Components/NavButtons";
 import "bootstrap/dist/css/bootstrap.min.css";
 // import VideoSlide from "../Components/VideoSlide";
@@ -15,6 +14,11 @@ import Courses from "./Pages/student pages/CoursesPage";
 import ApplyForm from "./Pages/student pages/ApplyForm";
 import ApplyDetail from "./Pages/student pages/ApplyDetail";
 
+// Import Admin Pages
+import AdminSignup from "./Pages/AdminSignup";
+import AdminLogin from "./Pages/AdminLogin";
+import AdminAddSchoolContent from "./Pages/AdminAddSchoolContent";
+
 function App() {
   const style = {
     backgroundColor: "#f0f0f0", // For solid color
@@ -23,6 +27,7 @@ function App() {
     height: "100vh", // Ensures it covers the full viewport height
     margin: 0,
   };
+
   return (
     <Router>
       <div className="d-flex flex-column min-vh-100">
@@ -32,7 +37,6 @@ function App() {
             <Route path="/knowMoreInstitute/:id" element={<KnowMore />} />
             <Route path="/applynow" element={<ApplyNow />} />
             <Route path="/applyDetail/:id" element={<ApplyDetail />} />
-
             <Route path="/login" element={<div>Login Page</div>} />
             <Route path="/school" element={<div>School Page</div>} />
             <Route path="/student" element={<div>Student Page</div>} />
@@ -41,10 +45,12 @@ function App() {
             <Route path="/courses" element={<div>CoursesPage</div>} />
             <Route path="/institute" element={<div>InstitutePage</div>} />
             <Route path="/applycourse" element={<div>ApplyForm </div>} />
-            <Route
-              path="/personaldetails"
-              element={<div>PersonalDetails </div>}
-            />
+            <Route path="/personaldetails" element={<div>PersonalDetails </div>} />
+
+            {/* Add Admin Routes */}
+            <Route path="/adminSignup" element={<AdminSignup />} />
+            <Route path="/adminLogin" element={<AdminLogin />} />
+            <Route path="/adminAddSchool" element={<AdminAddSchoolContent />} />
           </Routes>
         </main>
         <Footer /> {/* Add the Footer component */}
@@ -54,4 +60,3 @@ function App() {
 }
 
 export default App;
-<Route path="/videoslide" element={<VideoSlide />} />;

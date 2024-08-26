@@ -1,26 +1,40 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Form, Button, Container, Row, Col, Alert, InputGroup } from "react-bootstrap";
-import axios from 'axios';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../css/StudentPortalCss/StudentPortalLoginForm.css";
 import studentPortalLogin from "../../assets/StudentPortalAssets/studentPortalLogin.png";
 import studentPortalLoginLogo from "../../assets/StudentPortalAssets/studentPortalLoginLogo.png";
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
-import moment from 'moment';
 import { Eye, EyeOff } from 'react-feather';
 
 const StudentPortalLogin = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [phone, setPhone] = useState('');
+  const [countryCode, setCountryCode] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [countryCodes, setCountryCodes] = useState([]);
   const [loginStatus, setLoginStatus] = useState(null);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
+    const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+    if (token) {
+      navigate('/studentPortalBasicInformations');
+    }
+
+    const handleTabClosing = () => {
+      if (!JSON.parse(localStorage.getItem('rememberMe'))) {
+        sessionStorage.removeItem('token');
+        localStorage.removeItem('token');
+      }
+    };
+
+    window.addEventListener('beforeunload', handleTabClosing);
+
     fetch('http://192.168.0.69:8000/api/countryCode')
       .then(response => response.json())
       .then(data => {
@@ -32,7 +46,6 @@ const StudentPortalLogin = () => {
         console.error('Error fetching country codes:', error);
       });
 
-    // Load remembered credentials
     const rememberedPhone = localStorage.getItem('rememberedPhone');
     const rememberedPassword = localStorage.getItem('rememberedPassword');
     if (rememberedPhone && rememberedPassword) {
@@ -40,19 +53,28 @@ const StudentPortalLogin = () => {
       setPassword(rememberedPassword);
       setRememberMe(true);
     }
-  }, []);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleTabClosing);
+    };
+  }, [navigate]);
+
+  const handlePhoneChange = (value, country, e, formattedValue) => {
+    setPhone(value);
+    setCountryCode(country.dialCode);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setLoginStatus(null);
-    const countryCode = phone.slice(0, phone.length - 10);
-    const contactNumber = phone.slice(-10);
-    const formattedCountryCode = countryCode.startsWith('+') ? countryCode : `+${countryCode}`;
+    setError("");
+
     const formData = {
       password: password,
-      country_code: formattedCountryCode,
-      contact_number: contactNumber,
+      country_code: `+${countryCode}`,
+      contact_number: phone.slice(countryCode.length),
     };
+
     console.log('Sending login data:', formData);
     fetch('http://192.168.0.69:8000/api/student/login', {
       method: 'POST',
@@ -61,42 +83,46 @@ const StudentPortalLogin = () => {
       },
       body: JSON.stringify(formData),
     })
-      .then(response => response.json())
+      .then(response => {
+        if (!response.ok) {
+          return response.json().then(err => Promise.reject(err));
+        }
+        return response.json();
+      })
       .then(data => {
         console.log('Full API response:', data);
         if (data.true === true) {
           console.log('Login successful:');
           setLoginStatus('success');
-          sessionStorage.setItem('token', data.data.token)
-          sessionStorage.setItem('loginTimestamp', moment().toISOString());
+          
+          sessionStorage.setItem('token', data.data.token);
+          localStorage.setItem('rememberMe', JSON.stringify(rememberMe));
 
-          // Save credentials if "Remember Me" is checked
           if (rememberMe) {
+            localStorage.setItem('token', data.data.token);
             localStorage.setItem('rememberedPhone', phone);
             localStorage.setItem('rememberedPassword', password);
           } else {
+            localStorage.removeItem('token');
             localStorage.removeItem('rememberedPhone');
             localStorage.removeItem('rememberedPassword');
           }
 
           setTimeout(() => navigate('/studentPortalBasicInformations'), 500);
         } else {
-          console.error('Login failed:', response.data);
+          console.error('Login failed:', data);
           setLoginStatus('failed');
+          setError(data.message || "Login failed. Please check your credentials.");
         }
       })
       .catch(error => {
         console.error('Error during login:', error);
-        setLoginStatus('error');
-        if (error.response) {
-          console.error('Error response from server:', error.response.data);
-          console.error('Error status:', error.response.status);
-          console.error('Error headers:', error.response.headers);
-        } else if (error.request) {
-          console.error('No response received:', error.request);
+        if (error.message) {
+          setError(error.message);
         } else {
-          console.error('Error message:', error.message);
+          setError("An error occurred. Please try again later.");
         }
+        setLoginStatus('error');
       });
   };
 
@@ -114,21 +140,17 @@ const StudentPortalLogin = () => {
           <Container>
             <Row className="justify-content-center">
               <Col md={8} lg={6} className="px-0">
-                <img
-                  src={studentPortalLoginLogo}
-                  alt="Student Portal Login Logo"
-                  className="img-fluid d-flex justify-content-start"
-                />
+                <img src={studentPortalLoginLogo} className="mb-4" alt="StudyPal Logo" />
                 <h2 className="text-start mb-2 custom-color-title">Login as Student</h2>
                 <p className="text-start mb-4 small custom-color-title">Log in to get started.</p>
                 {loginStatus === 'success' && (
                   <Alert variant="success">Login successful! Redirecting...</Alert>
                 )}
                 {loginStatus === 'failed' && (
-                  <Alert variant="danger">Login failed. Please check your credentials.</Alert>
+                  <Alert variant="danger">{error || "Login failed. Please check your credentials."}</Alert>
                 )}
                 {loginStatus === 'error' && (
-                  <Alert variant="danger">An error occurred. Please try again later.</Alert>
+                  <Alert variant="danger">{error || "An error occurred. Please try again later."}</Alert>
                 )}
                 <Form onSubmit={handleSubmit}>
                   <Form.Group controlId="formBasicPhone" className="mb-3">
@@ -136,7 +158,7 @@ const StudentPortalLogin = () => {
                     <PhoneInput
                       country={'my'}
                       value={phone}
-                      onChange={(value) => setPhone(value)}
+                      onChange={handlePhoneChange}
                       inputProps={{
                         name: 'phone',
                         required: true,
@@ -161,7 +183,7 @@ const StudentPortalLogin = () => {
                         required
                         className="pe-5"
                       />
-                      <div className="position-absolute top-50 end-0 translate-middle-y pe-3" style={{ zIndex: 10 }}>
+                      <div className="position-absolute top-50 end-0 translate-middle-y pe-3" style={{ zIndex: 0 }}>
                         <span
                           className="password-toggle"
                           onClick={() => setShowPassword(!showPassword)}

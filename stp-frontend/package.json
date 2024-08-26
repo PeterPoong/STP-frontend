@@ -30,7 +30,8 @@
     "react-phone-input-2": "^2.15.1",
     "react-router-dom": "^6.25.1",
     "react-select-search": "^4.1.7",
-    "recharts": "^2.12.7"
+    "recharts": "^2.12.7",
+    "typeface-ubuntu": "^1.1.13"
   },
   "devDependencies": {
     "@types/react": "^18.0.27",

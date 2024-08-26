@@ -1,0 +1,184 @@
+
+
+* {
+    font-family: 'Ubuntu', sans-serif;
+}
+
+.admin-add-school-container {
+    width: 952px;
+    height: auto;
+    margin-bottom: 10px;
+    border-radius: 15px;
+    border: solid 1px #000000;
+    margin-top: 10px;
+    background-color: #fff;
+}
+
+.HeadNavBarContainer {
+    width: 100%;
+    background: #F5F7F8 !important;
+}
+
+.featured {
+    border-radius: 5px;
+    border: solid 1px #D6D5D5;
+    margin-left: 1px;
+    margin-right: 1px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Adjust gap between search bar and buttons */
+    padding: 10px; /* Add padding to the container */
+}
+
+.featured:hover {
+    background-color: inherit; /* Ensures background color doesn't change */
+    border: solid 1px #D6D5D5; /* Ensures border color remains the same */
+}
+
+/* Styles for the search input and icon */
+.search-input-wrapper {
+    display: flex;
+    align-items: center;
+    width: 25%;
+    position: relative; /* Ensure that the icon is positioned correctly */
+}
+
+.search-input {
+    flex: 1;
+    padding-right: 30px; /* Ensure space for the search icon */
+    margin-top: 8px;
+}
+
+.search-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+    pointer-events: none; /* Prevent icon from being clicked */
+}
+
+.button-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px; /* Space between buttons */
+}
+
+.button-container .btn {
+    margin-bottom: 10px; /* Space between rows of buttons */
+    background-color: #D9D9D9 !important;
+    color: #000000 !important;
+    font-size: 12px !important;
+    width: 205px !important;
+    height: 26px !important;
+    border-radius: 25px !important;
+    border-color: #D9D9D9;
+    display: block !important;
+    line-height: 0px;
+    transition: background-color 0.3s, color 0.3s;
+    flex: none;
+}
+
+.button-container .btn:hover {
+    background-color: #D32F2F !important;
+    color: #ffff !important;
+}
+
+.button-container .btn:active {
+    background-color: #D32F2F;
+    color: #fff; 
+}
+
+.button-container .btn:focus {
+    outline: none; /* Remove default focus outline */
+    background-color: #D32F2F; /* Background color when the button is focused */
+    color: #fff; /* Text color when the button is focused */
+}
+/* Media query for screens 1400px and wider */
+@media (min-width: 1400px) {
+    .admin-add-school-container {
+        width: 1200px; /* Increase width for larger screens */
+        margin: 20px auto; /* Center the container and add more margin */
+        border-radius: 20px; /* Slightly larger border-radius for a more spacious look */
+    }
+
+    .search-input-wrapper {
+        width: 30%; /* Increase width of search input wrapper */
+    }
+
+    .search-input {
+        width: calc(100% - 40px); /* Ensure it fits within the container with extra space for the icon */
+    }
+
+    .button-container {
+        flex-wrap: wrap; /* Allow buttons to wrap as needed */
+        gap: 15px; /* Increase space between buttons */
+    }
+
+    .button-container .btn {
+        width: 265px !important; /* Slightly larger button width */
+        font-size: 14px !important; /* Larger font size for better readability */
+        height: 30px !important; /* Increased height for a better appearance */
+        border-radius: 30px !important; /* Larger border-radius for a more prominent look */
+    }
+}
+
+/* Media query for screens smaller than 768px */
+@media (max-width: 768px) {
+    .admin-add-school-container {
+        width: 100%;
+        margin: 10px 0;
+        border-radius: 10px;
+    }
+
+    .search-input-wrapper {
+        width: 100%;
+    }
+
+    .search-input {
+        width: calc(100% - 40px); /* Adjust width to fit within the container */
+        margin-top: 8px;
+    }
+
+    .button-container {
+        flex-direction: column; /* Stack buttons vertically */
+        align-items: center;
+    }
+
+    .button-container .btn {
+        width: 100%; /* Make buttons full width on small screens */
+        max-width: 300px; /* Limit the maximum width */
+        font-size: 14px !important;
+        height: auto; /* Adjust height to content */
+    }
+}
+
+/* This will capitalize the first letter of the label text */
+form .form-check-label::first-letter {
+    text-transform: uppercase;
+}
+
+.save{
+    width: 144.77px;
+    height: 24px;
+    border-radius: 21px;
+    background-color: #B71A18;
+    color: #D9D9D9;
+    font-size: 20px;
+    line-height: 11.08px;
+}
+
+.course{
+    margin-bottom: 10px; /* Space between rows of buttons */
+    background-color: #D9D9D9 !important;
+    color: #000000 !important;
+    font-size: 12px !important;
+    width: 205px !important;
+    height: 26px !important;
+    border-radius: 25px !important;
+    border-color: #D9D9D9;
+    display: block !important;
+    line-height: 0px;
+    transition: background-color 0.3s, color 0.3s;
+    flex: none;
+}
