@@ -1,5 +1,6 @@
 import { React, useEffect } from "react";
 import { useLocation, Link } from "react-router-dom";
+import NavButtonsSP from "../../Components/StudentPortalComp/NavButtonsSP";
 import NavButtons from "../../Components/StudentComp/NavButtons";
 // import headerImage from "../../assets/student asset/coursepage image/StudyPal10.png";
 import headerImage from "../../assets/StudentAssets/coursepage image/StudyPal10.png";
