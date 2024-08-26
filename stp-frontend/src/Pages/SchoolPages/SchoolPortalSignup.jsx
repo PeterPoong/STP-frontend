@@ -93,7 +93,7 @@ const SchoolPortalSignup = () => {
     console.log("contact", schoolContact.slice(2));
 
     const response = await fetch(
-      `${import.meta.env.VITE_BASE_URL}school/register`,
+      `${import.meta.env.VITE_BASE_URL}api/school/register`,
       {
         method: "POST",
         headers: {
