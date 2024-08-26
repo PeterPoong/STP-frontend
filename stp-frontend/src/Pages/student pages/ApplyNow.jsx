@@ -1,6 +1,6 @@
 import { React, useEffect } from "react";
 import { useLocation, Link } from "react-router-dom";
-import NavButtons from "../../Components/student components/NavButtons";
+import NavButtonsSP from "../../Components/StudentPortalComp/NavButtonsSP";
 // import headerImage from "../../assets/student asset/coursepage image/StudyPal10.png";
 import headerImage from "../../assets/student asset/coursepage image/StudyPal10.png";
 import "../../css/student css/Apply.css";
@@ -38,7 +38,7 @@ const ApplyNow = () => {
 
   return (
     <div style={{ backgroundColor: "#F5F4F4" }}>
-      <NavButtons />
+      <NavButtonsSP />
       <header className="apply-now-masthead">
         <img
           src={headerImage}

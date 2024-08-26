@@ -1,8 +1,8 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { Form, Button, Container, Row, Col, InputGroup } from "react-bootstrap";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Form, Button, Container, Row, Col, InputGroup, Alert } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../../css/StudentPortalCss/StudentPortalLoginForm.css";
+import "../../css/StudentPortalStyles/StudentPortalLoginForm.css";
 import studentPortalLogin from "../../assets/StudentPortalAssets/studentPortalLogin.png";
 import studentPortalLoginLogo from "../../assets/StudentPortalAssets/studentPortalLoginLogo.png";
 import 'react-phone-input-2/lib/style.css';
@@ -14,16 +14,66 @@ const StudentPortalResetPassword = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [passwordError, setPasswordError] = useState("");
-  const handleSubmit = (e) => {
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (!location.state || !location.state.token || !location.state.userId) {
+      setError("No authentication token or user ID provided. Please log in first.");
+      setTimeout(() => navigate('/studentPortalLogin'), 3000);
+    }
+  }, [location.state, navigate]);
+
+  const handleResetPassword = async (e) => {
     e.preventDefault();
+    setError("");
+    setSuccess("");
     if (newPassword !== confirmPassword) {
-      setPasswordError("Passwords do not match");
-    } else {
-      setPasswordError("");
-      console.log("New Password:", newPassword);
+      setError("Passwords do not match.");
+      return;
+    }
+
+    const token = location.state?.token;
+    const userId = location.state?.userId;
+    if (!token || !userId) {
+      setError("No authentication token or user ID found. Please log in again.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/resetDummyAccountPassword`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ 
+          id: userId,
+          newPassword: newPassword,
+          confirmPassword: confirmPassword,
+        }),
+      });
+      
+      console.log("Response status:", response.status);
+      const responseData = await response.json();
+      console.log("Response data:", responseData);
+  
+      if (response.ok) {
+        console.log("Password reset successful");
+        setSuccess("Password reset successfully. You can now login with your new password.");
+        setTimeout(() => navigate('/studentPortalLogin'), 2000);
+      } else {
+        console.error("Failed to reset password:", responseData.message);
+        setError(responseData.message || "Failed to reset password. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error in resetting password:", error);
+      setError("An error occurred while resetting the password. Please check your internet connection and try again.");
     }
   };
+
   return (
     <Container fluid className="h-100">
       <Row className="h-50">
@@ -40,12 +90,13 @@ const StudentPortalResetPassword = () => {
               <Col md={8} lg={6} className="px-0">
                 <img
                   src={studentPortalLoginLogo}
-                  className="img-fluid mb-4 "
                   alt="StudyPal logo"
                 />
-                <h2 className="text-start mb-3 custom-color-title">Account exists.</h2>
-                <p className="text-start mb-4  small custom-color-title">An account with your information existed in our databases. Please create a new password to activate the account.</p>
-                <Form onSubmit={handleSubmit}>
+                <h2 className="text-start mb-3 custom-color-title">Reset Your Password</h2>
+                <p className="text-start mb-4 small custom-color-title">Please create a new password for your account.</p>
+                {error && <Alert variant="danger">{error}</Alert>}
+                {success && <Alert variant="success">{success}</Alert>}
+                <Form onSubmit={handleResetPassword}>
                   <Form.Group className="mb-3" controlId="formNewPassword">
                     <Form.Label className="custom-label">New Password</Form.Label>
                     <InputGroup className="password-input-group">
@@ -80,7 +131,6 @@ const StudentPortalResetPassword = () => {
                       </InputGroup.Text>
                     </InputGroup>
                   </Form.Group>
-                  {passwordError && <p className="text-danger">{passwordError}</p>}
                   <Button
                     variant="danger"
                     type="submit"
@@ -90,7 +140,7 @@ const StudentPortalResetPassword = () => {
                     Save New Password
                   </Button>
                   <div className="text-center text-lg-center m-5 pt-2">
-                    <p className="small pt-1 mb-0">Not Registered Yet? <Link to="/studentPortalSignUp" className="forgetpassword mx-2">Create an account</Link></p>
+                    <p className="small pt-1 mb-0">Remember your password? <Link to="/studentPortalLogin" className="forgetpassword mx-2">Login here</Link></p>
                   </div>
                 </Form>
               </Col>

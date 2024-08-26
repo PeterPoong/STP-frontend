@@ -1,17 +1,21 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Form, Button, Container, Row, Col, Alert } from "react-bootstrap";
+import { Form, Button, Container, Row, Col, Alert,InputGroup } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../../css/StudentPortalCss/StudentPortalLoginForm.css";
+import "../../css/StudentPortalStyles/StudentPortalLoginForm.css";
 import studentPortalLogin from "../../assets/StudentPortalAssets/studentPortalLogin.png";
 import studentPortalLoginLogo from "../../assets/StudentPortalAssets/studentPortalLoginLogo.png";
 import 'react-phone-input-2/lib/style.css';
+import { Eye, EyeOff } from 'react-feather';
+
 
 const StudentPortalForgetPassword = () => {
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [step, setStep] = useState(1);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -24,8 +28,8 @@ const StudentPortalForgetPassword = () => {
     console.log("Initiating password reset request for email:", email);
     
     try {
-      console.log("Sending request to:", 'http://192.168.0.69:8000/api/sendOtp');
-      const response = await fetch('http://192.168.0.69:8000/api/sendOtp', {
+      console.log("Sending request to:", `${import.meta.env.VITE_BASE_URL}api/sendOtp`);
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/sendOtp`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -47,7 +51,10 @@ const StudentPortalForgetPassword = () => {
         setStep(2); // Move to OTP input step
       } else {
         console.error("Failed to send reset request:", responseText);
-        setError(responseText || "Failed to send reset request. Please try again.");
+        const response = JSON.parse(responseText);
+        const errorMessage = response.error?.email?.[0]||"Failed to send reset request. Please try again";
+        setError(errorMessage);
+        
       }
     } catch (error) {
       console.error("Error in sending reset request:", error);
@@ -62,7 +69,7 @@ const StudentPortalForgetPassword = () => {
     console.log("Verifying OTP for email:", email);
   
     try {
-      const response = await fetch('http://192.168.0.69:8000/api/validateOtp', {
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/validateOtp`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -82,7 +89,7 @@ const StudentPortalForgetPassword = () => {
         console.log("OTP verified successfully");
         setSuccess("OTP verified successfully. Please set your new password.");
         setStep(3); // Move to password reset step
-      } else if (response.status === 404) {
+      } else if (response.status === 500) {
         console.error("Verify OTP endpoint not found");
         setError("The OTP verification service is currently unavailable. Please try again later or contact support.");
       } else {
@@ -106,8 +113,8 @@ const StudentPortalForgetPassword = () => {
     console.log("Initiating password reset for email:", email);
   
     try {
-      console.log("Sending request to:", 'http://192.168.0.69:8000/api/resetPassword');
-      const response = await fetch('http://192.168.0.69:8000/api/resetPassword', {
+      console.log("Sending request to:", `${import.meta.env.VITE_BASE_URL}api/resetPassword`);
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/resetPassword`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -127,7 +134,7 @@ const StudentPortalForgetPassword = () => {
       if (response.ok) {
         console.log("Password reset successful");
         setSuccess("Password reset successfully. You can now login with your new password.");
-        setTimeout(() => navigate('/studentPortalLogin'), 3000);
+        setTimeout(() => navigate('/studentPortalLogin'), 500);
       } else {
         console.error("Failed to reset password:", responseText);
         setError(responseText || "Failed to reset password. Please try again.");
@@ -153,7 +160,7 @@ const StudentPortalForgetPassword = () => {
               <Col md={8} lg={6} className="px-0">
                 <img
                   src={studentPortalLoginLogo}
-                  className="img-fluid"
+                  
                   alt="StudyPal logo"
                 />
                 <h2 className="text-start mb-3 custom-color-title">Forget your password?</h2>
@@ -206,21 +213,47 @@ const StudentPortalForgetPassword = () => {
                   <Form onSubmit={handleResetPassword}>
                     <Form.Group controlId="formNewPassword">
                       <Form.Label className="custom-label">New Password</Form.Label>
+                      <InputGroup>
                       <Form.Control
-                        type="password"
+                        type={showNewPassword ? "text" : "password"}
+                        placeholder="Password"
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
                         required
+                        className="pe-5"
                       />
+                      <div className="position-absolute top-50 end-0 translate-middle-y pe-3" style={{ zIndex: 10 }}>
+                        <span
+                          className="password-toggle"
+                          onClick={() => setShowNewPassword(!showNewPassword)}
+                          style={{ cursor: 'pointer' }}
+                        >
+                          {showNewPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+                        </span>
+                      </div>
+                    </InputGroup>
                     </Form.Group>
                     <Form.Group controlId="formConfirmPassword">
                       <Form.Label className="custom-label">Confirm New Password</Form.Label>
+                      <InputGroup>
                       <Form.Control
-                        type="password"
+                        type={showConfirmPassword ? "text" : "password"}
+                        placeholder="Password"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         required
+                        className="pe-5"
                       />
+                      <div className="position-absolute top-50 end-0 translate-middle-y pe-3" style={{ zIndex: 10 }}>
+                        <span
+                          className="password-toggle"
+                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          style={{ cursor: 'pointer' }}
+                        >
+                          {showConfirmPassword? <Eye size={18} /> : <EyeOff size={18} />}
+                        </span>
+                      </div>
+                    </InputGroup>
                     </Form.Group>
                     <Button
                       variant="danger"

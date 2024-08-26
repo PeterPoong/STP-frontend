@@ -10,9 +10,8 @@ import {
   Modal,
   InputGroup,
 } from "react-bootstrap";
-import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../../css/StudentPortalCss/StudentPortalLoginForm.css";
+import "../../css/StudentPortalStyles/StudentPortalLoginForm.css";
 import studentPortalLogin from "../../assets/StudentPortalAssets/studentPortalLogin.png";
 import studentPortalLoginLogo from "../../assets/StudentPortalAssets/studentPortalLoginLogo.png";
 import { Eye, EyeOff } from "react-feather";
@@ -22,6 +21,7 @@ import "react-phone-input-2/lib/style.css";
 const StudentPortalSignUp = () => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [countryCode, setCountryCode] = useState("");
   const [identityCard, setIdentityCard] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -34,6 +34,14 @@ const StudentPortalSignUp = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const token =
+      sessionStorage.getItem("token") || localStorage.getItem("token");
+    if (token) {
+      navigate("/studentPortalBasicInformations");
+    }
+  }, [navigate]);
+
+  useEffect(() => {
     const isValid =
       name.trim() !== "" &&
       phone.length >= 10 &&
@@ -44,9 +52,9 @@ const StudentPortalSignUp = () => {
     setIsFormValid(isValid);
   }, [name, phone, identityCard, email, password, confirmPassword]);
 
-  const handlePhoneChange = (value, country, event, formattedValue) => {
-    const digitsOnly = value.replace(/\D/g, "");
-    setPhone(digitsOnly);
+  const handlePhoneChange = (value, country) => {
+    setPhone(value);
+    setCountryCode(country.dialCode);
   };
 
   const handleSubmit = (e) => {
@@ -68,23 +76,29 @@ const StudentPortalSignUp = () => {
       email: email,
       password: password,
       confirm_password: confirmPassword,
+      ic: identityCard,
       type: "student",
-      country_code: countryCode.startsWith("+")
-        ? countryCode
-        : `+${countryCode}`,
-      contact_number: contactNumber,
+      country_code: `+${countryCode}`,
+      contact_number: phone.slice(countryCode.length),
     };
 
     console.log("Sending signup data:", formData);
 
-    fetch("http://192.168.0.69:8000/api/student/register", {
+    fetch(`${import.meta.env.VITE_BASE_URL}api/student/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(formData),
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          return response.json().then((errorData) => {
+            throw errorData;
+          });
+        }
+        return response.json();
+      })
       .then((data) => {
         console.log("Full API response:", data);
         if (data.success === true) {
@@ -101,15 +115,13 @@ const StudentPortalSignUp = () => {
       })
       .catch((error) => {
         console.error("Error during signup:", error);
-        if (
-          error.response &&
-          error.response.data &&
-          error.response.data.message
-        ) {
-          if (error.response.data.message.includes("already registered")) {
-            setShowModal(true);
+        if (error.errors) {
+          if (error.errors.email) {
+            setSignupStatus("email_exists");
+          } else if (error.errors.contact_no) {
+            setSignupStatus("phone_exists");
           } else {
-            setSignupStatus("error");
+            setSignupStatus("validation_error");
           }
         } else {
           setSignupStatus("error");
@@ -176,6 +188,18 @@ const StudentPortalSignUp = () => {
                 different number or try logging in.
               </Alert>
             )}
+            {signupStatus === "email_exists" && (
+              <Alert variant="warning">
+                This email is already registered. Please use a different email
+                or try logging in.
+              </Alert>
+            )}
+            {signupStatus === "phone_exists" && (
+              <Alert variant="warning">
+                This contact number is already registered. Please use a
+                different number or try logging in.
+              </Alert>
+            )}
             <Form onSubmit={handleSubmit}>
               <Form.Group className="mb-3">
                 <Form.Label className="custom-label">Name</Form.Label>
@@ -199,6 +223,7 @@ const StudentPortalSignUp = () => {
                       onChange={handlePhoneChange}
                       inputProps={{
                         name: "phone",
+                        required: true,
                         placeholder: "Enter phone number",
                       }}
                       inputClass="form-control"

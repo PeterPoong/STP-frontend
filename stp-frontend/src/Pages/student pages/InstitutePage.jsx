@@ -1,6 +1,6 @@
 import React from "react";
 // import NavButtons from "../Components/student components/NavButtons";
-import NavButtons from "../../Components/student components/NavButtons";
+import NavButtonsSP from "../../Components/StudentPortalComp/NavButtonsSP";
 // // import SearchInstitute from "../assets/student asset/institute image/SearchInstitute";
 import SearchInstitute from "../../Components/student components/InstitutePage/SearchInstitute";
 import headerImage from "../../assets/student asset/institute image/heading.png";
@@ -10,7 +10,7 @@ import Footer from "../../Components/student components/Footer";
 const InstitutePage = () => {
   return (
     <div style={{ backgroundColor: "#F5F4F4" }}>
-      <NavButtons />
+      <NavButtonsSP />
       <header className="masthead">
         <img src={headerImage} alt="Header" className="header-image" />
       </header>

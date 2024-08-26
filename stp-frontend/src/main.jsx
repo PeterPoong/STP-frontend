@@ -45,6 +45,7 @@ import SchoolDashboard from "./Pages/SchoolPages/SchoolDashboard";
 import SchoolPortalForgetPassword from "./Pages/SchoolPages/schoolPortalForgetPassword";
 import ExistSchool from "./Pages/SchoolPages/ExistSchool";
 
+import StudentApplyCourse from "./Pages/StudentPortalPages/StudentApplyCourse";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -131,7 +132,7 @@ const router = createBrowserRouter([
 
   {
     path: "/adminAddSchool",
-    element: <AdminAddSchool/>
+    element: <AdminAddSchool />,
   },
 
   {
@@ -198,6 +199,11 @@ const router = createBrowserRouter([
   {
     path: "/schoolExistingAccount",
     element: <ExistSchool />,
+  },
+
+  {
+    path: "/studentApplyCourse",
+    element: <StudentApplyCourse />,
   },
 ]);
 

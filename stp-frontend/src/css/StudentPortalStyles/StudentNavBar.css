@@ -1,0 +1,109 @@
+@import url("https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap");
+
+.btnfirst{
+    border-radius: 0px !important;
+    background-color:#B71A18 !important;
+    color:white !important;
+    border-color:transparent !important;
+}
+
+.btnfirst:hover{
+    border-radius: 0px !important;
+    background-color:white !important ;
+    color:#B71A18 !important;
+    border-color:#B71A18 !important;
+}
+
+
+.btnsecond{
+    border-radius: 0px !important;
+    background-color:white !important;
+    color:#514E4E !important;
+    border-color:#EBEBEB !important;
+}
+
+.btnsecond:hover{
+    border-radius: 0px !important;
+    background-color:rgb(81, 78, 78,0.5) !important;
+    color:white !important;
+    border-color:transparent !important;
+}
+
+.navbutton:hover
+{
+    background-color:none !important;
+}
+
+.navbar {
+    background-color: #ffffff; /* Background color for the navbar */
+  }
+  
+  .navbar-brand {
+    color: #b71a18; /* Color for the brand name */
+    font-weight: bold;
+  }
+  
+  .nav-link-custom {
+    color: #333333; /* Default color for navigation links */
+    
+  }
+  
+  .nav-link-custom:hover {
+    color: #b71a18; /* Hover color for navigation links */
+  }
+  
+  .nav-dropdown-custom {
+    color: #333333; /* Default color for dropdown links */
+  }
+  
+  .nav-dropdown-custom .dropdown-item:hover {
+    color: #b71a18; /* Hover color for dropdown items */
+  }
+  
+  .nav-button {
+    background-color: #b71a18;
+    color: white;
+    border: none;
+    
+  }
+  
+  .nav-button:hover {
+    background-color: #9c1515; /* Hover background color */
+  }
+  
+  .navbutton-section {
+    display: flex;
+    align-items: center;
+    justify-content: flex -end;
+      }
+  
+  .navbutton-section .btn-group {
+    margin-left: 10px;
+  }
+  
+  .logo {
+    width: 150px; /* Adjust the logo size */
+  }
+  
+  @media (max-width: 768px) {
+    .navbar-collapse {
+      text-align: left; /* Align text and buttons to the left */
+    }
+  
+    .nav-link-custom {
+      display: block; /* Ensure links take full width */
+      margin-bottom: 10px;
+    }
+  
+    .navbutton-section {
+      display: block; /* Make nav buttons stack vertically */
+      text-align: left; /* Align nav buttons to the left */
+    }
+  
+    .navbutton-section .btn-group {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+  }
+  
+  

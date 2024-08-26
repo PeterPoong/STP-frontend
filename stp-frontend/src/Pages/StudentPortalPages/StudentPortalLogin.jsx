@@ -9,20 +9,20 @@ import {
   Alert,
   InputGroup,
 } from "react-bootstrap";
-import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../../css/StudentPortalCss/StudentPortalLoginForm.css";
+
 import studentPortalLogin from "../../assets/StudentPortalAssets/studentPortalLogin.png";
 import studentPortalLoginLogo from "../../assets/StudentPortalAssets/studentPortalLoginLogo.png";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
-import moment from "moment";
 import { Eye, EyeOff } from "react-feather";
+import "../../css/StudentPortalStyles/StudentPortalLoginForm.css";
 
 const StudentPortalLogin = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [phone, setPhone] = useState("");
+  const [countryCode, setCountryCode] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [countryCodes, setCountryCodes] = useState([]);
   const [loginStatus, setLoginStatus] = useState(null);
@@ -30,7 +30,26 @@ const StudentPortalLogin = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("http://192.168.0.69:8000/api/countryCode")
+    const rememberMe = JSON.parse(
+      localStorage.getItem("rememberMe") || "false"
+    );
+    const token = rememberMe
+      ? localStorage.getItem("token")
+      : sessionStorage.getItem("token");
+
+    if (token) {
+      navigate("/studentPortalBasicInformations");
+    }
+
+    const handleTabClosing = () => {
+      if (!rememberMe) {
+        sessionStorage.removeItem("token");
+      }
+    };
+
+    window.addEventListener("beforeunload", handleTabClosing);
+
+    fetch(`${import.meta.env.VITE_BASE_URL}api/countryCode`)
       .then((response) => response.json())
       .then((data) => {
         if (data.success) {
@@ -41,7 +60,6 @@ const StudentPortalLogin = () => {
         console.error("Error fetching country codes:", error);
       });
 
-    // Load remembered credentials
     const rememberedPhone = localStorage.getItem("rememberedPhone");
     const rememberedPassword = localStorage.getItem("rememberedPassword");
     if (rememberedPhone && rememberedPassword) {
@@ -63,63 +81,100 @@ const StudentPortalLogin = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setLoginStatus(null);
-    const countryCode = phone.slice(0, phone.length - 10);
-    const contactNumber = phone.slice(-10);
-    const formattedCountryCode = countryCode.startsWith("+")
-      ? countryCode
-      : `+${countryCode}`;
+    setError("");
+
     const formData = {
       password: password,
       country_code: `+${countryCode}`,
       contact_number: phone.slice(countryCode.length),
     };
+
     console.log("Sending login data:", formData);
-    fetch("http://192.168.0.69:8000/api/student/login", {
+    fetch(`${import.meta.env.VITE_BASE_URL}api/student/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(formData),
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (response.status === 429) {
+          throw new Error(
+            "The website is currently busy, please try again later."
+          );
+        }
+        if (!response.ok) {
+          return response.json().then((err) => Promise.reject(err));
+        }
+        return response.json();
+      })
       .then((data) => {
         console.log("Full API response:", data);
-        if (data.true === true) {
-          console.log("Login successful:");
+        if (data.true === true && data.data && data.data.user) {
+          console.log("Login successful:", data);
           setLoginStatus("success");
-          sessionStorage.setItem("token", data.data.token);
-          sessionStorage.setItem("loginTimestamp", moment().toISOString());
 
-          if (rememberMe) {
-            localStorage.setItem("rememberedPhone", phone);
-            localStorage.setItem("rememberedPassword", password);
+          const studentStatus = data.data.user.student_status;
+          const token = data.data.token;
+          const userId = data.data.user.id;
+
+          if (studentStatus === 3) {
+            // Redirect to password reset page with token and user ID
+            navigate("/studentPortalResetPassword", {
+              state: { token: token, userId: userId },
+            });
           } else {
-            localStorage.removeItem("rememberedPhone");
-            localStorage.removeItem("rememberedPassword");
-          }
+            // Existing login logic
+            if (data.data.token) {
+              sessionStorage.setItem("token", data.data.token);
+              localStorage.setItem("rememberMe", JSON.stringify(rememberMe));
 
-          setTimeout(() => navigate("/studentPortalBasicInformations"), 500);
+              if (rememberMe) {
+                localStorage.setItem("token", data.data.token);
+                localStorage.setItem("rememberedPhone", phone);
+                localStorage.setItem("rememberedPassword", password);
+              } else {
+                localStorage.removeItem("token");
+                localStorage.removeItem("rememberedPhone");
+                localStorage.removeItem("rememberedPassword");
+              }
+
+              const userId = data.data.user.id;
+              if (userId) {
+                const id = userId.toString();
+                sessionStorage.setItem("id", id);
+                if (rememberMe) {
+                  localStorage.setItem("id", id);
+                }
+              } else {
+                console.error("User ID not found in response:", data);
+              }
+
+              setTimeout(
+                () => navigate("/studentPortalBasicInformations"),
+                500
+              );
+            } else {
+              console.error("Token not found in response");
+              setError(
+                "Login successful, but token not received. Please try again."
+              );
+            }
+          }
         } else {
-          console.error("Login failed:", response.data);
+          console.error("Login failed:", data);
           setLoginStatus("failed");
+          setError(
+            data.message || "Login failed. Please check your credentials."
+          );
         }
       })
       .catch((error) => {
         console.error("Error during login:", error);
-        setLoginStatus("error");
-        if (error.response) {
-          console.error("Error response from server:", error.response.data);
-          console.error("Error status:", error.response.status);
-          console.error("Error headers:", error.response.headers);
-        } else if (error.request) {
-          console.error("No response received:", error.request);
-        } else {
-          console.error("Error message:", error.message);
-        }
+        setError(error.message || "An error occurred. Please try again later.");
         setLoginStatus("error");
       });
   };
-
   return (
     <Container fluid className="h-100">
       <Row className="h-50">
@@ -136,7 +191,7 @@ const StudentPortalLogin = () => {
               <Col md={8} lg={6} className="px-0">
                 <img
                   src={studentPortalLoginLogo}
-                  className=" mb-4"
+                  className="mb-4"
                   alt="StudyPal Logo"
                 />
                 <h2 className="text-start mb-2 custom-color-title">
@@ -152,12 +207,12 @@ const StudentPortalLogin = () => {
                 )}
                 {loginStatus === "failed" && (
                   <Alert variant="danger">
-                    Login failed. Please check your credentials.
+                    {error || "Login failed. Please check your credentials."}
                   </Alert>
                 )}
                 {loginStatus === "error" && (
                   <Alert variant="danger">
-                    An error occurred. Please try again later.
+                    {error || "An error occurred. Please try again later."}
                   </Alert>
                 )}
                 <Form onSubmit={handleSubmit}>
@@ -195,7 +250,7 @@ const StudentPortalLogin = () => {
                       />
                       <div
                         className="position-absolute top-50 end-0 translate-middle-y pe-3"
-                        style={{ zIndex: 10 }}
+                        style={{ zIndex: 0 }}
                       >
                         <span
                           className="password-toggle"

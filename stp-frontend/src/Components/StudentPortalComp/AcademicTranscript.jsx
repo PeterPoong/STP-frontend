@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
-import { Edit2, Trash2, Eye, Plus, Search, GripVertical, ChevronDown, Info } from 'lucide-react';
+import React, { useState, useRef, useCallback } from 'react';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
+import { Edit2, Trash2, Eye, Plus, Search, GripVertical, ChevronDown, Info, FileText, X, Check } from 'lucide-react';
 import Carousel from 'react-material-ui-carousel';
 import { Paper, Button, Tooltip } from '@mui/material';
 import SelectSearch from 'react-select-search';
 import 'react-select-search/style.css';
-
+import "../../css/StudentPortalStyles/StudentPortalAcademicTranscript.css";
+import WidgetFileUpload from "../../Components/StudentPortalComp/WidgetFileUpload";
+import WidgetPopUpDelete from "../../Components/StudentPortalComp/WidgetPopUpDelete";
 
 const ExamSelector = ({ exams, selectedExam, setSelectedExam }) => {
   const itemsPerPage = 5;
@@ -62,201 +65,205 @@ const ExamSelector = ({ exams, selectedExam, setSelectedExam }) => {
   );
 };
 
+const SubjectBasedExam = ({ examType, subjects, onSubjectsChange }) => {
+  const [editingIndex, setEditingIndex] = useState(null);
 
-const customStyles = `
-  .select-search-container {
-    width: 100%;
-    position: relative;
-  }
-  .select-search-input {
-    width: 100%;
-    height: 38px;
-    padding: 0.375rem 0.75rem;
-    padding-right: 40px;
-    font-size: 1rem;
-    line-height: 1.5;
-    color: #495057;
-    background-color: #fff;
-    background-clip: padding-box;
-    border: 1px solid #ced4da;
-    border-radius: 0.25rem;
-    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-  }
-  .select-search-input:focus {
-    border-color: #80bdff;
-    outline: 0;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-  }
-  .add-subject-button {
-    position: absolute;
-    right: 0px;
-    top: 0px;
-    bottom: 0px;
-    width: 68px;
-    background-color: #dc3545;
-    border: none;
-    border-top-right-radius: 0.25rem;
-    border-bottom-right-radius: 0.25rem;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-  }
-  .add-subject-button:hover {
-    background-color: #c82333;
-  }
-  .select-search-option {
-    padding: 0.375rem 0.75rem;
-    cursor: pointer;
-  }
-  .select-search-option:hover {
-    background-color: #f8f9fa;
-  }
-  .select-search-option.is-selected {
-    background-color: #007bff;
-    color: #fff;
-  }
-`;
-
-const SubjectBasedExam = ({ examType, subjects }) => {
-  const [selectedSubject, setSelectedSubject] = useState('');
-  const [isOpen, setIsOpen] = useState(false);
-
-  const subjectOptions = subjects.map(subject => ({
-    name: subject.name,
-    value: subject.name
-  }));
-
-  const handleSubjectSelect = (selectedValue) => {
-    setSelectedSubject(selectedValue);
-    setIsOpen(false);
-  };
-
-  const handleAddSubject = () => {
-    if (selectedSubject) {
-      console.log('Adding subject:', selectedSubject);
-      // Add your logic here to handle adding the subject
-      setSelectedSubject('');
-    }
-  };
-
-  const toggleDropdown = () => {
-    setIsOpen(!isOpen);
-  };
-  const renderValue = (valueProps, snapshot, className) => {
-    return (
-      <div className="select-search-container" onClick={toggleDropdown}>
-        <div className="select-search-header">
-          <input
-            {...valueProps}
-            className="select-search-input"
-            placeholder="Enter subject name"
-            readOnly
-          />
-          <ChevronDown
-            size={20}
-            className={`chevron-icon ${isOpen ? 'open' : ''}`}
-          />
-        </div>
-        <button className="add-subject-button" onClick={handleAddSubject}>
-          <Plus size={16} />
-        </button>
-      </div>
+  const handleGradeChange = (index, grade) => {
+    const updatedSubjects = subjects.map((subject, i) =>
+      i === index ? { ...subject, grade } : subject
     );
+    onSubjectsChange(examType, updatedSubjects);
   };
-  const renderOption = (optionProps, optionData, optionSnapshot, className) => {
-    return (
-      <button {...optionProps} className={`select-search-option ${className}`}>
-        {optionData.name}
-      </button>
+
+  const handleNameChange = (index, name) => {
+    const updatedSubjects = subjects.map((subject, i) =>
+      i === index ? { ...subject, name } : subject
     );
+    onSubjectsChange(examType, updatedSubjects);
+  };
+
+  const handleEdit = (index) => {
+    setEditingIndex(index);
+  };
+
+  const handleSave = () => {
+    setEditingIndex(null);
+  };
+
+  const handleDelete = (index) => {
+    const updatedSubjects = subjects.filter((_, i) => i !== index);
+    onSubjectsChange(examType, updatedSubjects);
+  };
+
+  const getGradeColor = (grade) => {
+    if (grade.includes('A')) return 'bg-success';
+    if (grade.includes('B')) return 'bg-danger';
+    if (grade.includes('C')) return 'bg-warning text-dark';
+    return 'bg-secondary';
   };
 
   return (
-    <div>
-      <style>{customStyles}</style>
-      <div className="space-y-2 mb-4">
-        {subjects.map((subject, index) => (
-          <div key={index} className="d-flex align-items-center justify-content-between bg-white p-2 mb-2 rounded border">
-            <div className="d-flex align-items-center flex-grow-1">
-              <GripVertical className="me-3" size={20} />
+    <div className="space-y-2 mb-4">
+      {subjects.map((subject, index) => (
+        <div key={index} className="d-flex align-items-center justify-content-between bg-white p-2 mb-2 rounded border">
+          <div className="d-flex align-items-center flex-grow-1">
+            <GripVertical className="me-3" size={20} />
+            {editingIndex === index ? (
+              <input
+                type="text"
+                value={subject.name}
+                onChange={(e) => handleNameChange(index, e.target.value)}
+                className="editingplaceholder"
+                placeholder="Please enter you subjectname"
+              />
+            ) : (
               <span className="fw-medium h6 mb-0 me-3">{subject.name}</span>
-              <span className={`badge rounded-pill ${subject.grade.includes('A') ? 'bg-success' :
-                  subject.grade.includes('B') ? 'bg-danger' :
-                    subject.grade.includes('C') ? 'bg-warning text-dark' :
-                      'bg-secondary'
-                }`}>
+            )}
+            {editingIndex === index ? (
+              <input
+                type="text"
+                value={subject.grade}
+                onChange={(e) => handleGradeChange(index, e.target.value)}
+                className="editingplaceholder"
+                placeholder="Please enter you grade"
+              />
+            ) : (
+              <span className={`badge rounded-pill ${getGradeColor(subject.grade)}`}>
                 GRADE: {subject.grade}
               </span>
-            </div>
-            <Edit2 className="text-secondary cursor-pointer" size={20} />
+            )}
           </div>
-        ))}
-      </div>
-      <div className="mb-4">
-        <label className="fw-bold small formlabel">Insert a subject/course:</label>
-        <SelectSearch
-          options={subjectOptions}
-          value={selectedSubject}
-          onChange={handleSubjectSelect}
-          search
-          renderValue={renderValue}
-          renderOption={renderOption}
-        />
-      </div>
-
-      <div className="mb-4">
-        <label className="fw-bold small formlabel">Search for a subject:</label>
-        <div className="mt-1 flex rounded-md shadow-sm">
-          <input type="text" className="flex-1 block w-full rounded-none rounded-l-md border-gray-300" placeholder="Search subjects" />
-          <button className="inline-flex items-center px-3 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-500">
-            <Search size={20} />
-          </button>
+          <div>
+            {editingIndex === index ? (
+              <Check onClick={handleSave} className="text-success cursor-pointer me-2" />
+            ) : (
+              <Edit2 className="iconat me-2" onClick={() => handleEdit(index)} />
+            )}
+            <Trash2 className="iconat-trash" onClick={() => handleDelete(index)} />
+          </div>
         </div>
-      </div>
+      ))}
     </div>
   );
 };
 
-const ProgramBasedExam = ({ examType, defaultSubjects }) => {
+const ProgramBasedExam = ({ examType, subjects, onSubjectsChange }) => {
+  const [newSubject, setNewSubject] = useState('');
+  const [editingIndex, setEditingIndex] = useState(null);
+
+  const handleGradeChange = (index, grade) => {
+    const updatedSubjects = subjects.map((subject, i) =>
+      i === index ? { ...subject, grade } : subject
+    );
+    onSubjectsChange(examType, updatedSubjects);
+  };
+
+  const handleNameChange = (index, name) => {
+    const updatedSubjects = subjects.map((subject, i) =>
+      i === index ? { ...subject, name } : subject
+    );
+    onSubjectsChange(examType, updatedSubjects);
+  };
+
+  const handleAddSubject = (e) => {
+    e.preventDefault();
+    if (newSubject.trim() !== '') {
+      const updatedSubjects = [...subjects, { name: newSubject, grade: '' }];
+      onSubjectsChange(examType, updatedSubjects);
+      setNewSubject('');
+    }
+  };
+
+  const handleEdit = (index) => {
+    setEditingIndex(index);
+  };
+
+  const handleSave = () => {
+    setEditingIndex(null);
+  };
+
+  const handleDelete = (index) => {
+    const updatedSubjects = subjects.filter((_, i) => i !== index);
+    onSubjectsChange(examType, updatedSubjects);
+  };
+
+  const getGradeColor = (grade) => {
+    if (grade.includes('A')) return 'bg-success';
+    if (grade.includes('B')) return 'bg-danger';
+    if (grade.includes('C')) return 'bg-warning text-dark';
+    return 'bg-secondary';
+  };
+
   return (
     <div>
       <div className="mb-4">
-        <div className="flex space-x-4">
+        <div className="d-flex justify-content-around">
           <div className="w-1/2">
-            <label className="fw-bold small formlabel">Programme Name *</label>
-            <input type="text" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm" />
+            <label className="fw-bold small formlabel">Programme Name <span className="text-danger">*</span></label>
+            <input type="text" className="inputat" />
           </div>
           <div className="w-1/2">
-            <label className="block text-sm font-medium text-gray-700">CGPA *</label>
-            <input type="text" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm" />
+            <label className="fw-bold small formlabel">CGPA *</label>
+            <input type="text" className="inputat" />
           </div>
         </div>
       </div>
-      <div className="space-y-2 mb-4">
-        {defaultSubjects.map((subject, index) => (
-          <div key={index} className="flex items-center justify-between bg-white p-2 rounded shadow">
-            <div className="flex items-center space-x-2">
-              <span className="font-medium">{subject}</span>
-              <input type="text" placeholder="Enter grade" className="border rounded px-2 py-1 w-20" />
+      <TransitionGroup className="space-y-2 mb-4">
+        {subjects.map((subject, index) => (
+          <CSSTransition key={index} classNames="fade" timeout={300}>
+            <div className="d-flex align-items-center justify-content-between bg-white p-2 mb-2 rounded border">
+              <div className="d-flex align-items-center flex-grow-1">
+                <GripVertical className="me-3" size={20} />
+                {editingIndex === index ? (
+                  <input
+                    type="text"
+                    value={subject.name}
+                    onChange={(e) => handleNameChange(index, e.target.value)}
+                    className="editingplaceholder"
+                    placeholder="Please enter you subjectname" F
+                  />
+                ) : (
+                  <span className="fw-medium h6 mb-0 me-3">{subject.name}</span>
+                )}
+                {editingIndex === index ? (
+                  <input
+                    type="text"
+                    className="editingplaceholder"
+                    placeholder="Please enter you grade"
+                    value={subject.grade}
+                    onChange={(e) => handleGradeChange(index, e.target.value)}
+                  />) : (
+                  subject.grade && (
+                    <span className={`badge rounded-pill ms-2 ${getGradeColor(subject.grade)}`}>
+                      GRADE: {subject.grade}
+                    </span>
+                  ))}
+              </div>
+              {editingIndex === index ? (
+                <Check onClick={handleSave} className="text-success cursor-pointer me-2" />
+              ) : (
+                <Edit2 className="iconat" onClick={() => handleEdit(index)} />
+              )}
+              <Trash2 className="iconat-trash" onClick={() => handleDelete(index)} />
             </div>
-            <div className="flex space-x-2">
-              <Trash2 className="w-4 h-4 text-red-500 cursor-pointer" />
-              <Edit2 className="w-4 h-4 text-gray-500 cursor-pointer" />
-            </div>
-          </div>
+          </CSSTransition>
         ))}
-      </div>
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700">Insert a subject/course:</label>
-        <div className="mt-1 flex rounded-md shadow-sm">
-          <input type="text" className="flex-1 block w-full rounded-none rounded-l-md border-gray-300" placeholder="Enter subject name" />
-          <button className="inline-flex items-center px-3 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-500">
-            <Plus size={20} />
+      </TransitionGroup>
+      <form onSubmit={handleAddSubject} className="mb-4">
+        <label className="fw-bold small formlabel mb-2">Insert a subject/course:</label>
+        <div className="d-flex justify-content-center position-relative">
+          <input
+            type="text"
+            className="subject-input"
+            placeholder="Enter subject name"
+            value={newSubject}
+            onChange={(e) => setNewSubject(e.target.value)}
+          />
+          <button type="submit" className="add-button">
+            <Plus size={15} />
           </button>
         </div>
-      </div>
+      </form>
     </div>
   );
 };
@@ -265,7 +272,7 @@ const AcademicTranscript = () => {
   const [selectedExam, setSelectedExam] = useState('SPM');
   const exams = ['SPM', 'O-Level', 'GCSE', 'IGCSE', 'SSCE', 'A-Level', 'STPM', 'Foundation', 'Diploma', 'UEC', 'SAT / ACT'];
 
-  const subjectBasedExams = {
+  const [examData, setExamData] = useState({
     'SPM': [
       { name: 'Bahasa Melayu', grade: 'A+' },
       { name: 'Bahasa Inggeris', grade: 'A+' },
@@ -278,27 +285,143 @@ const AcademicTranscript = () => {
       { name: 'English', grade: 'A2' },
       { name: 'Mathematics', grade: 'B3' },
     ],
+    'O-Level': [
+      { name: 'English Language', grade: 'A*' },
+      { name: 'Mathematics', grade: 'A' },
+      { name: 'Physics', grade: 'B' },
+      { name: 'Chemistry', grade: 'A' },
+      { name: 'Biology', grade: 'B' },
+    ],
+    'GCSE': [
+      { name: 'English Language', grade: '9' },
+      { name: 'Mathematics', grade: '8' },
+      { name: 'Science (Double Award)', grade: '7-7' },
+      { name: 'History', grade: '6' },
+    ],
+    'IGCSE': [
+      { name: 'English as a Second Language', grade: 'A' },
+      { name: 'Mathematics', grade: 'A*' },
+      { name: 'Physics', grade: 'A' },
+      { name: 'Chemistry', grade: 'B' },
+    ],
+    'SSCE': [
+      { name: 'English Language', grade: 'A1' },
+      { name: 'Mathematics', grade: 'B2' },
+      { name: 'Physics', grade: 'B3' },
+      { name: 'Chemistry', grade: 'A2' },
+    ],
     'SAT / ACT': [
       { name: 'SAT Math', grade: '800' },
       { name: 'SAT Evidence-Based Reading and Writing', grade: '750' },
+      { name: 'ACT Composite Score', grade: '34' },
     ],
-  };
+    'A-Level': [
+      { name: 'Mathematics', grade: 'A' },
+      { name: 'Physics', grade: 'z' },
+      { name: 'Chemistry', grade: 'C' },
+    ],
+    'STPM': [
+      { name: 'Pengajian Am', grade: 'B' },
+      { name: 'Mathematics (T)', grade: 'B' },
+      { name: 'Physics', grade: 'B' },
+      { name: 'Chemistry', grade: 'B' },
+    ],
+    'Foundation': [
+      { name: 'Mathematics', grade: 'A' },
+      { name: 'Physics', grade: 'A' },
+      { name: 'Chemistry', grade: 'A' },
+      { name: 'Biology', grade: 'A' },
+    ],
+    'Diploma': [
+      { name: 'Mathematics', grade: 'D' },
+      { name: 'Computer Science', grade: 'D' },
+      { name: 'Database Management', grade: 'A' },
+      { name: 'Programming', grade: 'C' },
+    ],
+  });
 
-  const programBasedExams = {
-    'A-Level': ['Mathematics', 'Physics', 'Chemistry'],
-    'STPM': ['Pengajian Am', 'Mathematics (T)', 'Physics', 'Chemistry'],
-    'Foundation': ['Mathematics', 'Physics', 'Chemistry', 'Biology'],
-    'Diploma': ['Mathematics', 'Computer Science', 'Database Management', 'Programming'],
-  };
+  const handleSubjectsChange = useCallback((examType, updatedSubjects) => {
+    setExamData(prevData => ({
+      ...prevData,
+      [examType]: updatedSubjects
+    }));
+  }, []);
+
+  const isSubjectBased = ['SPM', 'UEC', 'O-Level', 'GCSE', 'IGCSE', 'SSCE', 'SAT / ACT'].includes(selectedExam);
+  const isProgramBased = ['A-Level', 'STPM', 'Foundation', 'Diploma'].includes(selectedExam);
 
   const renderExamComponent = () => {
-    if (['SPM', 'UEC', 'SAT / ACT'].includes(selectedExam)) {
-      return <SubjectBasedExam examType={selectedExam} subjects={subjectBasedExams[selectedExam]} />;
-    } else if (['A-Level', 'STPM', 'Foundation', 'Diploma'].includes(selectedExam)) {
-      return <ProgramBasedExam examType={selectedExam} defaultSubjects={programBasedExams[selectedExam]} />;
+    if (isSubjectBased) {
+      return <SubjectBasedExam
+        examType={selectedExam}
+        subjects={examData[selectedExam]}
+        onSubjectsChange={handleSubjectsChange}
+      />;
+    } else if (isProgramBased) {
+      return <ProgramBasedExam
+        examType={selectedExam}
+        subjects={examData[selectedExam]}
+        onSubjectsChange={handleSubjectsChange}
+      />;
     }
     return <div>Exam type not implemented yet</div>;
   };
+
+  const [files, setFiles] = useState([
+    { id: 1, title: 'Trial 1 Result', date: 'Thu Nov 23 2023 18:00', filename: 'example_filename3.pdf' }
+  ]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isFileUploadOpen, setIsFileUploadOpen] = useState(false);
+  const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
+  const [fileToDelete, setFileToDelete] = useState(null);
+
+  // Filter files based on search term
+  const filteredFiles = files.filter(file =>
+    file.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    file.filename.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Calculate pagination
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentFiles = filteredFiles.slice(indexOfFirstItem, indexOfLastItem);
+
+  // Change page
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  // Generate page numbers
+  const pageNumbers = [];
+  for (let i = 1; i <= Math.ceil(filteredFiles.length / itemsPerPage); i++) {
+    pageNumbers.push(i);
+  }
+
+  // Function to add new file
+  // Update the addFile function
+  const addFile = (newFile) => {
+    setFiles(prevFiles => [...prevFiles, { ...newFile, id: Date.now() }]);
+    setIsFileUploadOpen(false);
+  };
+  // Function to delete file
+  const deleteFile = () => {
+    setFiles(files.filter(file => file.id !== fileToDelete.id));
+    setIsDeletePopupOpen(false);
+    setFileToDelete(null);
+  };
+
+  // Function to open delete popup
+  const openDeletePopup = (file) => {
+    setFileToDelete(file);
+    setIsDeletePopupOpen(true);
+  };
+
+  // Function to view file (placeholder)
+  const viewFile = (file) => {
+    console.log("Viewing file:", file);
+    // Implement file viewing logic here
+  };
+
 
   return (
     <div className='p-0'>
@@ -312,7 +435,7 @@ const AcademicTranscript = () => {
 
         <div className="mb-4">
           <div className="flex items-center justify-between">
-            <p className="font-bold text-sm">Upload {selectedExam} Result Slips
+            <p className="fw-bold small formlabel">Upload {selectedExam} Result Slips
               <Tooltip title="Please upload trial results if full results not yet released" arrow>
                 <Info size={16} className="mx-3 text-danger cursor-help" />
               </Tooltip>
@@ -320,70 +443,103 @@ const AcademicTranscript = () => {
           </div>
         </div>
 
-        {/* Updated search bar section */}
         <div className="mb-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <span className="mr-2">Show</span>
-              <select className="border rounded p-1 bg-white">
-                <option>10</option>
-                <option>20</option>
-                <option>50</option>
-              </select>
-              <span className="ml-2">entries</span>
-            </div>
-            <div className="relative flex-grow mx-4">
-              <input 
-                type="text" 
-                placeholder="Search..." 
-                className="w-full pl-10 pr-4 py-2 border rounded-md"
-              />
-              <Search 
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" 
-                size={20} 
-              />
-            </div>
-            <button className="px-4 py-2 bg-red-600 text-white rounded-md flex items-center">
-              <Plus size={20} className="mr-2" />
-              ADD NEW
-            </button>
+          <div className="d-flex justify-content-start align-item-centger flex-wrap ">
+            <span className="me-3 align-self-center">Show</span>
+            <select
+              className="show-option-table me-3"
+              value={itemsPerPage}
+              onChange={(e) => setItemsPerPage(Number(e.target.value))}
+            >
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+              <option value={50}>50</option>
+            </select>
+            <span className="me-2 align-self-center">entries</span>
+            <input
+              className="search"
+              type="search"
+              placeholder="Search..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <button className="button-table w-25 px-5 ml-auto" onClick={() => setIsFileUploadOpen(true)}>ADD NEW</button>
           </div>
         </div>
 
-        <table className="w-full border-collapse border">
+        <table className="w-100  justify-content-around">
           <thead>
-            <tr className="bg-gray-100">
-              <th className="border p-2">Files</th>
-              <th className="border p-2">Filename</th>
-              <th className="border p-2">Actions</th>
+            <tr>
+              <th className="border-bottom p-2">Files</th>
+              <th className="border-bottom p-2 text-end">Filename</th>
+              <th className="border-bottom p-2 text-end">Actions</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td className="border p-2">Semester 1 20/21</td>
-              <td className="border p-2">example_filename3.pdf</td>
-              <td className="border p-2 flex justify-center space-x-2">
-                <Trash2 className="w-4 h-4 text-red-500 cursor-pointer" />
-                <Edit2 className="w-4 h-4 text-blue-500 cursor-pointer" />
-                <Eye className="w-4 h-4 text-gray-500 cursor-pointer" />
-              </td>
-            </tr>
-            <tr>
-              <td className="border p-2">Semester 2 21/22</td>
-              <td className="border p-2">example_filename4.pdf</td>
-              <td className="border p-2 flex justify-center space-x-2">
-                <Trash2 className="w-4 h-4 text-red-500 cursor-pointer" />
-                <Edit2 className="w-4 h-4 text-blue-500 cursor-pointer" />
-                <Eye className="w-4 h-4 text-gray-500 cursor-pointer" />
-              </td>
-            </tr>
+            <TransitionGroup component={null}>
+              {currentFiles.map((file) => (
+                <CSSTransition key={file.id} timeout={500} classNames="fade">
+                  <tr>
+                    <td className="border-bottom p-2">
+                      <div className="d-flex align-items-center">
+                        <FileText className="file-icon me-2" />
+                        <div>
+                          <div className="file-title">{file.title}</div>
+                          <div className="file-date">{file.date}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="border-bottom p-2 text-end">{file.filename}</td>
+                    <td className="border-bottom p-2">
+                      <div className="d-flex justify-content-end align-items-center">
+                        <Trash2 className="iconat-trash" onClick={() => openDeletePopup(file)} />
+                        <Eye className="iconat" onClick={() => viewFile(file)} />
+                      </div>
+                    </td>
+                  </tr>
+                </CSSTransition>
+              ))}
+            </TransitionGroup>
           </tbody>
         </table>
 
-        <div className="flex justify-end mt-4">
-          <button className="px-4 py-2 bg-red-600 text-white rounded">SAVE</button>
+        <div className="pagination">
+          <button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1}>
+            &lt;
+          </button>
+          {pageNumbers.map(number => (
+            <button
+              key={number}
+              onClick={() => paginate(number)}
+              className={currentPage === number ? 'active' : ''}
+            >
+              {number}
+            </button>
+          ))}
+          <button onClick={() => paginate(currentPage + 1)} disabled={currentPage === pageNumbers.length}>
+            &gt;
+          </button>
+        </div>
+
+        <div className="d-flex justify-content-end mt-4">
+          <button className="button-table w-25 px-5 text-center">SAVE</button>
         </div>
       </div>
+
+      <WidgetFileUpload
+        isOpen={isFileUploadOpen}
+        onClose={() => setIsFileUploadOpen(false)}
+        onSave={addFile}
+      />
+
+      <WidgetPopUpDelete
+        isOpen={isDeletePopupOpen}
+        onClose={() => {
+          setIsDeletePopupOpen(false);
+          setFileToDelete(null);
+        }}
+        onConfirm={deleteFile}
+      />
     </div>
   );
 };

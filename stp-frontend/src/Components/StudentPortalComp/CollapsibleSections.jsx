@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import Collapsible from 'react-collapsible';
 import { ChevronDown } from 'lucide-react';
 import AcademicTranscript from "../../Components/StudentPortalComp/AcademicTranscript";
+import CoCurriculum from "../../Components/StudentPortalComp/CoCurriculum";
+import Achievements from '../../Components/StudentPortalComp/Achievements';
+import OtherCertDoc from '../../Components/StudentPortalComp/OtherCertDoc'
+import "../../css/StudentPortalStyles/StudentPortalBasicInformation.css";
 
 const CollapsibleSections = () => {
   const [openSections, setOpenSections] = useState({
@@ -44,9 +48,9 @@ const CollapsibleSections = () => {
       <h4 className="mb-3 title-widget" >Transcript</h4>
       <div className="collapsible-sections">
         {renderCollapsible("Academic Transcript", <AcademicTranscript />, "academic")}
-        {renderCollapsible("Co-Curriculum", <p>Co-Curriculum content goes here</p>, "coCurriculum")}
-        {renderCollapsible("Achievements", <p>Achievements content goes here</p>, "achievements")}
-        {renderCollapsible("Other Certificates / Documents", <p>Other Certificates / Documents content goes here</p>, "otherCertificates")}
+        {renderCollapsible("Co-Curriculum", <CoCurriculum/>, "coCurriculum")}
+        {renderCollapsible("Achievements", <Achievements/>, "achievements")}
+        {renderCollapsible("Other Certificates / Documents", <OtherCertDoc/>, "otherCertificates")}
       </div>
     </div>
   );

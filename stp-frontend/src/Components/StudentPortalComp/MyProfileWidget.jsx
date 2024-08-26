@@ -3,11 +3,25 @@ import { Link } from "react-router-dom";
 import { Card, ListGroup, Collapse } from 'react-bootstrap';
 import { PlusCircle, MinusCircle } from 'react-feather';
 import sampleprofile from "../../assets/StudentPortalAssets/sampleprofile.png";
-import "../../css/StudentPortalCss/StudentPortalBasicInformation.css";
+import "../../css/StudentPortalStyles/StudentPortalBasicInformation.css";
 
 const MyProfileWidget = ({ onSelectContent }) => {
     const [isProfileExpanded, setIsProfileExpanded] = useState(false);
     const [isCoursesExpanded, setIsCoursesExpanded] = useState(false);
+    const [selectedContent, setSelectedContent] = useState('');
+
+    const handleContentSelect = (content) => {
+        setSelectedContent(content);
+        onSelectContent(content);
+    };
+
+    const getItemStyle = (content) => {
+        return {
+            cursor: 'pointer',
+            color: selectedContent === content ? 'red' : 'inherit',
+            fontWeight: selectedContent === content ? 'nomal' : 'normal'
+        };
+    };
 
     return (
         <Card className="boxshadow">
@@ -57,11 +71,29 @@ const MyProfileWidget = ({ onSelectContent }) => {
                 </ListGroup.Item>
                 <Collapse in={isProfileExpanded}>
                     <div>
-                        <ListGroup.Item className="ps-4" onClick={() => onSelectContent('basicInfo')}>Basic Information</ListGroup.Item>
-                        <ListGroup.Item className="ps-4" onClick={() => onSelectContent('managePassword')}>Manage Password</ListGroup.Item>
+                        <ListGroup.Item 
+                            className="ps-4" 
+                            onClick={() => handleContentSelect('basicInfo')}
+                            style={getItemStyle('basicInfo')}
+                        >
+                            Basic Information
+                        </ListGroup.Item>
+                        <ListGroup.Item 
+                            className="ps-4" 
+                            onClick={() => handleContentSelect('managePassword')}
+                            style={getItemStyle('managePassword')}
+                        >
+                            Manage Password
+                        </ListGroup.Item>
                     </div>
                 </Collapse>
-                <ListGroup.Item className="transcript-item" onClick={() => onSelectContent('transcript')}>Transcript</ListGroup.Item>
+                <ListGroup.Item 
+                    className="transcript-item" 
+                    onClick={() => handleContentSelect('transcript')}
+                    style={getItemStyle('transcript')}
+                >
+                    Transcript
+                </ListGroup.Item>
                 <ListGroup.Item
                     className="d-flex justify-content-between align-items-center"
                     onClick={() => setIsCoursesExpanded(!isCoursesExpanded)}
@@ -75,14 +107,25 @@ const MyProfileWidget = ({ onSelectContent }) => {
                 </ListGroup.Item>
                 <Collapse in={isCoursesExpanded}>
                     <div>
-                        <ListGroup.Item className="ps-4" onClick={() => onSelectContent('appliedCoursesPending')}>Pending</ListGroup.Item>
-                        <ListGroup.Item className="ps-4" onClick={() => onSelectContent('appliedCoursesHistory')}>History</ListGroup.Item>
+                        <ListGroup.Item 
+                            className="ps-4" 
+                            onClick={() => handleContentSelect('appliedCoursesPending')}
+                            style={getItemStyle('appliedCoursesPending')}
+                        >
+                            Pending
+                        </ListGroup.Item>
+                        <ListGroup.Item 
+                            className="ps-4" 
+                            onClick={() => handleContentSelect('appliedCoursesHistory')}
+                            style={getItemStyle('appliedCoursesHistory')}
+                        >
+                            History
+                        </ListGroup.Item>
                     </div>
                 </Collapse>
             </ListGroup>
         </Card>
     );
 };
-
 
 export default MyProfileWidget;
