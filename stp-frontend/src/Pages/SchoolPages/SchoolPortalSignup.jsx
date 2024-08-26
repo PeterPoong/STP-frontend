@@ -12,7 +12,7 @@ import {
 } from "react-bootstrap";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../../css/StudentPortalCss/StudentPortalLoginForm.css";
+import "../../css/StudentPortalStyles/StudentPortalLoginForm.css";
 import schoolPortalLoginBanner from "../../assets/SchoolPortalAssets/SchoolPortalLogin.png";
 import schoolPortalLoginLogo from "../../assets/SchoolPortalAssets/SchoolPortalLoginLogo.png";
 import { Eye, EyeOff } from "react-feather";
