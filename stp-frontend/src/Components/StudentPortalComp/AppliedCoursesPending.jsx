@@ -3,7 +3,7 @@ import { Card, Button } from "react-bootstrap";
 import { MapPin, BookOpen, Clock, Calendar, ChevronLeft, ChevronRight } from 'react-feather';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../css/StudentPortalStyles/StudentPortalWidget.css";
-import image1 from "../../assets/student asset/University Logo/image1.jpg";
+import image1 from "../../assets/StudentAssets/University Logo/image1.jpg";
 import WidgetPending from "../../Components/StudentPortalComp/WidgetPending";
 
 const AppliedCoursesPending = () => {

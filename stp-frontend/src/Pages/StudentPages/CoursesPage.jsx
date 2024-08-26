@@ -1,5 +1,5 @@
 import React from "react";
-import NavButtons from "../../Components/StudentComp/NavButtons";
+import NavButtonsSP from "../../Components/StudentPortalComp/NavButtonsSP";
 import SearchCourse from "../../Components/StudentComp/CoursePage/SearchCourse";
 import headerImage from "../../assets/StudentAssets/coursepage image/heading.png";
 import CourseListing from "../../Components/StudentComp/CoursePage/CourseListing";

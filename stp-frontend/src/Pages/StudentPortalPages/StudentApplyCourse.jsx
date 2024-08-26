@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Form, Button, ProgressBar } from 'react-bootstrap';
+import { Form, Button, ProgressBar, FormGroup } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import NavButtonsSP from "../../Components/StudentPortalComp/NavButtonsSP";
 import SpcFooter from "../../Components/StudentPortalComp/SpcFooter";
 import "../../css/StudentPortalStyles/StudentApplyCourse.css";
-import image1 from "../../assets/student asset/University Logo/image1.jpg";
+import image1 from "../../assets/StudentAssets/University Logo/image1.jpg";
 
 const StudentApplyCourse = () => {
   const [step, setStep] = useState(1);
@@ -32,9 +32,45 @@ const StudentApplyCourse = () => {
     switch (step) {
       case 1:
         return (
-          <div className="step-content">
+          <div className="step-content d-flex row  ">
             <h2>Basic Information</h2>
-            <Form.Group>
+            <div>
+              <Form.Group className="d-flex column align-items-center mb-3">
+                <Form.Label className="mb-0 me-2" style={{ width: '150px' }}>First Name</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="first_name"
+                  required
+                />
+              </Form.Group>
+              <Form.Group className="d-flex align-items-center mb-3">
+                <Form.Label className="mb-0 me-2" style={{ width: '150px' }}>Last Name</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="last_name"
+                  required
+                />
+              </Form.Group>
+            </div>
+            <div className="d-flex column justify-content-center ">
+              <Form.Group>
+                <Form.Label>First_Name</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="name"
+                  required
+                />
+              </Form.Group>
+              <Form.Group>
+                <Form.Label>Last_Name</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="name"
+                  required
+                />
+              </Form.Group>
+            </div>
+            <Form.Group >
               <Form.Label>Name</Form.Label>
               <Form.Control
                 type="text"
@@ -42,17 +78,7 @@ const StudentApplyCourse = () => {
                 value={formData.name}
                 onChange={handleInputChange}
                 required
-              />
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Email</Form.Label>
-              <Form.Control
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                required
-              />
+              ></Form.Control>
             </Form.Group>
             <Form.Group>
               <Form.Label>Phone</Form.Label>
@@ -64,6 +90,43 @@ const StudentApplyCourse = () => {
                 required
               />
             </Form.Group>
+            <div className="d-flex column justify-content-center ">
+              <Form.Group>
+                <Form.Label>First_Name</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="name"
+                  required
+                />
+              </Form.Group>
+              <Form.Group>
+                <Form.Label>Last_Name</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="name"
+                  required
+                />
+              </Form.Group>
+            </div>
+            <div className="d-flex column justify-content-center ">
+              <Form.Group>
+                <Form.Label>First_Name</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="name"
+                  required
+                />
+              </Form.Group>
+              <Form.Group>
+                <Form.Label>Last_Name</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="name"
+                  required
+                />
+              </Form.Group>
+            </div>
+
           </div>
         );
       case 2:
@@ -136,8 +199,8 @@ const StudentApplyCourse = () => {
               <a className="text-black align-self-center">You are now applying for </a>
               <h3 className="text-danger align-self-center">bachelor in mass communication</h3>
               <div className="d-flex justify-content-center " >
-              <img src={image1} className="acp-university-logo"/>
-              <h5 className="text-black fw-bold align-self-center">Swinburne University of Technology</h5>
+                <img src={image1} className="acp-university-logo" />
+                <h5 className="text-black fw-bold align-self-center">Swinburne University of Technology</h5>
               </div>
             </div>
           </div>
