@@ -10,8 +10,6 @@ import 'react-phone-input-2/lib/style.css';
 import { Eye, EyeOff } from 'react-feather';
 import "../../css/StudentPortalStyles/StudentPortalLoginForm.css";
 
-const stuURL = import.meta.env.VITE_STUDENT_LOGIN_URL;
-const stuCountryCodeURL = import.meta.env.VITE_STUDENT_COUNTRYCODE_URL;
 
 const StudentPortalLogin = () => {
   const [password, setPassword] = useState("");
@@ -40,7 +38,7 @@ const StudentPortalLogin = () => {
 
   window.addEventListener('beforeunload', handleTabClosing);
 
-    fetch(stuCountryCodeURL)
+    fetch(`${import.meta.env.VITE_BASE_URL}api/countryCode`)
       .then(response => response.json())
       .then(data => {
         if (data.success) {
@@ -81,7 +79,7 @@ const StudentPortalLogin = () => {
     };
   
     console.log('Sending login data:', formData);
-    fetch(stuURL, {
+    fetch(`${import.meta.env.VITE_BASE_URL}api/student/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

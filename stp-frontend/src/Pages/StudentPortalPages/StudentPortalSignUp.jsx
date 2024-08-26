@@ -10,8 +10,6 @@ import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 
 
-const stusuURL = import.meta.env.VITE_STUDENT_SIGNUP_URL;
-
 
 const StudentPortalSignUp = () => {
   const [name, setName] = useState("");
@@ -69,6 +67,7 @@ const StudentPortalSignUp = () => {
       email: email,
       password: password,
       confirm_password: confirmPassword,
+      ic:identityCard,
       type: "student",
       country_code: `+${countryCode}`,
       contact_number: phone.slice(countryCode.length),
@@ -76,7 +75,7 @@ const StudentPortalSignUp = () => {
   
     console.log('Sending signup data:', formData);
   
-    fetch(stusuURL, {
+    fetch( `${import.meta.env.VITE_BASE_URL}api/student/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -43,7 +43,7 @@ const StudentPortalResetPassword = () => {
     }
 
     try {
-      const response = await fetch('http://192.168.0.69:8000/api/student/resetDummyAccountPassword', {
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/resetDummyAccountPassword`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

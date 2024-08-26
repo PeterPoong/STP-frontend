@@ -8,9 +8,6 @@ import studentPortalLoginLogo from "../../assets/StudentPortalAssets/studentPort
 import 'react-phone-input-2/lib/style.css';
 import { Eye, EyeOff } from 'react-feather';
 
-const stuResetPasswordURL = import.meta.env.VITE_STUDENT_RESETPASSWORD_URL;
-const stuValidatePasswordURL = import.meta.env.VITE_STUDENT_VALIDATEOTP_URL;
-const stuSendPasswordURL = import.meta.env.VITE_STUDENT_SENDOTP_URL;
 
 const StudentPortalForgetPassword = () => {
   const [email, setEmail] = useState("");
@@ -31,8 +28,8 @@ const StudentPortalForgetPassword = () => {
     console.log("Initiating password reset request for email:", email);
     
     try {
-      console.log("Sending request to:", stuSendPasswordURL);
-      const response = await fetch(stuSendPasswordURL, {
+      console.log("Sending request to:", `${import.meta.env.VITE_BASE_URL}api/sendOtp`);
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/sendOtp`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -72,7 +69,7 @@ const StudentPortalForgetPassword = () => {
     console.log("Verifying OTP for email:", email);
   
     try {
-      const response = await fetch(stuValidatePasswordURL, {
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/validateOtp`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -116,8 +113,8 @@ const StudentPortalForgetPassword = () => {
     console.log("Initiating password reset for email:", email);
   
     try {
-      console.log("Sending request to:", stuResetPasswordURL);
-      const response = await fetch(stuResetPasswordURL, {
+      console.log("Sending request to:", `${import.meta.env.VITE_BASE_URL}api/resetPassword`);
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/resetPassword`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

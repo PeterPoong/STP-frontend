@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { Form, Button, ProgressBar } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import NavButtonsSP from "../../Components/StudentPortalComp/NavButtonsSP";
+import SpcFooter from "../../Components/StudentPortalComp/SpcFooter";
+import "../../css/StudentPortalStyles/StudentApplyCourse.css";
+import image1 from "../../assets/student asset/University Logo/image1.jpg";
 
 const StudentApplyCourse = () => {
   const [step, setStep] = useState(1);
@@ -123,28 +127,45 @@ const StudentApplyCourse = () => {
   };
 
   return (
-    <div className="container mt-5">
-      <h1 className="text-center mb-4">Student Course Application</h1>
-      <ProgressBar now={(step / 5) * 100} label={`Step ${step} of 5`} className="mb-4" />
-      <Form onSubmit={handleSubmit}>
-        {renderStep()}
-        <div className="d-flex justify-content-between mt-4">
-          {step > 1 && (
-            <Button variant="secondary" onClick={() => setStep(step - 1)}>
-              Previous
-            </Button>
-          )}
-          {step < 4 ? (
-            <Button variant="primary" onClick={() => setStep(step + 1)}>
-              Next
-            </Button>
-          ) : step === 4 ? (
-            <Button variant="success" type="submit">
-              Submit Application
-            </Button>
-          ) : null}
+    <div className="app-container-applycourse mt-5">
+      <NavButtonsSP />
+      <div className="main-content-applycourse">
+        <div className="backgroundimage">
+          <div>
+            <div className="widget-applying justify-content-center">
+              <a className="text-black align-self-center">You are now applying for </a>
+              <h3 className="text-danger align-self-center">bachelor in mass communication</h3>
+              <div className="d-flex justify-content-center " >
+              <img src={image1} className="acp-university-logo"/>
+              <h5 className="text-black fw-bold align-self-center">Swinburne University of Technology</h5>
+              </div>
+            </div>
+          </div>
         </div>
-      </Form>
+        <h1 className="text-center mb-4">Student Course Application</h1>
+
+        <ProgressBar now={(step / 5) * 100} label={`Step ${step} of 5`} className="mb-4" />
+        <Form onSubmit={handleSubmit}>
+          {renderStep()}
+          <div className="d-flex justify-content-between mt-4">
+            {step > 1 && (
+              <Button variant="secondary" onClick={() => setStep(step - 1)}>
+                Previous
+              </Button>
+            )}
+            {step < 4 ? (
+              <Button variant="primary" onClick={() => setStep(step + 1)}>
+                Next
+              </Button>
+            ) : step === 4 ? (
+              <Button variant="success" type="submit">
+                Submit Application
+              </Button>
+            ) : null}
+          </div>
+        </Form>
+      </div>
+      <SpcFooter />
     </div>
   );
 };

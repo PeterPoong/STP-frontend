@@ -99,7 +99,7 @@ const ManagePasswordWidget = () => {
 
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      const response = await fetch('http://192.168.0.69:8000/api/student/resetStudentPassword', {
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/resetStudentPassword`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

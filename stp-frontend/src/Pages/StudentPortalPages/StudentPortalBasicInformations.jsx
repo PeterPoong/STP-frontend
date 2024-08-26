@@ -32,7 +32,7 @@ const StudentPortalBasicInformations = () => {
   const verifyToken = async (token) => {
     try {
       console.log('Verifying token:', token);
-      const response = await fetch('http://192.168.0.69:8000/api/validateToken', {
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/validateToken`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -96,7 +96,7 @@ const StudentPortalBasicInformations = () => {
   return (
     <div className="app-container">
       <NavButtonsSP />
-      <main className="main-content">
+      <main className="main-content mt-5">
         <div className="content-wrapper">
           <div className="profile-widget-container">
             <MyProfileWidget onSelectContent={setSelectedContent} />

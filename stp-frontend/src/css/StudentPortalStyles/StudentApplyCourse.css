@@ -1,0 +1,37 @@
+.app-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: #F5F4F4;
+  }
+  
+  .main-content {
+    flex: 1;
+    padding:3rem 0 4.25rem 0;
+    
+  }
+
+  .backgroundimage
+  {
+    background: linear-gradient(
+        to bottom,
+        firebrick 0%,
+        firebrick 75%,
+        transparent 75%
+    ) !important;
+    height: 30rem !important;
+    width: 100%;
+    flex-direction: row;
+    align-content: flex-end;
+  }
+
+  .widget-applying
+  {
+    background-color: blue;
+    height: 15rem;
+    margin:0 4rem 0 4rem;
+    display: flex;
+    flex-direction: column;
+
+  }
+

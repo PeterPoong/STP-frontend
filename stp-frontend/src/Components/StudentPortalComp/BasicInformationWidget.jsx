@@ -5,7 +5,6 @@ import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import { Country, State, City } from 'country-state-city';
 
-const stubiURL = import.meta.env.VITE_STUDENT_BASICINFO_URL;
 
 const BasicInformationWidget = () => {
   const [studentData, setStudentData] = useState({
@@ -64,7 +63,7 @@ const BasicInformationWidget = () => {
   const fetchGenderList = async () => {
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      const response = await fetch('http://192.168.0.69:8000/api/student/genderList', {
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/genderList`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -97,7 +96,7 @@ const BasicInformationWidget = () => {
         return;
       }
 
-      const url = `http://192.168.0.69:8000/api/student/studentDetail?id=${id}`;
+      const url = `${import.meta.env.VITE_BASE_URL}api/student/studentDetail?id=${id}`;
 
       const response = await fetch(url, {
         method: 'POST',
@@ -212,7 +211,7 @@ const BasicInformationWidget = () => {
 
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      const response = await fetch('http://192.168.0.69:8000/api/student/editDetail', {
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/editDetail`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -275,8 +274,8 @@ const BasicInformationWidget = () => {
                     type="text"
                     required
                     className="w-75"
-                    name="username"
-                    value={studentData.username || ''}
+                    name="name"
+                    value={studentData.name || ''}
                     onChange={handleInputChange}
                     placeholder="Enter username"
                   />
