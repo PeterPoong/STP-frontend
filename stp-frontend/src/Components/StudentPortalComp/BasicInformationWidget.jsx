@@ -13,8 +13,8 @@ const BasicInformationWidget = () => {
     contact: '',
     country_code: '',
     email: '',
-    first_name: '',
-    last_name: '',
+    firstName: '',
+    lastName: '',
     country: '',
     city: '',
     state: '',
@@ -44,19 +44,21 @@ const BasicInformationWidget = () => {
 
     // Update states when country changes
     if (studentData.country) {
-      const countryData = Country.getAllCountries().find(c => c.isoCode === studentData.country);
-      if (countryData) {
-        setStates(State.getStatesOfCountry(countryData.isoCode));
-      }
+      //const countryData = Country.getAllCountries().find(c => c.isoCode === studentData.country);
+      //if (countryData) {
+      //  setStates(State.getStatesOfCountry(countryData.isoCode));
+     // }
+     setStates(State.getStatesOfCountry(studentData.country));
     }
 
     // Update cities when state changes
     if (studentData.state && studentData.country) {
-      const countryData = Country.getAllCountries().find(c => c.isoCode === studentData.country);
-      const stateData = State.getStatesOfCountry(countryData.isoCode).find(s => s.isoCode === studentData.state);
-      if (stateData) {
-        setCities(City.getCitiesOfState(countryData.isoCode, stateData.isoCode));
-      }
+     // const countryData = Country.getAllCountries().find(c => c.isoCode === studentData.country);
+      // const stateData = State.getStatesOfCountry(countryData.isoCode).find(s => s.isoCode === studentData.state);
+      // if (stateData) {
+      //   setCities(City.getCitiesOfState(countryData.isoCode, stateData.isoCode));
+      // }
+      setCities(City.getCitiesOfState(studentData.country, studentData.state));
     }
   }, [studentData]);
 
@@ -149,39 +151,43 @@ const BasicInformationWidget = () => {
 
   const handleCountryChange = (e) => {
     const { value } = e.target;
-    const countryData = Country.getAllCountries().find(c => c.name === value);
+   // const countryData = Country.getAllCountries().find(c => c.name === value);
     setStudentData(prevData => ({
       ...prevData,
       country: '1',
       state: '1',
       city: '1'
     }));
-    if (countryData) {
-      setStates(State.getStatesOfCountry(countryData.isoCode));
-    }
+   // if (countryData) {
+   //   setStates(State.getStatesOfCountry(countryData.isoCode));
+   // }
+   setStates(State.getStatesOfCountry(value));
     setCities([]);
   };
 
   const handleStateChange = (e) => {
     const { value } = e.target;
-    const countryData = Country.getAllCountries().find(c => c.isoCode === studentData.country);
-    const stateData = State.getStatesOfCountry(countryData.isoCode).find(s => s.name === value);
+    //const countryData = Country.getAllCountries().find(c => c.isoCode === studentData.country);
+    //const stateData = State.getStatesOfCountry(countryData.isoCode).find(s => s.name === value);
     setStudentData(prevData => ({
       ...prevData,
-      state: stateData ? stateData.isoCode : '',
+      //state: stateData ? stateData.isoCode : '',
+      state:value,
       city: ''
     }));
-    if (stateData) {
-      setCities(City.getCitiesOfState(countryData.isoCode, stateData.isoCode));
-    }
+    //if (stateData) {
+    //  setCities(City.getCitiesOfState(countryData.isoCode, stateData.isoCode));
+    //}
+    setCities(City.getCitiesOfState(studentData.country, value));
   };
 
   const handleCityChange = (e) => {
     const { value } = e.target;
-    const cityData = cities.find(c => c.name === value);
+    //const cityData = cities.find(c => c.name === value);
     setStudentData(prevData => ({
       ...prevData,
-      city: cityData ? cityData.id : ''
+    //  city: cityData ? cityData.id : ''
+    city:value
     }));
   };
   const handleSubmit = async (e) => {
@@ -193,11 +199,11 @@ const BasicInformationWidget = () => {
     const submissionData = {
       id: studentData.id,
       username: studentData.username,
-      first_name: studentData.first_name,
-      last_name: studentData.last_name,
+      first_name: studentData.firstName,
+      last_name: studentData.lastName,
       ic: studentData.ic,
       email: studentData.email,
-      contact: studentData.contact,
+      contact_number: studentData.contact,
       gender: studentData.gender,
       address: studentData.address,
       country: '1',  // Set default value
@@ -274,8 +280,8 @@ const BasicInformationWidget = () => {
                     type="text"
                     required
                     className="w-75"
-                    name="name"
-                    value={studentData.name || ''}
+                    name="username"
+                    value={studentData.username || ''}
                     onChange={handleInputChange}
                     placeholder="Enter username"
                   />
@@ -290,8 +296,8 @@ const BasicInformationWidget = () => {
                     className="w-75"
                     type="text"
                     required
-                    name="first_name"
-                    value={studentData.first_name || ''}
+                    name="firstName"
+                    value={studentData.firstName || ''}
                     onChange={handleInputChange}
                     placeholder="Enter first name"
                   />
@@ -304,8 +310,8 @@ const BasicInformationWidget = () => {
                     type="text"
                     required
                     className="w-75"
-                    name="last_name"
-                    value={studentData.last_name || ''}
+                    name="lastName"
+                    value={studentData.lastName || ''}
                     onChange={handleInputChange}
                     placeholder="Enter last name"
                   />
@@ -405,8 +411,9 @@ const BasicInformationWidget = () => {
                     /*required*/
                     className="w-75"
                     name="country"
-                    value={Country.getAllCountries().find(c => c.isoCode === studentData.country)?.name || ''}
-                    onChange={handleCountryChange}
+                  //  value={Country.getAllCountries().find(c => c.isoCode === studentData.country)?.name || ''}
+                  value={studentData.country || ''}
+                  onChange={handleCountryChange}
                   >
                     <option value="">Select country</option>
                     {countries.map((country) => (
@@ -424,8 +431,9 @@ const BasicInformationWidget = () => {
                     /*required*/
                     className="w-75"
                     name="state"
-                    value={State.getStatesOfCountry(studentData.country).find(s => s.isoCode === studentData.state)?.name || ''}
-                    onChange={handleStateChange}
+                   // value={State.getStatesOfCountry(studentData.country).find(s => s.isoCode === studentData.state)?.name || ''}
+                   value={studentData.state || ''}
+                  onChange={handleStateChange}
                   >
                     <option value="">Select state</option>
                     {states.map((state) => (
@@ -445,7 +453,8 @@ const BasicInformationWidget = () => {
                     /*required*/
                     className="w-75"
                     name="city"
-                    value={cities.find(c => c.id === studentData.city)?.name || ''}
+                    //value={cities.find(c => c.id === studentData.city)?.name || ''}
+                    value={studentData.city || ''}
                     onChange={handleCityChange}
                   ><option value="">Select city</option>
                     {cities.map((city) => (

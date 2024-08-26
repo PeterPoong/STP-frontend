@@ -32,101 +32,102 @@ const StudentApplyCourse = () => {
     switch (step) {
       case 1:
         return (
-          <div className="step-content d-flex row  ">
+          <div className="step-content p-4 ">
             <h2>Basic Information</h2>
-            <div>
-              <Form.Group className="d-flex column align-items-center mb-3">
-                <Form.Label className="mb-0 me-2" style={{ width: '150px' }}>First Name</Form.Label>
+            <div className="sap-content p-4 d-flex row ">
+              <div className="justify-self-center">
+                <Form.Group className="d-flex column align-items-center mb-3">
+                  <Form.Label className="mb-0 me-2" style={{ width: '150px' }}>First Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="first_name"
+                    required
+                  />
+                </Form.Group>
+                <Form.Group className="d-flex align-items-center mb-3">
+                  <Form.Label className="mb-0 me-2" style={{ width: '150px' }}>Last Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="last_name"
+                    required
+                  />
+                </Form.Group>
+              </div>
+              <div className="d-flex column justify-content-center ">
+                <Form.Group>
+                  <Form.Label>First_Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="name"
+                    required
+                  />
+                </Form.Group>
+                <Form.Group>
+                  <Form.Label>Last_Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="name"
+                    required
+                  />
+                </Form.Group>
+              </div>
+              <Form.Group >
+                <Form.Label>Name</Form.Label>
                 <Form.Control
                   type="text"
-                  name="first_name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  required
+                ></Form.Control>
+              </Form.Group>
+              <Form.Group>
+                <Form.Label>Phone</Form.Label>
+                <Form.Control
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleInputChange}
                   required
                 />
               </Form.Group>
-              <Form.Group className="d-flex align-items-center mb-3">
-                <Form.Label className="mb-0 me-2" style={{ width: '150px' }}>Last Name</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="last_name"
-                  required
-                />
-              </Form.Group>
+              <div className="d-flex column justify-content-center ">
+                <Form.Group>
+                  <Form.Label>First_Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="name"
+                    required
+                  />
+                </Form.Group>
+                <Form.Group>
+                  <Form.Label>Last_Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="name"
+                    required
+                  />
+                </Form.Group>
+              </div>
+              <div className="d-flex column justify-content-center ">
+                <Form.Group>
+                  <Form.Label>First_Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="name"
+                    required
+                  />
+                </Form.Group>
+                <Form.Group>
+                  <Form.Label>Last_Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="name"
+                    required
+                  />
+                </Form.Group>
+              </div>
             </div>
-            <div className="d-flex column justify-content-center ">
-              <Form.Group>
-                <Form.Label>First_Name</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="name"
-                  required
-                />
-              </Form.Group>
-              <Form.Group>
-                <Form.Label>Last_Name</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="name"
-                  required
-                />
-              </Form.Group>
-            </div>
-            <Form.Group >
-              <Form.Label>Name</Form.Label>
-              <Form.Control
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                required
-              ></Form.Control>
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Phone</Form.Label>
-              <Form.Control
-                type="tel"
-                name="phone"
-                value={formData.phone}
-                onChange={handleInputChange}
-                required
-              />
-            </Form.Group>
-            <div className="d-flex column justify-content-center ">
-              <Form.Group>
-                <Form.Label>First_Name</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="name"
-                  required
-                />
-              </Form.Group>
-              <Form.Group>
-                <Form.Label>Last_Name</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="name"
-                  required
-                />
-              </Form.Group>
-            </div>
-            <div className="d-flex column justify-content-center ">
-              <Form.Group>
-                <Form.Label>First_Name</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="name"
-                  required
-                />
-              </Form.Group>
-              <Form.Group>
-                <Form.Label>Last_Name</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="name"
-                  required
-                />
-              </Form.Group>
-            </div>
-
           </div>
         );
       case 2:
@@ -195,19 +196,19 @@ const StudentApplyCourse = () => {
       <div className="main-content-applycourse">
         <div className="backgroundimage">
           <div>
-            <div className="widget-applying justify-content-center">
-              <a className="text-black align-self-center">You are now applying for </a>
-              <h3 className="text-danger align-self-center">bachelor in mass communication</h3>
+            <div className="widget-applying-course justify-content-center ">
+              <h4 className="text-black align-self-center fw-normal mb-4">You are now applying for </h4>
+              <h3 className="text-danger align-self-center fw-bold mb-5">Bachelor in Mass Communication</h3>
               <div className="d-flex justify-content-center " >
-                <img src={image1} className="acp-university-logo" />
-                <h5 className="text-black fw-bold align-self-center">Swinburne University of Technology</h5>
+                <img src={image1} className="sac-image me-5" />
+                <h3 className="text-black fw-bold align-self-center">Swinburne University of Technology</h3>
               </div>
             </div>
           </div>
         </div>
         <h1 className="text-center mb-4">Student Course Application</h1>
 
-        <ProgressBar now={(step / 5) * 100} label={`Step ${step} of 5`} className="mb-4" />
+        <ProgressBar now={(step / 5) * 100} label={`Step ${step} of 5`} className="mb-4 sac-progress-bar" />
         <Form onSubmit={handleSubmit}>
           {renderStep()}
           <div className="d-flex justify-content-between mt-4">

@@ -1,37 +1,52 @@
 .app-container {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    background-color: #F5F4F4;
-  }
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #F5F5F5 !important;
+}
+
+.main-content {
+  flex: 1;
+  padding: 3rem 0 4.25rem 0;
+
+}
+
+.backgroundimage {
+  background: url("../../assets/StudentPortalAssets/applyCourseBackground.png") no-repeat;
+
+  background-size: 100% 75%;
+
+  height: 35rem !important;
+  width: 100%;
+  flex-direction: row;
+  align-content: flex-end;
+}
+
+.widget-applying-course {
+  background-color: blue;
+  height: 20rem;
+  margin: 0 4rem 0 6rem;
+  display: flex;
+  flex-direction: column;
+  background: url("../../assets/StudentPortalAssets/applyCoursebg.png") no-repeat;
+
+
+}
+
+.step-content {
+  padding: 2rem;
+  margin: 2rem 2rem;
+  background-color: white;
+}
+
+.sac-image{
+  width: auto;
+  height: 4.5em;
   
-  .main-content {
-    flex: 1;
-    padding:3rem 0 4.25rem 0;
-    
-  }
+}
 
-  .backgroundimage
-  {
-    background: linear-gradient(
-        to bottom,
-        firebrick 0%,
-        firebrick 75%,
-        transparent 75%
-    ) !important;
-    height: 30rem !important;
-    width: 100%;
-    flex-direction: row;
-    align-content: flex-end;
-  }
-
-  .widget-applying
-  {
-    background-color: blue;
-    height: 15rem;
-    margin:0 4rem 0 4rem;
-    display: flex;
-    flex-direction: column;
-
-  }
+.sap-content
+{
+  width: 25rem;
+}
 
