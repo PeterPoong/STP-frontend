@@ -5,28 +5,50 @@
   min-height: 200px;
   flex-wrap: wrap;
 }
+.featured-course-card {
+  /* Existing styles */
+  position: relative; /* Ensure badge is positioned correctly */
+}
+
+.badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 5px 10px;
+  font-size: 14px;
+  background-color: #9e1919;
+  color: white;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.course-container {
+  width: 100%;
+  overflow: hidden; /* Prevent horizontal scroll if needed */
+}
+
 
 .featured-course-card {
   margin: 10px;
-  padding: 20px;
+  padding: 15px;
   border: 1px solid #ddd;
-  border-radius: 5px;
+  border-radius: 8px;
   background-color: #fff;
-  text-align: center;
-  max-width: 300px; /* Adjust width as needed */
+  text-align: center; 
+  width: 33.33%;
   box-sizing: border-box;
   transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
 
 .featured-course-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
 .section-image {
-  max-width: 50px;
-  max-height: 100px; /* Fixed height */
-  object-fit: fit; /* Ensures image covers the area while maintaining aspect ratio */
+  max-width: 100%;
+  max-height: 120px;
+  object-fit: contain;
 }
 
 @media (min-width: 768px) {
@@ -35,8 +57,15 @@
   }
 
   .featured-course-card {
-    flex: 1 0 calc(33.333% - 20px); /* Three items per slide */
+    flex: 1 0 calc(33.333% - 20px);
     max-width: calc(33.333% - 20px);
+    width: 50%;
+  }
+}
+/* For even smaller screens, make the cards full-width */
+@media (max-width: 480px) {
+  .featured-course-card {
+    width: 100%;
   }
 }
 
@@ -67,5 +96,3 @@
     width: calc(100% - 20px);
   }
 }
-
-

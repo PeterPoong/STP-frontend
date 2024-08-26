@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
 import CoursesButton from "../../Components/StudentComp/CoursesButton";
-import { Container, Row, Col } from "react-bootstrap";
+import { Container, Row, Col, Button, Collapse } from "react-bootstrap";
 import "../../css/StudentCss/course button group/CoursesButton.css";
 
 const baseURL = import.meta.env.VITE_BASE_URL;
-const apiURL = "http://192.168.0.69:8000/api/student/categoryList";
+const apiURL = `${baseURL}api/student/categoryList`;
 
 const CoursesContainer = () => {
   const [buttons, setButtons] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isCollapsed, setIsCollapsed] = useState(true);
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,7 +40,7 @@ const CoursesContainer = () => {
         const data = result.data;
         console.log("API Response:", result);
 
-        const mappedButtons = data.map((item, index) => ({
+        const mappedButtons = data.map((item) => ({
           id: item.id,
           src: `${baseURL}storage/${item.category_icon}`,
           label: item.category_name,
@@ -55,7 +57,23 @@ const CoursesContainer = () => {
     };
 
     fetchData();
+
+    // Check if the screen size is small
+    const handleResize = () => {
+      setIsSmallScreen(window.innerWidth < 768);
+    };
+
+    handleResize(); // Check on initial load
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
+
+  const handleToggle = () => {
+    setIsCollapsed(!isCollapsed);
+  };
 
   return (
     <div style={{ backgroundColor: "white" }}>
@@ -72,34 +90,67 @@ const CoursesContainer = () => {
             Error: {error}
           </div>
         ) : (
-          <Row className="justify-content-center g-0">
-            {buttons.map((button) => (
-              <Col
-                key={button.id}
-                md={2}
-                className="d-flex justify-content-center"
+          <>
+            <Row className="justify-content-center g-0">
+              {buttons
+                .slice(0, isSmallScreen ? 4 : buttons.length)
+                .map((button) => (
+                  <Col
+                    key={button.id}
+                    md={2}
+                    className="d-flex justify-content-center"
+                  >
+                    <CoursesButton src={button.src} label={button.label} />
+                  </Col>
+                ))}
+            </Row>
+            {isSmallScreen && (
+              <Collapse in={!isCollapsed}>
+                <Row className="justify-content-center g-0">
+                  {buttons.slice(4).map((button) => (
+                    <Col
+                      key={button.id}
+                      md={2}
+                      className="d-flex justify-content-center"
+                    >
+                      <CoursesButton src={button.src} label={button.label} />
+                    </Col>
+                  ))}
+                </Row>
+              </Collapse>
+            )}
+            {isSmallScreen && buttons.length > 4 && (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  marginTop: "20px",
+                }}
               >
-                <CoursesButton src={button.src} label={button.label} />
-              </Col>
-            ))}
-          </Row>
+                <Button
+                  className="findmore-button"
+                  onClick={handleToggle}
+                  aria-controls="example-collapse-text"
+                  aria-expanded={!isCollapsed}
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    marginTop: "20px",
+                    textDecoration: "none",
+                    backgroundColor: "#B71A18",
+                    borderColor: "#B71A18",
+                    width: "150px",
+                    padding: "10px 20px",
+                    borderRadius: "5px",
+                    color: "white",
+                  }}
+                >
+                  {isCollapsed ? "Find More" : "Show Less"}
+                </Button>
+              </div>
+            )}
+          </>
         )}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            marginTop: "20px",
-          }}
-        >
-          <button
-            className="findmore-button"
-            size="lg"
-            active
-            // style={{ backgroundColor: " #a90000", borderColor: "#a90000" }}
-          >
-            Find More
-          </button>
-        </div>
       </Container>
     </div>
   );

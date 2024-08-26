@@ -17,14 +17,14 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../../../css/StudentCss/institutepage css/Institute.css";
 import InstituteListing from "./InstituteListing";
 
-const apiURL = "http://192.168.0.69:8000/api/student/schoolList";
-const countriesURL = "http://192.168.0.69:8000/api/student/countryList";
-const instituteURL = "http://192.168.0.69:8000/api/student/instituteType";
-const locationAPIURL =
-  "http://192.168.0.69:8000/api/student/locationFilterList";
+const baseURL = import.meta.env.VITE_BASE_URL;
 
-const qualificationURL =
-  "http://192.168.0.69:8000/api/student/qualificationFilterList";
+const apiURL = `${baseURL}api/student/schoolList`;
+const countriesURL = `${baseURL}api/student/countryList`;
+const instituteURL = `${baseURL}api/student/instituteType`;
+const locationAPIURL = `${baseURL}api/student/locationFilterList`;
+
+const qualificationURL = `${baseURL}api/student/qualificationFilterList`;
 
 const SearchInstitute = () => {
   const [locationFilters, setLocationFilters] = useState([]);
@@ -236,9 +236,12 @@ const SearchInstitute = () => {
       {/* Country Dropdown */}
       <Row className="align-items-center mb-3">
         <Col xs={12} sm={4} md={3} lg={2} className="mb-2 mb-sm-0">
-          <ButtonGroup>
-            <Dropdown as={ButtonGroup}>
-              <Dropdown.Toggle className="country-button" id="dropdown-country">
+          <ButtonGroup className="w-100">
+            <Dropdown as={ButtonGroup} className="w-100">
+              <Dropdown.Toggle
+                className="country-button w-100"
+                id="dropdown-country"
+              >
                 {selectedCountry ? selectedCountry.country_name : "Country"}
               </Dropdown.Toggle>
               <Dropdown.Menu>
@@ -270,10 +273,10 @@ const SearchInstitute = () => {
 
         {/* University Dropdown */}
         <Col xs={12} sm={4} md={3} lg={2} className="mb-2 mb-sm-0">
-          <ButtonGroup>
-            <Dropdown as={ButtonGroup}>
+          <ButtonGroup className="w-100">
+            <Dropdown as={ButtonGroup} className="w-100">
               <Dropdown.Toggle
-                className="university-button"
+                className="university-button w-100"
                 id="dropdown-university"
               >
                 {selectedInstitute

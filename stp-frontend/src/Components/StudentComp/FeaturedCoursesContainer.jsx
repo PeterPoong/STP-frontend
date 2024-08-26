@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
 
 const baseURL = import.meta.env.VITE_BASE_URL;
-const apiURL = "http://192.168.0.69:8000/api/student/hpFeaturedCoursesList";
+const apiURL = `${baseURL}api/student/hpFeaturedCoursesList`;
 
 const FeaturedCoursesContainer = () => {
   const [courses, setCourses] = useState([]);

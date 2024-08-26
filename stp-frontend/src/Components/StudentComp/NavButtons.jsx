@@ -16,7 +16,7 @@ const NavigationBar = () => {
       expand="lg"
       fixed="top"
       className="bg-white"
-      style={{ paddingLeft: "80px" }}
+      style={{ paddingLeft: "20px", paddingRight: "20px" }}
     >
       <Container>
         <Navbar.Brand as={Link} to="/">
@@ -30,7 +30,7 @@ const NavigationBar = () => {
               as={Link}
               to="/courses"
               className="nav-link-custom"
-              style={{ marginLeft: "20px" }}
+              style={{ marginLeft: "10px 0" }}
             >
               Courses
             </Button>
@@ -39,7 +39,7 @@ const NavigationBar = () => {
               as={Link}
               to="/institute"
               className="nav-link-custom"
-              style={{ marginLeft: "10px" }}
+              style={{ marginLeft: "10px 0" }}
             >
               Schools
             </Button>
@@ -47,7 +47,7 @@ const NavigationBar = () => {
               title="Scholarships"
               id="scholarship-nav-dropdown"
               className="nav-dropdown-custom"
-              style={{ marginLeft: "10px" }}
+              style={{ marginLeft: "10px 0" }}
             >
               <NavDropdown.Item as={Link} to="#action/3.1">
                 Action
@@ -67,7 +67,7 @@ const NavigationBar = () => {
               title="Study Guides"
               id="study-guide-nav-dropdown"
               className="nav-dropdown-custom"
-              style={{ marginLeft: "10px" }}
+              style={{ marginLeft: "10px 0" }}
             >
               <NavDropdown.Item as={Link} to="#action/3.1">
                 Action
@@ -95,8 +95,11 @@ const NavigationBar = () => {
 
 const NavButtons = () => {
   return (
-    <Nav className="ms-auto" style={{ paddingLeft: "60px" }} expand="lg">
-      <ButtonGroup>
+    <Nav
+      className="ms-auto d-flex flex-column flex-lg-row"
+      style={{ paddingLeft: "0" }}
+    >
+      <ButtonGroup className="mb-2 mb-lg-0">
         <Dropdown as={ButtonGroup}>
           <Dropdown.Toggle className="nav-button" id="dropdown-custom-1">
             Login

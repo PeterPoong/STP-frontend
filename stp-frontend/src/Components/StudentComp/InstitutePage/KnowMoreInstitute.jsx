@@ -27,6 +27,7 @@ import image7 from "../../../assets/StudentAssets/institute image/image7.png";
 import image5 from "../../../assets/StudentAssets/institute image/image5.jpg";
 
 const baseURL = import.meta.env.VITE_BASE_URL;
+
 const KnowMoreInstitute = () => {
   const [open, setOpen] = useState(false);
   const [openCourses, setOpenCourses] = useState(false);
@@ -40,7 +41,7 @@ const KnowMoreInstitute = () => {
     console.log("Institute ID: ", id);
 
     if (!institutes || institutes.length === 0) {
-      fetch(`http://192.168.0.69:8000/api/student/schoolList`, {
+      fetch(`${baseURL}api/student/schoolList`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

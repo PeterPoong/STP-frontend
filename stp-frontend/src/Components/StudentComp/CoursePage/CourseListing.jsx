@@ -24,17 +24,15 @@ import {
 import { useNavigate } from "react-router-dom";
 import SearchCourse from "./SearchCourse";
 
+//const apiURL = `${baseURL}api/student/hpFeaturedCoursesList`;
+
 const baseURL = import.meta.env.VITE_BASE_URL;
-const apiURL = "http://192.168.0.69:8000/api/student/courseList";
-const locationAPIURL =
-  "http://192.168.0.69:8000/api/student/locationFilterList";
-const studyModeAPIURL =
-  "http://192.168.0.69:8000/api/student/studyModeFilterlist";
-const categoryAPIURL =
-  "http://192.168.0.69:8000/api/student/categoryFilterList";
-const tuitionFeeAPIURL =
-  "http://192.168.0.69:8000/api/student/tuitionFeeFilterRange";
-const intakeAPIURL = "http://192.168.0.69:8000/api/student/intakeFilterList";
+const apiURL = `${baseURL}api/student/courseList`;
+const locationAPIURL = `${baseURL}api/student/locationFilterList`;
+const studyModeAPIURL = `${baseURL}api/student/studyModeFilterlist`;
+const categoryAPIURL = `${baseURL}api/student/categoryFilterList`;
+const tuitionFeeAPIURL = `${baseURL}api/student/tuitionFeeFilterRange`;
+const intakeAPIURL = `${baseURL}api/student/intakeFilterList`;
 
 const CourseListing = ({
   searchResults,
@@ -75,16 +73,13 @@ const CourseListing = ({
     setError(null);
 
     try {
-      const response = await fetch(
-        `http://192.168.0.69:8000/api/student/courseList`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({}),
-        }
-      );
+      const response = await fetch(`${baseURL}api/student/courseList`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({}),
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
@@ -131,16 +126,13 @@ const CourseListing = ({
     setError(null);
 
     try {
-      const response = await fetch(
-        `http://192.168.0.69:8000/api/student/courseList`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({}),
-        }
-      );
+      const response = await fetch(`${baseURL}api/student/courseList`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({}),
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
@@ -184,7 +176,7 @@ const CourseListing = ({
       try {
         console.log("Country ID received in CourseListing:", countryID);
         const response = await fetch(
-          "http://192.168.0.69:8000/api/student/locationFilterList",
+          `${baseURL}api/student/locationFilterList`,
           {
             method: "POST",
             headers: {
@@ -236,6 +228,25 @@ const CourseListing = ({
 
     fetchStudyModes();
   }, []);
+
+  // useEffect(() => {
+  //   if (selectedCountry) {
+  //     // Fetch courses based on the selected country
+  //     fetchCoursesByCountry(selectedCountry.id);
+  //   }
+  // }, [selectedCountry]);
+
+  // const fetchCoursesByCountry = async (countryID) => {
+  //   try {
+  //     const response = await fetch(
+  //       `http://192.168.0.69:8000/api/student/courseList?countryID=${countryID}`
+  //     );
+  //     const courses = await response.json();
+  //     setCourses(courses);
+  //   } catch (error) {
+  //     console.error("Error fetching courses:", error);
+  //   }
+  // };
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -299,14 +310,7 @@ const CourseListing = ({
 
           const result = await response.json();
           setPrograms(result.data.data);
-          filterPrograms(
-            searchResults,
-            locationFilters,
-            categoryFilters,
-            intakeFilters,
-            modeFilters,
-            tuitionFee
-          );
+          filterPrograms(); // This will ensure filtering is applied after fetching
 
           break; // Exit while loop if successful
         } catch (error) {
@@ -765,16 +769,25 @@ const CourseListing = ({
               </Accordion.Header>
               <Accordion.Body className="custom-accordion-body">
                 <Form.Group>
-                  {locationFilters &&
-                    locationFilters.map((location, index) => (
-                      <Form.Check
-                        key={index}
-                        type="checkbox"
-                        label={location.state_name}
-                        checked={locationFilters.includes(location.state_name)}
-                        onChange={() => handleLocationChange(location)}
-                      />
-                    ))}
+                  {locationFilters.length > 0 ? (
+                    locationFilters.map(
+                      (location, index) =>
+                        location.state_name &&
+                        location.state_name.trim() !== "" && (
+                          <Form.Check
+                            key={index}
+                            type="checkbox"
+                            label={location.state_name}
+                            checked={locationFilters.includes(
+                              location.state_name
+                            )}
+                            onChange={() => handleLocationChange(location)}
+                          />
+                        )
+                    )
+                  ) : (
+                    <p>No location available</p>
+                  )}
                 </Form.Group>
               </Accordion.Body>
             </Accordion.Item>

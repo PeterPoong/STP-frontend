@@ -16,14 +16,13 @@ import { Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import CourseListing from "../../../Components/StudentComp/CoursePage/CourseListing";
 
-const apiURL = "http://192.168.0.69:8000/api/student/courseList";
-const countriesURL = "http://192.168.0.69:8000/api/student/countryList";
-const instituteURL = "http://192.168.0.69:8000/api/student/instituteType";
-const locationAPIURL =
-  "http://192.168.0.69:8000/api/student/locationFilterList";
+const baseURL = import.meta.env.VITE_BASE_URL;
+const apiURL = `${baseURL}api/student/courseList`;
+const countriesURL = `${baseURL}api/student/countryList`;
+const instituteURL = `${baseURL}api/student/instituteType`;
+const locationAPIURL = `${baseURL}api/student/locationFilterList`;
 
-const qualificationURL =
-  "http://192.168.0.69:8000/api/student/qualificationFilterList";
+const qualificationURL = `${baseURL}api/student/qualificationFilterList`;
 
 const SearchCourse = () => {
   const [locationFilters, setLocationFilters] = useState([]);

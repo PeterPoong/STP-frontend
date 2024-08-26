@@ -43,7 +43,7 @@ const CourseDetail = () => {
     console.log("Program ID:", id);
 
     if (!programs || programs.length === 0) {
-      fetch(`http://192.168.0.69:8000/api/student/courseList`, {
+      fetch(`${baseURL}api/student/courseList`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -113,7 +113,7 @@ const CourseDetail = () => {
                       {program.location}
                     </span>
                     <a
-                      href="https://maps.google.com"
+                      href="https://www.google.com/maps/place/Curtin+University+Malaysia/@4.5143003,114.0152549,17z/data=!3m1!4b1!4m6!3m5!1s0x321f4826b4a6b637:0xe688be6fc8cd1d35!8m2!3d4.5143003!4d114.0178298!16s%2Fm%2F02qj2fj?entry=ttu&g_ep=EgoyMDI0MDgyMS4wIKXMDSoASAFQAw%3D%3D"
                       style={{ paddingLeft: "15px" }}
                       target="_blank"
                       rel="noopener noreferrer"

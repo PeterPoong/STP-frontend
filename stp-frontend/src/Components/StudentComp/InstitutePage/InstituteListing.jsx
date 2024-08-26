@@ -27,17 +27,12 @@ import {
 import { useNavigate } from "react-router-dom";
 
 const baseURL = import.meta.env.VITE_BASE_URL;
-const apiURL = "http://192.168.0.69:8000/api/student/schoolList";
-const locationAPIURL =
-  "http://192.168.0.69:8000/api/student/locationFilterList";
-const studylevelAPIURL =
-  "http://192.168.0.69:8000/api/student/qualificationFilterList";
-const studyModeAPIURL =
-  "http://192.168.0.69:8000/api/student/studyModeFilterlist";
-const tuitionFeeAPIURL =
-  "http://192.168.0.69:8000/api/student/tuitionFeeFilterRange";
-const categoryAPIURL =
-  "http://192.168.0.69:8000/api/student/categoryFilterList";
+const apiURL = `${baseURL}api/student/schoolList`;
+const locationAPIURL = `${baseURL}api/student/locationFilterList`;
+const studylevelAPIURL = `${baseURL}api/student/qualificationFilterList`;
+const studyModeAPIURL = `${baseURL}api/student/studyModeFilterlist`;
+const tuitionFeeAPIURL = `${baseURL}api/student/tuitionFeeFilterRange`;
+const categoryAPIURL = `${baseURL}api/student/categoryFilterList`;
 
 const InstituteListing = ({ searchResults, countryID, selectedInstitute }) => {
   const [locationFilters, setLocationFilters] = useState([]);
@@ -95,16 +90,13 @@ const InstituteListing = ({ searchResults, countryID, selectedInstitute }) => {
     setError(null);
 
     try {
-      const response = await fetch(
-        `http://192.168.0.69:8000/api/student/schoolList`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({}),
-        }
-      );
+      const response = await fetch(`${baseURL}api/student/schoolList`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({}),
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
@@ -150,7 +142,7 @@ const InstituteListing = ({ searchResults, countryID, selectedInstitute }) => {
       try {
         console.log("Country ID received in CourseListing:", countryID);
         const response = await fetch(
-          "http://192.168.0.69:8000/api/student/locationFilterList",
+          `${baseURL}api/student/locationFilterList`,
           {
             method: "POST",
             headers: {
@@ -370,26 +362,25 @@ const InstituteListing = ({ searchResults, countryID, selectedInstitute }) => {
   // };
 
   const handleLocationChange = (location) => {
-    const locationName = location.state_name;
+    const locationName = location.state_name.trim();
     let updatedLocations;
 
     if (locationFilters.includes(locationName)) {
       updatedLocations = locationFilters.filter(
-        (item) => item !== locationName
+        (item) => item !== locationName && item !== ""
       );
-    } else {
+    } else if (locationName !== "") {
       updatedLocations = [...locationFilters, locationName];
     }
-
     setLocationFilters(updatedLocations);
-    filterPrograms(
-      updatedLocations.length > 0 ? updatedLocations : [],
-      categoryFilters,
-      intakeFilters,
-      modeFilters,
-      tuitionFee,
-      institutes
-    );
+    // filterPrograms(
+    //   updatedLocations.length > 0 ? updatedLocations : [],
+    //   categoryFilters,
+    //   intakeFilters,
+    //   modeFilters,
+    //   tuitionFee,
+    //   institutes
+    // );
   };
   const filterPrograms = () => {
     const filtered = institutes.filter((institute) => {
@@ -501,35 +492,6 @@ const InstituteListing = ({ searchResults, countryID, selectedInstitute }) => {
       state_name: { institute: institute },
     }); // Navigate with state_name
   };
-
-  // Ensure displayInstitutes is always an array
-  // const displayInstitutes =
-  //   Array.isArray(searchResults) && searchResults.length > 0
-  //     ? searchResults
-  //     : institutes;
-  // const displayInstitutes =
-  //   Array.isArray(searchResults) && searchResults.length > 0
-  //     ? searchResults
-  //     : Array.isArray(institutes)
-  //     ? institutes.filter((institute) => {
-  //         const matchesLocation =
-  //           locationFilters.length === 0 ||
-  //           locationFilters.includes(institute.location);
-  //         const matchesCategory =
-  //           categoryFilters.length === 0 ||
-  //           categoryFilters.includes(institute.category);
-  //         const matchesMode =
-  //           modeFilters.length === 0 || modeFilters.includes(institute.mode);
-  //         // const matchesFee = tuitionFee === 0 || institute.cost <= tuitionFee&& matchesFee;
-  //         const matchesIntake =
-  //           intakeFilters.length === 0 ||
-  //           intakeFilters.includes(institute.intake); // Ensure this uses the state_name variable intakeFilters
-
-  //         return (
-  //           matchesLocation && matchesCategory && matchesMode && matchesIntake
-  //         );
-  //       })
-  //     : [];
 
   const mappedInstitutes = filteredPrograms.map((institute, index) => (
     <div
@@ -645,16 +607,25 @@ const InstituteListing = ({ searchResults, countryID, selectedInstitute }) => {
             <div className="filter-group">
               <h5 style={{ marginTop: "10px" }}>Location</h5>
               <Form.Group>
-                {locationFilters &&
-                  locationFilters.map((location, index) => (
-                    <Form.Check
-                      key={index}
-                      type="checkbox"
-                      label={location.state_name}
-                      checked={locationFilters.includes(location.state_name)}
-                      onChange={() => handleLocationChange(location)}
-                    />
-                  ))}
+                {locationFilters.length > 0 ? (
+                  locationFilters.map(
+                    (location, index) =>
+                      location.state_name &&
+                      location.state_name.trim() !== "" && (
+                        <Form.Check
+                          key={index}
+                          type="checkbox"
+                          label={location.state_name}
+                          checked={locationFilters.includes(
+                            location.state_name
+                          )}
+                          onChange={() => handleLocationChange(location)}
+                        />
+                      )
+                  )
+                ) : (
+                  <p>No location available</p>
+                )}
               </Form.Group>
             </div>
             <div className="filter-group">
@@ -740,16 +711,25 @@ const InstituteListing = ({ searchResults, countryID, selectedInstitute }) => {
               </Accordion.Header>
               <Accordion.Body className="custom-accordion-body">
                 <Form.Group>
-                  {locationFilters &&
-                    locationFilters.map((location, index) => (
-                      <Form.Check
-                        key={index}
-                        type="checkbox"
-                        label={location.state_name}
-                        checked={locationFilters.includes(location.state_name)}
-                        onChange={() => handleLocationChange(location)}
-                      />
-                    ))}
+                  {locationFilters.length > 0 ? (
+                    locationFilters.map(
+                      (location, index) =>
+                        location.state_name &&
+                        location.state_name.trim() !== "" && (
+                          <Form.Check
+                            key={index}
+                            type="checkbox"
+                            label={location.state_name}
+                            checked={locationFilters.includes(
+                              location.state_name
+                            )}
+                            onChange={() => handleLocationChange(location)}
+                          />
+                        )
+                    )
+                  ) : (
+                    <p>No location available</p>
+                  )}
                 </Form.Group>
               </Accordion.Body>
             </Accordion.Item>

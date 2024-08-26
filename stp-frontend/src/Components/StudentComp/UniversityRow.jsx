@@ -5,7 +5,7 @@ import "../../css/StudentCss/homePageStudent/UniversityRow.css";
 
 const itemsPerSlide = 4;
 const baseURL = import.meta.env.VITE_BASE_URL;
-const apiURL = import.meta.env.VITE_API_URL;
+const apiURL = `${baseURL}api/student/hpFeaturedSchoolList`;
 
 const UniversityRow = () => {
   const [schools, setSchools] = useState([]);
