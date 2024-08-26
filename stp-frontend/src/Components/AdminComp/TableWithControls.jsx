@@ -17,33 +17,42 @@ const TableWithControls = ({
     const [filteredData, setFilteredData] = useState(tbodyContent);
 
     useEffect(() => {
-        // Filter the data based on the search query
-        const filtered = tbodyContent.filter(row => {
-            return Object.values(row.props.children).some(
-                cell => 
-                    cell.props.children.toString().toLowerCase().includes(searchQuery.toLowerCase())
-            );
-        });
-        setFilteredData(filtered);
-        setCurrentPage(1); // Reset to the first page when filtering
+        if (Array.isArray(tbodyContent)) {
+            const filtered = tbodyContent.filter(row => {
+                return Object.values(row.props.children).some(cell => {
+                    const cellContent = cell.props.children;
+                    return cellContent ? cellContent.toString().toLowerCase().includes(searchQuery.toLowerCase()) : false;
+                });
+            });
+            setFilteredData(filtered);
+            setCurrentPage(1); // Reset to the first page when filtering
+        }
     }, [searchQuery, tbodyContent]);
-
+    
     const handleRowsPerPageChange = (number) => {
-        setRowsPerPage(number);
-        setCurrentPage(1); // Reset to the first page when rows per page changes
+        if (number > 0 || number === 'All') {
+            setRowsPerPage(number);
+            setCurrentPage(1); // Reset to the first page when rows per page changes
+        }
     };
+    
 
     const handlePageChange = (page) => {
         setCurrentPage(page);
     };
 
     // Calculate the total number of pages
-    const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+  // Ensure filteredData.length is not 0 or negative and rowsPerPage is valid
+const totalPages = Math.ceil(filteredData.length / rowsPerPage) || 1;
+
     
     // Calculate the items to display for the current page
     const startIndex = (currentPage - 1) * rowsPerPage;
     const endIndex = startIndex + rowsPerPage;
-    const paginatedData = filteredData.slice(startIndex, endIndex);
+    const paginatedData = rowsPerPage === 'All'
+    ? filteredData
+    : filteredData.slice(startIndex, endIndex);
+
 
     return (
         <Container fluid>
@@ -133,6 +142,7 @@ const TableWithControls = ({
                             </a>
                         </li>
                     ))}
+
                     <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
                         <a
                             className="page-link"
