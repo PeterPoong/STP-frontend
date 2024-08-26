@@ -1,19 +1,19 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Home from "./Pages/student pages/Home";
-import NotFoundPage from "./Pages/student pages/NotFoundPage";
-import KnowMore from "./Pages/student pages/KnowMore"; // Import KnowMore component
-import ApplyNow from "./Pages/student pages/ApplyNow"; // Import ApplyNow component
-import ApplyDetail from "./Pages/student pages/ApplyDetail"; // Import ApplyDetail component
+import Home from "./Pages/StudentPages/Home";
+import NotFoundPage from "./Pages/StudentPages/NotFoundPage";
+import KnowMore from "./Pages/StudentPages/KnowMore"; // Import KnowMore component
+import ApplyNow from "./Pages/StudentPages/ApplyNow"; // Import ApplyNow component
+import ApplyDetail from "./Pages/StudentPages/ApplyDetail"; // Import ApplyDetail component
 import "./index.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import LoginPage from "./Pages/student pages/LoginPage";
-import CoursesPage from "./Pages/student pages/CoursesPage";
-import InstitutePage from "./Pages/student pages/InstitutePage";
-import KnowMoreInstitute from "./Components/student components/InstitutePage/KnowMoreInstitute";
-import ApplyForm from "./Pages/student pages/ApplyPage/ApplyForm";
-import PersonalDetails from "./Pages/student pages/ApplyPage/PersonalDetails";
+import LoginPage from "./Pages/StudentPages/LoginPage";
+import CoursesPage from "./Pages/StudentPages/CoursesPage";
+import InstitutePage from "./Pages/StudentPages/InstitutePage";
+import KnowMoreInstitute from "./Components/StudentComp/InstitutePage/KnowMoreInstitute";
+import ApplyForm from "./Pages/StudentPages/ApplyPage/ApplyForm";
+import PersonalDetails from "./Pages/StudentPages/ApplyPage/PersonalDetails";
 
 // Admin Login Page
 import AdminSignup from "./Pages/AdminPages/AdminSignup";

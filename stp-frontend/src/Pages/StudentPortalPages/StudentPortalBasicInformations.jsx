@@ -12,18 +12,19 @@ import "aos/dist/aos.css";
 import "../../css/StudentPortalStyles/StudentPortalBasicInformation.css";
 
 const StudentPortalBasicInformations = () => {
-  const [selectedContent, setSelectedContent] = useState('basicInfo');
+  const [selectedContent, setSelectedContent] = useState("basicInfo");
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-    console.log('Token found:', token ? 'Yes' : 'No');
+    const token =
+      sessionStorage.getItem("token") || localStorage.getItem("token");
+    console.log("Token found:", token ? "Yes" : "No");
     if (!token) {
-      console.log('No token found, redirecting to login');
-      navigate('/studentPortalLogin');
+      console.log("No token found, redirecting to login");
+      navigate("/studentPortalLogin");
     } else {
       verifyToken(token);
     }
@@ -31,34 +32,37 @@ const StudentPortalBasicInformations = () => {
 
   const verifyToken = async (token) => {
     try {
-      console.log('Verifying token:', token);
-      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/validateToken`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+      console.log("Verifying token:", token);
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL}api/validateToken`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         }
-      });
+      );
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
-      console.log('Token validation response:', data);
+      console.log("Token validation response:", data);
 
       if (data && data.success === true) {
-        console.log('Token is valid');
+        console.log("Token is valid");
         setIsAuthenticated(true);
       } else {
-        console.log('Token is invalid based on response structure');
-        throw new Error('Token validation failed');
+        console.log("Token is invalid based on response structure");
+        throw new Error("Token validation failed");
       }
     } catch (error) {
-      console.error('Error during token verification:', error);
-      sessionStorage.removeItem('token');
-      localStorage.removeItem('token');
-      navigate('/studentPortalLogin');
+      console.error("Error during token verification:", error);
+      sessionStorage.removeItem("token");
+      localStorage.removeItem("token");
+      navigate("/studentPortalLogin");
     } finally {
       setIsLoading(false);
     }
@@ -66,19 +70,19 @@ const StudentPortalBasicInformations = () => {
 
   const renderContent = () => {
     switch (selectedContent) {
-      case 'basicInfo':
+      case "basicInfo":
         return (
           <div>
             <BasicInformationWidget />
           </div>
         );
-      case 'managePassword':
+      case "managePassword":
         return <ManagePasswordWidget />;
-      case 'transcript':
+      case "transcript":
         return <CollapsibleSections />;
-      case 'appliedCoursesPending':
+      case "appliedCoursesPending":
         return <AppliedCoursesPending status="pending" />;
-      case 'appliedCoursesHistory':
+      case "appliedCoursesHistory":
         return <AppliedCoursesHistory status="history" />;
       default:
         return <BasicInformationWidget />;
@@ -101,9 +105,7 @@ const StudentPortalBasicInformations = () => {
           <div className="profile-widget-container">
             <MyProfileWidget onSelectContent={setSelectedContent} />
           </div>
-          <div className="content-area">
-            {renderContent()}
-          </div>
+          <div className="content-area">{renderContent()}</div>
         </div>
       </main>
       <SpcFooter />

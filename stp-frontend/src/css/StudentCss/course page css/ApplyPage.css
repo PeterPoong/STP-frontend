@@ -1,0 +1,96 @@
+.apply-now-header-image {
+    width: 100%;
+    height: 450px;
+    display: block;
+    object-fit: cover;
+  }
+  
+  .apply-now-masthead {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .apply-now-container {
+    position: relative;
+    top: -5px; /* Adjust this value to control the overlap */
+    
+  }
+  
+  .apply-now-row {
+    position: relative;
+  }
+  
+  .apply-now-image-col {
+    top: -75px; /* Adjust this value to control the overlap */
+    z-index: 1;
+  }
+  
+  .apply-now-program-image {
+    max-height: 150px;
+    border-radius: 50%;
+    border: 3px solid white;
+  }
+  
+  .apply-now-card {
+    margin-top: 5rem;
+  }
+
+  .about-institute-image {
+    width: 100%;
+    height: 300px;
+    display: block;
+    object-fit: cover;
+  }
+  .adverstise-image{
+    width: 100%;
+    height: 200px;
+    display: block;
+    object-fit: cover;
+    margin-top: 50px;
+  }
+
+  .about-institute-container {
+    position: relative;
+    top: -100px; /* Adjust this value to control the overlap */
+  }
+  
+  .random-images-carousel{
+    max-height: 300px;
+    object-fit: contain;
+    margin-top: 15px;
+  }
+
+  .image-gallery-course {
+    display:inline-block;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 50px;
+  }
+  /* .carousel-item .text-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+  } */
+  
+  .item img {
+    width: 100%;
+    height: auto;
+  }
+  
+  .see-more {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    background-color: #000;
+    color: #fff;
+  }
+  
+  .see-more a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 20px;
+    font-weight: bold;
+  }
+  
