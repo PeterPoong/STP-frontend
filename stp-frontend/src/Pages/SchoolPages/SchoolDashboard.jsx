@@ -12,7 +12,7 @@ const SchoolDashboard = () => {
     const schoolDetail = async () => {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_BASE_URL}school/schoolDetail`,
+          `${import.meta.env.VITE_BASE_URL}api/school/schoolDetail`,
           {
             method: "GET",
             headers: {

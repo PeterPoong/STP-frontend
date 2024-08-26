@@ -46,7 +46,7 @@ const SchoolPortalLogin = () => {
     };
 
     console.log("Sending login data:", formData);
-    fetch("http://192.168.0.69:8000/api/school/login", {
+    fetch(`${import.meta.env.VITE_BASE_URL}api/school/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

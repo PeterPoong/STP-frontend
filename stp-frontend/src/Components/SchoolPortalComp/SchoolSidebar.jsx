@@ -25,7 +25,7 @@ const Sidebar = ({ detail }) => {
   const navigate = useNavigate();
 
   const schoolLogo = detail?.data?.school_logo
-    ? `${import.meta.env.VITE_URL}storage/${detail.data.school_logo}`
+    ? `${import.meta.env.VITE_BASE_URL}storage/${detail.data.school_logo}`
     : defaultProfilePic;
   console.log(schoolLogo);
 

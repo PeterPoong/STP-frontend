@@ -39,7 +39,7 @@ const ExistSchool = () => {
     console.log("Checking formData:", formData);
 
     const response = await fetch(
-      "http://192.168.0.69:8000/api/school/resetSchoolPassword",
+      `${import.meta.env.VITE_BASE_URL}api/school/resetSchoolPassword`,
       {
         method: "POST",
         headers: {
