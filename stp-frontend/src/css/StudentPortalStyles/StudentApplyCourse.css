@@ -1,11 +1,11 @@
-.app-container {
+.app-container-applycourse {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background-color: #F5F5F5 !important;
+  background-color: #F5F5F5;
 }
 
-.main-content {
+.main-content-applycourse {
   flex: 1;
   padding: 3rem 0 4.25rem 0;
 
@@ -34,8 +34,8 @@
 }
 
 .step-content {
-  padding: 2rem;
-  margin: 2rem 2rem;
+  padding: 2rem 2rem 0 2rem;
+  margin: 2rem 6rem;
   background-color: white;
 }
 
@@ -44,9 +44,3 @@
   height: 4.5em;
   
 }
-
-.sap-content
-{
-  width: 25rem;
-}
-

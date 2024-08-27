@@ -160,6 +160,7 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item }) => {
             )}
           </div>
         </div>
+        
         <div className="d-flex justify-content-center">
           <button className="achievement-save-btn" onClick={handleSave}>
             {item ? 'UPDATE' : 'SAVE'}

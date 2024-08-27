@@ -24,6 +24,7 @@ const BasicInformationWidget = () => {
     gender: ''
   });
   const [phone, setPhone] = useState('');
+  const [countryCode,setCountryCode] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -41,19 +42,22 @@ const BasicInformationWidget = () => {
   useEffect(() => {
     console.log('Student data updated:', studentData);
     setPhone(studentData.country_code + studentData.contact || '');
-
+    if (studentData.country_code && studentData.contact) {
+      setPhone(studentData.contact);
+      setCountryCode(studentData.country_code.replace('+', ''));
+    }
     // Update states when country changes
     if (studentData.country) {
       //const countryData = Country.getAllCountries().find(c => c.isoCode === studentData.country);
       //if (countryData) {
       //  setStates(State.getStatesOfCountry(countryData.isoCode));
-     // }
-     setStates(State.getStatesOfCountry(studentData.country));
+      // }
+      setStates(State.getStatesOfCountry(studentData.country));
     }
 
     // Update cities when state changes
     if (studentData.state && studentData.country) {
-     // const countryData = Country.getAllCountries().find(c => c.isoCode === studentData.country);
+      // const countryData = Country.getAllCountries().find(c => c.isoCode === studentData.country);
       // const stateData = State.getStatesOfCountry(countryData.isoCode).find(s => s.isoCode === studentData.state);
       // if (stateData) {
       //   setCities(City.getCitiesOfState(countryData.isoCode, stateData.isoCode));
@@ -140,8 +144,9 @@ const BasicInformationWidget = () => {
     }));
   };
 
-  const handlePhoneChange = (value, country) => {
+  const handlePhoneChange = (value, country, e, formattedValue) => {
     setPhone(value);
+    setCountryCode(country.dialCode);
     setStudentData(prevData => ({
       ...prevData,
       contact: value.slice(country.dialCode.length),
@@ -151,17 +156,17 @@ const BasicInformationWidget = () => {
 
   const handleCountryChange = (e) => {
     const { value } = e.target;
-   // const countryData = Country.getAllCountries().find(c => c.name === value);
+    // const countryData = Country.getAllCountries().find(c => c.name === value);
     setStudentData(prevData => ({
       ...prevData,
       country: '1',
       state: '1',
       city: '1'
     }));
-   // if (countryData) {
-   //   setStates(State.getStatesOfCountry(countryData.isoCode));
-   // }
-   setStates(State.getStatesOfCountry(value));
+    // if (countryData) {
+    //   setStates(State.getStatesOfCountry(countryData.isoCode));
+    // }
+    setStates(State.getStatesOfCountry(value));
     setCities([]);
   };
 
@@ -172,7 +177,7 @@ const BasicInformationWidget = () => {
     setStudentData(prevData => ({
       ...prevData,
       //state: stateData ? stateData.isoCode : '',
-      state:value,
+      state: value,
       city: ''
     }));
     //if (stateData) {
@@ -186,8 +191,8 @@ const BasicInformationWidget = () => {
     //const cityData = cities.find(c => c.name === value);
     setStudentData(prevData => ({
       ...prevData,
-    //  city: cityData ? cityData.id : ''
-    city:value
+      //  city: cityData ? cityData.id : ''
+      city: value
     }));
   };
   const handleSubmit = async (e) => {
@@ -197,27 +202,30 @@ const BasicInformationWidget = () => {
 
     // Create a new object with only the fields we want to send
     const submissionData = {
-      id: studentData.id,
-      username: studentData.username,
+  
+      name: studentData.username,
+      country_code: '+60',
+      contact_number: '12345678',
+      email: studentData.email,
       first_name: studentData.firstName,
       last_name: studentData.lastName,
-      ic: studentData.ic,
-      email: studentData.email,
-      contact_number: studentData.contact,
-      gender: studentData.gender,
-      address: studentData.address,
       country: '1',  // Set default value
       state: '1',    // Set default value
       city: '1',     // Set default value
       postcode: studentData.postcode,
-      country_code: studentData.country_code
+      ic: studentData.ic,
+      address: studentData.address,
+      
+      gender: '53',   //studentData.contact,  // Use the contact from studentData  //studentData.country_code,  // Use the country_code from studentData
     };
+  
 
+    
     console.log('Data to be sent to the API:', JSON.stringify(submissionData, null, 2));
 
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/editDetail`, {
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/editStudentDetail`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -228,6 +236,7 @@ const BasicInformationWidget = () => {
 
       const responseData = await response.json();
       console.log('API Response:', responseData);
+      
 
       if (!response.ok) {
         if (response.status === 422) {
@@ -411,9 +420,9 @@ const BasicInformationWidget = () => {
                     /*required*/
                     className="w-75"
                     name="country"
-                  //  value={Country.getAllCountries().find(c => c.isoCode === studentData.country)?.name || ''}
-                  value={studentData.country || ''}
-                  onChange={handleCountryChange}
+                    //  value={Country.getAllCountries().find(c => c.isoCode === studentData.country)?.name || ''}
+                    value={studentData.country || ''}
+                    onChange={handleCountryChange}
                   >
                     <option value="">Select country</option>
                     {countries.map((country) => (
@@ -431,9 +440,9 @@ const BasicInformationWidget = () => {
                     /*required*/
                     className="w-75"
                     name="state"
-                   // value={State.getStatesOfCountry(studentData.country).find(s => s.isoCode === studentData.state)?.name || ''}
-                   value={studentData.state || ''}
-                  onChange={handleStateChange}
+                    // value={State.getStatesOfCountry(studentData.country).find(s => s.isoCode === studentData.state)?.name || ''}
+                    value={studentData.state || ''}
+                    onChange={handleStateChange}
                   >
                     <option value="">Select state</option>
                     {states.map((state) => (

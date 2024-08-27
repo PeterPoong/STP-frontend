@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@emotion/react": "^11.13.0",
+    "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
     "@fortawesome/free-brands-svg-icons": "^6.6.0",
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
@@ -36,7 +36,9 @@
     "react-slick": "^0.30.2",
     "recharts": "^2.12.7",
     "slick-carousel": "^1.8.1",
-    "swiper": "^11.1.10"
+    "styled-components": "^6.1.12",
+    "swiper": "^11.1.10",
+    "typeface-ubuntu": "^1.1.13"
   },
   "devDependencies": {
     "@types/react": "^18.0.27",
