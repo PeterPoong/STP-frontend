@@ -139,3 +139,7 @@
   font-family: "Ubuntu";
 }
 
+.form-select option {
+  color: #000000; /* text color */
+  background-color: #f8f9fa; /* background color */
+}

@@ -24,7 +24,7 @@ const BasicInformationWidget = () => {
     gender: ''
   });
   const [phone, setPhone] = useState('');
-  const [countryCode,setCountryCode] = useState('');
+  const [countryCode, setCountryCode] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -202,7 +202,7 @@ const BasicInformationWidget = () => {
 
     // Create a new object with only the fields we want to send
     const submissionData = {
-  
+
       name: studentData.username,
       country_code: '+60',
       contact_number: '12345678',
@@ -215,12 +215,12 @@ const BasicInformationWidget = () => {
       postcode: studentData.postcode,
       ic: studentData.ic,
       address: studentData.address,
-      
+
       gender: '53',   //studentData.contact,  // Use the contact from studentData  //studentData.country_code,  // Use the country_code from studentData
     };
-  
 
-    
+
+
     console.log('Data to be sent to the API:', JSON.stringify(submissionData, null, 2));
 
     try {
@@ -236,7 +236,7 @@ const BasicInformationWidget = () => {
 
       const responseData = await response.json();
       console.log('API Response:', responseData);
-      
+
 
       if (!response.ok) {
         if (response.status === 422) {
@@ -347,14 +347,15 @@ const BasicInformationWidget = () => {
                   <Form.Label className="fw-bold small formlabel">Gender <span className="text-danger">*</span></Form.Label>
                   <Form.Select
                     required
-                    className="w-75"
+                    className="w-75 form-select"
                     name="gender"
                     value={studentData.gender || ''}
                     onChange={handleInputChange}
                   >
+                    
                     <option value="">Select gender</option>
                     {genderList.map((gender) => (
-                      <option key={gender.id} value={gender.id}>
+                      <option key={gender.id} value={gender.id} style={{color:"#000000"}}>
                         {gender.name}
                       </option>
                     ))}
