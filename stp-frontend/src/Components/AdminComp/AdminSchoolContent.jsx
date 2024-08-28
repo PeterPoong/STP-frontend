@@ -1,27 +1,31 @@
 import React, { useEffect, useState } from "react";
-import { Container, Table, Dropdown, Form, Button, Modal } from "react-bootstrap";
+import { Table, Button, Modal } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faTrash, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { faEdit } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
+import { MDBSwitch } from 'mdb-react-ui-kit';
 import '../../css/AdminStyles/AdminTableStyles.css';
-import TableWithControls from './TableWithControls'; // Adjust the path accordingly
+import TableWithControls from './TableWithControls';
 
 const AdminSchoolContent = () => {
     const [schools, setSchools] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [sortColumn, setSortColumn] = useState(null); // No initial sorting
-    const [sortDirection, setSortDirection] = useState(null); // No initial sorting
+    const [sortColumn, setSortColumn] = useState(null);
+    const [sortDirection, setSortDirection] = useState(null);
     const [showModal, setShowModal] = useState(false);
-    const [deleteId, setDeleteId] = useState(null);
+    const [targetSchool, setTargetSchool] = useState(null);
+    const [totalPages, setTotalPages] = useState(1); // Track total pages
+    const [currentPage, setCurrentPage] = useState(1);
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`;
     const navigate = useNavigate();
 
+
     useEffect(() => {
-        const fetchSchools = async () => {
+        const fetchSchools = async (page = 1) => {
             try {
-                const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/schoolList`, {
+                const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/schoolList?page=${page}`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -34,8 +38,10 @@ const AdminSchoolContent = () => {
                 }
 
                 const result = await response.json();
-                if (result && Array.isArray(result) && result[0].data) {
-                    setSchools(result[0].data);
+                if (result && result.data) {
+                    setSchools(result.data);
+                    setTotalPages(result.last_page); // Update total pages based on response
+                    setCurrentPage(result.current_page); // Update current page
                 } else {
                     setSchools([]);
                 }
@@ -46,9 +52,9 @@ const AdminSchoolContent = () => {
                 setLoading(false);
             }
         };
-
-        fetchSchools();
-    }, [Authenticate]);
+        fetchSchools(currentPage);
+            }, [Authenticate, currentPage]);
+    
 
     const handleEdit = (id) => {
         console.log(`Edit school with ID: ${id}`);
@@ -57,51 +63,67 @@ const AdminSchoolContent = () => {
 
     const handleDelete = (id) => {
         console.log(`Delete school with ID: ${id}`);
-        setDeleteId(id);
+        setTargetSchool({ id, action: 'disable' });
         setShowModal(true);
-        // Implement delete functionality here
     };
 
-    const confirmDelete = async () => {
-        try {
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/editSchoolStatus`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": Authenticate,
-                },
-                body: JSON.stringify({
-                    id: deleteId,
-                    type: 'disable' // what status you want to pass to the backend
-                }),
-            });
+    const handleToggleSwitch = (id, currentStatus) => {
+        const action = (currentStatus === 'Active' || currentStatus === 'Temporary') ? 'disable' : 'enable';
+        setTargetSchool({ id, action });
+        setShowModal(true);
+    };
+    
+    const confirmAction = async () => {
+    if (!targetSchool) return;
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
+    try {
+        const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/editSchoolStatus`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": Authenticate,
+            },
+            body: JSON.stringify({
+                id: targetSchool.id,
+                type: targetSchool.action
+            }),
+        });
 
-            const result = await response.json();
-            if (result.success) {
-                // Update local state to remove deleted school
-                setSchools(schools.filter(school => school.id !== deleteId));
-            } else {
-                console.error(result.message);
-            }
-        } catch (error) {
-            console.error("Error deleting the school:", error);
-        } finally {
-            setShowModal(false);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
-    };
+
+        const result = await response.json();
+        if (result.success) {
+            // Update the school status in the state immediately
+            setSchools(prevSchools =>
+                prevSchools.map(school =>
+                    school.id === targetSchool.id
+                        ? { ...school, status: result.newStatus } // Assume result.newStatus returns the new status correctly.
+                        : school
+                )
+            );
+        } else {
+            console.error(result.message);
+        }
+    } catch (error) {
+        console.error("Error processing the action:", error);
+    } finally {
+        setShowModal(false);
+        setTargetSchool(null);
+    }
+};
 
     const handleAddSchool = () => {
         sessionStorage.setItem('token', Authenticate);
-        navigate('/adminAddSchool'); // Redirect to AdminAddSchool page
+        navigate('/adminAddSchool');
     };
 
     const getStatusClass = (status) => {
         switch (status) {
             case 'Disable':
+                return 'status-disable'; // Red
+            case 'Temporary-Disable':
                 return 'status-disable'; // Red
             case 'Active':
                 return 'status-active';  // Green
@@ -113,16 +135,15 @@ const AdminSchoolContent = () => {
                 return '';
         }
     };
-
+    
     const handleSort = (column) => {
-        // Toggle sort direction if the same column is clicked
         const newDirection = sortColumn === column && sortDirection === "asc" ? "desc" : "asc";
         setSortColumn(column);
         setSortDirection(newDirection);
     };
 
     const sortedSchools = (() => {
-        if (!sortColumn || !sortDirection) return schools; // No sorting if column or direction is not set
+        if (!sortColumn || !sortDirection) return schools;
 
         return [...schools].sort((a, b) => {
             const aValue = a[sortColumn].toString().toLowerCase();
@@ -134,7 +155,10 @@ const AdminSchoolContent = () => {
         });
     })();
 
-    // Thead content
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+    };
+
     const theadContent = (
         <tr>
             <th onClick={() => handleSort("name")}>
@@ -156,7 +180,6 @@ const AdminSchoolContent = () => {
         </tr>
     );
 
-    // Tbody content
     const tbodyContent = sortedSchools.map((school) => (
         <tr key={school.id}>
             <td>{school.name}</td>
@@ -175,15 +198,14 @@ const AdminSchoolContent = () => {
                         style={{ marginRight: '8px', color: '#691ED2', cursor: 'pointer' }}
                         onClick={() => handleEdit(school.id)}
                     />
-                    {school.status !== 'Disable' && (
-                        <FontAwesomeIcon
-                            className="icon-color-delete"
-                            title="Delete"
-                            icon={faTrash}
-                            style={{ marginRight: '8px', color: '#dc3545', cursor: 'pointer' }}
-                            onClick={() => handleDelete(school.id)}
-                        />
-                    )}
+                    <MDBSwitch
+                        id={`switch-${school.id}`}
+                        checked={school.status === 'Active' || school.status === 'Temporary'}
+                        onChange={() => handleToggleSwitch(school.id, school.status)}
+                        style={{
+                            color: (school.status === 'Active' || school.status === 'Temporary') ? 'green' : ''
+                        }}
+                    />
                 </div>
             </td>
         </tr>
@@ -191,22 +213,25 @@ const AdminSchoolContent = () => {
 
     return (
         <>
-        <TableWithControls
-            theadContent={theadContent}
-            tbodyContent={tbodyContent}
-            onAddButtonClick={handleAddSchool}
-            onSort={handleSort} // Pass handleSort to TableWithControls
-        />
-        <Modal show={showModal} onHide={() => setShowModal(false)}>
+            <TableWithControls
+               theadContent={theadContent}
+                tbodyContent={tbodyContent}
+                onAddButtonClick={handleAddSchool}
+                onSort={handleSort}
+                totalPages={totalPages}
+                currentPage={currentPage}
+                onPageChange={handlePageChange}
+            />
+             <Modal show={showModal} onHide={() => setShowModal(false)}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Confirm Deletion</Modal.Title>
+                    <Modal.Title>Confirm Action</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>Are you sure you want to delete this school?</Modal.Body>
+                <Modal.Body>Are you sure you want to {targetSchool?.action} this school?</Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={() => setShowModal(false)}>
                         Cancel
                     </Button>
-                    <Button variant="primary" onClick={confirmDelete}>
+                    <Button variant="primary" onClick={confirmAction}>
                         Confirm
                     </Button>
                 </Modal.Footer>

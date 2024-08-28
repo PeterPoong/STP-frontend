@@ -198,3 +198,12 @@ background-color: #D32F2F;
     background-color: #e9ecef !important;
     color: #6c757d !important;
 }
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.pagination-controls .btn {
+    margin: 0 5px;
+}

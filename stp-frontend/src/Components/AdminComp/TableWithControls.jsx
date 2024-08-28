@@ -9,11 +9,13 @@ const TableWithControls = ({
     tbodyContent,
     onAddButtonClick,
     defaultRowsPerPage = 10,
-    onSort // Add onSort to handle sorting
+    onSort,
+    totalPages,
+    currentPage,
+    onPageChange
 }) => {
     const [rowsPerPage, setRowsPerPage] = useState(defaultRowsPerPage);
     const [searchQuery, setSearchQuery] = useState("");
-    const [currentPage, setCurrentPage] = useState(1);
     const [filteredData, setFilteredData] = useState(tbodyContent);
 
     useEffect(() => {
@@ -25,34 +27,20 @@ const TableWithControls = ({
                 });
             });
             setFilteredData(filtered);
-            setCurrentPage(1); // Reset to the first page when filtering
         }
     }, [searchQuery, tbodyContent]);
-    
+
+
+    const handlePageChange = (page) => {
+        onPageChange(page);
+    };
     const handleRowsPerPageChange = (number) => {
         if (number > 0 || number === 'All') {
             setRowsPerPage(number);
-            setCurrentPage(1); // Reset to the first page when rows per page changes
+            onRowsPerPageChange(number); // Notify the parent component
         }
     };
     
-
-    const handlePageChange = (page) => {
-        setCurrentPage(page);
-    };
-
-    // Calculate the total number of pages
-  // Ensure filteredData.length is not 0 or negative and rowsPerPage is valid
-const totalPages = Math.ceil(filteredData.length / rowsPerPage) || 1;
-
-    
-    // Calculate the items to display for the current page
-    const startIndex = (currentPage - 1) * rowsPerPage;
-    const endIndex = startIndex + rowsPerPage;
-    const paginatedData = rowsPerPage === 'All'
-    ? filteredData
-    : filteredData.slice(startIndex, endIndex);
-
 
     return (
         <Container fluid>
@@ -103,12 +91,12 @@ const totalPages = Math.ceil(filteredData.length / rowsPerPage) || 1;
                         {React.cloneElement(theadContent, { onSort })}
                     </thead>
                     <tbody className="AdminTableBody">
-                        {paginatedData}
+                        {filteredData}
                     </tbody>
                 </Table>
             </div>
 
-            {/* Always Render Pagination */}
+            {/* Pagination Controls */}
             <nav aria-label="Page navigation">
                 <ul className="pagination">
                     <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>

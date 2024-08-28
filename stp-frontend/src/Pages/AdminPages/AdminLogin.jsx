@@ -7,6 +7,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
+import { MDBSwitch } from 'mdb-react-ui-kit'; // Adjust the import based on your MDBReact version
+
 // Images
 import logo from '../../assets/AdminAssets/Images/logo.png';
 
