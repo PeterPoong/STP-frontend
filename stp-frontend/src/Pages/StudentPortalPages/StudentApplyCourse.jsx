@@ -5,6 +5,7 @@ import Select from 'react-select';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import NavButtonsSP from "../../Components/StudentPortalComp/NavButtonsSP";
 import SpcFooter from "../../Components/StudentPortalComp/SpcFooter";
+import ApplicationSummary from "../../Components/StudentPortalComp/ApplicationSummary";
 import "../../css/StudentPortalStyles/StudentApplyCourse.css";
 import image1 from "../../assets/StudentAssets/University Logo/image1.jpg";
 import { components } from 'react-select';
@@ -641,7 +642,7 @@ const StudentApplyCourse = () => {
             <h3 className="border-bottom pb-2 fw-normal">Achievements</h3>
             <div className="achievement-list">
               {formData.achievements && formData.achievements.map((item, index) => (
-                <div key={index} className="achievement-item mb-4 border rounded p-4">
+                <div key={index} className="achievement-item row mb-4 border rounded p-4">
                   {item.isEditing ? (
                     // Editing mode
                     <>
@@ -917,21 +918,24 @@ const StudentApplyCourse = () => {
         return null;
     }
   };
+  const [showSummary, setShowSummary] = useState(false);
+
+  const handleViewSummary = () => {
+    setShowSummary(true);
+  };
 
   const renderPostSubmission = () => (
     <div className="main-content-applycourse">
       <div className="backgroundimage">
-        <div >
-          <div className="widget-applying-course-success justify-content-center ">
+        <div>
+          <div className="widget-applying-course-success justify-content-center">
             <h1 className="text-danger align-self-center fw-bold mb-5 display-6">Congratulations!</h1>
             <h3 className="text-black align-self-center fw-normal mb-4">Your application has been successfully submitted.</h3>
-
           </div>
-
         </div>
       </div>
       <div className="d-flex justify-content-center mt-4">
-        <Button variant="primary" className="me-3" onClick={() => {/* Add logic to view summary */ }}>
+        <Button variant="primary" className="me-3" onClick={handleViewSummary}>
           View Summary
         </Button>
         <Button variant="secondary" onClick={() => {/* Add logic to go back to course page */ }}>
@@ -940,6 +944,17 @@ const StudentApplyCourse = () => {
       </div>
     </div>
   );
+
+  if (showSummary) {
+    return (
+      <div className="app-container-applycourse-viewsummary mt-5">
+        <NavButtonsSP />
+            <ApplicationSummary />
+        <SpcFooter />
+      </div>
+      
+    );
+  }
 
   if (isSubmitted) {
     return (
@@ -952,6 +967,7 @@ const StudentApplyCourse = () => {
       </div>
     );
   }
+
 
   return (
     <div className="app-container-applycourse mt-5">
