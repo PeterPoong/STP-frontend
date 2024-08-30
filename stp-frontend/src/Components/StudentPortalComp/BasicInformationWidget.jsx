@@ -3,8 +3,7 @@ import { Card, Form, Button, Row, Col, Alert } from 'react-bootstrap';
 import "../../css/StudentPortalStyles/StudentPortalLoginForm.css";
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
-import { Country, State, City } from 'country-state-city';
-
+import axios from 'axios';
 
 const BasicInformationWidget = () => {
   const [studentData, setStudentData] = useState({
@@ -34,37 +33,32 @@ const BasicInformationWidget = () => {
   const [genderList, setGenderList] = useState([]);
 
   useEffect(() => {
-    fetchStudentDetails();
-    fetchGenderList();
-    setCountries(Country.getAllCountries());
+    const fetchData = async () => {
+      await fetchGenderList();
+      await fetchStudentDetails();
+      await fetchCountries();
+    };
+    fetchData();
   }, []);
 
   useEffect(() => {
     console.log('Student data updated:', studentData);
-    setPhone(studentData.country_code + studentData.contact || '');
     if (studentData.country_code && studentData.contact) {
       setPhone(studentData.contact);
       setCountryCode(studentData.country_code.replace('+', ''));
     }
-    // Update states when country changes
     if (studentData.country) {
-      //const countryData = Country.getAllCountries().find(c => c.isoCode === studentData.country);
-      //if (countryData) {
-      //  setStates(State.getStatesOfCountry(countryData.isoCode));
-      // }
-      setStates(State.getStatesOfCountry(studentData.country));
+      const countryId = countries.find(c => c.country_name === studentData.country)?.id;
+      if (countryId) fetchStates(countryId);
     }
+  }, [studentData, countries]);
 
-    // Update cities when state changes
-    if (studentData.state && studentData.country) {
-      // const countryData = Country.getAllCountries().find(c => c.isoCode === studentData.country);
-      // const stateData = State.getStatesOfCountry(countryData.isoCode).find(s => s.isoCode === studentData.state);
-      // if (stateData) {
-      //   setCities(City.getCitiesOfState(countryData.isoCode, stateData.isoCode));
-      // }
-      setCities(City.getCitiesOfState(studentData.country, studentData.state));
+  useEffect(() => {
+    if (studentData.state) {
+      const stateId = states.find(s => s.state_name === studentData.state)?.id;
+      if (stateId) fetchCities(stateId);
     }
-  }, [studentData]);
+  }, [studentData.state, states]);
 
   const fetchGenderList = async () => {
     try {
@@ -89,8 +83,6 @@ const BasicInformationWidget = () => {
     }
   };
 
-
-
   const fetchStudentDetails = async () => {
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
@@ -113,9 +105,6 @@ const BasicInformationWidget = () => {
         body: JSON.stringify({ id: id })
       });
 
-      if (response.status === 429) {
-        throw new Error('Too many requests. Please wait a moment and try again.');
-      }
       if (!response.ok) {
         throw new Error(`Failed to fetch student details. Status: ${response.status}`);
       }
@@ -127,12 +116,107 @@ const BasicInformationWidget = () => {
         throw new Error('No data received from the server. Your profile might be incomplete.');
       }
 
-      setStudentData(responseData.data);
-      setIsLoading(false);
+      if (responseData.data) {
+        // Map gender ID to name
+        const genderName = genderList.find(g => g.id === parseInt(responseData.data.gender))?.core_metaName || '';
+        
+        const updatedStudentData = {
+          ...responseData.data,
+          gender: genderName,
+          contact: responseData.data.contact_number || '',
+          country_code: responseData.data.country_code || ''
+        };
+
+        console.log('Updated student data:', updatedStudentData);
+
+        setStudentData(updatedStudentData);
+
+        // Set phone state
+        setPhone(`${updatedStudentData.country_code}${updatedStudentData.contact}`);
+        
+        setIsLoading(false);
+      }
     } catch (error) {
       console.error('Error in fetchStudentDetails:', error.message);
       setError(error.message || 'Error fetching student details. Please try logging out and back in.');
       setIsLoading(false);
+    }
+  };
+
+  const fetchCountries = async () => {
+    try {
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/countryList`, {
+        method: 'GET',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      setCountries(data.data || []);
+    } catch (error) {
+      console.error('Error fetching countries:', error);
+      setError('Failed to load countries. Please try again later.');
+      setCountries([]);
+    }
+  };
+
+  const fetchStates = async (countryId) => {
+    try {
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/getState`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id: countryId })
+      });
+      if (!response.ok) {
+        if (response.status === 404) {
+          console.warn(`No states found for country ID: ${countryId}`);
+          setStates([]);
+          return;
+        }
+        const errorData = await response.json();
+        throw new Error(`HTTP error! status: ${response.status}, message: ${JSON.stringify(errorData)}`);
+      }
+      const data = await response.json();
+      setStates(data.data || []);
+    } catch (error) {
+      console.error('Error fetching states:', error);
+      setError(`Failed to load states: ${error.message}`);
+      setStates([]);
+    }
+  };
+
+  const fetchCities = async (stateId) => {
+    try {
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/getCities`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id: stateId })
+      });
+      if (!response.ok) {
+        if (response.status === 404) {
+          console.warn(`No cities found for state ID: ${stateId}`);
+          setCities([]);
+          return;
+        }
+        const errorData = await response.json();
+        throw new Error(`HTTP error! status: ${response.status}, message: ${JSON.stringify(errorData)}`);
+      }
+      const data = await response.json();
+      setCities(data.data || []);
+    } catch (error) {
+      console.error('Error fetching cities:', error);
+      setError(`Failed to load cities: ${error.message}`);
+      setCities([]);
     }
   };
 
@@ -142,6 +226,16 @@ const BasicInformationWidget = () => {
       ...prevData,
       [name]: value
     }));
+
+    if (name === 'gender') {
+      const selectedGender = genderList.find(g => g.core_metaName === value);
+      if (selectedGender) {
+        setStudentData(prevData => ({
+          ...prevData,
+          gender: selectedGender.core_metaName
+        }));
+      }
+    }
   };
 
   const handlePhoneChange = (value, country, e, formattedValue) => {
@@ -155,71 +249,55 @@ const BasicInformationWidget = () => {
   };
 
   const handleCountryChange = (e) => {
-    const { value } = e.target;
-    // const countryData = Country.getAllCountries().find(c => c.name === value);
+    const selectedCountry = countries.find(country => country.id === parseInt(e.target.value));
     setStudentData(prevData => ({
       ...prevData,
-      country: '1',
-      state: '1',
-      city: '1'
+      country: selectedCountry ? selectedCountry.country_name : '',
+      state: '',
+      city: ''
     }));
-    // if (countryData) {
-    //   setStates(State.getStatesOfCountry(countryData.isoCode));
-    // }
-    setStates(State.getStatesOfCountry(value));
+    fetchStates(e.target.value);
     setCities([]);
   };
 
   const handleStateChange = (e) => {
-    const { value } = e.target;
-    //const countryData = Country.getAllCountries().find(c => c.isoCode === studentData.country);
-    //const stateData = State.getStatesOfCountry(countryData.isoCode).find(s => s.name === value);
+    const selectedState = states.find(state => state.id === parseInt(e.target.value));
     setStudentData(prevData => ({
       ...prevData,
-      //state: stateData ? stateData.isoCode : '',
-      state: value,
+      state: selectedState ? selectedState.state_name : '',
       city: ''
     }));
-    //if (stateData) {
-    //  setCities(City.getCitiesOfState(countryData.isoCode, stateData.isoCode));
-    //}
-    setCities(City.getCitiesOfState(studentData.country, value));
+    fetchCities(e.target.value);
   };
 
   const handleCityChange = (e) => {
-    const { value } = e.target;
-    //const cityData = cities.find(c => c.name === value);
+    const selectedCity = cities.find(city => city.id === parseInt(e.target.value));
     setStudentData(prevData => ({
       ...prevData,
-      //  city: cityData ? cityData.id : ''
-      city: value
+      city: selectedCity ? selectedCity.city_name : ''
     }));
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSuccess('');
 
-    // Create a new object with only the fields we want to send
     const submissionData = {
-
       name: studentData.username,
-      country_code: '+60',
-      contact_number: '12345678',
+      country_code: studentData.country_code,
+      contact_number: studentData.contact,
       email: studentData.email,
       first_name: studentData.firstName,
       last_name: studentData.lastName,
-      country: '1',  // Set default value
-      state: '1',    // Set default value
-      city: '1',     // Set default value
+      country: countries.find(c => c.country_name === studentData.country)?.id.toString() || '',
+      state: states.find(s => s.state_name === studentData.state)?.id.toString() || '',
+      city: cities.find(c => c.city_name === studentData.city)?.id.toString() || '',
       postcode: studentData.postcode,
       ic: studentData.ic,
       address: studentData.address,
-
-      gender: '53',   //studentData.contact,  // Use the contact from studentData  //studentData.country_code,  // Use the country_code from studentData
+      gender: genderList.find(g => g.core_metaName === studentData.gender)?.id.toString() || '',
     };
-
-
 
     console.log('Data to be sent to the API:', JSON.stringify(submissionData, null, 2));
 
@@ -236,7 +314,6 @@ const BasicInformationWidget = () => {
 
       const responseData = await response.json();
       console.log('API Response:', responseData);
-
 
       if (!response.ok) {
         if (response.status === 422) {
@@ -352,11 +429,10 @@ const BasicInformationWidget = () => {
                     value={studentData.gender || ''}
                     onChange={handleInputChange}
                   >
-                    
                     <option value="">Select gender</option>
                     {genderList.map((gender) => (
-                      <option key={gender.id} value={gender.id} style={{color:"#000000"}}>
-                        {gender.name}
+                      <option key={gender.id} value={gender.core_metaName} style={{ color: "#000000" }}>
+                        {gender.core_metaName}
                       </option>
                     ))}
                   </Form.Select>
@@ -418,17 +494,16 @@ const BasicInformationWidget = () => {
                 <Form.Group controlId="country">
                   <Form.Label className="fw-bold small formlabel">Country <span className="text-danger">*</span></Form.Label>
                   <Form.Select
-                    /*required*/
+                    required
                     className="w-75"
                     name="country"
-                    //  value={Country.getAllCountries().find(c => c.isoCode === studentData.country)?.name || ''}
-                    value={studentData.country || ''}
+                    value={countries.find(c => c.country_name === studentData.country)?.id || ''}
                     onChange={handleCountryChange}
                   >
                     <option value="">Select country</option>
                     {countries.map((country) => (
-                      <option key={country.isoCode} value={country.name}>
-                        {country.name}
+                      <option key={country.id} value={country.id}>
+                        {country.country_name}
                       </option>
                     ))}
                   </Form.Select>
@@ -438,17 +513,16 @@ const BasicInformationWidget = () => {
                 <Form.Group controlId="state">
                   <Form.Label className="fw-bold small formlabel">State <span className="text-danger">*</span></Form.Label>
                   <Form.Select
-                    /*required*/
+                    required
                     className="w-75"
                     name="state"
-                    // value={State.getStatesOfCountry(studentData.country).find(s => s.isoCode === studentData.state)?.name || ''}
-                    value={studentData.state || ''}
+                    value={states.find(s => s.state_name === studentData.state)?.id || ''}
                     onChange={handleStateChange}
                   >
                     <option value="">Select state</option>
                     {states.map((state) => (
-                      <option key={state.isoCode} value={state.name}>
-                        {state.name}
+                      <option key={state.id} value={state.id}>
+                        {state.state_name}
                       </option>
                     ))}
                   </Form.Select>
@@ -460,16 +534,16 @@ const BasicInformationWidget = () => {
                 <Form.Group controlId="city">
                   <Form.Label className="fw-bold small formlabel">City <span className="text-danger">*</span></Form.Label>
                   <Form.Select
-                    /*required*/
+                    required
                     className="w-75"
                     name="city"
-                    //value={cities.find(c => c.id === studentData.city)?.name || ''}
-                    value={studentData.city || ''}
+                    value={cities.find(c => c.city_name === studentData.city)?.id || ''}
                     onChange={handleCityChange}
-                  ><option value="">Select city</option>
+                  >
+                    <option value="">Select city</option>
                     {cities.map((city) => (
-                      <option key={city.name} value={city.name}>
-                        {city.name}
+                      <option key={city.id} value={city.id}>
+                        {city.city_name}
                       </option>
                     ))}
                   </Form.Select>

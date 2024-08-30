@@ -1,6 +1,6 @@
 .app-container-applycourse {
   display: flex;
-  flex-direction: column;
+  flex-direction:column;
   min-height: 200vh;
   background-color: #F5F5F5;
 }
@@ -8,7 +8,7 @@
 .app-container-applycourse-viewsummary {
   display: flex;
   flex-direction: column;
-  min-height: 250vh;
+  min-height: 300vh;
   max-height: 400vh;
   background-color: #F5F5F5;
 }
@@ -27,7 +27,6 @@
   background-size: 100% 75%;
 
   height: 35rem !important;
-  width: 100%;
   flex-direction: row;
   align-content: flex-end;
 }
@@ -48,7 +47,7 @@
 .widget-applying-course-success {
   background-color: blue;
   height: 20rem;
-  margin: 0 4rem 0 6rem;
+  margin: 0 4rem 0 10rem;
   display: flex;
   flex-direction: column;
   background: url("../../assets/StudentPortalAssets/applyCoursebgSuccess.png") no-repeat;
@@ -465,5 +464,26 @@ ul {
   padding-left: 1.5rem;
 }
 
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
 
+.summary-label {
+  display: flex;
+  align-items: center;
+}
+
+.summary-value {
+  font-weight: bold;
+}
+
+
+
+.academic-transcript-item,.sac-at-bg
+{
+  background-color:#CFD6DC
+}
 

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Form, Button, Row, Col } from 'react-bootstrap';
-import { Trash2, Edit, Calendar, User, Building, LucideFileChartColumnIncreasing, Save, Trophy, FileText, Upload, X } from 'lucide-react';
+import { Trash2, Edit, Calendar, User, Building, LucideFileChartColumnIncreasing, Save, Trophy, FileText, Upload, X, Plus, ChevronDown } from 'lucide-react';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+
 import Select from 'react-select';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import NavButtonsSP from "../../Components/StudentPortalComp/NavButtonsSP";
@@ -18,6 +20,41 @@ import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import { faListCheck } from '@fortawesome/free-solid-svg-icons';
 import { Justify } from 'react-bootstrap-icons';
+
+import StepConnector, { stepConnectorClasses } from '@mui/material/StepConnector';
+
+
+// ... existing code ...
+
+const CustomConnector = styled(StepConnector)(({ theme }) => ({
+  [`&.${stepConnectorClasses.alternativeLabel}`]: {
+    top: 25, // Half of the icon height (50/2) to center the connector
+  },
+  [`&.${stepConnectorClasses.active}`]: {
+    [`& .${stepConnectorClasses.line}`]: {
+      borderColor: '#B71A18',
+      borderWidth: "0.5rem"
+    },
+  },
+  [`&.${stepConnectorClasses.completed}`]: {
+    [`& .${stepConnectorClasses.line}`]: {
+      borderColor: '#B71A18',
+      borderWidth: "0.5rem"
+    },
+  },
+  [`& .${stepConnectorClasses.line}`]: {
+    borderColor: '#e0e0e0',
+    borderWidth: "0.5rem",
+  },
+}));
+
+// Update the CustomStepper component
+const CustomStepper = styled(Stepper)(({ theme }) => ({
+  '& .MuiStepConnector-line': {
+    borderWidth:"0.5rem",
+    
+  },
+}));
 
 const steps = [
   'Basic Information',
@@ -42,7 +79,7 @@ const CustomFileInput = styled.div`
     cursor: pointer;
     background-color: #f8f9fa;
     border: 1px solid #ced4da;
-    border-radius: 4px;
+    border-radius: 10px;
     font-size: 14px;
     color: #495057;
     transition: all 0.2s ease-in-out;
@@ -58,39 +95,39 @@ const CustomFileInput = styled.div`
   }
 `;
 
-const CustomStepper = styled(Stepper)(({ theme }) => ({
-  '& .MuiStepConnector-line': {
-    borderTopWidth: 3,
-    borderColor: '#e0e0e0',
-  },
-  '& .MuiStepConnector-active, & .MuiStepConnector-completed': {
-    '& .MuiStepConnector-line': {
-      borderColor: '#dc3545',
-    },
-  },
-}));
+
 
 const CustomStepLabel = styled(StepLabel)(({ theme }) => ({
   '& .MuiStepLabel-label': {
     fontSize: '0.8rem',
-    color: '#6c757d',
+    color: '#e0e0e0',
+    fontWeight: "bold",
+    marginTop: '10px', // Add some margin to separate the label from the larger icon
     '&.Mui-active': {
       color: '#000',
-      fontWeight: 'bold',
+      fontSize: '0.8rem',
+      fontWeight: "bold"
+    },
+    '&.Mui-completed': {
+      color: '#000',
+      fontSize: '0.8rem',
+      fontWeight: "bold"
     },
   },
 }));
 
 const CustomStepIcon = styled('div')(({ theme, ownerState }) => ({
-  width: 30,
-  height: 30,
+  width: 50,
+  height: 50,
   borderRadius: '50%',
-  backgroundColor: ownerState.active ? '#dc3545' : '#e0e0e0',
+  backgroundColor: ownerState.completed ? '#B71A18' : ownerState.active ? '#B71A18' : '#e0e0e0',
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
   color: '#fff',
   fontWeight: 'bold',
+  fontSize: '1.5rem',
+  zIndex:1,
 }));
 
 const StepIcon = (props) => {
@@ -113,7 +150,8 @@ const StudentApplyCourse = () => {
     startDate: '',
     coCurriculum: [],
     achievements: [],
-    otherDocs: []  // Initialize as an empty array
+    otherDocs: [],  // Initialize as an empty array
+    academicTranscripts: []
   });
 
   const handleInputChange = (e) => {
@@ -336,6 +374,260 @@ const StudentApplyCourse = () => {
     </components.Option>
   );
 
+
+  const educationOptions = [
+    { value: 'STPM', label: 'STPM' },
+    { value: 'SPM', label: 'SPM' },
+    { value: 'Foundation', label: 'Foundation' },
+    { value: 'O-Level', label: 'O-Level' },
+    { value: 'Diploma', label: 'Diploma' },
+    { value: 'Previous', label: 'Previous' },
+  ];
+
+  // Modify the handleAddTranscript function
+  const handleAddTranscript = () => {
+    setFormData(prevData => ({
+      ...prevData,
+      academicTranscripts: [
+        ...(prevData.academicTranscripts || []),
+        { name: '', subjects: [], documents: [] }
+      ]
+    }));
+  };
+
+  // Add this new function to handle transcript type selection
+  const handleTranscriptTypeChange = (index, selectedOption) => {
+    setFormData(prevData => ({
+      ...prevData,
+      academicTranscripts: prevData.academicTranscripts.map((transcript, i) =>
+        i === index ? { ...transcript, name: selectedOption.value } : transcript
+      )
+    }));
+  };
+  const handleTranscriptChange = (index, field, value) => {
+    setFormData(prevData => ({
+      ...prevData,
+      academicTranscripts: prevData.academicTranscripts.map((transcript, i) =>
+        i === index ? { ...transcript, [field]: value } : transcript
+      )
+    }));
+  };
+
+  const handleRemoveTranscript = (index) => {
+    setFormData(prevData => ({
+      ...prevData,
+      academicTranscripts: prevData.academicTranscripts.filter((_, i) => i !== index)
+    }));
+  };
+
+  const handleAddSubject = (transcriptIndex) => {
+    setFormData(prevData => ({
+      ...prevData,
+      academicTranscripts: prevData.academicTranscripts.map((transcript, i) =>
+        i === transcriptIndex
+          ? { ...transcript, subjects: [...transcript.subjects, { name: '', grade: '', isEditing: true }] }
+          : transcript
+      )
+    }));
+  };
+  const handleAddDocument = (transcriptIndex) => {
+    setFormData(prevData => ({
+      ...prevData,
+      academicTranscripts: prevData.academicTranscripts.map((transcript, i) =>
+        i === transcriptIndex
+          ? { ...transcript, documents: [...transcript.documents, { name: 'New Document', title: '', isEditing: true }] }
+          : transcript
+      )
+    }));
+  };
+
+
+  const handleSubjectChange = (transcriptIndex, subjectIndex, field, value) => {
+    setFormData(prevData => ({
+      ...prevData,
+      academicTranscripts: prevData.academicTranscripts.map((transcript, i) =>
+        i === transcriptIndex
+          ? {
+            ...transcript,
+            subjects: transcript.subjects.map((subject, j) =>
+              j === subjectIndex ? { ...subject, [field]: value } : subject
+            )
+          }
+          : transcript
+      )
+    }));
+  };
+
+  const handleRemoveSubject = (transcriptIndex, subjectIndex) => {
+    setFormData(prevData => ({
+      ...prevData,
+      academicTranscripts: prevData.academicTranscripts.map((transcript, i) =>
+        i === transcriptIndex
+          ? { ...transcript, subjects: transcript.subjects.filter((_, j) => j !== subjectIndex) }
+          : transcript
+      )
+    }));
+  };
+
+
+  const handleDocumentChange = (transcriptIndex, documentIndex, field, value) => {
+    setFormData(prevData => ({
+      ...prevData,
+      academicTranscripts: prevData.academicTranscripts.map((transcript, i) =>
+        i === transcriptIndex
+          ? {
+            ...transcript,
+            documents: transcript.documents.map((doc, j) =>
+              j === documentIndex ? { ...doc, [field]: value } : doc
+            )
+          }
+          : transcript
+      )
+    }));
+  };
+
+  const handleRemoveDocument = (transcriptIndex, documentIndex) => {
+    setFormData(prevData => ({
+      ...prevData,
+      academicTranscripts: prevData.academicTranscripts.map((transcript, i) =>
+        i === transcriptIndex
+          ? { ...transcript, documents: transcript.documents.filter((_, j) => j !== documentIndex) }
+          : transcript
+      )
+    }));
+  };
+
+  const handleUploadTranscript = (transcriptIndex) => {
+    // Implement file upload logic here
+    console.log('Uploading transcript for index:', transcriptIndex);
+  };
+
+  const handleSaveSubject = (transcriptIndex, subjectIndex) => {
+    setFormData(prevData => ({
+      ...prevData,
+      academicTranscripts: prevData.academicTranscripts.map((transcript, i) =>
+        i === transcriptIndex ? {
+          ...transcript,
+          subjects: transcript.subjects.map((subject, j) =>
+            j === subjectIndex ? { ...subject, isEditing: false } : subject
+          )
+        } : transcript
+      )
+    }));
+  };
+
+  const handleEditSubject = (transcriptIndex, subjectIndex) => {
+    setFormData(prevData => ({
+      ...prevData,
+      academicTranscripts: prevData.academicTranscripts.map((transcript, i) =>
+        i === transcriptIndex ? {
+          ...transcript,
+          subjects: transcript.subjects.map((subject, j) =>
+            j === subjectIndex ? { ...subject, isEditing: true } : subject
+          )
+        } : transcript
+      )
+    }));
+  };
+
+  const handleSaveDocument = (transcriptIndex, documentIndex) => {
+    setFormData(prevData => ({
+      ...prevData,
+      academicTranscripts: prevData.academicTranscripts.map((transcript, i) =>
+        i === transcriptIndex ? {
+          ...transcript,
+          documents: transcript.documents.map((doc, j) =>
+            j === documentIndex ? { ...doc, isEditing: false } : doc
+          )
+        } : transcript
+      )
+    }));
+  };
+
+  const handleEditDocument = (transcriptIndex, documentIndex) => {
+    setFormData(prevData => ({
+      ...prevData,
+      academicTranscripts: prevData.academicTranscripts.map((transcript, i) =>
+        i === transcriptIndex ? {
+          ...transcript,
+          documents: transcript.documents.map((doc, j) =>
+            j === documentIndex ? { ...doc, isEditing: true } : doc
+          )
+        } : transcript
+      )
+    }));
+  };
+
+  const handleDocumentFileUpload = (transcriptIndex, docIndex) => {
+    document.getElementById(`fileInput-${transcriptIndex}-${docIndex}`).click();
+  };
+
+  const handleDocumentFileChange = (transcriptIndex, docIndex, file) => {
+    if (file) {
+      setFormData(prevData => ({
+        ...prevData,
+        academicTranscripts: prevData.academicTranscripts.map((transcript, i) =>
+          i === transcriptIndex ? {
+            ...transcript,
+            documents: transcript.documents.map((doc, j) =>
+              j === docIndex ? { ...doc, name: file.name, file: file } : doc
+            )
+          } : transcript
+        )
+      }));
+    }
+  };
+
+  // Drag and drop handlers
+  const onDragEnd = (result) => {
+    if (!result.destination) {
+      return;
+    }
+
+    const { source, destination } = result;
+
+    if (result.type === 'TRANSCRIPT') {
+      const newTranscripts = Array.from(formData.academicTranscripts);
+      const [reorderedItem] = newTranscripts.splice(source.index, 1);
+      newTranscripts.splice(destination.index, 0, reorderedItem);
+
+      setFormData(prevData => ({
+        ...prevData,
+        academicTranscripts: newTranscripts
+      }));
+    } else if (result.type === 'SUBJECT') {
+      const transcriptIndex = parseInt(result.type.split('-')[1]);
+      const newSubjects = Array.from(formData.academicTranscripts[transcriptIndex].subjects);
+      const [reorderedItem] = newSubjects.splice(source.index, 1);
+      newSubjects.splice(destination.index, 0, reorderedItem);
+
+      setFormData(prevData => ({
+        ...prevData,
+        academicTranscripts: prevData.academicTranscripts.map((transcript, index) =>
+          index === transcriptIndex ? { ...transcript, subjects: newSubjects } : transcript
+        )
+      }));
+    }
+  };
+
+  const getGradeColor = (grade) => {
+    switch (grade) {
+      case 'A': return 'success';
+      case 'B': return 'primary';
+      case 'C': return 'warning';
+      case 'D': case 'E': case 'F': return 'danger';
+      default: return 'secondary';
+    }
+  };
+
+
+  // DragHandle component
+  const DragHandle = () => (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M7 4H11M7 9H11M7 14H11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+
   const renderStep = () => {
     const renderNavButtons = () => (
       <div className="d-flex justify-content-between mt-4">
@@ -344,7 +636,7 @@ const StudentApplyCourse = () => {
             Back
           </Button>
         )}
-        {activeStep < 7 && (
+        {activeStep < 5 && (
           <Button
             variant="primary"
             onClick={() => setActiveStep(activeStep + 1)}
@@ -517,26 +809,193 @@ const StudentApplyCourse = () => {
 
       case 1:
         return (
-          <div className="step-content">
-            <h2>Course Selection</h2>
-            <Form.Group>
-              <Form.Label>Select Course</Form.Label>
-              <Form.Control
-                as="select"
-                name="course"
-                value={formData.course}
-                onChange={handleInputChange}
-                required
-              >
-                <option value="">Choose a course</option>
-                <option value="web-development">Web Development</option>
-                <option value="data-science">Data Science</option>
-                <option value="mobile-app-development">Mobile App Development</option>
-              </Form.Control>
-            </Form.Group>
+          <div className="step-content p-4 rounded">
+            <h3 className="border-bottom pb-2 fw-normal">Academic Transcript</h3>
+            <div className="academic-transcript-list">
+              <DragDropContext onDragEnd={onDragEnd}>
+                {formData.academicTranscripts && formData.academicTranscripts.map((transcript, index) => (
+                  <div key={index} className="academic-transcript-item mb-4 border rounded py-4 ">
+                    <div className="d-flex justify-content-between align-items-center mb-3 px-4">
+                      <div className="d-flex align-items-center">
+                        <DragHandle className="me-2" />
+                        <Form.Control
+                          type="text"
+                          value={transcript.name}
+                          onChange={(e) => handleTranscriptChange(index, 'name', e.target.value)}
+                          className="fw-bold border-0 sac-at-bg"
+                        />
+                      </div>
+                      <div>
+                        <Button variant="link" className="p-0 me-2" onClick={() => handleAddSubject(index)}>
+                          <Plus size={18} color="grey" />
+                        </Button>
+                        <Button variant="link" className="p-0 me-2" onClick={() => handleUploadTranscript(index)}>
+                          <Upload size={18} color="grey" />
+                        </Button>
+                        <Button variant="link" className="p-0" onClick={() => handleRemoveTranscript(index)}>
+                          <Trash2 size={18} color="grey" />
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="subjects-list">
+                      {transcript.subjects.map((subject, subIndex) => (
+                        <div className="px-4" key={subIndex}>
+                          <div className="justify-content-between subject-item d-flex align-items-center mb-2 bg-white p-1 rounded-3">
+                            {subject.isEditing ? (
+                              // Edit mode
+                              <>
+                                <div className="d-flex align-items-center flex-grow-1">
+                                  <DragHandle className="me-2" style={{ alignSelf: 'center' }} />
+                                  <Form.Control
+                                    type="text"
+                                    value={subject.name}
+                                    onChange={(e) => handleSubjectChange(index, subIndex, 'name', e.target.value)}
+                                    className="me-2 w-25"
+                                    placeholder="Enter Subject Name"
+                                    style={{ fontSize: '0.9rem', fontWeight: "500" }}
+                                    required
+                                  />
+                                  <Form.Control
+                                    as="select"
+                                    value={subject.grade}
+                                    onChange={(e) => handleSubjectChange(index, subIndex, 'grade', e.target.value)}
+                                    className={`me-2 w-auto px-2 py-1 px-3 rounded-5  border-0 text-white bg-${getGradeColor(subject.grade)}`}
+                                    style={{ fontSize: '0.9rem', fontWeight: "500" }}
+                                    required
+                                  >
+                                    <option value="" disabled>Grade</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="D">D</option>
+                                    <option value="E">E</option>
+                                    <option value="F">F</option>
+                                  </Form.Control>
+                                </div>
+                                <div className="d-flex">
+                                  <Button variant="link" className="p-0 me-2" onClick={() => handleSaveSubject(index, subIndex)}>
+                                    <Save size={15} color="grey" />
+                                  </Button>
+                                  <Button variant="link" className="p-0" onClick={() => handleRemoveSubject(index, subIndex)}>
+                                    <Trash2 size={15} color="grey" />
+                                  </Button>
+                                </div>
+                              </>
+                            ) : (
+                              // View mode
+                              <>
+                                <div className="d-flex align-items-center flex-grow-1">
+                                  <DragHandle className="me-2" style={{ alignSelf: 'center' }} />
+                                  <span className="me-21 " style={{ fontSize: '0.9rem', fontWeight: "500" }}> {subject.name}</span>
+                                  <span style={{ fontSize: '0.9rem', fontWeight: "500" }} className={` ms-3 me-2 px-2 py-1 px-3 rounded-5 text-white bg-${getGradeColor(subject.grade)} `}>
+                                    Grade: {subject.grade}
+                                  </span>
+                                </div>
+                                <div className="d-flex">
+                                  <Button variant="link" className="p-0 me-2" onClick={() => handleEditSubject(index, subIndex)}>
+                                    <Edit size={15} color="grey" />
+                                  </Button>
+                                  <Button variant="link" className="p-0" onClick={() => handleRemoveSubject(index, subIndex)}>
+                                    <Trash2 size={15} color="grey" />
+                                  </Button>
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="upload-documents mt-3 border border-4 border-top-3 border-bottom-0 border-start-0 border-end-0">
+                      <div className="d-flex justify-content-between align-items-center px-4">
+                        <h6>Upload Documents</h6>
+                        <Button variant="link" className="p-0 me-2" onClick={() => handleAddDocument(index)}>
+                          <Plus size={18} color="grey" />
+                        </Button>
+                      </div>
+                      {transcript.documents.map((doc, docIndex) => (
+                        <div className="px-4" key={docIndex}>
+                          <div className="document-item d-flex align-items-center mb-2 bg-white p-1 gap-1 justify-content-between rounded-3">
+                            {doc.isEditing ? (
+                              // Edit mode
+                              <>
+                                <div className="d-flex flex-grow-1 align-items-center">
+                                  <div className="me-3 border-end  px-3">
+                                    <Button
+                                      variant="secondary"
+                                      size="sm"
+                                      onClick={() => handleDocumentFileUpload(index, docIndex)}
+                                    >
+                                      <Upload size={15} className="me-2" />
+                                      Upload File
+                                    </Button>
+                                    <input
+                                      type="file"
+                                      id={`fileInput-${index}-${docIndex}`}
+                                      className="d-none"
+                                      onChange={(e) => handleDocumentFileChange(index, docIndex, e.target.files[0])}
+                                    />
+                                  </div>
+                                  <div className="align-items-center flex-grow-1">
+                                    <Form.Control
+                                      type="text"
+                                      value={doc.title}
+                                      onChange={(e) => handleDocumentChange(index, docIndex, 'title', e.target.value)}
+                                      className="me-2 w-100 border-0"
+                                      placeholder="Name your file....."
+                                      style={{ fontSize: '0.825rem' }}
+                                    />
+                                  </div>
+                                </div>
+                                <div>
+                                  <Button variant="link" className="p-0 me-2" onClick={() => handleSaveDocument(index, docIndex)}>
+                                    <Save size={15} color="grey" />
+                                  </Button>
+                                  <Button variant="link" className="p-0" onClick={() => handleRemoveDocument(index, docIndex)}>
+                                    <Trash2 size={15} color="grey" />
+                                  </Button>
+                                </div>
+                              </>
+                            ) : (
+                              // View mode
+                              <>
+                                <div className="d-flex flex-grow-1">
+                                  <div className="border-end me-4 px-3 align-items-center">
+                                    <FileText size={15} className="me-2 ms-2" style={{ alignSelf: 'center' }} />
+                                    <span className="me-2" style={{ fontSize: '0.825rem', textAlign: 'center', flex: 1 }}>{doc.name}</span>
+                                  </div>
+                                  <div className="align-items-center">
+                                    <span style={{ fontSize: '0.825rem' }}>{doc.title}</span>
+                                  </div>
+                                </div>
+                                <div>
+                                  <Button variant="link" className="p-0 me-2" onClick={() => handleEditDocument(index, docIndex)}>
+                                    <Edit size={15} color="grey" />
+                                  </Button>
+                                  <Button variant="link" className="p-0" onClick={() => handleRemoveDocument(index, docIndex)}>
+                                    <Trash2 size={15} color="grey" />
+                                  </Button>
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </DragDropContext>
+            </div>
+            <Button
+              variant="outline-primary"
+              onClick={handleAddTranscript}
+              className="w-100 mt-3"
+            >
+              Add New Transcript +
+            </Button>
             {renderNavButtons()}
           </div>
         );
+
       case 2:
         return (
           <div className="step-content p-4 rounded">
@@ -606,13 +1065,13 @@ const StudentApplyCourse = () => {
                     // View mode
                     <>
                       <div className="fw-bold mb-2" style={{ fontSize: '1.1rem' }}>{item.name}</div>
-                      <div className="d-flex justify-content-between">
+                      <div className="d-flex justify-content-between align-items-center">
                         <div className="d-flex flex-grow-1">
                           <div className="me-3"><Calendar size={18} className="me-2" />{item.year}</div>
                           <div className="me-3"><User size={18} className="me-2" />{item.position}</div>
                           <div><Building size={18} className="me-2" />{item.institution}</div>
                         </div>
-                        <div>
+                        <div className="d-flex align-items-center">
                           <Button variant="link" onClick={() => handleEditCoCurriculum(index)} className="p-0 me-2">
                             <Edit size={18} color="black" />
                           </Button>
@@ -690,7 +1149,7 @@ const StudentApplyCourse = () => {
                               className="py-0 px-2 me-2"
                             />
                           </div>
-                          <div className="mt-2">
+                          <div className="d-flex justify-content-center align-items-center">
                             {item.file ? (
                               <div className="d-flex align-items-center">
                                 <FileText size={18} className="me-2" />
@@ -704,11 +1163,11 @@ const StudentApplyCourse = () => {
                                 </Button>
                               </div>
                             ) : (
-                              <div className="d-flex align-items-center">
+                              <div className="d-flex align-items-center ms-2">
                                 <FileText size={18} className="me-2" />
                                 <Button
                                   variant="secondary"
-                                  className="d-flex align-items-center"
+                                  className="d-flex align-items-center py-1 px-2 rounded-2"
                                   onClick={() => document.getElementById(`achievementFileInput-${index}`).click()}
                                 >
                                   Upload File
@@ -723,7 +1182,7 @@ const StudentApplyCourse = () => {
                             )}
                           </div>
                         </div>
-                        <div className="mt-2 d-flex justify-content-end">
+                        <div className=" d-flex justify-content-end">
                           <Button variant="link" onClick={() => handleSaveAchievement(index)} className="me-2">
                             <Save size={18} color="black" />
                           </Button>
@@ -828,7 +1287,7 @@ const StudentApplyCourse = () => {
                             </div>
                           )}
                         </div>
-                        <div className="mt-2 d-flex justify-content-end">
+                        <div className=" d-flex justify-content-end">
                           <Button variant="link" onClick={() => handleSaveOtherDoc(index)} className="me-2">
                             <Save size={18} color="black" />
                           </Button>
@@ -851,7 +1310,7 @@ const StudentApplyCourse = () => {
                             </div>
                           )}
                         </div>
-                        <div className="mt-2 d-flex justify-content-end ">
+                        <div className="d-flex justify-content-end align-items-end ">
                           <Button variant="link" onClick={() => handleEditOtherDoc(index)} className="p-0 me-2">
                             <Edit size={18} />
                           </Button>
@@ -878,35 +1337,6 @@ const StudentApplyCourse = () => {
       case 5:
         return (
           <div className="step-content">
-            <h2>Start Date</h2>
-            <Form.Group>
-              <Form.Label>Select Start Date</Form.Label>
-              <Form.Control
-                type="date"
-                name="startDate"
-                value={formData.startDate}
-                onChange={handleInputChange}
-                required
-              />
-            </Form.Group>
-            {renderNavButtons()}
-          </div>
-        );
-      case 6:
-        return (
-          <div className="step-content">
-            <h2>Review Information</h2>
-            <p><strong>Name:</strong> {formData.name}</p>
-            <p><strong>Email:</strong> {formData.email}</p>
-            <p><strong>Phone:</strong> {formData.phone}</p>
-            <p><strong>Course:</strong> {formData.course}</p>
-            <p><strong>Start Date:</strong> {formData.startDate}</p>
-            {renderNavButtons()}
-          </div>
-        );
-      case 7:
-        return (
-          <div className="step-content">
             <h2>Save and Submit</h2>
             <p>Please review your information carefully before submitting your application.</p>
             <Button variant="success" onClick={handleSubmit}>
@@ -925,13 +1355,11 @@ const StudentApplyCourse = () => {
   };
 
   const renderPostSubmission = () => (
-    <div className="main-content-applycourse">
+    <div >
       <div className="backgroundimage">
-        <div>
-          <div className="widget-applying-course-success justify-content-center">
-            <h1 className="text-danger align-self-center fw-bold mb-5 display-6">Congratulations!</h1>
-            <h3 className="text-black align-self-center fw-normal mb-4">Your application has been successfully submitted.</h3>
-          </div>
+        <div className="widget-applying-course-success justify-content-center ">
+          <h1 className="text-danger align-self-center fw-bold mb-5 display-6">Congratulations!</h1>
+          <h3 className="text-black align-self-center fw-normal mb-4">Your application has been successfully submitted.</h3>
         </div>
       </div>
       <div className="d-flex justify-content-center mt-4">
@@ -949,16 +1377,16 @@ const StudentApplyCourse = () => {
     return (
       <div className="app-container-applycourse-viewsummary mt-5">
         <NavButtonsSP />
-            <ApplicationSummary />
+        <ApplicationSummary />
         <SpcFooter />
       </div>
-      
+
     );
   }
 
   if (isSubmitted) {
     return (
-      <div className="app-container-applycourse mt-5">
+      <div className="app-container-applycourse ">
         <NavButtonsSP />
         <div className="main-content-applycourse">
           {renderPostSubmission()}
@@ -970,7 +1398,7 @@ const StudentApplyCourse = () => {
 
 
   return (
-    <div className="app-container-applycourse mt-5">
+    <div className="app-container-applycourse mt-4">
       <NavButtonsSP />
       <div className="main-content-applycourse">
         <div className="backgroundimage">
@@ -986,9 +1414,8 @@ const StudentApplyCourse = () => {
           </div>
         </div>
         <h1 className="text-center mb-4">Student Course Application</h1>
-
-        <Box sx={{ width: '100%', mb: 4, mt: 4, mx: 6 }}>
-          <CustomStepper activeStep={activeStep} alternativeLabel>
+        <Box sx={{ width: '100%', mb: 4, mt: 4, mx: 0 }}>
+          <CustomStepper activeStep={activeStep} alternativeLabel connector={<CustomConnector />}>
             {steps.map((label) => (
               <Step key={label}>
                 <CustomStepLabel StepIconComponent={StepIcon}>{label}</CustomStepLabel>
@@ -1005,5 +1432,6 @@ const StudentApplyCourse = () => {
     </div>
   );
 };
+
 
 export default StudentApplyCourse;
