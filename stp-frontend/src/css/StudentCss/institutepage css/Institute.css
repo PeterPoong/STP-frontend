@@ -12,17 +12,17 @@
   object-fit: cover;
 }
 
-.country-button,
-.university-button {
+.country-dropdown-institute,
+.university-dropdown-institute {
   background-color: #ffffff;
-  color: #B71A18;
+  color: #ffffff;
   border: 1px solid #B71A18;
   min-width: 200px;
   margin-top: 35px;
 }
 
-.country-button:hover,
-.university-button:hover {
+.country-dropdown-institute:hover,
+.university-dropdown-institute:hover {
   background-color: #9c1515;
   color: #ffffff;
   border: none;
@@ -54,7 +54,7 @@
 }
 
 .studypal-image {
-  width: 1045px;
+  width: 1180px;
   height: 150px;
   display: block;
   object-fit: cover;
@@ -69,26 +69,52 @@
   padding: 20px;
 }
 
-.institute-card {
+/* .institute-card {
   width: 1045px;
   height: auto;
-  /* style={{ borderColor: "#B71A18", borderRadius: "10px" }} */
+  
   border-color: #B71A18 ;
   border-radius: 10px;
-  margin-bottom: 20px; /* Add spacing between cards */
+  margin-bottom: 20px; 
 
+} */
+
+.institute-card {
+  width: 1180px;
+  height: auto;
+  border-color: #B71A18;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  
 }
 
-.institute-card .card-title {
+/* .institute-card .card-title {
   background-color: #efefef;
 }
+ */
 
-
-.institute-card .card-body {
+.institute-card .institute-card-body  {
   display: flex;
   align-items: flex-start;
   padding: 20px;
 }
+
+.icon {
+  width: 40px;
+  height: auto;
+}
+
+.location-text,
+.detail-text {
+  padding-left: 10px;
+  font-size: 14px; /* Consistent font size */
+}
+
+.map-link {
+  display: inline-block;
+  padding-left: 5px;
+}
+
 
 .institute-card .card-image {
   flex-shrink: 0;
@@ -142,21 +168,18 @@
 /* .institute-card .details-div .d-flex {
   margin-bottom: 5px;
 } */
-
-.institute-card .knowmore-button {
+/* .knowmore-button {
   margin-top: 20px;
-  text-align: right;
-}
+} */
 
-.knowmore-button .featured {
+.featured-institute-button {
   background-color: #FF6B00;
-  font-weight: bold;
   color: #ffffff;
   border: none;
   padding: 10px 20px;
   cursor: pointer;
   border-radius: 5px;
-  font-size: 14px;
+  font-size: 14px; /* Consistent font size */
 }
 
 /* Media Queries */
@@ -179,7 +202,7 @@
     margin-top: 15px;
   }
 
-  .card-body {
+  .institute-card-body  {
     flex-direction: column;
   }
 
@@ -253,8 +276,7 @@
 
 @media (max-width: 992px) {
   .country-button,
-  .university-button,
-  .degree-button {
+  .university-button{
     width: 100%;
     min-width: 160px; /* Remove fixed min-width */
   }

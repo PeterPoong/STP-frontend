@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useLocation, Link } from "react-router-dom";
 import NavButtons from "../NavButtons";
-// import headerImage from "../../assets/StudentAssets/coursepage image/StudyPal10.png";
 import headerImage from "../../../assets/StudentAssets/coursepage image/StudyPal10.png";
 import "../../../css/StudentCss/course page css/ApplyPage.css";
 import {
@@ -10,6 +9,7 @@ import {
   Col,
   Collapse,
   Button,
+  Card,
   Carousel,
 } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -28,6 +28,12 @@ import studypal4 from "../../../assets/StudentAssets/coursepage image/StudyPal4.
 import studypal11 from "../../../assets/StudentAssets/coursepage image/StudyPal11.png";
 import Footer from "../Footer";
 
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
+import { Pagination, Navigation } from "swiper/modules";
+
 const baseURL = import.meta.env.VITE_BASE_URL;
 
 const CourseDetail = () => {
@@ -38,6 +44,7 @@ const CourseDetail = () => {
   const { id } = useParams();
   const location = useLocation();
   const [programs, setPrograms] = useState(location.state?.program || []);
+  const [featuredCourses, setFeaturedCourses] = useState([]);
 
   useEffect(() => {
     console.log("Program ID:", id);
@@ -57,7 +64,6 @@ const CourseDetail = () => {
           console.log("Fetched Data:", data.data);
           if (data && data.data && Array.isArray(data.data.data)) {
             const selectedProgram = data.data.data.find(
-              //add .data
               (item) => item.id === parseInt(id)
             );
             console.log("Selected Program:", selectedProgram);
@@ -72,6 +78,29 @@ const CourseDetail = () => {
           setPrograms([]);
         });
     }
+
+    // Fetch Featured Courses
+    fetch(`${baseURL}api/student/featuredCourseList`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ type: "thirdPage" }), // Add the required type field
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Fetched Featured Courses:", data.data);
+        if (data && data.success && Array.isArray(data.data)) {
+          setFeaturedCourses(data.data);
+        } else {
+          console.error("Invalid data structure for featured courses:", data);
+          setFeaturedCourses([]);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching featured courses:", error);
+        setFeaturedCourses([]);
+      });
   }, [id]);
 
   if (!programs || programs.length === 0) {
@@ -400,6 +429,69 @@ const CourseDetail = () => {
                 Know More
               </Button>
             </div>
+
+            {/* Render featured courses */}
+            {featuredCourses.length > 0 && (
+              <Container className="my-4">
+                <h4>Featured Courses</h4>
+                <Swiper
+                  spaceBetween={10}
+                  slidesPerView={3}
+                  navigation
+                  pagination={{ clickable: true }}
+                  loop={true}
+                  modules={[Pagination, Navigation]}
+                  className="featured-courses-swiper"
+                  breakpoints={{
+                    640: {
+                      slidesPerView: 1,
+                      spaceBetween: 10,
+                    },
+                    768: {
+                      slidesPerView: 2,
+                      spaceBetween: 15,
+                    },
+                    1024: {
+                      slidesPerView: 3,
+                      spaceBetween: 10,
+                    },
+                  }}
+                >
+                  {featuredCourses.map((course) => (
+                    <SwiperSlide key={course.id}>
+                      <Card className="featuredcourse-card">
+                        <Card.Body>
+                          <Card.Title>Course ID: {course.course_id}</Card.Title>
+                          <Card.Text>
+                            Featured Type: {course.featured_type}
+                          </Card.Text>
+                          {/* Add any additional course details you want to display */}
+                          {/* <Button
+                            variant="primary"
+                            onClick={() =>
+                              navigate(`/applyDetail/${course.course_id}`)
+                            }
+                          >
+                            View Details
+                          </Button> */}
+                          <a
+                            href={`/applyDetail/${course.course_id}`}
+                            className="btn btn-primary"
+                            style={{
+                              borderColor: "#B71A18",
+                              backgroundColor: "#B71A18",
+                            }}
+                          >
+                            View Details
+                          </a>
+                        </Card.Body>
+                      </Card>
+                    </SwiperSlide>
+                  ))}
+                </Swiper>
+              </Container>
+            )}
+
             <img src={studypal11} alt="Header" className="adverstise-image" />
           </Container>
         </>

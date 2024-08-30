@@ -26,19 +26,22 @@ const VideoSlide = () => {
       <Carousel>
         {videoProperties.map((videoObj) => (
           <Carousel.Item key={videoObj.id} className="video-carousel-item">
-            <video
-              className="video-element"
-              src={videoObj.src}
-              autoPlay
-              loop
-              muted
-              playsInline
-            />
-            <div className="video-carousel-caption">
-              <h3>{videoObj.title}</h3>
-              <button className="btn btn-outline-danger btn-lg video-carousel-button">
-                {videoObj.credit}
-              </button>
+            <div className="video-overlay-container">
+              <video
+                className="video-element"
+                src={videoObj.src}
+                autoPlay
+                loop
+                muted
+                playsInline
+              />
+              <div className="overlay"></div>
+              <div className="video-carousel-caption">
+                <h3>{videoObj.title}</h3>
+                <button className="btn btn-outline-danger btn-lg video-carousel-button">
+                  {videoObj.credit}
+                </button>
+              </div>
             </div>
           </Carousel.Item>
         ))}

@@ -3,7 +3,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import NavButtons from "../NavButtons";
 import headerImage from "../../../assets/StudentAssets/institute image/StudyPal10.png";
 import "../../../css/StudentCss/institutepage css/KnowMoreInstitute.css";
-import { Container, Row, Col, Button, Collapse } from "react-bootstrap";
+import { Container, Row, Col, Button, Collapse, Card } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faGraduationCap,
@@ -20,13 +20,16 @@ import studypal2 from "../../../assets/StudentAssets/institute image/StudyPal2.p
 import studypal3 from "../../../assets/StudentAssets/institute image/StudyPal3.png";
 import studypal4 from "../../../assets/StudentAssets/institute image/StudyPal4.png";
 import studypal11 from "../../../assets/StudentAssets/institute image/StudyPal11.png";
-// import Footer from "../Components/student components/Footer";
 import Footer from "../../../Components/StudentComp/Footer";
-import image1 from "../../../assets/StudentAssets/institute image/image1.jpg";
-import image7 from "../../../assets/StudentAssets/institute image/image7.png";
-import image5 from "../../../assets/StudentAssets/institute image/image5.jpg";
+
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
+import { Pagination, Navigation } from "swiper/modules";
 
 const baseURL = import.meta.env.VITE_BASE_URL;
+const schoolDetailAPIURL = `${baseURL}api/student/schoolDetail`;
 
 const KnowMoreInstitute = () => {
   const [open, setOpen] = useState(false);
@@ -37,11 +40,15 @@ const KnowMoreInstitute = () => {
   const { id } = useParams();
   const location = useLocation();
   const [institutes, setInstitutes] = useState([]);
+  const [featuredInstitutes, setFeaturedInstitutes] = useState([]);
+  const navigate = useNavigate();
+
   useEffect(() => {
     console.log("Institute ID: ", id);
 
+    // Fetch school detail if institutes are not loaded
     if (!institutes || institutes.length === 0) {
-      fetch(`${baseURL}api/student/schoolList`, {
+      fetch(`${baseURL}api/student/schoolDetail`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -52,24 +59,51 @@ const KnowMoreInstitute = () => {
       })
         .then((response) => response.json())
         .then((data) => {
-          console.log("Fetched Data: ", data);
-          if (data && data.data && Array.isArray(data.data)) {
-            const selectedInstitute = data.data.find(
-              (item) => item.id === parseInt(id)
-            );
-            console.log("Selected Institute: ", selectedInstitute);
-            setInstitutes(selectedInstitute ? [selectedInstitute] : []);
-            setCourses(selectedInstitute ? selectedInstitute.courses : []);
+          console.log("Fetched School Detail Data: ", data);
+          if (data && data.success && data.data) {
+            setInstitutes([data.data]);
+            setCourses(data.data.courses);
           } else {
-            console.error("Invalid data structure: ", data);
+            console.error(
+              "Invalid data structure for school detail: ",
+              data.data
+            );
             setInstitutes([]);
           }
         })
         .catch((error) => {
-          console.error("Error fetching institute data: ", error);
+          console.error("Error fetching school detail data: ", error);
           setInstitutes([]);
         });
     }
+
+    // Fetch featured institutes with type "thirdPage"
+    fetch(`${baseURL}api/student/featuredInstituteList`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        type: "thirdPage", // Use the required type value
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Fetched Featured Institutes Data: ", data);
+        if (data && data.success && Array.isArray(data.data)) {
+          setFeaturedInstitutes(data.data);
+        } else {
+          console.error(
+            "Invalid data structure for featured institutes: ",
+            data
+          );
+          setFeaturedInstitutes([]);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching featured institutes data: ", error);
+        setFeaturedInstitutes([]);
+      });
   }, [id]);
 
   if (!institutes || institutes.length === 0) {
@@ -176,7 +210,7 @@ const KnowMoreInstitute = () => {
                     <Col md={12}>
                       <Collapse in={open}>
                         <div>
-                          <p>{institute.description}</p>
+                          <p>{institute.short_description}</p>
                         </div>
                       </Collapse>
                     </Col>
@@ -312,13 +346,7 @@ const KnowMoreInstitute = () => {
                       </div>
                     </Col>
                     <div>
-                      <p>
-                        The purpose of this programme is to produce graduates
-                        with in-depth knowledge of Arabic linguistics. From the
-                        aspects of national aspiration and global importance,
-                        this programme aims to produce graduates who demonstrate
-                        those aspects.
-                      </p>
+                      <p>{institute.long_description}</p>
                     </div>
                     <Col md={12}>
                       <Collapse in={openAbout}>
@@ -329,27 +357,6 @@ const KnowMoreInstitute = () => {
                             linguistics. From the aspects of national aspiration
                             and global importance, this programme aims to
                             produce graduates who demonstrate those aspects.
-                          </p>
-                          <p>
-                            Having the ability to apply their knowledge and
-                            skills as well as communicate well in Arabic would
-                            further enable them to contribute at the
-                            international stage and realise the features of a
-                            Malaysian society as envisioned in Vision 2020.
-                          </p>
-                          <p>
-                            The purpose of this programme is to produce
-                            graduates with in-depth knowledge of Arabic
-                            linguistics. From the aspects of national aspiration
-                            and global importance, this programme aims to
-                            produce graduates who demonstrate those aspects.
-                          </p>
-                          <p>
-                            Having the ability to apply their knowledge and
-                            skills as well as communicate well in Arabic would
-                            further enable them to contribute at the
-                            international stage and realise the features of a
-                            Malaysian society as envisioned in Vision 2020.
                           </p>
                         </div>
                       </Collapse>
@@ -386,7 +393,7 @@ const KnowMoreInstitute = () => {
               {/*Course Offered List */}
               {courses.length > 0 && (
                 <Container className="my-4">
-                  <h5>Courses Offered</h5>
+                  <h4>Courses Offered</h4>
                   {courses.slice(0, 1).map((course) => (
                     <div className="card mt-3" key={course.id}>
                       <div className="card-body d-flex flex-column flex-md-row align-items-start">
@@ -674,6 +681,47 @@ const KnowMoreInstitute = () => {
                         </Button>
                       </Col>
                     </>
+                  )}
+                  {/* Render featured institutes */}
+                  {featuredInstitutes.length > 0 && (
+                    <Container className="my-4">
+                      <h4>Featured Institutes</h4>
+                      <Swiper
+                        spaceBetween={30}
+                        slidesPerView={2}
+                        navigation
+                        pagination={{ clickable: true }}
+                        loop={true}
+                        modules={[Pagination, Navigation]}
+                        className="featured-institute-swiper"
+                      >
+                        {featuredInstitutes.map((institute) => (
+                          <SwiperSlide key={institute.id}>
+                            <Card className="featured-institute-card">
+                              <Card.Body>
+                                <Card.Title>
+                                  Institute ID: {institute.school_id}
+                                </Card.Title>
+                                <Card.Text>
+                                  Featured Type: {institute.featured_type}
+                                </Card.Text>
+                                {/* Add any additional details you want to display */}
+                                <a
+                                  href={`/knowMoreInstitute/${institute.school_id}`}
+                                  className="btn btn-primary"
+                                  style={{
+                                    borderColor: "#B71A18",
+                                    backgroundColor: "#B71A18",
+                                  }}
+                                >
+                                  View Details
+                                </a>
+                              </Card.Body>
+                            </Card>
+                          </SwiperSlide>
+                        ))}
+                      </Swiper>
+                    </Container>
                   )}
                   <img
                     src={studypal11}

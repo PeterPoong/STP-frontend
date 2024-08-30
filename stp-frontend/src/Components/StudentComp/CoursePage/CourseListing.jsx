@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-
+import { useLocation } from "react-router-dom";
 import {
   Container,
   Row,
@@ -9,6 +9,7 @@ import {
   Pagination,
   Accordion,
   Badge,
+  Spinner,
 } from "react-bootstrap";
 import "../../../css/StudentCss/course page css/CoursesPage.css";
 import featuredBadge from "../../../assets/StudentAssets/featuredBadge/featuredBadge.png";
@@ -58,7 +59,11 @@ const CourseListing = ({
   const [courses, setCourses] = useState([]);
   const [filteredPrograms, setFilteredPrograms] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState({});
-  const [locationOptions, setLocationOptions] = useState([]); // This will hold the locations for the selected country
+  const [locationOptions, setLocationOptions] = useState([]);
+  const [selectedLocationFilters, setSelectedLocationFilters] = useState([]);
+
+  const location = useLocation();
+  const { selectedCategory } = location.state || {}; // Retrieve the selected category from the state
 
   /* ----------------------University Dropdown--------------------------- */
 
@@ -170,6 +175,7 @@ const CourseListing = ({
     const fetchLocationFilters = async () => {
       if (!countryID) {
         setLocationFilters([]);
+        setFilteredPrograms(programs);
         return;
       }
 
@@ -192,16 +198,17 @@ const CourseListing = ({
 
         const locationData = await response.json();
         console.log("Fetched Location Filters:", locationData);
-        setLocationFilters(locationData.data);
 
         if (Array.isArray(locationData.data) && locationData.data.length > 0) {
           setLocationFilters(locationData.data);
         } else {
           setLocationFilters([]);
         }
+        // Filter programs after fetching location filters
+        filterPrograms();
       } catch (error) {
         console.error("Error fetching locations:", error);
-        setLocationFilters([]); // Set to empty array in case of error
+        setLocationFilters([]);
       }
     };
 
@@ -268,6 +275,12 @@ const CourseListing = ({
   }, []);
 
   useEffect(() => {
+    if (selectedCategory) {
+      setCategoryFilters([selectedCategory]);
+    }
+  }, [selectedCategory]);
+
+  useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       setError(null);
@@ -310,7 +323,7 @@ const CourseListing = ({
 
           const result = await response.json();
           setPrograms(result.data.data);
-          filterPrograms(); // This will ensure filtering is applied after fetching
+          filterPrograms();
 
           break; // Exit while loop if successful
         } catch (error) {
@@ -378,40 +391,65 @@ const CourseListing = ({
   }, []);
 
   const handleLocationChange = (location) => {
-    const locationName = location.state_name.trim(); // Ensure no extra spaces
-    let updatedLocations;
+    const locationName = location.state_name.trim();
+    let updatedFilters;
 
-    if (locationFilters.includes(locationName)) {
-      updatedLocations = locationFilters.filter(
+    if (selectedLocationFilters.includes(locationName)) {
+      updatedFilters = selectedLocationFilters.filter(
         (item) => item !== locationName && item !== ""
       );
-    } else if (locationName !== "") {
-      updatedLocations = [...locationFilters, locationName];
+    } else {
+      updatedFilters = [...selectedLocationFilters, locationName];
     }
 
-    setLocationFilters(updatedLocations);
-    // filterPrograms(
-    //   updatedLocations.length > 0 ? updatedLocations : [],
-    //   categoryFilters,
-    //   intakeFilters,
-    //   modeFilters,
-    //   tuitionFee,
-    //   programs
-    // );
+    setSelectedLocationFilters(updatedFilters);
+    console.log("Updated Location Filters:", updatedFilters);
+    filterPrograms(
+      updatedFilters,
+      categoryFilters,
+      intakeFilters,
+      modeFilters,
+      tuitionFee,
+      programs
+    );
   };
 
   const filterPrograms = () => {
+    // Extract the IDs from the searchResults array
+    const searchResultIDs = searchResults
+      ? searchResults.map((result) => result.id)
+      : [];
+
     const filtered = programs.filter((program) => {
+      // Convert program.id to a string if necessary for comparison
+      const programIdString = String(program.id);
+
+      // Check if the program ID matches any ID in the search results
+      const matchesSearchResults =
+        searchResultIDs.length === 0 || searchResultIDs.includes(program.id);
+
+      // Debugging: Log the match status
+      console.log("Program ID:", program.id);
+      console.log("Matches Search Results:", matchesSearchResults);
+
+      const matchesCountry =
+        selectedCountry && selectedCountry.country_id
+          ? program.countryID === selectedCountry.country_id
+          : true;
+
       const matchesLocation =
         locationFilters.length === 0 ||
-        locationFilters.includes(program.location);
+        selectedLocationFilters.length === 0 ||
+        selectedLocationFilters.includes(program.location);
 
       const matchesCategory =
         categoryFilters.length === 0 ||
         categoryFilters.includes(program.category);
 
       const matchesIntake =
-        intakeFilters.length === 0 || intakeFilters.includes(program.intake);
+        intakeFilters.length === 0 ||
+        (Array.isArray(program.intake) &&
+          program.intake.some((intake) => intakeFilters.includes(intake)));
 
       const matchesMode =
         modeFilters.length === 0 || modeFilters.includes(program.mode);
@@ -423,41 +461,41 @@ const CourseListing = ({
         !selectedQualification ||
         program.qualification === selectedQualification;
 
+      // Return true only if the program matches all the criteria
       return (
+        matchesCountry &&
         matchesLocation &&
         matchesCategory &&
         matchesIntake &&
         matchesMode &&
         matchesInstitute &&
-        matchesQualification
+        matchesQualification &&
+        matchesSearchResults
       );
     });
 
+    // Update the state with the filtered programs
     setFilteredPrograms(filtered);
   };
 
+  // Ensure that filterPrograms is called whenever the relevant dependencies change
   useEffect(() => {
-    filterPrograms();
+    filterPrograms(
+      selectedLocationFilters,
+      categoryFilters,
+      intakeFilters,
+      modeFilters,
+      tuitionFee,
+      programs
+    );
   }, [
-    programs,
-    locationFilters,
+    selectedLocationFilters,
     categoryFilters,
     intakeFilters,
     modeFilters,
     tuitionFee,
-    selectedInstitute,
-  ]);
-
-  useEffect(() => {
-    filterPrograms();
-  }, [
     programs,
-    locationFilters,
-    categoryFilters,
-    intakeFilters,
-    modeFilters,
-    tuitionFee,
-    selectedInstitute,
+    searchResults, // Add searchResults as a dependency to trigger filtering when it changes
   ]);
 
   const handleCountryChange = async (country) => {
@@ -487,9 +525,7 @@ const CourseListing = ({
     let updatedCategory;
 
     if (categoryFilters.includes(categoryName)) {
-      updatedCategory = categoryFilters.filter(
-        (c) => c !== category.category_name
-      );
+      updatedCategory = categoryFilters.filter((c) => c !== categoryName);
     } else {
       updatedCategory = [...categoryFilters, categoryName];
     }
@@ -505,11 +541,8 @@ const CourseListing = ({
   };
 
   const handleIntakeChange = (intake) => {
-    const intakeMonth = intake.month;
-    console.log("Selected Intake Month:", intakeMonth);
-
+    const intakeMonth = intake.month; // Assuming `intake` is an object with a `month` property
     const updatedIntakeFilters = [...intakeFilters];
-    console.log("Current Intake Filters before update:", updatedIntakeFilters);
 
     if (updatedIntakeFilters.includes(intakeMonth)) {
       updatedIntakeFilters.splice(updatedIntakeFilters.indexOf(intakeMonth), 1);
@@ -517,17 +550,8 @@ const CourseListing = ({
       updatedIntakeFilters.push(intakeMonth);
     }
 
-    console.log("Updated Intake Filters:", updatedIntakeFilters);
-
     setIntakeFilters(updatedIntakeFilters);
-    filterPrograms(
-      locationFilters,
-      categoryFilters,
-      updatedIntakeFilters,
-      modeFilters,
-      tuitionFee,
-      programs
-    );
+    filterPrograms(); // Apply filters after updating
   };
 
   const handleModeChange = (mode) => {
@@ -686,7 +710,7 @@ const CourseListing = ({
                           key={index}
                           type="checkbox"
                           label={location.state_name}
-                          checked={locationFilters.includes(
+                          checked={selectedLocationFilters.includes(
                             location.state_name
                           )}
                           onChange={() => handleLocationChange(location)}
@@ -716,9 +740,9 @@ const CourseListing = ({
               <h5 style={{ marginTop: "25px" }}>Intakes</h5>
               <Form.Group>
                 {intakeData.length > 0 ? (
-                  intakeData.map((intake, index) => (
+                  intakeData.map((intake) => (
                     <Form.Check
-                      key={index} // Use a unique key if available
+                      key={intake.id} // Use a unique key if available, `intake.id` is preferred
                       type="checkbox"
                       label={intake.month}
                       checked={intakeFilters.includes(intake.month)}
@@ -816,9 +840,9 @@ const CourseListing = ({
               <Accordion.Body className="custom-accordion-body">
                 <Form.Group>
                   {intakeData.length > 0 ? (
-                    intakeData.map((intake, index) => (
+                    intakeData.map((intake) => (
                       <Form.Check
-                        key={index} // Use a unique key if available
+                        key={intake.id} // Use a unique key if available, `intake.id` is preferred
                         type="checkbox"
                         label={intake.month}
                         checked={intakeFilters.includes(intake.month)}
@@ -875,7 +899,11 @@ const CourseListing = ({
             <img src={StudyPal} alt="Study Pal" className="studypal-image" />
           </div>
           {loading ? (
-            <div>Loading...</div>
+            <div className="text-center">
+              <Spinner animation="border" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </Spinner>
+            </div>
           ) : error ? (
             <div>Error: {error}</div>
           ) : programs.length > 0 ? (
@@ -884,6 +912,7 @@ const CourseListing = ({
             <div>No programs available</div>
           )}
         </Col>
+
         <Pagination className="d-flex justify-content-end">
           <Pagination.Prev aria-label="Previous">
             <span aria-hidden="true">&laquo;</span>

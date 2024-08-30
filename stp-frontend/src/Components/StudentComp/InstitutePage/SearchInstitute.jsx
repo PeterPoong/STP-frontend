@@ -16,6 +16,7 @@ import { Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../../css/StudentCss/institutepage css/Institute.css";
 import InstituteListing from "./InstituteListing";
+import CountryFlag from "react-country-flag";
 
 const baseURL = import.meta.env.VITE_BASE_URL;
 
@@ -38,29 +39,6 @@ const SearchInstitute = () => {
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [institutes, setInstitutes] = useState([]);
   const [selectedInstitute, setSelectedInstitute] = useState(null);
-  // const [qualifications, setQualifications] = useState([]);
-  // const [selectedQualification, setSelectedQualification] = useState(null);
-
-  // // Fetch qualification from API
-  // useEffect(() => {
-  //   const fetchQualifications = async () => {
-  //     try {
-  //       const response = await fetch(qualificationURL);
-
-  //       if (!response.ok) {
-  //         throw new Error(`HTTP error! Status: ${response.status}`);
-  //       }
-
-  //       const result = await response.json();
-  //       setQualifications(result.data || []);
-  //     } catch (error) {
-  //       console.error("Error fetching qualifications:", error);
-  //       setQualifications([]);
-  //     }
-  //   };
-
-  //   fetchQualifications();
-  // }, []);
 
   // Fetch countries from API
   useEffect(() => {
@@ -223,11 +201,6 @@ const SearchInstitute = () => {
     console.log("Selected University ID:", institute);
   };
 
-  // const handleQualificationChange = (qualification) => {
-  //   setSelectedQualification(qualification);
-  //   console.log("Selected Qualification ID:", qualification?.id);
-  // };
-
   return (
     <Container>
       <h3 style={{ textAlign: "left", paddingTop: "15px" }}>
@@ -239,26 +212,27 @@ const SearchInstitute = () => {
           <ButtonGroup className="w-100">
             <Dropdown as={ButtonGroup} className="w-100">
               <Dropdown.Toggle
-                className="country-button w-100"
+                className="country-dropdown-institute w-100"
                 id="dropdown-country"
               >
                 {selectedCountry ? selectedCountry.country_name : "Country"}
               </Dropdown.Toggle>
-              <Dropdown.Menu>
+              <Dropdown.Menu className="scrollable-dropdown">
                 {countries.length > 0 ? (
                   countries.map((country, index) => (
                     <Dropdown.Item
                       key={index}
                       className="dropdown"
-                      value={selectedCountry ? selectedCountry.country_id : ""}
                       onClick={() => handleCountryChange(country)}
                     >
-                      <img
-                        src={country.country_flag}
-                        // alt={`${country.country_name}`}
-                        width="20"
-                        height="20"
-                        className="mr-2"
+                      <CountryFlag
+                        countryCode={country.country_code} // Use country code
+                        svg
+                        style={{
+                          width: "20px",
+                          height: "20px",
+                          marginRight: "10px",
+                        }}
                       />
                       {country.country_name}
                     </Dropdown.Item>
@@ -276,7 +250,7 @@ const SearchInstitute = () => {
           <ButtonGroup className="w-100">
             <Dropdown as={ButtonGroup} className="w-100">
               <Dropdown.Toggle
-                className="university-button w-100"
+                className="university-dropdown-institute w-100"
                 id="dropdown-university"
               >
                 {selectedInstitute
@@ -301,36 +275,6 @@ const SearchInstitute = () => {
             </Dropdown>
           </ButtonGroup>
         </Col>
-
-        {/* Qualification Dropdown
-        <Col xs={12} sm={4} md={3} lg={2} className="mb-2 mb-sm-0">
-          <ButtonGroup className="w-100">
-            <Dropdown as={ButtonGroup} className="w-100">
-              <Dropdown.Toggle
-                className="degree-button w-100"
-                id="dropdown-degree"
-              >
-                {selectedQualification
-                  ? selectedQualification.qualification_name
-                  : "Qualification"}
-              </Dropdown.Toggle>
-              <Dropdown.Menu>
-                {qualifications.length > 0 ? (
-                  qualifications.map((qualification, index) => (
-                    <Dropdown.Item
-                      key={index}
-                      onClick={() => handleQualificationChange(qualification)}
-                    >
-                      {qualification.qualification_name}
-                    </Dropdown.Item>
-                  ))
-                ) : (
-                  <Dropdown.Item>No qualifications available</Dropdown.Item>
-                )}
-              </Dropdown.Menu>
-            </Dropdown>
-          </ButtonGroup>
-        </Col> */}
 
         <Col className="d-flex justify-content-end">
           <Pagination className="ml-auto mb-2 mb-md-0">
@@ -387,9 +331,8 @@ const SearchInstitute = () => {
 
       <InstituteListing
         searchResults={searchResults}
-        countryID={selectedCountry?.id} // Make sure this is not undefined or null
+        countryID={selectedCountry?.id}
         selectedInstitute={selectedInstitute?.core_metaName}
-        // selectedQualification={selectedQualification?.qualification_name}
       />
     </Container>
   );
