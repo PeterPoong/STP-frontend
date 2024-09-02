@@ -1,0 +1,41 @@
+.student-card {
+    display: flex;
+    justify-content: space-between;
+    border: 1px solid #ccc;
+    padding: 20px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+  }
+  
+  .student-photo {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+  }
+  
+  .student-info {
+    flex-grow: 1;
+    margin-left: 20px;
+  }
+  
+  .status.pending {
+    background-color: orange;
+  }
+  
+  .status.rejected {
+    background-color: red;
+  }
+  
+  .status.accepted {
+    background-color: green;
+  }
+  
+  .actions {
+    display: flex;
+    align-items: center;
+  }
+  
+  .accept-btn, .reject-btn {
+    margin-right: 10px;
+  }
+  
