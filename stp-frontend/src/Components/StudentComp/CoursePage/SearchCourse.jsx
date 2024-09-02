@@ -326,6 +326,7 @@ const SearchCourse = () => {
           </Pagination>
         </Col>
       </Row>
+
       <Form>
         <InputGroup className="mb-3">
           <Form.Control

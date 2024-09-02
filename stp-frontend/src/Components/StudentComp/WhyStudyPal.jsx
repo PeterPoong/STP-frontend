@@ -33,9 +33,9 @@ const WhyStudyPal = () => {
                     src={cc}
                     alt="Circle Check"
                     style={{
-                      marginRight: "10px",
-                      width: "40px",
-                      height: "40px",
+                      // marginRight: "10px",
+                      // width: "40px",
+                      // height: "40px",
                       marginRight: "10px",
                       marginLeft: "100px",
                       width: "90px", // Adjust width to fit well with text

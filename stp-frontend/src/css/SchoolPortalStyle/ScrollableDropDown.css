@@ -1,0 +1,26 @@
+/* CSS Styles for Scrollable Dropdown */
+.dropdown-toggle {
+    padding: 8px 16px;
+    cursor: pointer;
+  }
+  
+  .dropdown-menu {
+    border: 1px solid #ddd;
+    padding: 0;
+    list-style: none;
+    margin: 8px 0 0;
+    background-color: white;
+    position: absolute; /* Position dropdown relative to button */
+    z-index: 1000; /* Ensure dropdown is above other content */
+  }
+  
+  .dropdown-item {
+    padding: 10px 16px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .dropdown-item:hover {
+    background-color: #f0f0f0;
+  }
+  

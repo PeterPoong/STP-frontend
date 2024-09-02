@@ -2,14 +2,25 @@ import { Navigate } from "react-router-dom";
 import Sidebar from "../../Components/SchoolPortalComp/SchoolSidebar";
 import { useEffect, useState } from "react";
 import { ArrowClockwise } from "react-bootstrap-icons";
+import BasicInformation from "../../Components/SchoolPortalComp/BasicInformation";
+import ManagePassword from "../../Components/SchoolPortalComp/ManagePassword";
+import ManageAccount from "../../Components/SchoolPortalComp/ManageAccount";
+import Applicant from "../../Components/SchoolPortalComp/Applicant";
+import Dashboard from "../../Components/SchoolPortalComp/Dashboard";
+import Courses from "../../Components/SchoolPortalComp/Courses";
+
 const SchoolDashboard = () => {
   const [schoolDetail, setSchoolDetail] = useState();
+  const [selectedDropdownItem, setSelectedDropdownItem] = useState("");
+  const [selectedTab, setSelectedTab] = useState("");
   const token = sessionStorage.getItem("token");
+
   if (!token) {
     return <Navigate to="/schoolPortalLogin" />;
   }
+
   useEffect(() => {
-    const schoolDetail = async () => {
+    const fetchSchoolDetail = async () => {
       try {
         const response = await fetch(
           `${import.meta.env.VITE_BASE_URL}api/school/schoolDetail`,
@@ -24,28 +35,50 @@ const SchoolDashboard = () => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-
         const data = await response.json();
         setSchoolDetail(data);
       } catch (error) {
         console.error("Failed to fetch school details:", error);
       }
     };
-    schoolDetail();
+    fetchSchoolDetail();
   }, [token]);
 
   if (!schoolDetail) {
     return <ArrowClockwise />;
   }
 
-  console.log("response", schoolDetail);
-  console.log("token", token);
+  const renderContent = () => {
+    switch (selectedDropdownItem) {
+      case "basicInfo":
+        return <BasicInformation />;
+      case "managePassword":
+        return <ManagePassword />;
+      case "manageAccount":
+        return <ManageAccount />;
+      default:
+        switch (selectedTab) {
+          case "application":
+            return <Applicant />;
+          case "dashboard":
+            return <Dashboard />;
+          case "courses":
+            return <Courses />;
+          default:
+            return <Dashboard />;
+        }
+    }
+  };
+
   return (
-    <>
-      <div>
-        <Sidebar detail={schoolDetail} />
-      </div>{" "}
-    </>
+    <div style={{ display: "flex", height: "100vh" }}>
+      <Sidebar
+        detail={schoolDetail}
+        onDropdownItemSelect={setSelectedDropdownItem}
+        selectTabPage={setSelectedTab}
+      />
+      <div style={{ flex: 1, overflowY: "auto" }}>{renderContent()}</div>
+    </div>
   );
 };
 

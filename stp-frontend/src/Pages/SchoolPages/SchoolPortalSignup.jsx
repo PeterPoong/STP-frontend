@@ -141,24 +141,6 @@ const SchoolPortalSignup = () => {
             {signupStatus === "success" && (
               <Alert variant="success">Signup successful! Redirecting...</Alert>
             )}
-            {/* {signupStatus === "failed" && (
-              <Alert variant="danger">Signup failed. Please try again.</Alert>
-            )}
-            {signupStatus === "error" && (
-              <Alert variant="danger">
-                An error occurred. Please try again later.
-              </Alert>
-            )}
-            {signupStatus === "password_mismatch" && (
-              <Alert variant="danger">
-                Passwords do not match. Please try again.
-              </Alert>
-            )}
-            {signupStatus === "password_too_short" && (
-              <Alert variant="danger">
-                Password must be at least 8 characters long.
-              </Alert>
-            )} */}
             <Form onSubmit={handleSubmit}>
               <Form.Group className="mb-3">
                 <Form.Label className="custom-label">Institute Name</Form.Label>

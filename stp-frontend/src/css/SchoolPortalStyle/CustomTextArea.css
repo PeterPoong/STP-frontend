@@ -1,0 +1,28 @@
+/* src/components/CustomTextArea.css */
+.custom-textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: 'Ubuntu', sans-serif; /* Apply the Ubuntu font if installed */
+    box-sizing: border-box;
+    resize: vertical; /* Allows vertical resizing only */
+    /* Add more custom styles as needed */
+  }
+  
+  .custom-textarea:focus {
+    border-color: #d9534f; /* Example focus border color */
+    outline: none;
+  }
+
+  /* src/components/CustomTextArea.css */
+.custom-text-area .ql-container {
+  border-radius: 8px; /* Adjust the radius value as needed */
+  border: 1px solid #ddd; /* Optional: add border to complement the radius */
+  padding: 8px; /* Optional: add padding */
+}
+
+
+
+
+  
