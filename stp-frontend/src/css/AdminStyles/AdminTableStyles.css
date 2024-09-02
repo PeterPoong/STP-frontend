@@ -1,6 +1,6 @@
 .AdminTable {
     margin-top: 2.5%;
-    width: 90%;
+    width: 100%;
     border-collapse: separate; /* This allows the border-radius to be respected */
     border-spacing: 0; /* Removes the gap between cells */
     border: #E0E0E0 1px;
@@ -10,6 +10,7 @@
 .AdminTable th, .AdminTable td{
     text-align: center;
     background: space;
+    vertical-align: baseline;
 }
 
 .AdminTableBody tr:nth-child(odd) {
@@ -125,7 +126,7 @@
 
 .search-input {
     padding-right: 10px; /* Ensure space for the search icon */
-    margin-top: 8px;
+    margin-top: 5px !important;
     height: 29px;
     width: 10px;
 }
@@ -148,7 +149,19 @@ button.addNew{
     font-size: 12px;
     line-height: 14.4px;
 }
+button.addNew:hover{
+    background-color: #8b0000;
+}
 
+button.accept,
+button.reject{
+    width: 70px;
+    height: 29px;
+    border-radius: 15px;
+    line-height: 14.4px;
+    font-size: 14px;
+    
+}
 .btn-primary{
 background-color: #D32F2F;
 }
@@ -197,4 +210,17 @@ background-color: #D32F2F;
 .pagination .page-link {
     background-color: #e9ecef !important;
     color: #6c757d !important;
+}
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.pagination-controls .btn {
+    margin: 0 5px;
+}
+
+button.confirm:hover{
+    background-color: #8b0000;
 }

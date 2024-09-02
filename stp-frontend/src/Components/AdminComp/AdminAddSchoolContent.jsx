@@ -5,6 +5,7 @@ import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from "react-router-dom";
 import 'typeface-ubuntu';
 import "../../css/AdminStyles/AdminFormStyle.css";
+import AdminFormComponent from './AdminFormComponent';
 
 const AdminAddSchoolContent = () => {
     const [name, setName] = useState("");
@@ -34,7 +35,7 @@ const AdminAddSchoolContent = () => {
     // Function to fetch course list based on search query
     const fetchCourses = async (query) => {
         try {
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/courseList`,{
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/courseList`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -50,7 +51,7 @@ const AdminAddSchoolContent = () => {
             const data = await response.json();
 
             if (data && data.data) {
-                const names = data.data.map(course => course.name);
+                const names = data.data.map(course => ({ name: course.name, id: course.id }));
                 setCourseList(names);
             } else {
                 setCourseList([]);
@@ -139,7 +140,7 @@ const AdminAddSchoolContent = () => {
             password,
             shortDescription,
             longDescription,
-
+            selectedCourses
         };
 
         fetch(`${import.meta.env.VITE_BASE_URL}api/admin/addSchool`, {
@@ -172,7 +173,6 @@ const AdminAddSchoolContent = () => {
         }
     };
 
-
     const handleFeatureChange = (event) => {
         const featureId = parseInt(event.target.value);
         setSchoolFeature(prevFeatures => {
@@ -183,6 +183,7 @@ const AdminAddSchoolContent = () => {
             }
         });
     };
+
     const handleFeatureCourseChange = (event) => {
         const featureCourseId = parseInt(event.target.value);
         setCourseFeature(prevFeatures => {
@@ -195,41 +196,40 @@ const AdminAddSchoolContent = () => {
     };
 
     // Handle "Select All" checkbox change
-  const handleSelectAllChange = (event) => {
-    const { checked } = event.target;
-    setSelectAll(checked);
-    setCourseFeature(checked ? courseFeaturedList.map((course) => course.id) : []);
-  };
+    const handleSelectAllChange = (event) => {
+        const { checked } = event.target;
+        setSelectAll(checked);
+        setCourseFeature(checked ? courseFeaturedList.map((course) => course.id) : []);
+    };
 
-  const updateCourseNames = () => {
-    const courseDiv = document.querySelector('.course');
-    courseDiv.innerHTML = selectedCourses.join(', ');
-  };
+    const handleCourseChange = (course) => {
+        const { value, checked } = course;
+        const courseId = courseList.find(c => c.name === value)?.id;
 
-    const handleCourseChange = (e) => {
-        const { value, checked } = e.target;
-        setFeaturedCourses(prev =>
-            checked ? [...prev, value] : prev.filter(c => c !== value)
-        );
+        if (checked) {
+            setSelectedCourses(prev => [...prev, { name: value, id: courseId }]);
+        } else {
+            setSelectedCourses(prev => prev.filter(c => c.name !== value));
+        }
+
+        // Remove from filteredCourses list
+        setCourseList(prev => prev.filter(c => c.name !== value));
     };
 
     // Filter the courses based on the search query
     const filteredCourses = courseList.filter(course =>
-        course.toLowerCase().includes(searchQuery.toLowerCase())
+        course.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
-
-    const selectedCourseIds = courseFeature;
-        const data = {
-        featureCourseId,
-        selectedCourseIds,
-        };
-
+    const handleAddSchool = () => {
+        sessionStorage.setItem('token', Authenticate);
+        navigate('/adminAddSchool');
+    };
     return (
         <Container fluid className="admin-add-school-container">
             <Form onSubmit={handleSubmit}>
                 <h3 className="fw-light text-left mt-4 mb-4">School Information</h3>
                 {error && <p className="text-danger">{error}</p>}
-                <hr></hr>
+                <hr />
                 <Row className="mb-3">
                     <Col md={6}>
                         <Form.Group controlId="formName">
@@ -269,7 +269,7 @@ const AdminAddSchoolContent = () => {
                             <Form.Label>Email Address</Form.Label>
                             <Form.Control
                                 type="email"
-                                placeholder="Enter email"
+                                placeholder="Enter email address"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
@@ -278,152 +278,112 @@ const AdminAddSchoolContent = () => {
                     </Col>
                     <Col md={6}>
                         <Form.Group controlId="formContact">
-                            <Form.Label>Contact No.</Form.Label>
-                            <Row>
-                                <Col md={4}>
-                                    <Form.Select
-                                        value={countryCode}
-                                        onChange={(e) => setCountryCode(e.target.value)}
-                                    >
-                                        <option value="MY">MY</option>
-                                        <option value="UK">UK</option>
-                                        <option value="US">US</option>
-                                        <option value="IN">India</option>
-                                        {/* Add more country options as needed */}
-                                    </Form.Select>
-                                </Col>
-                                <Col md={8}>
-                                    <Form.Control
-                                        type="text"
-                                        placeholder="Enter contact number"
-                                        value={contact}
-                                        onChange={(e) => setContact(e.target.value)}
-                                        required
-                                    />
-                                </Col>
-                            </Row>
+                            <Form.Label>Contact Number</Form.Label>
+                            <Form.Control
+                                type="text"
+                                placeholder="Enter contact number"
+                                value={contact}
+                                onChange={(e) => setContact(e.target.value)}
+                                required
+                            />
+                        </Form.Group>
+                        <Form.Group controlId="formCountryCode">
+                            <Form.Label>Country Code</Form.Label>
+                            <Form.Control
+                                as="select"
+                                value={countryCode}
+                                onChange={(e) => setCountryCode(e.target.value)}
+                                required
+                            >
+                                <option value="MY">Malaysia (+60)</option>
+                                <option value="SG">Singapore (+65)</option>
+                                {/* Add more options as needed */}
+                            </Form.Control>
                         </Form.Group>
                     </Col>
                 </Row>
+
                 <Row className="mb-3">
-                    <Col md={6}>
-                        <Form.Label>Password</Form.Label>
-                        <Form.Control
-                            type="password"
-                            placeholder="Enter password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                        />
-                    </Col>
-                    <Col md={6}>
-                        <Form.Label>Confirm Password</Form.Label>
-                        <Form.Control
-                            type="password"
-                            placeholder="Repeat password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                        />
+                    <Col md={12}>
+                        <Form.Group controlId="formShortDescription">
+                            <Form.Label>Short Description</Form.Label>
+                            <Form.Control
+                                as="textarea"
+                                rows={3}
+                                placeholder="Enter short description"
+                                value={shortDescription}
+                                onChange={(e) => setShortDescription(e.target.value)}
+                                required
+                            />
+                        </Form.Group>
                     </Col>
                 </Row>
-                <Form.Group className="mb-3" controlId="formShortDescription">
-                    <Form.Label>Short Description</Form.Label>
-                    <Form.Control
-                        as="textarea"
-                        rows={2}
-                        placeholder="Enter short description"
-                        value={shortDescription}
-                        onChange={(e) => setShortDescription(e.target.value)}
-                    />
-                </Form.Group>
 
-                <Form.Group className="mb-3" controlId="formLongDescription">
-                    <Form.Label>Long Description</Form.Label>
-                    <Form.Control
-                        as="textarea"
-                        rows={5}
-                        placeholder="Enter long description"
-                        value={longDescription}
-                        onChange={(e) => setLongDescription(e.target.value)}
-                    />
-                </Form.Group>
-                
-                <hr />
-
-                <Form.Group className="mb-3" controlId="formSchoolFeature">
-                    <Form.Label>School Advertising Feature</Form.Label>
-                    {schoolFeaturedList.map(feature => (
-                        <Form.Check
-                            key={feature.id}
-                            type="checkbox"
-                            label={feature.name}
-                            value={feature.id}
-                            checked={schoolFeature.includes(feature.id)}
-                            onChange={handleFeatureChange}
-                        />
-                    ))}
-                </Form.Group>
-
-                <hr />
-
-                <Form.Group className="mb-3" controlId="formCourses">
-                    <Form.Label>Featured Courses</Form.Label>
-                    <div className="featured">
-                        <div className="search-input-wrapper">
+                <Row className="mb-3">
+                    <Col md={12}>
+                        <Form.Group controlId="formLongDescription">
+                            <Form.Label>Long Description</Form.Label>
                             <Form.Control
-                                type="text"
-                                placeholder="Search"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="search-input"
+                                as="textarea"
+                                rows={5}
+                                placeholder="Enter long description"
+                                value={longDescription}
+                                onChange={(e) => setLongDescription(e.target.value)}
+                                required
                             />
-                            <FontAwesomeIcon icon={faSearch} className="search-icon" />
-                        </div>
-                        <div className="button-container">
-                        {filteredCourses.map((course, index) => (
-                <Button
-                    key={index}
-                    variant="outline-primary"
-                    className="mb-3"
-                    onClick={() => {
-                    handleCourseChange({ target: { value: course, checked: !selectedCourses.includes(course) } });
-                    updateCourseNames();
-                    }}
-                >
-                    {course}
-                </Button>
-                ))}
-                        </div>
-                    </div>
-                </Form.Group>
-                <hr></hr>
-                <Form.Group className="mb-3" controlId="formFeaturedCourses">
-                    <div className="course"></div> 
-                    <div>7777</div>
-                    <Form.Check
-                        type="checkbox"
-                        label="Select All"
-                        checked={selectAll}
-                        onChange={handleSelectAllChange}
-                    />
-                   
-                    {courseFeaturedList.map((featureCourse) => (
-                        <Form.Check
-                        key={featureCourse.id}
-                        type="checkbox"
-                        label={featureCourse.name}
-                        value={featureCourse.id}
-                        checked={courseFeature.includes(featureCourse.id)}
-                        onChange={handleFeatureCourseChange}
+                        </Form.Group>
+                    </Col>
+                </Row>
+
+                <Row className="mb-3">
+                    <Col md={12}>
+                        <h4 className="fw-light text-left mt-4 mb-4">Select Courses</h4>
+                        <Form.Control
+                            type="text"
+                            placeholder="Search for courses"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
                         />
-                    ))}
-                    </Form.Group>
-                <div className="d-flex justify-content-center">
-                <Button className="save mb-4" variant="danger" type="submit">
-                    SAVE
-                </Button>
-                </div>
+                        <div className="course-list mt-3">
+                            {filteredCourses.map((course) => (
+                                <Button
+                                    key={course.id}
+                                    value={course.name}
+                                    onClick={() => handleCourseChange({ name: course.name, value: course.name, checked: true })}
+                                    className="course-button"
+                                >
+                                    {course.name}
+                                </Button>
+                            ))}
+                        </div>
+                    </Col>
+                </Row>
+
+                <Row className="mb-3">
+                    <Col md={12}>
+                        <div className="course">
+                            {selectedCourses.map((course) => (
+                                <div key={course.id} className="course-item">
+                                    {course.name}
+                                    <Button
+                                        variant="link"
+                                        onClick={() => handleCourseChange({ name: course.name, value: course.name, checked: false })}
+                                    >
+                                        Remove
+                                    </Button>
+                                </div>
+                            ))}
+                        </div>
+                    </Col>
+                </Row>
+
+                <Row className="mb-3">
+                    <Col md={12}>
+                        <Button variant="primary" type="submit">
+                            Submit
+                        </Button>
+                    </Col>
+                </Row>
             </Form>
         </Container>
     );

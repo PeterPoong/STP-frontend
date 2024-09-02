@@ -1,12 +1,28 @@
 import React, { useEffect, useState } from "react";
-import { Container, Table } from "react-bootstrap";
+import { Table, Button, Modal } from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEdit } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
+import { MDBSwitch } from 'mdb-react-ui-kit';
 import '../../css/AdminStyles/AdminTableStyles.css';
+import TableWithControls from './TableWithControls';
 
 const AdminCoursesContent = () => {
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
+    const [sortColumn, setSortColumn] = useState(null);
+    const [sortDirection, setSortDirection] = useState(null);
+    const [showModal, setShowModal] = useState(false);
+    const [targetSchool, setTargetSchool] = useState(null);
+    const [totalPages, setTotalPages] = useState(1); // Start with 1 page
+    const [currentPage, setCurrentPage] = useState(1);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [searchQuery, setSearchQuery] = useState("");
+     // To track if there are search results
+    const token = sessionStorage.getItem('token');
+    const Authenticate = `Bearer ${token}`;
+    const navigate = useNavigate();
     useEffect(() => {
         const fetchCourses = async () => {
             try {

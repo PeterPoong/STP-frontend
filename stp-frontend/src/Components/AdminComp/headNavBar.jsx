@@ -15,6 +15,9 @@ const HeadNavBar = () => {
       case '/adminSchool':
         return 'School';
 
+      case '/adminBanner':
+        return 'Banner';
+
       case '/adminStudent':
         return 'Student';
 

@@ -1,98 +1,271 @@
 import React, { useEffect, useState } from "react";
-import { Container, Table } from "react-bootstrap";
-import '../../css/AdminStyles/AdminTableStyles.css';
+import { Table, Button, Modal } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
+import TableWithControls from './TableWithControls';
+import { useNavigate } from "react-router-dom";
+import { MDBSwitch } from 'mdb-react-ui-kit';
 
 const AdminStudentContent = () => {
-    const [students, setStudents] = useState([]);
+    const [sortColumn, setSortColumn] = useState(null);
+    const [sortDirection, setSortDirection] = useState(null);
+    const [students, setstudents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [showModal, setShowModal] = useState(false);
+    const [targetstudent, setTargetstudent] = useState(null);
+    const [isSearchResults, setIsSearchResults] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`;
-    console.log("Authorization Header Value:", Authenticate);
+
+    // useEffect(() => {
+    //     const fetchStudents = async () => {
+    //         try {
+    //             const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/studentListAdmin`, {
+    //                 method: 'POST',
+    //                 headers: {
+    //                     'Content-Type': 'application/json',
+    //                     'Authorization': Authenticate,
+    //                 },
+    //                 body: JSON.stringify({
+    //                     page: currentPage,
+    //                     per_page: rowsPerPage,
+    //                 }),
+    //             });
+
+    //             if (!response.ok) {
+    //                 throw new Error("Failed to fetch data");
+    //             }
+
+    //             const result = await response.json();
+    //             setstudents(result.data);
+    //             setTotalPages(result.total_pages || 1);
+    //             setLoading(false);
+    //         } catch (error) {
+    //             setError(error.message);
+    //             setLoading(false);
+    //         }
+    //     };
+
+    //     fetchStudents();
+    // }, [currentPage, rowsPerPage]);
+
+    const fetchstudents = async (page = 1, perPage = rowsPerPage, search = searchQuery) => {
+        try {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/studentListAdmin?page=${page}&per_page=${perPage}&search=${search}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": Authenticate,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            if (result && result.data) {
+                setstudents(result.data);
+                setTotalPages(result.last_page);
+                setCurrentPage(result.current_page);
+                setIsSearchResults(result.total > rowsPerPage);
+            } else {
+                setstudents([]);
+            }
+        } catch (error) {
+            setError(error.message);
+            console.error("Error fetching the student list:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchStudents = async () => {
-            try {
-                const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/studentList`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': Authenticate,
-                    },
-                });
-                
-                if (!response.ok) {
-                    throw new Error("Failed to fetch data");
-                }
+        fetchstudents(currentPage, rowsPerPage, searchQuery);
+    }, [Authenticate, currentPage, rowsPerPage, searchQuery]);
 
-                const result = await response.json();
-                setStudents(result.data);
-                setLoading(false);
-            } catch (error) {
-                setError(error.message);
-                setLoading(false);
-            }
-        };
+    const handleRowsPerPageChange = (newRowsPerPage) => {
+        setRowsPerPage(newRowsPerPage);
+        setCurrentPage(1); // Reset to the first page whenever rows per page changes
+        fetchstudents(1, newRowsPerPage, searchQuery); // Fetch data with updated rowsPerPage
+    };
 
-        fetchStudents();
-    }, []);
+    const handleSearch = (query) => {
+        setSearchQuery(query);
+        setCurrentPage(1); // Reset to the first page whenever search query changes
+        fetchstudents(1, rowsPerPage, query); // Fetch data with updated search query
+    };
 
     const handleEdit = (id) => {
         // Handle edit action
     };
 
-    const handleDelete = (id) => {
-        // Handle delete action
+    const handleToggleSwitch = (id, currentStatus) => {
+        const action = (currentStatus === 'Active' || currentStatus === 'Temporary') ? 'disable' : 'enable';
+        setTargetstudent({ id, action });
+        setShowModal(true);
+    };
+    const confirmAction = async () => {
+        if (!targetstudent) return;
+    
+        try {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/editStatus`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": Authenticate,
+                },
+                body: JSON.stringify({
+                    id: targetstudent.id,
+                    type: targetstudent.action
+                }),
+            });
+    
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+    
+            const result = await response.json();
+    
+            if (result.success) {
+                // Log the new status for debugging
+                console.log("New status:", result.newStatus);
+    
+                // Refresh the page after successful confirmation
+                window.location.reload();
+            } else {
+                console.error(result.message);
+            }
+        } catch (error) {
+            console.error("Error processing the action:", error);
+        } finally {
+            setShowModal(false);
+            setTargetstudent(null);
+        }
     };
 
+    const getStatusClass = (student_status) => {
+        switch (student_status) {
+            case 'Disable':
+                return 'status-disable';
+            case 'Temporary-Disable':
+                return 'status-disable';
+            case 'Active':
+                return 'status-active';
+            case 'Temporary':
+                return 'status-temporary';
+            default:
+                return '';
+        }
+    };
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+    };
+    const handleAddSchool = () => {
+        sessionStorage.setItem('token', Authenticate);
+        navigate('/adminAddSchool');
+    };
+    const handleSort = (column) => {
+        const newDirection = sortColumn === column && sortDirection === "asc" ? "desc" : "asc";
+        setSortColumn(column);
+        setSortDirection(newDirection);
+        fetchstudents(currentPage, rowsPerPage, searchQuery); // Fetch sorted data
+    };
+
+    const sortedstudents = (() => {
+        if (!sortColumn || !sortDirection) return students;
+    
+        return [...students].sort((a, b) => {
+            const aValue = a[sortColumn] ? a[sortColumn].toString().toLowerCase() : '';
+            const bValue = b[sortColumn] ? b[sortColumn].toString().toLowerCase() : '';
+    
+            if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
+            if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
+            return 0;
+        });
+    })();
+    
+    const theadContent = (
+        <tr>
+            <th onClick={() => handleSort("name")}>
+                Name{sortColumn === "name" && (sortDirection === "asc" ? "↑" : "↓")}
+            </th>
+            <th onClick={() => handleSort("email")}>
+                Email {sortColumn === "email" && (sortDirection === "asc" ? "↑" : "↓")}
+            </th>
+            <th onClick={() => handleSort("status")}>
+                Status {sortColumn === "status" && (sortDirection === "asc" ? "↑" : "↓")}
+            </th>
+            <th>Action</th>
+        </tr>
+    );
+
+    const tbodyContent = sortedstudents.map((student) => (
+        <tr key={student.id}>
+            <td>{student.name}</td>
+            <td>{student.email}</td>
+            <td className={getStatusClass(student.status)}>
+                {student.status}
+            </td>
+            <td>
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <FontAwesomeIcon
+                        className="icon-color-edit"
+                        title="Edit"
+                        icon={faEdit}
+                        style={{ marginRight: '8px', color: '#691ED2', cursor: 'pointer' }}
+                        onClick={() => handleEdit(student.id)}
+                    />
+                    <MDBSwitch
+                        id={`switch-${student.id}`}
+                        checked={student.status === 'Active' || student.status === 'Temporary'}
+                        onChange={() => handleToggleSwitch(student.id, student.status)}
+                        style={{
+                            color: (student.status === 'Active' || student.status === 'Temporary') ? 'green' : ''
+                        }}
+                    />
+                </div>
+            </td>
+        </tr>
+    ));
+
     return (
-        <Container fluid>
-            <div className="TableContainer">
-                {loading ? (
-                    <p>Loading...</p>
-                ) : error ? (
-                    <p>Error: {error}</p>
-                ) : (
-                    <Table className="AdminTable" striped hover>
-                        <thead className="AdminTableHead">
-                            <tr>
-                                <th className="LeftTableCorner">Name</th>
-                                <th>Email</th>
-                                <th>Status</th>
-                                <th className="RightTableCorner">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody className="AdminTableBody">
-                            {students.map((student) => (
-                                <tr key={student.id}>
-                                    <td>{student.student_userName}</td>
-                                    <td>{student.student_email}</td>
-                                    <td>{student.student_status === 1 ? "Active" : "Inactive"}</td>
-                                    <td>
-                                        <div style={{ display: 'flex', justifyContent: 'space-evenly' }}>
-                                            <FontAwesomeIcon
-                                                icon={faEdit}
-                                                className="action-icon edit-icon icon-color-edit"
-                                                title="Edit"
-                                                onClick={() => handleEdit(student.id)}
-                                            />
-                                            <FontAwesomeIcon
-                                                icon={faTrash}
-                                                className="action-icon delete-icon"
-                                                title="Delete"
-                                                onClick={() => handleDelete(student.id)}
-                                            />
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </Table>
-                )}
-            </div>
-        </Container>
+    <>
+        <TableWithControls
+            theadContent={theadContent}
+            tbodyContent={tbodyContent}
+            currentPage={currentPage}
+            onSearch={handleSearch}
+            onSort={handleSort}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            onRowsPerPageChange={handleRowsPerPageChange}
+            // onSearch={(query) => console.log(query)} // Implement search functionality
+            onAddButtonClick={() => console.log("Add new student")} // Implement add new student functionality
+        />
+        <Modal show={showModal} onHide={() => setShowModal(false)}>
+            <Modal.Header closeButton>
+                <Modal.Title>Confirm Action</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                Are you sure you want to {targetstudent?.action === 'enable' ? 'Enable' : 'Disable'} this student?
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="secondary" onClick={() => setShowModal(false)}>
+                    Cancel
+                </Button>
+                <Button className="confirm" variant="primary" onClick={confirmAction}>
+                    Confirm
+                </Button>
+            </Modal.Footer>
+        </Modal>
+    </>
     );
 };
 

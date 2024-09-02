@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Nav } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTachometerAlt, faSchool, faUserGraduate, faBook, faThList, faClipboardList, faUserShield, faFileAlt, faDatabase, faBars } from '@fortawesome/free-solid-svg-icons';import { NavLink } from 'react-router-dom';
+import { faTachometerAlt, faAd,faSchool, faUserGraduate, faBook, faThList, faClipboardList, faUserShield, faFileAlt, faDatabase, faBars } from '@fortawesome/free-solid-svg-icons';import { NavLink } from 'react-router-dom';
 import '../../css/AdminStyles/AdminSideNav.css';
 import logo from '../../assets/AdminAssets/Images/logo.png';
 import logoIcon from '../../assets/AdminAssets/Images/logo-icon.png'
@@ -58,7 +58,9 @@ const SideNavBar = () => {
         <NavLink to='/adminDashboard' className='nav-link'>
           <FontAwesomeIcon icon={faFileAlt} fixedWidth /><span className="link-text">Applicants</span>
         </NavLink>
-
+        <NavLink to='/adminBanner' className='nav-link'>
+          <FontAwesomeIcon icon={faAd} fixedWidth /><span className="link-text">Banner</span>
+        </NavLink>
         <NavLink to='/adminDashboard' className='nav-link'>
           <FontAwesomeIcon icon={faDatabase} fixedWidth /><span className="link-text">Data</span>
         </NavLink>
