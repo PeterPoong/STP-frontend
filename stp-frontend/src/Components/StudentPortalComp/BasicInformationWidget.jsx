@@ -43,9 +43,8 @@ const BasicInformationWidget = () => {
 
   useEffect(() => {
     console.log('Student data updated:', studentData);
-    if (studentData.country_code && studentData.contact) {
-      setPhone(studentData.contact);
-      setCountryCode(studentData.country_code.replace('+', ''));
+    if (studentData.contact && studentData.country_code) {
+      setPhone(`${studentData.country_code}${studentData.contact}`);
     }
     if (studentData.country) {
       const countryId = countries.find(c => c.country_name === studentData.country)?.id;
@@ -123,8 +122,8 @@ const BasicInformationWidget = () => {
         const updatedStudentData = {
           ...responseData.data,
           gender: genderName,
-          contact: responseData.data.contact_number || '',
-          country_code: responseData.data.country_code || ''
+         // contact: responseData.data.contact_number || '',
+          //country_code: responseData.data.country_code || ''
         };
 
         console.log('Updated student data:', updatedStudentData);
