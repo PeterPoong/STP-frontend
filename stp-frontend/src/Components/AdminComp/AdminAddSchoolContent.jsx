@@ -5,6 +5,7 @@ import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from "react-router-dom";
 import 'typeface-ubuntu';
 import "../../css/AdminStyles/AdminFormStyle.css";
+import AdminFormComponent from './AdminFormComponent';
 
 const AdminAddSchoolContent = () => {
     const [name, setName] = useState("");
@@ -219,7 +220,10 @@ const AdminAddSchoolContent = () => {
     const filteredCourses = courseList.filter(course =>
         course.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
-
+    const handleAddSchool = () => {
+        sessionStorage.setItem('token', Authenticate);
+        navigate('/adminAddSchool');
+    };
     return (
         <Container fluid className="admin-add-school-container">
             <Form onSubmit={handleSubmit}>

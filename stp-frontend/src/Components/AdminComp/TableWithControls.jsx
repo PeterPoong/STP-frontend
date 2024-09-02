@@ -3,150 +3,89 @@ import { Container, Table, Dropdown, Form, Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import '../../css/AdminStyles/AdminTableStyles.css';
+import { MDBInput,MDBTable,MDBTableHead, MDBTableBody, MDBPagination, MDBPaginationItem, MDBPaginationLink} from 'mdb-react-ui-kit';
 
-const TableWithControls = ({
+
+const TableWithControls = ({ 
     theadContent,
-    tbodyContent,
     onAddButtonClick,
-    defaultRowsPerPage = 10,
-    onSort,
-    totalPages,
-    currentPage,
-    onPageChange
-}) => {
-    const [rowsPerPage, setRowsPerPage] = useState(defaultRowsPerPage);
-    const [searchQuery, setSearchQuery] = useState("");
-    const [filteredData, setFilteredData] = useState(tbodyContent);
-
-    useEffect(() => {
-        if (Array.isArray(tbodyContent)) {
-            const filtered = tbodyContent.filter(row => {
-                return Object.values(row.props.children).some(cell => {
-                    const cellContent = cell.props.children;
-                    return cellContent ? cellContent.toString().toLowerCase().includes(searchQuery.toLowerCase()) : false;
-                });
-            });
-            setFilteredData(filtered);
-        }
-    }, [searchQuery, tbodyContent]);
-
-
-    const handlePageChange = (page) => {
-        onPageChange(page);
-    };
-    const handleRowsPerPageChange = (number) => {
-        if (number > 0 || number === 'All') {
-            setRowsPerPage(number);
-            onRowsPerPageChange(number); // Notify the parent component
-        }
-    };
-    
-
+     tbodyContent, 
+     onSearch, 
+     onSort, 
+     totalPages, 
+     currentPage, 
+     onPageChange, 
+     onRowsPerPageChange }) => {
     return (
         <Container fluid>
-            <div className="topbar container">
-                <div className="row align-items-center">
-                    <div className="col d-flex">
-                        <Dropdown className="me-1 mb-3 mt-3 custom-dropdown">
-                            Show
-                            <Dropdown.Toggle variant="secondary" id="dropdown-basic">
-                                {rowsPerPage === 'All' ? tbodyContent.length : rowsPerPage}
-                            </Dropdown.Toggle>
-
-                            <Dropdown.Menu>
-                                {[5, 10, 20, 30, 40, 50, 'All'].map((option, index) => (
-                                    <Dropdown.Item
-                                        key={index}
-                                        onClick={() => handleRowsPerPageChange(option)}
-                                    >
-                                        Show {option}
-                                    </Dropdown.Item>
-                                ))}
-                            </Dropdown.Menu>
-                        </Dropdown>
-
-                        {/* Search Input */}
-                        <div className="search-input-wrapper mt-2 mb-3">
-                            <Form.Control
-                                type="text"
-                                placeholder="Search"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="search-input"
-                            />
-                            <FontAwesomeIcon icon={faSearch} className="search-icon" />
-                        </div>
+         <div className="topbar container">
+            <div className="row align-items-center">
+                <div className="col d-flex">
+                    <div className="me-1 mb-3 mt-3 custom-dropdown">
+                        Show <span></span>
+                        <select onChange={(e) => onRowsPerPageChange(parseInt(e.target.value, 10))}>
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                            <option value="All">All</option>
+                        </select>
                     </div>
-                    <div className="col-auto">
-                        {/* Add Button */}
-                        <Button className="addNew" variant="primary" onClick={onAddButtonClick}>
-                            + Add New
-                        </Button>
+                    {/* Search Input */}
+                    <div className="search-input-wrapper mt-2 mb-3">
+                        <Form.Control
+                            type="text"
+                            placeholder="Search Name"
+                        
+                            onChange={(e) => onSearch(e.target.value)}
+                            className="search-input"
+                        />
+                        <FontAwesomeIcon icon={faSearch} className="search-icon" />
                     </div>
                 </div>
+                    <div className="col-auto">
+                    {/* Add Button */}
+                    <Button className="addNew" variant="primary" onClick={onAddButtonClick}>
+                        + Add New
+                    </Button>
+                    </div>
             </div>
             <div className="TableContainer">
-                <Table className="AdminTable table-borderless" hover>
-                    <thead className="AdminTableHead">
-                        {React.cloneElement(theadContent, { onSort })}
-                    </thead>
-                    <tbody className="AdminTableBody">
-                        {filteredData}
-                    </tbody>
-                </Table>
+                <MDBTable className="AdminTable table-borderless" hover>
+                    <MDBTableHead className="AdminTableHead">
+                    {React.cloneElement(theadContent, { onSort })}
+                    </MDBTableHead>
+                    <MDBTableBody className="AdminTableBody">
+                        {tbodyContent}
+                    </MDBTableBody>
+                </MDBTable>
             </div>
-
-            {/* Pagination Controls */}
-            <nav aria-label="Page navigation">
-                <ul className="pagination">
-                    <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                        <a
-                            className="page-link"
-                            href="#"
-                            aria-label="Previous"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                if (currentPage > 1) handlePageChange(currentPage - 1);
-                            }}
-                        >
-                            <span aria-hidden="true">&laquo;</span>
-                            <span className="sr-only">Previous</span>
-                        </a>
-                    </li>
+            <div className="pagination-controls">
+                <MDBPagination>
+                    {currentPage > 1 && (
+                        <MDBPaginationItem>
+                            <MDBPaginationLink onClick={() => onPageChange(currentPage - 1)}>
+                                Previous
+                            </MDBPaginationLink>
+                        </MDBPaginationItem>
+                    )}
                     {[...Array(totalPages).keys()].map(page => (
-                        <li
-                            key={page + 1}
-                            className={`page-item ${currentPage === page + 1 ? 'active' : ''}`}
-                        >
-                            <a
-                                className="page-link"
-                                href="#"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    handlePageChange(page + 1);
-                                }}
-                            >
+                        <MDBPaginationItem key={page + 1} active={page + 1 === currentPage}>
+                            <MDBPaginationLink onClick={() => onPageChange(page + 1)}>
                                 {page + 1}
-                            </a>
-                        </li>
+                            </MDBPaginationLink>
+                        </MDBPaginationItem>
                     ))}
-
-                    <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                        <a
-                            className="page-link"
-                            href="#"
-                            aria-label="Next"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                if (currentPage < totalPages) handlePageChange(currentPage + 1);
-                            }}
-                        >
-                            <span aria-hidden="true">&raquo;</span>
-                            <span className="sr-only">Next</span>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
+                    {currentPage < totalPages && (
+                        <MDBPaginationItem>
+                            <MDBPaginationLink onClick={() => onPageChange(currentPage + 1)}>
+                                Next
+                            </MDBPaginationLink>
+                        </MDBPaginationItem>
+                    )}
+                </MDBPagination>
+              
+            </div>
+        </div>
         </Container>
     );
 };
