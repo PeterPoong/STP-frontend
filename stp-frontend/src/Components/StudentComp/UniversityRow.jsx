@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col, Carousel, Card } from "react-bootstrap";
-// import './UniversityRow.css';  // Import the CSS file
+import { Container, Row, Col, Card } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
 import "../../css/StudentCss/homePageStudent/UniversityRow.css";
 
-const itemsPerSlide = 4;
 const baseURL = import.meta.env.VITE_BASE_URL;
 const apiURL = `${baseURL}api/student/hpFeaturedSchoolList`;
 
@@ -18,7 +21,7 @@ const UniversityRow = () => {
 
   const loadSchools = async () => {
     setLoading(true);
-    setError(null); // Clear previous errors
+    setError(null);
 
     try {
       const response = await fetch(apiURL, {
@@ -26,19 +29,7 @@ const UniversityRow = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          schoolID: 1,
-          schoolName: "updated School",
-          schoolLogo: "schoolLogo/1721804035.png",
-
-          schoolID: 2,
-          schoolName: "swinbrune",
-          schoolLogo: "schoolLogo/1721804464.png",
-
-          schoolID: 3,
-          schoolName: "curtin",
-          schoolLogo: "schoolLogo/1721804783.png",
-        }),
+        body: JSON.stringify({}),
       });
 
       if (!response.ok) {
@@ -51,7 +42,7 @@ const UniversityRow = () => {
       }
 
       const result = await response.json();
-      console.log("API Response:", result); // Debug log
+      console.log("API Response:", result);
       setSchools(result.data);
     } catch (error) {
       setError(error.message);
@@ -66,47 +57,52 @@ const UniversityRow = () => {
       <h4 className="university-row-title" style={{ textAlign: "left" }}>
         Featured Universities
       </h4>
-      <div className="university-row-container" style={{ width: "100%" }}>
+      <div>
         {error && <div>Error: {error}</div>}
         {loading && <div>Loading...</div>}
         {!loading && schools.length > 0 && (
           <Container className="university-row-carousel" fluid>
-            <Carousel controls={false} style={{ height: "auto" }}>
-              {Array.from({
-                length: Math.ceil(schools.length / itemsPerSlide),
-              }).map((_, slideIndex) => (
-                <Carousel.Item key={slideIndex}>
-                  <Row className="justify-content-center g-0">
-                    {schools
-                      .slice(
-                        slideIndex * itemsPerSlide,
-                        (slideIndex + 1) * itemsPerSlide
-                      )
-                      .map((school, index) => {
-                        const imgUrl = `${baseURL}storage/${school.schoolLogo}`;
-                        console.log("Image URL:", imgUrl); // Debug log
-                        return (
-                          <Col
-                            xs={12}
-                            md={4}
-                            lg={3}
-                            className="mb-3"
-                            key={index}
-                          >
-                            <Card className="university-card">
-                              <Card.Img
-                                variant="top"
-                                src={imgUrl}
-                                alt={school.schoolName}
-                              />
-                            </Card>
-                          </Col>
-                        );
-                      })}
-                  </Row>
-                </Carousel.Item>
+            <Swiper
+              spaceBetween={30}
+              slidesPerView={3}
+              loop={true}
+              pagination={{ clickable: true }}
+              navigation
+              breakpoints={{
+                640: {
+                  slidesPerView: 1,
+                  spaceBetween: 10,
+                },
+                768: {
+                  slidesPerView: 2,
+                  spaceBetween: 15,
+                },
+                1024: {
+                  slidesPerView: 3,
+                  spaceBetween: 10,
+                },
+              }}
+            >
+              {schools.map((school, index) => (
+                <SwiperSlide key={index} className="swiper-slide-image">
+                  <Col xs={12} className="mb-3">
+                    <Card className="university-card">
+                      <Link
+                        to={`/knowMoreInstitute/${school.schoolID}`}
+                        target="_parent"
+                        rel="noopener noreferrer"
+                      >
+                        <img
+                          className="uni-image"
+                          src={`${baseURL}storage/${school.schoolLogo}`}
+                          alt={school.schoolName}
+                        />
+                      </Link>
+                    </Card>
+                  </Col>
+                </SwiperSlide>
               ))}
-            </Carousel>
+            </Swiper>
           </Container>
         )}
       </div>

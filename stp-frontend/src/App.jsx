@@ -12,7 +12,7 @@ import VideoSlide from "./Components/student components/VideoSlide";
 import Footer from "./css/student css/Footer.css";
 import Courses from "./Pages/student pages/CoursesPage";
 import ApplyForm from "./Pages/student pages/ApplyForm";
-import ApplyDetail from "./Pages/student pages/ApplyDetail";
+import courseDetails from "./Pages/student pages/courseDetails";
 
 // Import Admin Pages
 import AdminSignup from "./Pages/AdminSignup";
@@ -36,7 +36,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/knowMoreInstitute/:id" element={<KnowMore />} />
             <Route path="/applynow" element={<ApplyNow />} />
-            <Route path="/applyDetail/:id" element={<ApplyDetail />} />
+            <Route path="/courseDetails/:id" element={<courseDetails />} />
             <Route path="/login" element={<div>Login Page</div>} />
             <Route path="/school" element={<div>School Page</div>} />
             <Route path="/student" element={<div>Student Page</div>} />
@@ -45,7 +45,10 @@ function App() {
             <Route path="/courses" element={<div>CoursesPage</div>} />
             <Route path="/institute" element={<div>InstitutePage</div>} />
             <Route path="/applycourse" element={<div>ApplyForm </div>} />
-            <Route path="/personaldetails" element={<div>PersonalDetails </div>} />
+            <Route
+              path="/personaldetails"
+              element={<div>PersonalDetails </div>}
+            />
 
             {/* Add Admin Routes */}
             <Route path="/adminSignup" element={<AdminSignup />} />

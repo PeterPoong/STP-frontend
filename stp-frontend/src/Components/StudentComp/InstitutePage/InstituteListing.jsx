@@ -33,6 +33,7 @@ const studylevelAPIURL = `${baseURL}api/student/qualificationFilterList`;
 const studyModeAPIURL = `${baseURL}api/student/studyModeFilterlist`;
 const tuitionFeeAPIURL = `${baseURL}api/student/tuitionFeeFilterRange`;
 const categoryAPIURL = `${baseURL}api/student/categoryFilterList`;
+const intakeAPIURL = `${baseURL}api/student/intakeFilterList`;
 
 const InstituteListing = ({ searchResults, countryID, selectedInstitute }) => {
   const [locationFilters, setLocationFilters] = useState([]);
@@ -60,6 +61,7 @@ const InstituteListing = ({ searchResults, countryID, selectedInstitute }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10); // Adjust the number of items per page as needed
   const [totalPages, setTotalPages] = useState(1);
+  const [selectedLocationFilters, setSelectedLocationFilters] = useState([]);
 
   // Pagination
   useEffect(() => {
@@ -122,7 +124,7 @@ const InstituteListing = ({ searchResults, countryID, selectedInstitute }) => {
         );
         return institute.category === selectedInstitute;
       });
-      console.log("Filtered Programs:", filtered);
+      console.log("Filtered Institutrd:", filtered);
       setFilteredPrograms(filtered);
     } else {
       console.log("No institutes available to filter.");
@@ -135,7 +137,8 @@ const InstituteListing = ({ searchResults, countryID, selectedInstitute }) => {
     console.log("Country ID changed:", countryID);
     const fetchLocationFilters = async () => {
       if (!countryID) {
-        // setLocationFilters([]);
+        setLocationFilters([]);
+        setFilteredPrograms(institutes);
         return;
       }
 
@@ -165,9 +168,11 @@ const InstituteListing = ({ searchResults, countryID, selectedInstitute }) => {
         } else {
           setLocationFilters([]); // Set to empty array if no data
         }
+        // Filter programs after fetching location filters
+        filterPrograms();
       } catch (error) {
         console.error("Error fetching locations:", error);
-        setLocationFilters([]); // Set to empty array in case of error
+        setLocationFilters([]);
       }
     };
 
@@ -250,8 +255,6 @@ const InstituteListing = ({ searchResults, countryID, selectedInstitute }) => {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              // countryID: selectedCountry,
-
               locationFilters: locationFilters,
               categoryFilters: categoryFilters,
               intakeFilters: intakeFilters,
@@ -278,14 +281,7 @@ const InstituteListing = ({ searchResults, countryID, selectedInstitute }) => {
 
           const result = await response.json();
           setInstitutes(result.data);
-          filterPrograms(
-            searchResults,
-            locationFilters,
-            categoryFilters,
-            intakeFilters,
-            modeFilters,
-            tuitionFee
-          );
+          filterPrograms();
 
           break; // Exit while loop if successful
         } catch (error) {
@@ -341,11 +337,11 @@ const InstituteListing = ({ searchResults, countryID, selectedInstitute }) => {
             "Content-Type": "application/json",
           },
         });
-        const intakeFilters = await response.json();
-        setIntakeFilters(intakeFilters.data);
-        console.log("Intakes: ", intakeFilters.data);
+        const intakeData = await response.json();
+        setIntakeData(intakeData.data);
+        console.log("Intakes: ", intakeData.data);
       } catch (error) {
-        console.error("Error fetching categories:", error);
+        console.error("Error fetching intakes:", error);
       }
     };
 
@@ -363,56 +359,80 @@ const InstituteListing = ({ searchResults, countryID, selectedInstitute }) => {
 
   const handleLocationChange = (location) => {
     const locationName = location.state_name.trim();
-    let updatedLocations;
+    let updatedFilters;
 
-    if (locationFilters.includes(locationName)) {
-      updatedLocations = locationFilters.filter(
+    if (selectedLocationFilters.includes(locationName)) {
+      updatedFilters = selectedLocationFilters.filter(
         (item) => item !== locationName && item !== ""
       );
-    } else if (locationName !== "") {
-      updatedLocations = [...locationFilters, locationName];
+    } else {
+      updatedFilters = [...selectedLocationFilters, locationName];
     }
-    setLocationFilters(updatedLocations);
-    // filterPrograms(
-    //   updatedLocations.length > 0 ? updatedLocations : [],
-    //   categoryFilters,
-    //   intakeFilters,
-    //   modeFilters,
-    //   tuitionFee,
-    //   institutes
-    // );
+
+    setSelectedLocationFilters(updatedFilters);
+    console.log("Updated Location Filters:", updatedFilters);
+    filterPrograms(
+      updatedFilters,
+      categoryFilters,
+      intakeFilters,
+      modeFilters,
+      tuitionFee,
+      institutes
+    );
   };
+
   const filterPrograms = () => {
+    const searchResultIDs = searchResults
+      ? searchResults.map((result) => result.id)
+      : [];
+
     const filtered = institutes.filter((institute) => {
+      // Convert program.id to a string if necessary for comparison
+      const programIdString = String(institute.id);
+
+      // Check if the program ID matches any ID in the search results
+      const matchesSearchResults =
+        searchResultIDs.length === 0 || searchResultIDs.includes(institute.id);
+
+      // Debugging: Log the match status
+      console.log("Institute ID:", institute.id);
+      console.log("Matches Search Results:", matchesSearchResults);
+
+      const matchesCountry =
+        selectedCountry && selectedCountry.country_id
+          ? institute.countryID === selectedCountry.country_id
+          : true;
+
       const matchesLocation =
         locationFilters.length === 0 ||
-        locationFilters.includes(institute.state);
+        selectedLocationFilters.length === 0 ||
+        selectedLocationFilters.includes(institute.state);
 
       const matchesCategory =
         categoryFilters.length === 0 ||
         categoryFilters.includes(institute.category);
 
+      // Check if any of the selected intake filters match any of the intake values in the institute
       const matchesIntake =
         intakeFilters.length === 0 ||
-        intakeFilters.some((intake) => institute.intake.includes(intake));
+        (Array.isArray(institute.intake) &&
+          institute.intake.some((intake) => intakeFilters.includes(intake)));
 
       const matchesMode =
         modeFilters.length === 0 || modeFilters.includes(institute.mode);
 
       const matchesInstitute =
-        !selectedInstitute || institute.category === selectedInstitute;
-
-      // const matchesQualification =
-      //   !selectedQualification ||
-      //   institute.qualification === selectedQualification;
+        !selectedInstitute ||
+        institute.institute_category === selectedInstitute;
 
       return (
+        matchesCountry &&
         matchesLocation &&
         matchesCategory &&
         matchesIntake &&
         matchesMode &&
-        matchesInstitute
-        // matchesQualification
+        matchesInstitute &&
+        matchesSearchResults
       );
     });
 
@@ -420,15 +440,22 @@ const InstituteListing = ({ searchResults, countryID, selectedInstitute }) => {
   };
 
   useEffect(() => {
-    filterPrograms();
+    filterPrograms(
+      selectedLocationFilters,
+      categoryFilters,
+      intakeFilters,
+      modeFilters,
+      tuitionFee,
+      institutes
+    );
   }, [
-    institutes,
-    locationFilters,
+    selectedLocationFilters,
     categoryFilters,
     intakeFilters,
     modeFilters,
     tuitionFee,
-    selectedInstitute,
+    institutes,
+    searchResults, // Add searchResults as a dependency to trigger filtering when it changes
   ]);
 
   const handleCountryChange = async (country) => {
@@ -502,11 +529,8 @@ const InstituteListing = ({ searchResults, countryID, selectedInstitute }) => {
       {institute.featured && <div className="featured-badge">Featured</div>}
       <div className="card-body d-flex flex-column flex-md-row align-items-start">
         <Row>
-          <Col md={7} lg={7}>
+          <Col md={6} lg={6}>
             <div className="card-image mb-3 mb-md-0">
-              <h5 className="card-title" style={{ paddingLeft: "20px" }}>
-                {institute.name}
-              </h5>
               <div className="d-flex align-items-center">
                 <div style={{ paddingLeft: "20px" }}>
                   <img
@@ -516,6 +540,9 @@ const InstituteListing = ({ searchResults, countryID, selectedInstitute }) => {
                   />
                 </div>
                 <div style={{ paddingLeft: "10px" }}>
+                  <h5 className="card-title" style={{ paddingLeft: "10px" }}>
+                    {institute.name}
+                  </h5>
                   {/* <h5 className="card-text">{institute.category}</h5> */}
                   <div className="d-flex align-items-center">
                     <img src={LocationIcon} alt="Location" width="40" />{" "}
@@ -540,13 +567,13 @@ const InstituteListing = ({ searchResults, countryID, selectedInstitute }) => {
               </div>
             </div>
           </Col>
-          <Col md={5} lg={5}>
+          <Col md={6} lg={6}>
             <div className="d-flex flex-grow-1 justify-content-between">
               <div className="details-div" style={{ width: "60%" }}>
                 <div className="d-flex align-items-center flex-wrap">
                   <Col>
                     <div>
-                      <Row style={{ paddingTop: "20px" }}>
+                      <Row style={{}}>
                         <div>
                           <img src={SchoolIcon} alt="School" width="40" />
                           <span style={{ paddingLeft: "20px" }}>
@@ -566,8 +593,8 @@ const InstituteListing = ({ searchResults, countryID, selectedInstitute }) => {
                         <div>
                           <img src={BookOpenIcon} alt="Book Open" width="40" />
                           <span style={{ paddingLeft: "20px" }}>
-                            {institute.intakes
-                              ? institute.intakes.join(", ")
+                            {institute.intake
+                              ? institute.intake.join(", ")
                               : "N/A"}
                           </span>
                         </div>
@@ -579,7 +606,7 @@ const InstituteListing = ({ searchResults, countryID, selectedInstitute }) => {
               <div className="fee-apply">
                 <div className="knowmore-button">
                   <button
-                    className="featured"
+                    className="featured-institute-button"
                     onClick={() => handleKnowMoreInstitute(institute)}
                     style={{ marginTop: "90px", width: "150px" }}
                   >
@@ -616,7 +643,7 @@ const InstituteListing = ({ searchResults, countryID, selectedInstitute }) => {
                           key={index}
                           type="checkbox"
                           label={location.state_name}
-                          checked={locationFilters.includes(
+                          checked={selectedLocationFilters.includes(
                             location.state_name
                           )}
                           onChange={() => handleLocationChange(location)}
@@ -659,17 +686,19 @@ const InstituteListing = ({ searchResults, countryID, selectedInstitute }) => {
             <div className="filter-group">
               <h5 style={{ marginTop: "25px" }}>Intakes</h5>
               <Form.Group>
-                {/* Check if intakeData and intakeData.data are defined */}
-                {intakeFilters.map((intake, index) => (
-                  <Form.Check
-                    key={index} // Use a unique key if available
-                    type="checkbox"
-                    label={intake.month}
-                    checked={intakeFilters.includes(intake.month)}
-                    onChange={() => handleIntakeChange(intake)}
-                    aria-label={`Filter by intake month: ${intake.month}`} // Accessibility improvement
-                  />
-                ))}
+                {intakeData.length > 0 ? (
+                  intakeData.map((intake) => (
+                    <Form.Check
+                      key={intake.id} // Use a unique key if available, `intake.id` is preferred
+                      type="checkbox"
+                      label={intake.month}
+                      checked={intakeFilters.includes(intake.month)}
+                      onChange={() => handleIntakeChange(intake)}
+                    />
+                  ))
+                ) : (
+                  <p>No intakes available</p> // Display a message if no data is available
+                )}
               </Form.Group>
             </div>
             <div className="filter-group">
@@ -793,17 +822,19 @@ const InstituteListing = ({ searchResults, countryID, selectedInstitute }) => {
               </Accordion.Header>
               <Accordion.Body className="custom-accordion-body">
                 <Form.Group>
-                  {/* Check if intakeData and intakeData.data are defined */}
-                  {intakeFilters.map((intake, index) => (
-                    <Form.Check
-                      key={index} // Use a unique key if available
-                      type="checkbox"
-                      label={intake.month}
-                      checked={intakeFilters.includes(intake.month)}
-                      onChange={() => handleIntakeChange(intake)}
-                      aria-label={`Filter by intake month: ${intake.month}`} // Accessibility improvement
-                    />
-                  ))}
+                  {intakeData.length > 0 ? (
+                    intakeData.map((intake) => (
+                      <Form.Check
+                        key={intake.id} // Use a unique key if available, `intake.id` is preferred
+                        type="checkbox"
+                        label={intake.month}
+                        checked={intakeFilters.includes(intake.month)}
+                        onChange={() => handleIntakeChange(intake)}
+                      />
+                    ))
+                  ) : (
+                    <p>No intakes available</p> // Display a message if no data is available
+                  )}
                 </Form.Group>
               </Accordion.Body>
             </Accordion.Item>

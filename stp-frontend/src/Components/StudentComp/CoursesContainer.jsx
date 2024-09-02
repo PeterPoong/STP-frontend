@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from "react";
 import CoursesButton from "../../Components/StudentComp/CoursesButton";
-import { Container, Row, Col, Button, Collapse } from "react-bootstrap";
+import { Container } from "react-bootstrap";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 import "../../css/StudentCss/course button group/CoursesButton.css";
+
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
+import { Pagination, Navigation } from "swiper/modules";
 
 const baseURL = import.meta.env.VITE_BASE_URL;
 const apiURL = `${baseURL}api/student/categoryList`;
@@ -10,13 +17,12 @@ const CoursesContainer = () => {
   const [buttons, setButtons] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isCollapsed, setIsCollapsed] = useState(true);
-  const [isSmallScreen, setIsSmallScreen] = useState(false);
+  const navigate = useNavigate(); // Initialize useNavigate
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      setError(null); // Clear previous errors
+      setError(null);
 
       try {
         const response = await fetch(apiURL, {
@@ -38,7 +44,6 @@ const CoursesContainer = () => {
 
         const result = await response.json();
         const data = result.data;
-        console.log("API Response:", result);
 
         const mappedButtons = data.map((item) => ({
           id: item.id,
@@ -47,7 +52,6 @@ const CoursesContainer = () => {
         }));
 
         setButtons(mappedButtons);
-        console.log("Fetched courses:", result); // Debug log
       } catch (error) {
         setError(error.message);
         console.error("Error fetching course data:", error);
@@ -57,22 +61,12 @@ const CoursesContainer = () => {
     };
 
     fetchData();
-
-    // Check if the screen size is small
-    const handleResize = () => {
-      setIsSmallScreen(window.innerWidth < 768);
-    };
-
-    handleResize(); // Check on initial load
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
   }, []);
 
-  const handleToggle = () => {
-    setIsCollapsed(!isCollapsed);
+  const handleButtonClick = (category) => {
+    navigate("/courses", {
+      state: { selectedCategory: category.label },
+    });
   };
 
   return (
@@ -90,66 +84,42 @@ const CoursesContainer = () => {
             Error: {error}
           </div>
         ) : (
-          <>
-            <Row className="justify-content-center g-0">
-              {buttons
-                .slice(0, isSmallScreen ? 4 : buttons.length)
-                .map((button) => (
-                  <Col
-                    key={button.id}
-                    md={2}
-                    className="d-flex justify-content-center"
-                  >
-                    <CoursesButton src={button.src} label={button.label} />
-                  </Col>
-                ))}
-            </Row>
-            {isSmallScreen && (
-              <Collapse in={!isCollapsed}>
-                <Row className="justify-content-center g-0">
-                  {buttons.slice(4).map((button) => (
-                    <Col
-                      key={button.id}
-                      md={2}
-                      className="d-flex justify-content-center"
-                    >
-                      <CoursesButton src={button.src} label={button.label} />
-                    </Col>
-                  ))}
-                </Row>
-              </Collapse>
-            )}
-            {isSmallScreen && buttons.length > 4 && (
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  marginTop: "20px",
-                }}
-              >
-                <Button
-                  className="findmore-button"
-                  onClick={handleToggle}
-                  aria-controls="example-collapse-text"
-                  aria-expanded={!isCollapsed}
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    marginTop: "20px",
-                    textDecoration: "none",
-                    backgroundColor: "#B71A18",
-                    borderColor: "#B71A18",
-                    width: "150px",
-                    padding: "10px 20px",
-                    borderRadius: "5px",
-                    color: "white",
-                  }}
-                >
-                  {isCollapsed ? "Find More" : "Show Less"}
-                </Button>
-              </div>
-            )}
-          </>
+          <Swiper
+            modules={[Navigation, Pagination]}
+            spaceBetween={10}
+            slidesPerView={7}
+            loop={true}
+            navigation
+            pagination={{ clickable: true }}
+            breakpoints={{
+              430: {
+                slidesPerView: 3,
+                spaceBetween: 15,
+              },
+              640: {
+                slidesPerView: 3,
+                spaceBetween: 10,
+              },
+              768: {
+                slidesPerView: 4,
+                spaceBetween: 15,
+              },
+              1024: {
+                slidesPerView: 7,
+                spaceBetween: 10,
+              },
+            }}
+          >
+            {buttons.map((button) => (
+              <SwiperSlide key={button.id}>
+                <CoursesButton
+                  src={button.src}
+                  label={button.label}
+                  onClick={() => handleButtonClick(button)} // Handle button click
+                />
+              </SwiperSlide>
+            ))}
+          </Swiper>
         )}
       </Container>
     </div>

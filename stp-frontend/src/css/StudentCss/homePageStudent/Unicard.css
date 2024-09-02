@@ -1,42 +1,16 @@
-.carousel-item {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 200px;
-  flex-wrap: wrap;
-}
-.featured-course-card {
-  /* Existing styles */
-  position: relative; /* Ensure badge is positioned correctly */
-}
-
-.badge {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  padding: 5px 10px;
-  font-size: 14px;
-  background-color: #9e1919;
-  color: white;
-  border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
 .course-container {
   width: 100%;
-  overflow: hidden; /* Prevent horizontal scroll if needed */
+  overflow: hidden;
 }
-
 
 .featured-course-card {
   margin: 10px;
   padding: 15px;
   border: 1px solid #ddd;
-  border-radius: 8px;
   background-color: #fff;
-  text-align: center; 
-  width: 33.33%;
-  box-sizing: border-box;
+  text-align: center;
+  max-height: fit-content;
+  box-sizing: content-box;
   transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
 
@@ -46,43 +20,44 @@
 }
 
 .section-image {
-  max-width: 100%;
-  max-height: 120px;
-  object-fit: contain;
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+}
+
+.swiper-slide-course {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: auto !important; /* Ensure each slide takes its own width */
+}
+
+.badge {
+  position: absolute;
+  top: -15px;
+  right: -28px;
+  padding: 5px 10px;
+  font-size: 20px;
+  background-color: #9e1919;
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 130px;
+  height: 30px;
+  text-align: center;
+  z-index: 1;
+  clip-path: polygon(10% 10%,90% 10%,90% 90%,10% 90%);
+}
+
+.button-know-more, .button-apply-now {
+  margin: 5px;
+  border-radius: 8px;
+  font-size: small;
 }
 
 @media (min-width: 768px) {
-  .carousel-item {
-    display: flex;
-  }
-
   .featured-course-card {
     flex: 1 0 calc(33.333% - 20px);
-    max-width: calc(33.333% - 20px);
-    width: 50%;
   }
-}
-/* For even smaller screens, make the cards full-width */
-@media (max-width: 480px) {
-  .featured-course-card {
-    width: 100%;
-  }
-}
-
-@media (max-width: 767px) {
-  .carousel-item {
-    display: block;
-  }
-
-  .featured-course-card {
-    flex: 1 0 100%;
-    max-width: 100%;
-  }
-}
-
-.carousel-control-prev,
-.carousel-control-next {
-  color: azure;
 }
 
 @media (max-width: 992px) {

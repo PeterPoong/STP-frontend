@@ -11,16 +11,59 @@
   object-fit: cover;
 }
 
-.country-button,
-.university-button,
-.degree-button
+
+.country-dropdown-course,
+.university-dropdown-course,
+.qualification-dropdown-course
  {
-  background-color: #ffffff;
-  color: #B71A18;
+  background-color: #B71A18;
+  color: #ffffff;
   border: 1px solid;
   min-width: 200px;
   margin-top: 35px;
+  
 }
+
+.country-dropdown-course:hover,
+.university-dropdown-course:hover,
+.qualification-dropdown-course:hover{
+  background-color: #9c1515;
+  color: #ffffff;
+  border: none;
+}
+
+
+.scrollable-dropdown {
+  max-height: 300px; /* Set your desired maximum height */
+  overflow-y: auto;
+  overflow-x: hidden;
+  
+}
+
+
+/* Width of the scrollbar */
+.scrollable-dropdown::-webkit-scrollbar {
+  width: 15px; /* You can adjust the width */
+}
+
+/* Track of the scrollbar (background) */
+.scrollable-dropdown::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Light background color for the scrollbar track */
+  border-radius: 10px; /* Rounded corners */
+}
+
+/* Handle of the scrollbar (thumb) */
+.scrollable-dropdown::-webkit-scrollbar-thumb {
+  background-color: #B71A18; /* Darker color for the scrollbar thumb */
+  border-radius: 10px; /* Rounded corners */
+  border: 2px solid #f1f1f1; /* Add a border around the thumb */
+}
+
+/* Handle on hover */
+.scrollable-dropdown::-webkit-scrollbar-thumb:hover {
+  background-color: #555; /* Darker color on hover */
+}
+
 
 .pagination .page-item .page-link {
   background-color: #B71A18; /* Your desired background color */
@@ -39,13 +82,6 @@
   color: white; /* Your desired hover text color */
 }
 
-.country-button:hover,
-.university-button:hover,
-.degree-button:hover{
-  background-color: #9c1515;
-  color: #ffffff;
-  border: none;
-}
 
 .mr-2 {
   margin-right: 0.5rem;
@@ -64,7 +100,7 @@
 }
 
 .studypal-image {
-  width: 1045px;
+  width: 1180px;
   height: 150px;
   display: block;
   object-fit: cover;
@@ -80,7 +116,7 @@
 .degree-card {
   display: flex;
   flex-direction: column;
-  width: 1045px;
+  width: 1180px;
   height: auto;
   border-color: #B71A18;
   border-radius: 10px;

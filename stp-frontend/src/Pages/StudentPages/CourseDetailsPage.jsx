@@ -1,8 +1,8 @@
-// src/Pages/ApplyDetail.js
+// src/Pages/courseDetails.js
 import React from "react";
 import { useParams } from "react-router-dom";
 import CourseDetail from "../../Components/StudentComp/CoursePage/CourseDetail";
-const ApplyDetail = () => {
+const CourseDetailsPage = () => {
   // const { id } = useParams();
   return (
     <div>
@@ -12,4 +12,4 @@ const ApplyDetail = () => {
   );
 };
 
-export default ApplyDetail;
+export default CourseDetailsPage;

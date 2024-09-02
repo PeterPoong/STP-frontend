@@ -40,7 +40,7 @@ const FeaturedUni = () => {
           </InputGroup>
           <button variant="outline-danger">Search</button>
         </Form>
-        <div className="button-container mt-3 d-flex justify-content-center flex-wrap">
+        <div className="button-container mt-3 d-flex justify-content-center ">
           <button className="diploma-button mb-2 mx-2" size="lg">
             Diploma
           </button>

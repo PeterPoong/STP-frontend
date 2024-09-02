@@ -15,6 +15,8 @@ import {
 import { Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import CourseListing from "../../../Components/StudentComp/CoursePage/CourseListing";
+import "../../../css/StudentCss/course page css/CoursesPage.css";
+import CountryFlag from "react-country-flag";
 
 const baseURL = import.meta.env.VITE_BASE_URL;
 const apiURL = `${baseURL}api/student/courseList`;
@@ -130,50 +132,56 @@ const SearchCourse = () => {
     }
   }, [selectedCountry]);
 
-  // Effect to fetch data when searchQuery or currentPage changes
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
+  const fetchData = async () => {
+    setLoading(true);
+    setError(null);
 
-      try {
-        const response = await fetch(apiURL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            search: searchQuery,
-            page: currentPage,
-            countryID: selectedCountry?.country_id,
-            institute: selectedInstitute?.id,
-          }),
-        });
+    try {
+      const response = await fetch(apiURL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          search: searchQuery,
+          page: currentPage,
+          countryID: selectedCountry?.country_id,
+          institute: selectedInstitute?.id,
+          qualification: selectedQualification?.id, // Add this line
+        }),
+      });
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
-        const contentType = response.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-          throw new Error("Response is not JSON");
-        }
-
-        const result = await response.json();
-        setSearchResults(result.data.data || []);
-        setTotalPages(result.totalPages || 1);
-      } catch (error) {
-        console.error("Error fetching search results:", error);
-        setError("Failed to fetch search results. Please try again.");
-      } finally {
-        setLoading(false);
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
-    };
 
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new Error("Response is not JSON");
+      }
+
+      const result = await response.json();
+      setSearchResults(result.data.data || []);
+      setTotalPages(result.totalPages || 1);
+    } catch (error) {
+      console.error("Error fetching search results:", error);
+      setError("Failed to fetch search results. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     if (searchQuery.trim()) {
       fetchData();
     }
-  }, [searchQuery, currentPage, selectedCountry, selectedInstitute]);
+  }, [
+    searchQuery,
+    currentPage,
+    selectedCountry,
+    selectedInstitute,
+    selectedQualification,
+  ]);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -181,6 +189,7 @@ const SearchCourse = () => {
 
   const handleSearch = () => {
     setCurrentPage(1);
+    setSearchQuery(searchQuery.trim());
   };
 
   const handleCountryChange = (country) => {
@@ -208,12 +217,12 @@ const SearchCourse = () => {
           <ButtonGroup className="w-100">
             <Dropdown as={ButtonGroup} className="w-100">
               <Dropdown.Toggle
-                className="country-button w-100"
+                className="country-dropdown-course w-100"
                 id="dropdown-country"
               >
                 {selectedCountry ? selectedCountry.country_name : "Country"}
               </Dropdown.Toggle>
-              <Dropdown.Menu>
+              <Dropdown.Menu className="scrollable-dropdown">
                 {countries.length > 0 ? (
                   countries.map((country, index) => (
                     <Dropdown.Item
@@ -221,11 +230,14 @@ const SearchCourse = () => {
                       className="dropdown"
                       onClick={() => handleCountryChange(country)}
                     >
-                      <img
-                        src={country.country_flag}
-                        width="20"
-                        height="20"
-                        className="mr-2"
+                      <CountryFlag
+                        countryCode={country.country_code} // Use country code
+                        svg
+                        style={{
+                          width: "20px",
+                          height: "20px",
+                          marginRight: "10px",
+                        }}
                       />
                       {country.country_name}
                     </Dropdown.Item>
@@ -243,7 +255,7 @@ const SearchCourse = () => {
           <ButtonGroup className="w-100">
             <Dropdown as={ButtonGroup} className="w-100">
               <Dropdown.Toggle
-                className="university-button w-100"
+                className="university-dropdown-course w-100"
                 id="dropdown-university"
               >
                 {selectedInstitute
@@ -273,7 +285,7 @@ const SearchCourse = () => {
           <ButtonGroup className="w-100">
             <Dropdown as={ButtonGroup} className="w-100">
               <Dropdown.Toggle
-                className="degree-button w-100"
+                className="qualification-dropdown-course w-100"
                 id="dropdown-degree"
               >
                 {selectedQualification

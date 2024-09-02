@@ -8,6 +8,7 @@ import WhyStudyPal from "../Components/StudentComp/WhyStudyPal";
 import CoursesContainer from "../Components/StudentComp/CoursesContainer";
 import VideoSlide from "../Components/StudentComp/VideoSlide";
 import Footer from "../Components/StudentComp/Footer";
+import FeaturedCoursesContainer from "../../Components/StudentComp/FeaturedCoursesContainer";
 
 const Home = () => {
   return (
