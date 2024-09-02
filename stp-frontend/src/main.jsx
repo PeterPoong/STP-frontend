@@ -31,7 +31,7 @@ import AdminCategory from "./Pages/AdminPages/AdminCategory";
 import AdminSubject from "./Pages/AdminPages/AdminSubject";
 import AdminAddSchool from "./Pages/AdminPages/AdminAddSchool";
 import AdminBanner from "./Pages/AdminPages/AdminBanner";
-import AdminAddBanner from "./Pages/AdminPages/AdminAddBanner";
+// import AdminAddBanner from "./Pages/AdminPages/AdminAddBanner";
 
 //StudentPortal Page
 import StudentPortalLogin from "./Pages/StudentPortalPages/StudentPortalLogin";
@@ -162,10 +162,10 @@ const router = createBrowserRouter([
     element: <AdminBanner />,
   },
 
-  {
-    path: "/adminAddBanner",
-    element: <AdminAddBanner />,
-  },
+  // {
+  //   path: "/adminAddBanner",
+  //   element: <AdminAddBanner />,
+  // },
 
   //Student Portal Page
   {
