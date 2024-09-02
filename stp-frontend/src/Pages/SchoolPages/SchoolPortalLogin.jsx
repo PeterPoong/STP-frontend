@@ -25,6 +25,7 @@ const SchoolPortalLogin = () => {
   const [loginStatus, setLoginStatus] = useState(null);
   const [email, setEmail] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [phone,setPhone] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {

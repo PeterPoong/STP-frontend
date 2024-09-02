@@ -117,13 +117,14 @@ const BasicInformationWidget = () => {
 
       if (responseData.data) {
         // Map gender ID to name
-        const genderName = genderList.find(g => g.id === parseInt(responseData.data.gender))?.core_metaName || '';
+        // Use the gender from the response directly, as it's already the core_metaName
+        const genderName = responseData.data.gender || '';
         
         const updatedStudentData = {
           ...responseData.data,
-          gender: genderName,
-         // contact: responseData.data.contact_number || '',
-          //country_code: responseData.data.country_code || ''
+          gender: genderName, // This is already the core_metaName, not the ID
+          // contact: responseData.data.contact_number || '',
+          // country_code: responseData.data.country_code || ''
         };
 
         console.log('Updated student data:', updatedStudentData);

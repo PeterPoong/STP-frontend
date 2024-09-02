@@ -17,17 +17,25 @@ const Achievements = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [paginationInfo, setPaginationInfo] = useState({});
+    const [isViewMode, setIsViewMode] = useState(false);
 
     const nodeRef = useRef(null);
     useEffect(() => {
         fetchAchievements();
-    }, [currentPage, itemsPerPage]);
+    }, []);
+
+
+    useEffect(() => {
+        // Reset to first page when search term changes
+        setCurrentPage(1);
+    }, [searchTerm]);
 
     const fetchAchievements = async () => {
         setIsLoading(true);
         setError(null);
         try {
-            const token = localStorage.getItem('token');
+            const token =
+                sessionStorage.getItem("token") || localStorage.getItem("token");
             if (!token) {
                 throw new Error('No authentication token found');
             }
@@ -84,23 +92,31 @@ const Achievements = () => {
     const filteredData = Array.isArray(data) ? data.filter(item =>
         (item?.achievement_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             item?.title_obtained?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item?.date?.includes(searchTerm)) ?? false
+            item?.date?.includes(searchTerm) ||
+            item?.awarded_by?.toLowerCase().includes(searchTerm.toLowerCase())) ?? false
     ) : [];
+
+    // Change page
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
 
     // Change page
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
     // Generate page numbers
     const pageNumbers = [];
-    for (let i = 1; i <= paginationInfo.lastPage; i++) {
+    for (let i = 1; i <= Math.ceil(filteredData.length / itemsPerPage); i++) {
         pageNumbers.push(i);
     }
+
 
     // Function to add new entry or update existing entry
     // Function to add new entry or update existing entry                                    
     const saveEntry = async (entry) => {
         try {
-            const token = localStorage.getItem('token');
+            const token =
+                sessionStorage.getItem("token") || localStorage.getItem("token");
             if (!token) {
                 throw new Error('No authentication token found');
             }
@@ -152,7 +168,8 @@ const Achievements = () => {
     // Function to delete entry
     const deleteEntry = async () => {
         try {
-            const token = localStorage.getItem('token');
+            const token =
+                sessionStorage.getItem("token") || localStorage.getItem("token");
             if (!token) {
                 throw new Error('No authentication token found');
             }
@@ -187,7 +204,7 @@ const Achievements = () => {
 
             console.log('Response status:', response.status);
             console.log('Response headers:', response.headers);
-    
+
             const contentType = response.headers.get("content-type");
             if (contentType && contentType.indexOf("application/json") !== -1) {
                 const result = await response.json();
@@ -210,92 +227,93 @@ const Achievements = () => {
         }
     };
 
-// Function to open popup for editing
-const editEntry = (item) => {
-    setCurrentItem(item);
-    setIsPopupOpen(true);
-};
+    // Function to open popup for editing
+    const editEntry = (item) => {
+        setCurrentItem(item);
+        setIsViewMode(false);
+        setIsPopupOpen(true);
+    };
 
-// Function to open popup for viewing
-const viewEntry = (item) => {
-    setCurrentItem(item);
-    setIsPopupOpen(true);
-};
+    // Function to open popup for viewing
+    const viewEntry = (item) => {
+        setCurrentItem(item);
+        setIsViewMode(true);
+        setIsPopupOpen(true);
+    };
 
-if (isLoading) return <div>Loading...</div>;
-if (error) return <div>Error: {error}</div>;
+    if (isLoading) return <div>Loading...</div>;
+    if (error) return <div>Error: {error}</div>;
 
 
-return (
-    <div className='p-5'>
-        <div className="mb-4">
-            <div className="d-flex justify-content-start align-item-centger flex-wrap ">
-                <span className="me-3 align-self-center">Show</span>
-                <select className="show-option-table me-3"
-                    value={itemsPerPage}
-                    onChange={(e) => setItemsPerPage(Number(e.target.value))}>
-                    <option value={10}>10</option>
-                    <option value={20}>20</option>
-                    <option value={50}>50</option>
-                </select>
-                <span className="me-2 align-self-center">entries</span>
-                <input
-                    type="search"
-                    className="search"
-                    placeholder="Search..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                />
-                <button className="button-table w-25 px-5 ml-auto" onClick={() => {
-                    setCurrentItem(null);
-                    setIsPopupOpen(true);
-                }}>
-                    ADD NEW
-                </button>
+    return (
+        <div className='p-5'>
+            <div className="mb-4">
+                <div className="d-flex justify-content-start align-item-centger flex-wrap ">
+                    <span className="me-3 align-self-center">Show</span>
+                    <select className="show-option-table me-3"
+                        value={itemsPerPage}
+                        onChange={(e) => setItemsPerPage(Number(e.target.value))}>
+                        <option value={10}>10</option>
+                        <option value={20}>20</option>
+                        <option value={50}>50</option>
+                    </select>
+                    <span className="me-2 align-self-center">entries</span>
+                    <input
+                        type="search"
+                        className="search"
+                        placeholder="Search..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                    <button className="button-table w-25 px-5 ml-auto" onClick={() => {
+                        setCurrentItem(null);
+                        setIsPopupOpen(true);
+                    }}>
+                        ADD NEW
+                    </button>
+                </div>
             </div>
-        </div>
 
-        {Array.isArray(filteredData) && filteredData.length > 0 ? (
-            <table className="w-100">
-                <thead>
-                    <tr>
-                        <th className="border-bottom p-2">Events</th>
-                        <th className="border-bottom p-2">Title Obtained</th>
-                        <th className="border-bottom p-2">Date of Achievement</th>
-                        <th className="border-bottom p-2">Uploads</th>
-                        <th className="border-bottom p-2 text-end">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {filteredData.map((item) => (
-                        <tr key={item.id || item.achievement_name}>
-                            <td className="border-bottom p-4">
-                                <div className="d-flex align-items-center">
-                                    <div>
-                                        <div className="file-title">{item.achievement_name}</div>
-                                        <div className="file-date">{item.awarded_by}</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td className="border-bottom p-2 text-end file-date">{item.title_obtained}</td>
-                            <td className="border-bottom p-2 text-end">{item.date}</td>
-                            <td className="border-bottom p-2 text-end file-date">{item.achievement_media}</td>
-                            <td className="border-bottom p-2">
-                                <div className="d-flex justify-content-end align-items-center">
-                                    <Trash2 className="iconat-trash" onClick={() => openDeletePopup(item)} />
-                                    <Edit2 className="iconat" onClick={() => editEntry(item)} />
-                                    <Eye className="iconat" onClick={() => viewEntry(item)} />
-                                </div>
-                            </td>
+            {Array.isArray(currentItems) && currentItems.length > 0 ? (
+                <table className="w-100">
+                    <thead>
+                        <tr >
+                            <th className="border-bottom px-4 py-2 fw-normal">Events</th>
+                            <th className="border-bottom p-2 fw-normal text-end">Title Obtained</th>
+                            <th className="border-bottom p-2 fw-normal text-end">Date of Achievement</th>
+                            <th className="border-bottom p-2 fw-normal text-end">Uploads</th>
+                            <th className="border-bottom p-2 text-end fw-normal">Actions</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
-        ) : (
-            <div>No achievements found</div>
-        )}
+                    </thead>
+                    <tbody>
+                        {currentItems.map((item) => (
+                            <tr key={item.id || item.achievement_name}>
+                                <td className="border-bottom p-4">
+                                    <div className="d-flex align-items-center">
+                                        <div>
+                                            <div className="file-title">{item.achievement_name}</div>
+                                            <div className="file-date">{item.awarded_by}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td className="border-bottom p-2 text-end file-date">{item.title_obtained}</td>
+                                <td className="border-bottom p-2 text-end">{item.date}</td>
+                                <td className="border-bottom p-2 text-end file-date">{item.achievement_media}</td>
+                                <td className="border-bottom p-2">
+                                    <div className="d-flex justify-content-end align-items-center">
+                                        <Trash2 className="iconat-trash" onClick={() => openDeletePopup(item)} />
+                                        <Edit2 className="iconat" onClick={() => editEntry(item)} />
+                                        <Eye className="iconat" onClick={() => viewEntry(item)} />
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            ) : (
+                <div>No achievements found</div>
+            )}
 
-        {paginationInfo.lastPage > 1 && (
             <div className="pagination">
                 <button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1}>
                     &lt;
@@ -309,32 +327,33 @@ return (
                         {number}
                     </button>
                 ))}
-                <button onClick={() => paginate(currentPage + 1)} disabled={currentPage === paginationInfo.lastPage}>
+                <button onClick={() => paginate(currentPage + 1)} disabled={currentPage === pageNumbers.length}>
                     &gt;
                 </button>
             </div>
-        )}
 
-        <WidgetAchievement
-            isOpen={isPopupOpen}
-            onClose={() => {
-                setIsPopupOpen(false);
-                setCurrentItem(null);
-            }}
-            onSave={saveEntry}
-            item={currentItem}
-        />
+            <WidgetAchievement
+                isOpen={isPopupOpen}
+                onClose={() => {
+                    setIsPopupOpen(false);
+                    setCurrentItem(null);
+                    setIsViewMode(false);
+                }}
+                onSave={saveEntry}
+                item={currentItem}
+                isViewMode={isViewMode}
+            />
 
-        <WidgetPopUpDelete
-            isOpen={isDeletePopupOpen}
-            onClose={() => {
-                setIsDeletePopupOpen(false);
-                setItemToDelete(null);
-            }}
-            onConfirm={deleteEntry}
-        />
-    </div>
-);
+            <WidgetPopUpDelete
+                isOpen={isDeletePopupOpen}
+                onClose={() => {
+                    setIsDeletePopupOpen(false);
+                    setItemToDelete(null);
+                }}
+                onConfirm={deleteEntry}
+            />
+        </div>
+    );
 };
 
 export default Achievements;

@@ -18,6 +18,7 @@ const OtherCertDoc = () => {
     const [error, setError] = useState(null);
     const [paginationInfo, setPaginationInfo] = useState({});
     const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const [isViewMode, setIsViewMode] = useState(false);
 
     const nodeRef = useRef(null);
     useEffect(() => {
@@ -38,7 +39,8 @@ const OtherCertDoc = () => {
         setIsLoading(true);
         setError(null);
         try {
-            const token = localStorage.getItem('token');
+            const token =
+                sessionStorage.getItem("token") || localStorage.getItem("token");
             if (!token) {
                 throw new Error('No authentication token found');
             }
@@ -94,8 +96,8 @@ const OtherCertDoc = () => {
 
     // Filter data based on search term
     const filteredData = Array.isArray(data) ? data.filter(item =>
-        (item?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item?.media?.toLowerCase().includes(searchTerm.toLowerCase()))
+    (item?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item?.media?.toLowerCase().includes(searchTerm.toLowerCase()))
     ) : [];
     // Change page
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
@@ -110,21 +112,29 @@ const OtherCertDoc = () => {
     // Function to add new entry or update existing entry                                    
     const saveEntry = async (entry) => {
         try {
-            const token = localStorage.getItem('token');
+            const token =
+                sessionStorage.getItem("token") || localStorage.getItem("token");
             if (!token) {
                 throw new Error('No authentication token found');
             }
-
+    
             const url = entry.id
                 ? `${import.meta.env.VITE_BASE_URL}api/student/editOtherCertFile?id=${entry.id}`
                 : `${import.meta.env.VITE_BASE_URL}api/student/addOtherCertFile`;
-
+    
             const formData = new FormData();
-            formData.append('certificate_name', entry.name);
-            if (entry.media instanceof File) {
-                formData.append('certificate_media', entry.media);
+            formData.append('certificate_name', entry.certificate_name);
+            if (entry.certificate_media instanceof File) {
+                formData.append('certificate_media', entry.certificate_media);
+            } else if (entry.certificate_media) {
+                formData.append('certificate_media', new Blob([entry.certificate_media], { type: 'application/octet-stream' }));
             }
-
+    
+            // Log form data for debugging
+            for (let pair of formData.entries()) {
+                console.log(pair[0] + ': ' + pair[1]);
+            }
+    
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {
@@ -132,14 +142,14 @@ const OtherCertDoc = () => {
                 },
                 body: formData,
             });
-
+    
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-
+    
             const result = await response.json();
             console.log('Save/Edit response:', result);
-
+    
             setIsPopupOpen(false);
             setCurrentItem(null);
             fetchOtherDocsCerts();  // Refresh the list after adding/updating
@@ -157,7 +167,8 @@ const OtherCertDoc = () => {
     // Function to delete entry
     const deleteEntry = async () => {
         try {
-            const token = localStorage.getItem('token');
+            const token =
+                sessionStorage.getItem("token") || localStorage.getItem("token");
             if (!token) {
                 throw new Error('No authentication token found');
             }
@@ -218,12 +229,14 @@ const OtherCertDoc = () => {
     // Function to open popup for editing
     const editEntry = (item) => {
         setCurrentItem(item);
+        setIsViewMode(false);
         setIsPopupOpen(true);
     };
 
     // Function to open popup for viewing
     const viewEntry = (item) => {
         setCurrentItem(item);
+        setIsViewMode(true);
         setIsPopupOpen(true);
     };
 
@@ -266,9 +279,9 @@ const OtherCertDoc = () => {
                 <table className="w-100 ">
                     <thead>
                         <tr>
-                            <th className="border-bottom p-2">Files</th>
-                            <th className="border-bottom p-2 text-end">Filename</th>
-                            <th className="border-bottom p-2 text-end">Actions</th>
+                            <th className="border-bottom fw-normal py-2 px-4">Files</th>
+                            <th className="border-bottom p-2 fw-normal text-end">Filename</th>
+                            <th className="border-bottom p-2  fw-normal text-end">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -283,7 +296,7 @@ const OtherCertDoc = () => {
                                         </div>
                                     </div>
                                 </td>
-                                <td className="border-bottom p-2 text-end">{item.media || 'No file'}</td>
+                                <td className="border-bottom p-2 text-end text-secondary">{item.media || 'No file'}</td>
                                 <td className="border-bottom p-2">
                                     <div className="d-flex justify-content-end align-items-center">
                                         <Trash2 className="iconat-trash" onClick={() => openDeletePopup(item)} />
@@ -325,9 +338,11 @@ const OtherCertDoc = () => {
                 onClose={() => {
                     setIsPopupOpen(false);
                     setCurrentItem(null);
+                    setIsViewMode(false);
                 }}
                 onSave={saveEntry}
                 item={currentItem}
+                isViewMode={isViewMode}
             />
 
             <WidgetPopUpDelete

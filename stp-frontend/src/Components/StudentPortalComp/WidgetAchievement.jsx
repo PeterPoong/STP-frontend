@@ -1,26 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import { X, Edit2, Calendar, ChevronDown, Upload, Check, FileText, Trash2 } from 'lucide-react';
+import { X, Edit2, ChevronDown, Upload, Check, FileText, Trash2 } from 'lucide-react';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import '../../css/StudentPortalStyles/StudentPortalWidget.css';
 
-const WidgetAchievement = ({ isOpen, onClose, onSave, item }) => {
+const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
   const [achievement_name, setAchievementName] = useState('');
-  const [date, setDate] = useState('');
+  const [date, setDate] = useState(null);
   const [title, setTitle] = useState('');
   const [awarded_by, setAwardedBy] = useState('');
   const [achievement_media, setAchievementMedia] = useState(null);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     if (item) {
       setAchievementName(item.achievement_name || '');
-      setDate(item.date || '');
+      setDate(item.date ? new Date(item.date) : null);
       setTitle(item.title_obtained || '');
       setAwardedBy(item.awarded_by || '');
       setAchievementMedia(item.achievement_media || null);
     } else {
       // Reset form for new entries
       setAchievementName('');
-      setDate('');
+      setDate(null);
       setTitle('');
       setAwardedBy('');
       setAchievementMedia(null);
@@ -31,11 +34,27 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item }) => {
   if (!isOpen) return null;
 
   const handleSave = () => {
+    // Validate all fields
+    const newErrors = {};
+    if (!achievement_name.trim()) newErrors.achievement_name = "Achievement name is required";
+    if (!date) newErrors.date = "Date is required";
+    if (!title.trim()) newErrors.title = "Title obtained is required";
+    if (!awarded_by.trim()) newErrors.awarded_by = "Awarded by is required";
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return; // Don't proceed with save if there are errors
+    }
+
+    // Clear any previous errors
+    setErrors({});
+
+    // Proceed with save
     onSave({
       id: item ? item.id : null,
       achievement_name,
-      date,
-      title:parseInt(title,10),
+      date: date ? date.getFullYear().toString() : '',
+      title,
       awarded_by,
       achievement_media
     });
@@ -60,7 +79,6 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item }) => {
     setAchievementMedia(null);
   };
 
-
   return (
     <div className="achievement-overlay">
       <div className="achievement-popup">
@@ -68,7 +86,7 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item }) => {
           <X size={24} color="white" />
         </button>
         <h2 className="achievement-title">
-          {isEditingTitle ? (
+          {isEditingTitle && !isViewMode ? (
             <>
               <input
                 type="text"
@@ -76,32 +94,39 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item }) => {
                 onChange={(e) => setAchievementName(e.target.value)}
                 className="achievement-title-input"
                 autoFocus
+                required
               />
               <Check size={20} color="white" onClick={handleTitleSave} className="buttonsaveam" />
             </>
           ) : (
             <>
               {achievement_name || 'New Achievement'}
-              <button className="buttoneditam" >
-                <Edit2 size={20} color="white" onClick={handleTitleEdit} />
-              </button>
+              {!isViewMode && (
+                <button className="buttoneditam">
+                  <Edit2 size={20} color="white" onClick={handleTitleEdit} />
+                </button>
+              )}
             </>
           )}
         </h2>
+        {errors.achievement_name && <div className="error-message">{errors.achievement_name}</div>}
 
         <div className="achievement-form">
           <div className="achievement-input-group">
             <div className="achievement-input-field">
               <label className="achievement-label">Date of Achievement</label>
               <div className="achievement-date-input">
-                <input
-                  type="text"
+                <DatePicker
+                  selected={date}
+                  onChange={(date) => setDate(date)}
+                  showYearPicker
+                  dateFormat="yyyy"
                   className="achievement-input"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
+                  readOnly={isViewMode}
+                  required
                 />
-                <Calendar size={20} color="white" />
               </div>
+              {errors.date && <div className="error-message">{errors.date}</div>}
             </div>
             <div className="achievement-input-field">
               <label className="achievement-label">Title Obtained</label>
@@ -111,9 +136,12 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item }) => {
                   className="achievement-input"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
+                  readOnly={isViewMode}
+                  required
                 />
                 <ChevronDown size={20} color="white" />
               </div>
+              {errors.title && <div className="error-message">{errors.title}</div>}
             </div>
             <div className="achievement-input-field">
               <label className="achievement-label">Awarded By</label>
@@ -122,7 +150,10 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item }) => {
                 className="achievement-input"
                 value={awarded_by}
                 onChange={(e) => setAwardedBy(e.target.value)}
+                readOnly={isViewMode}
+                required
               />
+              {errors.awarded_by && <div className="error-message">{errors.awarded_by}</div>}
             </div>
           </div>
 
@@ -130,17 +161,19 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item }) => {
             <label className="achievement-label">Upload Certificate/ Documents</label>
             {!achievement_media ? (
               <div className="achievement-upload-area">
-                <label htmlFor="file-upload" className="achievement-upload-label">
-                  <Upload size={24} color="#dc3545" />
-                  <span>Click to Upload</span>
-                  <span className="achievement-file-limit">(Max. File size: 25 MB)</span>
-                  <input
-                    id="file-upload"
-                    type="file"
-                    onChange={handleFileChange}
-                    style={{ display: 'none' }}
-                  />
-                </label>
+                {!isViewMode && (
+                  <label htmlFor="file-upload" className="achievement-upload-label">
+                    <Upload size={24} color="#dc3545" />
+                    <span>Click to Upload</span>
+                    <span className="achievement-file-limit">(Max. File size: 25 MB)</span>
+                    <input
+                      id="file-upload"
+                      type="file"
+                      onChange={handleFileChange}
+                      style={{ display: 'none' }}
+                    />
+                  </label>
+                )}
               </div>
             ) : (
               <div className="achievement-file-uploaded">
@@ -153,19 +186,23 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item }) => {
                     <button className="achievement-view-button">Click to view</button>
                   </div>
                 </div>
-                <button className="achievement-delete-button" onClick={handleFileDelete}>
-                  <Trash2 size={18} />
-                </button>
+                {!isViewMode && (
+                  <button className="achievement-delete-button" onClick={handleFileDelete}>
+                    <Trash2 size={18} />
+                  </button>
+                )}
               </div>
             )}
           </div>
         </div>
         
-        <div className="d-flex justify-content-center">
-          <button className="achievement-save-btn" onClick={handleSave}>
-            {item ? 'UPDATE' : 'SAVE'}
-          </button>
-        </div>
+        {!isViewMode && (
+          <div className="d-flex justify-content-center">
+            <button className="achievement-save-btn" onClick={handleSave}>
+              {item ? 'UPDATE' : 'SAVE'}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

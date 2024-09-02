@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, Button } from "react-bootstrap";
 import { MapPin, BookOpen, Clock, Calendar, ChevronLeft, ChevronRight } from 'react-feather';
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -12,70 +12,53 @@ const AppliedCoursesHistory = () => {
     const [itemsPerPage] = useState(3);
     const [isAcceptedOpen, setIsAcceptedOpen] = useState(false);
     const [isRejectedOpen, setIsRejectedOpen] = useState(false);
+    const [applications, setApplications] = useState([]);
 
-    const applications = [
-        {
-            id: 1,
-            degree: "Degree of Medicine",
-            university: "Swinburne University (Sarawak)",
-            location: "Sarawak",
-            type: "Degree",
-            duration: "28 months",
-            studyMode: "Full time",
-            intakes: "January, July or September",
-            status: "Accepted"
-        },
-        {
-            id: 2,
-            degree: "Bachelor of Engineering",
-            university: "University of Malaysia",
-            location: "Kuala Lumpur",
-            type: "Degree",
-            duration: "36 months",
-            studyMode: "Full time",
-            intakes: "September",
-            status: "Rejected"
-        },
-        {
-            id: 3,
-            degree: "Bachelor of Business",
-            university: "Taylor's University",
-            location: "Subang Jaya",
-            type: "Degree",
-            duration: "36 months",
-            studyMode: "Full time",
-            intakes: "March, August",
-            status: "Withdrawn"
-        },
-        {
-            id: 4,
-            degree: "Bachelor of Business",
-            university: "Taylor's University",
-            location: "Subang Jaya",
-            type: "Degree",
-            duration: "36 months",
-            studyMode: "Full time",
-            intakes: "March, August",
-            status: "Withdrawn"
-        },
-        {
-            id: 5,
-            degree: "Bachelor of Business",
-            university: "Taylor's University",
-            location: "Subang Jaya",
-            type: "Degree",
-            duration: "36 months",
-            studyMode: "Full time",
-            intakes: "March, August",
-            status: "Withdrawn"
-        },
-        // Add more applications as needed
-    ];
-
-    // Get current items
+    // Calculate first and last item index
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = applications.slice(indexOfFirstItem, indexOfLastItem);
+
+    useEffect(() => {
+        fetchApplicationsHistory();
+    }, []);
+
+    const fetchApplicationsHistory = async () => {
+        try {
+            const token = sessionStorage.getItem("token") || localStorage.getItem("token");
+            if (!token) {
+                throw new Error('No authentication token found');
+            }
+
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/historyAppList`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const responseData = await response.json();
+            console.log('API response:', responseData);
+
+            if (responseData.success && responseData.data && Array.isArray(responseData.data.data)) {
+                setApplications(responseData.data.data);
+            } else {
+                console.error('Unexpected API response structure');
+                setApplications([]);
+            }
+        } catch (error) {
+            console.error('Error fetching application history:', error);
+            setApplications([]);
+        }
+    };
+
+    // Get current items
+    const currentItems = Array.isArray(applications)
+        ? applications.slice(indexOfFirstItem, indexOfLastItem)
+        : [];
 
     // Change page
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
@@ -108,49 +91,63 @@ const AppliedCoursesHistory = () => {
             <Card className="acp-card mb-4">
                 <Card.Body>
                     <h2 className="acp-section-title">All Applications</h2>
-                    {currentItems.map((app) => (
-                        <Card key={app.id} className="acp-application-card mb-3">
-                            <Card.Body className="acp-application-body">
-                                <div className="acp-left-section">
-                                    <h3 className="acp-degree-title">{app.degree}</h3>
-                                    <div className="acp-university-info">
-                                        <img src={image1} alt={app.university} className="acp-university-logo"/>
+                    {currentItems.length === 0 ? (
+                        <p>No course history</p>
+                    ) : (
+                        currentItems.map((app) => (
+                            <Card key={app.student_id} className="acp-application-card mb-3">
+                                <Card.Body className="acp-application-body">
+                                    <div className="acp-left-section">
+                                        <h3 className="acp-degree-title">{app.course_name}</h3>
+                                        <div className="acp-university-info">
+                                        <img 
+                                                src={`${import.meta.env.VITE_BASE_URL}storage/${app.course_logo}`}
+                                                alt={app.school_name}
+                                                className="acp-university-logo"
+                                                style={{
+                                                    height: "80px",
+                                                    width: "150px",
+                                                    objectFit: "contain",
+                                                }}/>
                                         <div>
-                                            <p className="acp-university-name">{app.university}</p>
+                                            <p className="acp-university-name">{app.school_name}</p>
                                             <p className="acp-location">
                                                 <MapPin size={16} className="acp-icon" />
-                                                {app.location} <span className="acp-link">click and view on map</span>
+                                                {app.city_name}, {app.state_name}, {app.country_name} <span className="acp-link">click and view on map</span>
                                             </p>
                                         </div>
                                     </div>
-                                </div>
-                                <div className="acp-middle-section">
-                                    <div className="acp-detail-item">
-                                        <BookOpen size={16} className="acp-icon" />
-                                        <span>{app.type}</span>
                                     </div>
-                                    <div className="acp-detail-item">
-                                        <Clock size={16} className="acp-icon" />
-                                        <span>{app.studyMode}</span>
+                                    <div className="acp-middle-section">
+                                        <div className="acp-detail-item">
+                                            <BookOpen size={16} className="acp-icon" />
+                                            <span>{app.category_name}</span>
+                                        </div>
+                                        <div className="acp-detail-item">
+                                            <Clock size={16} className="acp-icon" />
+                                            <span>{app.study_mode}</span>
+                                        </div>
+                                        <div className="acp-detail-item">
+                                            <Clock size={16} className="acp-icon" />
+                                            <span>{app.course_period}</span>
+                                        </div>
+                                        <div className="acp-detail-item">
+                                            <Calendar size={16} className="acp-icon" />
+                                            <span>{app.course_intake}</span>
+                                        </div>
                                     </div>
-                                    <div className="acp-detail-item">
-                                        <Clock size={16} className="acp-icon" />
-                                        <span>{app.duration}</span>
+                                    <div className="acp-right-section">
+                                        <span className={`acp-status-badge acp-status-${app.status.toLowerCase()}`}>{app.status}</span>
+                                        <div className="acp-action-buttons">
+                                            {app.status !== "WithDrawl" && (
+                                                <Button className="acp-view-btn btn-danger" onClick={() => handleView(app.status)}>Review</Button>
+                                            )}
+                                        </div>
                                     </div>
-                                    <div className="acp-detail-item">
-                                        <Calendar size={16} className="acp-icon" />
-                                        <span>{app.intakes}</span>
-                                    </div>
-                                </div>
-                                <div className="acp-right-section">
-                                    <span className={`acp-status-badge acp-status-${app.status.toLowerCase()}`}>{app.status}</span>
-                                    <div className="acp-action-buttons">
-                                        <Button className="acp-view-btn btn-danger" onClick={() => handleView(app.status)}>Review</Button>
-                                    </div>
-                                </div>
-                            </Card.Body>
-                        </Card>
-                    ))}
+                                </Card.Body>
+                            </Card>
+                        ))
+                    )}
                     <div className="pagination">
                         <button 
                             onClick={() => paginate(currentPage - 1)} 

@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { Edit2, Trash2, Eye, Plus, Search } from 'lucide-react';
 import WidgetClub from "../../Components/StudentPortalComp/WidgetClub";
@@ -18,8 +18,7 @@ const CoCurriculum = () => {
     const [error, setError] = useState(null);
     const [paginationInfo, setPaginationInfo] = useState({});
     const [isPopupOpen, setIsPopupOpen] = useState(false);
-    // Filter data based on search term
-
+    const [isViewMode, setIsViewMode] = useState(false);
 
     const normalizeItem = (item) => {
         return {
@@ -35,12 +34,18 @@ const CoCurriculum = () => {
         fetchCocurriculum();
     }, []);
 
+    useEffect(() => {
+        // Reset to first page when search term changes
+        setCurrentPage(1);
+    }, [searchTerm]);
+
     const fetchCocurriculum = async () => {
         console.log('Fetching co-curriculum data...');
         setIsLoading(true);
         setError(null);
         try {
-            const token = localStorage.getItem('token');
+            const token =
+                sessionStorage.getItem("token") || localStorage.getItem("token");
             if (!token) {
                 throw new Error('No authentication token found');
             }
@@ -90,15 +95,13 @@ const CoCurriculum = () => {
             setIsLoading(false);
         }
     };
-    
-    
+
     const filteredData = Array.isArray(data) ? data.filter(item =>
         (item?.club_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item?.student_position?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item?.location?.toLowerCase().includes(searchTerm.toLowerCase()))
+        item?.student_position?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item?.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item?.year?.toString().includes(searchTerm))
     ) : [];
-
-
 
     // Calculate pagination
     const indexOfLastItem = currentPage * itemsPerPage;
@@ -117,7 +120,8 @@ const CoCurriculum = () => {
     // Function to add new entry or update existing entry
     const saveEntry = async (entry) => {
         try {
-            const token = localStorage.getItem('token');
+            const token =
+                sessionStorage.getItem("token") || localStorage.getItem("token");
             if (!token) {
                 throw new Error('No authentication token found');
             }
@@ -131,8 +135,6 @@ const CoCurriculum = () => {
             formData.append('position', entry.student_position);
             formData.append('institute_name', entry.location);
             formData.append('year', entry.year);
-
-
 
             const response = await fetch(url, {
                 method: 'POST',
@@ -166,7 +168,8 @@ const CoCurriculum = () => {
     // Function to delete entry
     const deleteEntry = async () => {
         try {
-            const token = localStorage.getItem('token');
+            const token =
+                sessionStorage.getItem("token") || localStorage.getItem("token");
             if (!token) {
                 throw new Error('No authentication token found');
             }
@@ -217,20 +220,19 @@ const CoCurriculum = () => {
     // Function to open popup for editing
     const editEntry = (item) => {
         setCurrentItem(item);
+        setIsViewMode(false);
         setIsPopupOpen(true);
     };
 
     // Function to open popup for viewing
     const viewEntry = (item) => {
         setCurrentItem(item);
+        setIsViewMode(true);
         setIsPopupOpen(true);
     };
 
     if (isLoading) return <div>Loading...</div>;
     if (error) return <div>Error: {error}</div>;
-
-
-
 
     return (
         <div className='p-5'>
@@ -261,44 +263,44 @@ const CoCurriculum = () => {
                 </div>
             </div>
 
-            {Array.isArray(filteredData) && filteredData.length > 0 ? (
-            <table className="w-100 ">
-                <thead>
-                    <tr>
-                        <th className="border-bottom p-2">Club</th>
-                        <th className="border-bottom p-2">Position</th>
-                        <th className="border-bottom p-2">Year</th>
-                        <th className="border-bottom p-2 text-end">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {filteredData.map((item) => (
+            {Array.isArray(currentItems) && currentItems.length > 0 ? (
+                <table className="w-100 ">
+                    <thead>
+                        <tr>
+                            <th className="border-bottom py-2 px-4 fw-normal">Club</th>
+                            <th className="border-bottom p-2 fw-normal">Position</th>
+                            <th className="border-bottom p-2 fw-normal">Year</th>
+                            <th className="border-bottom p-2 text-end fw-normal">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {currentItems.map((item) => (
                             <tr key={item.id || item.club_name}>
-                                    <td className="border-bottom p-4">
-                                        <div className="d-flex align-items-center">
-                                            <div>
-                                                <div className="file-title">{item.club_name}</div>
-                                                <div className="file-date">{item.location}</div>
-                                            </div>
+                                <td className="border-bottom p-4">
+                                    <div className="d-flex align-items-center">
+                                        <div>
+                                            <div className="file-title">{item.club_name}</div>
+                                            <div className="file-date">{item.location}</div>
                                         </div>
-                                    </td>
-                                    <td className="border-bottom p-2">{item.student_position}</td>
-                                    <td className="border-bottom p-2">{item.year}</td>
-                                    <td className="border-bottom p-2">
-                                        <div className="d-flex justify-content-end align-items-center">
-                                            <Trash2 className="iconat-trash" onClick={() => openDeletePopup(item)} />
-                                            <Edit2 className="iconat" onClick={() => editEntry(item)} />
-                                            <Eye className="iconat" onClick={() => viewEntry(item)} />
-                                        </div>
-                                    </td>
-                                </tr>         
-                ))}
-                </tbody>
-            </table>
+                                    </div>
+                                </td>
+                                <td className="border-bottom p-2">{item.student_position}</td>
+                                <td className="border-bottom p-2">{item.year}</td>
+                                <td className="border-bottom p-2">
+                                    <div className="d-flex justify-content-end align-items-center">
+                                        <Trash2 className="iconat-trash" onClick={() => openDeletePopup(item)} />
+                                        <Edit2 className="iconat" onClick={() => editEntry(item)} />
+                                        <Eye className="iconat" onClick={() => viewEntry(item)} />
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
 
-        ) : (
-            <div>No other certificate or documentation found</div>
-        )}
+            ) : (
+                <div>No other certificate or documentation found</div>
+            )}
             <div className="pagination">
                 <button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1}>
                     &lt;
@@ -317,25 +319,27 @@ const CoCurriculum = () => {
                 </button>
             </div>
             <WidgetClub
-               isOpen={isPopupOpen}
-               onClose={() => {
-                   setIsPopupOpen(false);
-                   setCurrentItem(null);
-               }}
-               onSave={saveEntry}
-               item={currentItem}
-           />
+                isOpen={isPopupOpen}
+                onClose={() => {
+                    setIsPopupOpen(false);
+                    setCurrentItem(null);
+                    setIsViewMode(false);
+                }}
+                onSave={saveEntry}
+                item={currentItem}
+                isViewMode={isViewMode}
+            />
 
-           <WidgetPopUpDelete
-               isOpen={isDeletePopupOpen}
-               onClose={() => {
-                   setIsDeletePopupOpen(false);
-                   setItemToDelete(null);
-               }}
-               onConfirm={deleteEntry}
-           />
-       </div>
-   );
+            <WidgetPopUpDelete
+                isOpen={isDeletePopupOpen}
+                onClose={() => {
+                    setIsDeletePopupOpen(false);
+                    setItemToDelete(null);
+                }}
+                onConfirm={deleteEntry}
+            />
+        </div>
+    );
 };
 
 export default CoCurriculum;

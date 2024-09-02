@@ -252,7 +252,7 @@ const StudentPortalLogin = () => {
                       />
                       <div
                         className="position-absolute top-50 end-0 translate-middle-y pe-3"
-                        style={{ zIndex: 0 }}
+                        style={{ zIndex: 10 }}
                       >
                         <span
                           className="password-toggle"

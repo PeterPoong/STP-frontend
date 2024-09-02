@@ -168,6 +168,7 @@ const ManagePasswordWidget = () => {
                 <InputGroup.Text
                   onClick={() => setShowCurrentPassword(!showCurrentPassword)}
                   className="bg-transparent border-start-0 password-toggle"
+                  style={{ zIndex: 10 }}
                 >
                   {showCurrentPassword ? <Eye size={18} /> : <EyeOff size={18} />}
                 </InputGroup.Text>
@@ -186,6 +187,7 @@ const ManagePasswordWidget = () => {
                 <InputGroup.Text
                   onClick={() => setShowNewPassword(!showNewPassword)}
                   className="bg-transparent border-start-0 password-toggle"
+                  style={{ zIndex: 10 }}
                 >
                   {showNewPassword ? <Eye size={18} /> : <EyeOff size={18} />}
                 </InputGroup.Text>
@@ -213,6 +215,7 @@ const ManagePasswordWidget = () => {
                 <InputGroup.Text
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   className="bg-transparent border-start-0 password-toggle"
+                  style={{ zIndex: 10 }}
                 >
                   {showConfirmPassword ? <Eye size={18} /> : <EyeOff size={18} />}
                 </InputGroup.Text>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Upload, FileText, Trash2 } from 'lucide-react';
 import "../../css/StudentPortalStyles/StudentPortalWidget.css";
 
-const WidgetFileUpload = ({ isOpen, onClose, onSave, item }) => {
+const WidgetFileUpload = ({ isOpen, onClose, onSave, item, isViewMode }) => {
   const [name, setName] = useState('');
   const [media, setMedia] = useState(null);
 
@@ -42,7 +42,7 @@ const WidgetFileUpload = ({ isOpen, onClose, onSave, item }) => {
     <div className="upload-widget-overlay">
       <div className="upload-widget-popup">
         <div className="upload-header">
-          <h5 className="small">Upload</h5>
+          <h5 className="small">{isViewMode ? 'View' : 'Upload'}</h5>
           <button className="close-button" onClick={onClose}><X size={20} /></button>
         </div>
         <div className="upload-title-input">
@@ -52,22 +52,25 @@ const WidgetFileUpload = ({ isOpen, onClose, onSave, item }) => {
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="file-title-input"
+            readOnly={isViewMode}
           />
         </div>
 
         {!media ? (
           <div className="upload-area">
-            <label htmlFor="file-upload" className="upload-label">
-              <Upload size={24} color="#dc3545" />
-              <span>Click to Upload</span>
-              <span className="file-size-limit">(Max. File size: 25 MB)</span>
-              <input
-                id="file-upload"
-                type="file"
-                onChange={handleFileChange}
-                style={{ display: 'none' }}
-              />
-            </label>
+            {!isViewMode && (
+              <label htmlFor="file-upload" className="upload-label">
+                <Upload size={24} color="#dc3545" />
+                <span>Click to Upload</span>
+                <span className="file-size-limit">(Max. File size: 25 MB)</span>
+                <input
+                  id="file-upload"
+                  type="file"
+                  onChange={handleFileChange}
+                  style={{ display: 'none' }}
+                />
+              </label>
+            )}
           </div>
         ) : (
           <div className="file-uploaded">
@@ -80,17 +83,21 @@ const WidgetFileUpload = ({ isOpen, onClose, onSave, item }) => {
                 <button className="view-button">Click to view</button>
               </div>
             </div>
-            <button className="delete-button" onClick={handleFileDelete}>
-              <Trash2 size={18} />
-            </button>
+            {!isViewMode && (
+              <button className="delete-button" onClick={handleFileDelete}>
+                <Trash2 size={18} />
+              </button>
+            )}
           </div>
         )}
 
-        <div className="save-button-container">
-          <button className="save-button" onClick={handleSave}>
-            {item ? 'UPDATE' : 'SAVE'}
-          </button>
-        </div>
+        {!isViewMode && (
+          <div className="save-button-container">
+            <button className="save-button" onClick={handleSave}>
+              {item ? 'UPDATE' : 'SAVE'}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

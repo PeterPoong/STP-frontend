@@ -120,7 +120,11 @@ const StudentPortalSignUp = () => {
             setSignupStatus("email_exists");
           } else if (error.errors.contact_no) {
             setSignupStatus("phone_exists");
-          } else {
+          } else if (error.erros.ic)
+          {
+            setSignupStatus("ic_exists")
+          }
+          else {
             setSignupStatus("validation_error");
           }
         } else {
@@ -188,9 +192,9 @@ const StudentPortalSignUp = () => {
                 different number or try logging in.
               </Alert>
             )}
-            {signupStatus === "email_exists" && (
+            {signupStatus === "ic_exists" && (
               <Alert variant="warning">
-                This email is already registered. Please use a different email
+                This ic is already registered. Please use a different email
                 or try logging in.
               </Alert>
             )}

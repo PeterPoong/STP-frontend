@@ -1,26 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import { X, Edit2,Check } from 'lucide-react';
+import { X, Edit2, Check } from 'lucide-react';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import '../../css/StudentPortalStyles/StudentPortalWidget.css';
 
-const WidgetClub = ({ isOpen, onClose, onSave, item }) => {
+const WidgetClub = ({ isOpen, onClose, onSave, item, isViewMode }) => {
  
   const [club_name, setClubTitle] = useState('');
-  const [year, setYearOfTerm] = useState('2024');
+  const [year, setYearOfTerm] = useState(new Date());
   const [student_position, setPosition] = useState('');
   const [location, setInstitution] = useState('');
   const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     if (item) {
       setClubTitle(item.club_name);
-      setYearOfTerm(item.year.toString());
+      setYearOfTerm(new Date(item.year, 0, 1));
       setPosition(item.student_position);
       setInstitution(item.location);
     } else {
       // Reset form for new entries
       
       setClubTitle('');
-      setYearOfTerm('');
+      setYearOfTerm(new Date());
       setPosition('');
       setInstitution('');
     }
@@ -30,11 +33,27 @@ const WidgetClub = ({ isOpen, onClose, onSave, item }) => {
   if (!isOpen) return null;
 
   const handleSave = () => {
+    // Validate all fields
+    const newErrors = {};
+    if (!club_name.trim()) newErrors.club_name = "Club name is required";
+    if (!year) newErrors.year = "Year is required";
+    if (!student_position.trim()) newErrors.student_position = "Position is required";
+    if (!location.trim()) newErrors.location = "Institution is required";
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return; // Don't proceed with save if there are errors
+    }
+
+    // Clear any previous errors
+    setErrors({});
+
+    // Proceed with save
     onSave({
       id: item ? item.id : null,
       club_name,
       location,
-      year: parseInt(year),
+      year: year.getFullYear(),
       student_position
     });
   };
@@ -55,7 +74,7 @@ const WidgetClub = ({ isOpen, onClose, onSave, item }) => {
           <X size={24} color="white" />
         </button>
         <h2 className="achievement-title">
-          {isEditingTitle ? (
+          {isEditingTitle && !isViewMode ? (
             <>
               <input
                 type="text"
@@ -63,31 +82,35 @@ const WidgetClub = ({ isOpen, onClose, onSave, item }) => {
                 onChange={(e) => setClubTitle(e.target.value)}
                 className="achievement-title-input"
                 autoFocus
+                required
               />
-              <Check size={20} color="white" onClick={handleTitleSave}  className="buttonsaveam"/>
+              <Check size={20} color="white" onClick={handleTitleSave} className="buttonsaveam"/>
             </>
           ) : (
             <>
-              {club_name || 'Ente Club Name'}
-              <button className="buttoneditam" >
-              <Edit2 size={20} color="white" onClick={handleTitleEdit} />
-              </button>
+              {club_name || 'Enter Club Name'}
+              {!isViewMode && (
+                <button className="buttoneditam">
+                  <Edit2 size={20} color="white" onClick={handleTitleEdit} />
+                </button>
+              )}
             </>
           )}
         </h2>
+        {errors.club_name && <div className="error-message">{errors.club_name}</div>}
         
         <div className="input-group-club">
           <div className="input-field-club w-50">
             <label className="label-club">Year of Term</label>
-            <select 
-              value={year} 
-              className="select-club"
-              onChange={(e) => setYearOfTerm(e.target.value)}
-            >
-              <option value="2024">2024</option>
-              <option value="2025">2025</option>
-              <option value="2026">2026</option>
-            </select>
+            <DatePicker
+              selected={year}
+              onChange={(date) => setYearOfTerm(date)}
+              showYearPicker
+              dateFormat="yyyy"
+              className="custom-datepicker"
+              required
+            />
+            {errors.year && <div className="error-message">{errors.year}</div>}
           </div>
           <div className="input-field-club w-50">
             <label className="label-club">Position</label>
@@ -97,24 +120,30 @@ const WidgetClub = ({ isOpen, onClose, onSave, item }) => {
               value={student_position} 
               onChange={(e) => setPosition(e.target.value)}
               placeholder="Position"
+              required
             />
+            {errors.student_position && <div className="error-message">{errors.student_position}</div>}
           </div>
         </div>
         
-        <div className="input-field-club">
+        <div className="input-field-club mb-3">
           <label>Institution</label>
           <input 
             type="text" 
             value={location} 
-            className="location"
+            className="input-club "
             onChange={(e) => setInstitution(e.target.value)}
             placeholder="Institution"
+            required
           />
+          {errors.location && <div className="error-message">{errors.location}</div>}
         </div>
         
-        <button className="save-button-club" onClick={handleSave}>
-          {item ? 'UPDATE' : 'SAVE'}
-        </button>
+        {!isViewMode && (
+          <button className="save-button-club" onClick={handleSave}>
+            {item ? 'UPDATE' : 'SAVE'}
+          </button>
+        )}
       </div>
     </div>
   );
