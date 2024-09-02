@@ -436,7 +436,7 @@ const CourseDetail = () => {
                 <h4>Featured Courses</h4>
                 <Swiper
                   spaceBetween={10}
-                  slidesPerView={3}
+                  slidesPerView={2}
                   navigation
                   pagination={{ clickable: true }}
                   loop={true}
@@ -469,13 +469,13 @@ const CourseDetail = () => {
                           {/* <Button
                             variant="primary"
                             onClick={() =>
-                              navigate(`/applyDetail/${course.course_id}`)
+                              navigate(`/courseDetails/${course.course_id}`)
                             }
                           >
                             View Details
                           </Button> */}
                           <a
-                            href={`/applyDetail/${course.course_id}`}
+                            href={`/courseDetails/${course.course_id}`}
                             className="btn btn-primary"
                             style={{
                               borderColor: "#B71A18",

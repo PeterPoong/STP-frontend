@@ -49,3 +49,38 @@
   color: #B71A18;
   size: bold;
 }
+
+/* Media Query for Smaller Screens */
+@media (max-width: 768px) {
+  .custom-button {
+    width: 120px; /* Adjust the width for smaller screens */
+    height: 120px; /* Adjust the height for smaller screens */
+    margin-bottom: 30px;
+    margin-top: 10px;
+  }
+
+  .custom-button-image {
+    width: 70px; /* Adjust the image size */
+    height: 40px;
+  }
+
+  .custom-button-label {
+    font-size: 12px; /* Adjust the label font size */
+  }
+}
+
+@media (max-width: 480px) {
+  .custom-button {
+    width: 100px; /* Further adjust the width for very small screens */
+    height: 100px; /* Further adjust the height for very small screens */
+  }
+
+  .custom-button-image {
+    width: 60px; /* Further adjust the image size */
+    height: 35px;
+  }
+
+  .custom-button-label {
+    font-size: 10px; /* Further adjust the label font size */
+  }
+}

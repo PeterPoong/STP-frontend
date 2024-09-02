@@ -23,7 +23,7 @@
     overflow: hidden;
   }
   
-  .swiper-slide {
+  .swiper-slide-image {
     display: flex;
     justify-content: center;
     align-items: center;

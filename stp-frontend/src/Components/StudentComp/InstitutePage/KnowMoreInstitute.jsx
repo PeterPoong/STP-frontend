@@ -409,7 +409,7 @@ const KnowMoreInstitute = () => {
                               >
                                 <a
                                   style={{ color: "black" }}
-                                  href={`/applyDetail/${course.id}`}
+                                  href={`/courseDetails/${course.id}`}
                                 >
                                   {course.course_name}
                                 </a>
@@ -530,7 +530,7 @@ const KnowMoreInstitute = () => {
                                       >
                                         <a
                                           style={{ color: "black" }}
-                                          href={`/applyDetail/${course.id}`}
+                                          href={`/courseDetails/${course.id}`}
                                         >
                                           {course.course_name}
                                         </a>

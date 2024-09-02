@@ -5,7 +5,7 @@ import Home from "./Pages/StudentPages/Home";
 import NotFoundPage from "./Pages/StudentPages/NotFoundPage";
 import KnowMore from "./Pages/StudentPages/KnowMore"; // Import KnowMore component
 import ApplyNow from "./Pages/StudentPages/ApplyNow"; // Import ApplyNow component
-import ApplyDetail from "./Pages/StudentPages/ApplyDetail"; // Import ApplyDetail component
+import CourseDetailsPage from "./Pages/StudentPages/CourseDetailsPage"; // Import courseDetails component
 import "./index.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import LoginPage from "./Pages/StudentPages/LoginPage";
@@ -62,11 +62,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/applynow/:applyId",
-    element: <ApplyDetail />,
+    element: <CourseDetailsPage />,
   },
   {
-    path: "/applyDetail/:id",
-    element: <ApplyDetail />,
+    path: "/courseDetails/:id",
+    element: <CourseDetailsPage />,
   },
   {
     path: "/login",

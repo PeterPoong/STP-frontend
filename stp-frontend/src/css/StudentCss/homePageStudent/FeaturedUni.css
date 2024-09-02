@@ -98,45 +98,66 @@
 }
 
 @media (max-width: 768px) {
-  
-  .carousel-item {
-    height: 300px; /* Adjust height for smaller screens */
+  .button-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; /* Center the buttons horizontally */
+    gap: 10px; /* Add some spacing between the buttons */
   }
 
-  .carousel-image-wrapper {
-    height: 300px; /* Match the height of the carousel */
+  .button-container button {
+    width: 48%; /* Make the buttons take up about half the width */
+    height: 40px; /* Smaller consistent button height */
   }
 
-  .featured-uni-carousel .carousel-caption-wrapper {
-    width: 100%; /* Adjust width for smaller screens */
+  .search-bar {
+    width: 100%; /* Make the search bar take up the full width */
+    margin-bottom: 10px; /* Add some spacing below the search bar */
   }
 
+  .search-bar input {
+    width: 100%; /* Ensure the input takes up the full width of the search bar */
+    min-width: 0; /* Remove any minimum width to allow it to scale down */
+    height: 40px; /* Adjust the height for smaller screens */
+  }
+
+  .search-bar button {
+    width: 100px; /* Set a fixed width for the search button */
+    height: 40px; /* Match the button height with the input field */
+    margin-left: 10px; /* Add spacing between the input and button */
+  }
+}
+
+/* Further adjustments for very small screens */
+@media (max-width: 480px) {
   .diploma-button, 
   .degree1-button, 
   .master-button, 
   .studyInMalaysia-button {
-    width: 100%; /* Make buttons full-width on smaller screens */
-    margin-bottom: 10px; /* Add spacing between buttons on small screens */
+    padding: 10px 0; /* Slightly reduce padding */
+    font-size: 12px; /* Further reduce font size */
   }
 
   .button-container {
-    flex-direction: row; /* Ensure buttons are still side by side */
-    flex-wrap: wrap; /* Allow wrapping to the next line */
-  }
-
-  .search-bar input {
-    min-width: 150px; /* Reduce minimum width for smaller screens */
+    width: 100%; /* Ensure the container is full width */
+    justify-content: space-between; /* Space the buttons evenly */
   }
 
   .search-bar {
-    width: 100%; /* Adjust the width of the search bar */
+    width: 100%; /* Ensure the search bar takes up the full width */
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping of input and button */
+    gap: 5px; /* Add a small gap between input and button */
   }
 
-  .button-container button {
-    width: 130px; /* Smaller consistent button width */
-    height: 40px; /* Smaller consistent button height */
+  .search-bar input {
+    width: calc(100% - 110px); /* Adjust input width considering the button */
+    min-width: 100px; /* Reduce minimum width further */
+    height: 36px; /* Adjust the height for very small screens */
   }
 
+  .search-bar button {
+    width: 100px; /* Set a fixed width for the button */
+    height: 36px; /* Match the button height with the input field */
+  }
 }
-
-/*#B71A18;*/

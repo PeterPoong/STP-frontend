@@ -61,6 +61,19 @@ const CourseListing = ({
   const [selectedCountry, setSelectedCountry] = useState({});
   const [locationOptions, setLocationOptions] = useState([]);
   const [selectedLocationFilters, setSelectedLocationFilters] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentCourses = filteredPrograms.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
 
   const location = useLocation();
   const { selectedCategory } = location.state || {}; // Retrieve the selected category from the state
@@ -575,7 +588,7 @@ const CourseListing = ({
     setSelectedInstitute(institute);
   };
 
-  const mappedPrograms = filteredPrograms.map((program, index) => (
+  const mappedPrograms = currentCourses.map((program, index) => (
     <div
       key={index}
       className="card mb-4 degree-card"
@@ -590,7 +603,7 @@ const CourseListing = ({
                 <Link
                   style={{ color: "black" }}
                   to={{
-                    pathname: `/applyDetail/${program.id}`,
+                    pathname: `/courseDetails/${program.id}`,
                     state: { program: program },
                   }}
                 >
@@ -914,13 +927,31 @@ const CourseListing = ({
         </Col>
 
         <Pagination className="d-flex justify-content-end">
-          <Pagination.Prev aria-label="Previous">
+          <Pagination.Prev
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
             <span aria-hidden="true">&laquo;</span>
           </Pagination.Prev>
-          <Pagination.Item active>{1}</Pagination.Item>
-          <Pagination.Item>{2}</Pagination.Item>
-          <Pagination.Item>{3}</Pagination.Item>
-          <Pagination.Next aria-label="Next">
+
+          {[
+            ...Array(Math.ceil(filteredPrograms.length / itemsPerPage)).keys(),
+          ].map((number) => (
+            <Pagination.Item
+              key={number + 1}
+              active={number + 1 === currentPage}
+              onClick={() => handlePageChange(number + 1)}
+            >
+              {number + 1}
+            </Pagination.Item>
+          ))}
+
+          <Pagination.Next
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={
+              currentPage === Math.ceil(filteredPrograms.length / itemsPerPage)
+            }
+          >
             <span aria-hidden="true">&raquo;</span>
           </Pagination.Next>
         </Pagination>

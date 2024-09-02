@@ -86,7 +86,7 @@ const FeaturedCoursesContainer = () => {
             }}
           >
             {courses.map((course, idx) => (
-              <SwiperSlide key={idx}>
+              <SwiperSlide key={idx} className="swiper-slide-course">
                 <div
                   className="featured-course-card"
                   style={{ width: "230px", height: "245px" }}

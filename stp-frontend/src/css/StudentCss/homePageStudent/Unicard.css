@@ -25,6 +25,13 @@
   object-fit: cover;
 }
 
+.swiper-slide-course {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: auto !important; /* Ensure each slide takes its own width */
+}
+
 .badge {
   position: absolute;
   top: -15px;

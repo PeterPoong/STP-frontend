@@ -92,6 +92,10 @@ const CoursesContainer = () => {
             navigation
             pagination={{ clickable: true }}
             breakpoints={{
+              430: {
+                slidesPerView: 3,
+                spaceBetween: 15,
+              },
               640: {
                 slidesPerView: 3,
                 spaceBetween: 10,
