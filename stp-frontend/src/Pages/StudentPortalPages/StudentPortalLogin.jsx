@@ -132,10 +132,12 @@ const StudentPortalLogin = () => {
               if (rememberMe) {
                 localStorage.setItem("token", data.data.token);
                 localStorage.setItem("rememberedPhone", phone);
+                localStorage.setItem("rememberedCountryCode", countryCode);
                 localStorage.setItem("rememberedPassword", password);
               } else {
                 localStorage.removeItem("token");
                 localStorage.removeItem("rememberedPhone");
+                localStorage.removeItem("rememberedCountryCode");
                 localStorage.removeItem("rememberedPassword");
               }
 

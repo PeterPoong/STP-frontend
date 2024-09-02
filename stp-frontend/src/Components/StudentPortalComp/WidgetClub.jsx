@@ -4,26 +4,27 @@ import '../../css/StudentPortalStyles/StudentPortalWidget.css';
 
 const WidgetClub = ({ isOpen, onClose, onSave, item }) => {
  
-  const [clubTitle, setClubTitle] = useState('');
-  const [yearOfTerm, setYearOfTerm] = useState('2024');
-  const [position, setPosition] = useState('');
-  const [institution, setInstitution] = useState('');
+  const [club_name, setClubTitle] = useState('');
+  const [year, setYearOfTerm] = useState('2024');
+  const [student_position, setPosition] = useState('');
+  const [location, setInstitution] = useState('');
   const [isEditingTitle, setIsEditingTitle] = useState(false);
 
   useEffect(() => {
     if (item) {
-      setClubTitle(item.club);
+      setClubTitle(item.club_name);
       setYearOfTerm(item.year.toString());
-      setPosition(item.position);
-      setInstitution(item.university);
+      setPosition(item.student_position);
+      setInstitution(item.location);
     } else {
       // Reset form for new entries
       
       setClubTitle('');
-      setYearOfTerm('2024');
+      setYearOfTerm('');
       setPosition('');
       setInstitution('');
     }
+    setIsEditingTitle(false);
   }, [item]);
 
   if (!isOpen) return null;
@@ -31,10 +32,10 @@ const WidgetClub = ({ isOpen, onClose, onSave, item }) => {
   const handleSave = () => {
     onSave({
       id: item ? item.id : null,
-      club: clubTitle,
-      university: institution,
-      position: position,
-      year: parseInt(yearOfTerm)
+      club_name,
+      location,
+      year: parseInt(year),
+      student_position
     });
   };
 
@@ -58,7 +59,7 @@ const WidgetClub = ({ isOpen, onClose, onSave, item }) => {
             <>
               <input
                 type="text"
-                value={clubTitle}
+                value={club_name}
                 onChange={(e) => setClubTitle(e.target.value)}
                 className="achievement-title-input"
                 autoFocus
@@ -67,7 +68,7 @@ const WidgetClub = ({ isOpen, onClose, onSave, item }) => {
             </>
           ) : (
             <>
-              {clubTitle || 'New Achievement'}
+              {club_name || 'Ente Club Name'}
               <button className="buttoneditam" >
               <Edit2 size={20} color="white" onClick={handleTitleEdit} />
               </button>
@@ -79,7 +80,7 @@ const WidgetClub = ({ isOpen, onClose, onSave, item }) => {
           <div className="input-field-club w-50">
             <label className="label-club">Year of Term</label>
             <select 
-              value={yearOfTerm} 
+              value={year} 
               className="select-club"
               onChange={(e) => setYearOfTerm(e.target.value)}
             >
@@ -93,7 +94,7 @@ const WidgetClub = ({ isOpen, onClose, onSave, item }) => {
             <input 
               type="text" 
               className="input-club "
-              value={position} 
+              value={student_position} 
               onChange={(e) => setPosition(e.target.value)}
               placeholder="Position"
             />
@@ -104,8 +105,8 @@ const WidgetClub = ({ isOpen, onClose, onSave, item }) => {
           <label>Institution</label>
           <input 
             type="text" 
-            value={institution} 
-            className="input-club"
+            value={location} 
+            className="location"
             onChange={(e) => setInstitution(e.target.value)}
             placeholder="Institution"
           />

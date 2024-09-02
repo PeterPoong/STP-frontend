@@ -1,37 +1,489 @@
-.app-container {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    background-color: #F5F4F4;
-  }
+.app-container-applycourse {
+  display: flex;
+  flex-direction:column;
+  min-height: 200vh;
+  background-color: #F5F5F5;
+}
+
+.app-container-applycourse-viewsummary {
+  display: flex;
+  flex-direction: column;
+  min-height: 300vh;
+  max-height: 400vh;
+  background-color: #F5F5F5;
+}
+
+
+
+.main-content-applycourse {
+  flex: 1;
+  padding: 3rem 0 8.25rem 0;
+
+}
+
+.backgroundimage {
+  background: url("../../assets/StudentPortalAssets/applyCourseBackground.png") no-repeat;
+
+  background-size: 100% 75%;
+
+  height: 35rem !important;
+  flex-direction: row;
+  align-content: flex-end;
+}
+
+
+
+.widget-applying-course {
+  background-color: blue;
+  height: 20rem;
+  margin: 0 4rem 0 6rem;
+  display: flex;
+  flex-direction: column;
+  background: url("../../assets/StudentPortalAssets/applyCoursebg.png") no-repeat;
+
+
+}
+
+.widget-applying-course-success {
+  background-color: blue;
+  height: 20rem;
+  margin: 0 4rem 0 10rem;
+  display: flex;
+  flex-direction: column;
+  background: url("../../assets/StudentPortalAssets/applyCoursebgSuccess.png") no-repeat;
+
+
+}
+
+
+.step-content {
+  padding: 2rem 2rem 0 2rem;
+  margin: 2rem 6rem 0 6rem;
+  background-color: white;
+}
+
+.sac-image{
+  width: auto;
+  height: 4.5em;
   
-  .main-content {
-    flex: 1;
-    padding:3rem 0 4.25rem 0;
-    
-  }
+}
 
-  .backgroundimage
-  {
-    background: linear-gradient(
-        to bottom,
-        firebrick 0%,
-        firebrick 75%,
-        transparent 75%
-    ) !important;
-    height: 30rem !important;
-    width: 100%;
-    flex-direction: row;
-    align-content: flex-end;
-  }
+.custom-select{
+  border: red;
+}
+/*
+.custom-select__control {
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
 
-  .widget-applying
-  {
-    background-color: blue;
-    height: 15rem;
-    margin:0 4rem 0 4rem;
-    display: flex;
-    flex-direction: column;
+.custom-select__placeholder {
+  color: #6c757d !important;
+}
 
-  }
+.custom-select__menu {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+
+
+.custom-select__menu::-webkit-scrollbar {
+  width: 8px;
+  background-color: #F5F5F5;
+}
+.custom-select__menu::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+  background-color: #F5F5F5;
+  border-radius: 10px;
+
+}
+
+.custom-select__menu::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+  background-color: #C6C6C6; 
+}
+
+.custom-select__menu::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+select__menu-list::-webkit-scrollbar {
+  width: 8px;
+  background-color: #F5F5F5;
+}
+select__menu-list::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+  background-color: #F5F5F5;
+  border-radius: 10px;
+}
+select__menu-list::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+  background-color: #C6C6C6; 
+}
+select__menu-list::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+*/
+
+
+/* Stepper styles 
+.stepper-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 2rem 6rem;
+  position: relative;
+}
+
+.stepper-line {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #e0e0e0;
+  z-index: 1;
+}
+
+.stepper-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+
+.step-number {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 0.5rem;
+}
+
+.step-number.active {
+  background-color: #dc3545;  Red color for active step 
+}
+
+.step-label {
+  font-size: 0.8rem;
+  color: #6c757d;
+  text-align: center;
+}
+
+.step-label.active {
+  color: #000;
+  font-weight: bold;
+}
+
+*/
+/* Add this to your existing CSS */
+.MuiStepLabel-label {
+  white-space: pre-line;
+  text-align: center;
+}
+/* Add this to your existing CSS */
+.MuiStepLabel-label {
+  white-space: pre-line;
+  text-align: center;
+}
+
+.application-summary-container {
+  
+  margin: 6rem 4rem;
+  padding: 2rem 2rem;
+ 
+}
+
+.application-summary-container-inside {
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  
+}
+
+.summary-title {
+  color: #dc3545;
+  font-weight: bold;
+
+}
+
+.summary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+}
+
+.applicant-info {
+  display: flex;
+  align-items: center;
+}
+
+.applicant-photo {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+
+}
+
+.summary-tabs {
+  border-bottom: 1px solid #dee2e6;
+  
+}
+
+.summary-tabs .btn-link {
+  color: #6c757d;
+  text-decoration: none;
+  border-radius: 0;
+}
+
+.summary-tabs .btn-link.active {
+  color: #dc3545; /* Active text color */
+  border-bottom: 2px solid #dc3545; /* Thicker border for active tab */
+  font-weight: bold; /* Make the active tab bold */
+  padding-bottom: 0.5rem; /* Add some padding for better spacing */
+}
+
+.info-grid, .results-grid, .activities-grid, .achievements-grid {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.address-field {
+  grid-column: span 2;
+}
+
+.grade-summary {
+
+  
+  /*background-color: #dc3545;*/
+  color: white;
+  
+}
+
+.activity-item, .achievement-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f8f9fa;
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+
+
+
+.position {
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+}
+
+.president { background-color: #007bff; color: white;  }
+.secretary { background-color: #6f42c1; color: white; }
+.treasurer { background-color: #17a2b8; color: white; }
+.ajk { background-color: #ffc107; }
+.champion { background-color: #ffc107; }
+.runner-up { background-color: #6c757d; color: white; }
+.participation { background-color: #28a745; color: white; }
+
+.summary-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  padding: 1rem 4rem 2rem 4rem;
+}
+
+.summary-content-yourdocument {
+  
+  padding: 1rem 4rem 2rem 4rem;
+}
+
+.basic-info, .academic-results {
+  grid-row: 1 / 2;
+}
+
+.basic-info {
+  grid-column: 1 / 2;
+}
+
+.academic-results {
+  grid-column: 2 / 3;
+  display: flex;
+  flex-direction: column;
+}
+
+.results-grid {
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.grade-summary {
+  margin-top: auto;
+
+  border-top: 1px solid #dee2e6;
+}
+
+.overall-grade {
+  background-color: #dc3545;
+  color: white;
+  border-bottom-left-radius: 2rem;
+
+}
+
+/* Remove these styles if they exist */
+.co-curriculum, .achievements {
+  grid-column: auto;
+  grid-row: auto;
+}
+
+/* Add styles for the scrollbar if needed */
+.results-grid::-webkit-scrollbar {
+  width: 8px;
+  background-color: #F5F5F5;
+}
+
+.results-grid::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: #C6C6C6;
+}
+
+.results-grid::-webkit-scrollbar-thumb:hover {
+  background-color: #A8A8A8;
+}
+
+.document-tabs {
+  border-bottom: 1px solid #dee2e6;
+}
+
+.document-tabs .btn-link {
+  color: #6c757d;
+  text-decoration: none;
+  border-radius: 0;
+}
+
+.document-tabs .btn-link.active {
+  color: #dc3545;
+  border-bottom: 2px solid #dc3545;
+  font-weight: bold;
+  padding-bottom: 0.5rem;
+}
+
+.search-bar {
+  position: relative;
+}
+
+.search-bar input {
+  padding-left: 2.5rem;
+}
+
+.search-bar svg {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6c757d;
+}
+
+.table .btn-link {
+  color: #6c757d;
+}
+
+.table .btn-link:hover {
+  color: #dc3545;
+}
+
+.summary-content-course-info {
+  padding: 0 0 2rem 0;
+  background-color: #F5F5F5;
+  min-height: 7cap;
+  
+  
+}
+
+.school-info {
+  background-size: cover;
+  background-position: center; /* Center the background image */
+  padding: 4cqi;
+  margin: 0;
+  
+  color: black;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center items horizontally */
+  justify-content: center; /* Center items vertically */
+  object-fit: contain;
+  min-height: 17.5rem;
+  
+  background: 
+    linear-gradient(to bottom, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.5)), 
+    url("../../assets/StudentPortalAssets/sacCDbackground.png") no-repeat center center;
+  width: 100%; /* Stretch the width of the image to fit the div */
+}
+
+.school-logo-name {
+  display: flex;
+  align-items: center;
+}
+
+.school-logo {
+  width: 60px;
+  height: 60px;
+  margin-right: 1rem;
+}
+
+
+
+
+
+
+.overview-content, .requirements-content {
+  max-height: 10vh;
+  overflow-y: auto;
+  transition: max-height 0.3s ease-out;
+}
+
+.overview-content.expanded, .requirements-content.expanded {
+  max-height: none;
+}
+
+.course-overview button, .entry-requirements button {
+  padding: 0;
+  margin-top: 0.5rem;
+}
+
+ul {
+  padding-left: 1.5rem;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.summary-label {
+  display: flex;
+  align-items: center;
+}
+
+.summary-value {
+  font-weight: bold;
+}
+
+
+
+.academic-transcript-item,.sac-at-bg
+{
+  background-color:#CFD6DC
+}
 

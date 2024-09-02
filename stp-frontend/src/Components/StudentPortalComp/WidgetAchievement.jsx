@@ -3,27 +3,27 @@ import { X, Edit2, Calendar, ChevronDown, Upload, Check, FileText, Trash2 } from
 import '../../css/StudentPortalStyles/StudentPortalWidget.css';
 
 const WidgetAchievement = ({ isOpen, onClose, onSave, item }) => {
-  const [events, setEvents] = useState('');
-  const [dateOfAchievement, setDateOfAchievement] = useState('');
-  const [titleObtained, setTitleObtained] = useState('');
-  const [university, setUniversity] = useState('');
-  const [uploads, setUploads] = useState(null);
+  const [achievement_name, setAchievementName] = useState('');
+  const [date, setDate] = useState('');
+  const [title, setTitle] = useState('');
+  const [awarded_by, setAwardedBy] = useState('');
+  const [achievement_media, setAchievementMedia] = useState(null);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
 
   useEffect(() => {
     if (item) {
-      setEvents(item.events);
-      setDateOfAchievement(item.dateOfAchievement);
-      setTitleObtained(item.titleObtained);
-      setUniversity(item.university);
-      setUploads(item.uploads);
+      setAchievementName(item.achievement_name || '');
+      setDate(item.date || '');
+      setTitle(item.title_obtained || '');
+      setAwardedBy(item.awarded_by || '');
+      setAchievementMedia(item.achievement_media || null);
     } else {
       // Reset form for new entries
-      setEvents('');
-      setDateOfAchievement('');
-      setTitleObtained('');
-      setUniversity('');
-      setUploads(null);
+      setAchievementName('');
+      setDate('');
+      setTitle('');
+      setAwardedBy('');
+      setAchievementMedia(null);
     }
     setIsEditingTitle(false);
   }, [item]);
@@ -33,11 +33,11 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item }) => {
   const handleSave = () => {
     onSave({
       id: item ? item.id : null,
-      events,
-      dateOfAchievement,
-      titleObtained,
-      university,
-      uploads
+      achievement_name,
+      date,
+      title:parseInt(title,10),
+      awarded_by,
+      achievement_media
     });
   };
 
@@ -52,13 +52,14 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item }) => {
   const handleFileChange = (event) => {
     const uploadedFile = event.target.files[0];
     if (uploadedFile) {
-      setUploads(uploadedFile.name);
+      setAchievementMedia(uploadedFile);
     }
   };
 
   const handleFileDelete = () => {
-    setUploads(null);
+    setAchievementMedia(null);
   };
+
 
   return (
     <div className="achievement-overlay">
@@ -71,8 +72,8 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item }) => {
             <>
               <input
                 type="text"
-                value={events}
-                onChange={(e) => setEvents(e.target.value)}
+                value={achievement_name}
+                onChange={(e) => setAchievementName(e.target.value)}
                 className="achievement-title-input"
                 autoFocus
               />
@@ -80,7 +81,7 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item }) => {
             </>
           ) : (
             <>
-              {events || 'New Achievement'}
+              {achievement_name || 'New Achievement'}
               <button className="buttoneditam" >
                 <Edit2 size={20} color="white" onClick={handleTitleEdit} />
               </button>
@@ -96,8 +97,8 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item }) => {
                 <input
                   type="text"
                   className="achievement-input"
-                  value={dateOfAchievement}
-                  onChange={(e) => setDateOfAchievement(e.target.value)}
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
                 />
                 <Calendar size={20} color="white" />
               </div>
@@ -108,26 +109,26 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item }) => {
                 <input
                   type="text"
                   className="achievement-input"
-                  value={titleObtained}
-                  onChange={(e) => setTitleObtained(e.target.value)}
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
                 />
                 <ChevronDown size={20} color="white" />
               </div>
             </div>
             <div className="achievement-input-field">
-              <label className="achievement-label">University</label>
+              <label className="achievement-label">Awarded By</label>
               <input
                 type="text"
                 className="achievement-input"
-                value={university}
-                onChange={(e) => setUniversity(e.target.value)}
+                value={awarded_by}
+                onChange={(e) => setAwardedBy(e.target.value)}
               />
             </div>
           </div>
 
           <div className="achievement-upload-section">
             <label className="achievement-label">Upload Certificate/ Documents</label>
-            {!uploads ? (
+            {!achievement_media ? (
               <div className="achievement-upload-area">
                 <label htmlFor="file-upload" className="achievement-upload-label">
                   <Upload size={24} color="#dc3545" />
@@ -146,7 +147,9 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item }) => {
                 <div className="achievement-file-info">
                   <FileText size={20} color="#353535" />
                   <div className="achievement-file-details">
-                    <span className="achievement-file-name">{uploads}</span>
+                    <span className="achievement-file-name">
+                      {achievement_media instanceof File ? achievement_media.name : achievement_media}
+                    </span>
                     <button className="achievement-view-button">Click to view</button>
                   </div>
                 </div>
@@ -157,6 +160,7 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item }) => {
             )}
           </div>
         </div>
+        
         <div className="d-flex justify-content-center">
           <button className="achievement-save-btn" onClick={handleSave}>
             {item ? 'UPDATE' : 'SAVE'}
