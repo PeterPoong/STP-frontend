@@ -79,6 +79,18 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
     setAchievementMedia(null);
   };
 
+  const handleViewClick = () => {
+    if (achievement_media instanceof File) {
+      // For newly uploaded files
+      const fileUrl = URL.createObjectURL(achievement_media);
+      window.open(fileUrl, '_blank');
+    } else if (achievement_media) {
+      // For existing files
+      const fullUrl = `${import.meta.env.VITE_BASE_URL}storage/${achievement_media}`;
+      window.open(fullUrl, '_blank');
+    }
+  };
+
   return (
     <div className="achievement-overlay">
       <div className="achievement-popup">
@@ -183,7 +195,7 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
                     <span className="achievement-file-name">
                       {achievement_media instanceof File ? achievement_media.name : achievement_media}
                     </span>
-                    <button className="achievement-view-button">Click to view</button>
+                    <button className="achievement-view-button" onClick={handleViewClick}>Click to view</button>
                   </div>
                 </div>
                 {!isViewMode && (

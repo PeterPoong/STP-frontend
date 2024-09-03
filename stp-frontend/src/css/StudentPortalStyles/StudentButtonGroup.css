@@ -1,0 +1,41 @@
+.sac-previous-button
+{
+    background-color: white;
+    border-color: #B71A18;
+    color:#B71A18;
+}
+
+.sac-next-button
+{
+    background-color: #B71A18;
+    border-color: #B71A18;
+    color:white';
+}
+.sac-previous-button:hover,
+.sac-previous-button:focus,
+.sac-previous-button:active,
+.sac-previous-button:active:focus
+{
+    background-color: #B71A18;
+    border-color: #B71A18;
+}
+
+
+
+.sac-next-button:hover,
+.sac-next-button:focus,
+.sac-next-button:active,
+.sac-next-button:active:focus
+{
+    
+    background-color: white;
+    border-color: #B71A18;
+    color:#B71A18;
+}
+
+
+.sac-next-button, .sac-previous-button
+{
+    width:15%;
+}
+

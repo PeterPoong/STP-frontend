@@ -119,7 +119,7 @@ const BasicInformationWidget = () => {
         // Map gender ID to name
         // Use the gender from the response directly, as it's already the core_metaName
         const genderName = responseData.data.gender || '';
-        
+
         const updatedStudentData = {
           ...responseData.data,
           gender: genderName, // This is already the core_metaName, not the ID
@@ -133,7 +133,7 @@ const BasicInformationWidget = () => {
 
         // Set phone state
         setPhone(`${updatedStudentData.country_code}${updatedStudentData.contact}`);
-        
+
         setIsLoading(false);
       }
     } catch (error) {
@@ -359,8 +359,8 @@ const BasicInformationWidget = () => {
           {success && <Alert variant="success">{success}</Alert>}
           <Form onSubmit={handleSubmit}>
             <Row>
-              <Col md={6}>
-                <Form.Group className="mb-3" controlId="username">
+              <Col md={6} >
+                <Form.Group className="mb-3 " controlId="username">
                   <Form.Label className="fw-bold small formlabel">Username <span className="text-danger">*</span></Form.Label>
                   <Form.Control
                     type="text"
@@ -374,7 +374,7 @@ const BasicInformationWidget = () => {
                 </Form.Group>
               </Col>
             </Row>
-            <Row className="mb-3">
+            <Row className="mb-3 px-0">
               <Col md={6}>
                 <Form.Group controlId="first_name">
                   <Form.Label className="fw-bold small formlabel">First Name <span className="text-danger">*</span></Form.Label>
@@ -404,7 +404,7 @@ const BasicInformationWidget = () => {
                 </Form.Group>
               </Col>
             </Row>
-            <Row className="mb-3">
+            <Row className="mb-3 px-0">
               <Col md={6}>
                 <Form.Group controlId="ic">
                   <Form.Label className="fw-bold small formlabel">Identity Card Number <span className="text-danger">*</span></Form.Label>
@@ -439,7 +439,7 @@ const BasicInformationWidget = () => {
                 </Form.Group>
               </Col>
             </Row>
-            <Row className="mb-3">
+            <Row className="mb-3 px-0">
               <Col md={6}>
                 <Form.Group controlId="formBasicPhone" className="mb-3">
                   <Form.Label className="fw-bold small formlabel">Contact Number</Form.Label>
@@ -476,105 +476,110 @@ const BasicInformationWidget = () => {
                 </Form.Group>
               </Col>
             </Row>
-            <Form.Group className="mb-3" controlId="address">
-              <Form.Label className="fw-bold small formlabel">Address <span className="text-danger">*</span></Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={3}
-                required
-                className="w-100"
-                name="address"
-                value={studentData.address || ''}
-                onChange={handleInputChange}
-                placeholder="Enter address"
-              />
-            </Form.Group>
-            <Row className="mb-3">
-              <Col md={6}>
-                <Form.Group controlId="country">
-                  <Form.Label className="fw-bold small formlabel">Country <span className="text-danger">*</span></Form.Label>
-                  <Form.Select
-                    required
-                    className="w-75"
-                    name="country"
-                    value={countries.find(c => c.country_name === studentData.country)?.id || ''}
-                    onChange={handleCountryChange}
-                  >
-                    <option value="">Select country</option>
-                    {countries.map((country) => (
-                      <option key={country.id} value={country.id}>
-                        {country.country_name}
-                      </option>
-                    ))}
-                  </Form.Select>
-                </Form.Group>
-              </Col>
-              <Col md={6}>
-                <Form.Group controlId="state">
-                  <Form.Label className="fw-bold small formlabel">State <span className="text-danger">*</span></Form.Label>
-                  <Form.Select
-                    required
-                    className="w-75"
-                    name="state"
-                    value={states.find(s => s.state_name === studentData.state)?.id || ''}
-                    onChange={handleStateChange}
-                  >
-                    <option value="">Select state</option>
-                    {states.map((state) => (
-                      <option key={state.id} value={state.id}>
-                        {state.state_name}
-                      </option>
-                    ))}
-                  </Form.Select>
-                </Form.Group>
-              </Col>
-            </Row>
-            <Row className="mb-4">
-              <Col md={6}>
-                <Form.Group controlId="city">
-                  <Form.Label className="fw-bold small formlabel">City <span className="text-danger">*</span></Form.Label>
-                  <Form.Select
-                    required
-                    className="w-75"
-                    name="city"
-                    value={cities.find(c => c.city_name === studentData.city)?.id || ''}
-                    onChange={handleCityChange}
-                  >
-                    <option value="">Select city</option>
-                    {cities.map((city) => (
-                      <option key={city.id} value={city.id}>
-                        {city.city_name}
-                      </option>
-                    ))}
-                  </Form.Select>
-                </Form.Group>
-              </Col>
-              <Col md={6}>
-                <Form.Group controlId="postcode">
-                  <Form.Label className="fw-bold small formlabel">Postcode <span className="text-danger">*</span></Form.Label>
+            <Row>
+              <Col md={11}  >
+                <Form.Group className="mb-3 pe-4" controlId="address">
+                  <Form.Label className="fw-bold small formlabel">Address <span className="text-danger">*</span></Form.Label>
                   <Form.Control
-                    type="text"
                     required
-                    className="w-75"
-                    name="postcode"
-                    value={studentData.postcode || ''}
+                    className="w-100"
+                    name="address"
+                    value={studentData.address || ''}
                     onChange={handleInputChange}
-                    placeholder="Enter postcode"
+                    placeholder="Enter address"
                   />
                 </Form.Group>
-              </Col>
+                </Col>
             </Row>
-            <div className="d-flex justify-content-end mt-3">
-              <div className="w-25">
-                <Button variant="danger" type="submit" className="m-0 w-100 fw-bold rounded-pill">
-                  Save
-                </Button>
-              </div>
+          
+
+
+          <Row className="mb-3 px-0">
+            <Col md={6}>
+              <Form.Group controlId="country">
+                <Form.Label className="fw-bold small formlabel">Country <span className="text-danger">*</span></Form.Label>
+                <Form.Select
+                  required
+                  className="w-75"
+                  name="country"
+                  value={countries.find(c => c.country_name === studentData.country)?.id || ''}
+                  onChange={handleCountryChange}
+                >
+                  <option value="">Select country</option>
+                  {countries.map((country) => (
+                    <option key={country.id} value={country.id}>
+                      {country.country_name}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Form.Group>
+            </Col>
+            <Col md={6}>
+              <Form.Group controlId="state">
+                <Form.Label className="fw-bold small formlabel">State <span className="text-danger">*</span></Form.Label>
+                <Form.Select
+                  required
+                  className="w-75"
+                  name="state"
+                  value={states.find(s => s.state_name === studentData.state)?.id || ''}
+                  onChange={handleStateChange}
+                >
+                  <option value="">Select state</option>
+                  {states.map((state) => (
+                    <option key={state.id} value={state.id}>
+                      {state.state_name}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Form.Group>
+            </Col>
+          </Row>
+          <Row className="mb-4 ">
+            <Col md={6}>
+              <Form.Group controlId="city">
+                <Form.Label className="fw-bold small formlabel">City <span className="text-danger">*</span></Form.Label>
+                <Form.Select
+                  required
+                  className="w-75"
+                  name="city"
+                  value={cities.find(c => c.city_name === studentData.city)?.id || ''}
+                  onChange={handleCityChange}
+                >
+                  <option value="">Select city</option>
+                  {cities.map((city) => (
+                    <option key={city.id} value={city.id}>
+                      {city.city_name}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Form.Group>
+            </Col>
+            <Col md={6}>
+              <Form.Group controlId="postcode">
+                <Form.Label className="fw-bold small formlabel">Postcode <span className="text-danger">*</span></Form.Label>
+                <Form.Control
+                  type="text"
+                  required
+                  className="w-75"
+                  name="postcode"
+                  value={studentData.postcode || ''}
+                  onChange={handleInputChange}
+                  placeholder="Enter postcode"
+                />
+              </Form.Group>
+            </Col>
+          </Row>
+          <div className="d-flex justify-content-end mt-3">
+            <div className="w-25">
+              <Button variant="danger" type="submit" className="m-0 w-100 fw-bold rounded-pill">
+                Save
+              </Button>
             </div>
-          </Form>
-        </Card.Body>
-      </Card>
-    </div>
+          </div>
+        </Form>
+      </Card.Body>
+    </Card>
+    </div >
   );
 };
 

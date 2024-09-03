@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { Edit2, Trash2, Eye, Plus, Search, GripVertical, ChevronDown, Info, FileText, X, Check } from 'lucide-react';
 import Carousel from 'react-material-ui-carousel';
@@ -6,7 +6,7 @@ import { Paper, Button, Tooltip } from '@mui/material';
 import SelectSearch from 'react-select-search';
 import 'react-select-search/style.css';
 import "../../css/StudentPortalStyles/StudentPortalAcademicTranscript.css";
-import WidgetFileUpload from "../../Components/StudentPortalComp/WidgetFileUpload";
+import WidgetFileUploadAcademicTranscript from "../../Components/StudentPortalComp/WidgetFileUploadAcademicTranscript";
 import WidgetPopUpDelete from "../../Components/StudentPortalComp/WidgetPopUpDelete";
 
 const ExamSelector = ({ exams, selectedExam, setSelectedExam }) => {
@@ -42,21 +42,21 @@ const ExamSelector = ({ exams, selectedExam, setSelectedExam }) => {
         <Paper key={index} elevation={0} style={{ display: 'flex', justifyContent: 'center', backgroundColor: 'transparent', margin: "0em" }}>
           {page.map((exam) => (
             <Button
-              key={exam}
-              variant={selectedExam === exam ? "contained" : "outlined"}
+              key={exam.id}
+              variant={selectedExam === exam.transcript_category ? "contained" : "outlined"}
               color="primary"
               font-family="Ubuntu"
-              onClick={() => setSelectedExam(exam)}
+              onClick={() => setSelectedExam(exam.transcript_category)}
               style={{
                 margin: '1.5rem 2rem',
                 borderRadius: '0px',
-                backgroundColor: selectedExam === exam ? 'white' : 'transparent',
-                color: selectedExam === exam ? '#4b5563' : '#4b5563',
-                borderColor: selectedExam === exam ? 'transparent' : 'transparent',
-                borderbottom: selectedExam === exam ? 'red' : 'transparent',
+                backgroundColor: selectedExam === exam.transcript_category ? 'white' : 'transparent',
+                color: selectedExam === exam.transcript_category ? '#4b5563' : '#4b5563',
+                borderColor: selectedExam === exam.transcript_category ? 'transparent' : 'transparent',
+                borderbottom: selectedExam === exam.transcript_category ? 'red' : 'transparent',
               }}
             >
-              {exam}
+              {exam.transcript_category}
             </Button>
           ))}
         </Paper>
@@ -65,7 +65,7 @@ const ExamSelector = ({ exams, selectedExam, setSelectedExam }) => {
   );
 };
 
-const SubjectBasedExam = ({ examType, subjects, onSubjectsChange }) => {
+const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files }) => {
   const [editingIndex, setEditingIndex] = useState(null);
 
   const handleGradeChange = (index, grade) => {
@@ -147,7 +147,13 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange }) => {
   );
 };
 
-const ProgramBasedExam = ({ examType, subjects, onSubjectsChange }) => {
+const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files }) => {
+  // Add this check at the beginning of the component
+  if (!subjects || !Array.isArray(subjects)) {
+    console.error(`Subjects for ${examType} is not an array:`, subjects);
+    return <div>No data available for {examType}</div>;
+  }
+
   const [newSubject, setNewSubject] = useState('');
   const [editingIndex, setEditingIndex] = useState(null);
 
@@ -220,7 +226,7 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange }) => {
                     value={subject.name}
                     onChange={(e) => handleNameChange(index, e.target.value)}
                     className="editingplaceholder"
-                    placeholder="Please enter you subjectname" F
+                    placeholder="Please enter you subjectname"
                   />
                 ) : (
                   <span className="fw-medium h6 mb-0 me-3">{subject.name}</span>
@@ -269,75 +275,24 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange }) => {
 };
 
 const AcademicTranscript = () => {
-  const [selectedExam, setSelectedExam] = useState('SPM');
-  const exams = ['SPM', 'O-Level', 'GCSE', 'IGCSE', 'SSCE', 'A-Level', 'STPM', 'Foundation', 'Diploma', 'UEC', 'SAT / ACT'];
+  const [categories, setCategories] = useState([]);
+  const [examBasedCategories, setExamBasedCategories] = useState([]);
+  const [programBasedCategories, setProgramBasedCategories] = useState([]);
+  const [selectedExam, setSelectedExam] = useState('');
+  const [mediaData, setMediaData] = useState({});
 
   const [examData, setExamData] = useState({
-    'SPM': [
-      { name: 'Bahasa Melayu', grade: 'A+' },
-      { name: 'Bahasa Inggeris', grade: 'A+' },
-      { name: 'Matematik', grade: 'B+' },
-      { name: 'Sains', grade: 'C+' },
-      { name: 'Sejarah', grade: 'A+' },
-    ],
-    'UEC': [
-      { name: 'Chinese', grade: 'A1' },
-      { name: 'English', grade: 'A2' },
-      { name: 'Mathematics', grade: 'B3' },
-    ],
-    'O-Level': [
-      { name: 'English Language', grade: 'A*' },
-      { name: 'Mathematics', grade: 'A' },
-      { name: 'Physics', grade: 'B' },
-      { name: 'Chemistry', grade: 'A' },
-      { name: 'Biology', grade: 'B' },
-    ],
-    'GCSE': [
-      { name: 'English Language', grade: '9' },
-      { name: 'Mathematics', grade: '8' },
-      { name: 'Science (Double Award)', grade: '7-7' },
-      { name: 'History', grade: '6' },
-    ],
-    'IGCSE': [
-      { name: 'English as a Second Language', grade: 'A' },
-      { name: 'Mathematics', grade: 'A*' },
-      { name: 'Physics', grade: 'A' },
-      { name: 'Chemistry', grade: 'B' },
-    ],
-    'SSCE': [
-      { name: 'English Language', grade: 'A1' },
-      { name: 'Mathematics', grade: 'B2' },
-      { name: 'Physics', grade: 'B3' },
-      { name: 'Chemistry', grade: 'A2' },
-    ],
-    'SAT / ACT': [
-      { name: 'SAT Math', grade: '800' },
-      { name: 'SAT Evidence-Based Reading and Writing', grade: '750' },
-      { name: 'ACT Composite Score', grade: '34' },
-    ],
-    'A-Level': [
-      { name: 'Mathematics', grade: 'A' },
-      { name: 'Physics', grade: 'z' },
-      { name: 'Chemistry', grade: 'C' },
-    ],
-    'STPM': [
-      { name: 'Pengajian Am', grade: 'B' },
-      { name: 'Mathematics (T)', grade: 'B' },
-      { name: 'Physics', grade: 'B' },
-      { name: 'Chemistry', grade: 'B' },
-    ],
-    'Foundation': [
-      { name: 'Mathematics', grade: 'A' },
-      { name: 'Physics', grade: 'A' },
-      { name: 'Chemistry', grade: 'A' },
-      { name: 'Biology', grade: 'A' },
-    ],
-    'Diploma': [
-      { name: 'Mathematics', grade: 'D' },
-      { name: 'Computer Science', grade: 'D' },
-      { name: 'Database Management', grade: 'A' },
-      { name: 'Programming', grade: 'C' },
-    ],
+    'SPM': [],
+    'UEC': [],
+    'O-Level': [],
+    'GCSE': [],
+    'IGCSE': [],
+    'SSCE': [],
+    'SAT / ACT': [],
+    'A-level': [],
+    'STPM': [],
+    'Foundation': [],
+    'Diploma': [],
   });
 
   const handleSubjectsChange = useCallback((examType, updatedSubjects) => {
@@ -347,40 +302,20 @@ const AcademicTranscript = () => {
     }));
   }, []);
 
-  const isSubjectBased = ['SPM', 'UEC', 'O-Level', 'GCSE', 'IGCSE', 'SSCE', 'SAT / ACT'].includes(selectedExam);
-  const isProgramBased = ['A-Level', 'STPM', 'Foundation', 'Diploma'].includes(selectedExam);
-
-  const renderExamComponent = () => {
-    if (isSubjectBased) {
-      return <SubjectBasedExam
-        examType={selectedExam}
-        subjects={examData[selectedExam]}
-        onSubjectsChange={handleSubjectsChange}
-      />;
-    } else if (isProgramBased) {
-      return <ProgramBasedExam
-        examType={selectedExam}
-        subjects={examData[selectedExam]}
-        onSubjectsChange={handleSubjectsChange}
-      />;
-    }
-    return <div>Exam type not implemented yet</div>;
-  };
-
-  const [files, setFiles] = useState([
-    { id: 1, title: 'Trial 1 Result', date: 'Thu Nov 23 2023 18:00', filename: 'example_filename3.pdf' }
-  ]);
+  // Initialize files as an empty array
+  const [files, setFiles] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState('');
   const [isFileUploadOpen, setIsFileUploadOpen] = useState(false);
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
+  const [currentFile, setCurrentFile] = useState(null);
   const [fileToDelete, setFileToDelete] = useState(null);
+  const [isViewMode, setIsViewMode] = useState(false);
 
-  // Filter files based on search term
   const filteredFiles = files.filter(file =>
-    file.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    file.filename.toLowerCase().includes(searchTerm.toLowerCase())
+    file.studentMedia_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    file.studentMedia_location.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Calculate pagination
@@ -397,15 +332,138 @@ const AcademicTranscript = () => {
     pageNumbers.push(i);
   }
 
-  // Function to add new file
-  // Update the addFile function
-  const addFile = (newFile) => {
-    setFiles(prevFiles => [...prevFiles, { ...newFile, id: Date.now() }]);
+  const addFile = async (newFile) => {
+    try {
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      const category = categories.find(cat => cat.transcript_category === selectedExam);
+      
+      if (!category) {
+        console.error('Selected exam category not found');
+        return;
+      }
+  
+      const formData = new FormData();
+      formData.append('studentMedia_type', category.id.toString());
+      formData.append('studentMedia_location', newFile.file);
+      formData.append('studentMedia_name', newFile.title);
+      formData.append('studentMedia_format', 'Photo'); // Assuming it's always a photo, adjust if needed
+  
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/addTranscriptFile`, {
+        method: 'POST', 
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        body: formData,
+      });
+      const data = await response.json();
+      if (data.success) {
+        fetchMediaByCategory(category.id);
+      } else {
+        console.error('Error adding file:', data.message);
+      }
+    } catch (error) {
+      console.error('Error adding file:', error);
+    }
     setIsFileUploadOpen(false);
   };
+
+  const editFile = async (updatedFile) => {
+    try {
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      const category = categories.find(cat => cat.transcript_category === selectedExam);
+      
+      if (!category) {
+        console.error('Selected exam category not found');
+        return;
+      }
+
+      const formData = new FormData();
+      
+      formData.append('id', updatedFile.id);
+      formData.append('studentMedia_type', category.id.toString());
+      formData.append('studentMedia_name', updatedFile.title);
+      
+      if (updatedFile.isNewFile) {
+        formData.append('studentMedia_location', updatedFile.file);
+    } else if (updatedFile.file) {
+        formData.append('studentMedia_location', updatedFile.file);
+    }
+
+    // Console log to see what's being sent
+    console.log('Editing file with data:', {
+        id: updatedFile.id,
+        studentMedia_type: category.id,
+        studentMedia_name: updatedFile.title,
+        studentMedia_location: updatedFile.isNewFile ? 'New File' : (updatedFile.file || 'Unchanged')
+    });
+
+      // Log the FormData contents
+      for (let [key, value] of formData.entries()) {
+        console.log(`${key}:`, value);
+      }
+
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/editTranscriptFile`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      const data = await response.json();
+      
+      if (response.ok && data.success) {
+        console.log('File edited successfully:', data);
+        fetchMediaByCategory(category.id);
+      } else {
+        console.error('Error editing file:', data.message);
+        alert(`Error editing file: ${data.message}`);
+      }
+    } catch (error) {
+      console.error('Error editing file:', error);
+      alert('An unexpected error occurred while editing the file.');
+    }
+    setIsFileUploadOpen(false);
+    setCurrentFile(null);
+  };
+
+  // Update the existing editFile function to open the edit modal
+  const openEditModal = (file) => {
+    setCurrentFile(file);
+    setIsViewMode(false);
+    setIsFileUploadOpen(true);
+  };
+
   // Function to delete file
-  const deleteFile = () => {
-    setFiles(files.filter(file => file.id !== fileToDelete.id));
+  const deleteFile = async () => {
+    if (!fileToDelete) return;
+    try {
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/deleteTranscriptFile`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ id: fileToDelete.id, type: "delete" }),
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Error deleting file:', errorData);
+        return;
+      }
+      
+      const data = await response.json();
+      if (data.success) {
+        console.log('File deleted successfully');
+        fetchMediaByCategory(categories.find(cat => cat.transcript_category === selectedExam).id);
+      } else {
+        console.error('Error deleting file:', data.message);
+      }
+    } catch (error) {
+      console.error('Error deleting file:', error);
+    }
     setIsDeletePopupOpen(false);
     setFileToDelete(null);
   };
@@ -416,19 +474,124 @@ const AcademicTranscript = () => {
     setIsDeletePopupOpen(true);
   };
 
-  // Function to view file (placeholder)
+  // Function to view file
   const viewFile = (file) => {
-    console.log("Viewing file:", file);
-    // Implement file viewing logic here
+    setCurrentFile(file);
+    setIsViewMode(true);
+    setIsFileUploadOpen(true);
   };
 
+  useEffect(() => {
+    fetchTranscriptCategories();
+  }, []);
+
+  const fetchTranscriptCategories = async () => {
+    try {
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/transcriptCategoryList`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log('API RESPONSE', result);
+
+      if (result.success && Array.isArray(result.data.data)) {
+        setCategories(result.data.data);
+        
+        // Manually categorize transcript categories
+        const examBased = ['SPM', 'O-level', 'GCSE', 'IGCSE', 'SSCE', 'UEC', 'SAT / ACT'];
+        const programBased = ['STPM', 'A-level', 'Foundation', 'Diploma'];
+
+        setExamBasedCategories(result.data.data.filter(cat => examBased.includes(cat.transcript_category)));
+        setProgramBasedCategories(result.data.data.filter(cat => programBased.includes(cat.transcript_category)));
+
+        // Set initial selected exam
+        if (result.data.data.length > 0) {
+          setSelectedExam(result.data.data[0].transcript_category);
+          fetchMediaByCategory(result.data.data[0].id);
+        }
+      } else {
+        console.error('Unexpected data structure:', result);
+        setCategories([]);
+        setExamBasedCategories([]);
+        setProgramBasedCategories([]);
+      }
+    } catch (error) {
+      console.error('Error fetching transcript categories:', error);
+      setCategories([]);
+      setExamBasedCategories([]);
+      setProgramBasedCategories([]);
+    }
+  };
+
+  const fetchMediaByCategory = async (categoryId) => {
+    try {
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/mediaListByCategory`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ category_id: categoryId }),
+      });
+      const data = await response.json();
+      console.log('API response for media:', data);
+      if (data.success && data.data && data.data.data) {
+        setFiles(data.data.data);
+      } else {
+        setFiles([]);
+      }
+    } catch (error) {
+      console.error('Error fetching media by category:', error);
+      setFiles([]);
+    }
+  };
+
+  const renderExamComponent = () => {
+    const categoryId = categories.find(cat => cat.transcript_category === selectedExam)?.id;
+    const files = mediaData[categoryId] || [];
+
+    // Make sure examData[selectedExam] exists and is an array
+    const subjects = Array.isArray(examData[selectedExam]) ? examData[selectedExam] : [];
+
+    if (examBasedCategories.some(cat => cat.transcript_category === selectedExam)) {
+      return <SubjectBasedExam
+        examType={selectedExam}
+        subjects={subjects}
+        onSubjectsChange={handleSubjectsChange}
+        files={files}
+      />;
+    } else if (programBasedCategories.some(cat => cat.transcript_category === selectedExam)) {
+      return <ProgramBasedExam
+        examType={selectedExam}
+        subjects={subjects}
+        onSubjectsChange={handleSubjectsChange}
+        files={files}
+      />;
+    }
+    return <div>No data available for {selectedExam}</div>;
+  };
 
   return (
     <div className='p-0'>
-      <ExamSelector
-        exams={exams}
+       <ExamSelector
+        exams={categories}
         selectedExam={selectedExam}
-        setSelectedExam={setSelectedExam}
+        setSelectedExam={(exam) => {
+          setSelectedExam(exam);
+          const categoryId = categories.find(cat => cat.transcript_category === exam)?.id;
+          if (categoryId) fetchMediaByCategory(categoryId);
+        }}
       />
       <div className="p-5 pt-0">
         {renderExamComponent()}
@@ -484,15 +647,16 @@ const AcademicTranscript = () => {
                       <div className="d-flex align-items-center">
                         <FileText className="file-icon me-2" />
                         <div>
-                          <div className="file-title">{file.title}</div>
-                          <div className="file-date">{file.date}</div>
+                          <div className="file-title">{file.studentMedia_name}</div>
+                          <div className="file-date">{file.status}</div>
                         </div>
                       </div>
                     </td>
-                    <td className="border-bottom p-2 text-end">{file.filename}</td>
+                    <td className="border-bottom p-2 text-end">{file.studentMedia_location || 'N/A'}</td>
                     <td className="border-bottom p-2">
                       <div className="d-flex justify-content-end align-items-center">
                         <Trash2 className="iconat-trash" onClick={() => openDeletePopup(file)} />
+                        <Edit2 className="iconat" onClick={() => openEditModal(file)} />
                         <Eye className="iconat" onClick={() => viewFile(file)} />
                       </div>
                     </td>
@@ -526,10 +690,19 @@ const AcademicTranscript = () => {
         </div>
       </div>
 
-      <WidgetFileUpload
+      <WidgetFileUploadAcademicTranscript
         isOpen={isFileUploadOpen}
-        onClose={() => setIsFileUploadOpen(false)}
-        onSave={addFile}
+        onClose={() => {
+          setIsFileUploadOpen(false);
+          setCurrentFile(null);
+          setIsViewMode(false);
+        }}
+        onSave={(file) => {
+          console.log('File to be saved/edited:', file);
+          return currentFile ? editFile({...file, studentMedia_type: currentFile.studentMedia_type}) : addFile(file);
+        }}
+        item={currentFile}
+        isViewMode={isViewMode}
       />
 
       <WidgetPopUpDelete

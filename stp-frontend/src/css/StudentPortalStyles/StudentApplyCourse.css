@@ -487,3 +487,22 @@ ul {
   background-color:#CFD6DC
 }
 
+
+.form-group label {
+  flex: 0 0 150px;
+  margin-right: 1rem;
+  font-weight: bold;
+ /* Adjust width as needed */
+  text-align: right;
+  
+ 
+}
+
+.form-group input,
+.form-group select {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+}
+

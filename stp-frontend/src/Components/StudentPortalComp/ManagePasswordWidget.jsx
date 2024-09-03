@@ -155,8 +155,8 @@ const ManagePasswordWidget = () => {
           </div>
           {error && <Alert variant="danger">{error}</Alert>}
           {success && <Alert variant="success">{success}</Alert>}
-          <Form onSubmit={handleSubmit} className="w-100 px-4 ">
-            <Form.Group className="mb-3" controlId="formCurrentPassword">
+          <Form onSubmit={handleSubmit} className="w-100 px-4  ">
+            <Form.Group className="mb-3 px-5" controlId="formCurrentPassword">
               <Form.Label className="fw-bold small formlabel">Current Password<span className="text-danger">    *</span></Form.Label>
               <InputGroup className="password-input-group">
                 <Form.Control
@@ -174,7 +174,7 @@ const ManagePasswordWidget = () => {
                 </InputGroup.Text>
               </InputGroup>
             </Form.Group>
-            <Form.Group className="mb-3" controlId="formNewPassword">
+            <Form.Group className="mb-3 px-5" controlId="formNewPassword">
               <Form.Label className="fw-bold small formlabel">New Password<span className="text-danger">    *</span></Form.Label>
               <InputGroup className="password-input-group">
                 <Form.Control
@@ -202,7 +202,7 @@ const ManagePasswordWidget = () => {
                 <small className="text-danger d-block">New password must be different from the current password</small>
               )}
             </Form.Group>
-            <Form.Group className="mb-3" controlId="formConfirmPassword">
+            <Form.Group className="mb-3 px-5" controlId="formConfirmPassword">
               <Form.Label className="fw-bold small formlabel">Confirm New Password<span className="text-danger">    *</span></Form.Label>
               <InputGroup className="password-input-group">
                 <Form.Control

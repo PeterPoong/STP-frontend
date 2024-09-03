@@ -9,6 +9,7 @@ import NavButtonsSP from "../../Components/StudentPortalComp/NavButtonsSP";
 import SpcFooter from "../../Components/StudentPortalComp/SpcFooter";
 import ApplicationSummary from "../../Components/StudentPortalComp/ApplicationSummary";
 import "../../css/StudentPortalStyles/StudentApplyCourse.css";
+import "../../css/StudentPortalStyles/StudentButtonGroup.css";
 import image1 from "../../assets/StudentAssets/University Logo/image1.jpg";
 import { components } from 'react-select';
 import styled from 'styled-components';
@@ -51,8 +52,8 @@ const CustomConnector = styled(StepConnector)(({ theme }) => ({
 // Update the CustomStepper component
 const CustomStepper = styled(Stepper)(({ theme }) => ({
   '& .MuiStepConnector-line': {
-    borderWidth:"0.5rem",
-    
+    borderWidth: "0.5rem",
+
   },
 }));
 
@@ -127,7 +128,7 @@ const CustomStepIcon = styled('div')(({ theme, ownerState }) => ({
   color: '#fff',
   fontWeight: 'bold',
   fontSize: '1.5rem',
-  zIndex:1,
+  zIndex: 1,
 }));
 
 const StepIcon = (props) => {
@@ -632,15 +633,14 @@ const StudentApplyCourse = () => {
     const renderNavButtons = () => (
       <div className="d-flex justify-content-between mt-4">
         {activeStep > 0 && (
-          <Button variant="secondary" onClick={() => setActiveStep(activeStep - 1)} className="me-2">
+          <Button  onClick={() => setActiveStep(activeStep - 1)} className="me-2 rounded-pill px-5 sac-previous-button">
             Back
           </Button>
         )}
         {activeStep < 5 && (
           <Button
-            variant="primary"
             onClick={() => setActiveStep(activeStep + 1)}
-            className={activeStep === 0 ? "ms-auto" : ""}
+            className={`${activeStep === 0 ? "ms-auto" : ""} sac-next-button rounded-pill px-5`}
           >
             Next
           </Button>
@@ -651,156 +651,192 @@ const StudentApplyCourse = () => {
     switch (activeStep) {
       case 0:
         return (
-          <div className="step-content p-4 rounded ">
+          <div className="step-content p-4 rounded">
             <h3 className="border-bottom pb-2 fw-normal">Basic Information</h3>
-            <div className="sap-content  w-100 d-flex justify-content-center">
-              <div className="sap-content w-50">
-                <Row className="mb-3">
-                  <Col xs={6}>
-                    <Form.Group controlId="firstName">
-                      <Form.Label>First Name</Form.Label>
-                      <Form.Control
+            <div className="sap-content w-100 d-flex justify-content-center">
+              <div className="sap-content w-100 py-5 px-5">
+                <div className="row mb-5">
+                  <div className="col-md-6 ">
+                    <div className="form-group d-flex align-items-center">
+                      <label htmlFor="firstName" className="me-2">First Name<span className="text-danger">*</span></label>
+                      <input
                         type="text"
+                        id="firstName"
                         name="firstName"
                         value={formData.firstName}
                         onChange={handleInputChange}
+                        className="form-control"
+                        placeholder="First Name"
                         required
                       />
-                    </Form.Group>
-                  </Col>
-                  <Col xs={6}>
-                    <Form.Group controlId="lastName">
-                      <Form.Label>Last Name</Form.Label>
-                      <Form.Control
+                    </div>
+                  </div>
+                  <div className="col-md-6">
+                    <div className="form-group d-flex align-items-center">
+                      <label htmlFor="lastName" className="me-2">Last Name<span className="text-danger">*</span></label>
+                      <input
                         type="text"
+                        id="lastName"
                         name="lastName"
                         value={formData.lastName}
                         onChange={handleInputChange}
+                        className="form-control"
+                        placeholder="Last Name"
                         required
                       />
-                    </Form.Group>
-                  </Col>
-                </Row>
-                <Row className="mb-3">
-                  <Col xs={6}>
-                    <Form.Group controlId="icNumber">
-                      <Form.Label>IC Number</Form.Label>
-                      <Form.Control
+                    </div>
+                  </div>
+                </div>
+                <div className="row mb-5">
+                  <div className="col-md-6">
+                    <div className="form-group d-flex align-items-center">
+                      <label htmlFor="icNumber" className="me-2">IC Number<span className="text-danger">*</span></label>
+                      <input
                         type="text"
+                        id="icNumber"
                         name="icNumber"
                         value={formData.icNumber}
                         onChange={handleInputChange}
+                        className="form-control"
+                        placeholder="IC Number"
                         required
                       />
-                    </Form.Group>
-                  </Col>
-                  <Col xs={6}>
-                    <Form.Group controlId="gender">
-                      <Form.Label>Gender</Form.Label>
-                      <Form.Control
-                        as="select"
+                    </div>
+                  </div>
+                  <div className="col-md-6">
+                    <div className="form-group d-flex align-items-center">
+                      <label htmlFor="gender" className="me-2">Gender<span className="text-danger">*</span></label>
+                      <select
+                        id="gender"
                         name="gender"
                         value={formData.gender}
                         onChange={handleInputChange}
+                        className="form-control"
                         required
                       >
                         <option value="">Select Gender</option>
                         <option value="male">Male</option>
                         <option value="female">Female</option>
                         <option value="other">Other</option>
-                      </Form.Control>
-                    </Form.Group>
-                  </Col>
-                </Row>
-                <Row className="mb-3">
-                  <Col xs={6}>
-                    <Form.Group controlId="contactNumber">
-                      <Form.Label>Contact Number</Form.Label>
-                      <Form.Control
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div className="row mb-5">
+                  <div className="col-md-6">
+                    <div className="form-group d-flex align-items-center">
+                      <label htmlFor="contactNumber" className="me-2">Contact Number<span className="text-danger">*</span></label>
+                      <input
                         type="tel"
+                        id="contactNumber"
                         name="contactNumber"
                         value={formData.contactNumber}
                         onChange={handleInputChange}
+                        className="form-control"
+                        placeholder="Contact Number"
                         required
                       />
-                    </Form.Group>
-                  </Col>
-                  <Col xs={6}>
-
-                  </Col>
-                </Row>
-                <Form.Group controlId="emailAddress">
-                  <Form.Label>Email Address</Form.Label>
-                  <Form.Control
-                    type="email"
-                    name="emailAddress"
-                    value={formData.emailAddress}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </Form.Group>
-                <Form.Group className="mb-3" controlId="address">
-                  <Form.Label>Address</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="address"
-                    value={formData.address}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </Form.Group>
-                <Row className="mb-3">
-                  <Col xs={6}>
-                    <Form.Group controlId="country">
-                      <Form.Label>Country</Form.Label>
-                      <Form.Control
+                    </div>
+                  </div>
+                </div>
+                <div className="row mb-5">
+                  <div className="col-md-12">
+                    <div className="form-group d-flex align-items-center">
+                      <label htmlFor="emailAddress" className="me-0 form-label">Email Address<span className="text-danger">*</span></label>
+                      <input
+                        type="email"
+                        id="emailAddress"
+                        name="emailAddress"
+                        value={formData.emailAddress}
+                        onChange={handleInputChange}
+                        className="form-control ms-2"
+                        placeholder="Email Address"
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="row mb-5">
+                  <div className="col-md-12">
+                    <div className="form-group d-flex align-items-center">
+                      <label htmlFor="address" className="me-0 form-label">Address<span className="text-danger">*</span></label>
+                      <input
                         type="text"
+                        id="address"
+                        name="address"
+                        value={formData.address}
+                        onChange={handleInputChange}
+                        className="form-control ms-2"
+                        placeholder="Address"
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="row mb-5">
+                  <div className="col-md-6">
+                    <div className="form-group d-flex align-items-center">
+                      <label htmlFor="country" className="me-2">Country<span className="text-danger">*</span></label>
+                      <input
+                        type="text"
+                        id="country"
                         name="country"
                         value={formData.country}
                         onChange={handleInputChange}
+                        className="form-control"
+                        placeholder="Country"
                         required
                       />
-                    </Form.Group>
-                  </Col>
-                  <Col xs={6}>
-                    <Form.Group controlId="state">
-                      <Form.Label>State</Form.Label>
-                      <Form.Control
+                    </div>
+                  </div>
+                  <div className="col-md-6">
+                    <div className="form-group d-flex align-items-center">
+                      <label htmlFor="state" className="me-2">State<span className="text-danger">*</span></label>
+                      <input
                         type="text"
+                        id="state"
                         name="state"
                         value={formData.state}
                         onChange={handleInputChange}
+                        className="form-control"
+                        placeholder="State"
                         required
                       />
-                    </Form.Group>
-                  </Col>
-                </Row>
-                <Row className="mb-3">
-                  <Col xs={6}>
-                    <Form.Group controlId="city">
-                      <Form.Label>City</Form.Label>
-                      <Form.Control
+                    </div>
+                  </div>
+                </div>
+                <div className="row mb-5">
+                  <div className="col-md-6">
+                    <div className="form-group d-flex align-items-center">
+                      <label htmlFor="city" className="me-2">City<span className="text-danger">*</span></label>
+                      <input
                         type="text"
+                        id="city"
                         name="city"
                         value={formData.city}
                         onChange={handleInputChange}
+                        className="form-control"
+                        placeholder="City"
                         required
                       />
-                    </Form.Group>
-                  </Col>
-                  <Col xs={6}>
-                    <Form.Group controlId="postcode">
-                      <Form.Label>Postcode</Form.Label>
-                      <Form.Control
+                    </div>
+                  </div>
+                  <div className="col-md-6">
+                    <div className="form-group d-flex align-items-center">
+                      <label htmlFor="postcode" className="me-2">Postcode<span className="text-danger">*</span></label>
+                      <input
                         type="text"
+                        id="postcode"
                         name="postcode"
                         value={formData.postcode}
                         onChange={handleInputChange}
+                        className="form-control"
+                        placeholder="Postcode"
                         required
                       />
-                    </Form.Group>
-                  </Col>
-                </Row>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
             {renderNavButtons()}

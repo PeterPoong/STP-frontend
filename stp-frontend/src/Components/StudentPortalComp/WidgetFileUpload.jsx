@@ -38,6 +38,18 @@ const WidgetFileUpload = ({ isOpen, onClose, onSave, item, isViewMode }) => {
     setMedia(null);
   };
 
+  const handleViewClick = () => {
+    if (media instanceof File) {
+      // For newly uploaded files
+      const fileUrl = URL.createObjectURL(media);
+      window.open(fileUrl, '_blank');
+    } else if (media) {
+      // For existing files
+      const fullUrl = `${import.meta.env.VITE_BASE_URL}storage/${media}`;
+      window.open(fullUrl, '_blank');
+    }
+  };
+
   return (
     <div className="upload-widget-overlay">
       <div className="upload-widget-popup">
@@ -80,7 +92,7 @@ const WidgetFileUpload = ({ isOpen, onClose, onSave, item, isViewMode }) => {
                 <span className="file-name">
                   {media instanceof File ? media.name : media}
                 </span>
-                <button className="view-button">Click to view</button>
+                <button className="view-button" onClick={handleViewClick}>Click to view</button>
               </div>
             </div>
             {!isViewMode && (

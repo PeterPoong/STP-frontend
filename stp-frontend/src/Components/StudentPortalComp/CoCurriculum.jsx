@@ -274,30 +274,33 @@ const CoCurriculum = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {currentItems.map((item) => (
-                            <tr key={item.id || item.club_name}>
-                                <td className="border-bottom p-4">
-                                    <div className="d-flex align-items-center">
-                                        <div>
-                                            <div className="file-title">{item.club_name}</div>
-                                            <div className="file-date">{item.location}</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td className="border-bottom p-2">{item.student_position}</td>
-                                <td className="border-bottom p-2">{item.year}</td>
-                                <td className="border-bottom p-2">
-                                    <div className="d-flex justify-content-end align-items-center">
-                                        <Trash2 className="iconat-trash" onClick={() => openDeletePopup(item)} />
-                                        <Edit2 className="iconat" onClick={() => editEntry(item)} />
-                                        <Eye className="iconat" onClick={() => viewEntry(item)} />
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
+                        <TransitionGroup component={null}>
+                            {currentItems.map((item) => (
+                                <CSSTransition key={item.id || item.club_name} timeout={300} classNames="fade">
+                                    <tr>
+                                        <td className="border-bottom p-4">
+                                            <div className="d-flex align-items-center">
+                                                <div>
+                                                    <div className="file-title">{item.club_name}</div>
+                                                    <div className="file-date">{item.location}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className="border-bottom p-2">{item.student_position}</td>
+                                        <td className="border-bottom p-2">{item.year}</td>
+                                        <td className="border-bottom p-2">
+                                            <div className="d-flex justify-content-end align-items-center">
+                                                <Trash2 className="iconat-trash" onClick={() => openDeletePopup(item)} />
+                                                <Edit2 className="iconat" onClick={() => editEntry(item)} />
+                                                <Eye className="iconat" onClick={() => viewEntry(item)} />
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </CSSTransition>
+                            ))}
+                        </TransitionGroup>
                     </tbody>
                 </table>
-
             ) : (
                 <div>No other certificate or documentation found</div>
             )}

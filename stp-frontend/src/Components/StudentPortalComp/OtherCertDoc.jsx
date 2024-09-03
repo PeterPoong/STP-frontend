@@ -275,7 +275,6 @@ const OtherCertDoc = () => {
             </div>
 
             {Array.isArray(filteredData) && filteredData.length > 0 ? (
-
                 <table className="w-100 ">
                     <thead>
                         <tr>
@@ -285,34 +284,36 @@ const OtherCertDoc = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {filteredData.map((item) => (
-                            <tr key={item.id || item.certificate_name}>
-                                <td className="border-bottom p-4">
-                                    <div className="d-flex align-items-center">
-                                        <FileText className="file-icon me-2" />
-                                        <div>
-                                            <div className="file-title">{item.name}</div>
-                                            <div className="file-date">{item.created_at || 'No date'}</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td className="border-bottom p-2 text-end text-secondary">{item.media || 'No file'}</td>
-                                <td className="border-bottom p-2">
-                                    <div className="d-flex justify-content-end align-items-center">
-                                        <Trash2 className="iconat-trash" onClick={() => openDeletePopup(item)} />
-                                        <Edit2 className="iconat" onClick={() => editEntry(item)} />
-                                        <Eye className="iconat" onClick={() => viewEntry(item)} />
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
+                        <TransitionGroup component={null}>
+                            {filteredData.map((item) => (
+                                <CSSTransition key={item.id || item.certificate_name} timeout={300} classNames="fade">
+                                    <tr>
+                                        <td className="border-bottom p-4">
+                                            <div className="d-flex align-items-center">
+                                                <FileText className="file-icon me-2" />
+                                                <div>
+                                                    <div className="file-title">{item.name}</div>
+                                                    <div className="file-date">{item.created_at || 'No date'}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className="border-bottom p-2 text-end text-secondary">{item.media || 'No file'}</td>
+                                        <td className="border-bottom p-2">
+                                            <div className="d-flex justify-content-end align-items-center">
+                                                <Trash2 className="iconat-trash" onClick={() => openDeletePopup(item)} />
+                                                <Edit2 className="iconat" onClick={() => editEntry(item)} />
+                                                <Eye className="iconat" onClick={() => viewEntry(item)} />
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </CSSTransition>
+                            ))}
+                        </TransitionGroup>
                     </tbody>
                 </table>
-
             ) : (
                 <div>No other certificate or documentation found</div>
             )}
-
             {paginationInfo.lastPage > 1 && (
                 <div className="pagination">
                     <button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1}>

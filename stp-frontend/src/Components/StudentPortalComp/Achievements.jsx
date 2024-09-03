@@ -286,28 +286,32 @@ const Achievements = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {currentItems.map((item) => (
-                            <tr key={item.id || item.achievement_name}>
-                                <td className="border-bottom p-4">
-                                    <div className="d-flex align-items-center">
-                                        <div>
-                                            <div className="file-title">{item.achievement_name}</div>
-                                            <div className="file-date">{item.awarded_by}</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td className="border-bottom p-2 text-end file-date">{item.title_obtained}</td>
-                                <td className="border-bottom p-2 text-end">{item.date}</td>
-                                <td className="border-bottom p-2 text-end file-date">{item.achievement_media}</td>
-                                <td className="border-bottom p-2">
-                                    <div className="d-flex justify-content-end align-items-center">
-                                        <Trash2 className="iconat-trash" onClick={() => openDeletePopup(item)} />
-                                        <Edit2 className="iconat" onClick={() => editEntry(item)} />
-                                        <Eye className="iconat" onClick={() => viewEntry(item)} />
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
+                        <TransitionGroup component={null}>
+                            {currentItems.map((item) => (
+                                <CSSTransition key={item.id || item.achievement_name} timeout={300} classNames="fade">
+                                    <tr>
+                                        <td className="border-bottom p-4">
+                                            <div className="d-flex align-items-center">
+                                                <div>
+                                                    <div className="file-title">{item.achievement_name}</div>
+                                                    <div className="file-date">{item.awarded_by}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className="border-bottom p-2 text-end file-date">{item.title_obtained}</td>
+                                        <td className="border-bottom p-2 text-end">{item.date}</td>
+                                        <td className="border-bottom p-2 text-end file-date">{item.achievement_media}</td>
+                                        <td className="border-bottom p-2">
+                                            <div className="d-flex justify-content-end align-items-center">
+                                                <Trash2 className="iconat-trash" onClick={() => openDeletePopup(item)} />
+                                                <Edit2 className="iconat" onClick={() => editEntry(item)} />
+                                                <Eye className="iconat" onClick={() => viewEntry(item)} />
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </CSSTransition>
+                            ))}
+                        </TransitionGroup>
                     </tbody>
                 </table>
             ) : (
