@@ -5,7 +5,8 @@ import { ArrowClockwise } from "react-bootstrap-icons";
 import BasicInformation from "../../Components/SchoolPortalComp/BasicInformation";
 import ManagePassword from "../../Components/SchoolPortalComp/ManagePassword";
 import ManageAccount from "../../Components/SchoolPortalComp/ManageAccount";
-import Applicant from "../../Components/SchoolPortalComp/Application/Applicant";
+// import Applicant from "../../Components/SchoolPortalComp/Application/Applicant";
+import Applicant from "../../Components/SchoolPortalComp/Application/test";
 import Dashboard from "../../Components/SchoolPortalComp/Dashboard";
 import Courses from "../../Components/SchoolPortalComp/Courses";
 

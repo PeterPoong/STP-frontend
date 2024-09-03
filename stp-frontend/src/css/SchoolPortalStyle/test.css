@@ -1,0 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+
+.applicant-title {
+  text-align: center;
+  margin-top: 20px;
+  font-family: Arial, sans-serif; /* You can change this to your preferred font */
+}
+
+.applicant-title h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 24px; /* Adjust this size according to your design */
+  color: #333;
+}
