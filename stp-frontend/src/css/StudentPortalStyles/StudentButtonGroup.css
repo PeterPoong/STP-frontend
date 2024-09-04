@@ -39,3 +39,56 @@
     width:15%;
 }
 
+
+.sac-add-new-button
+{
+    background-color: #FFEEE8;
+    border-color: transparent;
+    color: #B71A18;
+    font-weight: 600;
+}
+
+.sac-add-new-button:hover,
+.sac-add-new-button :focus,
+.sac-add-new-button:active,
+.sac-add-new-button:active:focus
+{
+    background-color: #B71A18;
+    color: #FFEEE8;
+    border-color: transparent;
+}
+
+.sac-submit-button
+{
+    background-color: #B71A18;
+    border-color: #B71A18;
+    color:white';
+}
+
+.sac-submit-button:hover,
+.sac-submit-button:focus,
+.sac-submit-button:active,
+.sac-submit-button:active:focus
+{
+    background-color:#ffffff;
+    border-color: #B71A18;
+    color:#B71A18;
+}
+
+
+.as-knowmore-button
+{
+    background-color: #FF6B00;
+    border-color: #FF6B00;
+    color:white';
+}
+
+.as-knowmore-button:hover,
+.as-knowmore-button:focus,
+.as-knowmore-button:active,
+.as-knowmore-button:active:focus
+{
+    background-color: white;
+    border-color: #FF6B00;
+    color:#FF6B00;
+}

@@ -1,20 +1,29 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link } from "react-router-dom";
 import { Card, ListGroup, Collapse, Button, Modal } from 'react-bootstrap';
 import { PlusCircle, MinusCircle } from 'react-feather';
-import sampleprofile from "../../assets/StudentPortalAssets/sampleprofile.png";
+import defaultProfilePic from "../../assets/StudentPortalAssets/sampleprofile.png";
 import "../../css/StudentPortalStyles/StudentPortalBasicInformation.css";
 
-const MyProfileWidget = ({ onSelectContent }) => {
+const MyProfileWidget = ({ onSelectContent, profilePic }) => {
     const [isProfileExpanded, setIsProfileExpanded] = useState(false);
     const [isCoursesExpanded, setIsCoursesExpanded] = useState(false);
     const [selectedContent, setSelectedContent] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
-    const [profilePic, setProfilePic] = useState(sampleprofile);
+    const [localProfilePic, setLocalProfilePic] = useState(defaultProfilePic);
     const [errorUploadMessage, setErrorUploadMessage] = useState('');
+    const [selectedFileName, setSelectedFileName] = useState('');
     const fileInputRef = useRef(null);
     const token = sessionStorage.getItem("token");
+
+    useEffect(() => {
+        if (profilePic) {
+            setLocalProfilePic(`${import.meta.env.VITE_BASE_URL}storage/${profilePic}`);
+        } else {
+            setLocalProfilePic(defaultProfilePic);
+        }
+    }, [profilePic]);
 
     const handleContentSelect = (content) => {
         setSelectedContent(content);
@@ -36,6 +45,16 @@ const MyProfileWidget = ({ onSelectContent }) => {
     const handleFileChange = (event) => {
         const file = event.target.files[0];
         setSelectedFile(file);
+        setSelectedFileName(file ? file.name : '');
+        setErrorUploadMessage('');
+    };
+
+    const handleDeleteFile = () => {
+        setSelectedFile(null);
+        setSelectedFileName('');
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
     };
 
     const handleUpload = async () => {
@@ -55,18 +74,19 @@ const MyProfileWidget = ({ onSelectContent }) => {
                     }
                 );
 
-                if (!response.ok) {
-                    setErrorUploadMessage(response.statusText);
-                    const errorData = await response.json();
-                    console.log("Error response:", errorData);
-                    throw new Error("error:".response);
-                }
                 const data = await response.json();
+
+                if (!response.ok) {
+                    setErrorUploadMessage(data.message || 'An error occurred while uploading the image.');
+                    throw new Error(data.message || 'Upload failed');
+                }
+
                 console.log("File uploaded successfully:", data.data);
                 setShowModal(false);
-                setProfilePic(`${import.meta.env.VITE_BASE_URL}storage/${data.data.porfilePic}`);
+                setLocalProfilePic(`${import.meta.env.VITE_BASE_URL}storage/${data.data.porfilePic}`);
             } catch (error) {
                 console.error("Error uploading file:", error);
+                setErrorUploadMessage(error.message || 'An unexpected error occurred.');
             }
         }
     };
@@ -83,9 +103,13 @@ const MyProfileWidget = ({ onSelectContent }) => {
                     position: 'relative'
                 }}>
                     <img
-                        src={profilePic}
+                        src={localProfilePic}
                         alt="Profile"
                         style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
+                        onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = defaultProfilePic;
+                        }}
                     />
                     <Button
                         variant="danger"
@@ -108,14 +132,33 @@ const MyProfileWidget = ({ onSelectContent }) => {
                             <Modal.Title>Select a Photo</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
-                            <input
-                                type="file"
-                                ref={fileInputRef}
-                                onChange={handleFileChange}
-                                accept="image/*"
-                            />
+                            {!selectedFileName ? (
+                                <input
+                                    type="file"
+                                    ref={fileInputRef}
+                                    onChange={handleFileChange}
+                                    accept="image/*"
+                                    style={{ display: 'none' }}
+                                />
+                            ) : (
+                                <div className="d-flex justify-content-between align-items-center">
+                                    <span>{selectedFileName}</span>
+                                    <Button variant="outline-danger" size="sm" onClick={handleDeleteFile}>
+                                        X
+                                    </Button>
+                                </div>
+                            )}
+                            {!selectedFileName && (
+                                <Button 
+                                    variant="outline-primary" 
+                                    onClick={() => fileInputRef.current.click()}
+                                    className="mt-2"
+                                >
+                                    Select File
+                                </Button>
+                            )}
                             {errorUploadMessage && (
-                                <div style={{ color: "red", marginTop: "5px" }}>
+                                <div style={{ color: "red", marginTop: "10px" }}>
                                     {errorUploadMessage}
                                 </div>
                             )}
@@ -124,7 +167,11 @@ const MyProfileWidget = ({ onSelectContent }) => {
                             <Button variant="secondary" onClick={() => setShowModal(false)}>
                                 Cancel
                             </Button>
-                            <Button variant="primary" onClick={handleUpload}>
+                            <Button 
+                                variant="primary" 
+                                onClick={handleUpload}
+                                disabled={!selectedFile}
+                            >
                                 Upload
                             </Button>
                         </Modal.Footer>

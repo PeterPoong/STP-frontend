@@ -5,7 +5,7 @@ import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import axios from 'axios';
 
-const BasicInformationWidget = () => {
+const BasicInformationWidget = ({ onProfilePicUpdate }) => {
   const [studentData, setStudentData] = useState({
     id: '',
     username: '',
@@ -133,6 +133,9 @@ const BasicInformationWidget = () => {
 
         // Set phone state
         setPhone(`${updatedStudentData.country_code}${updatedStudentData.contact}`);
+
+        // Add this line to update the profile picture
+        onProfilePicUpdate(responseData.data.profilePic || '');
 
         setIsLoading(false);
       }

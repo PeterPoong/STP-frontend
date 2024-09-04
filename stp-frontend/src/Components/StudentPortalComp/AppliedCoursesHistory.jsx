@@ -13,6 +13,7 @@ const AppliedCoursesHistory = () => {
     const [isAcceptedOpen, setIsAcceptedOpen] = useState(false);
     const [isRejectedOpen, setIsRejectedOpen] = useState(false);
     const [applications, setApplications] = useState([]);
+    const [selectedApplication, setSelectedApplication] = useState(null);
 
     // Calculate first and last item index
     const indexOfLastItem = currentPage * itemsPerPage;
@@ -69,8 +70,9 @@ const AppliedCoursesHistory = () => {
         pageNumbers.push(i);
     }
 
-    const handleView = (status) => {
-        switch(status) {
+    const handleView = (application) => {
+        setSelectedApplication(application);
+        switch(application.status) {
             case "Accepted":
                 setIsAcceptedOpen(true);
                 break;
@@ -140,7 +142,7 @@ const AppliedCoursesHistory = () => {
                                         <span className={`acp-status-badge acp-status-${app.status.toLowerCase()}`}>{app.status}</span>
                                         <div className="acp-action-buttons">
                                             {app.status !== "WithDrawl" && (
-                                                <Button className="acp-view-btn btn-danger" onClick={() => handleView(app.status)}>Review</Button>
+                                                <Button className="acp-view-btn btn-danger" onClick={() => handleView(app)}>Review</Button>
                                             )}
                                         </div>
                                     </div>
@@ -173,8 +175,18 @@ const AppliedCoursesHistory = () => {
                     </div>
                 </Card.Body>
             </Card>
-            <WidgetAccepted isOpen={isAcceptedOpen} onClose={() => setIsAcceptedOpen(false)} />
-            <WidgetRejected isOpen={isRejectedOpen} onClose={() => setIsRejectedOpen(false)} />
+            <WidgetAccepted 
+                isOpen={isAcceptedOpen} 
+                onClose={() => setIsAcceptedOpen(false)}
+                date={selectedApplication ? selectedApplication.date_applied : ""}
+                feedbacks={selectedApplication && selectedApplication.feedback ? [selectedApplication.feedback] : []}
+            />
+            <WidgetRejected 
+                isOpen={isRejectedOpen} 
+                onClose={() => setIsRejectedOpen(false)}
+                date={selectedApplication ? selectedApplication.date_applied : ""}
+                feedbacks={selectedApplication && selectedApplication.feedback ? [selectedApplication.feedback] : []}
+            />
         </div>
     );
 };

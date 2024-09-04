@@ -23,7 +23,13 @@ import { faListCheck } from '@fortawesome/free-solid-svg-icons';
 import { Justify } from 'react-bootstrap-icons';
 
 import StepConnector, { stepConnectorClasses } from '@mui/material/StepConnector';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
+//testing
+import WidgetPopUpRemind from "../../Components/StudentPortalComp/WidgetPopUpRemind";
+import WidgetPopUpSubmission from "../../Components/StudentPortalComp/WidgetPopUpSubmission";
+import WidgetPopUpFillIn from "../../Components/StudentPortalComp/WidgetPopUpFillIn";
 
 // ... existing code ...
 
@@ -143,6 +149,12 @@ const StepIcon = (props) => {
 const StudentApplyCourse = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  //testing
+  // const [showRemindPopup, setShowRemindPopup] = useState(false);
+  const [showSubmissionPopup, setShowSubmissionPopup] = useState(false);
+  // const [showFillInPopup, setShowFillInPopup] = useState(false);
+
+  //
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -161,8 +173,11 @@ const StudentApplyCourse = () => {
   };
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Form submitted:', formData);
+    setShowSubmissionPopup(true);
+  };
+
+  const handleConfirmSubmission = () => {
+    setShowSubmissionPopup(false);
     setIsSubmitted(true);
   };
 
@@ -196,6 +211,21 @@ const StudentApplyCourse = () => {
         i === index ? { ...item, isEditing: true } : item
       )
     }));
+  };
+
+
+
+  const handleDateChangeAchievement = (date, index) => {
+    handleAchievementChange(index, 'date', date);
+  };
+
+  const formatDate = (date) => {
+    if (!date) return '';
+    return date.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
   };
 
   const handleSaveCoCurriculum = (index) => {
@@ -621,6 +651,10 @@ const StudentApplyCourse = () => {
     }
   };
 
+  //handle data change
+  const handleDateChange = (date, index) => {
+    handleAchievementChange(index, 'date', date);
+  };
 
   // DragHandle component
   const DragHandle = () => (
@@ -629,20 +663,46 @@ const StudentApplyCourse = () => {
     </svg>
   );
 
+
+
+  //remove file for academic trancript
+  const handleRemoveDocumentFile = (transcriptIndex, docIndex) => {
+    setFormData(prevData => ({
+      ...prevData,
+      academicTranscripts: prevData.academicTranscripts.map((transcript, i) =>
+        i === transcriptIndex ? {
+          ...transcript,
+          documents: transcript.documents.map((doc, j) =>
+            j === docIndex ? { ...doc, file: null, name: 'New Document' } : doc
+          )
+        } : transcript
+      )
+    }));
+  };
+
+
   const renderStep = () => {
     const renderNavButtons = () => (
       <div className="d-flex justify-content-between mt-4">
         {activeStep > 0 && (
-          <Button  onClick={() => setActiveStep(activeStep - 1)} className="me-2 rounded-pill px-5 sac-previous-button">
-            Back
+          <Button onClick={() => setActiveStep(activeStep - 1)} className="me-2 rounded-pill px-5 sac-previous-button">
+            Previous
           </Button>
         )}
-        {activeStep < 5 && (
+        {activeStep < 4 && (
           <Button
             onClick={() => setActiveStep(activeStep + 1)}
             className={`${activeStep === 0 ? "ms-auto" : ""} sac-next-button rounded-pill px-5`}
           >
             Next
+          </Button>
+        )}
+        {activeStep === 4 && (
+          <Button
+            onClick={handleSubmit}
+            className="sac-next-button rounded-pill px-5"
+          >
+            Submit
           </Button>
         )}
       </div>
@@ -956,20 +1016,32 @@ const StudentApplyCourse = () => {
                               <>
                                 <div className="d-flex flex-grow-1 align-items-center">
                                   <div className="me-3 border-end  px-3">
-                                    <Button
-                                      variant="secondary"
-                                      size="sm"
-                                      onClick={() => handleDocumentFileUpload(index, docIndex)}
-                                    >
-                                      <Upload size={15} className="me-2" />
-                                      Upload File
-                                    </Button>
-                                    <input
-                                      type="file"
-                                      id={`fileInput-${index}-${docIndex}`}
-                                      className="d-none"
-                                      onChange={(e) => handleDocumentFileChange(index, docIndex, e.target.files[0])}
-                                    />
+                                    {doc.file ? (
+                                      <>
+                                        <FileText size={15} className="me-2 ms-2" style={{ alignSelf: 'center' }} />
+                                        <span className="me-2" style={{ fontSize: '0.825rem', textAlign: 'center', flex: 1 }}>{doc.name}</span>
+                                        <Button variant="link" className="p-0" onClick={() => handleRemoveDocumentFile(index, docIndex)}>
+                                          <X size={15} color="red" />
+                                        </Button>
+                                      </>
+                                    ) : (
+                                      <>
+                                        <Button
+                                          variant="secondary"
+                                          size="sm"
+                                          onClick={() => handleDocumentFileUpload(index, docIndex)}
+                                        >
+                                          <Upload size={15} className="me-2" />
+                                          Upload File
+                                        </Button>
+                                        <input
+                                          type="file"
+                                          id={`fileInput-${index}-${docIndex}`}
+                                          className="d-none"
+                                          onChange={(e) => handleDocumentFileChange(index, docIndex, e.target.files[0])}
+                                        />
+                                      </>
+                                    )}
                                   </div>
                                   <div className="align-items-center flex-grow-1">
                                     <Form.Control
@@ -1024,7 +1096,7 @@ const StudentApplyCourse = () => {
             <Button
               variant="outline-primary"
               onClick={handleAddTranscript}
-              className="w-100 mt-3"
+              className="w-100 mt-3 sac-add-new-button"
             >
               Add New Transcript +
             </Button>
@@ -1107,11 +1179,11 @@ const StudentApplyCourse = () => {
                           <div className="me-3"><User size={18} className="me-2" />{item.position}</div>
                           <div><Building size={18} className="me-2" />{item.institution}</div>
                         </div>
-                        <div className="d-flex align-items-center">
-                          <Button variant="link" onClick={() => handleEditCoCurriculum(index)} className="p-0 me-2">
+                        <div>
+                          <Button variant="link" onClick={() => handleEditCoCurriculum(index)} className=" me-2">
                             <Edit size={18} color="black" />
                           </Button>
-                          <Button variant="link" onClick={() => handleRemoveCoCurriculum(index)} className="p-0">
+                          <Button variant="link" onClick={() => handleRemoveCoCurriculum(index)} className="">
                             <Trash2 size={18} color="red" />
                           </Button>
                         </div>
@@ -1124,7 +1196,7 @@ const StudentApplyCourse = () => {
             <Button
               variant="outline-primary"
               onClick={handleAddCoCurriculum}
-              className="w-100 mt-3"
+              className="w-100 mt-3 sac-add-new-button"
             >
               Add New +
             </Button>
@@ -1146,33 +1218,29 @@ const StudentApplyCourse = () => {
                         placeholder="Name of Achievement..."
                         value={item.name}
                         onChange={(e) => handleAchievementChange(index, 'name', e.target.value)}
-                        className="mb-2 border-0 p-0 fw-bold"
+                        className="mb-2 border-0 p-0 fw-bold w-25"
                         style={{ fontSize: '1.1rem' }}
                       />
-                      <div className="d-flex justify-content-between">
+                      <div className="d-flex justify-content-between ps-0">
                         <div className="d-flex flex-grow-1 ">
-                          <div className="d-flex align-items-center me-3 w-25">
+                          <div className="d-flex align-items-center me-3 ">
                             <Calendar size={18} className="me-2" />
-                            <Select
-                              options={yearOptions}
-                              value={{ value: item.year, label: item.year }}
-                              onChange={(selectedOption) => handleAchievementChange(index, 'year', selectedOption.value)}
-                              placeholder="Year"
-                              className="flex-grow-1"
-                              styles={customStyles}
-                              components={{ Option: CustomOption }}
-                              isClearable={false}
-                              isSearchable={true}
+                            <DatePicker
+                              selected={item.date ? new Date(item.date) : null}
+                              onChange={(date) => handleDateChangeAchievement(date, index)}
+                              dateFormat="dd/MM/yyyy"
+                              className="form-control py-0 px-2"
+                              placeholderText="Select date"
                             />
                           </div>
-                          <div className="d-flex align-items-center me-3">
+                          <div className="d-flex align-items-center me-3 ">
                             <Trophy size={18} className="me-2" />
                             <Form.Control
                               type="text"
                               placeholder="Position"
                               value={item.position}
                               onChange={(e) => handleAchievementChange(index, 'position', e.target.value)}
-                              className="py-0 px-2"
+                              className="py-0 px-2 w-100"
                             />
                           </div>
                           <div className="d-flex align-items-center">
@@ -1203,7 +1271,7 @@ const StudentApplyCourse = () => {
                                 <FileText size={18} className="me-2" />
                                 <Button
                                   variant="secondary"
-                                  className="d-flex align-items-center py-1 px-2 rounded-2"
+                                  className="d-flex align-items-center py-1 px-4 rounded-2 "
                                   onClick={() => document.getElementById(`achievementFileInput-${index}`).click()}
                                 >
                                   Upload File
@@ -1236,7 +1304,10 @@ const StudentApplyCourse = () => {
                       <div className="fw-bold mb-2" style={{ fontSize: '1.1rem' }}>{item.name}</div>
                       <div className="d-flex justify-content-between">
                         <div className="d-flex flex-grow-1 align-items-center">
-                          <div className="me-3"><Calendar size={18} className="me-2" />{item.year}</div>
+                          <div className="me-3">
+                            <Calendar size={18} className="me-2" />
+                            {item.date ? formatDate(new Date(item.date)) : 'No date selected'}
+                          </div>
                           <div className="me-3"><Trophy size={18} className="me-2" />{item.position}</div>
                           <div className="me-3"><Building size={18} className="me-2" />{item.institution}</div>
                           {item.file && (
@@ -1247,10 +1318,10 @@ const StudentApplyCourse = () => {
                           )}
                         </div>
                         <div className=" d-flex justify-content-end">
-                          <Button variant="link" onClick={() => handleEditAchievement(index)} className="p-0 me-2">
+                          <Button variant="link" onClick={() => handleEditAchievement(index)} className="me-2">
                             <Edit size={18} color="black" />
                           </Button>
-                          <Button variant="link" onClick={() => handleRemoveAchievement(index)} className="p-0">
+                          <Button variant="link" onClick={() => handleRemoveAchievement(index)} className="">
                             <Trash2 size={18} color="red" />
                           </Button>
                         </div>
@@ -1265,7 +1336,7 @@ const StudentApplyCourse = () => {
             <Button
               variant="outline-primary"
               onClick={handleAddAchievement}
-              className="w-100 mt-3"
+              className="w-100 mt-3 sac-add-new-button"
             >
               Add New Achievement +
             </Button>
@@ -1305,10 +1376,10 @@ const StudentApplyCourse = () => {
                               </Button>
                             </div>
                           ) : (
-                            <div className="d-flex align-items-center">
+                            <div className="d-flex align-items-center ">
                               <Button
                                 variant="secondary"
-                                className="d-flex align-items-center"
+                                className="d-flex align-items-center mx-0"
                                 onClick={() => document.getElementById(`otherDocFileInput-${index}`).click()}
                               >
                                 <Upload size={18} className="me-2" />
@@ -1347,10 +1418,10 @@ const StudentApplyCourse = () => {
                           )}
                         </div>
                         <div className="d-flex justify-content-end align-items-end ">
-                          <Button variant="link" onClick={() => handleEditOtherDoc(index)} className="p-0 me-2">
-                            <Edit size={18} />
+                          <Button variant="link" onClick={() => handleEditOtherDoc(index)} className=" me-2">
+                            <Edit size={18} color="black" />
                           </Button>
-                          <Button variant="link" onClick={() => handleRemoveOtherDoc(index)} className="p-0">
+                          <Button variant="link" onClick={() => handleRemoveOtherDoc(index)} className="">
                             <Trash2 size={18} color="red" />
                           </Button>
                         </div>
@@ -1363,23 +1434,14 @@ const StudentApplyCourse = () => {
             <Button
               variant="outline-primary"
               onClick={handleAddOtherDoc}
-              className="w-100 mt-3"
+              className="w-100 mt-3 sac-add-new-button"
             >
               Add New Document +
             </Button>
             {renderNavButtons()}
           </div>
         );
-      case 5:
-        return (
-          <div className="step-content">
-            <h2>Save and Submit</h2>
-            <p>Please review your information carefully before submitting your application.</p>
-            <Button variant="success" onClick={handleSubmit}>
-              Save and Submit Application
-            </Button>
-          </div>
-        );
+
       default:
         return null;
     }
@@ -1399,10 +1461,10 @@ const StudentApplyCourse = () => {
         </div>
       </div>
       <div className="d-flex justify-content-center mt-4">
-        <Button variant="primary" className="me-3" onClick={handleViewSummary}>
+        <Button  className="me-3 sac-submit-button" onClick={handleViewSummary}>
           View Summary
         </Button>
-        <Button variant="secondary" onClick={() => {/* Add logic to go back to course page */ }}>
+        <Button className="sac-submit-button" onClick={() => {/* Add logic to go back to course page */ }}>
           Back to Course Page
         </Button>
       </div>
@@ -1464,10 +1526,16 @@ const StudentApplyCourse = () => {
           {renderStep()}
         </Form>
       </div>
+      <WidgetPopUpSubmission
+        isOpen={showSubmissionPopup}
+        onClose={() => setShowSubmissionPopup(false)}
+        onConfirm={handleConfirmSubmission}
+      />
       <SpcFooter />
     </div>
   );
 };
+
 
 
 export default StudentApplyCourse;

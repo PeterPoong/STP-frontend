@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Button } from 'react-bootstrap';
-import { FileText, Search, Eye, ChevronDown, ChevronUp,Clock } from 'react-feather';
+import { FileText, Search, Eye, ChevronDown, ChevronUp, Clock, Copy } from 'react-feather';
 import "../../css/StudentPortalStyles/StudentApplyCourse.css";
 import image1 from "../../assets/StudentAssets/University Logo/image1.jpg";
+import "../../css/StudentPortalStyles/StudentButtonGroup.css";
 const fakeFormData = {
   profilePicture: "https://example.com/fake-profile-pic.jpg",
   name: "John Doe",
@@ -24,8 +25,14 @@ const fakeFormData = {
     { name: "School Prefect", year: "2022", position: "President", location: "SMK Subang Jaya" },
     { name: "Debate Club", year: "2021", position: "Secretary", location: "District Level" },
     { name: "Basketball Team", year: "2020", position: "Captain", location: "State Level" },
+    { name: "School Prefect", year: "2022", position: "President", location: "SMK Subang Jaya" },
+    { name: "Debate Club", year: "2021", position: "Secretary", location: "District Level" },
+    { name: "Basketball Team", year: "2020", position: "Captain", location: "State Level" },
   ],
   achievements: [
+    { name: "National Science Olympiad", date: "2022", position: "Gold Medal", location: "Kuala Lumpur" },
+    { name: "Inter-School Debate Competition", date: "2021", position: "Champion", location: "Selangor" },
+    { name: "State-level Essay Writing Contest", date: "2020", position: "Runner-up", location: "Penang" },
     { name: "National Science Olympiad", date: "2022", position: "Gold Medal", location: "Kuala Lumpur" },
     { name: "Inter-School Debate Competition", date: "2021", position: "Champion", location: "Selangor" },
     { name: "State-level Essay Writing Contest", date: "2020", position: "Runner-up", location: "Penang" },
@@ -37,6 +44,15 @@ const ApplicationSummary = ({ formData = fakeFormData }) => {
   const [activeDocumentTab, setActiveDocumentTab] = useState('achievements');
   const [showFullOverview, setShowFullOverview] = useState(false);
   const [showFullRequirements, setShowFullRequirements] = useState(false);
+
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text).then(() => {
+      // Optionally, you can show a tooltip or notification that the text was copied
+      console.log('Copied to clipboard');
+    }).catch(err => {
+      console.error('Failed to copy: ', err);
+    });
+  };
 
   const renderDocumentsContent = () => {
     const documents = {
@@ -130,7 +146,7 @@ const ApplicationSummary = ({ formData = fakeFormData }) => {
             <img src={image1} className="school-logo" style={{ width: '25%', height: 'auto', maxHeight: '9rem' }} />
             <h1 style={{ fontSize: '3rem', margin: '1rem 0' }}>Swinburne University of Technology</h1>
           </div>
-          <Button variant="primary" className="mx-auto mt-5 w-25" style={{ padding: '0.5rem 1.5rem', fontSize: '1rem' }}>Know More</Button>
+          <Button  className="mx-auto mt-5 w-25 as-knowmore-button" style={{ padding: '0.5rem 1.5rem', fontSize: '1rem' }}>Know More</Button>
         </div>
 
         <div className="bg-white mt-3 rounded-1 shadow p-4 ">
@@ -201,7 +217,7 @@ const ApplicationSummary = ({ formData = fakeFormData }) => {
                   <p className="ms-3 text-secondary">Applied For: <span className="fw-bold text-black">{formData.course}</span></p>
                 </div>
               </div>
-              <Button variant="danger">Print Summary</Button>
+              <Button className="sac-submit-button">Print Summary</Button>
             </div>
             <div className="summary-tabs d-flex column">
               <Button
@@ -237,21 +253,21 @@ const ApplicationSummary = ({ formData = fakeFormData }) => {
                         <div className="col-md-6">
                           <div className="mb-3">
                             <p><strong>Student Name</strong></p>
-                            <p>{formData.name} <FileText size={16} /></p>
+                            <p>{formData.name} <Copy size={16} className="cursor-pointer" onClick={() => copyToClipboard(formData.name)} /></p>
                           </div>
                           <div className="mb-3">
                             <p><strong>Identity Card Number</strong></p>
-                            <p>{formData.icNumber} <FileText size={16} /></p>
+                            <p>{formData.icNumber} <Copy size={16} className="cursor-pointer" onClick={() => copyToClipboard(formData.icNumber)} /></p>
                           </div>
                         </div>
                         <div className="col-md-6">
                           <div className="mb-3">
                             <p><strong>Contact Number</strong></p>
-                            <p>{formData.phone} <FileText size={16} /></p>
+                            <p>{formData.phone} <Copy size={16} className="cursor-pointer" onClick={() => copyToClipboard(formData.phone)} /></p>
                           </div>
                           <div className="mb-3">
                             <p><strong>Email Address</strong></p>
-                            <p>{formData.email} <FileText size={16} /></p>
+                            <p>{formData.email} <Copy size={16} className="cursor-pointer" onClick={() => copyToClipboard(formData.email)} /></p>
                           </div>
                         </div>
                       </div>
@@ -259,7 +275,7 @@ const ApplicationSummary = ({ formData = fakeFormData }) => {
                         <div className="col-12">
                           <div className="address-field">
                             <p><strong>Address</strong></p>
-                            <p>{formData.address} <FileText size={16} /></p>
+                            <p>{formData.address} <Copy size={16} className="cursor-pointer" onClick={() => copyToClipboard(formData.address)} /></p>
                           </div>
                         </div>
                       </div>
@@ -287,9 +303,9 @@ const ApplicationSummary = ({ formData = fakeFormData }) => {
 
                   <div className="co-curriculum m-3 shadow-lg p-4 rounded-5">
                     <p className="text-secondary fw-bold border-bottom border-2 pb-3">Co-curriculum</p>
-                    <div className="activities-grid">
+                    <div className="activities-grid" style={{ maxHeight: '15rem', overflowY: 'auto' }}>
                       {formData.coCurricularActivities && formData.coCurricularActivities.map((activity, index) => (
-                        <div key={index} className="activity-item d-flex justify-content-between align-items-center">
+                        <div key={index} className="activity-item d-flex justify-content-between align-items-center py-2">
                           <div className="col-6">
                             <p className="mb-0"><strong>{activity.name}</strong></p>
                             <p className="mb-0 text-muted">{activity.location}</p>
@@ -306,9 +322,9 @@ const ApplicationSummary = ({ formData = fakeFormData }) => {
                   </div>
                   <div className="achievements m-3 shadow-lg p-4 rounded-5">
                     <p className="text-secondary fw-bold border-bottom border-2 pb-3">Achievements</p>
-                    <div className="achievements-grid">
+                    <div className="achievements-grid" style={{ maxHeight: '15rem', overflowY: 'auto' }}>
                       {formData.achievements && formData.achievements.map((achievement, index) => (
-                        <div key={index} className="achievement-item d-flex justify-content-between align-items-center">
+                        <div key={index} className="achievement-item d-flex justify-content-between align-items-center py-2">
                           <div className="col-6">
                             <p className="mb-0"><strong>{achievement.name}</strong></p>
                             <p className="mb-0 text-muted">{achievement.location}</p>

@@ -303,9 +303,9 @@ const Achievements = () => {
                                         <td className="border-bottom p-2 text-end file-date">{item.achievement_media}</td>
                                         <td className="border-bottom p-2">
                                             <div className="d-flex justify-content-end align-items-center">
-                                                <Trash2 className="iconat-trash" onClick={() => openDeletePopup(item)} />
-                                                <Edit2 className="iconat" onClick={() => editEntry(item)} />
-                                                <Eye className="iconat" onClick={() => viewEntry(item)} />
+                                                <Trash2 size={20}   className="iconat-trash" onClick={() => openDeletePopup(item)} />
+                                                <Edit2 size={20}   className="iconat" onClick={() => editEntry(item)} />
+                                                <Eye size={20}  className="iconat" onClick={() => viewEntry(item)} />
                                             </div>
                                         </td>
                                     </tr>

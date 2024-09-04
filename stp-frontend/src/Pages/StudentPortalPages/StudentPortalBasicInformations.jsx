@@ -13,6 +13,7 @@ import "../../css/StudentPortalStyles/StudentPortalBasicInformation.css";
 
 const StudentPortalBasicInformations = () => {
   const [selectedContent, setSelectedContent] = useState("basicInfo");
+  const [profilePic, setProfilePic] = useState(null);
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -68,12 +69,16 @@ const StudentPortalBasicInformations = () => {
     }
   };
 
+  const handleProfilePicUpdate = (newProfilePic) => {
+    setProfilePic(newProfilePic);
+  };
+
   const renderContent = () => {
     switch (selectedContent) {
       case "basicInfo":
         return (
           <div>
-            <BasicInformationWidget />
+            <BasicInformationWidget onProfilePicUpdate={handleProfilePicUpdate} />
           </div>
         );
       case "managePassword":
@@ -103,7 +108,7 @@ const StudentPortalBasicInformations = () => {
       <main className="main-content mt-5">
         <div className="content-wrapper">
           <div className="profile-widget-container">
-            <MyProfileWidget onSelectContent={setSelectedContent} />
+            <MyProfileWidget onSelectContent={setSelectedContent} profilePic={profilePic} />
           </div>
           <div className="content-area">{renderContent()}</div>
         </div>

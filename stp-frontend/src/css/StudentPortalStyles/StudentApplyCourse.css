@@ -1,6 +1,6 @@
 .app-container-applycourse {
   display: flex;
-  flex-direction:column;
+  flex-direction: column;
   min-height: 200vh;
   background-color: #F5F5F5;
 }
@@ -62,15 +62,16 @@
   background-color: white;
 }
 
-.sac-image{
+.sac-image {
   width: auto;
   height: 4.5em;
-  
+
 }
 
-.custom-select{
+.custom-select {
   border: red;
 }
+
 /*
 .custom-select__control {
   border: none !important;
@@ -191,6 +192,7 @@ select__menu-list::-webkit-scrollbar-thumb:hover {
   white-space: pre-line;
   text-align: center;
 }
+
 /* Add this to your existing CSS */
 .MuiStepLabel-label {
   white-space: pre-line;
@@ -198,16 +200,16 @@ select__menu-list::-webkit-scrollbar-thumb:hover {
 }
 
 .application-summary-container {
-  
+
   margin: 6rem 4rem;
   padding: 2rem 2rem;
- 
+
 }
 
 .application-summary-container-inside {
   background-color: white;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
 }
 
 .summary-title {
@@ -237,7 +239,7 @@ select__menu-list::-webkit-scrollbar-thumb:hover {
 
 .summary-tabs {
   border-bottom: 1px solid #dee2e6;
-  
+
 }
 
 .summary-tabs .btn-link {
@@ -247,13 +249,20 @@ select__menu-list::-webkit-scrollbar-thumb:hover {
 }
 
 .summary-tabs .btn-link.active {
-  color: #dc3545; /* Active text color */
-  border-bottom: 2px solid #dc3545; /* Thicker border for active tab */
-  font-weight: bold; /* Make the active tab bold */
-  padding-bottom: 0.5rem; /* Add some padding for better spacing */
+  color: #dc3545;
+  /* Active text color */
+  border-bottom: 2px solid #dc3545;
+  /* Thicker border for active tab */
+  font-weight: bold;
+  /* Make the active tab bold */
+  padding-bottom: 0.5rem;
+  /* Add some padding for better spacing */
 }
 
-.info-grid, .results-grid, .activities-grid, .achievements-grid {
+.info-grid,
+.results-grid,
+.activities-grid,
+.achievements-grid {
   grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
 }
@@ -264,17 +273,18 @@ select__menu-list::-webkit-scrollbar-thumb:hover {
 
 .grade-summary {
 
-  
+
   /*background-color: #dc3545;*/
   color: white;
-  
+
 }
 
-.activity-item, .achievement-item {
+.activity-item,
+.achievement-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #f8f9fa;
+  background-color: #ffffff;
   padding: 0.5rem;
   border-radius: 4px;
 }
@@ -287,13 +297,38 @@ select__menu-list::-webkit-scrollbar-thumb:hover {
   font-size: 0.8rem;
 }
 
-.president { background-color: #007bff; color: white;  }
-.secretary { background-color: #6f42c1; color: white; }
-.treasurer { background-color: #17a2b8; color: white; }
-.ajk { background-color: #ffc107; }
-.champion { background-color: #ffc107; }
-.runner-up { background-color: #6c757d; color: white; }
-.participation { background-color: #28a745; color: white; }
+.president {
+  background-color: #007bff;
+  color: white;
+}
+
+.secretary {
+  background-color: #6f42c1;
+  color: white;
+}
+
+.treasurer {
+  background-color: #17a2b8;
+  color: white;
+}
+
+.ajk {
+  background-color: #ffc107;
+}
+
+.champion {
+  background-color: #ffc107;
+}
+
+.runner-up {
+  background-color: #6c757d;
+  color: white;
+}
+
+.participation {
+  background-color: #28a745;
+  color: white;
+}
 
 .summary-content {
   display: grid;
@@ -303,11 +338,12 @@ select__menu-list::-webkit-scrollbar-thumb:hover {
 }
 
 .summary-content-yourdocument {
-  
+
   padding: 1rem 4rem 2rem 4rem;
 }
 
-.basic-info, .academic-results {
+.basic-info,
+.academic-results {
   grid-row: 1 / 2;
 }
 
@@ -340,25 +376,29 @@ select__menu-list::-webkit-scrollbar-thumb:hover {
 }
 
 /* Remove these styles if they exist */
-.co-curriculum, .achievements {
+.co-curriculum,
+.achievements {
   grid-column: auto;
   grid-row: auto;
 }
 
 /* Add styles for the scrollbar if needed */
-.results-grid::-webkit-scrollbar {
+.results-grid::-webkit-scrollbar,.achievements-grid::-webkit-scrollbar ,.activities-grid::-webkit-scrollbar,.overview-content::-webkit-scrollbar,.requirements-content::-webkit-scrollbar {
   width: 8px;
   background-color: #F5F5F5;
 }
 
-.results-grid::-webkit-scrollbar-thumb {
+.results-grid::-webkit-scrollbar-thumb,.achievements-grid::-webkit-scrollbar-thumb,.activities-grid::-webkit-scrollbar-thumb ,.overview-content::-webkit-scrollbar-thumb,.requirements-content::-webkit-scrollbar-thumb{
   border-radius: 10px;
   background-color: #C6C6C6;
 }
 
-.results-grid::-webkit-scrollbar-thumb:hover {
+.results-grid::-webkit-scrollbar-thumb:hover,.achievements-grid::-webkit-scrollbar-thumb:hover,.activities-grid::-webkit-scrollbar-thumb:hover,.overview-content::-webkit-scrollbar-thumb:hover,.requirements-content::-webkit-scrollbar-thumb:hover  {
   background-color: #A8A8A8;
 }
+
+
+
 
 .document-tabs {
   border-bottom: 1px solid #dee2e6;
@@ -405,28 +445,32 @@ select__menu-list::-webkit-scrollbar-thumb:hover {
   padding: 0 0 2rem 0;
   background-color: #F5F5F5;
   min-height: 7cap;
-  
-  
+
+
 }
 
 .school-info {
   background-size: cover;
-  background-position: center; /* Center the background image */
+  background-position: center;
+  /* Center the background image */
   padding: 4cqi;
   margin: 0;
-  
+
   color: black;
   display: flex;
   flex-direction: column;
-  align-items: center; /* Center items horizontally */
-  justify-content: center; /* Center items vertically */
+  align-items: center;
+  /* Center items horizontally */
+  justify-content: center;
+  /* Center items vertically */
   object-fit: contain;
   min-height: 17.5rem;
-  
-  background: 
-    linear-gradient(to bottom, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.5)), 
+
+  background:
+    linear-gradient(to bottom, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.5)),
     url("../../assets/StudentPortalAssets/sacCDbackground.png") no-repeat center center;
-  width: 100%; /* Stretch the width of the image to fit the div */
+  width: 100%;
+  /* Stretch the width of the image to fit the div */
 }
 
 .school-logo-name {
@@ -445,17 +489,20 @@ select__menu-list::-webkit-scrollbar-thumb:hover {
 
 
 
-.overview-content, .requirements-content {
+.overview-content,
+.requirements-content {
   max-height: 10vh;
   overflow-y: auto;
   transition: max-height 0.3s ease-out;
 }
 
-.overview-content.expanded, .requirements-content.expanded {
+.overview-content.expanded,
+.requirements-content.expanded {
   max-height: none;
 }
 
-.course-overview button, .entry-requirements button {
+.course-overview button,
+.entry-requirements button {
   padding: 0;
   margin-top: 0.5rem;
 }
@@ -482,9 +529,9 @@ ul {
 
 
 
-.academic-transcript-item,.sac-at-bg
-{
-  background-color:#CFD6DC
+.academic-transcript-item,
+.sac-at-bg {
+  background-color: #CFD6DC
 }
 
 
@@ -492,10 +539,10 @@ ul {
   flex: 0 0 150px;
   margin-right: 1rem;
   font-weight: bold;
- /* Adjust width as needed */
+  /* Adjust width as needed */
   text-align: right;
-  
- 
+
+
 }
 
 .form-group input,
@@ -505,4 +552,3 @@ ul {
   border: 1px solid #ced4da;
   border-radius: 0.25rem;
 }
-

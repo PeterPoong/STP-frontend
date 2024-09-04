@@ -655,9 +655,9 @@ const AcademicTranscript = () => {
                     <td className="border-bottom p-2 text-end">{file.studentMedia_location || 'N/A'}</td>
                     <td className="border-bottom p-2">
                       <div className="d-flex justify-content-end align-items-center">
-                        <Trash2 className="iconat-trash" onClick={() => openDeletePopup(file)} />
-                        <Edit2 className="iconat" onClick={() => openEditModal(file)} />
-                        <Eye className="iconat" onClick={() => viewFile(file)} />
+                        <Trash2 size={18} className="iconat-trash" onClick={() => openDeletePopup(file)} />
+                        <Edit2 size={18}   className="iconat" onClick={() => openEditModal(file)} />
+                        <Eye size={18}  className="iconat" onClick={() => viewFile(file)} />
                       </div>
                     </td>
                   </tr>

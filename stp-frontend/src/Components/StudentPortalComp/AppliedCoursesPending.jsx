@@ -10,6 +10,7 @@ const AppliedCoursesPending = () => {
     const [itemsPerPage] = useState(3);
     const [isPendingOpen, setIsPendingOpen] = useState(false);
     const [pendingApplications, setPendingApplications] = useState([]);
+    const [selectedApplication, setSelectedApplication] = useState(null);
 
     // Calculate first and last item index
     const indexOfLastItem = currentPage * itemsPerPage;
@@ -127,7 +128,15 @@ const AppliedCoursesPending = () => {
                                     <div className="acp-right-section">
                                         <span className="acp-status-badge">Pending</span>
                                         <div className="acp-action-buttons">
-                                            <Button className="acp-view-btn danger btn-danger" onClick={() => setIsPendingOpen(true)}>View</Button>
+                                            <Button 
+                                                className="acp-view-btn danger btn-danger" 
+                                                onClick={() => {
+                                                    setSelectedApplication(app);
+                                                    setIsPendingOpen(true);
+                                                }}
+                                            >
+                                                View
+                                            </Button>
                                             <Button className="acp-withdraw-btn btn-danger">Withdraw</Button>
                                         </div>
                                     </div>
@@ -160,7 +169,12 @@ const AppliedCoursesPending = () => {
                     </div>
                 </Card.Body>
             </Card>
-            <WidgetPending isOpen={isPendingOpen} onClose={() => setIsPendingOpen(false)} />
+            <WidgetPending 
+                isOpen={isPendingOpen} 
+                onClose={() => setIsPendingOpen(false)}
+                date={selectedApplication ? selectedApplication.date_applied : ""}
+                feedbacks={selectedApplication && selectedApplication.feedback ? [selectedApplication.feedback] : []}
+            />
         </div>
     );
 };

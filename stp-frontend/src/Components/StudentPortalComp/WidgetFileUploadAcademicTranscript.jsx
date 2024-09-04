@@ -63,6 +63,7 @@ const WidgetFileUploadAcademicTranscript = ({ isOpen, onClose, onSave, item, isV
 
     const handleFileDelete = () => {
         setFile(null);
+        setExistingFileUrl(null); // Add this line to clear the existing file URL
     };
 
     const handleViewClick = () => {

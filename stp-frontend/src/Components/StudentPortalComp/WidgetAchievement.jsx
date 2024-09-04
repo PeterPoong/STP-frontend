@@ -31,6 +31,15 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
     setIsEditingTitle(false);
   }, [item]);
 
+  const formatDate = (date) => {
+    if (!date) return '';
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    console.log(`Formatted date: ${day}/${month}/${year}`); // Add this log
+    return `${day}/${month}/${year}`;
+  };
+
   if (!isOpen) return null;
 
   const handleSave = () => {
@@ -50,10 +59,12 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
     setErrors({});
 
     // Proceed with save
+    const formattedDate = date ? formatDate(date) : '';
+    console.log(`Date being saved: ${formattedDate}`); // Add this log
     onSave({
       id: item ? item.id : null,
       achievement_name,
-      date: date ? date.getFullYear().toString() : '',
+      date: formattedDate,
       title,
       awarded_by,
       achievement_media
@@ -130,9 +141,11 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
               <div className="achievement-date-input">
                 <DatePicker
                   selected={date}
-                  onChange={(date) => setDate(date)}
-                  showYearPicker
-                  dateFormat="yyyy"
+                  onChange={(date) => {
+                    setDate(date);
+                    console.log(`Selected date: ${date}`); // Add this log
+                  }}
+                  dateFormat="dd/MM/yyyy"
                   className="achievement-input"
                   readOnly={isViewMode}
                   required
