@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Nav, Image, Button, Modal } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import 'typeface-ubuntu';
+
 import {
   House,
   Person,
