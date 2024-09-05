@@ -128,7 +128,7 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files }) => {
                 placeholder="Please enter you grade"
               />
             ) : (
-              <span className={`badge rounded-pill ${getGradeColor(subject.grade)}`}>
+              <span className={` rounded-pill px-4 text-white ${getGradeColor(subject.grade)}`}>
                 GRADE: {subject.grade}
               </span>
             )}
@@ -240,7 +240,7 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files }) => {
                     onChange={(e) => handleGradeChange(index, e.target.value)}
                   />) : (
                   subject.grade && (
-                    <span className={`badge rounded-pill ms-2 ${getGradeColor(subject.grade)}`}>
+                    <span className={`rounded-pill px-4 text-white ms-2 ${getGradeColor(subject.grade)}`}>
                       GRADE: {subject.grade}
                     </span>
                   ))}
@@ -312,6 +312,7 @@ const AcademicTranscript = () => {
   const [currentFile, setCurrentFile] = useState(null);
   const [fileToDelete, setFileToDelete] = useState(null);
   const [isViewMode, setIsViewMode] = useState(false);
+  const [subjects, setSubjects] = useState([]);
 
   const filteredFiles = files.filter(file =>
     file.studentMedia_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -557,12 +558,72 @@ const AcademicTranscript = () => {
     }
   };
 
+  const fetchSubjects = useCallback(async (categoryId) => {
+    try {
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      let url, method, body;
+
+      if (categoryId === "32") {
+        url = `${import.meta.env.VITE_BASE_URL}api/student/transcriptSubjectList`;
+        method = 'GET';
+      } else {
+        url = `${import.meta.env.VITE_BASE_URL}api/student/higherTranscriptSubjectList`;
+        method = 'POST';
+        body = JSON.stringify({ id: categoryId });
+      }
+
+      const response = await fetch(url, {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        ...(method === 'POST' && { body }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      if (result.success) {
+        if (categoryId === "32") {
+          setSubjects(result.data.map(subject => ({
+            id: subject.subject_id,
+            name: subject.subject_name,
+            grade: subject.subject_grade
+          })));
+        } else {
+          setSubjects(result.data.map(subject => ({
+            id: subject.id,
+            name: subject.highTranscript_name,
+            grade: subject.higherTranscript_grade
+          })));
+        }
+      } else {
+        console.error('Failed to fetch subjects:', result);
+        setSubjects([]);
+      }
+    } catch (error) {
+      console.error('Error fetching subjects:', error);
+      setSubjects([]);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (selectedExam) {
+      const category = categories.find(cat => cat.transcript_category === selectedExam);
+      if (category) {
+        fetchMediaByCategory(category.id);
+        fetchSubjects(category.id.toString());
+      }
+    }
+  }, [selectedExam, categories, fetchSubjects]);
+
   const renderExamComponent = () => {
     const categoryId = categories.find(cat => cat.transcript_category === selectedExam)?.id;
     const files = mediaData[categoryId] || [];
-
-    // Make sure examData[selectedExam] exists and is an array
-    const subjects = Array.isArray(examData[selectedExam]) ? examData[selectedExam] : [];
 
     if (examBasedCategories.some(cat => cat.transcript_category === selectedExam)) {
       return <SubjectBasedExam

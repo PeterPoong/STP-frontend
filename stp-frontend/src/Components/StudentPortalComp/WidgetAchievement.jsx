@@ -11,7 +11,8 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
   const [awarded_by, setAwardedBy] = useState('');
   const [achievement_media, setAchievementMedia] = useState(null);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState([]);
+  const [achievementTypes, setAchievementTypes] = useState([]);
 
   useEffect(() => {
     if (item) {
@@ -29,7 +30,31 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
       setAchievementMedia(null);
     }
     setIsEditingTitle(false);
+    fetchAchievementTypes();
   }, [item]);
+
+  const fetchAchievementTypes = async () => {
+    try {
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/achievementTypeList`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch achievement types. Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setAchievementTypes(data.data || []);
+    } catch (error) {
+      console.error('Error fetching achievement types:', error);
+      setError('Failed to load achievement types. Please try again later.');
+    }
+  };
 
   const formatDate = (date) => {
     if (!date) return '';
@@ -156,14 +181,20 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
             <div className="achievement-input-field">
               <label className="achievement-label">Title Obtained</label>
               <div className="achievement-select-input">
-                <input
-                  type="text"
+                <select
                   className="achievement-input"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  readOnly={isViewMode}
+                  disabled={isViewMode}
                   required
-                />
+                >
+                  <option value="">Select title</option>
+                  {achievementTypes.map((type) => (
+                    <option key={type.id} value={type.id}>
+                      {type.core_metaName}
+                    </option>
+                  ))}
+                </select>
                 <ChevronDown size={20} color="white" />
               </div>
               {errors.title && <div className="error-message">{errors.title}</div>}

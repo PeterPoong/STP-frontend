@@ -513,7 +513,6 @@ ul {
 
 .summary-row {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   margin-bottom: 0.5rem;
 }
@@ -551,4 +550,24 @@ ul {
   padding: 0.5rem;
   border: 1px solid #ced4da;
   border-radius: 0.25rem;
+}
+
+
+/*for imput holder for case 3*/
+
+.date-picker-short {
+  width:10rem;
+  min-width: 7rem;
+}
+
+.input-short {
+  width: 10rem;
+  min-width: 7rem;
+}
+
+.file-name {
+  max-width: 20rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

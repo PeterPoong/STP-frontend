@@ -24,13 +24,12 @@ const Achievements = () => {
         fetchAchievements();
     }, []);
 
-
     useEffect(() => {
         // Reset to first page when search term changes
         setCurrentPage(1);
     }, [searchTerm]);
 
-    const fetchAchievements = async () => {
+    const fetchAchievements = async (page = 1) => {
         setIsLoading(true);
         setError(null);
         try {
@@ -50,8 +49,9 @@ const Achievements = () => {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    page: currentPage,
-                    per_page: itemsPerPage
+                    page: page,
+                    per_page: itemsPerPage,
+                    search: searchTerm // Add search term to the request
                 })
             });
 
@@ -69,10 +69,8 @@ const Achievements = () => {
             const result = await response.json();
             console.log('API response:', result);
 
-            // Correctly access the nested data array
-            const achievementsArray = result.data.data || [];
-
-            setData(achievementsArray);
+            // Directly set the data from the API response
+            setData(result.data.data || []);
             setPaginationInfo({
                 currentPage: result.data.current_page,
                 lastPage: result.data.last_page,
@@ -88,30 +86,50 @@ const Achievements = () => {
         }
     };
 
-    // Filter data based on search term
-    const filteredData = Array.isArray(data) ? data.filter(item =>
-        (item?.achievement_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item?.title_obtained?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item?.date?.includes(searchTerm) ||
-            item?.awarded_by?.toLowerCase().includes(searchTerm.toLowerCase())) ?? false
-    ) : [];
-
     // Change page
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
-
-    // Change page
-    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+    const paginate = (pageNumber) => {
+        if (pageNumber >= 1 && pageNumber <= paginationInfo.lastPage) {
+            setCurrentPage(pageNumber);
+            fetchAchievements(pageNumber);
+        }
+    };
 
     // Generate page numbers
-    const pageNumbers = [];
-    for (let i = 1; i <= Math.ceil(filteredData.length / itemsPerPage); i++) {
-        pageNumbers.push(i);
-    }
+    const getPageNumbers = () => {
+        const totalPages = paginationInfo.lastPage;
+        const current = paginationInfo.currentPage;
+        const pages = [];
+        
+        if (totalPages <= 7) {
+            for (let i = 1; i <= totalPages; i++) {
+                pages.push(i);
+            }
+        } else {
+            if (current <= 4) {
+                for (let i = 1; i <= 5; i++) {
+                    pages.push(i);
+                }
+                pages.push('...');
+                pages.push(totalPages);
+            } else if (current >= totalPages - 3) {
+                pages.push(1);
+                pages.push('...');
+                for (let i = totalPages - 4; i <= totalPages; i++) {
+                    pages.push(i);
+                }
+            } else {
+                pages.push(1);
+                pages.push('...');
+                for (let i = current - 1; i <= current + 1; i++) {
+                    pages.push(i);
+                }
+                pages.push('...');
+                pages.push(totalPages);
+            }
+        }
+        return pages;
+    };
 
-
-    // Function to add new entry or update existing entry
     // Function to add new entry or update existing entry                                    
     const saveEntry = async (entry) => {
         try {
@@ -244,6 +262,14 @@ const Achievements = () => {
     if (isLoading) return <div>Loading...</div>;
     if (error) return <div>Error: {error}</div>;
 
+    const filteredData = searchTerm
+        ? data.filter(item =>
+            item.achievement_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item.title_obtained.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item.date.includes(searchTerm) ||
+            item.awarded_by.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+        : data;
 
     return (
         <div className='p-5'>
@@ -274,7 +300,7 @@ const Achievements = () => {
                 </div>
             </div>
 
-            {Array.isArray(currentItems) && currentItems.length > 0 ? (
+            {Array.isArray(filteredData) && filteredData.length > 0 ? (
                 <table className="w-100">
                     <thead>
                         <tr >
@@ -287,8 +313,8 @@ const Achievements = () => {
                     </thead>
                     <tbody>
                         <TransitionGroup component={null}>
-                            {currentItems.map((item) => (
-                                <CSSTransition key={item.id || item.achievement_name} timeout={300} classNames="fade">
+                            {filteredData.map((item) => (
+                                <CSSTransition key={item.id} timeout={300} classNames="fade">
                                     <tr>
                                         <td className="border-bottom p-4">
                                             <div className="d-flex align-items-center">
@@ -319,19 +345,20 @@ const Achievements = () => {
             )}
 
             <div className="pagination">
-                <button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1}>
+                <button onClick={() => paginate(paginationInfo.currentPage - 1)} disabled={paginationInfo.currentPage === 1}>
                     &lt;
                 </button>
-                {pageNumbers.map(number => (
+                {getPageNumbers().map((number, index) => (
                     <button
-                        key={number}
-                        onClick={() => paginate(number)}
-                        className={currentPage === number ? 'active' : ''}
+                        key={index}
+                        onClick={() => number !== '...' ? paginate(number) : null}
+                        className={paginationInfo.currentPage === number ? 'active' : ''}
+                        disabled={number === '...'}
                     >
                         {number}
                     </button>
                 ))}
-                <button onClick={() => paginate(currentPage + 1)} disabled={currentPage === pageNumbers.length}>
+                <button onClick={() => paginate(paginationInfo.currentPage + 1)} disabled={paginationInfo.currentPage === paginationInfo.lastPage}>
                     &gt;
                 </button>
             </div>

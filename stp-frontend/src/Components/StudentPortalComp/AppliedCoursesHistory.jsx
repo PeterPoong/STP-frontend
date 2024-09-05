@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Button } from "react-bootstrap";
+import {GraduationCap,CalendarCheck,BookOpenText } from 'lucide-react';
 import { MapPin, BookOpen, Clock, Calendar, ChevronLeft, ChevronRight } from 'react-feather';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../css/StudentPortalStyles/StudentPortalWidget.css";
@@ -122,11 +123,11 @@ const AppliedCoursesHistory = () => {
                                     </div>
                                     <div className="acp-middle-section">
                                         <div className="acp-detail-item">
-                                            <BookOpen size={16} className="acp-icon" />
+                                            <GraduationCap size={16} className="acp-icon" />
                                             <span>{app.category_name}</span>
                                         </div>
                                         <div className="acp-detail-item">
-                                            <Clock size={16} className="acp-icon" />
+                                            <CalendarCheck size={16} className="acp-icon" />
                                             <span>{app.study_mode}</span>
                                         </div>
                                         <div className="acp-detail-item">
@@ -134,7 +135,7 @@ const AppliedCoursesHistory = () => {
                                             <span>{app.course_period}</span>
                                         </div>
                                         <div className="acp-detail-item">
-                                            <Calendar size={16} className="acp-icon" />
+                                            <BookOpenText  size={16} className="acp-icon" />
                                             <span>{app.course_intake}</span>
                                         </div>
                                     </div>

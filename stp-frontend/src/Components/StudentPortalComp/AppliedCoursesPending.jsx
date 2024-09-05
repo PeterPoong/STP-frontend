@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Button } from "react-bootstrap";
+import { Card, Button, Modal } from "react-bootstrap";
+import {GraduationCap,CalendarCheck,BookOpenText } from 'lucide-react';
 import { MapPin, BookOpen, Clock, Calendar, ChevronLeft, ChevronRight } from 'react-feather';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../css/StudentPortalStyles/StudentPortalWidget.css";
@@ -11,6 +12,8 @@ const AppliedCoursesPending = () => {
     const [isPendingOpen, setIsPendingOpen] = useState(false);
     const [pendingApplications, setPendingApplications] = useState([]);
     const [selectedApplication, setSelectedApplication] = useState(null);
+    const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+    const [withdrawingId, setWithdrawingId] = useState(null);
 
     // Calculate first and last item index
     const indexOfLastItem = currentPage * itemsPerPage;
@@ -56,6 +59,46 @@ const AppliedCoursesPending = () => {
         } catch (error) {
             console.error('Error fetching pending applications:', error);
             setPendingApplications([]);
+        }
+    };
+
+    const handleWithdraw = async (id) => {
+        setWithdrawingId(id);
+        setShowWithdrawModal(true);
+    };
+
+    const confirmWithdraw = async () => {
+        try {
+            const token = sessionStorage.getItem("token") || localStorage.getItem("token");
+            if (!token) {
+                throw new Error('No authentication token found');
+            }
+
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/withdrawApplicant`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ id: withdrawingId }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            if (result.success) {
+                // Refresh the pending applications list
+                fetchPendingApplications();
+            } else {
+                console.error('Failed to withdraw application:', result.message);
+            }
+        } catch (error) {
+            console.error('Error withdrawing application:', error);
+        } finally {
+            setShowWithdrawModal(false);
+            setWithdrawingId(null);
         }
     };
 
@@ -109,11 +152,11 @@ const AppliedCoursesPending = () => {
                                     </div>
                                     <div className="acp-middle-section">
                                         <div className="acp-detail-item">
-                                            <BookOpen size={16} className="acp-icon" />
+                                            <GraduationCap size={16} className="acp-icon" />
                                             <span>{app.qualification}</span>
                                         </div>
                                         <div className="acp-detail-item">
-                                            <Clock size={16} className="acp-icon" />
+                                            <CalendarCheck size={16} className="acp-icon" />
                                             <span>{app.study_mode}</span>
                                         </div>
                                         <div className="acp-detail-item">
@@ -121,7 +164,7 @@ const AppliedCoursesPending = () => {
                                             <span>{app.course_period}</span>
                                         </div>
                                         <div className="acp-detail-item">
-                                            <Calendar size={16} className="acp-icon" />
+                                            <BookOpenText size={16} className="acp-icon" />
                                             <span>{app.course_intake}</span>
                                         </div>
                                     </div>
@@ -137,7 +180,12 @@ const AppliedCoursesPending = () => {
                                             >
                                                 View
                                             </Button>
-                                            <Button className="acp-withdraw-btn btn-danger">Withdraw</Button>
+                                            <Button 
+                                                className="acp-withdraw-btn btn-danger"
+                                                onClick={() => handleWithdraw(app.id)}
+                                            >
+                                                Withdraw
+                                            </Button>
                                         </div>
                                     </div>
                                 </Card.Body>
@@ -169,6 +217,20 @@ const AppliedCoursesPending = () => {
                     </div>
                 </Card.Body>
             </Card>
+            <Modal show={showWithdrawModal} onHide={() => setShowWithdrawModal(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Confirm Withdrawal</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>Are you sure you want to withdraw this application?</Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowWithdrawModal(false)}>
+                        Cancel
+                    </Button>
+                    <Button variant="danger" onClick={confirmWithdraw}>
+                        Confirm Withdraw
+                    </Button>
+                </Modal.Footer>
+            </Modal>
             <WidgetPending 
                 isOpen={isPendingOpen} 
                 onClose={() => setIsPendingOpen(false)}

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from 'react-bootstrap';
 import { FileText, Search, Eye, ChevronDown, ChevronUp, Clock, Copy } from 'react-feather';
+import { GraduationCap, CalendarCheck, BookOpenText } from 'lucide-react';
 import "../../css/StudentPortalStyles/StudentApplyCourse.css";
 import image1 from "../../assets/StudentAssets/University Logo/image1.jpg";
 import "../../css/StudentPortalStyles/StudentButtonGroup.css";
@@ -146,21 +147,39 @@ const ApplicationSummary = ({ formData = fakeFormData }) => {
             <img src={image1} className="school-logo" style={{ width: '25%', height: 'auto', maxHeight: '9rem' }} />
             <h1 style={{ fontSize: '3rem', margin: '1rem 0' }}>Swinburne University of Technology</h1>
           </div>
-          <Button  className="mx-auto mt-5 w-25 as-knowmore-button" style={{ padding: '0.5rem 1.5rem', fontSize: '1rem' }}>Know More</Button>
+          <Button className="mx-auto mt-5 w-25 as-knowmore-button" style={{ padding: '0.5rem 1.5rem', fontSize: '1rem' }}>Know More</Button>
         </div>
-
+       
         <div className="bg-white mt-3 rounded-1 shadow p-4 ">
           <h3 className="fw-bold">Degree of Business Management</h3>
         </div>
         <div className="bg-white p-4 mb-1 rounded-1 shadow mt-3">
           <h5 className="fw-bold mb-3">Summary</h5>
-          <div className="summary-row ">
-            <span className="summary-label"><FileText size={16} className="me-2" /> Degree</span>
-            <span className="summary-value">30 months</span>
-          </div>
-          <div className="summary-row">
-            <span className="summary-label"><Clock size={16} className="me-2" /> Full time</span>
-            <span className="summary-value">January, July or September</span>
+          <div className="d-flex flex-wrap">
+            <div className="col-6 mb-3">
+              <div className="d-flex align-items-center">
+                <GraduationCap size={16} className="me-2" />
+                <span className="summary-label">Degree</span>
+              </div>
+            </div>
+            <div className="col-6 mb-3">
+              <div className="d-flex align-items-center">
+                <Clock size={16} className="me-2" />
+                <span className="summary-value">30 months</span>
+              </div>
+            </div>
+            <div className="col-6 mb-3">
+              <div className="d-flex align-items-center">
+                <CalendarCheck size={16} className="me-2" />
+                <span className="summary-label">Full time</span>
+              </div>
+            </div>
+            <div className="col-6 mb-3">
+              <div className="d-flex align-items-center">
+                <BookOpenText size={16} className="me-2" />
+                <span className="summary-value">January, July or September</span>
+              </div>
+            </div>
           </div>
         </div>
 

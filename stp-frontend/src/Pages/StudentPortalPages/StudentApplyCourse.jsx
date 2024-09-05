@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Form, Button, Row, Col } from 'react-bootstrap';
-import { Trash2, Edit, Calendar, User, Building, LucideFileChartColumnIncreasing, Save, Trophy, FileText, Upload, X, Plus, ChevronDown } from 'lucide-react';
+import { Trash2, Edit, Calendar, User, Building, LucideFileChartColumnIncreasing, Save, Trophy, FileText, Upload, X, Plus, ChevronDown, Clock4, Landmark, CircleX, AlignJustify } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 import Select from 'react-select';
@@ -913,7 +913,7 @@ const StudentApplyCourse = () => {
                   <div key={index} className="academic-transcript-item mb-4 border rounded py-4 ">
                     <div className="d-flex justify-content-between align-items-center mb-3 px-4">
                       <div className="d-flex align-items-center">
-                        <DragHandle className="me-2" />
+                        <AlignJustify className="me-2" size={15} />
                         <Form.Control
                           type="text"
                           value={transcript.name}
@@ -941,7 +941,7 @@ const StudentApplyCourse = () => {
                               // Edit mode
                               <>
                                 <div className="d-flex align-items-center flex-grow-1">
-                                  <DragHandle className="me-2" style={{ alignSelf: 'center' }} />
+                                  <AlignJustify className="mx-2 " size={15} color="grey" />
                                   <Form.Control
                                     type="text"
                                     value={subject.name}
@@ -1021,7 +1021,7 @@ const StudentApplyCourse = () => {
                                         <FileText size={15} className="me-2 ms-2" style={{ alignSelf: 'center' }} />
                                         <span className="me-2" style={{ fontSize: '0.825rem', textAlign: 'center', flex: 1 }}>{doc.name}</span>
                                         <Button variant="link" className="p-0" onClick={() => handleRemoveDocumentFile(index, docIndex)}>
-                                          <X size={15} color="red" />
+                                          <CircleX size={15} color="red" />
                                         </Button>
                                       </>
                                     ) : (
@@ -1122,40 +1122,38 @@ const StudentApplyCourse = () => {
                         className="mb-2 border-0 p-0 fw-bold"
                         style={{ fontSize: '1.1rem' }}
                       />
-                      <div className="d-flex justify-content-between">
-                        <div className="d-flex flex-grow-1">
-                          <div className="d-flex align-items-center me-3 w-25">
-                            <Calendar size={18} className="me-2" />
-                            <Select
-                              options={yearOptions}
-                              value={{ value: item.year, label: item.year }}
-                              onChange={(selectedOption) => handleCoCurriculumChange(index, 'year', selectedOption.value)}
-                              placeholder="Year"
-                              className="flex-grow-1"
-                              styles={customStyles}
-                              components={{ Option: CustomOption }}
-                              isClearable={false}
-                              isSearchable={true}
+                      <div className="d-flex justify-content-between ps-0">
+                        <div className="d-flex flex-grow-1 px-0">
+                          <div className="d-flex align-items-center me-3 flex-shrink-0">
+                            <Clock4 size={18} className="me-2" />
+                            <DatePicker
+                              selected={item.year ? new Date(item.year, 0) : null}
+                              onChange={(date) => handleCoCurriculumChange(index, 'year', date.getFullYear())}
+                              showYearPicker
+                              dateFormat="yyyy"
+                              yearItemNumber={9}
+                              className="form-control py-0 px-2 date-picker-short"
+                              placeholderText="Select year"
                             />
                           </div>
-                          <div className="d-flex align-items-center me-3">
+                          <div className="d-flex align-items-center me-3 flex-shrink-0">
                             <User size={18} className="me-2" />
                             <Form.Control
                               type="text"
                               placeholder="Position"
                               value={item.position}
                               onChange={(e) => handleCoCurriculumChange(index, 'position', e.target.value)}
-                              className="py-0 px-2"
+                              className="py-0 px-2 input-short"
                             />
                           </div>
-                          <div className="d-flex align-items-center">
-                            <Building size={18} className="me-2" />
+                          <div className="d-flex align-items-center flex-shrink-0">
+                            <Landmark size={18} className="me-2" />
                             <Form.Control
                               type="text"
                               placeholder="Institution"
                               value={item.institution}
                               onChange={(e) => handleCoCurriculumChange(index, 'institution', e.target.value)}
-                              className="py-0 px-2"
+                              className="py-0 px-2 input-short"
                             />
                           </div>
                         </div>
@@ -1175,9 +1173,9 @@ const StudentApplyCourse = () => {
                       <div className="fw-bold mb-2" style={{ fontSize: '1.1rem' }}>{item.name}</div>
                       <div className="d-flex justify-content-between align-items-center">
                         <div className="d-flex flex-grow-1">
-                          <div className="me-3"><Calendar size={18} className="me-2" />{item.year}</div>
+                          <div className="me-3"><Clock4 size={18} className="me-2" />{item.year}</div>
                           <div className="me-3"><User size={18} className="me-2" />{item.position}</div>
-                          <div><Building size={18} className="me-2" />{item.institution}</div>
+                          <div><Landmark size={18} className="me-2" />{item.institution}</div>
                         </div>
                         <div>
                           <Button variant="link" onClick={() => handleEditCoCurriculum(index)} className=" me-2">
@@ -1222,48 +1220,48 @@ const StudentApplyCourse = () => {
                         style={{ fontSize: '1.1rem' }}
                       />
                       <div className="d-flex justify-content-between ps-0">
-                        <div className="d-flex flex-grow-1 ">
-                          <div className="d-flex align-items-center me-3 ">
-                            <Calendar size={18} className="me-2" />
+                        <div className="d-flex flex-grow-1 px-0">
+                          <div className="d-flex align-items-center me-3 flex-shrink-0">
+                            <Clock4 size={18} className="me-2" />
                             <DatePicker
                               selected={item.date ? new Date(item.date) : null}
                               onChange={(date) => handleDateChangeAchievement(date, index)}
                               dateFormat="dd/MM/yyyy"
-                              className="form-control py-0 px-2"
+                              className="form-control py-0 px-2 date-picker-short"
                               placeholderText="Select date"
                             />
                           </div>
-                          <div className="d-flex align-items-center me-3 ">
+                          <div className="d-flex align-items-center me-3 flex-shrink-0">
                             <Trophy size={18} className="me-2" />
                             <Form.Control
                               type="text"
                               placeholder="Position"
                               value={item.position}
                               onChange={(e) => handleAchievementChange(index, 'position', e.target.value)}
-                              className="py-0 px-2 w-100"
+                              className="py-0 px-2 input-short"
                             />
                           </div>
-                          <div className="d-flex align-items-center">
-                            <Building size={18} className="me-2" />
+                          <div className="d-flex align-items-center me-3 flex-shrink-0">
+                            <Landmark size={18} className="me-2" />
                             <Form.Control
                               type="text"
                               placeholder="Institution"
                               value={item.institution}
                               onChange={(e) => handleAchievementChange(index, 'institution', e.target.value)}
-                              className="py-0 px-2 me-2"
+                              className="py-0 px-2 input-short"
                             />
                           </div>
                           <div className="d-flex justify-content-center align-items-center">
                             {item.file ? (
                               <div className="d-flex align-items-center">
                                 <FileText size={18} className="me-2" />
-                                <span className="me-2">{item.file.name}</span>
+                                <span className="mx-0 text-decoration-underline text-truncate file-name">{item.file.name}</span>
                                 <Button
                                   variant="link"
-                                  className="p-0 text-danger"
+                                  className="p-0 me-5 text-danger"
                                   onClick={() => handleRemoveAchievementFile(index)}
                                 >
-                                  <X size={18} />
+                                  <CircleX size={18} />
                                 </Button>
                               </div>
                             ) : (
@@ -1271,7 +1269,7 @@ const StudentApplyCourse = () => {
                                 <FileText size={18} className="me-2" />
                                 <Button
                                   variant="secondary"
-                                  className="d-flex align-items-center py-1 px-4 rounded-2 "
+                                  className="d-flex align-items-center py-1 px-4 rounded-2"
                                   onClick={() => document.getElementById(`achievementFileInput-${index}`).click()}
                                 >
                                   Upload File
@@ -1305,11 +1303,11 @@ const StudentApplyCourse = () => {
                       <div className="d-flex justify-content-between">
                         <div className="d-flex flex-grow-1 align-items-center">
                           <div className="me-3">
-                            <Calendar size={18} className="me-2" />
+                            <Clock4 size={18} className="me-2" />
                             {item.date ? formatDate(new Date(item.date)) : 'No date selected'}
                           </div>
                           <div className="me-3"><Trophy size={18} className="me-2" />{item.position}</div>
-                          <div className="me-3"><Building size={18} className="me-2" />{item.institution}</div>
+                          <div className="me-3"><Landmark size={18} className="me-2" />{item.institution}</div>
                           {item.file && (
                             <div className=" d-flex align-items-center text-decoration-underline">
                               <FileText size={18} className="me-2" />
@@ -1366,23 +1364,23 @@ const StudentApplyCourse = () => {
                           {doc.file ? (
                             <div className="d-flex align-items-center">
                               <FileText size={18} className="me-2" />
-                              <span className="me-2">{doc.file.name}</span>
+                              <span className="me-2 text-decoration-underline">{doc.file.name}</span>
                               <Button
                                 variant="link"
                                 className="p-0 text-danger"
                                 onClick={() => handleRemoveOtherDocFile(index)}
                               >
-                                <X size={18} />
+                                <CircleX size={18} />
                               </Button>
                             </div>
                           ) : (
                             <div className="d-flex align-items-center ">
+                              <FileText size={18} className="me-2" />
                               <Button
                                 variant="secondary"
-                                className="d-flex align-items-center mx-0"
+                                className="d-flex align-items-center mx-0 px-3"
                                 onClick={() => document.getElementById(`otherDocFileInput-${index}`).click()}
                               >
-                                <Upload size={18} className="me-2" />
                                 Upload File
                               </Button>
                               <input
@@ -1461,7 +1459,7 @@ const StudentApplyCourse = () => {
         </div>
       </div>
       <div className="d-flex justify-content-center mt-4">
-        <Button  className="me-3 sac-submit-button" onClick={handleViewSummary}>
+        <Button className="me-3 sac-submit-button" onClick={handleViewSummary}>
           View Summary
         </Button>
         <Button className="sac-submit-button" onClick={() => {/* Add logic to go back to course page */ }}>

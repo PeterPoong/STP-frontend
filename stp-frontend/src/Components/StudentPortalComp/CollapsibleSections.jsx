@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Collapsible from 'react-collapsible';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import AcademicTranscript from "../../Components/StudentPortalComp/AcademicTranscript";
 import CoCurriculum from "../../Components/StudentPortalComp/CoCurriculum";
 import Achievements from '../../Components/StudentPortalComp/Achievements';
@@ -24,10 +24,11 @@ const CollapsibleSections = () => {
       trigger={
         <div className="d-flex justify-content-between align-items-center p-3">
           <span>{title}</span>
-          <ChevronDown 
-            size={20} 
-            className={`transition-transform duration-300 ${openSections[section] ? 'rotate-180' : ''}`}
-          />
+          {openSections[section] ? (
+            <ChevronUp size={20} />
+          ) : (
+            <ChevronDown size={20} />
+          )}
         </div>
       } 
       className="mb-0 bg-white border"

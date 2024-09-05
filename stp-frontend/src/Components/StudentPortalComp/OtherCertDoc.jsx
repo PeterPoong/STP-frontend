@@ -108,7 +108,6 @@ const OtherCertDoc = () => {
         pageNumbers.push(i);
     }
 
-    // Function to add new entry or update existing entry
     // Function to add new entry or update existing entry                                    
     const saveEntry = async (entry) => {
         try {
@@ -117,24 +116,24 @@ const OtherCertDoc = () => {
             if (!token) {
                 throw new Error('No authentication token found');
             }
-    
+
             const url = entry.id
                 ? `${import.meta.env.VITE_BASE_URL}api/student/editOtherCertFile?id=${entry.id}`
                 : `${import.meta.env.VITE_BASE_URL}api/student/addOtherCertFile`;
-    
+
             const formData = new FormData();
-            formData.append('certificate_name', entry.certificate_name);
-            if (entry.certificate_media instanceof File) {
+            formData.append('certificate_name', entry.name || entry.certificate_name);
+            if (entry.media instanceof File) {
+                formData.append('certificate_media', entry.media);
+            } else if (entry.certificate_media instanceof File) {
                 formData.append('certificate_media', entry.certificate_media);
-            } else if (entry.certificate_media) {
-                formData.append('certificate_media', new Blob([entry.certificate_media], { type: 'application/octet-stream' }));
             }
-    
+
             // Log form data for debugging
             for (let pair of formData.entries()) {
                 console.log(pair[0] + ': ' + pair[1]);
             }
-    
+
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {
@@ -142,14 +141,19 @@ const OtherCertDoc = () => {
                 },
                 body: formData,
             });
-    
+
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                const errorData = await response.json();
+                throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
             }
-    
+
             const result = await response.json();
             console.log('Save/Edit response:', result);
-    
+
+            if (!result.success) {
+                throw new Error(result.message || 'Failed to save certificate');
+            }
+
             setIsPopupOpen(false);
             setCurrentItem(null);
             fetchOtherDocsCerts();  // Refresh the list after adding/updating
@@ -158,6 +162,7 @@ const OtherCertDoc = () => {
             setError(error.message || 'Failed to save certificate. Please try again.');
         }
     };
+
     // Function to open delete popup
     const openDeletePopup = (item) => {
         setItemToDelete(item);
