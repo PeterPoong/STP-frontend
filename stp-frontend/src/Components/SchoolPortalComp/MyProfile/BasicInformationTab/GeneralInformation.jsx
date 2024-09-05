@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ReactDOMServer from "react-dom/server";
-import { Container, Row, Col, Form, Button, Nav } from "react-bootstrap";
-import "../../../../css/SchoolPortalStyle/SchoolPortalBasicInformation.css";
+import { Container, Row, Col, Form, Button, Nav, Alert } from "react-bootstrap";
+import "../../../../css/SchoolPortalStyle/MyProfile/SchoolPortalBasicInformation.css";
 import CustomTextArea from "../../CustomTextArea";
 // import CustomTextArea from "../SchoolPortalComp/CustomTextArea";
 import PhoneInput from "react-phone-input-2";
@@ -34,7 +34,12 @@ function GeneralInformationForm() {
   const [stateList, setStateList] = useState("");
   const [cityList, setCityList] = useState("");
 
+  const [updateStatus, setUpdateStatus] = useState("");
+
+  const [showAlert, setShowAlert] = useState(false);
+
   const handleSubmit = async (e) => {
+    setUpdateStatus("false");
     e.preventDefault();
     const formData = {
       name: schoolName,
@@ -54,7 +59,6 @@ function GeneralInformationForm() {
     };
 
     console.log("formData", formData);
-
     const update = async () => {
       try {
         const response = await fetch(
@@ -80,13 +84,10 @@ function GeneralInformationForm() {
         console.error("There was a problem with the fetch operation:", error);
       }
     };
-    update();
 
-    // console.log("testContact", schoolContact);
-    // console.log("hello", schoolCountryCode);
-    // console.log("category", instituteCategory);
-    // console.log("long desx", longDescription);
-    // console.log("countryCode", schoolCountryCode);
+    await update();
+    console.log("status", updateStatus);
+    setUpdateStatus("success");
   };
 
   useEffect(() => {
@@ -251,6 +252,19 @@ function GeneralInformationForm() {
     };
     getCities();
   }, [state]);
+
+  useEffect(() => {
+    if (updateStatus === "success") {
+      setShowAlert(true);
+      // Set a timer to hide the alert after 3 seconds
+      const timer = setTimeout(() => {
+        setShowAlert(false);
+      }, 1000); // Change the time in milliseconds as needed
+
+      // Clean up the timer when the component unmounts or updateStatus changes
+      return () => clearTimeout(timer);
+    }
+  }, [updateStatus]);
 
   const handlePhoneChange = (value, country) => {
     const dialCode = country.dialCode;
@@ -515,6 +529,14 @@ function GeneralInformationForm() {
 
   return (
     <Form onSubmit={handleSubmit}>
+      {showAlert && (
+        <Alert
+          variant="success"
+          className={`fade-alert alert-position ${showAlert ? "show" : "hide"}`}
+        >
+          Update Successfully
+        </Alert>
+      )}
       <h4 className="mb-2">General Information</h4>
       <hr className="divider-line" />
       <Row className="mb-3">

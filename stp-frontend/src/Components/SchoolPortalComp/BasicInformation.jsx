@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Form, Button, Nav } from "react-bootstrap";
-import "../../css/SchoolPortalStyle/SchoolPortalBasicInformation.css";
+import "../../css/SchoolPortalStyle/MyProfile/SchoolPortalBasicInformation.css";
 import CustomTextArea from "../SchoolPortalComp/CustomTextArea";
 import PhoneInput from "react-phone-input-2";
 import GeneralInformationForm from "./MyProfile/BasicInformationTab/GeneralInformation";

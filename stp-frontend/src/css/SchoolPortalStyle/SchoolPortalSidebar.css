@@ -1,18 +1,65 @@
 /* Premium Button Css */
 /* Adjust border radius for the button with gradient */
+/* Premium Button Css */
 .custom-border-gradient-button {
   background: #fff;
-  border: 2px solid transparent;
-  border-image: linear-gradient(to right, #5E5CE6 0%, #FF375F 53%, #FF9F0A 100%);
-  border-image-slice: 1;
+  border: 2px solid transparent; /* Ensures the button has a border */
+  border-radius: 12px; /* Border radius for the button */
+  padding: 6px 12px; /* Padding for the button */
   color: #000;
-  border-radius: 12px; /* Proper border radius */
+  text-align: center; /* Center text */
+  display: inline-flex; /* Flexbox for alignment */
+  align-items: center; /* Align items */
+  position: relative; /* Positioning for the gradient border */
+  overflow: hidden; /* Ensure the gradient doesn't spill over */
+  font-size: 14px; /* Adjust font size if needed */
 }
 
-/* Hover effect for the custom button */
+/* Adding the gradient border effect */
+.custom-border-gradient-button::before {
+  content: '';
+  position: absolute;
+  top: -2px; /* Offset to ensure the border is visible */
+  left: -2px; /* Offset to ensure the border is visible */
+  right: -2px; /* Offset to ensure the border is visible */
+  bottom: -2px; /* Offset to ensure the border is visible */
+  border-radius: 12px; /* Border radius to match the button */
+  background: linear-gradient(to right, #5E5CE6 0%, #FF375F 53%, #FF9F0A 100%);
+  z-index: -1; /* Place it behind the button content */
+}
+
+/* Hover effect */
 .custom-border-gradient-button:hover {
   background-color: rgba(183, 26, 24, 0.20);
 }
+
+
+/* blue button */
+.custom-blue-button {
+  border: 2px solid #007bff; /* Blue border */
+  background-color: #e7f0ff; /* Light blue background */
+  color: #007bff; /* Blue text color */
+  border-radius: 12px; /* Increased border radius for rounded corners */
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+  margin-top: 10px; /* Adds spacing above the button */
+  width: 50%; /* Makes the button take the full width of its container */
+}
+
+.custom-blue-button:hover {
+  background-color: #d0e7ff; /* Slightly darker blue on hover */
+  color: #0056b3; /* Darker blue text on hover */
+  border-color: #0056b3; /* Darker blue border on hover */
+}
+
+.custom-blue-button:focus,
+.custom-blue-button:active {
+  box-shadow: none; /* Remove outline */
+  background-color: #d0e7ff; /* Maintain hover background color */
+  border-color: #0056b3; /* Maintain hover border color */
+}
+
+
+
 
 /* SideBar css */
 /* General Nav Link */
@@ -83,3 +130,5 @@
   color: #B71A18 !important; /* Change font color for selected dropdown item */
   border-left: none !important;
 }
+
+

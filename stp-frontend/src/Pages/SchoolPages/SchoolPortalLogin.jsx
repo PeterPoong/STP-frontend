@@ -25,6 +25,7 @@ const SchoolPortalLogin = () => {
   const [loginStatus, setLoginStatus] = useState(null);
   const [email, setEmail] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [phone, setPhone] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -61,7 +62,7 @@ const SchoolPortalLogin = () => {
           setErrorMessage("");
           console.log("Login successful:", data.data.user.school_status);
           setLoginStatus("success");
-
+          sessionStorage.setItem("name", data.data.user.school_name);
           sessionStorage.setItem("token", data.data.token);
           sessionStorage.setItem("loginTimestamp", moment().toISOString());
 

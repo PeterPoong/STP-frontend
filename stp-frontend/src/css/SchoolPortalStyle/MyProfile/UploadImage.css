@@ -1,0 +1,169 @@
+/* Base styles for the upload box */
+/* Base styles for the upload box */
+.upload-box {
+    border: 2px dashed #ddd;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 80%; /* Adjust width as needed */
+    min-width: 300px; /* Ensure a minimum width */
+    margin: 0 auto;
+    background-color: #f9f9f9;
+    height: 150px; /* Adjust height as needed */
+    max-height: 200px; /* Optional: Set max-height if needed */
+  }
+  
+  /* Highlight styles */
+  .upload-box.highlight {
+    border-color: #007bff;
+    background-color: #f0f8ff;
+  }
+  
+  /* Styles for upload label */
+  .upload-box-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  /* Styles for upload icon */
+  .upload-icon {
+    font-size: 40px;
+    color: #888;
+    margin-bottom: 10px;
+  }
+  
+  /* Styles for upload text */
+  .upload-text {
+    color: #007bff;
+    font-weight: 600;
+  }
+  
+  /* Styles for upload instructions */
+  .upload-instructions {
+    font-size: 12px;
+    color: #666;
+  }
+  
+  /* Responsive Styles */
+  @media (max-width: 768px) {
+    .upload-box {
+      width: 90%; /* Adjust width for smaller screens */
+      height: auto; /* Allow height to adjust automatically */
+      padding: 10px; /* Add padding for better spacing */
+    }
+    
+    .upload-icon {
+      font-size: 30px; /* Reduce icon size for smaller screens */
+    }
+    
+    .upload-text {
+      font-size: 16px; /* Adjust font size for better readability */
+    }
+    
+    .upload-instructions {
+      font-size: 10px; /* Adjust font size for better readability */
+    }
+  }
+  
+  
+  /* Container for uploaded files */
+  .uploaded-files-container {
+    padding-top: 20px;
+    margin-top: 20px;
+    padding-bottom: 30px;
+    width: 100%; /* Match the width of the upload box or adjust as needed */
+    max-width: 800px; /* Optional: Set max-width as needed */
+    margin: 0 auto;
+  }
+  
+  /* Styles for uploaded files */
+  .uploaded-files {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  /* Box for each uploaded file */
+  .uploaded-file-box {
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 10px;
+    width: 100%;
+    min-width: 300px; /* Adjust minimum width as needed */
+    text-align: center;
+  }
+  
+  /* Flex container for text and delete icon */
+  .text-with-link {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+  
+  /* Container for text and link */
+  .text-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  /* Styles for image with text */
+  .image-with-text {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  /* Styles for click here text */
+  .click-here-text {
+    margin-top: -10px; /* Space between the text and the link */
+    font-size: 12px;
+    padding-left: 20px;
+    color: #fc6b6b;
+    cursor: pointer;
+    transition: color 0.3s ease;
+  }
+  
+  /* Hover effect for click here text */
+  .click-here-text:hover {
+    color: #ff0000;
+    text-decoration: underline;
+
+  }
+  
+  /* Styles for delete icon */
+  .delete-icon {
+    font-size: 16px;
+    color: #dc3545;
+    cursor: pointer;
+  }
+  
+  /* Hover effect for delete icon */
+  .delete-icon:hover {
+    color: #c82333;
+  }
+  
+  /* Responsive Styles */
+  @media (max-width: 768px) {
+    .upload-box {
+      width: 90%; /* Adjust width for smaller screens */
+      height: 120px; /* Adjust height for smaller screens */
+    }
+    
+    .uploaded-file-box {
+      min-width: 100%; /* Full width for smaller screens */
+      text-align: left; /* Align text to the left */
+    }
+  
+    .text-container {
+      align-items: center; /* Center items for smaller screens */
+    }
+  }
+  

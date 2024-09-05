@@ -89,4 +89,29 @@ h4.mb-2 {
 .span-style{
   color: red !important;
 }
+
+/* Alert positioning */
+.alert-position {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 1000; /* Ensures it appears above other elements */
+}
+
+/* Fade-in and fade-out effect for alerts */
+.fade-alert {
+  opacity: 0 !important;
+  transition: opacity 1s ease-in-out !important; /* Adjust duration for fade effect */
+}
+
+.fade-alert.show {
+  opacity: 1 !important;
+}
+
+.fade-alert.hide {
+  opacity: 0 !important;
+}
+
+/* uploadImage */
+
   
