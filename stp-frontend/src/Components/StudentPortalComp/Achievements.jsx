@@ -138,11 +138,11 @@ const Achievements = () => {
             if (!token) {
                 throw new Error('No authentication token found');
             }
-
+    
             const url = entry.id
                 ? `${import.meta.env.VITE_BASE_URL}api/student/editAchievement?id=${entry.id}`
                 : `${import.meta.env.VITE_BASE_URL}api/student/addAchievement`;
-
+    
             const formData = new FormData();
             formData.append('achievement_name', entry.achievement_name);
             formData.append('date', entry.date);
@@ -151,7 +151,7 @@ const Achievements = () => {
             if (entry.achievement_media instanceof File) {
                 formData.append('achievement_media', entry.achievement_media);
             }
-
+    
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {
@@ -159,23 +159,22 @@ const Achievements = () => {
                 },
                 body: formData,
             });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
+    
             const result = await response.json();
             console.log('Save/Edit response:', result);
-
-            setIsPopupOpen(false);
-            setCurrentItem(null);
-            fetchAchievements(); // Refresh the list after adding/updating
+    
+            if (result.success) {
+                setIsPopupOpen(false);
+                setCurrentItem(null);
+                fetchAchievements(); // Refresh the list after adding/updating
+            }
+    
+            return result; // Return the entire result object
         } catch (error) {
             console.error('Error saving achievement:', error);
-            setError(error.message || 'Failed to save achievement. Please try again.');
+            return { success: false, message: error.message || 'Failed to save achievement. Please try again.' };
         }
     };
-
 
     // Function to open delete popup
     const openDeletePopup = (item) => {

@@ -13,24 +13,34 @@ const WidgetClub = ({ isOpen, onClose, onSave, item, isViewMode }) => {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [errors, setErrors] = useState({});
 
-  useEffect(() => {
-    if (item) {
-      setClubTitle(item.club_name);
-      setYearOfTerm(new Date(item.year, 0, 1));
-      setPosition(item.student_position);
-      setInstitution(item.location);
-    } else {
-      // Reset form for new entries
-      
-      setClubTitle('');
-      setYearOfTerm(new Date());
-      setPosition('');
-      setInstitution('');
-    }
+  const resetForm = () => {
+    setClubTitle('');
+    setYearOfTerm(new Date());
+    setPosition('');
+    setInstitution('');
     setIsEditingTitle(false);
-  }, [item]);
+    setErrors({});
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      if (item) {
+        setClubTitle(item.club_name);
+        setYearOfTerm(new Date(item.year, 0, 1));
+        setPosition(item.student_position);
+        setInstitution(item.location);
+      } else {
+        resetForm();
+      }
+    }
+  }, [isOpen, item]);
 
   if (!isOpen) return null;
+
+  const handleClose = () => {
+    resetForm();
+    onClose();
+  };
 
   const handleSave = () => {
     // Validate all fields
@@ -58,7 +68,6 @@ const WidgetClub = ({ isOpen, onClose, onSave, item, isViewMode }) => {
     });
   };
 
-  
   const handleTitleEdit = () => {
     setIsEditingTitle(true);
   };
@@ -70,7 +79,7 @@ const WidgetClub = ({ isOpen, onClose, onSave, item, isViewMode }) => {
   return (
     <div className="club-widget-overlay">
       <div className="club-widget-popup ">
-        <button className="close-button-club mt-3" onClick={onClose}>
+        <button className="close-button-club mt-3" onClick={handleClose}>
           <X size={24} color="white" />
         </button>
         <h2 className="achievement-title">
@@ -97,7 +106,7 @@ const WidgetClub = ({ isOpen, onClose, onSave, item, isViewMode }) => {
             </>
           )}
         </h2>
-        {errors.club_name && <div className="error-message">{errors.club_name}</div>}
+        {errors.club_name && <div className="my-3">* {errors.club_name}</div>}
         
         <div className="input-group-club">
           <div className="input-field-club w-50">
@@ -122,10 +131,11 @@ const WidgetClub = ({ isOpen, onClose, onSave, item, isViewMode }) => {
               placeholder="Position"
               required
             />
-            {errors.student_position && <div className="error-message">{errors.student_position}</div>}
+           
           </div>
+          
         </div>
-        
+        {errors.student_position && <div className="my-2">* {errors.student_position}</div>}
         <div className="input-field-club mb-3">
           <label>Institution</label>
           <input 
@@ -136,7 +146,7 @@ const WidgetClub = ({ isOpen, onClose, onSave, item, isViewMode }) => {
             placeholder="Institution"
             required
           />
-          {errors.location && <div className="error-message">{errors.location}</div>}
+          {errors.location && <div className="mt-2">* {errors.location}</div>}
         </div>
         
         {!isViewMode && (

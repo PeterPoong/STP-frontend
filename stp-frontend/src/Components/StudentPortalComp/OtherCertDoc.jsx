@@ -151,15 +151,16 @@ const OtherCertDoc = () => {
             console.log('Save/Edit response:', result);
 
             if (!result.success) {
-                throw new Error(result.message || 'Failed to save certificate');
+                return result; // Return the error result to be handled in WidgetFileUpload
             }
 
             setIsPopupOpen(false);
             setCurrentItem(null);
             fetchOtherDocsCerts();  // Refresh the list after adding/updating
+            return result;
         } catch (error) {
             console.error('Error saving certificate:', error);
-            setError(error.message || 'Failed to save certificate. Please try again.');
+            return { success: false, message: error.message || 'Failed to save certificate. Please try again.' };
         }
     };
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Upload, FileText, Trash2 } from 'lucide-react';
+import { Alert } from 'react-bootstrap';
 import "../../css/StudentPortalStyles/StudentPortalWidget.css";
 
 const WidgetFileUploadAcademicTranscript = ({ isOpen, onClose, onSave, item, isViewMode }) => {
@@ -7,25 +8,38 @@ const WidgetFileUploadAcademicTranscript = ({ isOpen, onClose, onSave, item, isV
     const [file, setFile] = useState(null);
     const [existingFileUrl, setExistingFileUrl] = useState(null);
     const [errors, setErrors] = useState({});
+    const [alert, setAlert] = useState(null);
 
     useEffect(() => {
-        if (item) {
-            console.log('Editing item:', item);
-            setTitle(item.studentMedia_name || '');
-            setExistingFileUrl(item.studentMedia_location || null);
-            setFile(null); // Reset file state when editing
-        } else {
-            console.log('New upload');
-            setTitle('');
-            setFile(null);
-            setExistingFileUrl(null);
+        if (isOpen) {
+            if (item) {
+                console.log('Editing item:', item);
+                setTitle(item.studentMedia_name || '');
+                setExistingFileUrl(item.studentMedia_location || null);
+                setFile(null);
+            } else {
+                resetForm();
+            }
         }
-    }, [item]);
+    }, [isOpen, item]);
+
+    const resetForm = () => {
+        setTitle('');
+        setFile(null);
+        setExistingFileUrl(null);
+        setErrors({});
+        setAlert(null);
+    };
+
+    const handleClose = () => {
+        resetForm();
+        onClose();
+    };
 
     if (!isOpen) return null;
 
-    const handleSave = () => {
-        if (isViewMode) return; // Don't perform validation in view mode
+    const handleSave = async () => {
+        if (isViewMode) return;
 
         const newErrors = {};
         if (!title.trim()) newErrors.title = "Title is required";
@@ -38,19 +52,28 @@ const WidgetFileUploadAcademicTranscript = ({ isOpen, onClose, onSave, item, isV
 
         setErrors({});
 
-        console.log('Saving/Updating with:', {
-            id: item ? item.id : null,
-            title,
-            file: file || existingFileUrl,
-            isNewFile: !!file
-        });
+        try {
+            const result = await onSave({
+                id: item ? item.id : null,
+                title,
+                file: file || existingFileUrl,
+                isNewFile: !!file
+            });
 
-        onSave({
-            id: item ? item.id : null,
-            title,
-            file: file || existingFileUrl,
-            isNewFile: !!file
-        });
+            if (!result.success) {
+                if (result.error) {
+                    const errorMessages = Object.entries(result.error).map(([key, value]) => `${key}: ${value.join(', ')}`);
+                    setAlert({ type: 'danger', message: errorMessages.join('. ') });
+                } else {
+                    setAlert({ type: 'danger', message: result.message || "Failed to save file. Please try again." });
+                }
+            } else {
+                handleClose();
+            }
+        } catch (error) {
+            console.error('Error saving file:', error);
+            setAlert({ type: 'danger', message: "An unexpected error occurred. Please try again later." });
+        }
     };
 
     const handleFileChange = (event) => {
@@ -83,8 +106,15 @@ const WidgetFileUploadAcademicTranscript = ({ isOpen, onClose, onSave, item, isV
             <div className="upload-widget-popup">
                 <div className="upload-header">
                     <h5 className="small">{isViewMode ? 'View' : (item ? 'Edit' : 'Upload')}</h5>
-                    <button className="close-button" onClick={onClose}><X size={20} /></button>
+                    <button className="close-button" onClick={handleClose}><X size={20} /></button>
                 </div>
+
+                {alert && (
+                    <Alert variant={alert.type} onClose={() => setAlert(null)} dismissible>
+                        {alert.message}
+                    </Alert>
+                )}
+
                 <div className="upload-title-input">
                     <input
                         type="text"
@@ -94,7 +124,7 @@ const WidgetFileUploadAcademicTranscript = ({ isOpen, onClose, onSave, item, isV
                         className="file-title-input"
                         readOnly={isViewMode}
                     />
-                    {!isViewMode && errors.title && <div className="error-message">{errors.title}</div>}
+                    {errors.title && <div className="error-message">{errors.title}</div>}
                 </div>
 
                 {!file && !existingFileUrl ? (

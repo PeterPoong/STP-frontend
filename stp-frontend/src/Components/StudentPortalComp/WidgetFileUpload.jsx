@@ -1,30 +1,62 @@
 import React, { useState, useEffect } from 'react';
 import { X, Upload, FileText, Trash2 } from 'lucide-react';
+import { Alert } from 'react-bootstrap';
 import "../../css/StudentPortalStyles/StudentPortalWidget.css";
 
 const WidgetFileUpload = ({ isOpen, onClose, onSave, item, isViewMode }) => {
   const [name, setName] = useState('');
   const [media, setMedia] = useState(null);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    if (item) {
-      setName(item.name || '');
-      setMedia(item.media || null);
-    } else {
-      // Reset form for new entries
-      setName('');
-      setMedia(null);
+    if (isOpen) {
+      if (item) {
+        setName(item.name || '');
+        setMedia(item.media || null);
+      } else {
+        resetForm();
+      }
+      setError(''); // Clear any previous errors
     }
-  }, [item]);
+  }, [isOpen, item]);
+
+  const resetForm = () => {
+    setName('');
+    setMedia(null);
+    setError('');
+  };
+
+  const handleClose = () => {
+    resetForm();
+    onClose();
+  };
 
   if (!isOpen) return null;
 
-  const handleSave = () => {
-    onSave({
-      id: item ? item.id : null,
-      name,
-      media
-    });
+  const handleSave = async () => {
+    setError('');
+    try {
+      const result = await onSave({
+        id: item ? item.id : null,
+        name,
+        media
+      });
+      
+      if (!result.success) {
+        if (result.message === "Validation Error" && result.error) {
+          // Handle validation errors
+          const errorMessages = Object.values(result.error).flat();
+          setError(errorMessages.join('. ') || "Validation failed. Please check your input.");
+        } else {
+          setError(result.message || "Failed to save certificate. Please try again.");
+        }
+      } else {
+        handleClose();
+      }
+    } catch (error) {
+      console.error('Error saving certificate:', error);
+      setError("An error occurred. Please try again later.");
+    }
   };
 
   const handleFileChange = (event) => {
@@ -55,8 +87,11 @@ const WidgetFileUpload = ({ isOpen, onClose, onSave, item, isViewMode }) => {
       <div className="upload-widget-popup">
         <div className="upload-header">
           <h5 className="small">{isViewMode ? 'View' : 'Upload'}</h5>
-          <button className="close-button" onClick={onClose}><X size={20} /></button>
+          <button className="close-button" onClick={handleClose}><X size={20} /></button>
         </div>
+        
+        {error && <Alert variant="danger" className="mt-3">{error}</Alert>}
+        
         <div className="upload-title-input">
           <input
             type="text"

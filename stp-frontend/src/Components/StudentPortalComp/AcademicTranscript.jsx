@@ -340,7 +340,7 @@ const AcademicTranscript = () => {
       
       if (!category) {
         console.error('Selected exam category not found');
-        return;
+        return { success: false, message: 'Selected exam category not found' };
       }
   
       const formData = new FormData();
@@ -359,11 +359,15 @@ const AcademicTranscript = () => {
       const data = await response.json();
       if (data.success) {
         fetchMediaByCategory(category.id);
+        setIsFileUploadOpen(false);
+        return { success: true };
       } else {
         console.error('Error adding file:', data.message);
+        return { success: false, message: data.message, error: data.error };
       }
     } catch (error) {
       console.error('Error adding file:', error);
+      return { success: false, message: 'An unexpected error occurred' };
     }
     setIsFileUploadOpen(false);
   };

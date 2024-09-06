@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Edit2, ChevronDown, Upload, Check, FileText, Trash2 } from 'lucide-react';
 import DatePicker from 'react-datepicker';
+import { Alert } from 'react-bootstrap';
 import 'react-datepicker/dist/react-datepicker.css';
 import '../../css/StudentPortalStyles/StudentPortalWidget.css';
 
@@ -11,27 +12,38 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
   const [awarded_by, setAwardedBy] = useState('');
   const [achievement_media, setAchievementMedia] = useState(null);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
-  const [errors, setErrors] = useState([]);
+  const [errors, setErrors] = useState({});
   const [achievementTypes, setAchievementTypes] = useState([]);
 
   useEffect(() => {
-    if (item) {
-      setAchievementName(item.achievement_name || '');
-      setDate(item.date ? new Date(item.date) : null);
-      setTitle(item.title_obtained || '');
-      setAwardedBy(item.awarded_by || '');
-      setAchievementMedia(item.achievement_media || null);
-    } else {
-      // Reset form for new entries
-      setAchievementName('');
-      setDate(null);
-      setTitle('');
-      setAwardedBy('');
-      setAchievementMedia(null);
+    if (isOpen) {
+      if (item) {
+        setAchievementName(item.achievement_name || '');
+        setDate(item.date ? new Date(item.date) : null);
+        setTitle(item.title_obtained || '');
+        setAwardedBy(item.awarded_by || '');
+        setAchievementMedia(item.achievement_media || null);
+      } else {
+        resetForm();
+      }
+      setIsEditingTitle(false);
+      fetchAchievementTypes();
     }
-    setIsEditingTitle(false);
-    fetchAchievementTypes();
-  }, [item]);
+  }, [isOpen, item]);
+
+  const resetForm = () => {
+    setAchievementName('');
+    setDate(null);
+    setTitle('');
+    setAwardedBy('');
+    setAchievementMedia(null);
+    setErrors({});
+  };
+
+  const handleClose = () => {
+    resetForm();
+    onClose();
+  };
 
   const fetchAchievementTypes = async () => {
     try {
@@ -67,7 +79,7 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
 
   if (!isOpen) return null;
 
-  const handleSave = () => {
+  const handleSave = async () => {
     // Validate all fields
     const newErrors = {};
     if (!achievement_name.trim()) newErrors.achievement_name = "Achievement name is required";
@@ -85,15 +97,31 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
 
     // Proceed with save
     const formattedDate = date ? formatDate(date) : '';
-    console.log(`Date being saved: ${formattedDate}`); // Add this log
-    onSave({
-      id: item ? item.id : null,
-      achievement_name,
-      date: formattedDate,
-      title,
-      awarded_by,
-      achievement_media
-    });
+    try {
+      const result = await onSave({
+        id: item ? item.id : null,
+        achievement_name,
+        date: formattedDate,
+        title,
+        awarded_by,
+        achievement_media
+      });
+
+      if (!result.success) {
+        if (result.message === "Validation Error" && result.error) {
+          // Handle validation errors
+          const errorMessages = Object.entries(result.error).map(([key, value]) => `${key}: ${value.join(', ')}`);
+          setErrors({ general: errorMessages.join('. ') });
+        } else {
+          setErrors({ general: result.message || "Failed to save achievement. Please try again." });
+        }
+      } else {
+        handleClose();
+      }
+    } catch (error) {
+      console.error('Error saving achievement:', error);
+      setErrors({ general: "An error occurred. Please try again later." });
+    }
   };
 
   const handleTitleEdit = () => {
@@ -130,7 +158,7 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
   return (
     <div className="achievement-overlay">
       <div className="achievement-popup">
-        <button className="achievement-close-btn" onClick={onClose}>
+        <button className="achievement-close-btn" onClick={handleClose}>
           <X size={24} color="white" />
         </button>
         <h2 className="achievement-title">
@@ -159,6 +187,8 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
         </h2>
         {errors.achievement_name && <div className="error-message">{errors.achievement_name}</div>}
 
+        {errors.general && <Alert variant="danger" className="mt-3">{errors.general}</Alert>}
+
         <div className="achievement-form">
           <div className="achievement-input-group">
             <div className="achievement-input-field">
@@ -180,23 +210,32 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
             </div>
             <div className="achievement-input-field">
               <label className="achievement-label">Title Obtained</label>
-              <div className="achievement-select-input">
+              <div className="achievement-select-input" style={{ position: 'relative', outline: 'none' }}>
                 <select
                   className="achievement-input"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   disabled={isViewMode}
                   required
+                  style={{ 
+                    appearance: 'none', 
+                    borderBottom: 'none', 
+                    outline: 'none',
+                    color: 'white' 
+                  }}
+                  onFocus={(e) => e.target.style.outline = 'none'}
+                  onBlur={(e) => e.target.style.outline = 'none'}
                 >
-                  <option value="">Select title</option>
+                  <option value="" style={{ color: 'black' }}>Select title</option>
                   {achievementTypes.map((type) => (
-                    <option key={type.id} value={type.id}>
+                    <option key={type.id} value={type.id} style={{ color: 'black' }}>
                       {type.core_metaName}
                     </option>
                   ))}
                 </select>
-                <ChevronDown size={20} color="white" />
+                <ChevronDown size={20} color="white" style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)' }} />
               </div>
+            
               {errors.title && <div className="error-message">{errors.title}</div>}
             </div>
             <div className="achievement-input-field">
