@@ -18,17 +18,18 @@ const ExamSelector = ({ exams, selectedExam, setSelectedExam }) => {
 
   return (
     <Carousel
-      height="6rem"
+      height="5rem"
       animation="slide"
       autoPlay={false}
       navButtonsAlwaysVisible
       navButtonsProps={{
         style: {
-          backgroundColor: '#f3f4f6',
+          backgroundColor: 'transparent',
           borderRadius: 0,
-          color: '#4b5563',
+          color: '#B71A18',
           margin: 0,
           padding: 0,
+          
         }
       }}
       indicatorContainerProps={{
@@ -41,23 +42,38 @@ const ExamSelector = ({ exams, selectedExam, setSelectedExam }) => {
       {pages.map((page, index) => (
         <Paper key={index} elevation={0} style={{ display: 'flex', justifyContent: 'center', backgroundColor: 'transparent', margin: "0em" }}>
           {page.map((exam) => (
-            <Button
-              key={exam.id}
-              variant={selectedExam === exam.transcript_category ? "contained" : "outlined"}
-              color="primary"
-              font-family="Ubuntu"
-              onClick={() => setSelectedExam(exam.transcript_category)}
-              style={{
-                margin: '1.5rem 2rem',
-                borderRadius: '0px',
-                backgroundColor: selectedExam === exam.transcript_category ? 'white' : 'transparent',
-                color: selectedExam === exam.transcript_category ? '#4b5563' : '#4b5563',
-                borderColor: selectedExam === exam.transcript_category ? 'transparent' : 'transparent',
-                borderbottom: selectedExam === exam.transcript_category ? 'red' : 'transparent',
-              }}
-            >
-              {exam.transcript_category}
-            </Button>
+           <Button
+           key={exam.id}
+           variant={selectedExam === exam.transcript_category ? "contained" : "outlined"}
+           color="primary"
+           onClick={() => setSelectedExam(exam.transcript_category)}
+           sx={{
+             margin: { xs: '0rem 0.5rem', sm: '0rem 1rem', md: '0rem 2rem' },
+             borderRadius: '0px',
+             backgroundColor: selectedExam === exam.transcript_category ? 'white' : 'transparent',
+             color: '#4b5563',
+             border: 'none',
+             borderBottom: selectedExam === exam.transcript_category ? '2px solid #B71A18' : 'none',
+             fontFamily: 'Ubuntu, sans-serif',
+             boxShadow: 'none',
+             width: { xs: '100%', sm: '45%', md: '200px' },
+             padding: { xs: '5px 10px', sm: '8px 15px', md: '10px 20px' },
+             minWidth: { xs: '100px', sm: '120px', md: '150px' },
+             fontSize: { xs: '0.8rem', sm: '0.9rem', md: '1rem' },
+            
+             '&:hover': {
+               backgroundColor: 'transparent',
+               boxShadow: 'none',
+               border: 'none',
+               borderBottom: selectedExam === exam.transcript_category ? '2px solid red' : 'none',
+             },
+             '&:focus': {
+               outline: 'none',
+             },
+           }}
+         >
+           {exam.transcript_category}
+         </Button>
           ))}
         </Paper>
       ))}
@@ -147,50 +163,56 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files }) => {
   );
 };
 
-const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files }) => {
-  // Add this check at the beginning of the component
-  if (!subjects || !Array.isArray(subjects)) {
-    console.error(`Subjects for ${examType} is not an array:`, subjects);
-    return <div>No data available for {examType}</div>;
-  }
-
+const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveAll }) => {
   const [newSubject, setNewSubject] = useState('');
   const [editingIndex, setEditingIndex] = useState(null);
 
-  const handleGradeChange = (index, grade) => {
-    const updatedSubjects = subjects.map((subject, i) =>
-      i === index ? { ...subject, grade } : subject
-    );
-    onSubjectsChange(examType, updatedSubjects);
-  };
-
-  const handleNameChange = (index, name) => {
-    const updatedSubjects = subjects.map((subject, i) =>
-      i === index ? { ...subject, name } : subject
-    );
-    onSubjectsChange(examType, updatedSubjects);
-  };
+  console.log('ProgramBasedExam rendered with subjects:', subjects);
 
   const handleAddSubject = (e) => {
     e.preventDefault();
     if (newSubject.trim() !== '') {
+      console.log('Adding new subject:', newSubject);
       const updatedSubjects = [...subjects, { name: newSubject, grade: '' }];
-      onSubjectsChange(examType, updatedSubjects);
+      console.log('Updated subjects after addition:', updatedSubjects);
+      onSubjectsChange(updatedSubjects);
       setNewSubject('');
     }
   };
 
+  const handleGradeChange = (index, grade) => {
+    console.log(`Changing grade for subject at index ${index} to:`, grade);
+    const updatedSubjects = subjects.map((subject, i) =>
+      i === index ? { ...subject, grade } : subject
+    );
+    console.log('Updated subjects after grade change:', updatedSubjects);
+    onSubjectsChange(updatedSubjects);
+  };
+
+  const handleNameChange = (index, name) => {
+    console.log(`Changing name for subject at index ${index} to:`, name);
+    const updatedSubjects = subjects.map((subject, i) =>
+      i === index ? { ...subject, name } : subject
+    );
+    console.log('Updated subjects after name change:', updatedSubjects);
+    onSubjectsChange(updatedSubjects);
+  };
+
   const handleEdit = (index) => {
+    console.log('Editing subject at index:', index);
     setEditingIndex(index);
   };
 
   const handleSave = () => {
+    console.log('Saving edits, current subjects:', subjects);
     setEditingIndex(null);
   };
 
   const handleDelete = (index) => {
+    console.log('Deleting subject at index:', index);
     const updatedSubjects = subjects.filter((_, i) => i !== index);
-    onSubjectsChange(examType, updatedSubjects);
+    console.log('Updated subjects after deletion:', updatedSubjects);
+    onSubjectsChange(updatedSubjects);
   };
 
   const getGradeColor = (grade) => {
@@ -270,6 +292,17 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files }) => {
           </button>
         </div>
       </form>
+      <div className="d-flex justify-content-end mt-4">
+        <button
+          className="button-table w-25 px-5 text-center"
+          onClick={() => {
+            console.log('Save button clicked. Current subjects:', subjects);
+            onSaveAll();
+          }}
+        >
+          SAVE
+        </button>
+      </div>
     </div>
   );
 };
@@ -295,14 +328,6 @@ const AcademicTranscript = () => {
     'Diploma': [],
   });
 
-  const handleSubjectsChange = useCallback((examType, updatedSubjects) => {
-    setExamData(prevData => ({
-      ...prevData,
-      [examType]: updatedSubjects
-    }));
-  }, []);
-
-  // Initialize files as an empty array
   const [files, setFiles] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -313,6 +338,8 @@ const AcademicTranscript = () => {
   const [fileToDelete, setFileToDelete] = useState(null);
   const [isViewMode, setIsViewMode] = useState(false);
   const [subjects, setSubjects] = useState([]);
+
+  console.log('AcademicTranscript rendered with subjects:', subjects);
 
   const filteredFiles = files.filter(file =>
     file.studentMedia_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -337,20 +364,20 @@ const AcademicTranscript = () => {
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       const category = categories.find(cat => cat.transcript_category === selectedExam);
-      
+
       if (!category) {
         console.error('Selected exam category not found');
         return { success: false, message: 'Selected exam category not found' };
       }
-  
+
       const formData = new FormData();
       formData.append('studentMedia_type', category.id.toString());
       formData.append('studentMedia_location', newFile.file);
       formData.append('studentMedia_name', newFile.title);
       formData.append('studentMedia_format', 'Photo'); // Assuming it's always a photo, adjust if needed
-  
+
       const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/addTranscriptFile`, {
-        method: 'POST', 
+        method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -376,31 +403,31 @@ const AcademicTranscript = () => {
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       const category = categories.find(cat => cat.transcript_category === selectedExam);
-      
+
       if (!category) {
         console.error('Selected exam category not found');
         return;
       }
 
       const formData = new FormData();
-      
+
       formData.append('id', updatedFile.id);
       formData.append('studentMedia_type', category.id.toString());
       formData.append('studentMedia_name', updatedFile.title);
-      
+
       if (updatedFile.isNewFile) {
         formData.append('studentMedia_location', updatedFile.file);
-    } else if (updatedFile.file) {
+      } else if (updatedFile.file) {
         formData.append('studentMedia_location', updatedFile.file);
-    }
+      }
 
-    // Console log to see what's being sent
-    console.log('Editing file with data:', {
+      // Console log to see what's being sent
+      console.log('Editing file with data:', {
         id: updatedFile.id,
         studentMedia_type: category.id,
         studentMedia_name: updatedFile.title,
         studentMedia_location: updatedFile.isNewFile ? 'New File' : (updatedFile.file || 'Unchanged')
-    });
+      });
 
       // Log the FormData contents
       for (let [key, value] of formData.entries()) {
@@ -416,7 +443,7 @@ const AcademicTranscript = () => {
       });
 
       const data = await response.json();
-      
+
       if (response.ok && data.success) {
         console.log('File edited successfully:', data);
         fetchMediaByCategory(category.id);
@@ -452,13 +479,13 @@ const AcademicTranscript = () => {
         },
         body: JSON.stringify({ id: fileToDelete.id, type: "delete" }),
       });
-      
+
       if (!response.ok) {
         const errorData = await response.json();
         console.error('Error deleting file:', errorData);
         return;
       }
-      
+
       const data = await response.json();
       if (data.success) {
         console.log('File deleted successfully');
@@ -511,7 +538,7 @@ const AcademicTranscript = () => {
 
       if (result.success && Array.isArray(result.data.data)) {
         setCategories(result.data.data);
-        
+
         // Manually categorize transcript categories
         const examBased = ['SPM', 'O-level', 'GCSE', 'IGCSE', 'SSCE', 'UEC', 'SAT / ACT'];
         const programBased = ['STPM', 'A-level', 'Foundation', 'Diploma'];
@@ -564,6 +591,7 @@ const AcademicTranscript = () => {
 
   const fetchSubjects = useCallback(async (categoryId) => {
     try {
+      console.log('Fetching subjects for category:', categoryId);
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       let url, method, body;
 
@@ -590,21 +618,22 @@ const AcademicTranscript = () => {
       }
 
       const result = await response.json();
+      console.log('Fetched subjects:', result);
 
       if (result.success) {
-        if (categoryId === "32") {
-          setSubjects(result.data.map(subject => ({
+        const formattedSubjects = categoryId === "32"
+          ? result.data.map(subject => ({
             id: subject.subject_id,
             name: subject.subject_name,
             grade: subject.subject_grade
-          })));
-        } else {
-          setSubjects(result.data.map(subject => ({
+          }))
+          : result.data.map(subject => ({
             id: subject.id,
             name: subject.highTranscript_name,
             grade: subject.higherTranscript_grade
-          })));
-        }
+          }));
+        console.log('Formatted subjects:', formattedSubjects);
+        setSubjects(formattedSubjects);
       } else {
         console.error('Failed to fetch subjects:', result);
         setSubjects([]);
@@ -625,6 +654,58 @@ const AcademicTranscript = () => {
     }
   }, [selectedExam, categories, fetchSubjects]);
 
+  const updateSubjects = useCallback((updatedSubjects) => {
+    console.log('updateSubjects called with:', updatedSubjects);
+    setSubjects(updatedSubjects);
+  }, []);
+
+  const handleSaveAll = async () => {
+    try {
+      console.log('handleSaveAll initiated');
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      const category = categories.find(cat => cat.transcript_category === selectedExam);
+
+      if (!category) {
+        console.error('Selected exam category not found');
+        return;
+      }
+
+      const payload = {
+        category: category.id,
+        data: subjects.map(subject => ({
+          name: subject.name,
+          grade: subject.grade
+        }))
+      };
+
+      console.log('Payload prepared for API:', payload);
+
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/addEditHigherTranscript`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+      console.log('API response:', data);
+
+      if (data.success) {
+        console.log('Subjects saved successfully');
+        // Optionally, you can refresh the subjects here
+        fetchSubjects(category.id.toString());
+      } else {
+        console.error('Error saving subjects:', data.message);
+        alert(`Error saving subjects: ${data.message}`);
+      }
+    } catch (error) {
+      console.error('Error in handleSaveAll:', error);
+      alert('An unexpected error occurred while saving subjects.');
+    }
+  };
+
   const renderExamComponent = () => {
     const categoryId = categories.find(cat => cat.transcript_category === selectedExam)?.id;
     const files = mediaData[categoryId] || [];
@@ -633,15 +714,16 @@ const AcademicTranscript = () => {
       return <SubjectBasedExam
         examType={selectedExam}
         subjects={subjects}
-        onSubjectsChange={handleSubjectsChange}
+        onSubjectsChange={updateSubjects}
         files={files}
       />;
     } else if (programBasedCategories.some(cat => cat.transcript_category === selectedExam)) {
       return <ProgramBasedExam
         examType={selectedExam}
         subjects={subjects}
-        onSubjectsChange={handleSubjectsChange}
+        onSubjectsChange={updateSubjects}
         files={files}
+        onSaveAll={handleSaveAll}
       />;
     }
     return <div>No data available for {selectedExam}</div>;
@@ -649,7 +731,7 @@ const AcademicTranscript = () => {
 
   return (
     <div className='p-0'>
-       <ExamSelector
+      <ExamSelector
         exams={categories}
         selectedExam={selectedExam}
         setSelectedExam={(exam) => {
@@ -721,8 +803,8 @@ const AcademicTranscript = () => {
                     <td className="border-bottom p-2">
                       <div className="d-flex justify-content-end align-items-center">
                         <Trash2 size={18} className="iconat-trash" onClick={() => openDeletePopup(file)} />
-                        <Edit2 size={18}   className="iconat" onClick={() => openEditModal(file)} />
-                        <Eye size={18}  className="iconat" onClick={() => viewFile(file)} />
+                        <Edit2 size={18} className="iconat" onClick={() => openEditModal(file)} />
+                        <Eye size={18} className="iconat" onClick={() => viewFile(file)} />
                       </div>
                     </td>
                   </tr>
@@ -764,7 +846,7 @@ const AcademicTranscript = () => {
         }}
         onSave={(file) => {
           console.log('File to be saved/edited:', file);
-          return currentFile ? editFile({...file, studentMedia_type: currentFile.studentMedia_type}) : addFile(file);
+          return currentFile ? editFile({ ...file, studentMedia_type: currentFile.studentMedia_type }) : addFile(file);
         }}
         item={currentFile}
         isViewMode={isViewMode}
