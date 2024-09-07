@@ -154,9 +154,9 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files }) => {
             {editingIndex === index ? (
               <Check onClick={handleSave} className="text-success cursor-pointer me-2" />
             ) : (
-              <Edit2 className="iconat me-2" onClick={() => handleEdit(index)} />
+              <Edit2 size={18} className="iconat mx-2" onClick={() => handleEdit(index)} />
             )}
-            <Trash2 className="iconat-trash" onClick={() => handleDelete(index)} />
+            <Trash2 size={18} className="iconat-trash mx-2" onClick={() => handleDelete(index)} />
           </div>
         </div>
       ))}
@@ -271,9 +271,9 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
               {editingIndex === index ? (
                 <Check onClick={handleSave} className="text-success cursor-pointer me-2" />
               ) : (
-                <Edit2 className="iconat" onClick={() => handleEdit(index)} />
+                <Edit2  size={18} className="iconat mx-2" onClick={() => handleEdit(index)} />
               )}
-              <Trash2 className="iconat-trash" onClick={() => handleDelete(index)} />
+              <Trash2  size={18} className="iconat-trash mx-2" onClick={() => handleDelete(index)} />
             </div>
           </CSSTransition>
         ))}
