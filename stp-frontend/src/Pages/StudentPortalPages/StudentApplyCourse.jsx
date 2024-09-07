@@ -711,13 +711,13 @@ const StudentApplyCourse = () => {
     switch (activeStep) {
       case 0:
         return (
-          <div className="step-content p-4 rounded">
+          <div className="step-content-caseone p-4 rounded">
             <h3 className="border-bottom pb-2 fw-normal">Basic Information</h3>
-            <div className="sap-content w-100 d-flex justify-content-center">
-              <div className="sap-content w-100 py-5 px-5">
+            <div className="sap-content-caseone w-100 d-flex justify-content-center">
+              <div className="sap-content-caseone w-100 py-5 px-5">
                 <div className="row mb-5">
                   <div className="col-md-6 ">
-                    <div className="form-group d-flex align-items-center">
+                    <div className="sac-form-group d-flex align-items-center">
                       <label htmlFor="firstName" className="me-2">First Name<span className="text-danger">*</span></label>
                       <input
                         type="text"
@@ -732,7 +732,7 @@ const StudentApplyCourse = () => {
                     </div>
                   </div>
                   <div className="col-md-6">
-                    <div className="form-group d-flex align-items-center">
+                    <div className="sac-form-group d-flex align-items-center">
                       <label htmlFor="lastName" className="me-2">Last Name<span className="text-danger">*</span></label>
                       <input
                         type="text"
@@ -749,7 +749,7 @@ const StudentApplyCourse = () => {
                 </div>
                 <div className="row mb-5">
                   <div className="col-md-6">
-                    <div className="form-group d-flex align-items-center">
+                    <div className="sac-form-group d-flex align-items-center">
                       <label htmlFor="icNumber" className="me-2">IC Number<span className="text-danger">*</span></label>
                       <input
                         type="text"
@@ -764,7 +764,7 @@ const StudentApplyCourse = () => {
                     </div>
                   </div>
                   <div className="col-md-6">
-                    <div className="form-group d-flex align-items-center">
+                    <div className="sac-form-group d-flex align-items-center">
                       <label htmlFor="gender" className="me-2">Gender<span className="text-danger">*</span></label>
                       <select
                         id="gender"
@@ -784,7 +784,7 @@ const StudentApplyCourse = () => {
                 </div>
                 <div className="row mb-5">
                   <div className="col-md-6">
-                    <div className="form-group d-flex align-items-center">
+                    <div className="sac-form-group d-flex align-items-center">
                       <label htmlFor="contactNumber" className="me-2">Contact Number<span className="text-danger">*</span></label>
                       <input
                         type="tel"
@@ -801,7 +801,7 @@ const StudentApplyCourse = () => {
                 </div>
                 <div className="row mb-5">
                   <div className="col-md-12">
-                    <div className="form-group d-flex align-items-center">
+                    <div className="sac-form-group d-flex align-items-center">
                       <label htmlFor="emailAddress" className="me-0 form-label">Email Address<span className="text-danger">*</span></label>
                       <input
                         type="email"
@@ -818,7 +818,7 @@ const StudentApplyCourse = () => {
                 </div>
                 <div className="row mb-5">
                   <div className="col-md-12">
-                    <div className="form-group d-flex align-items-center">
+                    <div className="sac-form-group d-flex align-items-center">
                       <label htmlFor="address" className="me-0 form-label">Address<span className="text-danger">*</span></label>
                       <input
                         type="text"
@@ -835,7 +835,7 @@ const StudentApplyCourse = () => {
                 </div>
                 <div className="row mb-5">
                   <div className="col-md-6">
-                    <div className="form-group d-flex align-items-center">
+                    <div className="sac-form-group d-flex align-items-center">
                       <label htmlFor="country" className="me-2">Country<span className="text-danger">*</span></label>
                       <input
                         type="text"
@@ -850,7 +850,7 @@ const StudentApplyCourse = () => {
                     </div>
                   </div>
                   <div className="col-md-6">
-                    <div className="form-group d-flex align-items-center">
+                    <div className="sac-form-group d-flex align-items-center">
                       <label htmlFor="state" className="me-2">State<span className="text-danger">*</span></label>
                       <input
                         type="text"
@@ -867,7 +867,7 @@ const StudentApplyCourse = () => {
                 </div>
                 <div className="row mb-5">
                   <div className="col-md-6">
-                    <div className="form-group d-flex align-items-center">
+                    <div className="sac-form-group d-flex align-items-center">
                       <label htmlFor="city" className="me-2">City<span className="text-danger">*</span></label>
                       <input
                         type="text"
@@ -882,7 +882,7 @@ const StudentApplyCourse = () => {
                     </div>
                   </div>
                   <div className="col-md-6">
-                    <div className="form-group d-flex align-items-center">
+                    <div className="sac-form-group d-flex align-items-center">
                       <label htmlFor="postcode" className="me-2">Postcode<span className="text-danger">*</span></label>
                       <input
                         type="text"
@@ -904,8 +904,9 @@ const StudentApplyCourse = () => {
         );
 
       case 1:
+        
         return (
-          <div className="step-content p-4 rounded">
+          <div className="step-content-casetwo p-4 rounded ">
             <h3 className="border-bottom pb-2 fw-normal">Academic Transcript</h3>
             <div className="academic-transcript-list">
               <DragDropContext onDragEnd={onDragEnd}>
@@ -1449,20 +1450,20 @@ const StudentApplyCourse = () => {
   const handleViewSummary = () => {
     setShowSummary(true);
   };
-
+  
   const renderPostSubmission = () => (
-    <div >
+    <div>
       <div className="backgroundimage">
-        <div className="widget-applying-course-success justify-content-center ">
-          <h1 className="text-danger align-self-center fw-bold mb-5 display-6">Congratulations!</h1>
-          <h3 className="text-black align-self-center fw-normal mb-4">Your application has been successfully submitted.</h3>
+        <div className="widget-applying-course-success">
+          <h1 className="text-danger fw-bold mb-4">Congratulations!</h1>
+          <h3 className="text-black fw-normal">Your application has been successfully submitted.</h3>
         </div>
       </div>
-      <div className="d-flex justify-content-center mt-4">
-        <Button className="me-3 sac-submit-button" onClick={handleViewSummary}>
+      <div className="post-submission-buttons">
+        <Button className="sac-submit-button" onClick={handleViewSummary}>
           View Summary
         </Button>
-        <Button className="sac-submit-button" onClick={() => {/* Add logic to go back to course page */ }}>
+        <Button className="sac-submit-button" onClick={() => {/* Add logic to go back to course page */}}>
           Back to Course Page
         </Button>
       </div>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Button } from "react-bootstrap";
-import {GraduationCap,CalendarCheck,BookOpenText } from 'lucide-react';
+import { GraduationCap, CalendarCheck, BookOpenText } from 'lucide-react';
 import { MapPin, BookOpen, Clock, Calendar, ChevronLeft, ChevronRight } from 'react-feather';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../css/StudentPortalStyles/StudentPortalWidget.css";
@@ -73,7 +73,7 @@ const AppliedCoursesHistory = () => {
 
     const handleView = (application) => {
         setSelectedApplication(application);
-        switch(application.status) {
+        switch (application.status) {
             case "Accepted":
                 setIsAcceptedOpen(true);
                 break;
@@ -103,7 +103,7 @@ const AppliedCoursesHistory = () => {
                                     <div className="acp-left-section">
                                         <h3 className="acp-degree-title">{app.course_name}</h3>
                                         <div className="acp-university-info">
-                                        <img 
+                                            <img
                                                 src={`${import.meta.env.VITE_BASE_URL}storage/${app.course_logo}`}
                                                 alt={app.school_name}
                                                 className="acp-university-logo"
@@ -111,15 +111,15 @@ const AppliedCoursesHistory = () => {
                                                     height: "80px",
                                                     width: "150px",
                                                     objectFit: "contain",
-                                                }}/>
-                                        <div>
-                                            <p className="acp-university-name">{app.school_name}</p>
-                                            <p className="acp-location">
-                                                <MapPin size={16} className="acp-icon" />
-                                                {app.city_name}, {app.state_name}, {app.country_name} <span className="acp-link">click and view on map</span>
-                                            </p>
+                                                }} />
+                                            <div>
+                                                <p className="acp-university-name">{app.school_name}</p>
+                                                <p className="acp-location">
+                                                    <MapPin size={16} className="acp-icon" />
+                                                    {app.city_name}, {app.state_name}, {app.country_name} <span className="acp-link">click and view on map</span>
+                                                </p>
+                                            </div>
                                         </div>
-                                    </div>
                                     </div>
                                     <div className="acp-middle-section">
                                         <div className="acp-detail-item">
@@ -135,7 +135,7 @@ const AppliedCoursesHistory = () => {
                                             <span>{app.course_period}</span>
                                         </div>
                                         <div className="acp-detail-item">
-                                            <BookOpenText  size={16} className="acp-icon" />
+                                            <BookOpenText size={16} className="acp-icon" />
                                             <span>{app.course_intake}</span>
                                         </div>
                                     </div>
@@ -152,8 +152,8 @@ const AppliedCoursesHistory = () => {
                         ))
                     )}
                     <div className="pagination">
-                        <button 
-                            onClick={() => paginate(currentPage - 1)} 
+                        <button
+                            onClick={() => paginate(currentPage - 1)}
                             disabled={currentPage === 1}
                         >
                             <ChevronLeft size={20} />
@@ -167,23 +167,23 @@ const AppliedCoursesHistory = () => {
                                 {number}
                             </button>
                         ))}
-                        <button 
-                            onClick={() => paginate(currentPage + 1)} 
-                            disabled={currentPage === pageNumbers.length} 
+                        <button
+                            onClick={() => paginate(currentPage + 1)}
+                            disabled={currentPage === pageNumbers.length}
                         >
                             <ChevronRight size={20} />
                         </button>
                     </div>
                 </Card.Body>
             </Card>
-            <WidgetAccepted 
-                isOpen={isAcceptedOpen} 
+            <WidgetAccepted
+                isOpen={isAcceptedOpen}
                 onClose={() => setIsAcceptedOpen(false)}
                 date={selectedApplication ? selectedApplication.date_applied : ""}
                 feedbacks={selectedApplication && selectedApplication.feedback ? [selectedApplication.feedback] : []}
             />
-            <WidgetRejected 
-                isOpen={isRejectedOpen} 
+            <WidgetRejected
+                isOpen={isRejectedOpen}
                 onClose={() => setIsRejectedOpen(false)}
                 date={selectedApplication ? selectedApplication.date_applied : ""}
                 feedbacks={selectedApplication && selectedApplication.feedback ? [selectedApplication.feedback] : []}

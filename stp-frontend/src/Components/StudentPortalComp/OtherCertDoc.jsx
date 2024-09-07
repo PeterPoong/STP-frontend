@@ -4,6 +4,7 @@ import { Trash2, Eye, Plus, Search, FileText, Edit2 } from 'lucide-react';
 import WidgetFileUpload from "../../Components/StudentPortalComp/WidgetFileUpload";
 import WidgetPopUpDelete from "../../Components/StudentPortalComp/WidgetPopUpDelete";
 import "../../css/StudentPortalStyles/StudentPortalAcademicTranscript.css";
+import "../../css/StudentPortalStyles/StudentButtonGroup.css";
 
 const OtherCertDoc = () => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -271,7 +272,7 @@ const OtherCertDoc = () => {
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
-                    <button className="button-table w-25 px-5 ml-auto" onClick={() => {
+                    <button className="button-table px-5 py-1 ml-auto" onClick={() => {
                         setCurrentItem(null);
                         setIsPopupOpen(true);
                     }}>
@@ -284,7 +285,7 @@ const OtherCertDoc = () => {
                 <table className="w-100 ">
                     <thead>
                         <tr>
-                            <th className="border-bottom fw-normal py-2 px-4">Files</th>
+                            <th className="border-bottom fw-normal ps-2">Files</th>
                             <th className="border-bottom p-2 fw-normal text-end">Filename</th>
                             <th className="border-bottom p-2  fw-normal text-end">Actions</th>
                         </tr>
@@ -294,11 +295,11 @@ const OtherCertDoc = () => {
                             {filteredData.map((item) => (
                                 <CSSTransition key={item.id || item.certificate_name} timeout={300} classNames="fade">
                                     <tr>
-                                        <td className="border-bottom p-4">
-                                            <div className="d-flex align-items-center">
+                                        <td className="border-bottom py-2 px-2">
+                                            <div className="d-flex align-items-center ">
                                                 <FileText className="file-icon me-2" />
                                                 <div>
-                                                    <div className="file-title">{item.name}</div>
+                                                    <div className="file-title mb-1">{item.name}</div>
                                                     <div className="file-date">{item.created_at || 'No date'}</div>
                                                 </div>
                                             </div>
@@ -306,9 +307,9 @@ const OtherCertDoc = () => {
                                         <td className="border-bottom p-2 text-end text-secondary">{item.media || 'No file'}</td>
                                         <td className="border-bottom p-2">
                                             <div className="d-flex justify-content-end align-items-center">
-                                                <Trash2 size={20}  className="iconat-trash" onClick={() => openDeletePopup(item)} />
-                                                <Edit2 size={20}  className="iconat" onClick={() => editEntry(item)} />
-                                                <Eye size={20}  className="iconat" onClick={() => viewEntry(item)} />
+                                                <Trash2 size={18}  className="iconat-trash mx-2" onClick={() => openDeletePopup(item)} />
+                                                <Edit2 size={18}  className="iconat mx-2" onClick={() => editEntry(item)} />
+                                                <Eye size={18}  className="iconat ms-2" onClick={() => viewEntry(item)} />
                                             </div>
                                         </td>
                                     </tr>

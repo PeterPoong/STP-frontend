@@ -4,6 +4,7 @@ import { Edit2, Trash2, Eye, Plus, Search } from 'lucide-react';
 import WidgetClub from "../../Components/StudentPortalComp/WidgetClub";
 import WidgetPopUpDelete from "../../Components/StudentPortalComp/WidgetPopUpDelete";
 import "../../css/StudentPortalStyles/StudentPortalAcademicTranscript.css";
+import "../../css/StudentPortalStyles/StudentButtonGroup.css";
 
 const CoCurriculum = () => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -254,7 +255,7 @@ const CoCurriculum = () => {
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
-                    <button className="button-table w-25 px-5 ml-auto" onClick={() => {
+                    <button className="button-table px-5 py-1 ml-auto" onClick={() => {
                         setCurrentItem(null);
                         setIsPopupOpen(true);
                     }}>
@@ -265,9 +266,9 @@ const CoCurriculum = () => {
 
             {Array.isArray(currentItems) && currentItems.length > 0 ? (
                 <table className="w-100 ">
-                    <thead>
+                    <thead >
                         <tr>
-                            <th className="border-bottom py-2 px-4 fw-normal">Club</th>
+                            <th className="border-bottom p-2 fw-normal">Club</th>
                             <th className="border-bottom p-2 fw-normal">Position</th>
                             <th className="border-bottom p-2 fw-normal">Year</th>
                             <th className="border-bottom p-2 text-end fw-normal">Actions</th>
@@ -278,10 +279,10 @@ const CoCurriculum = () => {
                             {currentItems.map((item) => (
                                 <CSSTransition key={item.id || item.club_name} timeout={300} classNames="fade">
                                     <tr>
-                                        <td className="border-bottom p-4">
+                                        <td className="border-bottom py-2 px-2">
                                             <div className="d-flex align-items-center">
                                                 <div>
-                                                    <div className="file-title">{item.club_name}</div>
+                                                    <div className="file-title mb-1">{item.club_name}</div>
                                                     <div className="file-date">{item.location}</div>
                                                 </div>
                                             </div>
@@ -290,9 +291,9 @@ const CoCurriculum = () => {
                                         <td className="border-bottom p-2">{item.year}</td>
                                         <td className="border-bottom p-2">
                                             <div className="d-flex justify-content-end align-items-center">
-                                                <Trash2 size={20}  className="iconat-trash" onClick={() => openDeletePopup(item)} />
-                                                <Edit2 size={20}  className="iconat" onClick={() => editEntry(item)} />
-                                                <Eye size={20}  className="iconat" onClick={() => viewEntry(item)} />
+                                                <Trash2 size={20}  className="iconat-trash mx-2" onClick={() => openDeletePopup(item)} />
+                                                <Edit2 size={20}  className="iconat mx-2" onClick={() => editEntry(item)} />
+                                                <Eye size={20}  className="iconat ms-2" onClick={() => viewEntry(item)} />
                                             </div>
                                         </td>
                                     </tr>

@@ -8,6 +8,7 @@ import 'react-select-search/style.css';
 import "../../css/StudentPortalStyles/StudentPortalAcademicTranscript.css";
 import WidgetFileUploadAcademicTranscript from "../../Components/StudentPortalComp/WidgetFileUploadAcademicTranscript";
 import WidgetPopUpDelete from "../../Components/StudentPortalComp/WidgetPopUpDelete";
+import "../../css/StudentPortalStyles/StudentButtonGroup.css"; 
 
 const ExamSelector = ({ exams, selectedExam, setSelectedExam }) => {
   const itemsPerPage = 5;
@@ -773,16 +774,16 @@ const AcademicTranscript = () => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <button className="button-table w-25 px-5 ml-auto" onClick={() => setIsFileUploadOpen(true)}>ADD NEW</button>
+            <button className="button-table px-5 py-1 ml-auto" onClick={() => setIsFileUploadOpen(true)}>ADD NEW</button>
           </div>
         </div>
 
         <table className="w-100  justify-content-around">
           <thead>
             <tr>
-              <th className="border-bottom p-2">Files</th>
-              <th className="border-bottom p-2 text-end">Filename</th>
-              <th className="border-bottom p-2 text-end">Actions</th>
+              <th className="border-bottom p-2 fw-normal">Files</th>
+              <th className="border-bottom p-2 text-end fw-normal">Filename</th>
+              <th className="border-bottom p-2 text-end fw-normal">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -794,17 +795,17 @@ const AcademicTranscript = () => {
                       <div className="d-flex align-items-center">
                         <FileText className="file-icon me-2" />
                         <div>
-                          <div className="file-title">{file.studentMedia_name}</div>
+                          <div className="file-title mb-1">{file.studentMedia_name}</div>
                           <div className="file-date">{file.status}</div>
                         </div>
                       </div>
                     </td>
-                    <td className="border-bottom p-2 text-end">{file.studentMedia_location || 'N/A'}</td>
+                    <td className="border-bottom p-2 text-end text-secondary">{file.studentMedia_location || 'N/A'}</td>
                     <td className="border-bottom p-2">
                       <div className="d-flex justify-content-end align-items-center">
-                        <Trash2 size={18} className="iconat-trash" onClick={() => openDeletePopup(file)} />
-                        <Edit2 size={18} className="iconat" onClick={() => openEditModal(file)} />
-                        <Eye size={18} className="iconat" onClick={() => viewFile(file)} />
+                        <Trash2 size={18} className="iconat-trash mx-2" onClick={() => openDeletePopup(file)} />
+                        <Edit2 size={18} className="iconat mx-2" onClick={() => openEditModal(file)} />
+                        <Eye size={18} className="iconat ms-2" onClick={() => viewFile(file)} />
                       </div>
                     </td>
                   </tr>
@@ -833,7 +834,7 @@ const AcademicTranscript = () => {
         </div>
 
         <div className="d-flex justify-content-end mt-4">
-          <button className="button-table w-25 px-5 text-center">SAVE</button>
+          <button className="button-table px-5 py-1 text-center">SAVE</button>
         </div>
       </div>
 

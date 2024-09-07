@@ -1551,6 +1551,7 @@ p {
 .acp-university-info {
     display: flex;
     align-items: flex-start;
+    gap:1rem;
 }
 
 .acp-university-logo {
@@ -1562,7 +1563,13 @@ p {
 
 .acp-university-name {
     font-size: 1rem;
-    margin-bottom: 0.4rem;
+    margin-bottom: 0.9rem;
+}
+
+
+.acp-university-details {
+  display: flex;
+  flex-direction: column;
 }
 
 .acp-location {
@@ -1575,7 +1582,8 @@ p {
 .acp-link {
     color: #007bff;
     cursor: pointer;
-    margin-left: 0.825rem;
+    margin-left:0.5rem;
+    
 }
 
 .acp-detail-item {
@@ -1653,13 +1661,35 @@ p {
       padding: 10px 0; /* Adjust padding */
   }
 
+
+  /*for applied course history*/
   .acp-status-badge {
-      font-size: 1rem; /* Adjust font size */
-      padding: 0.5rem 1rem; /* Adjust padding */
+    font-size: 1rem;
+    padding: 0.3rem 1.5rem;
+    border-bottom-left-radius: 1.5rem;
+  }
+
+  .acp-university-info {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .acp-university-logo {
+    margin-bottom: 0.5rem;
+  }
+
+  .acp-location {
+    font-size: 0.8rem;
+  }
+
+  .acp-link {
+    display: block;
+    margin-left: 0;
+    margin-top: 0.25rem;
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 576px) {
   .acp-container {
       padding: 10px; /* Adjust padding */
   }
@@ -1695,6 +1725,39 @@ p {
 
   .acp-view-btn, .acp-withdraw-btn {
       font-size: 0.75rem; /* Adjust font size */
+  }
+
+  .acp-status-badge {
+    font-size: 0.9rem;
+    padding: 0.2rem 1rem;
+    border-bottom-left-radius: 1rem;
+  }
+
+}
+
+
+@media (max-width: 375px) {
+  .acp-status-badge {
+    font-size: 0.8rem;
+    padding: 0.2rem 0.8rem;
+    border-bottom-left-radius: 0.8rem;
+  }
+
+  .acp-university-logo {
+    height: 50px;
+    width: 100px;
+  }
+
+  .acp-university-name {
+    font-size: 0.85rem;
+  }
+
+  .acp-location {
+    font-size: 0.7rem;
+  }
+
+  .acp-link {
+    font-size: 0.7rem;
   }
 }
 

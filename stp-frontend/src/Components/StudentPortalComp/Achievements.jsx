@@ -4,6 +4,7 @@ import { Edit2, Trash2, Eye, Plus, Search } from 'lucide-react';
 import WidgetAchievement from "../../Components/StudentPortalComp/WidgetAchievement";
 import WidgetPopUpDelete from "../../Components/StudentPortalComp/WidgetPopUpDelete";
 import "../../css/StudentPortalStyles/StudentPortalAcademicTranscript.css";
+import "../../css/StudentPortalStyles/StudentButtonGroup.css";
 
 const Achievements = () => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -290,7 +291,7 @@ const Achievements = () => {
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
-                    <button className="button-table w-25 px-5 ml-auto" onClick={() => {
+                    <button className="button-table px-5 py-1 ml-auto" onClick={() => {
                         setCurrentItem(null);
                         setIsPopupOpen(true);
                     }}>
@@ -303,7 +304,7 @@ const Achievements = () => {
                 <table className="w-100">
                     <thead>
                         <tr >
-                            <th className="border-bottom px-4 py-2 fw-normal">Events</th>
+                            <th className="border-bottom p-2 fw-normal">Events</th>
                             <th className="border-bottom p-2 fw-normal text-end">Title Obtained</th>
                             <th className="border-bottom p-2 fw-normal text-end">Date of Achievement</th>
                             <th className="border-bottom p-2 fw-normal text-end">Uploads</th>
@@ -315,10 +316,10 @@ const Achievements = () => {
                             {filteredData.map((item) => (
                                 <CSSTransition key={item.id} timeout={300} classNames="fade">
                                     <tr>
-                                        <td className="border-bottom p-4">
+                                        <td className="border-bottom py-2 px-2">
                                             <div className="d-flex align-items-center">
                                                 <div>
-                                                    <div className="file-title">{item.achievement_name}</div>
+                                                    <div className="file-title mb-1">{item.achievement_name}</div>
                                                     <div className="file-date">{item.awarded_by}</div>
                                                 </div>
                                             </div>
@@ -328,9 +329,9 @@ const Achievements = () => {
                                         <td className="border-bottom p-2 text-end file-date">{item.achievement_media}</td>
                                         <td className="border-bottom p-2">
                                             <div className="d-flex justify-content-end align-items-center">
-                                                <Trash2 size={20}   className="iconat-trash" onClick={() => openDeletePopup(item)} />
-                                                <Edit2 size={20}   className="iconat" onClick={() => editEntry(item)} />
-                                                <Eye size={20}  className="iconat" onClick={() => viewEntry(item)} />
+                                                <Trash2 size={20}   className="iconat-trash mx-2" onClick={() => openDeletePopup(item)} />
+                                                <Edit2 size={20}   className="iconat mx-2" onClick={() => editEntry(item)} />
+                                                <Eye size={20}  className="iconat ms-2" onClick={() => viewEntry(item)} />
                                             </div>
                                         </td>
                                     </tr>
