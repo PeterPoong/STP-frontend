@@ -108,7 +108,10 @@ const AdminSchoolContent = () => {
     };
     const handleEdit = (id) => {
         console.log(`Edit school with ID: ${id}`);
+        sessionStorage.setItem('token', Authenticate);
+        navigate(`/adminEditSchool/${id}`);
     };
+    
 
     const handleToggleSwitch = (id, currentStatus) => {
         const action = (currentStatus === 'Active' || currentStatus === 'Temporary') ? 'disable' : 'enable';
@@ -139,11 +142,8 @@ const AdminSchoolContent = () => {
             const result = await response.json();
     
             if (result.success) {
-                // Log the new status for debugging
-                console.log("New status:", result.newStatus);
-    
-                // Refresh the page after successful confirmation
-                window.location.reload();
+                // Fetch the updated data from the database
+                await fetchSchools(currentPage, rowsPerPage, searchQuery);
             } else {
                 console.error(result.message);
             }

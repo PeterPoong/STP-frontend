@@ -134,10 +134,7 @@ const AdminStudentContent = () => {
     
             if (result.success) {
                 // Log the new status for debugging
-                console.log("New status:", result.newStatus);
-    
-                // Refresh the page after successful confirmation
-                window.location.reload();
+                await fetchstudents(currentPage, rowsPerPage, searchQuery);
             } else {
                 console.error(result.message);
             }

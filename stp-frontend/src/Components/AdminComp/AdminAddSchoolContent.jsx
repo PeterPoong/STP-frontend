@@ -1,72 +1,89 @@
-import React, { useEffect, useState } from "react";
-import { Container, Form, Button, Row, Col, Image } from "react-bootstrap";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import React, { useState, useEffect } from "react";
+import { Container } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import AdminFormComponent from './AdminFormComponent';
 import 'typeface-ubuntu';
 import "../../css/AdminStyles/AdminFormStyle.css";
-import AdminFormComponent from './AdminFormComponent';
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
 
 const AdminAddSchoolContent = () => {
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [contact, setContact] = useState("");
-    const [password, setPassword] = useState("");
-    const [countryCode, setCountryCode] = useState("MY");
-    const [shortDescription, setShortDescription] = useState("");
-    const [longDescription, setLongDescription] = useState("");
-    const [schoolLogo, setSchoolLogo] = useState(null);
-    const [schoolFeature, setSchoolFeature] = useState([]);
-    const [courseFeature, setCourseFeature] = useState([]);
-    const [featureCourseId, setFeatureCourseId] = useState(null);
-    const [featuredCourses, setFeaturedCourses] = useState([]);
     const [schoolFeaturedList, setSchoolFeaturedList] = useState([]);
-    const [courseFeaturedList, setCourseFeaturedList] = useState([]);
-    const [selectAll, setSelectAll] = useState(false);
-    const [courseList, setCourseList] = useState([]);
-    const [searchQuery, setSearchQuery] = useState("");
+    const [categoryList, setCategoryList] = useState([]); 
+    const [accountList, setAccountList] = useState([]); 
+    const [formData, setFormData] = useState({
+        name: "",
+        email: "",
+        contact_number: "",
+        country_code: "+60",
+        person_in_charge_name:"",
+        person_in_charge_email:"",
+        person_in_charge_contact:"",
+        school_website:"",
+        category:"",
+        account:"",
+        password: "",
+        confirm_password: "",
+        school_shortDesc: "",
+        school_fullDesc: "",
+        logo: null
+    });
+    const [selectedFeatures, setSelectedFeatures] = useState([]);
     const [error, setError] = useState(null);
-    const [selectedCourses, setSelectedCourses] = useState([]);
-    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`;
 
-    // Function to fetch course list based on search query
-    const fetchCourses = async (query) => {
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+    
+        const { name, email, category, account,  school_website, contact_number,person_in_charge_email,person_in_charge_name,person_in_charge_contact, country_code, confirm_password, school_shortDesc, school_fullDesc, password } = formData;
+        
+        const formPayload = new FormData();
+        formPayload.append("name", name);
+        formPayload.append("email", email);
+        formPayload.append("country_code", country_code);
+        formPayload.append("contact_number", contact_number);
+        formPayload.append("person_in_charge_contact", person_in_charge_contact);
+        formPayload.append("person_in_charge_name", person_in_charge_name);
+        formPayload.append("person_in_charge_email", person_in_charge_email);
+        formPayload.append("school_website", school_website);
+        formPayload.append("category", category);
+        formPayload.append("category", account);
+        formPayload.append("password", password);
+        formPayload.append("confirm_password", confirm_password);
+        formPayload.append("school_shortDesc", school_shortDesc);
+        formPayload.append("school_fullDesc", school_fullDesc);
+    
+        // Append each feature id individually to formPayload as featured[]
+        selectedFeatures.forEach(feature => {
+            formPayload.append("featured[]", feature);
+        });
+    
         try {
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/courseList`, {
+            console.log("FormData before submission:", formPayload);
+    
+            const addSchoolResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/addSchool`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
                     'Authorization': Authenticate,
                 },
-                body: JSON.stringify({ searchQuery: query }),
+                body: formPayload, // Using FormData directly as the body
             });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const data = await response.json();
-
-            if (data && data.data) {
-                const names = data.data.map(course => ({ name: course.name, id: course.id }));
-                setCourseList(names);
+    
+            const addSchoolData = await addSchoolResponse.json();
+    
+            if (addSchoolResponse.ok) {
+                console.log('School successfully registered:', addSchoolData);
+                navigate('/adminSchool');
             } else {
-                setCourseList([]);
+                throw new Error(`School Registration failed: ${addSchoolData.message}`);
             }
         } catch (error) {
-            console.error('Error fetching course list:', error.message);
-            setError(error.message);
+            setError('An error occurred during school registration. Please try again later.');
+            console.error('Error during school registration:', error);
         }
     };
-
-    // Handle search query change
-    useEffect(() => {
-        fetchCourses(searchQuery);
-    }, [searchQuery]);
-
     useEffect(() => {
         const fetchFeatured = async () => {
             try {
@@ -99,83 +116,66 @@ const AdminAddSchoolContent = () => {
     }, [Authenticate]);
 
     useEffect(() => {
-        const fetchCourseFeatured = async () => {
+        const fetchCategories = async () => {
             try {
-                const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/courseFeaturedList`, {
-                    method: 'POST',
+                const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/instituteCategoryList`, {
+                    method: 'POST', // Change to POST if required
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': Authenticate,
                     },
+                    body: JSON.stringify({}) // Add any necessary body data
                 });
-
+    
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-
+    
                 const data = await response.json();
-
                 if (data && data.data) {
-                    setCourseFeaturedList(data.data);
-                } else {
-                    setCourseFeaturedList([]);
+                    setCategoryList(data.data);  // Set the category list state
                 }
             } catch (error) {
-                console.error('Error fetching course featured list:', error.message);
+                console.error('Error fetching categories:', error.message);
                 setError(error.message);
             }
         };
-
-        fetchCourseFeatured();
+    
+        fetchCategories();
     }, [Authenticate]);
-
-    // Handle submit form
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-
-        const formData = {
-            name,
-            email,
-            contact: `${countryCode} ${contact}`,
-            password,
-            shortDescription,
-            longDescription,
-            selectedCourses
-        };
-
-        fetch(`${import.meta.env.VITE_BASE_URL}api/admin/addSchool`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': Authenticate,
-            },
-            body: JSON.stringify(formData),
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    console.log('School successfully registered:', data);
-                    navigate('/adminSchool'); // Redirect to school page
-                } else {
-                    setError(`School Registration failed: ${data.message}`);
-                    console.error('School Registration failed:', data);
+    
+    useEffect(() => {
+        const fetchAccounts = async () => {
+            try {
+                const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/accountTypeList`, {
+                    method: 'POST', // Change to POST if required
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': Authenticate,
+                    },
+                    body: JSON.stringify({}) // Add any necessary body data
+                });
+    
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
-            })
-            .catch(error => {
-                setError('An error occurred during school registration. Please try again later.');
-                console.error('Error during school registration:', error);
-            });
-    };
-
-    const handleSchoolLogoChange = (e) => {
-        if (e.target.files.length > 0) {
-            setSchoolLogo(URL.createObjectURL(e.target.files[0]));
-        }
-    };
+    
+                const data = await response.json();
+                if (data && data.data) {
+                    setAccountList(data.data);  // Set the category list state
+                }
+            } catch (error) {
+                console.error('Error fetching accounts:', error.message);
+                setError(error.message);
+            }
+        };
+    
+        fetchAccounts();
+    }, [Authenticate]);
 
     const handleFeatureChange = (event) => {
         const featureId = parseInt(event.target.value);
-        setSchoolFeature(prevFeatures => {
+        setSelectedFeatures(prevFeatures => {
             if (prevFeatures.includes(featureId)) {
                 return prevFeatures.filter(id => id !== featureId);
             } else {
@@ -184,207 +184,223 @@ const AdminAddSchoolContent = () => {
         });
     };
 
-    const handleFeatureCourseChange = (event) => {
-        const featureCourseId = parseInt(event.target.value);
-        setCourseFeature(prevFeatures => {
-            if (prevFeatures.includes(featureCourseId)) {
-                return prevFeatures.filter(id => id !== featureCourseId);
-            } else {
-                return [...prevFeatures, featureCourseId];
+    const handlePhoneChange = (value, country, field) => {
+        setFormData(prevFormData => {
+            if (field === "contact_number") {
+                return {
+                    ...prevFormData,
+                    contact_number: value.slice(country.dialCode.length), // Update contact_number
+                    country_code: `+${country.dialCode}`, // Update country code
+                };
+            } else if (field === "person_in_charge_contact") {
+                return {
+                    ...prevFormData,
+                    person_in_charge_contact: value, // Update person_in_charge_contact
+                };
             }
         });
     };
+    
+    
 
-    // Handle "Select All" checkbox change
-    const handleSelectAllChange = (event) => {
-        const { checked } = event.target;
-        setSelectAll(checked);
-        setCourseFeature(checked ? courseFeaturedList.map((course) => course.id) : []);
+    const handleLogoChange = (e) => {
+        const file = e.target.files[0];
+        setFormData(prev => ({
+            ...prev,
+            logo: file
+        }));
     };
 
-    const handleCourseChange = (course) => {
-        const { value, checked } = course;
-        const courseId = courseList.find(c => c.name === value)?.id;
-
-        if (checked) {
-            setSelectedCourses(prev => [...prev, { name: value, id: courseId }]);
+    const handleFieldChange = (e) => {
+        const { id, value, type, files } = e.target;
+        if (type === "file") {
+            setFormData(prev => ({
+                ...prev,
+                [id]: files[0]
+            }));
         } else {
-            setSelectedCourses(prev => prev.filter(c => c.name !== value));
+            setFormData(prev => ({
+                ...prev,
+                [id]: value
+            }));
         }
-
-        // Remove from filteredCourses list
-        setCourseList(prev => prev.filter(c => c.name !== value));
     };
 
-    // Filter the courses based on the search query
-    const filteredCourses = courseList.filter(course =>
-        course.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    const handleAddSchool = () => {
-        sessionStorage.setItem('token', Authenticate);
-        navigate('/adminAddSchool');
+    const handleEditorChange = (content) => {
+        setFormData(prevFormData => ({
+            ...prevFormData,
+            school_fullDesc: content,
+        }));
     };
+
+    const formFields = [
+        {
+            id: "name",
+            label: "School Name",
+            type: "text",
+            placeholder: "Enter school name",
+            value: formData.name,
+            onChange: handleFieldChange,
+            required: true
+        },
+        {
+            id: "email",
+            label: "Email Address",
+            type: "email",
+            placeholder: "Enter email address",
+            value: formData.email,
+            onChange: handleFieldChange,
+            required: true,
+            autoComplete: "off"
+        },
+    ];
+
+    const formPersonInCharge=[
+        {
+            id: "person_in_charge_name",
+            label: "Person in Charge's Name",
+            type: "text",
+            placeholder: "Enter name",
+            value: formData.person_in_charge_name,
+            onChange: handleFieldChange,
+            required: true
+        },
+        {
+            id: "person_in_charge_email",
+            label: "Person in Charge's Email Address",
+            type: "email",
+            placeholder: "Enter email address",
+            value: formData.person_in_charge_email,
+            onChange: handleFieldChange,
+            required: true,
+            autoComplete: "off"
+        },
+    ];
+
+    const formWebsite=[
+        {
+            id: "school_website",
+            label: "Official Website",
+            type: "text",
+            placeholder: "Enter Website URL",
+            value: formData.school_website,
+            onChange: handleFieldChange,
+            required: true
+        },
+    ];
+    const formPassword = [
+        {
+            id: "password",
+            label: "Password",
+            type: "password",
+            placeholder: "Enter new password",
+            value: formData.password,
+            onChange: handleFieldChange,
+            required: true,
+            autoComplete: "new-password"
+        },
+        {
+            id: "confirm_password",
+            label: "Confirm Password",
+            type: "password",
+            placeholder: "Enter password again",
+            value: formData.confirm_password,
+            onChange: handleFieldChange,
+            required: true
+        },
+    ];
+
+    const formTextarea = [
+        {
+            id: "school_shortDesc",
+            label: "Short Description",
+            as: "textarea",
+            rows: 3,
+            placeholder: "Enter short description",
+            value: formData.school_shortDesc,
+            onChange: handleFieldChange,
+            required: true
+        },
+    ];
+
+    const formCategory = [
+        {
+            id: "category",
+            label: "Institute Category",
+            value: formData.category,
+            onChange: handleFieldChange,
+            required: true,
+            options: categoryList.map(category => ({
+                label: category.name,
+                value: category.id
+            }))
+        }
+    ];
+
+    const formAccount = [
+        {
+            id: "account",
+            label: "School Account Type",
+            value: formData.account,
+            onChange: handleFieldChange,
+            required: true,
+            options: accountList.map(account => ({
+                label: account.name,
+                value: account.id
+            }))
+        }
+    ];
+
+    const formHTML = [
+        {
+            id: "school_fullDesc",
+            label: "Full Description",
+            value: formData.school_fullDesc,
+            onChange: handleEditorChange,
+            required: true
+        }
+    ];
+
+    const formCheckboxes = schoolFeaturedList.map((feature) => ({
+        id: `feature-${feature.id}`,
+        label: feature.name,
+        value: feature.id,
+        checked: selectedFeatures.includes(feature.id),
+        onChange: handleFeatureChange,
+    }));
+
+    const buttons = [
+        {
+            label: "SAVE",
+            type: "submit"
+        }
+    ];
+
     return (
         <Container fluid className="admin-add-school-container">
-            <Form onSubmit={handleSubmit}>
-                <h3 className="fw-light text-left mt-4 mb-4">School Information</h3>
-                {error && <p className="text-danger">{error}</p>}
-                <hr />
-                <Row className="mb-3">
-                    <Col md={6}>
-                        <Form.Group controlId="formName">
-                            <Form.Label>School Name</Form.Label>
-                            <Form.Control
-                                type="text"
-                                placeholder="Enter school name"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                required
-                            />
-                        </Form.Group>
-                    </Col>
-                    <Col md={6}>
-                        <Form.Group controlId="formLogo">
-                            <Form.Label>School Logo</Form.Label>
-                            <Form.Control
-                                type="file"
-                                onChange={handleSchoolLogoChange}
-                                required
-                            />
-                            {schoolLogo && (
-                                <Image
-                                    src={schoolLogo}
-                                    alt="School Logo"
-                                    thumbnail
-                                    className="mt-2"
-                                />
-                            )}
-                        </Form.Group>
-                    </Col>
-                </Row>
+            <AdminFormComponent
+                formTitle="School Information"
+                checkboxTitle="School Advertising Feature"
+                formFields={formFields}
+                formPassword={formPassword}
+                formTextarea={formTextarea}
+                formHTML={formHTML}
+                formCategory={formCategory}
+                formAccount={formAccount}
+                formWebsite={formWebsite}
+                onSubmit={handleSubmit}
+                formCheckboxes={formCheckboxes}
+                formPersonInCharge={formPersonInCharge}
+                error={error}
+                buttons={buttons}
+                logo={formData.logo ? URL.createObjectURL(formData.logo) : null}
+                handleLogoChange={handleLogoChange}
+                handlePhoneChange={handlePhoneChange}  
+                phone={formData.contact_number} 
+                personPhone={formData.person_in_charge_contact}  
+                country_code={formData.country_code}  
+            />
 
-                <Row className="mb-3">
-                    <Col md={6}>
-                        <Form.Group controlId="formEmail">
-                            <Form.Label>Email Address</Form.Label>
-                            <Form.Control
-                                type="email"
-                                placeholder="Enter email address"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
-                            />
-                        </Form.Group>
-                    </Col>
-                    <Col md={6}>
-                        <Form.Group controlId="formContact">
-                            <Form.Label>Contact Number</Form.Label>
-                            <Form.Control
-                                type="text"
-                                placeholder="Enter contact number"
-                                value={contact}
-                                onChange={(e) => setContact(e.target.value)}
-                                required
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="formCountryCode">
-                            <Form.Label>Country Code</Form.Label>
-                            <Form.Control
-                                as="select"
-                                value={countryCode}
-                                onChange={(e) => setCountryCode(e.target.value)}
-                                required
-                            >
-                                <option value="MY">Malaysia (+60)</option>
-                                <option value="SG">Singapore (+65)</option>
-                                {/* Add more options as needed */}
-                            </Form.Control>
-                        </Form.Group>
-                    </Col>
-                </Row>
-
-                <Row className="mb-3">
-                    <Col md={12}>
-                        <Form.Group controlId="formShortDescription">
-                            <Form.Label>Short Description</Form.Label>
-                            <Form.Control
-                                as="textarea"
-                                rows={3}
-                                placeholder="Enter short description"
-                                value={shortDescription}
-                                onChange={(e) => setShortDescription(e.target.value)}
-                                required
-                            />
-                        </Form.Group>
-                    </Col>
-                </Row>
-
-                <Row className="mb-3">
-                    <Col md={12}>
-                        <Form.Group controlId="formLongDescription">
-                            <Form.Label>Long Description</Form.Label>
-                            <Form.Control
-                                as="textarea"
-                                rows={5}
-                                placeholder="Enter long description"
-                                value={longDescription}
-                                onChange={(e) => setLongDescription(e.target.value)}
-                                required
-                            />
-                        </Form.Group>
-                    </Col>
-                </Row>
-
-                <Row className="mb-3">
-                    <Col md={12}>
-                        <h4 className="fw-light text-left mt-4 mb-4">Select Courses</h4>
-                        <Form.Control
-                            type="text"
-                            placeholder="Search for courses"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                        />
-                        <div className="course-list mt-3">
-                            {filteredCourses.map((course) => (
-                                <Button
-                                    key={course.id}
-                                    value={course.name}
-                                    onClick={() => handleCourseChange({ name: course.name, value: course.name, checked: true })}
-                                    className="course-button"
-                                >
-                                    {course.name}
-                                </Button>
-                            ))}
-                        </div>
-                    </Col>
-                </Row>
-
-                <Row className="mb-3">
-                    <Col md={12}>
-                        <div className="course">
-                            {selectedCourses.map((course) => (
-                                <div key={course.id} className="course-item">
-                                    {course.name}
-                                    <Button
-                                        variant="link"
-                                        onClick={() => handleCourseChange({ name: course.name, value: course.name, checked: false })}
-                                    >
-                                        Remove
-                                    </Button>
-                                </div>
-                            ))}
-                        </div>
-                    </Col>
-                </Row>
-
-                <Row className="mb-3">
-                    <Col md={12}>
-                        <Button variant="primary" type="submit">
-                            Submit
-                        </Button>
-                    </Col>
-                </Row>
-            </Form>
         </Container>
     );
 };

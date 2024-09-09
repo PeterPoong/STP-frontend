@@ -7,7 +7,7 @@ import { MDBSwitch } from 'mdb-react-ui-kit';
 import '../../css/AdminStyles/AdminTableStyles.css';
 import TableWithControls from './TableWithControls';
 
-const AdminbannerContent = () => {
+const AdminBannerContent = () => {
     const [banners, setbanners] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -26,7 +26,7 @@ const AdminbannerContent = () => {
 
     const fetchbanners = async (page = 1, perPage = rowsPerPage, search = searchQuery) => {
         try {
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/bannerList?page=${page}&per_page=${perPage}&search=${search}`, {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/bannerListAdmin?page=${page}&per_page=${perPage}&search=${search}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -141,9 +141,8 @@ const AdminbannerContent = () => {
             if (result.success) {
                 // Log the new status for debugging
                 console.log("New status:", result.newStatus);
+                await fetchbanners(currentPage, rowsPerPage, searchQuery);
     
-                // Refresh the page after successful confirmation
-                window.location.reload();
             } else {
                 console.error(result.message);
             }
@@ -171,14 +170,14 @@ const AdminbannerContent = () => {
             <th onClick={() => handleSort("name")}>
                 Banner Name {sortColumn === "name" && (sortDirection === "asc" ? "↑" : "↓")}
             </th>
-            <th onClick={() => handleSort("email")}>
-                Banner File {sortColumn === "email" && (sortDirection === "asc" ? "↑" : "↓")}
+            <th onClick={() => handleSort("file")}>
+                Banner File {sortColumn === "file" && (sortDirection === "asc" ? "↑" : "↓")}
             </th>
-            <th onClick={() => handleSort("contact")}>
-                Featured Type {sortColumn === "contact" && (sortDirection === "asc" ? "↑" : "↓")}
+            <th onClick={() => handleSort("featured")}>
+                Featured Type {sortColumn === "featured" && (sortDirection === "asc" ? "↑" : "↓")}
             </th>
-            <th onClick={() => handleSort("category")}>
-                Banner Duration {sortColumn === "category" && (sortDirection === "asc" ? "↑" : "↓")}
+            <th onClick={() => handleSort("banner_duration")}>
+                Banner Duration {sortColumn === "banner_duration" && (sortDirection === "asc" ? "↑" : "↓")}
             </th>
             <th onClick={() => handleSort("status")}>
                 Status {sortColumn === "status" && (sortDirection === "asc" ? "↑" : "↓")}
@@ -191,8 +190,8 @@ const AdminbannerContent = () => {
         <tr key={banner.id}>
             <td>{banner.name}</td>
             <td>{banner.file}</td>
-            <td>{banner.banner_duration}</td>
             <td>{banner.featured}</td>
+            <td>{banner.banner_duration}</td>
             <td className={getStatusClass(banner.status)}>
                 {banner.status}
             </td>
@@ -271,4 +270,4 @@ const AdminbannerContent = () => {
     );
 };
 
-export default AdminbannerContent;
+export default AdminBannerContent;
