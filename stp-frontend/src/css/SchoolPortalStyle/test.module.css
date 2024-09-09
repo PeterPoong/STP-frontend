@@ -1,0 +1,364 @@
+@font-face {
+  font-family: "Bebas Neue";
+  src: url("../../assets/SchoolPortalAssets/Fonts/BebasNeue-Regular.ttf")
+    format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+* {
+  /* border: 1px solid red; */
+}
+
+/* Title Styles */
+.applicant-title {
+  text-align: left;
+  margin-top: 40px;
+  margin-left: 30px;
+}
+
+.applicant-title h1 {
+  font-family: "Bebas Neue", sans-serif !important;
+  font-size: 26px;
+  color: #333;
+}
+
+/* Search and Filter Styles */
+.search-filter-container {
+  margin-top: 20px;
+  margin-left: 30px;
+}
+
+.search-label {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 5px;
+}
+
+.filter-column {
+  display: flex;
+  align-items: flex-end;
+}
+
+.search-bar {
+  position: relative;
+  width: 300px;
+  margin-top: 5px;
+}
+
+.search-bar input[type="text"] {
+  background-color: #fff;
+  width: 100%;
+  padding: 15px 10px 10px 50px; /* Adjust padding for icon */
+  font-size: 16px;
+  border: none;
+  outline: none;
+  color: #333;
+}
+
+.search-bar input[type="text"]::placeholder {
+  color: #8c94a3; /* Placeholder color */
+}
+
+.search-bar .search-icon {
+  position: absolute;
+  left: 10px; /* Space between icon and input border */
+  top: 30%;
+  /* transform: translateY(-50%); */
+  width: 27px;
+  height: 27px;
+  background: url("../../assets/SchoolPortalAssets/magnifying-glass.png")
+    no-repeat center center;
+  background-size: contain;
+  pointer-events: none; /* Make the icon non-clickable */
+}
+
+/* Dropdown Styles */
+.filter-dropdowns {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.filter-dropdowns .dropdown select {
+  padding: 10px 30px 10px 15px;
+  border: 1px solid #eff0f6;
+  border-radius: 20px;
+  background-color: #fff;
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+  outline: none;
+  appearance: none; /* Remove default dropdown arrow */
+  position: relative;
+}
+
+.filter-dropdowns .dropdown {
+  position: relative;
+}
+
+.filter-dropdowns .dropdown::after {
+  content: "▼";
+  font-size: 10px;
+  position: absolute;
+  right: 10px;
+  top: 51%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #666;
+}
+
+/* Reset Filter Styles */
+.reset-filter {
+  margin-right: 20px;
+}
+
+.reset-filter a {
+  font-size: 14px;
+  color: #07779a; /* Bootstrap blue, adjust as needed */
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.reset-filter a:hover {
+  text-decoration: underline; /* Underline on hover */
+}
+
+/* Results Message Styles */
+.results-message {
+  text-align: right;
+  margin: 20px 40px 10px 20px;
+}
+
+.results-message p {
+  font-size: small;
+}
+
+.results-message b {
+  font-weight: bold; /* Bolding the numbers */
+}
+
+.student-card {
+  display: flex;
+  border-radius: 10px; /* Rounded corners */
+  border: 1px solid #ccc; /* Light gray border */
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  padding: 28px;
+  margin: 20px 30px 40px 40px;
+  background-color: #fff;
+  align-items: flex-start; /* Centers the content vertically */
+  position: relative; /* Make sure the card container is positioned relative for absolute positioning inside it */
+}
+
+.student-profile {
+  width: 16%;
+  height: 15rem;
+  background-image: url("../../assets/SchoolPortalAssets/student1.jpg"); /* Adjust path to your Assets folder */
+  background-size: cover; /* Ensures the image covers the entire div */
+  background-position: center; /* Centers the image */
+  background-repeat: no-repeat; /* Ensures the image doesn't repeat */
+  border-radius: 10%; /* Keeps the circular look */
+  margin-right: 20px;
+  position: relative;
+}
+
+.cgpa-banner {
+  position: absolute;
+  bottom: 28px;
+  left: -10px;
+  background-color: #b71a18; /* Red background for the CGPA banner */
+  color: white; /* White text color */
+  padding: 5px 20px;
+  font-size: 13px;
+  border-radius: 10px;
+  font-weight: bold;
+}
+
+.cgpa-banner p {
+  margin: 0;
+}
+
+/* Student Info Styles */
+.student-info {
+  display: flex;
+}
+
+.first-row {
+  display: flex;
+  gap: 15px;
+  margin-left: 20px;
+}
+
+.student-name {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.application-status {
+  height: 75%;
+  background-color: #d95117;
+  color: white; /* White text color */
+  padding: 5px 24px;
+  font-size: 15px;
+  border-radius: 10px;
+}
+
+.application-status p {
+  margin: 0;
+}
+
+.reminder-count {
+  height: 75%;
+  background-color: #b71a18;
+  color: white; /* White text color */
+  padding: 5px 24px;
+  font-size: 15px;
+  border-radius: 10px;
+}
+
+.reminder-count p {
+  margin: 0;
+}
+
+.options-menu {
+  position: absolute;
+  top: 15px;
+  right: 30px;
+  cursor: pointer;
+}
+
+.options-menu svg {
+  font-size: 25px;
+  color: #333;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 30px;
+  right: 0px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 100; /* Ensure it's on top of other elements */
+  width: w200px; /* Adjust dropdown width as needed */
+}
+
+.dropdown-menu ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 10px 0;
+}
+
+.dropdown-menu ul li {
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.dropdown-menu ul li:hover {
+  background-color: #b71a18;
+  color: #fff;
+}
+
+/*Contact Method Style*/
+.second-row {
+  display: flex;
+  gap: 40px;
+  margin-top: 10px;
+  margin-left: 20px;
+}
+
+.second-row div {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.email i,
+.contact-number i {
+  margin-right: 10px;
+}
+
+.email p,
+.contact-number p {
+  margin: 0; /* Remove default margin */
+  font-size: 14px; /* Adjust font size as needed */
+  color: #333; /* Adjust color as needed */
+}
+
+/* Applied Degree Section */
+.third-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  margin-left: 20px;
+  gap: 10rem;
+}
+
+.applied-degree {
+  display: flex;
+  flex-direction: column;
+  /* margin-left: 30px; */
+}
+
+.applied-degree .applied-for {
+  font-size: 15px;
+  font-weight: normal;
+  color: #6e7485;
+  margin: 0;
+}
+
+.applied-degree .degree-name {
+  font-size: 16px;
+  font-weight: normal;
+  color: #333;
+  margin: 5px 0 0 0;
+}
+
+/* Progress Bar */
+.profile-completion {
+  display: flex;
+  flex-direction: column;
+  margin-right: 30px;
+}
+
+.profile-completion .progress-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.profile-completion .profile-bar-title {
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.profile-completion .progress-bar {
+  width: 30rem; /* Adjust width as needed */
+  height: 7px;
+  background-color: #e0e0e0; /* Background color for the empty bar */
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.profile-completion .progress-fill {
+  height: 100%;
+  background-color: #b71a18; /* Color for the filled portion */
+  border-radius: 5px 0 0 5px; /* Round the left corners */
+  transition: width 0.3s ease; /* Smooth transition */
+}
+
+.profile-completion .progress-percentage {
+  font-size: 14px;
+  color: #333;
+}
+
+/* Horizontal Line (Separator) */
+.separator {
+  width: 100%;
+  border: none;
+  border-top: 1px solid #6e7485;
+  margin: 20px 20px; /* Adjust spacing above and below the line */
+}
