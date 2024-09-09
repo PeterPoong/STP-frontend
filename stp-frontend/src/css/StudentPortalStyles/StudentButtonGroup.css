@@ -104,6 +104,30 @@
   }
 
 
+/*manage password button*/
+.mpbtndiv
+{
+    background-color: #B71A18;
+    width: 15rem;
+
+}
+
+.mpbtndiv:hover,.btn-login-signup-forgetpassword:hover
+{
+    background-color:#ffffff;
+    border-color: #B71A18;
+    color:#B71A18;
+}
+
+/*login signup forgetpassword*/
+.btn-login-signup-forgetpassword
+{
+background-color: #B71A18;
+width:100%;
+
+
+}
+
 /*responsive button*/
 @media (max-width: 768px) {
     .sac-next-button, .sac-previous-button {
@@ -124,6 +148,8 @@
         width: 13px;
         height: 13px;
       }
+
+      
 }
 
 @media (max-width: 576px) {

@@ -574,7 +574,7 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
           </Row>
           <div className="d-flex justify-content-end mt-3">
             <div className="w-25">
-              <Button variant="danger" type="submit" className="m-0 w-100 fw-bold rounded-pill">
+              <Button variant="danger" type="submit" className="mpbtndiv m-0 fw-bold rounded-pill">
                 Save
               </Button>
             </div>

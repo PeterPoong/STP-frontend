@@ -8,7 +8,7 @@ import 'react-select-search/style.css';
 import "../../css/StudentPortalStyles/StudentPortalAcademicTranscript.css";
 import WidgetFileUploadAcademicTranscript from "../../Components/StudentPortalComp/WidgetFileUploadAcademicTranscript";
 import WidgetPopUpDelete from "../../Components/StudentPortalComp/WidgetPopUpDelete";
-import "../../css/StudentPortalStyles/StudentButtonGroup.css"; 
+import "../../css/StudentPortalStyles/StudentButtonGroup.css";
 
 const ExamSelector = ({ exams, selectedExam, setSelectedExam }) => {
   const itemsPerPage = 5;
@@ -30,7 +30,7 @@ const ExamSelector = ({ exams, selectedExam, setSelectedExam }) => {
           color: '#B71A18',
           margin: 0,
           padding: 0,
-          
+
         }
       }}
       indicatorContainerProps={{
@@ -43,38 +43,38 @@ const ExamSelector = ({ exams, selectedExam, setSelectedExam }) => {
       {pages.map((page, index) => (
         <Paper key={index} elevation={0} style={{ display: 'flex', justifyContent: 'center', backgroundColor: 'transparent', margin: "0em" }}>
           {page.map((exam) => (
-           <Button
-           key={exam.id}
-           variant={selectedExam === exam.transcript_category ? "contained" : "outlined"}
-           color="primary"
-           onClick={() => setSelectedExam(exam.transcript_category)}
-           sx={{
-             margin: { xs: '0rem 0.5rem', sm: '0rem 1rem', md: '0rem 2rem' },
-             borderRadius: '0px',
-             backgroundColor: selectedExam === exam.transcript_category ? 'white' : 'transparent',
-             color: '#4b5563',
-             border: 'none',
-             borderBottom: selectedExam === exam.transcript_category ? '2px solid #B71A18' : 'none',
-             fontFamily: 'Ubuntu, sans-serif',
-             boxShadow: 'none',
-             width: { xs: '100%', sm: '45%', md: '200px' },
-             padding: { xs: '5px 10px', sm: '8px 15px', md: '10px 20px' },
-             minWidth: { xs: '100px', sm: '120px', md: '150px' },
-             fontSize: { xs: '0.8rem', sm: '0.9rem', md: '1rem' },
-            
-             '&:hover': {
-               backgroundColor: 'transparent',
-               boxShadow: 'none',
-               border: 'none',
-               borderBottom: selectedExam === exam.transcript_category ? '2px solid red' : 'none',
-             },
-             '&:focus': {
-               outline: 'none',
-             },
-           }}
-         >
-           {exam.transcript_category}
-         </Button>
+            <Button
+              key={exam.id}
+              variant={selectedExam === exam.transcript_category ? "contained" : "outlined"}
+              color="primary"
+              onClick={() => setSelectedExam(exam.transcript_category)}
+              sx={{
+                margin: { xs: '0rem 0.5rem', sm: '0rem 1rem', md: '0rem 2rem' },
+                borderRadius: '0px',
+                backgroundColor: selectedExam === exam.transcript_category ? 'white' : 'transparent',
+                color: '#4b5563',
+                border: 'none',
+                borderBottom: selectedExam === exam.transcript_category ? '2px solid #B71A18' : 'none',
+                fontFamily: 'Ubuntu, sans-serif',
+                boxShadow: 'none',
+                width: { xs: '100%', sm: '45%', md: '200px' },
+                padding: { xs: '5px 10px', sm: '8px 15px', md: '10px 20px' },
+                minWidth: { xs: '100px', sm: '120px', md: '150px' },
+                fontSize: { xs: '0.8rem', sm: '0.9rem', md: '1rem' },
+
+                '&:hover': {
+                  backgroundColor: 'transparent',
+                  boxShadow: 'none',
+                  border: 'none',
+                  borderBottom: selectedExam === exam.transcript_category ? '2px solid red' : 'none',
+                },
+                '&:focus': {
+                  outline: 'none',
+                },
+              }}
+            >
+              {exam.transcript_category}
+            </Button>
           ))}
         </Paper>
       ))}
@@ -82,21 +82,59 @@ const ExamSelector = ({ exams, selectedExam, setSelectedExam }) => {
   );
 };
 
-const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files }) => {
+const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveAll }) => {
   const [editingIndex, setEditingIndex] = useState(null);
+  const [availableSubjects, setAvailableSubjects] = useState([]);
+
+  useEffect(() => {
+    if (examType === 'SPM') {
+      fetchAvailableSubjects();
+    }
+  }, [examType]);
+
+  const fetchAvailableSubjects = async () => {
+    try {
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/subjectList`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          category: 32,
+          selectedSubject: subjects.map(s => s.id)
+        }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        setAvailableSubjects(data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching available subjects:', error);
+    }
+  };
+
+  const handleAddSubject = (selectedSubject) => {
+    const newSubject = availableSubjects.find(s => s.id === parseInt(selectedSubject));
+    if (newSubject) {
+      onSubjectsChange([...subjects, { ...newSubject, grade: '' }]);
+      fetchAvailableSubjects(); // Refresh available subjects
+    }
+  };
 
   const handleGradeChange = (index, grade) => {
     const updatedSubjects = subjects.map((subject, i) =>
-      i === index ? { ...subject, grade } : subject
+      i === index ? { ...subject, grade: grade.toUpperCase() } : subject
     );
-    onSubjectsChange(examType, updatedSubjects);
+    onSubjectsChange(updatedSubjects);
   };
 
   const handleNameChange = (index, name) => {
     const updatedSubjects = subjects.map((subject, i) =>
       i === index ? { ...subject, name } : subject
     );
-    onSubjectsChange(examType, updatedSubjects);
+    onSubjectsChange(updatedSubjects);
   };
 
   const handleEdit = (index) => {
@@ -109,7 +147,10 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files }) => {
 
   const handleDelete = (index) => {
     const updatedSubjects = subjects.filter((_, i) => i !== index);
-    onSubjectsChange(examType, updatedSubjects);
+    onSubjectsChange(updatedSubjects);
+    if (examType === 'SPM') {
+      fetchAvailableSubjects(); // Refresh available subjects after deletion
+    }
   };
 
   const getGradeColor = (grade) => {
@@ -121,6 +162,21 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files }) => {
 
   return (
     <div className="space-y-2 mb-4">
+      {examType === 'SPM' && (
+        <div className="mb-4">
+          <label className="fw-bold small formlabel">Add Subject:</label>
+          <select
+            className="form-select"
+            onChange={(e) => handleAddSubject(e.target.value)}
+            value=""
+          >
+            <option value="">Select a subject</option>
+            {availableSubjects.map(subject => (
+              <option key={subject.id} value={subject.id}>{subject.name}</option>
+            ))}
+          </select>
+        </div>
+      )}
       {subjects.map((subject, index) => (
         <div key={index} className="d-flex align-items-center justify-content-between bg-white p-2 mb-2 rounded border">
           <div className="d-flex align-items-center flex-grow-1">
@@ -131,7 +187,7 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files }) => {
                 value={subject.name}
                 onChange={(e) => handleNameChange(index, e.target.value)}
                 className="editingplaceholder"
-                placeholder="Please enter you subjectname"
+                placeholder="Please enter your subject name"
               />
             ) : (
               <span className="fw-medium h6 mb-0 me-3">{subject.name}</span>
@@ -142,10 +198,10 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files }) => {
                 value={subject.grade}
                 onChange={(e) => handleGradeChange(index, e.target.value)}
                 className="editingplaceholder"
-                placeholder="Please enter you grade"
+                placeholder="Please enter your grade"
               />
             ) : (
-              <span className={` rounded-pill px-4 text-white ${getGradeColor(subject.grade)}`}>
+              <span className={`rounded-pill px-4 text-white ${getGradeColor(subject.grade)}`}>
                 GRADE: {subject.grade}
               </span>
             )}
@@ -160,10 +216,17 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files }) => {
           </div>
         </div>
       ))}
+      <div className="d-flex justify-content-end mt-4">
+        <button
+          className="button-table px-5 py-1 text-center"
+          onClick={onSaveAll}
+        >
+          SAVE
+        </button>
+      </div>
     </div>
   );
 };
-
 const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveAll }) => {
   const [newSubject, setNewSubject] = useState('');
   const [editingIndex, setEditingIndex] = useState(null);
@@ -271,9 +334,9 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
               {editingIndex === index ? (
                 <Check onClick={handleSave} className="text-success cursor-pointer me-2" />
               ) : (
-                <Edit2  size={18} className="iconat mx-2" onClick={() => handleEdit(index)} />
+                <Edit2 size={18} className="iconat mx-2" onClick={() => handleEdit(index)} />
               )}
-              <Trash2  size={18} className="iconat-trash mx-2" onClick={() => handleDelete(index)} />
+              <Trash2 size={18} className="iconat-trash mx-2" onClick={() => handleDelete(index)} />
             </div>
           </CSSTransition>
         ))}
@@ -645,6 +708,70 @@ const AcademicTranscript = () => {
     }
   }, []);
 
+  //subject list for spm api//
+  const addEditSPMTranscript = async (subjects) => {
+    try {
+      console.log('addEditSPMTranscript called with subjects:', subjects);
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      const category = categories.find(cat => cat.transcript_category === selectedExam);
+  
+      if (!category) {
+        console.error('Selected exam category not found');
+        return;
+      }
+  
+      console.log('Category for SPM:', category);
+  
+      // Function to convert letter grade to integer
+      const gradeToInt = (grade) => {
+        const gradeMap = {
+          'A+': 17, 'A': 18, 'A-': 19,
+          'B+': 20, 'B': 21,
+          'C+': 22, 'C': 23, 
+          'D': 24, 'E': 25,
+          'G': 26
+        };
+        return gradeMap[grade] || 0; // Return 0 if grade not found
+      };
+  
+      const payload = {
+        category: category.id,
+        data: subjects.map(subject => ({
+          subjectID: subject.id,
+          grade: gradeToInt(subject.grade)
+        }))
+      };
+  
+      console.log('Payload prepared for SPM API:', payload);
+  
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/addEditTranscript`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+  
+      const data = await response.json();
+      console.log('API response for SPM:', data);
+  
+      if (data.success) {
+        console.log('SPM Subjects saved successfully');
+        // Refresh the subjects
+        fetchSubjects(category.id.toString());
+      } else {
+        console.error('Error saving SPM subjects:', data.message);
+        alert(`Error saving SPM subjects: ${data.message}`);
+      }
+    } catch (error) {
+      console.error('Error in addEditSPMTranscript:', error);
+      alert('An unexpected error occurred while saving SPM subjects.');
+    }
+  };
+
+
+
   useEffect(() => {
     if (selectedExam) {
       const category = categories.find(cat => cat.transcript_category === selectedExam);
@@ -663,43 +790,50 @@ const AcademicTranscript = () => {
   const handleSaveAll = async () => {
     try {
       console.log('handleSaveAll initiated');
-      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       const category = categories.find(cat => cat.transcript_category === selectedExam);
-
+  
       if (!category) {
         console.error('Selected exam category not found');
         return;
       }
-
-      const payload = {
-        category: category.id,
-        data: subjects.map(subject => ({
-          name: subject.name,
-          grade: subject.grade
-        }))
-      };
-
-      console.log('Payload prepared for API:', payload);
-
-      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/addEditHigherTranscript`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await response.json();
-      console.log('API response:', data);
-
-      if (data.success) {
-        console.log('Subjects saved successfully');
-        // Optionally, you can refresh the subjects here
-        fetchSubjects(category.id.toString());
+  
+      console.log('Current exam category:', category);
+  
+      if (category.id === 32) {
+        console.log('Saving SPM subjects...');
+        await addEditSPMTranscript(subjects);
       } else {
-        console.error('Error saving subjects:', data.message);
-        alert(`Error saving subjects: ${data.message}`);
+        console.log('Saving non-SPM subjects...');
+        const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+        const payload = {
+          category: category.id,
+          data: subjects.map(subject => ({
+            name: subject.name,
+            grade: subject.grade
+          }))
+        };
+  
+        console.log('Payload prepared for non-SPM API:', payload);
+  
+        const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/addEditHigherTranscript`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        });
+  
+        const data = await response.json();
+        console.log('API response for non-SPM:', data);
+  
+        if (data.success) {
+          console.log('Non-SPM Subjects saved successfully');
+          fetchSubjects(category.id.toString());
+        } else {
+          console.error('Error saving non-SPM subjects:', data.message);
+          alert(`Error saving subjects: ${data.message}`);
+        }
       }
     } catch (error) {
       console.error('Error in handleSaveAll:', error);
@@ -711,12 +845,13 @@ const AcademicTranscript = () => {
     const categoryId = categories.find(cat => cat.transcript_category === selectedExam)?.id;
     const files = mediaData[categoryId] || [];
 
-    if (examBasedCategories.some(cat => cat.transcript_category === selectedExam)) {
+    if (selectedExam === 'SPM' || examBasedCategories.some(cat => cat.transcript_category === selectedExam)) {
       return <SubjectBasedExam
         examType={selectedExam}
         subjects={subjects}
         onSubjectsChange={updateSubjects}
         files={files}
+        onSaveAll={handleSaveAll}
       />;
     } else if (programBasedCategories.some(cat => cat.transcript_category === selectedExam)) {
       return <ProgramBasedExam
@@ -729,7 +864,6 @@ const AcademicTranscript = () => {
     }
     return <div>No data available for {selectedExam}</div>;
   };
-
   return (
     <div className='p-0'>
       <ExamSelector

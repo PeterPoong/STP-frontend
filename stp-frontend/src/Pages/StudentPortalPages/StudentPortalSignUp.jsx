@@ -352,7 +352,7 @@ const StudentPortalSignUp = () => {
               <Button
                 variant="danger"
                 type="submit"
-                className="w-100 mt-3 mb-3 m-0"
+                className="btn-login-signup-forgetpassword mt-3 mb-3 m-0"
               >
                 Sign Up
               </Button>

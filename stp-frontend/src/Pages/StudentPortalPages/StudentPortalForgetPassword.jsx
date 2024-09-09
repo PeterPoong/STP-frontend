@@ -181,7 +181,7 @@ const StudentPortalForgetPassword = () => {
                     <Button
                       variant="danger"
                       type="submit"
-                      className="my-3 m-0"
+                      className="my-3 m-0 btn-login-signup-forgetpassword"
                       style={{ width: '100%', height: '40px' }}
                     >
                       Send OTP
@@ -202,7 +202,7 @@ const StudentPortalForgetPassword = () => {
                     <Button
                       variant="danger"
                       type="submit"
-                      className="my-3 m-0"
+                      className="my-3 m-0 btn-login-signup-forgetpassword"
                       style={{ width: '100%', height: '40px' }}
                     >
                       Verify OTP
@@ -258,7 +258,7 @@ const StudentPortalForgetPassword = () => {
                     <Button
                       variant="danger"
                       type="submit"
-                      className="my-3 m-0"
+                      className="my-3 m-0 btn-login-signup-forgetpassword"
                       style={{ width: '100%', height: '40px' }}
                     >
                       Reset Password
