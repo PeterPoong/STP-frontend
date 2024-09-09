@@ -53,6 +53,14 @@ const CustomConnector = styled(StepConnector)(({ theme }) => ({
     borderColor: '#e0e0e0',
     borderWidth: "0.5rem",
   },
+  '@media (max-width: 375px)': {
+    [`&.${stepConnectorClasses.alternativeLabel}`]: {
+      top: 20,
+    },
+    [`& .${stepConnectorClasses.line}`]: {
+      borderWidth: "0.3rem",
+    },
+  },
 }));
 
 // Update the CustomStepper component
@@ -60,6 +68,11 @@ const CustomStepper = styled(Stepper)(({ theme }) => ({
   '& .MuiStepConnector-line': {
     borderWidth: "0.5rem",
 
+  },
+  '@media (max-width: 375px)': {
+    '& .MuiStep-root': {
+      padding: '0 4px', // Reduce padding between steps
+    },
   },
 }));
 
@@ -121,6 +134,12 @@ const CustomStepLabel = styled(StepLabel)(({ theme }) => ({
       fontWeight: "bold"
     },
   },
+  '@media (max-width: 375px)': {
+    '& .MuiStepLabel-label': {
+      fontSize: '0.7rem',
+      marginTop: '5px',
+    },
+  },
 }));
 
 const CustomStepIcon = styled('div')(({ theme, ownerState }) => ({
@@ -135,6 +154,11 @@ const CustomStepIcon = styled('div')(({ theme, ownerState }) => ({
   fontWeight: 'bold',
   fontSize: '1.5rem',
   zIndex: 1,
+  '@media (max-width: 375px)': {
+    width: 40,
+    height: 40,
+    fontSize: '1.2rem',
+  },
 }));
 
 const StepIcon = (props) => {
@@ -904,7 +928,7 @@ const StudentApplyCourse = () => {
         );
 
       case 1:
-        
+
         return (
           <div className="step-content-casetwo p-4 rounded ">
             <h3 className="border-bottom pb-2 fw-normal">Academic Transcript</h3>
@@ -912,9 +936,9 @@ const StudentApplyCourse = () => {
               <DragDropContext onDragEnd={onDragEnd}>
                 {formData.academicTranscripts && formData.academicTranscripts.map((transcript, index) => (
                   <div key={index} className="academic-transcript-item mb-4 border rounded py-4 ">
-                    <div className="d-flex justify-content-between align-items-center mb-3 px-4">
-                      <div className="d-flex align-items-center">
-                        <AlignJustify className="me-2" size={15} />
+                    <div className="sac-container-casetwo d-flex  justify-content-between align-items-start align-items-sm-center mb-3 px-4">
+                      <div className="d-flex align-items-center mb-2 mb-sm-0">
+                        <AlignJustify className="me-2 align-self-center" size={15} />
                         <Form.Control
                           type="text"
                           value={transcript.name}
@@ -922,8 +946,8 @@ const StudentApplyCourse = () => {
                           className="fw-bold border-0 sac-at-bg"
                         />
                       </div>
-                      <div>
-                        <Button variant="link" className="p-0 me-2" onClick={() => handleAddSubject(index)}>
+                      <div className="d-flex ">
+                        <Button variant="link" className="p-0 me-2 " onClick={() => handleAddSubject(index)}>
                           <Plus size={18} color="grey" />
                         </Button>
                         <Button variant="link" className="p-0 me-2" onClick={() => handleUploadTranscript(index)}>
@@ -1004,7 +1028,7 @@ const StudentApplyCourse = () => {
                     </div>
                     <div className="upload-documents mt-3 border border-4 border-top-3 border-bottom-0 border-start-0 border-end-0">
                       <div className="d-flex justify-content-between align-items-center px-4">
-                        <h6>Upload Documents</h6>
+                        <h6 className="mb-0">Upload Documents</h6>
                         <Button variant="link" className="p-0 me-2" onClick={() => handleAddDocument(index)}>
                           <Plus size={18} color="grey" />
                         </Button>
@@ -1019,21 +1043,27 @@ const StudentApplyCourse = () => {
                                   <div className="me-3 border-end  px-3">
                                     {doc.file ? (
                                       <>
-                                        <FileText size={15} className="me-2 ms-2" style={{ alignSelf: 'center' }} />
-                                        <span className="me-2" style={{ fontSize: '0.825rem', textAlign: 'center', flex: 1 }}>{doc.name}</span>
-                                        <Button variant="link" className="p-0" onClick={() => handleRemoveDocumentFile(index, docIndex)}>
-                                          <CircleX size={15} color="red" />
-                                        </Button>
+                                        <div className="sac-file-info">
+                                          <FileText size={15} className="sac-file-icon" />
+                                          <span className="sac-file-name">{doc.name}</span>
+                                          <Button
+                                            variant="link"
+                                            className="sac-remove-file-btn"
+                                            onClick={() => handleRemoveDocumentFile(index, docIndex)}
+                                          >
+                                            <CircleX size={15} color="red" />
+                                          </Button>
+                                        </div>
                                       </>
                                     ) : (
                                       <>
                                         <Button
                                           variant="secondary"
-                                          size="sm"
+                                          className="sac-upload-button"
                                           onClick={() => handleDocumentFileUpload(index, docIndex)}
                                         >
-                                          <Upload size={15} className="me-2" />
-                                          Upload File
+                                          <Upload size={15} className="me-2 upload-icon" />
+                                          <span className="button-text">Upload File</span>
                                         </Button>
                                         <input
                                           type="file"
@@ -1364,7 +1394,7 @@ const StudentApplyCourse = () => {
                         <div className="mt-2">
                           {doc.file ? (
                             <div className="d-flex align-items-center">
-                              <FileText size={18} className="me-2" />
+                              <FileText size={18} className="me-2 " />
                               <span className="me-2 text-decoration-underline">{doc.file.name}</span>
                               <Button
                                 variant="link"
@@ -1379,7 +1409,7 @@ const StudentApplyCourse = () => {
                               <FileText size={18} className="me-2" />
                               <Button
                                 variant="secondary"
-                                className="d-flex align-items-center mx-0 px-3"
+                                className="sac-upload-button"
                                 onClick={() => document.getElementById(`otherDocFileInput-${index}`).click()}
                               >
                                 Upload File
@@ -1450,7 +1480,7 @@ const StudentApplyCourse = () => {
   const handleViewSummary = () => {
     setShowSummary(true);
   };
-  
+
   const renderPostSubmission = () => (
     <div>
       <div className="backgroundimage">
@@ -1463,7 +1493,7 @@ const StudentApplyCourse = () => {
         <Button className="sac-submit-button" onClick={handleViewSummary}>
           View Summary
         </Button>
-        <Button className="sac-submit-button" onClick={() => {/* Add logic to go back to course page */}}>
+        <Button className="sac-submit-button" onClick={() => {/* Add logic to go back to course page */ }}>
           Back to Course Page
         </Button>
       </div>

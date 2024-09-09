@@ -68,6 +68,18 @@ const StudentPortalLogin = () => {
       setRememberMe(true);
     }
 
+  // // New implementation (commented out)
+  // const rememberedCountryCode = localStorage.getItem("rememberedCountryCode");
+  // const rememberedContactNumber = localStorage.getItem("rememberedContactNumber");
+  // if (rememberedCountryCode && rememberedContactNumber) {
+  //   setCountryCode(rememberedCountryCode);
+  //   setPhone(rememberedCountryCode + rememberedContactNumber);
+  //   setRememberMe(true);
+  // }
+  // if (rememberedPassword) {
+  //   setPassword(rememberedPassword);
+  // }
+
     return () => {
       window.removeEventListener("beforeunload", handleTabClosing);
     };
@@ -89,6 +101,12 @@ const StudentPortalLogin = () => {
       contact_number: phone.slice(countryCode.length),
     };
 
+     // // New implementation (commented out)
+  // const formData = {
+  //   password: password,
+  //   country_code: `+${countryCode}`,
+  //   contact_number: phone.slice(countryCode.length),
+  // };
     console.log("Sending login data:", formData);
     fetch(`${import.meta.env.VITE_BASE_URL}api/student/login`, {
       method: "POST",
@@ -139,6 +157,9 @@ const StudentPortalLogin = () => {
                 localStorage.removeItem("rememberedPhone");
                 localStorage.removeItem("rememberedCountryCode");
                 localStorage.removeItem("rememberedPassword");
+                 // // New implementation (commented out)
+  // localStorage.setItem("rememberedContactNumber", phone.slice(countryCode.length));
+
               }
 
               const userId = data.data.user.id;

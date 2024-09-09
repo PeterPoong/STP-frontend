@@ -36,7 +36,7 @@
 .widget-applying-course {
   height: auto;
   min-height: 20rem;
-  margin: 0 4rem 0 6rem;
+  margin: 0 6rem;
   display: flex;
   padding: 2rem;
   flex-direction: column;
@@ -637,6 +637,34 @@ ul {
 
 
 
+/*case1 */
+.sac-file-info {
+  display: flex;
+  align-items: center;
+  font-size: 0.825rem;
+}
+
+.sac-file-icon {
+  margin-right: 0.5rem;
+  margin-left: 0.5rem;
+}
+
+.sac-file-name {
+  flex: 1;
+  text-align: left;
+  margin-right: 0.5rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sac-remove-file-btn {
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+
 
 /*responsive*/
 
@@ -697,48 +725,60 @@ ul {
   }
 
   .academic-transcript-item {
-    padding: 1rem;
+    padding: 0 1rem;
   }
 
   .academic-transcript-item .d-flex {
-    flex-direction: column;
+   padding:0;
     align-items: flex-start;
   }
 
-  .academic-transcript-item .d-flex>div {
-    width: 100%;
-    margin-bottom: 0.5rem;
-  }
+ 
 
   .subjects-list {
     padding: 0;
   }
 
   .subject-item {
-    flex-direction: column;
+    flex-direction: row;
+
     align-items: flex-start;
     padding: 0.5rem;
   }
 
   .subject-item>div {
-    width: 100%;
+    
     margin-bottom: 0.5rem;
   }
+
+  
 
   .upload-documents {
     padding: 0.5rem;
   }
 
   .document-item {
-    flex-direction: column;
+    flex-direction: row;
     align-items: flex-start;
+    
     padding: 0.5rem;
   }
 
   .document-item>div {
-    width: 100%;
+   display: flex;
+   flex-direction: row;
     margin-bottom: 0.5rem;
   }
+
+  .sac-file-info {
+    font-size: 0.75rem;
+  }
+  .sac-file-icon, .sac-remove-file-btn svg {
+    width: 13px;
+    height: 13px;
+  }
+
+
 
   /*case2*/
   .step-content {
@@ -800,20 +840,22 @@ ul {
     padding: 1rem;
   }
 
-  .other-doc-item .d-flex {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+ 
 
   .other-doc-item .d-flex>div {
     width: 100%;
     margin-bottom: 0.5rem;
+   
   }
 
   .other-doc-item .d-flex .justify-content-end {
     width: 100%;
-    justify-content: flex-start !important;
+    
     margin-top: 0.5rem;
+  }
+
+  .other-doc-item .d-flex .align-items-center {
+    padding:0;
   }
 
   .file-name {
@@ -900,6 +942,30 @@ ul {
   .school-name {
     font-size: 1.8rem;
   }
+
+  /*application summary your document tabs*/
+  .document-tabs {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .document-tabs .btn-link {
+    width: 100%;
+    text-align: left;
+    padding: 0.5rem 0;
+  }
+  
+  .documents-content table {
+    font-size: 0.9rem;
+  }
+  
+  .documents-content .file-title {
+    font-size: 0.9rem;
+  }
+  
+  .documents-content .file-date {
+    font-size: 0.8rem;
+  }
 }
 
 @media (max-width: 576px) {
@@ -936,11 +1002,29 @@ ul {
   }
 
   /*case1*/
+
+
   .step-content-casetwo {
-    margin: 0.5rem;
-    padding: 0.5rem;
+    margin: 0rem;
+    padding: 0rem;
+    flex-direction: row;
+  }
+  .sac-container-casetwo {
+    padding:0 1rem;
+    margin: 0;
+  
+   
+
   }
 
+  .sac-container-casetwo .form-control {
+    width: 100%;
+   
+  }
+
+  .sac-container-casetwo .d-flex:last-child {
+    margin-top: 0rem;
+  }
   .academic-transcript-item {
     padding: 0.5rem;
   }
@@ -959,28 +1043,31 @@ ul {
   }
 
   .academic-transcript-item .d-flex {
-    flex-direction: column;
+    
     align-items: flex-start;
   }
 
-  .academic-transcript-item .d-flex>div {
-    width: 100%;
-    margin-bottom: 0.5rem;
-  }
-
+ 
   .subjects-list {
     padding: 0;
   }
 
   .subject-item {
-    flex-direction: column;
+  
     align-items: flex-start;
     padding: 0.5rem 0;
   }
 
   .subject-item>div {
-    width: 100%;
+    
     margin-bottom: 0.5rem;
+  }
+  .sac-file-info {
+    font-size: 0.7rem;
+  }
+  .sac-file-icon, .sac-remove-file-btn svg {
+    width: 12px;
+    height: 12px;
   }
 
   /*case2*/
@@ -1061,6 +1148,11 @@ ul {
     font-size: 0.9rem;
   }
 
+ 
+  .other-doc-item .d-flex .align-items-center {
+      align-items: center !important;
+  }
+  
   .btn-link {
     padding: 0.25rem;
   }
@@ -1134,6 +1226,46 @@ ul {
    .sac-school-name {
     font-size: 1.8rem;
   }
+
+  /*application your documents tabs*/
+  .documents-content table thead {
+    display: none;
+  }
+  
+  .documents-content table, 
+  .documents-content table tbody, 
+  .documents-content table tr, 
+  .documents-content table td {
+    display: block;
+    width: 100%;
+  }
+  
+  .documents-content table tr {
+    margin-bottom: 1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+  }
+  
+  .documents-content table td {
+    text-align: right;
+    padding-left: 50%;
+    position: relative;
+  }
+  
+  .documents-content table td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 6px;
+    width: 45%;
+    padding-right: 10px;
+    white-space: nowrap;
+    text-align: left;
+    font-weight: bold;
+  }
+  
+  .documents-content .file-icon {
+    display: none;
+  }
 }
 
 
@@ -1185,6 +1317,17 @@ ul {
 
   .sac-image {
     height: 2.5em;
+  }
+
+  .sac-file-info {
+    font-size: 0.65rem;
+  }
+  .sac-file-icon, .sac-remove-file-btn svg {
+    width: 10px;
+    height: 10px;
+  }
+  .sac-file-name {
+    max-width: 80px;
   }
 
   /*case2*/
@@ -1283,6 +1426,7 @@ ul {
     max-width: 120px;
   }
 
+  
   /*summary application for yourinfo tab*/
 
   .application-summary-container {
@@ -1409,5 +1553,26 @@ ul {
    /*courseinformation tab*/
    .sac-school-name {
     font-size: 1.2rem;
+  }
+
+  /*application summary your document tabs*/
+  .documents-content .lead {
+    font-size: 1rem;
+  }
+  
+  .document-tabs .btn-link {
+    font-size: 0.9rem;
+  }
+  
+  .documents-content table td {
+    font-size: 0.8rem;
+  }
+  
+  .documents-content .file-title {
+    font-size: 0.8rem;
+  }
+  
+  .documents-content .file-date {
+    font-size: 0.7rem;
   }
 }

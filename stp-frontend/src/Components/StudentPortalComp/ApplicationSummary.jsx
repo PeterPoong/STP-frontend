@@ -77,7 +77,7 @@ const ApplicationSummary = ({ formData = fakeFormData }) => {
       return counts;
     }, {});
 
-    const gradeOrder = ['A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'D', 'E', 'G','F','A1','A2','B3'];
+    const gradeOrder = ['A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'D', 'E', 'G', 'F', 'A1', 'A2', 'B3'];
     let overallGrade = '';
 
     for (const grade of gradeOrder) {
@@ -178,7 +178,7 @@ const ApplicationSummary = ({ formData = fakeFormData }) => {
             <tbody>
               {documents[activeDocumentTab]?.map((doc, index) => (
                 <tr key={index}>
-                  <td className="border-bottom p-4">
+                  <td className="border-bottom p-4" data-label="Name">
                     <div className="d-flex align-items-center">
                       <FileText className="file-icon me-2" />
                       <div>
@@ -187,8 +187,8 @@ const ApplicationSummary = ({ formData = fakeFormData }) => {
                       </div>
                     </div>
                   </td>
-                  <td className="border-bottom p-2 text-end">{doc.filename}</td>
-                  <td className="border-bottom p-2">
+                  <td className="border-bottom p-2 text-end" data-label="Filename">{doc.filename}</td>
+                  <td className="border-bottom p-2" data-label="Actions">
                     <div className="d-flex justify-content-end align-items-center">
                       <Button variant="link" className="p-0">
                         <Eye size={20} className="iconat" />
@@ -215,7 +215,7 @@ const ApplicationSummary = ({ formData = fakeFormData }) => {
           </div>
           <Button className="mx-auto mt-5 w-25 as-knowmore-button" style={{ padding: '0.5rem 1.5rem', fontSize: '1rem' }}>Know More</Button>
         </div>
-       
+
         <div className="bg-white mt-3 rounded-1 shadow p-4 ">
           <h3 className="fw-bold">Degree of Business Management</h3>
         </div>
@@ -362,9 +362,9 @@ const ApplicationSummary = ({ formData = fakeFormData }) => {
                   </div>
                   <div className="academic-results m-3 shadow-lg rounded-5 pt-4 d-flex flex-column">
                     <div className="px-4">
-                      <select 
-                        className="sac-form-select mb-3" 
-                        value={selectedExam} 
+                      <select
+                        className="sac-form-select mb-3"
+                        value={selectedExam}
                         onChange={handleExamChange}
                       >
                         {Object.entries(examTypes).map(([key, value]) => (
