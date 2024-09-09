@@ -49,7 +49,7 @@ const AdminAddSchoolContent = () => {
         formPayload.append("person_in_charge_email", person_in_charge_email);
         formPayload.append("school_website", school_website);
         formPayload.append("category", category);
-        formPayload.append("category", account);
+        formPayload.append("account", account);
         formPayload.append("password", password);
         formPayload.append("confirm_password", confirm_password);
         formPayload.append("school_shortDesc", school_shortDesc);

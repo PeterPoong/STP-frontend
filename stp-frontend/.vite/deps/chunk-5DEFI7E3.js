@@ -18,17 +18,17 @@ import {
   useWindow
 } from "./chunk-EAXKUTIM.js";
 import {
-  addEventListener_default,
-  listen_default,
-  ownerDocument
-} from "./chunk-QJW2QC3G.js";
-import {
   NavbarContext_default,
   SelectableContext_default,
   dataAttr,
   makeEventKey,
   qsa
 } from "./chunk-IBU2J2BI.js";
+import {
+  addEventListener_default,
+  listen_default,
+  ownerDocument
+} from "./chunk-QJW2QC3G.js";
 import {
   require_browser,
   useEventCallback,
@@ -1387,4 +1387,4 @@ export {
   DropdownToggle_default2 as DropdownToggle_default,
   Dropdown_default2 as Dropdown_default
 };
-//# sourceMappingURL=chunk-UFYV475J.js.map
+//# sourceMappingURL=chunk-5DEFI7E3.js.map

@@ -1,13 +1,4 @@
 import {
-  CarouselCaption_default,
-  CarouselItem_default,
-  Carousel_default,
-  forEach,
-  hasChildOfType,
-  map,
-  useTimeout
-} from "./chunk-X5VWNFO5.js";
-import {
   CardHeaderContext_default,
   NavItem_default,
   Nav_default,
@@ -15,15 +6,12 @@ import {
 } from "./chunk-RT5V64EF.js";
 import {
   NavDropdown_default
-} from "./chunk-N57VGWOQ.js";
+} from "./chunk-OHCUUGE2.js";
 import {
   NavLink_default,
   TabContext_default,
   useNavItem
 } from "./chunk-2HS7M4QW.js";
-import {
-  ButtonGroup_default
-} from "./chunk-3JCLF3TU.js";
 import {
   Container_default
 } from "./chunk-SW5NY2UE.js";
@@ -44,8 +32,20 @@ import {
   useClickOutside_default,
   usePopper_default,
   useUncontrolledProp as useUncontrolledProp2
-} from "./chunk-UFYV475J.js";
+} from "./chunk-5DEFI7E3.js";
 import "./chunk-IEYIYD2T.js";
+import {
+  ButtonGroup_default
+} from "./chunk-3JCLF3TU.js";
+import {
+  CarouselCaption_default,
+  CarouselItem_default,
+  Carousel_default,
+  forEach,
+  hasChildOfType,
+  map,
+  useTimeout
+} from "./chunk-AD2DN6WG.js";
 import {
   Anchor_default,
   useCallbackRef
@@ -79,15 +79,19 @@ import {
   isEscKey,
   renderTransition,
   useWaitForDOMRef
-} from "./chunk-OHWIECSO.js";
+} from "./chunk-EFWUVQJZ.js";
+import {
+  contains
+} from "./chunk-EAXKUTIM.js";
+import {
+  SelectableContext_default,
+  makeEventKey
+} from "./chunk-IBU2J2BI.js";
 import {
   safeFindDOMNode,
   transitionEnd,
   useWillUnmount
-} from "./chunk-NKNFMJPR.js";
-import {
-  contains
-} from "./chunk-EAXKUTIM.js";
+} from "./chunk-WPL7R3R7.js";
 import {
   addEventListener_default,
   canUseDOM_default,
@@ -95,10 +99,6 @@ import {
   ownerDocument,
   removeEventListener_default
 } from "./chunk-QJW2QC3G.js";
-import {
-  SelectableContext_default,
-  makeEventKey
-} from "./chunk-IBU2J2BI.js";
 import {
   require_browser,
   useEventCallback,
@@ -115,8 +115,7 @@ import {
   ENTERING,
   EXITING,
   init_Transition
-} from "./chunk-L7MQE37M.js";
-import "./chunk-RU56NBL2.js";
+} from "./chunk-KTCTU4ET.js";
 import {
   DEFAULT_BREAKPOINTS,
   DEFAULT_MIN_BREAKPOINT,
@@ -127,21 +126,22 @@ import {
   useBootstrapPrefix,
   useIsRTL
 } from "./chunk-V45P6XYM.js";
-import "./chunk-QP43C3QV.js";
 import {
   require_warning
 } from "./chunk-J5P6RILA.js";
 import "./chunk-YR7MIILV.js";
-import "./chunk-GFY2XVYF.js";
+import "./chunk-RU56NBL2.js";
+import "./chunk-QP43C3QV.js";
 import {
   require_jsx_runtime
 } from "./chunk-43ZI66F5.js";
-import {
-  require_prop_types
-} from "./chunk-KMVGN64O.js";
+import "./chunk-GFY2XVYF.js";
 import {
   require_react_dom
 } from "./chunk-ISY3SE76.js";
+import {
+  require_prop_types
+} from "./chunk-KMVGN64O.js";
 import {
   require_react
 } from "./chunk-2RGQL2JM.js";

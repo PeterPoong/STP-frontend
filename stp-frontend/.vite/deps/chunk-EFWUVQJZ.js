@@ -1,25 +1,25 @@
 import {
-  TransitionWrapper_default,
-  css_default,
-  transitionEndListener,
-  triggerBrowserReflow,
-  useWillUnmount
-} from "./chunk-NKNFMJPR.js";
-import {
   contains,
   useWindow
 } from "./chunk-EAXKUTIM.js";
-import {
-  canUseDOM_default,
-  listen_default,
-  ownerDocument
-} from "./chunk-QJW2QC3G.js";
 import {
   NavbarContext_default,
   SelectableContext_default,
   dataAttr,
   qsa
 } from "./chunk-IBU2J2BI.js";
+import {
+  TransitionWrapper_default,
+  css_default,
+  transitionEndListener,
+  triggerBrowserReflow,
+  useWillUnmount
+} from "./chunk-WPL7R3R7.js";
+import {
+  canUseDOM_default,
+  listen_default,
+  ownerDocument
+} from "./chunk-QJW2QC3G.js";
 import {
   useEventCallback,
   useIsomorphicEffect_default,
@@ -40,7 +40,7 @@ import {
   EXITED,
   EXITING,
   init_Transition
-} from "./chunk-L7MQE37M.js";
+} from "./chunk-KTCTU4ET.js";
 import {
   require_classnames,
   useBootstrapPrefix
@@ -49,11 +49,11 @@ import {
   require_jsx_runtime
 } from "./chunk-43ZI66F5.js";
 import {
-  require_prop_types
-} from "./chunk-KMVGN64O.js";
-import {
   require_react_dom
 } from "./chunk-ISY3SE76.js";
+import {
+  require_prop_types
+} from "./chunk-KMVGN64O.js";
 import {
   require_react
 } from "./chunk-2RGQL2JM.js";
@@ -1530,4 +1530,4 @@ export {
   NavbarText_default,
   Navbar_default
 };
-//# sourceMappingURL=chunk-OHWIECSO.js.map
+//# sourceMappingURL=chunk-EFWUVQJZ.js.map
