@@ -30,8 +30,9 @@ import AdminCourses from "./Pages/AdminPages/AdminCourses";
 import AdminCategory from "./Pages/AdminPages/AdminCategory";
 import AdminSubject from "./Pages/AdminPages/AdminSubject";
 import AdminAddSchool from "./Pages/AdminPages/AdminAddSchool";
+import AdminEditSchool from "./Pages/AdminPages/AdminEditSchool";
 import AdminBanner from "./Pages/AdminPages/AdminBanner";
-// import AdminAddBanner from "./Pages/AdminPages/AdminAddBanner";
+import AdminAddBanner from "./Pages/AdminPages/AdminAddBanner";
 
 //StudentPortal Page
 import StudentPortalLogin from "./Pages/StudentPortalPages/StudentPortalLogin";
@@ -138,6 +139,11 @@ const router = createBrowserRouter([
   },
 
   {
+    path: "/adminEditSchool",
+    element: <AdminAddSchool />,
+  },
+
+  {
     path: "/adminStudent",
     element: <AdminStudent />,
   },
@@ -162,10 +168,10 @@ const router = createBrowserRouter([
     element: <AdminBanner />,
   },
 
-  // {
-  //   path: "/adminAddBanner",
-  //   element: <AdminAddBanner />,
-  // },
+  {
+    path: "/adminAddBanner",
+    element: <AdminAddBanner />,
+  },
 
   //Student Portal Page
   {

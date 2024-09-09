@@ -18,6 +18,8 @@ import courseDetails from "./Pages/student pages/courseDetails";
 import AdminSignup from "./Pages/AdminSignup";
 import AdminLogin from "./Pages/AdminLogin";
 import AdminAddSchoolContent from "./Pages/AdminAddSchoolContent";
+import AdminEditSchool from './path/to/AdminEditSchool';
+
 
 function App() {
   const style = {
@@ -54,6 +56,7 @@ function App() {
             <Route path="/adminSignup" element={<AdminSignup />} />
             <Route path="/adminLogin" element={<AdminLogin />} />
             <Route path="/adminAddSchool" element={<AdminAddSchoolContent />} />
+            <Route path="/adminEditSchool/:id" element={<AdminEditSchool />} />
           </Routes>
         </main>
         <Footer /> {/* Add the Footer component */}
