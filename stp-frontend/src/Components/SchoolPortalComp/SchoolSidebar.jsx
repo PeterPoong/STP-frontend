@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Nav, Image, Button, Modal } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import 'typeface-ubuntu';
+
 import {
   House,
   Person,
@@ -19,9 +21,11 @@ import "../../css/SchoolPortalStyle/SchoolPortalSidebar.css";
 
 const Sidebar = ({ detail, onDropdownItemSelect, selectTabPage }) => {
   // Destructure `detail` from props
+
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState("dashboard");
   const [selectedDropdownItem, setSelectedDropdownItem] = useState("");
+  const [accountType, setAccountType] = useState(detail.data.account_type);
 
   const navigate = useNavigate();
   const token = sessionStorage.getItem("token");
@@ -36,7 +40,7 @@ const Sidebar = ({ detail, onDropdownItemSelect, selectTabPage }) => {
     const checkForNullValues = (data, excludeKeys = []) => {
       for (const key in data) {
         if (!excludeKeys.includes(key) && data[key] === null) {
-          console.log("empty");
+          console.log("empty", data);
           setIsProfileDropdownOpen(true);
           setSelectedTab("myProfile");
           setSelectedDropdownItem("basicInfo");
@@ -47,7 +51,7 @@ const Sidebar = ({ detail, onDropdownItemSelect, selectTabPage }) => {
       console.log("All keys have values.");
     };
 
-    const excludeKeys = ["created_by"];
+    const excludeKeys = ["created_by", "school_lg", "school_lat"];
     checkForNullValues(detail?.data || {}, excludeKeys);
   }, [detail]); // Dependency array includes `detail`
 
@@ -212,15 +216,27 @@ const Sidebar = ({ detail, onDropdownItemSelect, selectTabPage }) => {
           </Modal>
         </div>
 
-        <Button
-          variant="outline-warning"
-          size="sm"
-          style={{ borderRadius: "12px" }}
-          className="custom-border-gradient-button"
-        >
-          <Gem className="pe-1" />
-          Premium
-        </Button>
+        {accountType === 64 ? (
+          <Button
+            variant="outline-warning"
+            size="sm"
+            className="custom-blue-button"
+          >
+            <Person className="pe-1" />
+            Basic
+          </Button>
+        ) : accountType === 65 ? (
+          <Button
+            variant="outline-warning"
+            size="sm"
+            className="custom-border-gradient-button"
+          >
+            <Gem className="pe-1" />
+            Premium
+          </Button>
+        ) : (
+          "Unknown"
+        )}
       </div>
 
       {/* Navigation Links */}

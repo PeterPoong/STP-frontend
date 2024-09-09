@@ -1,0 +1,117 @@
+* {
+    font-family: 'Ubuntu', sans-serif !important;
+  }
+  
+
+.my-profile-header{
+    padding-top: 50px;
+    padding-left: 30px;
+}
+
+
+.profile-container { background-color: #fff;
+    border: none; 
+    box-shadow: none;
+  }
+  
+  .nav-tabs .nav-link {
+    border: none; /* Remove all borders initially */
+    color: #333; /* Set the default text color */
+    background-color: transparent; /* Ensure the background remains transparent */
+    position: relative; /* Required for the underline effect */
+    opacity: 0.7;
+  }
+  
+  .nav-tabs .nav-link.active,
+  .nav-tabs .nav-link:hover {
+    font-weight: bold;
+    color: #000000; /* Change the text color on hover or when active */
+    background-color: transparent; /* Prevent background color fill */
+  }
+  
+  .nav-tabs .nav-link:hover::after,
+  .nav-tabs .nav-link.active::after {
+    content: ''; /* Create the underline effect */
+    position: absolute;
+    bottom: -2px; /* Position it just below the text */
+    left: 0;
+    right: 0;
+    height: 3px; /* Set the height of the underline */
+    background-color: #d9534f; /* Set the underline color */
+    border-radius: 2px; /* Add a slight rounding to the underline */
+  }
+  
+  /* If you don't want underline when the tab is not hovered or active */
+  .nav-tabs .nav-link::after {
+    content: ''; /* Ensure no underline is visible by default */
+    height: 0;
+  }
+  
+ /* Styling for the divider line */
+.divider-line {
+  width: calc(100% + 2rem); /* Extend the line across the page including any padding */
+  margin-left: -2rem; /* Adjust the margin to offset the container's padding */
+  border: 1;
+  height: 1px;
+  background-color: #ddd; /* Light gray color */
+  margin-bottom: 1.5rem; /* Space below the line */
+}
+
+.save-button{
+    border-radius: 20px;
+    background: #fff;
+    color: #d9534f;
+    border: 2px solid #d9534f;
+    transition: background-color 0.3s, color 0.3s;
+    float: right;
+}
+
+.save-button:hover {
+    background: #d9534f; /* Red background on hover */
+    color: #fff; /* White text color on hover */
+    border: 2px solid #d9534f; /* Maintain red border on hover */
+}
+
+/* general information */
+h4.mb-2 {
+    padding-top: 15px; /* Top padding */
+    padding-bottom: 5px; /* Bottom padding */
+}
+
+.row.mb-3{
+    padding-left: 10px;
+}
+
+.form-label {
+    font-weight: bold; /* Makes the text bold */
+}
+
+.span-style{
+  color: red !important;
+}
+
+/* Alert positioning */
+.alert-position {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 1000; /* Ensures it appears above other elements */
+}
+
+/* Fade-in and fade-out effect for alerts */
+.fade-alert {
+  opacity: 0 !important;
+  transition: opacity 1s ease-in-out !important; /* Adjust duration for fade effect */
+}
+
+.fade-alert.show {
+  opacity: 1 !important;
+}
+
+.fade-alert.hide {
+  opacity: 0 !important;
+}
+
+/* uploadImage */
+
+  

@@ -1,0 +1,15 @@
+.borderedRow {
+  border: 1px solid #ddd; /* Add your desired border style */
+  border-radius: 5px; /* Optional: to add rounded corners */
+  padding: 10px; /* Optional: to add padding inside the border */
+}
+
+.customRadius {
+  margin-top: 1.8rem;
+  border-radius: 12px; /* Adjust the radius as needed */
+}
+
+.editButton {
+  margin-top: -1rem;
+  border-radius: 1rem;
+}
