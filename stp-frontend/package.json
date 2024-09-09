@@ -23,6 +23,7 @@
     "aos": "^2.3.4",
     "axios": "^1.7.3",
     "bootstrap": "^5.3.3",
+    "bootstrap-icons": "^1.11.3",
     "country-state-city": "^3.2.1",
     "draft-js": "^0.11.7",
     "libphonenumber-js": "^1.11.7",
