@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsisH } from "@fortawesome/free-solid-svg-icons"; // Importing the ellipsis icon
 import emailIcon from "../../../assets/SchoolPortalAssets/email.png";
 import phoneIcon from "../../../assets/SchoolPortalAssets/telephone.png";
-import "../../../css/SchoolPortalStyle/test.css";
+import "../../../css/SchoolPortalStyle/test.module.css";
 
 const Applicant = () => {
   const token = sessionStorage.getItem("token");
