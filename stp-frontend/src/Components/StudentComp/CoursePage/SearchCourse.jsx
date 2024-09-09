@@ -132,7 +132,7 @@ const SearchCourse = () => {
     }
   }, [selectedCountry]);
 
-  const fetchData = async () => {
+  const fetchData = async (query) => {
     setLoading(true);
     setError(null);
 
@@ -143,11 +143,13 @@ const SearchCourse = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          search: searchQuery,
+          search: query.trim(),
           page: currentPage,
           countryID: selectedCountry?.country_id,
           institute: selectedInstitute?.id,
-          qualification: selectedQualification?.id, // Add this line
+          qualification: selectedQualification?.id,
+          name: query.trim(), // Search by course name
+          school_name: query.trim(), // Search by institute name
         }),
       });
 
@@ -161,8 +163,8 @@ const SearchCourse = () => {
       }
 
       const result = await response.json();
-      setSearchResults(result.data.data || []);
-      setTotalPages(result.totalPages || 1);
+      setSearchResults(result.data || []); // Use the returned data
+      setTotalPages(result.totalPages || 1); // Handle pagination if needed
     } catch (error) {
       console.error("Error fetching search results:", error);
       setError("Failed to fetch search results. Please try again.");
@@ -173,7 +175,7 @@ const SearchCourse = () => {
 
   useEffect(() => {
     if (searchQuery.trim()) {
-      fetchData();
+      fetchData(searchQuery); // Pass the search query to fetchData
     }
   }, [
     searchQuery,
@@ -183,13 +185,14 @@ const SearchCourse = () => {
     selectedQualification,
   ]);
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
+  const handleSearchChange = (event) => {
+    const query = event.target.value;
+    setSearchQuery(query);
+    // Optionally you can fetch data here on search change if needed
   };
 
-  const handleSearch = () => {
-    setCurrentPage(1);
-    setSearchQuery(searchQuery.trim());
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
   };
 
   const handleCountryChange = (country) => {
@@ -210,8 +213,10 @@ const SearchCourse = () => {
 
   return (
     <Container>
-      <h3 className="pt-3">Courses in Degree</h3>
-      <Row className="align-items-center mb-3">
+      <h3 style={{ textAlign: "left", paddingTop: "15px" }}>
+        Courses in Degree
+      </h3>
+      <Row className="align-items-center mb-2 mb-md-0">
         {/* Country Dropdown */}
         <Col xs={12} sm={4} md={3} lg={2} className="mb-2 mb-sm-0">
           <ButtonGroup className="w-100">
@@ -219,8 +224,28 @@ const SearchCourse = () => {
               <Dropdown.Toggle
                 className="country-dropdown-course w-100"
                 id="dropdown-country"
+                style={{
+                  backgroundColor: selectedCountry ? "white" : "", // Set background color to white if a country is selected
+                  color: selectedCountry ? "#000" : "", // Optional: Change text color for better contrast
+                  border: selectedCountry ? "1px solid #B71A18" : "", // Set border width, style, and color
+                }}
               >
-                {selectedCountry ? selectedCountry.country_name : "Country"}
+                {selectedCountry ? (
+                  <>
+                    <CountryFlag
+                      countryCode={selectedCountry.country_code}
+                      svg
+                      style={{
+                        width: "20px",
+                        height: "20px",
+                        marginRight: "10px",
+                      }}
+                    />
+                    {selectedCountry.country_name}
+                  </>
+                ) : (
+                  "Country"
+                )}
               </Dropdown.Toggle>
               <Dropdown.Menu className="scrollable-dropdown">
                 {countries.length > 0 ? (
@@ -231,7 +256,7 @@ const SearchCourse = () => {
                       onClick={() => handleCountryChange(country)}
                     >
                       <CountryFlag
-                        countryCode={country.country_code} // Use country code
+                        countryCode={country.country_code}
                         svg
                         style={{
                           width: "20px",
@@ -257,6 +282,11 @@ const SearchCourse = () => {
               <Dropdown.Toggle
                 className="university-dropdown-course w-100"
                 id="dropdown-university"
+                style={{
+                  backgroundColor: selectedInstitute ? "white" : "", // Set background color to white if a country is selected
+                  color: selectedInstitute ? "#000" : "", // Optional: Change text color for better contrast
+                  border: selectedInstitute ? "1px solid #B71A18" : "", // Set border width, style, and color
+                }}
               >
                 {selectedInstitute
                   ? selectedInstitute.core_metaName
@@ -287,6 +317,11 @@ const SearchCourse = () => {
               <Dropdown.Toggle
                 className="qualification-dropdown-course w-100"
                 id="dropdown-degree"
+                style={{
+                  backgroundColor: selectedQualification ? "white" : "", // Set background color to white if a country is selected
+                  color: selectedQualification ? "#000" : "", // Optional: Change text color for better contrast
+                  border: selectedQualification ? "1px solid #B71A18" : "", // Set border width, style, and color
+                }}
               >
                 {selectedQualification
                   ? selectedQualification.qualification_name
@@ -311,7 +346,7 @@ const SearchCourse = () => {
         </Col>
 
         <Col className="d-flex justify-content-end">
-          <Pagination className="ml-auto mb-2 mb-md-0">
+          <Pagination className="pagination-course ml-auto mb-2 mb-md-0">
             <Pagination.Prev
               aria-label="Previous"
               onClick={() => handlePageChange(currentPage - 1)}
@@ -338,20 +373,17 @@ const SearchCourse = () => {
           </Pagination>
         </Col>
       </Row>
-
       <Form>
         <InputGroup className="mb-3">
           <Form.Control
+            className="custom-placeholder"
             style={{ height: "45px", marginTop: "9px" }}
             placeholder="Search for Courses, Institutions"
             aria-label="Search for Courses, Institutions"
             aria-describedby="search-icon"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={handleSearchChange}
           />
-          <Button className="search-button" onClick={handleSearch}>
-            Search
-          </Button>
         </InputGroup>
       </Form>
       {loading && (

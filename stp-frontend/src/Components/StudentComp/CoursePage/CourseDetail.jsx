@@ -62,8 +62,8 @@ const CourseDetail = () => {
         .then((response) => response.json())
         .then((data) => {
           console.log("Fetched Data:", data.data);
-          if (data && data.data && Array.isArray(data.data.data)) {
-            const selectedProgram = data.data.data.find(
+          if (data && data.data && Array.isArray(data.data)) {
+            const selectedProgram = data.data.find(
               (item) => item.id === parseInt(id)
             );
             console.log("Selected Program:", selectedProgram);
@@ -129,11 +129,14 @@ const CourseDetail = () => {
                   src={`${baseURL}storage/${program.logo}`}
                   alt="Program"
                   className="img-fluid img-thumbnail apply-now-program-image"
-                  width="250"
+                  style={{
+                    maxWidth: "auto",
+                    marginLeft: "30px",
+                  }}
                 />
               </Col>
               <Col md={6} className="d-flex align-items-center">
-                <div style={{ paddingBottom: "25px" }}>
+                <div style={{ paddingBottom: "25px", marginLeft: "30px" }}>
                   <h4>{program.school_name}</h4>
                   <p>{import.meta.env.VITE_random_Var}</p>
                   <p>
@@ -324,20 +327,6 @@ const CourseDetail = () => {
                 </Row>
               </div>
             </div>
-            <div className="d-flex justify-content-center">
-              <Button
-                style={{
-                  backgroundColor: "#B71A18",
-                  border: "none",
-                  width: "180px",
-                  height: "50px",
-                  marginBottom: "20px",
-                  marginTop: "20px",
-                }}
-              >
-                Apply Now
-              </Button>
-            </div>
           </Container>
           <img
             src={headerImage}
@@ -435,10 +424,10 @@ const CourseDetail = () => {
               <Container className="my-4">
                 <h4>Featured Courses</h4>
                 <Swiper
-                  spaceBetween={10}
-                  slidesPerView={2}
+                  spaceBetween={30}
+                  slidesPerView={5}
                   navigation
-                  pagination={{ clickable: true }}
+                  style={{ padding: "0 50px" }}
                   loop={true}
                   modules={[Pagination, Navigation]}
                   className="featured-courses-swiper"
@@ -452,50 +441,98 @@ const CourseDetail = () => {
                       spaceBetween: 15,
                     },
                     1024: {
-                      slidesPerView: 3,
+                      slidesPerView: 5,
                       spaceBetween: 10,
                     },
                   }}
                 >
                   {featuredCourses.map((course) => (
                     <SwiperSlide key={course.id}>
-                      <Card className="featuredcourse-card">
-                        <Card.Body>
-                          <Card.Title>Course ID: {course.course_id}</Card.Title>
-                          <Card.Text>
-                            Featured Type: {course.featured_type}
-                          </Card.Text>
-                          {/* Add any additional course details you want to display */}
-                          {/* <Button
-                            variant="primary"
+                      <div
+                        className="featured-course-card"
+                        style={{ width: "230px", height: "245px" }}
+                      >
+                        <div style={{ position: "relative" }}>
+                          {course.course_qualification && (
+                            <span
+                              className="badge"
+                              style={{ fontSize: "16px" }}
+                            >
+                              {course.course_qualification.toUpperCase()}
+                            </span>
+                          )}
+                          <img
+                            src={`${baseURL}storage/${course.course_logo}`}
+                            alt={course.course_school}
+                            className="section-image"
+                            style={{
+                              height: "80px",
+                              width: "150px",
+                              objectFit: "contain",
+                            }}
+                          />
+                        </div>
+                        <div>
+                          <p
+                            className="course-school-title"
+                            style={{
+                              color: "#514E4E",
+                              fontSize: "16px",
+                              fontWeight: "500",
+                              marginBottom: "15px",
+                            }}
+                          >
+                            {course.course_id}
+                          </p>
+                          <p
+                            className="course-title"
+                            style={{
+                              color: "#B71A18",
+                              fontSize: "18px",
+                              fontWeight: "500",
+                              marginBottom: "15px",
+                            }}
+                          >
+                            {course.featured_type}
+                          </p>
+                          <div className="d-flex justify-content-center">
+                            <i
+                              className="bi bi-geo-alt"
+                              style={{ marginRight: "10px", color: "#AAAAAA" }}
+                            ></i>
+                            <span style={{ color: "#AAAAAA" }}>
+                              {course.location}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="d-flex justify-content-center">
+                          <button
+                            className="button-know-more"
                             onClick={() =>
                               navigate(`/courseDetails/${course.course_id}`)
                             }
                           >
-                            View Details
-                          </Button> */}
-                          <a
-                            href={`/courseDetails/${course.course_id}`}
-                            className="btn btn-primary"
-                            style={{
-                              borderColor: "#B71A18",
-                              backgroundColor: "#B71A18",
-                            }}
+                            {course.knowMoreText || "Know More"}
+                          </button>
+                          <button
+                            className="button-apply-now"
+                            onClick={() =>
+                              navigate(`/courseDetails/${course.course_id}`)
+                            }
                           >
-                            View Details
-                          </a>
-                        </Card.Body>
-                      </Card>
+                            {course.applyNowText || "Apply Now"}
+                          </button>
+                        </div>
+                      </div>
                     </SwiperSlide>
                   ))}
                 </Swiper>
               </Container>
             )}
-
-            <img src={studypal11} alt="Header" className="adverstise-image" />
           </Container>
         </>
-      ))}
+      ))}{" "}
+      <img src={studypal11} alt="Header" className="adverstise-image" />
       <div>
         <Footer />
       </div>

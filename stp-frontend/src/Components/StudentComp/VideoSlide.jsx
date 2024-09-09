@@ -37,8 +37,8 @@ const VideoSlide = () => {
               />
               <div className="overlay"></div>
               <div className="video-carousel-caption">
-                <h3>{videoObj.title}</h3>
-                <button className="btn btn-outline-danger btn-lg video-carousel-button">
+                <p style={{ fontWeight: "bolder" }}>{videoObj.title}</p>
+                <button className="btn-lg video-carousel-button">
                   {videoObj.credit}
                 </button>
               </div>

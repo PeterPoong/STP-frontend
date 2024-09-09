@@ -21,12 +21,13 @@ const Home = () => {
           <FeaturedUni />
         </div>
         <UniversityRow />
+
         <div className="section-division">
           <FeaturedCoursesContainer />
         </div>
         <WhyStudyPal />
       </div>
-      <h3>Hot pick courses</h3>
+      <h4>Hot pick courses</h4>
       <div>
         <CoursesContainer />
       </div>

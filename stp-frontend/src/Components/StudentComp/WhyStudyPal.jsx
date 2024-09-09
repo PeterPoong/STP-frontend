@@ -7,18 +7,23 @@ import cc from "../../assets/StudentAssets/circlecheck.png";
 const WhyStudyPal = () => {
   return (
     <div className="container-fluid">
-      <Container className="whystp-container">
+      <Container className="whystp-container" style={{ marginTop: "100px" }}>
         <Row className="why-study-pal-card wider-card responsive-card">
           <Col xs={12} md={6} className="text-center text-md-left">
             <div>
-              <h2
-                className="text-center text-md-left"
-                style={{ color: "#a90000", paddingLeft: "20px" }}
+              <h3
+                style={{
+                  color: "#a90000",
+                  paddingLeft: "70px",
+                  width: "100%",
+                  textAlign: "left",
+                  fontWeight: "lighter",
+                }}
               >
                 Why StudyPal?
-              </h2>
+              </h3>
             </div>
-            <div>
+            <div style={{ marginTop: "70px", marginLeft: "20px" }}>
               {[
                 "Most choice courses",
                 "Most quality university",

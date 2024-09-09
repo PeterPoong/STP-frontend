@@ -38,6 +38,7 @@ const KnowMoreInstitute = () => {
   const [courses, setCourses] = useState([]);
 
   const { id } = useParams();
+
   const location = useLocation();
   const [institutes, setInstitutes] = useState([]);
   const [featuredInstitutes, setFeaturedInstitutes] = useState([]);
@@ -119,17 +120,17 @@ const KnowMoreInstitute = () => {
   return (
     <div style={{ backgroundColor: "#F5F4F4" }}>
       <NavButtons />
-      <header className="know-more-masthead">
-        <img
-          src={headerImage}
-          alt="Header"
-          className="know-more-header-image"
-        />
-      </header>
       {Array.isArray(institutes) &&
         institutes.map((institute) => (
-          <>
-            <Container key={institute.id} className="my-4 know-more-container">
+          <div key={institute.id}>
+            <header className="know-more-masthead">
+              <img
+                src={`${baseURL}storage/${institute.school_cover.schoolMedia_location}`}
+                alt="Header"
+                className="know-more-header-image"
+              />
+            </header>
+            <Container className="my-4 know-more-container">
               <Row className="know-more-row no-gutters">
                 <Col
                   xs={12}
@@ -160,12 +161,6 @@ const KnowMoreInstitute = () => {
                         <span style={{ paddingLeft: "10px" }}>
                           {institute.category}
                         </span>
-                        {/* <a
-                          href="https://maps.google.com"
-                          style={{ paddingLeft: "15px" }}
-                        >
-                          Click and view on map
-                        </a> */}
                       </p>
                     </Row>
                   </div>
@@ -178,7 +173,7 @@ const KnowMoreInstitute = () => {
                   <Button
                     style={{
                       backgroundColor: "#FF6B00",
-                      fontWeight: "bold",
+                      fontWeight: "lighter",
                       border: "none",
                       width: "180px",
                       height: "50px",
@@ -192,11 +187,16 @@ const KnowMoreInstitute = () => {
               </Row>
 
               <div className="image-gallery" style={{ marginTop: "20px" }}>
-                <img src={studypal1} className="gallery-image" alt="Slide 1" />
-                <img src={studypal2} className="gallery-image" alt="Slide 2" />
-                <img src={studypal3} className="gallery-image" alt="Slide 3" />
-                <img src={studypal4} className="gallery-image" alt="Slide 4" />
-                <img src={studypal1} className="gallery-image" alt="Slide 1" />
+                {institutes.map((institute) =>
+                  institute.school_photo.map((photo) => (
+                    <img
+                      key={photo.id}
+                      src={`${baseURL}storage/${photo.schoolMedia_location}`}
+                      className="gallery-image"
+                      alt={`Slide ${photo.id}`}
+                    />
+                  ))
+                )}
               </div>
 
               <div className="card mt-4 know-more-card">
@@ -265,11 +265,10 @@ const KnowMoreInstitute = () => {
                           </div>
                         </Col>
                         <div>
-                          <FontAwesomeIcon
-                            icon={faGraduationCap}
-                            style={{ paddingLeft: "20px" }}
-                            className="icon-lg"
-                          />
+                          <i
+                            className="bi bi-mortarboard"
+                            style={{ paddingLeft: "20px", fontSize: "2rem" }}
+                          ></i>
                         </div>
                         <div>
                           <h5
@@ -286,6 +285,7 @@ const KnowMoreInstitute = () => {
                     </div>
                   </div>
                 </Col>
+
                 <Col xs={6} sm={6} md={6} className="d-flex">
                   <div className="card mt-4 intake-period-card w-100">
                     <div className="card-body">
@@ -306,11 +306,10 @@ const KnowMoreInstitute = () => {
                           </div>
                         </Col>
                         <div>
-                          <FontAwesomeIcon
-                            icon={faBookOpen}
-                            style={{ paddingLeft: "20px" }}
-                            className="icon-lg"
-                          />
+                          <i
+                            className="bi bi-book"
+                            style={{ paddingLeft: "20px", fontSize: "2rem" }}
+                          ></i>
                         </div>
                         <div>
                           <h5
@@ -320,8 +319,8 @@ const KnowMoreInstitute = () => {
                               color: "#514E4E",
                             }}
                           >
-                            {Array.isArray(institute.intakes)
-                              ? institute.intakes.join(", ")
+                            {institute.intake && institute.intake.length > 0
+                              ? institute.intake.join(", ")
                               : "N/A"}
                           </h5>
                         </div>
@@ -331,50 +330,102 @@ const KnowMoreInstitute = () => {
                 </Col>
               </Row>
             </Container>
-            <img
-              src={headerImage}
+
+            {/* <img
+              src={`${baseURL}storage/${institute.school_cover.schoolMedia_location}`}
               alt="Header"
               className="about-institute-image"
-            />
+            /> */}
+
             <Container className="my-4 about-institute-container">
-              <div className="card mt-4 know-more-card">
-                <div className="card-body" style={{ padding: "50px" }}>
-                  <Row>
-                    <Col md={10} className="d-flex align-items-center">
-                      <div>
-                        <h5 className="card-title">About {institute.name}</h5>
-                      </div>
-                    </Col>
-                    <div>
-                      <p>{institute.long_description}</p>
+              <div
+                style={{
+                  position: "relative",
+                  marginBottom: openAbout ? "20px" : "0px",
+                  marginTop: "10%",
+                }}
+              >
+                {/* Background Image */}
+                <div
+                  style={{
+                    position: "relative", // Position the background image absolutely
+                    top: 0,
+                    left: 0,
+                    zIndex: 0, // Behind other elements
+                    width: "100%", // Set width to 1457px
+                    height: openAbout ? "600px" : "300px", // Adjust height as needed
+                    overflow: "hidden",
+                    transition: "height 0.5s ease", // Smooth transition for height
+                  }}
+                >
+                  <img
+                    src={`${baseURL}storage/${institute.school_cover.schoolMedia_location}`}
+                    alt="Header"
+                    style={{
+                      position: "absolute",
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      zIndex: 0,
+                    }}
+                  />
+                  {/* Card */}
+                  <div
+                    className="card know-more-card"
+                    style={{
+                      bottom: -10,
+                      width: "100%", // Set the card's width to a percentage or specific px value
+                      margin: "0 auto", // Center the card horizontally
+                      position: "absolute",
+                      zIndex: 1, // Ensure it appears above the background image
+                    }}
+                  >
+                    <div className="card-body" style={{ padding: "50px" }}>
+                      <Row>
+                        <Col md={10} className="d-flex align-items-center">
+                          <div>
+                            <h5 className="card-title" style={{ zIndex: 1 }}>
+                              About {institute.name}
+                            </h5>
+                          </div>
+                        </Col>
+                        <Col md={12}>
+                          <div style={{ zIndex: 1 }}>
+                            <p>{institute.long_description}</p>
+                          </div>
+                        </Col>
+                        <Col md={12}>
+                          <Collapse in={openAbout}>
+                            <div style={{ zIndex: 1 }}>
+                              <p>
+                                The purpose of this programme is to produce
+                                graduates with in-depth knowledge of Arabic
+                                linguistics. From the aspects of national
+                                aspiration and global importance, this programme
+                                aims to produce graduates who demonstrate those
+                                aspects.
+                              </p>
+                            </div>
+                          </Collapse>
+                        </Col>
+                        <Col className="d-flex justify-content-center">
+                          <Button
+                            style={{ textDecoration: "none" }}
+                            variant="link"
+                            onClick={() => setOpenAbout(!openAbout)}
+                            aria-controls="collapse-about-institute"
+                            aria-expanded={openAbout}
+                          >
+                            {openAbout ? "View Less" : "View More"}
+                          </Button>
+                        </Col>
+                      </Row>
                     </div>
-                    <Col md={12}>
-                      <Collapse in={openAbout}>
-                        <div>
-                          <p>
-                            The purpose of this programme is to produce
-                            graduates with in-depth knowledge of Arabic
-                            linguistics. From the aspects of national aspiration
-                            and global importance, this programme aims to
-                            produce graduates who demonstrate those aspects.
-                          </p>
-                        </div>
-                      </Collapse>
-                    </Col>
-                    <Col className="d-flex justify-content-center">
-                      <Button
-                        style={{ textDecoration: "none" }}
-                        variant="link"
-                        onClick={() => setOpenAbout(!openAbout)}
-                        aria-controls="collapse-about-institute"
-                        aria-expanded={openAbout}
-                      >
-                        {openAbout ? "View Less" : "View More"}
-                      </Button>
-                    </Col>
-                  </Row>
+                  </div>
                 </div>
               </div>
+
+              {/* Contact School Button */}
               <div className="d-flex justify-content-center">
                 <Button
                   style={{
@@ -382,7 +433,7 @@ const KnowMoreInstitute = () => {
                     border: "none",
                     width: "180px",
                     height: "50px",
-                    marginTop: "20px",
+                    // marginTop: openAbout ? "30px" : "10%", // Adjust margin when expanded
                     fontWeight: "bold",
                   }}
                 >
@@ -390,7 +441,7 @@ const KnowMoreInstitute = () => {
                 </Button>
               </div>
 
-              {/*Course Offered List */}
+              {/* Course Offered List */}
               {courses.length > 0 && (
                 <Container className="my-4">
                   <h4>Courses Offered</h4>
@@ -688,50 +739,122 @@ const KnowMoreInstitute = () => {
                       <h4>Featured Institutes</h4>
                       <Swiper
                         spaceBetween={30}
-                        slidesPerView={2}
+                        slidesPerView={5}
                         navigation
-                        pagination={{ clickable: true }}
+                        style={{ padding: "0 50px" }}
                         loop={true}
                         modules={[Pagination, Navigation]}
                         className="featured-institute-swiper"
+                        breakpoints={{
+                          640: {
+                            slidesPerView: 1,
+                            spaceBetween: 10,
+                          },
+                          768: {
+                            slidesPerView: 2,
+                            spaceBetween: 15,
+                          },
+                          1024: {
+                            slidesPerView: 5,
+                            spaceBetween: 10,
+                          },
+                        }}
                       >
                         {featuredInstitutes.map((institute) => (
                           <SwiperSlide key={institute.id}>
-                            <Card className="featured-institute-card">
-                              <Card.Body>
-                                <Card.Title>
-                                  Institute ID: {institute.school_id}
-                                </Card.Title>
-                                <Card.Text>
-                                  Featured Type: {institute.featured_type}
-                                </Card.Text>
-                                {/* Add any additional details you want to display */}
-                                <a
-                                  href={`/knowMoreInstitute/${institute.school_id}`}
-                                  className="btn btn-primary"
+                            <div
+                              className="featured-institute-card"
+                              style={{ width: "230px", height: "245px" }}
+                            >
+                              <div style={{ position: "relative" }}>
+                                {institute.institute_qualification && (
+                                  <span
+                                    className="badge"
+                                    style={{ fontSize: "16px" }}
+                                  >
+                                    {institute.institute_qualification.toUpperCase()}
+                                  </span>
+                                )}
+                                <img
+                                  src={`${baseURL}storage/${institute.institute_logo}`}
+                                  alt={institute.school_name}
+                                  className="section-image"
                                   style={{
-                                    borderColor: "#B71A18",
-                                    backgroundColor: "#B71A18",
+                                    height: "80px",
+                                    width: "150px",
+                                    objectFit: "contain",
+                                  }}
+                                />
+                              </div>
+                              <div>
+                                <p
+                                  className="institute-title"
+                                  style={{
+                                    color: "#514E4E",
+                                    fontSize: "16px",
+                                    fontWeight: "500",
+                                    marginBottom: "15px",
                                   }}
                                 >
-                                  View Details
-                                </a>
-                              </Card.Body>
-                            </Card>
+                                  Institute ID: {institute.school_id}
+                                </p>
+                                <p
+                                  className="featured-type"
+                                  style={{
+                                    color: "#B71A18",
+                                    fontSize: "18px",
+                                    fontWeight: "500",
+                                    marginBottom: "15px",
+                                  }}
+                                >
+                                  {institute.featured_type}
+                                </p>
+                                <div className="d-flex justify-content-center">
+                                  <i
+                                    className="bi bi-geo-alt"
+                                    style={{
+                                      marginRight: "10px",
+                                      color: "#AAAAAA",
+                                    }}
+                                  ></i>
+                                  <span style={{ color: "#AAAAAA" }}>
+                                    {institute.location}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="d-flex justify-content-center">
+                                <button
+                                  className="button-know-more"
+                                  onClick={() =>
+                                    navigate(
+                                      `/knowMoreInstitute/${institute.school_id}`
+                                    )
+                                  }
+                                >
+                                  {institute.knowMoreText || "Know More"}
+                                </button>
+                                <button
+                                  className="button-apply-now"
+                                  onClick={() =>
+                                    navigate(
+                                      `/knowMoreInstitute/${institute.school_id}`
+                                    )
+                                  }
+                                >
+                                  {institute.applyNowText || "Apply Now"}
+                                </button>
+                              </div>
+                            </div>
                           </SwiperSlide>
                         ))}
                       </Swiper>
                     </Container>
                   )}
-                  <img
-                    src={studypal11}
-                    alt="Header"
-                    className="adverstise-image"
-                  />
                 </Container>
               )}
+              <img src={studypal11} alt="Header" className="adverstise-image" />
             </Container>
-          </>
+          </div>
         ))}
       <div>
         <Footer />

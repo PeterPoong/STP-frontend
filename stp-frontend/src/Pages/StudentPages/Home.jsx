@@ -11,6 +11,7 @@ import FeaturedCoursesContainer from "../../Components/StudentComp/FeaturedCours
 import VideoSlide from "../../Components/StudentComp/VideoSlide";
 import Footer from "../../Components/StudentComp/Footer";
 import "../../css/StudentCss/homePageStudent/UniversityRow.css";
+import SpcFooter from "../../Components/StudentPortalComp/SpcFooter";
 
 import AOS from "aos";
 import "aos/dist/aos.css";
@@ -24,11 +25,27 @@ const Home = () => {
           <div className="featured-uni-section">
             <FeaturedUni />
           </div>
-          <div className="university-row-container">
+          <div
+            className="university-row-container"
+            style={{ marginTop: "40px" }}
+          >
             <UniversityRow />
           </div>
-          {/* <h2>Featured Courses</h2> */}
-          <div className="section-division-container">
+          <h4
+            style={{
+              textAlign: "left",
+              fontSize: "20px",
+              paddingLeft: "100px",
+              width: "100%",
+              marginBottom: "0",
+            }}
+          >
+            Featured Courses
+          </h4>
+          <div
+            className="section-division-container"
+            style={{ height: "210px", marginBottom: "40px" }}
+          >
             <FeaturedCoursesContainer />
           </div>
           <div>
@@ -44,7 +61,7 @@ const Home = () => {
         </div>
       </main>
       <div>
-        <Footer />
+        <SpcFooter />
       </div>
     </div>
   );

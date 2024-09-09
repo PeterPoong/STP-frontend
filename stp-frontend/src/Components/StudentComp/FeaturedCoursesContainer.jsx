@@ -3,8 +3,9 @@ import { Container } from "react-bootstrap";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "../../css/StudentCss/homePageStudent/Unicard.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
+// Remove FontAwesome imports if not used elsewhere
+// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+// import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
 
 const baseURL = import.meta.env.VITE_BASE_URL;
 const apiURL = `${baseURL}api/student/hpFeaturedCoursesList`;
@@ -59,7 +60,6 @@ const FeaturedCoursesContainer = () => {
 
   return (
     <div>
-      <h4 style={{ textAlign: "left", marginTop: "10px" }}>Featured Courses</h4>
       {error && <div>Error: {error}</div>}
       {loading && <div>Loading...</div>}
       {!loading && !error && courses.length > 0 && (
@@ -70,6 +70,7 @@ const FeaturedCoursesContainer = () => {
             loop={true}
             pagination={{ clickable: true }}
             navigation
+            style={{ padding: "0 50px" }}
             breakpoints={{
               640: {
                 slidesPerView: 1,
@@ -93,10 +94,18 @@ const FeaturedCoursesContainer = () => {
                 >
                   <div style={{ position: "relative" }}>
                     {course.course_qualification && (
-                      <span className="badge" style={{ fontSize: "16px" }}>
-                        {course.course_qualification.toUpperCase()}
+                      <span
+                        className="badge"
+                        style={{
+                          fontSize: "16px",
+                          fontWeight: "normal",
+                          backgroundColor: course.course_qualification_color, // Dynamically set background color from API
+                        }}
+                      >
+                        {course.course_qualification}
                       </span>
                     )}
+
                     <img
                       src={`${baseURL}storage/${course.course_logo}`}
                       alt={course.course_school}
@@ -109,25 +118,40 @@ const FeaturedCoursesContainer = () => {
                     />
                   </div>
                   <div>
-                    <h4>{course.course_school}</h4>
-                    <p>{course.course_name}</p>
-                    <div className="d-flex justify-content-center">
-                      <FontAwesomeIcon
-                        icon={faLocationDot}
-                        style={{ marginRight: "10px" }}
-                      />
-                      <span>{course.location}</span>
-                    </div>
-                  </div>
-                  <div className="d-flex justify-content-center">
-                    <button
-                      className="button-know-more"
+                    <p
+                      className="course-school-title"
                       style={{
-                        backgroundColor: "white",
-                        borderColor: "#B71A18",
-                        color: "#B71A18",
+                        color: "#514E4E",
+                        fontSize: "16px",
+                        fontWeight: "500",
+                        marginBottom: "15px",
                       }}
                     >
+                      {course.course_school}
+                    </p>
+                    <p
+                      className="course-title"
+                      style={{
+                        color: "#B71A18",
+                        fontSize: "18px",
+                        fontWeight: "500",
+                        marginBottom: "15px",
+                      }}
+                    >
+                      {course.course_name}
+                    </p>
+                    <div className="d-flex justify-content-center">
+                      <i
+                        className="bi bi-geo-alt"
+                        style={{ marginRight: "10px", color: "#AAAAAA" }}
+                      ></i>
+                      <span style={{ color: "#AAAAAA" }}>
+                        {course.location}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="d-flex justify-content-center ">
+                    <button className="button-know-more">
                       {course.knowMoreText || "Know More"}
                     </button>
                     <button className="button-apply-now">

@@ -15,7 +15,8 @@ import {
 import { Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../../css/StudentCss/institutepage css/Institute.css";
-import InstituteListing from "./InstituteListing";
+// import InstituteListing from "./InstituteListing";
+import InstituteListing from "../../../Components/StudentComp/InstitutePage/InstituteListing";
 import CountryFlag from "react-country-flag";
 
 const baseURL = import.meta.env.VITE_BASE_URL;
@@ -92,14 +93,10 @@ const SearchInstitute = () => {
         }
 
         const result = await response.json();
-        if (result.data && Array.isArray(result.data)) {
-          setCountries(result.data);
-        } else {
-          setCountries([]); // Ensure countries is always an array
-        }
+        setCountries(result.data || []);
       } catch (error) {
         console.error("Error fetching countries:", error);
-        setCountries([]); // Ensure countries is always an array
+        setCountries([]);
       }
     };
 
@@ -110,26 +107,17 @@ const SearchInstitute = () => {
   useEffect(() => {
     const fetchInstitutes = async () => {
       try {
-        const response = await fetch(instituteURL, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
+        const response = await fetch(instituteURL);
 
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
         const result = await response.json();
-        if (result.data && Array.isArray(result.data)) {
-          setInstitutes(result.data);
-        } else {
-          setInstitutes([]); // Ensure institutes is always an array
-        }
+        setInstitutes(result.data || []);
       } catch (error) {
         console.error("Error fetching institutes:", error);
-        setInstitutes([]); // Ensure institutes is always an array
+        setInstitutes([]);
       }
     };
 
@@ -137,58 +125,59 @@ const SearchInstitute = () => {
   }, []);
 
   // Effect to fetch data when searchQuery or currentPage changes
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
 
-      try {
-        const response = await fetch(apiURL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            search: searchQuery,
-            page: currentPage,
-            countryID: selectedCountry?.country_id,
-            instituteId: selectedInstitute?.id,
-          }),
-        });
+  const fetchData = async (query) => {
+    setLoading(true);
+    setError(null);
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
+    try {
+      const response = await fetch(apiURL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          search: query.trim(),
+          page: currentPage,
+          country: selectedCountry?.country_id,
+          category: selectedInstitute?.id || null,
+        }),
+      });
 
-        const contentType = response.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-          throw new Error("Response is not JSON");
-        }
-
-        const result = await response.json();
-
-        setSearchResults(result.data); // Assuming result.data.data contains search results
-        setTotalPages(result.totalPages); // Update total pages based on API response
-      } catch (error) {
-        console.error("Error fetching search results:", error);
-        setError("Failed to fetch search results. Please try again.");
-      } finally {
-        setLoading(false);
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
-    };
 
-    // Fetch data.data only if searchQuery is not empty
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new Error("Response is not JSON");
+      }
+
+      const result = await response.json();
+
+      setSearchResults(result.data || []); // Assuming result.data contains search results
+      setTotalPages(result.totalPages || 1); // Update total pages based on API response
+    } catch (error) {
+      console.error("Error fetching search results:", error);
+      setError("Failed to fetch search results. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     if (searchQuery.trim()) {
-      fetchData();
+      fetchData(searchQuery); // Pass the search query to fetchData
     }
   }, [searchQuery, currentPage, selectedCountry, selectedInstitute]);
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
+  const handleSearchChange = (event) => {
+    const query = event.target.value;
+    setSearchQuery(query);
   };
 
-  const handleSearch = () => {
-    setCurrentPage(1); // Reset to first page when search query changes
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
   };
 
   const handleCountryChange = (country) => {
@@ -207,15 +196,35 @@ const SearchInstitute = () => {
         Institute in Malaysia
       </h3>
       {/* Country Dropdown */}
-      <Row className="align-items-center mb-3">
+      <Row className="align-items-center mb-2 mb-md-0">
         <Col xs={12} sm={4} md={3} lg={2} className="mb-2 mb-sm-0">
           <ButtonGroup className="w-100">
             <Dropdown as={ButtonGroup} className="w-100">
               <Dropdown.Toggle
                 className="country-dropdown-institute w-100"
                 id="dropdown-country"
+                style={{
+                  backgroundColor: selectedCountry ? "white" : "", // Set background color to white if a country is selected
+                  color: selectedCountry ? "#000" : "", // Optional: Change text color for better contrast
+                  border: selectedCountry ? "1px solid #B71A18" : "", // Set border width, style, and color
+                }}
               >
-                {selectedCountry ? selectedCountry.country_name : "Country"}
+                {selectedCountry ? (
+                  <>
+                    <CountryFlag
+                      countryCode={selectedCountry.country_code}
+                      svg
+                      style={{
+                        width: "20px",
+                        height: "20px",
+                        marginRight: "10px",
+                      }}
+                    />
+                    {selectedCountry.country_name}
+                  </>
+                ) : (
+                  "Country"
+                )}
               </Dropdown.Toggle>
               <Dropdown.Menu className="scrollable-dropdown">
                 {countries.length > 0 ? (
@@ -226,7 +235,7 @@ const SearchInstitute = () => {
                       onClick={() => handleCountryChange(country)}
                     >
                       <CountryFlag
-                        countryCode={country.country_code} // Use country code
+                        countryCode={country.country_code}
                         svg
                         style={{
                           width: "20px",
@@ -252,6 +261,11 @@ const SearchInstitute = () => {
               <Dropdown.Toggle
                 className="university-dropdown-institute w-100"
                 id="dropdown-university"
+                style={{
+                  backgroundColor: selectedInstitute ? "white" : "", // Set background color to white if a country is selected
+                  color: selectedInstitute ? "#000" : "", // Optional: Change text color for better contrast
+                  border: selectedInstitute ? "1px solid #B71A18" : "", // Set border width, style, and color
+                }}
               >
                 {selectedInstitute
                   ? selectedInstitute.core_metaName
@@ -262,7 +276,6 @@ const SearchInstitute = () => {
                   institutes.map((institute, index) => (
                     <Dropdown.Item
                       key={index}
-                      className="dropdown"
                       onClick={() => handleInstituteChange(institute)}
                     >
                       {institute.core_metaName}
@@ -308,16 +321,14 @@ const SearchInstitute = () => {
       <Form>
         <InputGroup className="mb-3">
           <Form.Control
+            className="custom-placeholder"
             style={{ height: "45px", marginTop: "9px" }}
-            placeholder="Search for Courses, Institutions"
-            aria-label="Search for Courses, Institutions"
+            placeholder="Search for Institutions, Country"
+            aria-label="Search for Institutions, Country"
             aria-describedby="search-icon"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={handleSearchChange}
           />
-          <Button className="search-button" onClick={handleSearch}>
-            Search
-          </Button>
         </InputGroup>
       </Form>
 
