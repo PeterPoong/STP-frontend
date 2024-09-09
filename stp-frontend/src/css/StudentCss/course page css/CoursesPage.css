@@ -1,7 +1,150 @@
-.masthead {
-  position: relative;
-  width: 100%;
+.apply-button .featured {
+  margin-left: 10px;
+  background-color: #B71A18;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 145px;
+  text-align: center;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.apply-button .featured:hover {
+  background-color: #ff9896;
+  color: #B71A18;
+  border-color: #B71A18;
+
+}
+
+.blankslate-courses {
+  text-align: center;
+  padding: 2rem;
+  margin-left: 250px;
+}
+
+.blankslate-courses-actions .btn {
+  margin: 0.5rem;
+}
+
+.blankslate-courses-body {
+  margin-bottom: 1rem;
+}
+
+.blankslate-courses-top-img {
+  max-width: 100px;
+  margin-bottom: 1rem;
+}
+
+.card-body {
+  flex-direction: column;
+}
+
+.country-dropdown-course, .university-dropdown-course, .qualification-dropdown-course  {
+  border: none; 
+  background-color: #B71A18;
+}
+
+.country-dropdown-course:hover, .university-dropdown-course:hover, .qualification-dropdown-course:hover {
+  border: none; 
+  background-color: #8B0000;
+  color: white;
+}
+
+/* In your CSS file or inside a <style> tag */
+.custom-placeholder::placeholder {
+  color: #888; /* Replace #888 with your desired color */
+  opacity: 1; /* Optional: Ensures the color is applied without transparency */
+}
+
+
+.degree-card {
+  display: flex;
+  flex-direction: column;
+  width: 1180px;
   height: auto;
+  border-color: #B71A18;
+  border-radius: 10px;
+  margin-bottom: 20px; /* Add spacing between cards */
+}
+
+
+.degree-card .card-body {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  position: relative;
+}
+
+.degree-card .card-image {
+  flex-shrink: 0;
+  margin-right: 20px;
+  margin-bottom: 10px; /* Adjusted for smaller screens */
+}
+
+.degree-card .card-image img {
+  max-width: 100px;
+  height: auto;
+  display: block;
+}
+
+.degree-card .card-text {
+  margin-bottom: 10px;
+}
+
+.degree-card .card-title {
+  background-color: #F2F2F2;
+  padding-left: 30px;
+  height: 31px;
+  margin-left: -15px;
+}
+
+.degree-card .card-content {
+  flex-grow: 1;
+  margin-right: 20px;
+}
+
+.degree-card .details-div {
+  flex-grow: 1;
+}
+
+.degree-card .fee-apply {
+  margin-left: 100px; /* Pushes the fee-apply div to the right side */
+  display: flex;
+  color: #514E4E;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  
+}
+
+.featured-badge {
+  position: absolute;
+  top: 0;
+  right: 10px;
+  background-color: #B71A18; 
+  color: white;
+  padding: 5px 10px;
+  font-size: 12px;
+  text-align: center;
+  font-weight: bold;
+  text-transform: uppercase;
+  clip-path: polygon(0 0, 100% 0, 100% 75%, 100% 100%, 50% 70%, 0 100%);
+  z-index: 1;
+  width: 100px;
+  height: 40px;
+}
+
+.featured:hover {
+  background-color: #9c1515;
+}
+
+.flex-grow-1 {
+  flex-grow: 1;
 }
 
 .header-image {
@@ -11,35 +154,54 @@
   object-fit: cover;
 }
 
-
-.country-dropdown-course,
-.university-dropdown-course,
-.qualification-dropdown-course
- {
-  background-color: #B71A18;
-  color: #ffffff;
-  border: 1px solid;
-  min-width: 200px;
-  margin-top: 35px;
-  
+.location-container {
+  border: 1px solid #dadada;
+  border-radius: 10px;
+  height: 1200px;
+  width: 250px;
 }
 
-.country-dropdown-course:hover,
-.university-dropdown-course:hover,
-.qualification-dropdown-course:hover{
-  background-color: #9c1515;
-  color: #ffffff;
-  border: none;
+.masthead {
+  position: relative;
+  width: 100%;
+  height: auto;
 }
 
+.ml-auto {
+  margin-left: auto;
+}
+
+.mr-2 {
+  margin-right: 0.5rem;
+}
+
+
+.pagination-course{
+  margin-top: 20px;
+    font-size: 1rem;
+}
+.pagination-course .page-item .page-link {
+  background-color: #B71A18; /* Your desired background color */
+  color: white; /* Your desired text color */
+  border: none; /* Remove border if desired */
+  margin-top: 30px;
+}
+
+.pagination .page-item.active .page-link {
+  background-color: #8B0000; /* Your desired active background color */
+  color: white; /* Your desired active text color */
+}
+
+.pagination .page-item .page-link:hover {
+  background-color: #ff6347; /* Your desired hover background color */
+  color: white; /* Your desired hover text color */
+}
 
 .scrollable-dropdown {
   max-height: 300px; /* Set your desired maximum height */
   overflow-y: auto;
   overflow-x: hidden;
-  
 }
-
 
 /* Width of the scrollbar */
 .scrollable-dropdown::-webkit-scrollbar {
@@ -64,39 +226,18 @@
   background-color: #555; /* Darker color on hover */
 }
 
-
-.pagination .page-item .page-link {
-  background-color: #B71A18; /* Your desired background color */
-  color: white; /* Your desired text color */
-  border: none; /* Remove border if desired */
-  margin-top: 30px;
+.search-button {
+  background-color: #B71A18;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 0 5px 5px 0; /* Ensure the button aligns with the input */
+  cursor: pointer;
+  height: 100%; /* Make sure the button height matches the input height */
 }
 
-.pagination .page-item.active .page-link {
-  background-color: #8B0000; /* Your desired active background color */
-  color: white; /* Your desired active text color */
-}
-
-.pagination .page-item .page-link:hover {
-  background-color: #ff6347; /* Your desired hover background color */
-  color: white; /* Your desired hover text color */
-}
-
-
-.mr-2 {
-  margin-right: 0.5rem;
-}
-
-.ml-auto {
-  margin-left: auto;
-}
-
-.location-container {
-  width: 250px;
-}
-
-.flex-grow-1 {
-  flex-grow: 1;
+.search-button:hover {
+  background-color: #9c1515;
 }
 
 .studypal-image {
@@ -107,153 +248,21 @@
   margin-bottom: 40px;
 }
 
-.location-container {
-  border: 1px solid #dadada;
-  border-radius: 10px;
-  height: 1200px;
-}
-
-.degree-card {
-  display: flex;
-  flex-direction: column;
-  width: 1180px;
-  height: auto;
-  border-color: #B71A18;
-  border-radius: 10px;
-  margin-bottom: 20px; /* Add spacing between cards */
-}
-
-.degree-card .card-title {
-  background-color: #efefef;
-}
-
-.degree-card .card-body {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  position: relative;
-}
-
-.degree-card .card-image {
-  flex-shrink: 0;
-  margin-right: 20px;
-  margin-bottom: 10px; /* Adjusted for smaller screens */
-}
-
-.degree-card .card-image img {
-  max-width: 100px;
-  height: auto;
-  display: block;
-}
-
-.degree-card .card-content {
-  flex-grow: 1;
-  margin-right: 20px;
-}
-
-.degree-card .card-text {
-  margin-bottom: 10px;
-}
-
-.degree-card .details-div {
-  flex-grow: 1;
-}
-
-/* .degree-card .details-div .d-flex {
-  margin-bottom: 5px;
-} */
-
-.degree-card .apply-button  {
-  margin-top: 20px;
-  text-align: right;
-}
-
-.degree-card .fee-apply {
-  margin-left: 100px; /* Pushes the fee-apply div to the right side */
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  text-align: right;
-}
-
-
-.btn-danger {
-  background-color: #c00;
-}
-
-.fee-info {
-  text-align: right;
-  margin-right: 10px; /* Adjust margin to bring the text closer */
-
-}
-
-.apply-button .featured {
-  margin-left: 10px;
-  background-color: #B71A18;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  width: 150px;
-}
-
-.featured-badge {
-  position: absolute;
-  top: 0;
-  right: 10px;
-  background-color: #B71A18; 
-  color: white;
-  padding: 5px 10px;
-  font-size: 12px;
-  text-align: center;
-  font-weight: bold;
-  text-transform: uppercase;
-  clip-path: polygon(0 0, 100% 0, 100% 75%, 100% 100%, 50% 70%, 0 100%);
-  z-index: 1;
-  width: 100px;
-  height: 40px;
-}
-
-
-
-.featured:hover {
-  background-color: #9c1515;
-}
-
-.align-items-center {
-  display: flex;
-  align-items: center;
-}
-
-.justify-content-end {
-  justify-content: flex-end;
-}
-
-@media (max-width: 992px) {
-  .country-button,
-  .university-button,
-  .degree-button {
-    width: 100%;
-    min-width: 160px; /* Remove fixed min-width */
-  }
-}
-
 /* Ensure buttons stack vertically on larger screens and horizontally on smaller screens */
 @media (max-width: 767px) {
+  .custom-accordion {
+    display: block;
+  }
+  
+  .filters-container {
+    display: none;
+  }
+
   .dropdown-button-group {
     display: flex;
     flex-direction: column;
   }
 }
-
-@media (min-width: 768px) {
-  .dropdown-button-group {
-    display: flex;
-    flex-direction: row;
-  }
-}
-
 
 @media (max-width: 576px) {
   .country-button,
@@ -284,15 +293,10 @@
 
   .card-body {
     flex-direction: column;
-    
   }
   .studypal-image {
     width: 100%;
   }
-}
-
-.justify-content-end {
-  justify-content: flex-end;
 }
 
 @media (max-width: 768px) {
@@ -325,44 +329,28 @@
   }
 }
 
-.search-button {
-  background-color: #B71A18;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 0 5px 5px 0; /* Ensure the button aligns with the input */
-  cursor: pointer;
-  height: 100%; /* Make sure the button height matches the input height */
+@media (min-width: 768px) {
+  .dropdown-button-group {
+    display: flex;
+    flex-direction: row;
+  }
 }
 
-.search-button:hover {
-  background-color: #9c1515;
+@media (max-width: 992px) {
+  .country-button,
+  .university-button,
+  .degree-button {
+    width: 100%;
+    min-width: 160px; /* Remove fixed min-width */
+  }
 }
 
-/* Default state for larger screens */
 .custom-accordion {
   display: none;
 }
 
-/* Filters are always visible on larger screens */
-.filters-container {
-  display: block;
-}
-
-/* Media query for smaller screens */
-@media (max-width: 767px) {
-  .custom-accordion {
-    display: block;
-  }
-  
-  .filters-container {
-    display: none;
-  }
-}
-
 /* Style for the Accordion Header */
 .custom-accordion-header {
-  /* background-color: #b71a18; */
   color: white;
   font-weight: bold;
   padding: 10px;
@@ -387,3 +375,36 @@
   color: #b71a18;
 }
 
+.featured-badge {
+  position: absolute;
+  top: 0;
+  right: 10px;
+  background-color: #B71A18; 
+  color: white;
+  padding: 5px 10px;
+  font-size: 12px;
+  text-align: center;
+  font-weight: bold;
+  text-transform: uppercase;
+  clip-path: polygon(0 0, 100% 0, 100% 75%, 100% 100%, 50% 70%, 0 100%);
+  z-index: 1;
+  width: 100px;
+  height: 40px;
+}
+
+.btn-danger {
+  background-color: rgb(221, 158, 158);
+}
+
+.align-items-center {
+  display: flex;
+  align-items: center;
+}
+
+.studypal-image {
+  width: 1180px;
+  height: 150px;
+  display: block;
+  object-fit: cover;
+  margin-bottom: 40px;
+}

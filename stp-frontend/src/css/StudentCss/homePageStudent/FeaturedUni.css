@@ -54,14 +54,15 @@
   overflow: hidden; /* Hide overflow */
 }
 
-.search-bar {
+/* .search-bar-homepage {
   flex-grow: 1;
+  width: 832px;
 }
 
-.search-bar input {
+.search-bar-homepage input {
   width: 100%;
-  min-width: 200px; /* Adjust min-width as needed */
-}
+  min-width: 200px;
+} */
 
 .button-container button {
   width: 150px; /* Set a consistent width for buttons */
@@ -70,32 +71,43 @@
   font-size: 14px; /* Adjust the font size */
 }
 
-.diploma-button, 
-.degree1-button, 
-.master-button, 
-.studyInMalaysia-button {
+.featured-uni-carousel .button-container .diploma-button, 
+.featured-uni-carousel .button-container .degree1-button, 
+.featured-uni-carousel .button-container .master-button, 
+.featured-uni-carousel .button-container .studyInMalaysia-button {
   background-color: #B71A18;
   color: white;
-  width: auto; /* Ensure all buttons have the same width */
-  height: 60px; /* Ensure all buttons have the same height */
-  border: none; /* Remove any default borders */
-  border-radius: 10px; /* Optional: Add some border-radius */
-  font-size: 16px; /* Ensure consistent font size */
-  text-align: center; /* Center the text */
+  width: 179px;
+  height: 40px;
+  border: none;
+  border-radius: 21px; 
+  font-size: 16px; 
+  text-align: center; font-weight: lighter;
+  font-weight: lighter;
+  text-align: center;
 }
-
-.diploma-button:hover, 
-.degree1-button:hover, 
-.master-button:hover, 
-.studyInMalaysia-button:hover {
+.featured-uni-carousel .button-container .diploma-button:hover, 
+.featured-uni-carousel .button-container .degree1-button:hover, 
+.featured-uni-carousel .button-container .master-button:hover, 
+.featured-uni-carousel .button-container .studyInMalaysia-button:hover  {
   background-color: #922010;
   color: white;
+ 
 
+}
+
+.featured-uni-carousel .search-course-button {
+  background-color: #B71A18;
+  color: white;
+  font-size: 16px; 
+  border-color: #B71A18; 
+  font-weight: lighter;
 }
 
 .button-container .mx-2 {
   margin: 0 10px; /* Ensure consistent horizontal spacing between buttons */
 }
+
 
 @media (max-width: 768px) {
   .button-container {
@@ -130,10 +142,10 @@
 
 /* Further adjustments for very small screens */
 @media (max-width: 480px) {
-  .diploma-button, 
-  .degree1-button, 
-  .master-button, 
-  .studyInMalaysia-button {
+  .featured-uni-carousel .button-container .diploma-button, 
+  .featured-uni-carousel .button-container .degree1-button, 
+  .featured-uni-carousel .button-container .master-button, 
+  .featured-uni-carousel .button-container .studyInMalaysia-button  {
     padding: 10px 0; /* Slightly reduce padding */
     font-size: 12px; /* Further reduce font size */
   }

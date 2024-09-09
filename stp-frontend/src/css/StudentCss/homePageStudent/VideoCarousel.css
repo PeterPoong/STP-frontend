@@ -44,9 +44,10 @@
   padding: 10px;
   border-radius: 10px;
   z-index: 10;
+  font-size: 50px;
 }
 
-.carousel-control-prev,
+/* .carousel-control-prev,
 .carousel-control-next {
   height: 100%;
 }
@@ -60,16 +61,20 @@
 .carousel:hover .carousel-control-prev-icon,
 .carousel:hover .carousel-control-next-icon {
   visibility: visible;
-}
+} */
 
 .video-carousel-button {
-  margin-top: 20px; /* Adjusted to fit better */
+  margin-top: 60px; /* Adjusted to fit better */
   border-color: #B71A18;
   color: #B71A18;
+  border: 5px solid;
+  font-size: 15px;
+  width: 165px;
   background-color: transparent;
 }
 
 .video-carousel-button:hover {
-  background-color: #B71A18;
+  background-color: #bf2522;
   color: white;
+  border-color: #bf2522;
 }

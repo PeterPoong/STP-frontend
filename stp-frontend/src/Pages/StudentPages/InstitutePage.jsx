@@ -7,6 +7,8 @@ import headerImage from "../../assets/StudentAssets/institute image/heading.png"
 import InstituteListing from "../../Components/StudentComp/InstitutePage/InstituteListing";
 // import Footer from "../Components/StudentComp/Footer";
 import Footer from "../../Components/StudentComp/Footer";
+import SpcFooter from "../../Components/StudentPortalComp/SpcFooter";
+
 const InstitutePage = () => {
   return (
     <div style={{ backgroundColor: "#F5F4F4" }}>
@@ -17,7 +19,7 @@ const InstitutePage = () => {
       <SearchInstitute />
       <div> </div>
       <div>
-        <Footer />
+        <SpcFooter />
       </div>
     </div>
   );

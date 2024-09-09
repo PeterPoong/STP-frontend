@@ -1,0 +1,22 @@
+.results-list {
+    margin: 20px auto;
+    max-width: 800px;
+    padding: 0;
+    list-style-type: none;
+  }
+  
+  .results-list .search-result {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    background-color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s, box-shadow 0.3s;
+  }
+  
+  .results-list .search-result:hover {
+    background-color: #f5f5f5;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  

@@ -1,8 +1,96 @@
-/* General Styling */
-.masthead {
-  position: relative;
-  width: 100%;
-  height: auto;
+/* Layout Adjustments */
+.card-body {
+  flex-direction: column;
+
+}
+
+.custom-accordion {
+  display: none;
+}
+
+.custom-accordion-body {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border: 1px solid #dee2e6;
+  border-radius: 5px;
+}
+
+.custom-accordion-header {
+  /* background-color: #b71a18; */
+  color: white;
+  font-weight: bold;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.custom-range-input {
+  color: #b71a18;
+}
+
+.custom-range-label {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+/* Default state for larger screens */
+.filters-container {
+  display: block;
+}
+
+/* Filters are always visible on larger screens */
+.filters-container {
+  display: none;
+}
+
+.fee-apply .featured-institute-button {
+  color: #ffffff;
+  background-color: #FF6B00;
+  border: none;
+  border-radius: 5px;
+  font-weight: 400;
+}
+
+.fee-apply .featured-institute-button:hover {
+  color: #ffffff;
+  background-color: #cc5500;
+  border: none;
+  border-radius: 5px;
+  font-weight: 400;
+}
+
+.featured-badge {
+  position: absolute;
+  top: 0;
+  right: 10px;
+  background-color: #B71A18;
+  color: white;
+  padding: 5px 10px;
+  font-size: 12px;
+  text-align: center;
+  font-weight: bold;
+  text-transform: uppercase;
+  clip-path: polygon(0 0, 100% 0, 100% 75%, 100% 100%, 50% 70%, 0 100%);
+  z-index: 1;
+  width: 100px;
+  height: 40px;
+}
+
+.featured-institute-button {
+  background-color: #FF6B00;
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 14px; /* Consistent font size */
+}
+
+.filters-container {
+  display: block;
+}
+
+.flex-grow-1 {
+  flex-grow: 1;
 }
 
 .header-image {
@@ -12,20 +100,95 @@
   object-fit: cover;
 }
 
-.country-dropdown-institute,
-.university-dropdown-institute {
-  background-color: #ffffff;
-  color: #ffffff;
-  border: 1px solid #B71A18;
-  min-width: 200px;
-  margin-top: 35px;
+.icon {
+  width: 40px;
+  height: auto;
 }
 
-.country-dropdown-institute:hover,
-.university-dropdown-institute:hover {
-  background-color: #9c1515;
-  color: #ffffff;
-  border: none;
+.institute-card {
+  display: flex;
+  flex-direction: column;
+  width: 1180px;
+  height: auto;
+  border-color: #B71A18;
+  border-radius: 10px;
+  margin-bottom: 20px; /* Add spacing between cards */
+}
+
+.institute-card .card-body{
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  position: relative;
+}
+
+.institute-card .card-image {
+  flex-shrink: 0;
+  margin-right: 20px;
+}
+
+.institute-card .card-image img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.institute-card .card-text {
+  margin-bottom: 10px;
+}
+
+.institute-card .card-content {
+  flex-grow: 1;
+  margin-right: 20px;
+}
+
+.institute-card .details-div-institute {
+  flex-grow: 1;
+}
+
+.institute-card .fee-apply {
+  width: 35%;
+  text-align: right;
+  margin-left: auto;
+}
+
+.institute-card .institute-card-body {
+  display: flex;
+  align-items: flex-start;
+  padding: 20px;
+}
+
+/* General Styling */
+.location-container {
+  border: 1px solid #dadada;
+  border-radius: 10px;
+  height: auto; /* Adjusted for better responsiveness */
+  padding: 20px;
+}
+
+.location-text,
+.detail-text {
+  padding-left: 10px;
+  font-size: 14px; /* Consistent font size */
+}
+
+.map-link {
+  display: inline-block;
+  padding-left: 5px;
+}
+
+.masthead {
+  position: relative;
+  width: 100%;
+  height: auto;
+}
+
+.mr-2 {
+  margin-right: 0.5rem;
+}
+
+.ml-auto {
+  margin-left: auto;
 }
 
 .pagination .page-item .page-link {
@@ -45,14 +208,6 @@
   color: white;
 }
 
-.mr-2 {
-  margin-right: 0.5rem;
-}
-
-.ml-auto {
-  margin-left: auto;
-}
-
 .studypal-image {
   width: 1180px;
   height: 150px;
@@ -61,138 +216,19 @@
   margin-bottom: 40px;
 }
 
-/* Layout Adjustments */
-.location-container {
-  border: 1px solid #dadada;
-  border-radius: 10px;
-  height: auto; /* Adjusted for better responsiveness */
-  padding: 20px;
-}
 
-/* .institute-card {
-  width: 1045px;
-  height: auto;
-  
-  border-color: #B71A18 ;
-  border-radius: 10px;
-  margin-bottom: 20px; 
-
-} */
-
-.institute-card {
-  width: 1180px;
-  height: auto;
-  border-color: #B71A18;
-  border-radius: 10px;
-  margin-bottom: 20px;
-  
-}
-
-/* .institute-card .card-title {
-  background-color: #efefef;
-}
- */
-
-.institute-card .institute-card-body  {
-  display: flex;
-  align-items: flex-start;
-  padding: 20px;
-}
-
-.icon {
-  width: 40px;
-  height: auto;
-}
-
-.location-text,
-.detail-text {
-  padding-left: 10px;
-  font-size: 14px; /* Consistent font size */
-}
-
-.map-link {
-  display: inline-block;
-  padding-left: 5px;
-}
-
-
-.institute-card .card-image {
-  flex-shrink: 0;
-  margin-right: 20px;
-}
-
-.institute-card .card-image img {
-  max-width: 100%;
-  height: auto;
-  display: block;
-}
-
-.institute-card .card-content {
-  flex-grow: 1;
-  margin-right: 20px;
-}
-
-.institute-card .card-text {
-  margin-bottom: 10px;
-}
-
-.institute-card .details-div {
-  flex-shrink: 0;
-  width: 60%;
-}
-
-.institute-card .fee-apply {
-  width: 35%;
-  text-align: right;
-  margin-left: auto;
-}
-
-.featured-badge {
-  position: absolute;
-  top: 0;
-  right: 10px;
-  background-color: #B71A18; 
-  color: white;
-  padding: 5px 10px;
-  font-size: 12px;
-  text-align: center;
-  font-weight: bold;
-  text-transform: uppercase;
-  clip-path: polygon(0 0, 100% 0, 100% 75%, 100% 100%, 50% 70%, 0 100%);
-  z-index: 1;
-  width: 100px;
-  height: 40px;
-}
-
-
-/* .institute-card .details-div .d-flex {
-  margin-bottom: 5px;
-} */
-/* .knowmore-button {
-  margin-top: 20px;
-} */
-
-.featured-institute-button {
-  background-color: #FF6B00;
-  color: #ffffff;
-  border: none;
-  padding: 10px 20px;
-  cursor: pointer;
-  border-radius: 5px;
-  font-size: 14px; /* Consistent font size */
-}
-
-/* Media Queries */
 @media (max-width: 768px) {
   .header-image {
     height: 200px;
   }
 
-  .institute-card {
+  .institute-card .card-body{
     width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
   }
 
-  .institute-card .details-div {
+  .institute-card .details-div-institute {
     width: 100%;
   }
 
@@ -202,11 +238,7 @@
     margin-top: 15px;
   }
 
-  .institute-card-body  {
-    flex-direction: column;
-  }
-
-  .card-image {
+  .institute-card .card-image {
     margin-bottom: 15px;
   }
 
@@ -220,64 +252,55 @@
     height: auto;
     padding: 10px;
   }
-
-  .institute-card .details-div {
-    width: 100%;
-  }
 }
 
-/* Default state for larger screens */
-.custom-accordion {
-  display: none;
-}
-
-/* Filters are always visible on larger screens */
-.filters-container {
-  display: block;
-}
-
-/* Media query for smaller screens */
 @media (max-width: 767px) {
   .custom-accordion {
     display: block;
   }
-  
+
   .filters-container {
     display: none;
   }
 }
 
-/* Style for the Accordion Header */
-.custom-accordion-header {
-  /* background-color: #b71a18; */
-  color: white;
-  font-weight: bold;
-  padding: 10px;
-  border-radius: 5px;
+.blankslate-institutes {
+  text-align: center;
+  padding: 2rem;
+  margin-left: 250px;
 }
 
-/* Style for the Accordion Body */
-.custom-accordion-body {
-  background-color: #f8f9fa;
-  padding: 15px;
-  border: 1px solid #dee2e6;
-  border-radius: 5px;
+.blankslate-institutes-actions .btn {
+  margin: 0.5rem;
 }
 
-/* Additional Custom Styles */
-.custom-range-label {
-  font-weight: bold;
-  margin-bottom: 10px;
+.blankslate-institutes-body {
+  margin-bottom: 1rem;
 }
 
-.custom-range-input {
-  color: #b71a18;
+.blankslate-institutes-top-img {
+  max-width: 100px;
+  margin-bottom: 1rem;
 }
 
-@media (max-width: 992px) {
-  .country-button,
-  .university-button{
-    width: 100%;
-    min-width: 160px; /* Remove fixed min-width */
-  }
+.country-button,
+.university-button {
+  width: 100%;
+  min-width: 160px; /* Remove fixed min-width */
+}
+
+.country-dropdown-institute,
+.university-dropdown-institute {
+  background-color: #ffffff;
+  color: #ffffff;
+  border: 1px solid #B71A18;
+  min-width: 200px;
+  margin-top: 35px;
+}
+
+.country-dropdown-institute:hover,
+.university-dropdown-institute:hover {
+  background-color: #9c1515;
+  color: #ffffff;
+  border: none;
 }

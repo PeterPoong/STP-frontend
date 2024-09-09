@@ -6,6 +6,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "../../css/StudentCss/homePageStudent/UniversityRow.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const baseURL = import.meta.env.VITE_BASE_URL;
 const apiURL = `${baseURL}api/student/hpFeaturedSchoolList`;
@@ -54,9 +55,6 @@ const UniversityRow = () => {
 
   return (
     <div>
-      <h4 className="university-row-title" style={{ textAlign: "left" }}>
-        Featured Universities
-      </h4>
       <div>
         {error && <div>Error: {error}</div>}
         {loading && <div>Loading...</div>}
@@ -68,6 +66,7 @@ const UniversityRow = () => {
               loop={true}
               pagination={{ clickable: true }}
               navigation
+              style={{ padding: "0 50px" }}
               breakpoints={{
                 640: {
                   slidesPerView: 1,

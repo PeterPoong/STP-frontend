@@ -6,6 +6,7 @@ import CourseListing from "../../Components/StudentComp/CoursePage/CourseListing
 import Footer from "../../Components/StudentComp/Footer";
 import NavButtons from "../../Components/StudentComp/NavButtons";
 import "../../css/StudentCss/course page css/CoursesPage.css";
+import SpcFooter from "../../Components/StudentPortalComp/SpcFooter";
 
 const CoursesPage = () => {
   return (
@@ -19,7 +20,8 @@ const CoursesPage = () => {
         <SearchCourse />
       </div>
       <div>
-        <Footer />
+        {/* <Footer /> */}
+        <SpcFooter />
       </div>
     </div>
   );

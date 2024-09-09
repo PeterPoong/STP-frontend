@@ -12,20 +12,10 @@ import {
   Spinner,
 } from "react-bootstrap";
 import "../../../css/StudentCss/course page css/CoursesPage.css";
-import featuredBadge from "../../../assets/StudentAssets/featuredBadge/featuredBadge.png";
 import StudyPal from "../../../assets/StudentAssets/coursepage image/StudyPal.png";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faGraduationCap,
-  faClock,
-  faCalendarAlt,
-  faCalendarCheck,
-  faLocationDot,
-} from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import SearchCourse from "./SearchCourse";
-
-//const apiURL = `${baseURL}api/student/hpFeaturedCoursesList`;
+import emptyStateImage from "../../../assets/StudentAssets/emptyStateImage/emptystate.png";
 
 const baseURL = import.meta.env.VITE_BASE_URL;
 const apiURL = `${baseURL}api/student/courseList`;
@@ -62,6 +52,7 @@ const CourseListing = ({
   const [locationOptions, setLocationOptions] = useState([]);
   const [selectedLocationFilters, setSelectedLocationFilters] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+
   const itemsPerPage = 10;
 
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -71,12 +62,46 @@ const CourseListing = ({
     indexOfLastItem
   );
 
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
-
   const location = useLocation();
-  const { selectedCategory } = location.state || {}; // Retrieve the selected category from the state
+  const { searchQuery = "" } = location.state || {};
+  const { selectedCategory } = location.state || {};
+
+  useEffect(() => {
+    if (!selectedCategory) return;
+
+    const fetchCourses = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const response = await fetch(`${baseURL}api/student/courseList`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ category: selectedCategory }), // Sending selectedCategory in the request body
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          throw new Error("Response is not JSON");
+        }
+
+        const result = await response.json();
+        setCourses(result.data || []);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCourses();
+  }, [selectedCategory]);
 
   /* ----------------------University Dropdown--------------------------- */
 
@@ -104,7 +129,7 @@ const CourseListing = ({
       }
 
       const result = await response.json();
-      const courses = result.data.data;
+      const courses = result.data;
       setPrograms(courses);
     } catch (error) {
       console.error("Error fetching courses:", error);
@@ -157,7 +182,7 @@ const CourseListing = ({
       }
 
       const result = await response.json();
-      const courses = result.data.data;
+      const courses = result.data;
       setPrograms(courses);
     } catch (error) {
       console.error("Error fetching courses:", error);
@@ -249,25 +274,6 @@ const CourseListing = ({
     fetchStudyModes();
   }, []);
 
-  // useEffect(() => {
-  //   if (selectedCountry) {
-  //     // Fetch courses based on the selected country
-  //     fetchCoursesByCountry(selectedCountry.id);
-  //   }
-  // }, [selectedCountry]);
-
-  // const fetchCoursesByCountry = async (countryID) => {
-  //   try {
-  //     const response = await fetch(
-  //       `http://192.168.0.69:8000/api/student/courseList?countryID=${countryID}`
-  //     );
-  //     const courses = await response.json();
-  //     setCourses(courses);
-  //   } catch (error) {
-  //     console.error("Error fetching courses:", error);
-  //   }
-  // };
-
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -281,17 +287,22 @@ const CourseListing = ({
         setCategoriesData(categoriesData.data);
       } catch (error) {
         console.error("Error fetching categories:", error);
+        setError(error);
       }
     };
 
     fetchCategories();
-  }, []);
+  }, [categoryAPIURL, setCategoriesData, setError]);
 
   useEffect(() => {
     if (selectedCategory) {
       setCategoryFilters([selectedCategory]);
     }
   }, [selectedCategory]);
+
+  useEffect(() => {
+    filterPrograms();
+  }, [locationFilters, categoryFilters, programs, searchResults]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -335,7 +346,7 @@ const CourseListing = ({
           }
 
           const result = await response.json();
-          setPrograms(result.data.data);
+          setPrograms(result.data);
           filterPrograms();
 
           break; // Exit while loop if successful
@@ -357,6 +368,7 @@ const CourseListing = ({
     modeFilters,
     tuitionFee,
     searchResults,
+    searchQuery,
   ]);
 
   useEffect(() => {
@@ -428,22 +440,22 @@ const CourseListing = ({
   };
 
   const filterPrograms = () => {
-    // Extract the IDs from the searchResults array
-    const searchResultIDs = searchResults
-      ? searchResults.map((result) => result.id)
-      : [];
+    console.log("Programs before filtering:", programs);
+    console.log("Search Results:", searchResults);
+
+    const searchResultIDs =
+      searchResults && Array.isArray(searchResults)
+        ? searchResults.map((result) => result.id)
+        : [];
 
     const filtered = programs.filter((program) => {
-      // Convert program.id to a string if necessary for comparison
-      const programIdString = String(program.id);
+      (searchQuery
+        ? program.name.toLowerCase().includes(searchQuery.toLowerCase())
+        : true) &&
+        (selectedCategory ? program.category === selectedCategory : true);
 
-      // Check if the program ID matches any ID in the search results
       const matchesSearchResults =
         searchResultIDs.length === 0 || searchResultIDs.includes(program.id);
-
-      // Debugging: Log the match status
-      console.log("Program ID:", program.id);
-      console.log("Matches Search Results:", matchesSearchResults);
 
       const matchesCountry =
         selectedCountry && selectedCountry.country_id
@@ -451,9 +463,10 @@ const CourseListing = ({
           : true;
 
       const matchesLocation =
-        locationFilters.length === 0 ||
         selectedLocationFilters.length === 0 ||
-        selectedLocationFilters.includes(program.location);
+        selectedLocationFilters.some((filter) =>
+          program.location.includes(filter)
+        );
 
       const matchesCategory =
         categoryFilters.length === 0 ||
@@ -474,7 +487,13 @@ const CourseListing = ({
         !selectedQualification ||
         program.qualification === selectedQualification;
 
-      // Return true only if the program matches all the criteria
+      const trimmedSearchQuery = searchQuery?.trim().toLowerCase() || "";
+
+      const matchesSearchQuery = trimmedSearchQuery
+        ? program.name.toLowerCase().includes(trimmedSearchQuery) ||
+          program.school_name.toLowerCase().includes(trimmedSearchQuery)
+        : true;
+
       return (
         matchesCountry &&
         matchesLocation &&
@@ -483,32 +502,36 @@ const CourseListing = ({
         matchesMode &&
         matchesInstitute &&
         matchesQualification &&
+        matchesSearchQuery &&
         matchesSearchResults
       );
     });
 
-    // Update the state with the filtered programs
+    console.log("Filtered Programs:", filtered);
     setFilteredPrograms(filtered);
   };
 
-  // Ensure that filterPrograms is called whenever the relevant dependencies change
   useEffect(() => {
-    filterPrograms(
-      selectedLocationFilters,
+    console.log("Filtering programs with:", {
+      locationFilters,
       categoryFilters,
       intakeFilters,
       modeFilters,
       tuitionFee,
-      programs
-    );
+      programs,
+      searchResults,
+      searchQuery,
+    });
+    filterPrograms();
   }, [
-    selectedLocationFilters,
     categoryFilters,
+    locationFilters,
     intakeFilters,
     modeFilters,
     tuitionFee,
     programs,
-    searchResults, // Add searchResults as a dependency to trigger filtering when it changes
+    searchResults,
+    searchQuery,
   ]);
 
   const handleCountryChange = async (country) => {
@@ -533,6 +556,20 @@ const CourseListing = ({
     }
   };
 
+  useEffect(() => {
+    if (selectedCategory) {
+      setCategoryFilters([selectedCategory]);
+      filterPrograms();
+    }
+  }, [
+    selectedCategory,
+    locationFilters,
+    intakeFilters,
+    modeFilters,
+    tuitionFee,
+    programs,
+  ]);
+
   const handleCategoryChange = (category) => {
     const categoryName = category.category_name;
     let updatedCategory;
@@ -544,7 +581,7 @@ const CourseListing = ({
     }
     setCategoryFilters(updatedCategory);
     filterPrograms(
-      updatedLocations.length > 0 ? updatedLocations : [],
+      locationFilters.length > 0 ? locationFilters : [],
       updatedCategory.length > 0 ? updatedCategory : [],
       intakeFilters,
       modeFilters,
@@ -599,7 +636,7 @@ const CourseListing = ({
         <Row>
           <Col md={6} lg={6}>
             <div className="card-image mb-3 mb-md-0">
-              <h5 className="card-title" style={{ paddingLeft: "20px" }}>
+              <h5 className="card-title">
                 <Link
                   style={{ color: "black" }}
                   to={{
@@ -620,7 +657,10 @@ const CourseListing = ({
                 </div>
                 <div style={{ paddingLeft: "30px" }}>
                   <h5 className="card-text">{program.school_name}</h5>
-                  <FontAwesomeIcon icon={faLocationDot} />
+                  <i
+                    className="bi bi-geo-alt"
+                    style={{ marginRight: "10px", color: "#AAAAAA" }}
+                  ></i>
                   <span style={{ paddingLeft: "10px" }}>
                     {program.location}
                   </span>
@@ -641,27 +681,39 @@ const CourseListing = ({
                 <div className="d-flex align-items-center flex-wrap">
                   <Col>
                     <div>
-                      <Row style={{ paddingTop: "20px" }}>
+                      <Row style={{ paddingTop: "10px" }}>
                         <div>
-                          <FontAwesomeIcon icon={faGraduationCap} />
+                          <i
+                            className="bi bi-mortarboard"
+                            style={{ marginRight: "10px" }}
+                          ></i>
                           <span style={{ paddingLeft: "20px" }}>
                             {program.qualification}
                           </span>
                         </div>
-                        <div>
-                          <FontAwesomeIcon icon={faCalendarCheck} />
+                        <div style={{ marginTop: "10px" }}>
+                          <i
+                            className="bi bi-calendar-check"
+                            style={{ marginRight: "10px" }}
+                          ></i>
                           <span style={{ paddingLeft: "20px" }}>
                             {program.mode}
                           </span>
                         </div>
-                        <div>
-                          <FontAwesomeIcon icon={faClock} />
+                        <div style={{ marginTop: "10px" }}>
+                          <i
+                            className="bi bi-clock"
+                            style={{ marginRight: "10px" }}
+                          ></i>
                           <span style={{ paddingLeft: "20px" }}>
                             {program.period}
                           </span>
                         </div>
-                        <div>
-                          <FontAwesomeIcon icon={faCalendarAlt} />
+                        <div style={{ marginTop: "10px" }}>
+                          <i
+                            className="bi bi-calendar2-week"
+                            style={{ marginRight: "10px" }}
+                          ></i>
                           <span style={{ paddingLeft: "20px" }}>
                             {Array.isArray(program.intake) &&
                             program.intake.length > 0
@@ -679,13 +731,14 @@ const CourseListing = ({
                   className="fee-info text-right"
                   style={{ marginTop: "25px" }}
                 >
-                  <p>Estimate fee</p>
-                  <span>
-                    <strong>RM </strong>
-                    {program.cost}
-                  </span>
+                  <p style={{ fontSize: "14px" }}>
+                    estimate fee<br></br>
+                    <p style={{ fontSize: "16px" }}>
+                      <strong>RM </strong> {program.cost}
+                    </p>
+                  </p>
                 </div>
-                <div className="apply-button mt-3">
+                <div className="apply-button ">
                   <button
                     className="featured"
                     onClick={() => handleApplyNow(program)}
@@ -918,11 +971,63 @@ const CourseListing = ({
               </Spinner>
             </div>
           ) : error ? (
-            <div>Error: {error}</div>
-          ) : programs.length > 0 ? (
-            mappedPrograms
+            <div className="text-center text-danger">
+              <p>Error: {error}</p>
+            </div>
           ) : (
-            <div>No programs available</div>
+            <>
+              {filteredPrograms && filteredPrograms.length > 0 ? (
+                <>
+                  {console.log(
+                    "Filtered programs available:",
+                    filteredPrograms
+                  )}
+                  {mappedPrograms}
+                </>
+              ) : (
+                <>
+                  {console.log(
+                    "No filtered programs available, showing empty state"
+                  )}
+                  <div className="blankslate-courses text-center">
+                    <img
+                      className="blankslate-courses-top-img"
+                      src={emptyStateImage}
+                      alt="Empty State"
+                    />
+                    <div className="blankslate-courses-body">
+                      <h4>No programs found</h4>
+                      <p>
+                        There are no programs that match your selected filters.
+                        Please try adjusting your filters and search criteria.
+                      </p>
+                    </div>
+                    <div className="blankslate-actions mt-3">
+                      <button
+                        className="btn btn-default mx-2"
+                        type="button"
+                        onClick={() => {
+                          // Reset filters logic here
+                          console.log("Filters reset");
+                        }}
+                      >
+                        Reset Filters
+                      </button>
+                      <button
+                        className="btn btn-primary mx-2"
+                        type="button"
+                        onClick={() => {
+                          // Trigger a new search or provide feedback
+                          console.log("Search again");
+                        }}
+                      >
+                        Search Again
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
+            </>
           )}
         </Col>
 

@@ -158,7 +158,6 @@ button:focus-visible {
 .nav-link-custom.active {
   color: #B71A18;
   text-decoration: none;
-  transform: translateY(-5px);
 }
 
 .navbar-nav .nav-dropdown-custom .nav-link {
@@ -172,7 +171,6 @@ button:focus-visible {
   color: #B71A18;
   background-color: transparent;
   text-decoration: none;
-  transform: translateY(-5px);
 }
 
 .navbar-nav .nav-item {

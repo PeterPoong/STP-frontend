@@ -6,6 +6,7 @@ import {
   Form,
   Pagination,
   Accordion,
+  Spinner,
 } from "react-bootstrap";
 import "../../../css/StudentCss/institutepage css/Institute.css";
 import SchoolIcon from "../../../assets/StudentAssets/icons/SchoolIcon.png";
@@ -25,6 +26,14 @@ import {
   faBookOpen,
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
+import emptyStateImage from "../../../assets/StudentAssets/emptyStateImage/emptystate.png";
+
+import {
+  GeoAltFill,
+  Building,
+  MortarboardFill,
+  BookFill,
+} from "react-bootstrap-icons";
 
 const baseURL = import.meta.env.VITE_BASE_URL;
 const apiURL = `${baseURL}api/student/schoolList`;
@@ -62,6 +71,8 @@ const InstituteListing = ({ searchResults, countryID, selectedInstitute }) => {
   const [itemsPerPage] = useState(10); // Adjust the number of items per page as needed
   const [totalPages, setTotalPages] = useState(1);
   const [selectedLocationFilters, setSelectedLocationFilters] = useState([]);
+
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Pagination
   useEffect(() => {
@@ -124,7 +135,7 @@ const InstituteListing = ({ searchResults, countryID, selectedInstitute }) => {
         );
         return institute.category === selectedInstitute;
       });
-      console.log("Filtered Institutrd:", filtered);
+      console.log("Filtered Institutes", filtered);
       setFilteredPrograms(filtered);
     } else {
       console.log("No institutes available to filter.");
@@ -239,6 +250,10 @@ const InstituteListing = ({ searchResults, countryID, selectedInstitute }) => {
   }, []);
 
   useEffect(() => {
+    filterPrograms();
+  }, [locationFilters, categoryFilters, institutes, searchResults]);
+
+  useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       setError(null);
@@ -302,6 +317,7 @@ const InstituteListing = ({ searchResults, countryID, selectedInstitute }) => {
     modeFilters,
     tuitionFee,
     searchResults,
+    searchQuery,
   ]);
 
   useEffect(() => {
@@ -382,21 +398,17 @@ const InstituteListing = ({ searchResults, countryID, selectedInstitute }) => {
   };
 
   const filterPrograms = () => {
-    const searchResultIDs = searchResults
-      ? searchResults.map((result) => result.id)
-      : [];
+    console.log("Institutes before filtering:", institutes);
+    console.log("Search Results:", searchResults);
+
+    const searchResultIDs =
+      searchResults && Array.isArray(searchResults)
+        ? searchResults.map((result) => result.id)
+        : [];
 
     const filtered = institutes.filter((institute) => {
-      // Convert program.id to a string if necessary for comparison
-      const programIdString = String(institute.id);
-
-      // Check if the program ID matches any ID in the search results
       const matchesSearchResults =
         searchResultIDs.length === 0 || searchResultIDs.includes(institute.id);
-
-      // Debugging: Log the match status
-      console.log("Institute ID:", institute.id);
-      console.log("Matches Search Results:", matchesSearchResults);
 
       const matchesCountry =
         selectedCountry && selectedCountry.country_id
@@ -425,6 +437,17 @@ const InstituteListing = ({ searchResults, countryID, selectedInstitute }) => {
         !selectedInstitute ||
         institute.institute_category === selectedInstitute;
 
+      const trimmedSearchQuery = searchQuery?.trim().toLowerCase() || "";
+
+      const matchesInstituteName =
+        !trimmedSearchQuery ||
+        institute.name.toLowerCase().includes(trimmedSearchQuery);
+
+      const matchesCountryName =
+        !trimmedSearchQuery ||
+        (institute.country &&
+          institute.country.toLowerCase().includes(trimmedSearchQuery));
+
       return (
         matchesCountry &&
         matchesLocation &&
@@ -432,22 +455,30 @@ const InstituteListing = ({ searchResults, countryID, selectedInstitute }) => {
         matchesIntake &&
         matchesMode &&
         matchesInstitute &&
-        matchesSearchResults
+        matchesSearchResults &&
+        (matchesInstituteName || matchesCountryName)
       );
     });
-
+    console.log("Filtered Institutes:", filtered);
     setFilteredPrograms(filtered);
   };
 
+  // useEffect(() => {
+  //   filterPrograms();
+  // }, [institutes, searchQuery]);
+
   useEffect(() => {
-    filterPrograms(
+    console.log("Filtering programs with:", {
       selectedLocationFilters,
       categoryFilters,
       intakeFilters,
       modeFilters,
       tuitionFee,
-      institutes
-    );
+      institutes,
+      searchResults,
+      searchQuery, // Add this if searchQuery affects filtering
+    });
+    filterPrograms();
   }, [
     selectedLocationFilters,
     categoryFilters,
@@ -455,7 +486,8 @@ const InstituteListing = ({ searchResults, countryID, selectedInstitute }) => {
     modeFilters,
     tuitionFee,
     institutes,
-    searchResults, // Add searchResults as a dependency to trigger filtering when it changes
+    searchResults,
+    searchQuery, // Ensure this is included for filtering
   ]);
 
   const handleCountryChange = async (country) => {
@@ -524,14 +556,14 @@ const InstituteListing = ({ searchResults, countryID, selectedInstitute }) => {
     <div
       key={index}
       className="card mb-4 institute-card"
-      style={{ height: "auto" }}
+      style={{ position: "relative", height: "auto" }}
     >
       {institute.featured && <div className="featured-badge">Featured</div>}
       <div className="card-body d-flex flex-column flex-md-row align-items-start">
         <Row>
           <Col md={6} lg={6}>
             <div className="card-image mb-3 mb-md-0">
-              <div className="d-flex align-items-center">
+              <div className="d-flex" style={{ width: "100%" }}>
                 <div style={{ paddingLeft: "20px" }}>
                   <img
                     src={`${baseURL}storage/${institute.logo}`}
@@ -539,29 +571,28 @@ const InstituteListing = ({ searchResults, countryID, selectedInstitute }) => {
                     width="100"
                   />
                 </div>
-                <div style={{ paddingLeft: "10px" }}>
-                  <h5 className="card-title" style={{ paddingLeft: "10px" }}>
-                    {institute.name}
-                  </h5>
-                  {/* <h5 className="card-text">{institute.category}</h5> */}
-                  <div className="d-flex align-items-center">
-                    <img src={LocationIcon} alt="Location" width="40" />{" "}
-                    {/* Adjusted width */}
-                    <span style={{ paddingLeft: "10px" }}>
-                      {institute.city}, {institute.state}, {institute.country}
-                    </span>
-                  </div>
+                <div style={{ paddingLeft: "30px" }}>
+                  <h5 className="card-text">{institute.name || "N/A"}</h5>
+                  <i
+                    className="bi bi-geo-alt"
+                    style={{ marginRight: "10px", color: "#AAAAAA" }}
+                  ></i>
+                  <span style={{ paddingLeft: "10px" }}>
+                    {institute.city || "N/A"}, {institute.state || "N/A"},{" "}
+                    {institute.country || "N/A"}
+                  </span>
                   <div>
                     <a
                       href="#"
                       className="map-link"
-                      style={{ paddingLeft: "5px" }}
+                      style={{ paddingLeft: "30px" }}
                     >
-                      click and view on map
+                      Click and view on map
                     </a>
                   </div>
+
                   <p className="card-text mt-2" style={{ paddingLeft: "10px" }}>
-                    {institute.description}
+                    {institute.description || "N/A"}
                   </p>
                 </div>
               </div>
@@ -569,31 +600,54 @@ const InstituteListing = ({ searchResults, countryID, selectedInstitute }) => {
           </Col>
           <Col md={6} lg={6}>
             <div className="d-flex flex-grow-1 justify-content-between">
-              <div className="details-div" style={{ width: "60%" }}>
+              <div className="details-div-institute" style={{ width: "70%" }}>
                 <div className="d-flex align-items-center flex-wrap">
                   <Col>
                     <div>
-                      <Row style={{}}>
+                      <Row style={{ paddingTop: "10px" }}>
                         <div>
-                          <img src={SchoolIcon} alt="School" width="40" />
-                          <span style={{ paddingLeft: "20px" }}>
-                            {institute.category}
+                          <i
+                            className="bi bi-building"
+                            style={{ marginRight: "10px" }}
+                          ></i>
+                          <span
+                            style={{
+                              paddingLeft: "20px",
+                              minWidth: "100px",
+                              display: "inline-block",
+                            }}
+                          >
+                            {institute.category || "N/A"}
                           </span>
                         </div>
-                        <div>
-                          <img
-                            src={GraduationCapIcon}
-                            alt="Graduation Cap"
-                            width="40"
-                          />
-                          <span style={{ paddingLeft: "20px" }}>
-                            {institute.id}
+                        <div style={{ marginTop: "10px" }}>
+                          <i
+                            className="bi bi-mortarboard"
+                            style={{ marginRight: "10px" }}
+                          ></i>
+                          <span
+                            style={{
+                              paddingLeft: "20px",
+                              minWidth: "100px",
+                              display: "inline-block",
+                            }}
+                          >
+                            {institute.id || "N/A"}
                           </span>
                         </div>
-                        <div>
-                          <img src={BookOpenIcon} alt="Book Open" width="40" />
-                          <span style={{ paddingLeft: "20px" }}>
-                            {institute.intake
+                        <div style={{ marginTop: "10px" }}>
+                          <i
+                            className="bi bi-calendar2-week"
+                            style={{ marginRight: "10px" }}
+                          ></i>
+                          <span
+                            style={{
+                              paddingLeft: "20px",
+                              minWidth: "100px",
+                              display: "inline-block",
+                            }}
+                          >
+                            {institute.intake && institute.intake.length > 0
                               ? institute.intake.join(", ")
                               : "N/A"}
                           </span>
@@ -864,15 +918,57 @@ const InstituteListing = ({ searchResults, countryID, selectedInstitute }) => {
             <img src={StudyPal} alt="Study Pal" className="studypal-image" />
           </div>
           {loading ? (
-            <div>Loading...</div>
+            <div className="text-center">
+              <Spinner animation="border" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </Spinner>
+            </div>
           ) : error ? (
             <div>Error: {error}</div>
-          ) : institutes.length > 0 ? (
-            mappedInstitutes
           ) : (
-            <div>No institute available</div>
+            <>
+              {filteredPrograms && filteredPrograms.length > 0 ? (
+                <>
+                  {console.log(
+                    "Filtered institutes available:",
+                    filteredPrograms
+                  )}
+                  {mappedInstitutes}
+                </>
+              ) : (
+                <>
+                  {console.log(
+                    "No filtered institutes available, showing empty state"
+                  )}
+                  <div className="blankslate-institutes">
+                    <img
+                      className="blankslate-institutes-top-img"
+                      src={emptyStateImage}
+                      alt="Empty State"
+                    />
+                    <div className="blankslate-institutes-body">
+                      <h4>No institutes found</h4>
+                      <p>
+                        There are no institutes that match your selected
+                        filters. Please try adjusting your filters and search
+                        criteria.
+                      </p>
+                    </div>
+                    {/* <div className="blankslate-actions">
+                      <button className="btn btn-default" type="button">
+                        Reset Filters
+                      </button>
+                      <button className="btn btn-primary" type="button">
+                        Search Again
+                      </button>
+                    </div> */}
+                  </div>
+                </>
+              )}
+            </>
           )}
         </Col>
+
         <Col xs={12} className="d-flex justify-content-end">
           <Pagination className="pagination">
             <Pagination.Prev
