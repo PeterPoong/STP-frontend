@@ -61,21 +61,15 @@ const WidgetFileUploadAcademicTranscript = ({ isOpen, onClose, onSave, item, isV
             });
 
             if (!result.success) {
-                if (result.error) {
-                    const errorMessages = Object.entries(result.error).map(([key, value]) => `${key}: ${value.join(', ')}`);
-                    setAlert({ type: 'danger', message: errorMessages.join('. ') });
-                } else {
-                    setAlert({ type: 'danger', message: result.message || "Failed to save file. Please try again." });
-                }
+                setAlert({ type: 'error', message: result.message || "Failed to save file. Please try again." });
             } else {
                 handleClose();
             }
         } catch (error) {
             console.error('Error saving file:', error);
-            setAlert({ type: 'danger', message: "An unexpected error occurred. Please try again later." });
+            setAlert({ type: 'error', message: "An unexpected error occurred. Please try again later." });
         }
     };
-
     const handleFileChange = (event) => {
         const uploadedFile = event.target.files[0];
         if (uploadedFile) {

@@ -1,8 +1,54 @@
-import React from 'react';
+import React, { useState } from 'react';
 import "../../css/StudentPortalStyles/StudentPortalWidget.css";
 
-const WidgetPending = ({ isOpen, onClose, date , feedbacks }) => {
+const WidgetPending = ({ isOpen, onClose, date, feedbacks, formID }) => {
+  const [isSending, setIsSending] = useState(false);
+  const [reminderSent, setReminderSent] = useState(false);
+
   if (!isOpen) return null;
+
+  const sendReminder = async () => {
+    console.log('Sending reminder for formID:', formID);
+    setIsSending(true);
+    try {
+      const token = sessionStorage.getItem("token") || localStorage.getItem("token");
+      if (!token) {
+        console.error('No authentication token found');
+        throw new Error('No authentication token found');
+      }
+
+      console.log('Sending POST request to sendReminder API...');
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/sendReminder`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ formID: formID }),
+      });
+
+      console.log('Response status:', response.status);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log('API response:', result);
+
+      if (result.success) {
+        console.log('Reminder sent successfully');
+        setReminderSent(true);
+      } else {
+        console.error('Failed to send reminder:', result.message);
+      }
+    } catch (error) {
+      console.error('Error sending reminder:', error);
+    } finally {
+      setIsSending(false);
+      console.log('Reminder sending process completed');
+    }
+  };
+
   return (
     <div className="popup-overlay">
       <div className="popup-content-pending">
@@ -18,7 +64,13 @@ const WidgetPending = ({ isOpen, onClose, date , feedbacks }) => {
             {feedbacks.map((feedback, index) => (
               <p key={index}>{feedback}</p>
             ))}
-            <button className="buttonpending">Send a reminder</button>
+            <button 
+              className="buttonpending" 
+              onClick={sendReminder}
+              disabled={isSending || reminderSent}
+            >
+              {isSending ? 'Sending...' : reminderSent ? 'Reminder Sent' : 'Send a reminder'}
+            </button>
           </div>
           <span className="feedback-label-pending">Feedbacks</span>
         </div>

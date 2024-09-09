@@ -1,7 +1,7 @@
 .app-container-applycourse {
   display: flex;
   flex-direction: column;
-  min-height: 200vh;
+  
   background-color: #F5F5F5;
 }
 
@@ -385,7 +385,7 @@ select__menu-list::-webkit-scrollbar-thumb:hover {
 }
 
 .overall-grade {
-  background-color: #dc3545;
+  background-color: #B71A18;
   color: white;
   border-bottom-left-radius: 2rem;
 
@@ -898,12 +898,13 @@ ul {
   }
 
   .grade-summary {
-    flex-direction: column;
+    flex-direction: row;
+    
   }
 
   .overall-grade {
     width: 100%;
-    border-bottom-left-radius: 0;
+    border-bottom-left-radius: auto;
     padding: 1rem;
   }
 
@@ -1182,8 +1183,9 @@ ul {
     margin: 0;
   }
 
+  
+
   .basic-info,
-  .academic-results,
   .co-curriculum,
   .achievements {
     margin: 1rem 0;
@@ -1208,6 +1210,8 @@ ul {
     margin-top: 0.5rem;
   }
 
+  
+ 
   /*submit success*/
   .widget-applying-course-success {
     margin: 0 1rem;
@@ -1443,8 +1447,7 @@ ul {
     margin: 0;
   }
 
-  .basic-info,
-  .academic-results {
+  .basic-info {
     margin: 0.5rem 0;
     padding: 0.75rem;
     border-radius: 0;
@@ -1475,12 +1478,12 @@ ul {
 
 
   .grade-summary {
-    flex-direction: column;
+    flex-direction: row;
   }
 
   .overall-grade {
     width: 100%;
-    border-bottom-left-radius: 0;
+    border-bottom-left-radius: auto;
     padding: 0.5rem;
   }
 

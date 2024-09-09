@@ -90,7 +90,7 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
     if (examType === 'SPM') {
       fetchAvailableSubjects();
     }
-  }, [examType]);
+  }, [examType, subjects]);
 
   const fetchAvailableSubjects = async () => {
     try {
@@ -108,7 +108,11 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
       });
       const data = await response.json();
       if (data.success) {
-        setAvailableSubjects(data.data);
+        // Filter out subjects that are already in the subjects list
+        const filteredSubjects = data.data.filter(subject => 
+          !subjects.some(s => s.id === subject.id)
+        );
+        setAvailableSubjects(filteredSubjects);
       }
     } catch (error) {
       console.error('Error fetching available subjects:', error);
@@ -118,21 +122,16 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
   const handleAddSubject = (selectedSubject) => {
     const newSubject = availableSubjects.find(s => s.id === parseInt(selectedSubject));
     if (newSubject) {
-      onSubjectsChange([...subjects, { ...newSubject, grade: '' }]);
-      fetchAvailableSubjects(); // Refresh available subjects
+      const updatedSubjects = [...subjects, { ...newSubject, grade: '' }];
+      onSubjectsChange(updatedSubjects);
+      // Remove the added subject from availableSubjects
+      setAvailableSubjects(availableSubjects.filter(s => s.id !== newSubject.id));
     }
   };
 
   const handleGradeChange = (index, grade) => {
     const updatedSubjects = subjects.map((subject, i) =>
       i === index ? { ...subject, grade: grade.toUpperCase() } : subject
-    );
-    onSubjectsChange(updatedSubjects);
-  };
-
-  const handleNameChange = (index, name) => {
-    const updatedSubjects = subjects.map((subject, i) =>
-      i === index ? { ...subject, name } : subject
     );
     onSubjectsChange(updatedSubjects);
   };
@@ -146,11 +145,11 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
   };
 
   const handleDelete = (index) => {
+    const deletedSubject = subjects[index];
     const updatedSubjects = subjects.filter((_, i) => i !== index);
     onSubjectsChange(updatedSubjects);
-    if (examType === 'SPM') {
-      fetchAvailableSubjects(); // Refresh available subjects after deletion
-    }
+    // Add the deleted subject back to availableSubjects
+    setAvailableSubjects([...availableSubjects, deletedSubject]);
   };
 
   const getGradeColor = (grade) => {
@@ -162,43 +161,19 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
 
   return (
     <div className="space-y-2 mb-4">
-      {examType === 'SPM' && (
-        <div className="mb-4">
-          <label className="fw-bold small formlabel">Add Subject:</label>
-          <select
-            className="form-select"
-            onChange={(e) => handleAddSubject(e.target.value)}
-            value=""
-          >
-            <option value="">Select a subject</option>
-            {availableSubjects.map(subject => (
-              <option key={subject.id} value={subject.id}>{subject.name}</option>
-            ))}
-          </select>
-        </div>
-      )}
+      
       {subjects.map((subject, index) => (
         <div key={index} className="d-flex align-items-center justify-content-between bg-white p-2 mb-2 rounded border">
           <div className="d-flex align-items-center flex-grow-1">
             <GripVertical className="me-3" size={20} />
-            {editingIndex === index ? (
-              <input
-                type="text"
-                value={subject.name}
-                onChange={(e) => handleNameChange(index, e.target.value)}
-                className="editingplaceholder"
-                placeholder="Please enter your subject name"
-              />
-            ) : (
-              <span className="fw-medium h6 mb-0 me-3">{subject.name}</span>
-            )}
+            <span className="fw-medium h6 mb-0 me-3">{subject.name}</span>
             {editingIndex === index ? (
               <input
                 type="text"
                 value={subject.grade}
                 onChange={(e) => handleGradeChange(index, e.target.value)}
                 className="editingplaceholder"
-                placeholder="Please enter your grade"
+                placeholder="Enter grade"
               />
             ) : (
               <span className={`rounded-pill px-4 text-white ${getGradeColor(subject.grade)}`}>
@@ -216,10 +191,28 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
           </div>
         </div>
       ))}
+      {examType === 'SPM' && (
+        <div className="my-4">
+          <label className="fw-bold small formlabel">Add Subject:</label>
+          <select
+            className="form-select my-2"
+            onChange={(e) => handleAddSubject(e.target.value)}
+            value=""
+          >
+            <option value="">Select a subject</option>
+            {availableSubjects.map(subject => (
+              <option key={subject.id} value={subject.id}>{subject.name}</option>
+            ))}
+          </select>
+        </div>
+      )}
       <div className="d-flex justify-content-end mt-4">
         <button
           className="button-table px-5 py-1 text-center"
-          onClick={onSaveAll}
+          onClick={() => {
+            onSaveAll();
+            fetchAvailableSubjects(); // Refresh available subjects after saving
+          }}
         >
           SAVE
         </button>
@@ -227,6 +220,9 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
     </div>
   );
 };
+
+
+
 const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveAll }) => {
   const [newSubject, setNewSubject] = useState('');
   const [editingIndex, setEditingIndex] = useState(null);
@@ -467,24 +463,31 @@ const AcademicTranscript = () => {
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       const category = categories.find(cat => cat.transcript_category === selectedExam);
-
+  
       if (!category) {
         console.error('Selected exam category not found');
-        return;
+        return { success: false, message: 'Selected exam category not found' };
       }
-
+  
       const formData = new FormData();
-
+  
       formData.append('id', updatedFile.id);
       formData.append('studentMedia_type', category.id.toString());
       formData.append('studentMedia_name', updatedFile.title);
+  
+       // Handle file upload logic
+    if (updatedFile.file instanceof File) {
+      // If a new file is selected, append it to formData
+      formData.append('studentMedia_location', updatedFile.file);
+      console.log('New file being uploaded:', updatedFile.file.name);
+    } else if (updatedFile.file && typeof updatedFile.file === 'string') {
+      // If editing and the file hasn't changed, don't send the studentMedia_location field
+      console.log('Existing file, not changing:', updatedFile.file);
+    } else {
+      console.log('No file provided');
+    }
 
-      if (updatedFile.isNewFile) {
-        formData.append('studentMedia_location', updatedFile.file);
-      } else if (updatedFile.file) {
-        formData.append('studentMedia_location', updatedFile.file);
-      }
-
+  
       // Console log to see what's being sent
       console.log('Editing file with data:', {
         id: updatedFile.id,
@@ -492,12 +495,12 @@ const AcademicTranscript = () => {
         studentMedia_name: updatedFile.title,
         studentMedia_location: updatedFile.isNewFile ? 'New File' : (updatedFile.file || 'Unchanged')
       });
-
+  
       // Log the FormData contents
       for (let [key, value] of formData.entries()) {
         console.log(`${key}:`, value);
       }
-
+  
       const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/editTranscriptFile`, {
         method: 'POST',
         headers: {
@@ -505,22 +508,39 @@ const AcademicTranscript = () => {
         },
         body: formData,
       });
-
+  
       const data = await response.json();
-
+  
+      console.log('Full API response:', data); // Log the full API response
+  
       if (response.ok && data.success) {
         console.log('File edited successfully:', data);
         fetchMediaByCategory(category.id);
+        return { success: true, message: 'File updated successfully' };
       } else {
-        console.error('Error editing file:', data.message);
-        alert(`Error editing file: ${data.message}`);
+        console.error('Error editing file:', data);
+        console.error('Validation errors:', data.errors); // Log validation errors if present
+        
+        // If there are validation errors, log them in detail
+        if (data.errors) {
+          Object.entries(data.errors).forEach(([field, errors]) => {
+            console.error(`Validation error for ${field}:`, errors);
+          });
+        }
+        
+        return { 
+          success: false, 
+          message: data.message || 'Failed to edit file',
+          errors: data.errors // Include validation errors in the return object
+        };
       }
     } catch (error) {
       console.error('Error editing file:', error);
-      alert('An unexpected error occurred while editing the file.');
+      return { success: false, message: 'An unexpected error occurred' };
+    } finally {
+      setIsFileUploadOpen(false);
+      setCurrentFile(null);
     }
-    setIsFileUploadOpen(false);
-    setCurrentFile(null);
   };
 
   // Update the existing editFile function to open the edit modal
@@ -770,8 +790,6 @@ const AcademicTranscript = () => {
     }
   };
 
-
-
   useEffect(() => {
     if (selectedExam) {
       const category = categories.find(cat => cat.transcript_category === selectedExam);
@@ -791,14 +809,14 @@ const AcademicTranscript = () => {
     try {
       console.log('handleSaveAll initiated');
       const category = categories.find(cat => cat.transcript_category === selectedExam);
-  
+
       if (!category) {
         console.error('Selected exam category not found');
         return;
       }
-  
+
       console.log('Current exam category:', category);
-  
+
       if (category.id === 32) {
         console.log('Saving SPM subjects...');
         await addEditSPMTranscript(subjects);
@@ -812,9 +830,9 @@ const AcademicTranscript = () => {
             grade: subject.grade
           }))
         };
-  
+
         console.log('Payload prepared for non-SPM API:', payload);
-  
+
         const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/addEditHigherTranscript`, {
           method: 'POST',
           headers: {
@@ -823,10 +841,10 @@ const AcademicTranscript = () => {
           },
           body: JSON.stringify(payload),
         });
-  
+
         const data = await response.json();
         console.log('API response for non-SPM:', data);
-  
+
         if (data.success) {
           console.log('Non-SPM Subjects saved successfully');
           fetchSubjects(category.id.toString());
@@ -930,7 +948,7 @@ const AcademicTranscript = () => {
                         <FileText className="file-icon me-2" />
                         <div>
                           <div className="file-title mb-1">{file.studentMedia_name}</div>
-                          <div className="file-date">{file.status}</div>
+                          <div className="file-date">{file.created_at}</div>
                         </div>
                       </div>
                     </td>

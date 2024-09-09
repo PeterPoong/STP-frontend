@@ -131,11 +131,9 @@ const Achievements = () => {
         return pages;
     };
 
-    // Function to add new entry or update existing entry                                    
     const saveEntry = async (entry) => {
         try {
-            const token =
-                sessionStorage.getItem("token") || localStorage.getItem("token");
+            const token = sessionStorage.getItem("token") || localStorage.getItem("token");
             if (!token) {
                 throw new Error('No authentication token found');
             }
@@ -149,8 +147,23 @@ const Achievements = () => {
             formData.append('date', entry.date);
             formData.append('title', entry.title);
             formData.append('awarded_by', entry.awarded_by);
-            if (entry.achievement_media instanceof File) {
+    
+             // Handle file upload logic
+             if (entry.achievement_media instanceof File) {
+                // If a new file is selected, append it to formData
                 formData.append('achievement_media', entry.achievement_media);
+                console.log('New file being uploaded:', entry.achievement_media.name);
+            } else if (entry.id && entry.achievement_media && typeof entry.achievement_media === 'string') {
+                // If editing and the file hasn't changed, don't send the achievement_media field
+                console.log('Existing file, not changing:', entry.achievement_media);
+            } else if (!entry.id) {
+                // If adding a new entry and no file is selected, send an empty string
+                formData.append('achievement_media', '');
+                console.log('No file selected for new entry');
+            }
+            // Log the formData contents
+            for (let [key, value] of formData.entries()) {
+                console.log(`${key}:`, value);
             }
     
             const response = await fetch(url, {
