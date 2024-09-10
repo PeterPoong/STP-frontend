@@ -3,8 +3,8 @@ import { Card, Button } from "react-bootstrap";
 import { GraduationCap, CalendarCheck, BookOpenText } from 'lucide-react';
 import { MapPin, BookOpen, Clock, Calendar, ChevronLeft, ChevronRight } from 'react-feather';
 import "bootstrap/dist/css/bootstrap.min.css";
-import WidgetAccepted from "../../../Components/StudentPortalComp/WidgetAccepted";
-import WidgetRejected from "../../../Components/StudentPortalComp/WidgetRejected";
+import WidgetAccepted from "../../../Components/StudentPortalComp/Widget/WidgetAccepted";
+import WidgetRejected from "../../../Components/StudentPortalComp/Widget/WidgetRejected";
 
 import "../../../css/StudentPortalStyles/StudentPortalWidget.css";
 

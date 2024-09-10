@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import "../../css/StudentPortalStyles/StudentPortalWidget.css";
+import "../../../css/StudentPortalStyles/StudentPortalWidget.css";
 
 const WidgetPending = ({ isOpen, onClose, date, feedbacks, formID }) => {
   const [isSending, setIsSending] = useState(false);

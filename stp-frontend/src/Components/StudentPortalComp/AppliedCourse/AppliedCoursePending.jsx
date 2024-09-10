@@ -4,7 +4,7 @@ import { GraduationCap, CalendarCheck, BookOpenText } from 'lucide-react';
 import { MapPin, BookOpen, Clock, Calendar, ChevronLeft, ChevronRight } from 'react-feather';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../../css/StudentPortalStyles/StudentPortalWidget.css";
-import WidgetPending from "../../../Components/StudentPortalComp/WidgetPending";
+import WidgetPending from "../../../Components/StudentPortalComp/Widget/WidgetPending";
 
 const AppliedCoursePending = () => {
     const [currentPage, setCurrentPage] = useState(1);
