@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { Trash2, Eye, Plus, Search, FileText, Edit2 } from 'lucide-react';
-import WidgetFileUpload from "../../Components/StudentPortalComp/WidgetFileUpload";
-import WidgetPopUpDelete from "../../Components/StudentPortalComp/WidgetPopUpDelete";
-import "../../css/StudentPortalStyles/StudentPortalAcademicTranscript.css";
-import "../../css/StudentPortalStyles/StudentButtonGroup.css";
+import WidgetFileUpload from "../../../Components/StudentPortalComp/WidgetFileUpload";
+import WidgetPopUpDelete from "../../../Components/StudentPortalComp/WidgetPopUpDelete";
+import "../../../css/StudentPortalStyles/StudentPortalAcademicTranscript.css";
+import "../../../css/StudentPortalStyles/StudentButtonGroup.css";
 
 const OtherCertDoc = () => {
     const [currentPage, setCurrentPage] = useState(1);

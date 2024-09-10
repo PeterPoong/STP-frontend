@@ -1,43 +1,44 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Button } from "react-bootstrap";
+import { Card, Button, Modal } from "react-bootstrap";
 import { GraduationCap, CalendarCheck, BookOpenText } from 'lucide-react';
 import { MapPin, BookOpen, Clock, Calendar, ChevronLeft, ChevronRight } from 'react-feather';
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../../css/StudentPortalStyles/StudentPortalWidget.css";
-import image1 from "../../assets/StudentAssets/University Logo/image1.jpg";
-import WidgetAccepted from "../../Components/StudentPortalComp/WidgetAccepted";
-import WidgetRejected from "../../Components/StudentPortalComp/WidgetRejected";
+import "../../../css/StudentPortalStyles/StudentPortalWidget.css";
+import WidgetPending from "../../../Components/StudentPortalComp/WidgetPending";
 
-const AppliedCoursesHistory = () => {
+const AppliedCoursePending = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(3);
-    const [isAcceptedOpen, setIsAcceptedOpen] = useState(false);
-    const [isRejectedOpen, setIsRejectedOpen] = useState(false);
-    const [applications, setApplications] = useState([]);
+    const [isPendingOpen, setIsPendingOpen] = useState(false);
+    const [pendingApplications, setPendingApplications] = useState([]);
     const [selectedApplication, setSelectedApplication] = useState(null);
+    const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+    const [withdrawingId, setWithdrawingId] = useState(null);
 
     // Calculate first and last item index
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 
     useEffect(() => {
-        fetchApplicationsHistory();
+        fetchPendingApplications();
     }, []);
 
-    const fetchApplicationsHistory = async () => {
+    const fetchPendingApplications = async () => {
         try {
             const token = sessionStorage.getItem("token") || localStorage.getItem("token");
             if (!token) {
                 throw new Error('No authentication token found');
             }
 
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/historyAppList`, {
+            // Change the method to GET
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/pendingAppList`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },
             });
 
+            // Check if the response is ok before parsing JSON
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -45,21 +46,65 @@ const AppliedCoursesHistory = () => {
             const responseData = await response.json();
             console.log('API response:', responseData);
 
+            // Check if the response has the expected structure
             if (responseData.success && responseData.data && Array.isArray(responseData.data.data)) {
-                setApplications(responseData.data.data);
+                setPendingApplications(responseData.data.data);
+                // You might want to update pagination state here as well
+                // setCurrentPage(responseData.data.current_page);
+                // setTotalPages(responseData.data.last_page);
             } else {
                 console.error('Unexpected API response structure');
-                setApplications([]);
+                setPendingApplications([]);
             }
         } catch (error) {
-            console.error('Error fetching application history:', error);
-            setApplications([]);
+            console.error('Error fetching pending applications:', error);
+            setPendingApplications([]);
+        }
+    };
+
+    const handleWithdraw = async (id) => {
+        setWithdrawingId(id);
+        setShowWithdrawModal(true);
+    };
+
+    const confirmWithdraw = async () => {
+        try {
+            const token = sessionStorage.getItem("token") || localStorage.getItem("token");
+            if (!token) {
+                throw new Error('No authentication token found');
+            }
+
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/withdrawApplicant`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ id: withdrawingId }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            if (result.success) {
+                // Refresh the pending applications list
+                fetchPendingApplications();
+            } else {
+                console.error('Failed to withdraw application:', result.message);
+            }
+        } catch (error) {
+            console.error('Error withdrawing application:', error);
+        } finally {
+            setShowWithdrawModal(false);
+            setWithdrawingId(null);
         }
     };
 
     // Get current items
-    const currentItems = Array.isArray(applications)
-        ? applications.slice(indexOfFirstItem, indexOfLastItem)
+    const currentItems = Array.isArray(pendingApplications)
+        ? pendingApplications.slice(indexOfFirstItem, indexOfLastItem)
         : [];
 
     // Change page
@@ -67,38 +112,21 @@ const AppliedCoursesHistory = () => {
 
     // Calculate page numbers
     const pageNumbers = [];
-    for (let i = 1; i <= Math.ceil(applications.length / itemsPerPage); i++) {
+    for (let i = 1; i <= Math.ceil(pendingApplications.length / itemsPerPage); i++) {
         pageNumbers.push(i);
     }
 
-    const handleView = (application) => {
-        setSelectedApplication(application);
-        switch (application.status) {
-            case "Accepted":
-                setIsAcceptedOpen(true);
-                break;
-            case "Rejected":
-                setIsRejectedOpen(true);
-                break;
-            case "Withdrawn":
-                // Do nothing for withdrawn status
-                break;
-            default:
-                console.log("Unknown status");
-        }
-    };
-
     return (
         <div className="acp-container pt-0">
-            <h1 className="acp-main-title">Application History</h1>
+            <h1 className="acp-main-title">Applied Courses</h1>
             <Card className="acp-card mb-4">
                 <Card.Body>
-                    <h2 className="acp-section-title">All Applications</h2>
+                    <h2 className="acp-section-title">Pending Applications</h2>
                     {currentItems.length === 0 ? (
-                        <p>No course history</p>
+                        <p>No course applied</p>
                     ) : (
                         currentItems.map((app) => (
-                            <Card key={app.student_id} className="acp-application-card mb-3">
+                            <Card key={app.id} className="acp-application-card mb-3">
                                 <Card.Body className="acp-application-body">
                                     <div className="acp-left-section">
                                         <h3 className="acp-degree-title">{app.course_name}</h3>
@@ -111,12 +139,13 @@ const AppliedCoursesHistory = () => {
                                                     height: "80px",
                                                     width: "150px",
                                                     objectFit: "contain",
-                                                }} />
+                                                }}
+                                            />
                                             <div>
                                                 <p className="acp-university-name">{app.school_name}</p>
                                                 <p className="acp-location">
                                                     <MapPin size={16} className="acp-icon" />
-                                                    {app.city_name}, {app.state_name}, {app.country_name} <span className="acp-link">click and view on map</span>
+                                                    {`${app.country_name}${app.state_name ? `, ${app.state_name}` : ''}${app.city_name ? `, ${app.city_name}` : ''}`} <span className="acp-link">click and view on map</span>
                                                 </p>
                                             </div>
                                         </div>
@@ -124,7 +153,7 @@ const AppliedCoursesHistory = () => {
                                     <div className="acp-middle-section">
                                         <div className="acp-detail-item">
                                             <GraduationCap size={16} className="acp-icon" />
-                                            <span>{app.category_name}</span>
+                                            <span>{app.qualification}</span>
                                         </div>
                                         <div className="acp-detail-item">
                                             <CalendarCheck size={16} className="acp-icon" />
@@ -140,11 +169,23 @@ const AppliedCoursesHistory = () => {
                                         </div>
                                     </div>
                                     <div className="acp-right-section">
-                                        <span className={`acp-status-badge acp-status-${app.status.toLowerCase()}`}>{app.status}</span>
+                                        <span className="acp-status-badge">Pending</span>
                                         <div className="acp-action-buttons">
-                                            {app.status !== "WithDrawl" && (
-                                                <Button className="acp-view-btn btn-danger" onClick={() => handleView(app)}>Review</Button>
-                                            )}
+                                            <Button
+                                                className="acp-view-btn danger btn-danger"
+                                                onClick={() => {
+                                                    setSelectedApplication(app);
+                                                    setIsPendingOpen(true);
+                                                }}
+                                            >
+                                                View
+                                            </Button>
+                                            <Button
+                                                className="acp-withdraw-btn btn-danger"
+                                                onClick={() => handleWithdraw(app.id)}
+                                            >
+                                                Withdraw
+                                            </Button>
                                         </div>
                                     </div>
                                 </Card.Body>
@@ -176,20 +217,29 @@ const AppliedCoursesHistory = () => {
                     </div>
                 </Card.Body>
             </Card>
-            <WidgetAccepted
-                isOpen={isAcceptedOpen}
-                onClose={() => setIsAcceptedOpen(false)}
+            <Modal show={showWithdrawModal} onHide={() => setShowWithdrawModal(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Confirm Withdrawal</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>Are you sure you want to withdraw this application?</Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowWithdrawModal(false)}>
+                        Cancel
+                    </Button>
+                    <Button variant="danger" onClick={confirmWithdraw}>
+                        Confirm Withdraw
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+            <WidgetPending
+                isOpen={isPendingOpen}
+                onClose={() => setIsPendingOpen(false)}
                 date={selectedApplication ? selectedApplication.date_applied : ""}
                 feedbacks={selectedApplication && selectedApplication.feedback ? [selectedApplication.feedback] : []}
-            />
-            <WidgetRejected
-                isOpen={isRejectedOpen}
-                onClose={() => setIsRejectedOpen(false)}
-                date={selectedApplication ? selectedApplication.date_applied : ""}
-                feedbacks={selectedApplication && selectedApplication.feedback ? [selectedApplication.feedback] : []}
+                formID={selectedApplication ? selectedApplication.id : null}
             />
         </div>
     );
 };
 
-export default AppliedCoursesHistory;
+export default AppliedCoursePending;

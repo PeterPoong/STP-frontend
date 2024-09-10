@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Form, Button, Row, Col, Alert } from 'react-bootstrap';
-import "../../css/StudentPortalStyles/StudentPortalLoginForm.css";
+import "../../../css/StudentPortalStyles/StudentPortalLoginForm.css";
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
-import "../../css/StudentPortalStyles/StudentButtonGroup.css";
+import "../../../css/StudentPortalStyles/StudentButtonGroup.css";
 import axios from 'axios';
 
 const BasicInformationWidget = ({ onProfilePicUpdate }) => {

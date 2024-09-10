@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { Edit2, Trash2, Eye, Plus, Search } from 'lucide-react';
-import WidgetAchievement from "../../Components/StudentPortalComp/WidgetAchievement";
-import WidgetPopUpDelete from "../../Components/StudentPortalComp/WidgetPopUpDelete";
-import "../../css/StudentPortalStyles/StudentPortalAcademicTranscript.css";
-import "../../css/StudentPortalStyles/StudentButtonGroup.css";
+import WidgetAchievement from "../../../Components/StudentPortalComp/WidgetAchievement";
+import WidgetPopUpDelete from "../../../Components/StudentPortalComp/WidgetPopUpDelete";
+import "../../../css/StudentPortalStyles/StudentPortalAcademicTranscript.css";
+import "../../../css/StudentPortalStyles/StudentButtonGroup.css";
 
 const Achievements = () => {
     const [currentPage, setCurrentPage] = useState(1);

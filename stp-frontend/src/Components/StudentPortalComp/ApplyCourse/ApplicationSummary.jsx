@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
 import { FileText, Search, Eye, ChevronDown, ChevronUp, Clock, Copy } from 'react-feather';
 import { GraduationCap, CalendarCheck, BookOpenText } from 'lucide-react';
-import "../../css/StudentPortalStyles/StudentApplyCourse.css";
-import image1 from "../../assets/StudentAssets/University Logo/image1.jpg";
-import "../../css/StudentPortalStyles/StudentButtonGroup.css";
-import SpcFooter from "../../Components/StudentPortalComp/SpcFooter";
+import "../../../css/StudentPortalStyles/StudentApplyCourse.css";
+import image1 from "../../../assets/StudentAssets/University Logo/image1.jpg";
+import "../../../css/StudentPortalStyles/StudentButtonGroup.css";
+import SpcFooter from "../../../Components/StudentPortalComp/SpcFooter";
 
 const fakeFormData = {
   profilePicture: "https://example.com/fake-profile-pic.jpg",

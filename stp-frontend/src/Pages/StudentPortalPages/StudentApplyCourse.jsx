@@ -7,7 +7,7 @@ import Select from 'react-select';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import NavButtonsSP from "../../Components/StudentPortalComp/NavButtonsSP";
 import SpcFooter from "../../Components/StudentPortalComp/SpcFooter";
-import ApplicationSummary from "../../Components/StudentPortalComp/ApplicationSummary";
+import ApplicationSummary from "../../Components/StudentPortalComp/ApplyCourse/ApplicationSummary";
 import "../../css/StudentPortalStyles/StudentApplyCourse.css";
 import "../../css/StudentPortalStyles/StudentButtonGroup.css";
 import image1 from "../../assets/StudentAssets/University Logo/image1.jpg";
@@ -27,9 +27,9 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 //testing
-import WidgetPopUpRemind from "../../Components/StudentPortalComp/WidgetPopUpRemind";
+
 import WidgetPopUpSubmission from "../../Components/StudentPortalComp/WidgetPopUpSubmission";
-import WidgetPopUpFillIn from "../../Components/StudentPortalComp/WidgetPopUpFillIn";
+
 import { useNavigate } from "react-router-dom";
 // ... existing code ...
 

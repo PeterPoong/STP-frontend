@@ -5,11 +5,11 @@ import Carousel from 'react-material-ui-carousel';
 import { Paper, Button, Tooltip } from '@mui/material';
 import SelectSearch from 'react-select-search';
 import 'react-select-search/style.css';
-import "../../css/StudentPortalStyles/StudentPortalAcademicTranscript.css";
-import WidgetFileUploadAcademicTranscript from "../../Components/StudentPortalComp/WidgetFileUploadAcademicTranscript";
-import WidgetPopUpDelete from "../../Components/StudentPortalComp/WidgetPopUpDelete";
-import WidgetPopUpSubmission from "../../Components/StudentPortalComp/WidgetPopUpSubmission";
-import "../../css/StudentPortalStyles/StudentButtonGroup.css";
+import "../../../css/StudentPortalStyles/StudentPortalAcademicTranscript.css";
+import WidgetFileUploadAcademicTranscript from "../../../Components/StudentPortalComp/WidgetFileUploadAcademicTranscript";
+import WidgetPopUpDelete from "../../../Components/StudentPortalComp/WidgetPopUpDelete";
+import WidgetPopUpSubmission from "../../../Components/StudentPortalComp/WidgetPopUpSubmission";
+import "../../../css/StudentPortalStyles/StudentButtonGroup.css";
 
 const ExamSelector = ({ exams, selectedExam, setSelectedExam }) => {
   const itemsPerPage = 5;

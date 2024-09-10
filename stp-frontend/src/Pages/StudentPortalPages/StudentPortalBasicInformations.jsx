@@ -3,13 +3,14 @@ import { useNavigate } from "react-router-dom";
 import NavButtonsSP from "../../Components/StudentPortalComp/NavButtonsSP";
 import MyProfileWidget from "../../Components/StudentPortalComp/MyProfileWidget";
 import SpcFooter from "../../Components/StudentPortalComp/SpcFooter";
-import BasicInformationWidget from "../../Components/StudentPortalComp/BasicInformationWidget";
-import ManagePasswordWidget from "../../Components/StudentPortalComp/ManagePasswordWidget";
+import BasicInformationWidget from "../../Components/StudentPortalComp/MyProfile/BasicInformationWidget";
+import ManagePasswordWidget from "../../Components/StudentPortalComp/MyProfile/ManagePasswordWidget";
 import CollapsibleSections from "../../Components/StudentPortalComp/CollapsibleSections";
-import AppliedCoursesHistory from "../../Components/StudentPortalComp/AppliedCoursesHistory";
-import AppliedCoursesPending from "../../Components/StudentPortalComp/AppliedCoursesPending";
+import AppliedCourseHistory from "../../Components/StudentPortalComp/AppliedCourse/AppliedCourseHistory";
+import AppliedCoursePending from "../../Components/StudentPortalComp/AppliedCourse/AppliedCoursePending";
 import "aos/dist/aos.css";
 import "../../css/StudentPortalStyles/StudentPortalBasicInformation.css";
+
 
 const StudentPortalBasicInformations = () => {
   const [selectedContent, setSelectedContent] = useState("basicInfo");
@@ -91,10 +92,10 @@ const StudentPortalBasicInformations = () => {
         return <ManagePasswordWidget />;
       case "transcript":
         return <CollapsibleSections />;
-      case "appliedCoursesPending":
-        return <AppliedCoursesPending status="pending" />;
-      case "appliedCoursesHistory":
-        return <AppliedCoursesHistory status="history" />;
+      case "appliedCoursePending": // Ensure this matches the case of the component name
+        return <AppliedCoursePending status="pending" />; // Check if this is correctly imported
+      case "appliedCourseHistory":
+        return <AppliedCourseHistory status="history" />;
       default:
         return <BasicInformationWidget />;
     }

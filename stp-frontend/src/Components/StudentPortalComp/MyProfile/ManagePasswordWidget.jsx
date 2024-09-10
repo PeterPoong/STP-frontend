@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import "../../css/StudentPortalStyles/StudentPortalLoginForm.css";
+import "../../../css/StudentPortalStyles/StudentPortalLoginForm.css";
 import { Eye, EyeOff } from 'react-feather';
 import { Form, Button, Container, Row, Col, InputGroup, Card, Alert } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../../css/StudentPortalStyles/StudentButtonGroup.css";
-import "../../css/StudentPortalStyles/StudentManagePassword.css";
+import "../../../css/StudentPortalStyles/StudentButtonGroup.css";
+import "../../../css/StudentPortalStyles/StudentManagePassword.css";
 
 
 const ManagePasswordWidget = () => {

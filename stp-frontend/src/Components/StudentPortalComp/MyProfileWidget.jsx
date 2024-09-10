@@ -244,15 +244,15 @@ const MyProfileWidget = ({ onSelectContent, profilePic }) => {
                     <div>
                         <ListGroup.Item
                             className="ps-4"
-                            onClick={() => handleContentSelect('appliedCoursesPending')}
-                            style={getItemStyle('appliedCoursesPending')}
+                            onClick={() => handleContentSelect('appliedCoursePending')}
+                            style={getItemStyle('appliedCoursePending')}
                         >
                             Pending
                         </ListGroup.Item>
                         <ListGroup.Item
                             className="ps-4"
-                            onClick={() => handleContentSelect('appliedCoursesHistory')}
-                            style={getItemStyle('appliedCoursesHistory')}
+                            onClick={() => handleContentSelect('appliedCourseHistory')}
+                            style={getItemStyle('appliedCourseHistory')}
                         >
                             History
                         </ListGroup.Item>
