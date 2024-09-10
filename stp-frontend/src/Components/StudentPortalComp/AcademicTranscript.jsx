@@ -8,6 +8,7 @@ import 'react-select-search/style.css';
 import "../../css/StudentPortalStyles/StudentPortalAcademicTranscript.css";
 import WidgetFileUploadAcademicTranscript from "../../Components/StudentPortalComp/WidgetFileUploadAcademicTranscript";
 import WidgetPopUpDelete from "../../Components/StudentPortalComp/WidgetPopUpDelete";
+import WidgetPopUpSubmission from "../../Components/StudentPortalComp/WidgetPopUpSubmission";
 import "../../css/StudentPortalStyles/StudentButtonGroup.css";
 
 const ExamSelector = ({ exams, selectedExam, setSelectedExam }) => {
@@ -109,7 +110,7 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
       const data = await response.json();
       if (data.success) {
         // Filter out subjects that are already in the subjects list
-        const filteredSubjects = data.data.filter(subject => 
+        const filteredSubjects = data.data.filter(subject =>
           !subjects.some(s => s.id === subject.id)
         );
         setAvailableSubjects(filteredSubjects);
@@ -122,9 +123,9 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
   const handleAddSubject = (selectedSubject) => {
     const newSubject = availableSubjects.find(s => s.id === parseInt(selectedSubject));
     if (newSubject) {
-      const updatedSubjects = [...subjects, { ...newSubject, grade: '' }];
+      const updatedSubjects = [...subjects, { ...newSubject, grade: '', isEditing: true }];
       onSubjectsChange(updatedSubjects);
-      // Remove the added subject from availableSubjects
+      setEditingIndex(updatedSubjects.length - 1);  // Set the new subject to edit mode
       setAvailableSubjects(availableSubjects.filter(s => s.id !== newSubject.id));
     }
   };
@@ -140,7 +141,16 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
     setEditingIndex(index);
   };
 
-  const handleSave = () => {
+  const handleSave = (index) => {
+    const subject = subjects[index];
+    if (!subject.name.trim() || !subject.grade.trim()) {
+      alert("Both subject name and grade are required.");
+      return;
+    }
+    const updatedSubjects = subjects.map((s, i) =>
+      i === index ? { ...s, isEditing: false } : s
+    );
+    onSubjectsChange(updatedSubjects);
     setEditingIndex(null);
   };
 
@@ -161,29 +171,32 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
 
   return (
     <div className="space-y-2 mb-4">
-      
+
       {subjects.map((subject, index) => (
         <div key={index} className="d-flex align-items-center justify-content-between bg-white p-2 mb-2 rounded border">
           <div className="d-flex align-items-center flex-grow-1">
             <GripVertical className="me-3" size={20} />
             <span className="fw-medium h6 mb-0 me-3">{subject.name}</span>
-            {editingIndex === index ? (
+            {editingIndex === index || subject.isEditing ? (
               <input
                 type="text"
                 value={subject.grade}
                 onChange={(e) => handleGradeChange(index, e.target.value)}
                 className="editingplaceholder"
                 placeholder="Enter grade"
+                required
               />
             ) : (
-              <span className={`rounded-pill px-4 text-white ${getGradeColor(subject.grade)}`}>
-                GRADE: {subject.grade}
-              </span>
+              subject.grade && (
+                <span className={`rounded-pill px-4 text-white ${getGradeColor(subject.grade)}`}>
+                  GRADE: {subject.grade}
+                </span>
+              )
             )}
           </div>
           <div>
-            {editingIndex === index ? (
-              <Check onClick={handleSave} className="text-success cursor-pointer me-2" />
+            {editingIndex === index || subject.isEditing ? (
+              <Check onClick={() => handleSave(index)} className="text-success cursor-pointer me-2" />
             ) : (
               <Edit2 size={18} className="iconat mx-2" onClick={() => handleEdit(index)} />
             )}
@@ -232,14 +245,13 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
   const handleAddSubject = (e) => {
     e.preventDefault();
     if (newSubject.trim() !== '') {
-      console.log('Adding new subject:', newSubject);
-      const updatedSubjects = [...subjects, { name: newSubject, grade: '' }];
-      console.log('Updated subjects after addition:', updatedSubjects);
+      const newSubjectObj = { name: newSubject, grade: '', isEditing: true };
+      const updatedSubjects = [...subjects, newSubjectObj];
       onSubjectsChange(updatedSubjects);
       setNewSubject('');
+      setEditingIndex(updatedSubjects.length - 1);  // Set the new subject to edit mode
     }
   };
-
   const handleGradeChange = (index, grade) => {
     console.log(`Changing grade for subject at index ${index} to:`, grade);
     const updatedSubjects = subjects.map((subject, i) =>
@@ -263,10 +275,19 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
     setEditingIndex(index);
   };
 
-  const handleSave = () => {
-    console.log('Saving edits, current subjects:', subjects);
+  const handleSave = (index) => {
+    const subject = subjects[index];
+    if (!subject.name.trim() || !subject.grade.trim()) {
+      alert("Both subject name and grade are required.");
+      return;
+    }
+    const updatedSubjects = subjects.map((s, i) =>
+      i === index ? { ...s, isEditing: false } : s
+    );
+    onSubjectsChange(updatedSubjects);
     setEditingIndex(null);
   };
+
 
   const handleDelete = (index) => {
     console.log('Deleting subject at index:', index);
@@ -299,40 +320,47 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
       <TransitionGroup className="space-y-2 mb-4">
         {subjects.map((subject, index) => (
           <CSSTransition key={index} classNames="fade" timeout={300}>
-            <div className="d-flex align-items-center justify-content-between bg-white p-2 mb-2 rounded border">
+            <div key={index} className="d-flex align-items-center justify-content-between bg-white p-2 mb-2 rounded border">
               <div className="d-flex align-items-center flex-grow-1">
                 <GripVertical className="me-3" size={20} />
-                {editingIndex === index ? (
-                  <input
-                    type="text"
-                    value={subject.name}
-                    onChange={(e) => handleNameChange(index, e.target.value)}
-                    className="editingplaceholder"
-                    placeholder="Please enter you subjectname"
-                  />
+                {editingIndex === index || subject.isEditing ? (
+                  <>
+                    <input
+                      type="text"
+                      value={subject.name}
+                      onChange={(e) => handleNameChange(index, e.target.value)}
+                      className="editingplaceholder me-2"
+                      placeholder="Enter subject name"
+                      required
+                    />
+                    <input
+                      type="text"
+                      value={subject.grade}
+                      onChange={(e) => handleGradeChange(index, e.target.value)}
+                      className="editingplaceholder"
+                      placeholder="Enter grade"
+                      required
+                    />
+                  </>
                 ) : (
-                  <span className="fw-medium h6 mb-0 me-3">{subject.name}</span>
+                  <>
+                    <span className="fw-medium h6 mb-0 me-3">{subject.name}</span>
+                    {subject.grade && (
+                      <span className={`rounded-pill px-4 text-white ms-2 ${getGradeColor(subject.grade)}`}>
+                        GRADE: {subject.grade}
+                      </span>
+                    )}
+                  </>
                 )}
-                {editingIndex === index ? (
-                  <input
-                    type="text"
-                    className="editingplaceholder"
-                    placeholder="Please enter you grade"
-                    value={subject.grade}
-                    onChange={(e) => handleGradeChange(index, e.target.value)}
-                  />) : (
-                  subject.grade && (
-                    <span className={`rounded-pill px-4 text-white ms-2 ${getGradeColor(subject.grade)}`}>
-                      GRADE: {subject.grade}
-                    </span>
-                  ))}
               </div>
-              {editingIndex === index ? (
-                <Check onClick={handleSave} className="text-success cursor-pointer me-2" />
-              ) : (
-                <Edit2 size={18} className="iconat mx-2" onClick={() => handleEdit(index)} />
-              )}
-              <Trash2 size={18} className="iconat-trash mx-2" onClick={() => handleDelete(index)} />
+              <div>
+                {editingIndex === index || subject.isEditing ? (
+                  <Check onClick={() => handleSave(index)} className="text-success cursor-pointer me-2" />
+                ) : (
+                  <Edit2 size={18} className="iconat mx-2" onClick={() => handleEdit(index)} />
+                )}
+                <Trash2 size={18} className="iconat-trash mx-2" onClick={() => handleDelete(index)} />
+              </div>
             </div>
           </CSSTransition>
         ))}
@@ -373,6 +401,17 @@ const AcademicTranscript = () => {
   const [programBasedCategories, setProgramBasedCategories] = useState([]);
   const [selectedExam, setSelectedExam] = useState('');
   const [mediaData, setMediaData] = useState({});
+  const [isSubmissionPopupOpen, setIsSubmissionPopupOpen] = useState(false);
+  const [files, setFiles] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isFileUploadOpen, setIsFileUploadOpen] = useState(false);
+  const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
+  const [currentFile, setCurrentFile] = useState(null);
+  const [fileToDelete, setFileToDelete] = useState(null);
+  const [isViewMode, setIsViewMode] = useState(false);
+  const [subjects, setSubjects] = useState([]);
 
   const [examData, setExamData] = useState({
     'SPM': [],
@@ -388,16 +427,6 @@ const AcademicTranscript = () => {
     'Diploma': [],
   });
 
-  const [files, setFiles] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [isFileUploadOpen, setIsFileUploadOpen] = useState(false);
-  const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
-  const [currentFile, setCurrentFile] = useState(null);
-  const [fileToDelete, setFileToDelete] = useState(null);
-  const [isViewMode, setIsViewMode] = useState(false);
-  const [subjects, setSubjects] = useState([]);
 
   console.log('AcademicTranscript rendered with subjects:', subjects);
 
@@ -419,6 +448,12 @@ const AcademicTranscript = () => {
   for (let i = 1; i <= Math.ceil(filteredFiles.length / itemsPerPage); i++) {
     pageNumbers.push(i);
   }
+
+
+  const handleSaveConfirmation = () => {
+    setIsSubmissionPopupOpen(true);
+  };
+
 
   const addFile = async (newFile) => {
     try {
@@ -463,31 +498,31 @@ const AcademicTranscript = () => {
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       const category = categories.find(cat => cat.transcript_category === selectedExam);
-  
+
       if (!category) {
         console.error('Selected exam category not found');
         return { success: false, message: 'Selected exam category not found' };
       }
-  
+
       const formData = new FormData();
-  
+
       formData.append('id', updatedFile.id);
       formData.append('studentMedia_type', category.id.toString());
       formData.append('studentMedia_name', updatedFile.title);
-  
-       // Handle file upload logic
-    if (updatedFile.file instanceof File) {
-      // If a new file is selected, append it to formData
-      formData.append('studentMedia_location', updatedFile.file);
-      console.log('New file being uploaded:', updatedFile.file.name);
-    } else if (updatedFile.file && typeof updatedFile.file === 'string') {
-      // If editing and the file hasn't changed, don't send the studentMedia_location field
-      console.log('Existing file, not changing:', updatedFile.file);
-    } else {
-      console.log('No file provided');
-    }
 
-  
+      // Handle file upload logic
+      if (updatedFile.file instanceof File) {
+        // If a new file is selected, append it to formData
+        formData.append('studentMedia_location', updatedFile.file);
+        console.log('New file being uploaded:', updatedFile.file.name);
+      } else if (updatedFile.file && typeof updatedFile.file === 'string') {
+        // If editing and the file hasn't changed, don't send the studentMedia_location field
+        console.log('Existing file, not changing:', updatedFile.file);
+      } else {
+        console.log('No file provided');
+      }
+
+
       // Console log to see what's being sent
       console.log('Editing file with data:', {
         id: updatedFile.id,
@@ -495,12 +530,12 @@ const AcademicTranscript = () => {
         studentMedia_name: updatedFile.title,
         studentMedia_location: updatedFile.isNewFile ? 'New File' : (updatedFile.file || 'Unchanged')
       });
-  
+
       // Log the FormData contents
       for (let [key, value] of formData.entries()) {
         console.log(`${key}:`, value);
       }
-  
+
       const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/editTranscriptFile`, {
         method: 'POST',
         headers: {
@@ -508,11 +543,11 @@ const AcademicTranscript = () => {
         },
         body: formData,
       });
-  
+
       const data = await response.json();
-  
+
       console.log('Full API response:', data); // Log the full API response
-  
+
       if (response.ok && data.success) {
         console.log('File edited successfully:', data);
         fetchMediaByCategory(category.id);
@@ -520,16 +555,16 @@ const AcademicTranscript = () => {
       } else {
         console.error('Error editing file:', data);
         console.error('Validation errors:', data.errors); // Log validation errors if present
-        
+
         // If there are validation errors, log them in detail
         if (data.errors) {
           Object.entries(data.errors).forEach(([field, errors]) => {
             console.error(`Validation error for ${field}:`, errors);
           });
         }
-        
-        return { 
-          success: false, 
+
+        return {
+          success: false,
           message: data.message || 'Failed to edit file',
           errors: data.errors // Include validation errors in the return object
         };
@@ -734,26 +769,26 @@ const AcademicTranscript = () => {
       console.log('addEditSPMTranscript called with subjects:', subjects);
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       const category = categories.find(cat => cat.transcript_category === selectedExam);
-  
+
       if (!category) {
         console.error('Selected exam category not found');
         return;
       }
-  
+
       console.log('Category for SPM:', category);
-  
+
       // Function to convert letter grade to integer
       const gradeToInt = (grade) => {
         const gradeMap = {
           'A+': 17, 'A': 18, 'A-': 19,
           'B+': 20, 'B': 21,
-          'C+': 22, 'C': 23, 
+          'C+': 22, 'C': 23,
           'D': 24, 'E': 25,
           'G': 26
         };
         return gradeMap[grade] || 0; // Return 0 if grade not found
       };
-  
+
       const payload = {
         category: category.id,
         data: subjects.map(subject => ({
@@ -761,9 +796,9 @@ const AcademicTranscript = () => {
           grade: gradeToInt(subject.grade)
         }))
       };
-  
+
       console.log('Payload prepared for SPM API:', payload);
-  
+
       const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/addEditTranscript`, {
         method: 'POST',
         headers: {
@@ -772,10 +807,10 @@ const AcademicTranscript = () => {
         },
         body: JSON.stringify(payload),
       });
-  
+
       const data = await response.json();
       console.log('API response for SPM:', data);
-  
+
       if (data.success) {
         console.log('SPM Subjects saved successfully');
         // Refresh the subjects
@@ -806,6 +841,7 @@ const AcademicTranscript = () => {
   }, []);
 
   const handleSaveAll = async () => {
+    setIsSubmissionPopupOpen(false);
     try {
       console.log('handleSaveAll initiated');
       const category = categories.find(cat => cat.transcript_category === selectedExam);
@@ -869,7 +905,7 @@ const AcademicTranscript = () => {
         subjects={subjects}
         onSubjectsChange={updateSubjects}
         files={files}
-        onSaveAll={handleSaveAll}
+        onSaveAll={handleSaveConfirmation}
       />;
     } else if (programBasedCategories.some(cat => cat.transcript_category === selectedExam)) {
       return <ProgramBasedExam
@@ -877,11 +913,13 @@ const AcademicTranscript = () => {
         subjects={subjects}
         onSubjectsChange={updateSubjects}
         files={files}
-        onSaveAll={handleSaveAll}
+        onSaveAll={handleSaveConfirmation}
       />;
     }
     return <div>No data available for {selectedExam}</div>;
   };
+
+
   return (
     <div className='p-0'>
       <ExamSelector
@@ -906,67 +944,67 @@ const AcademicTranscript = () => {
           </div>
         </div>
 
-        <div className="mb-4">
-          <div className="d-flex justify-content-start align-item-centger flex-wrap ">
-            <span className="me-3 align-self-center">Show</span>
-            <select
-              className="show-option-table me-3"
-              value={itemsPerPage}
-              onChange={(e) => setItemsPerPage(Number(e.target.value))}
-            >
-              <option value={10}>10</option>
-              <option value={20}>20</option>
-              <option value={50}>50</option>
-            </select>
-            <span className="me-2 align-self-center">entries</span>
-            <input
-              className="search"
-              type="search"
-              placeholder="Search..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <button className="button-table px-5 py-1 ml-auto" onClick={() => setIsFileUploadOpen(true)}>ADD NEW</button>
-          </div>
+
+        <div className="transcript-search-bar-container">
+          <span className="me-3 align-self-center">Show</span>
+          <select
+            className="show-option-table me-3"
+            value={itemsPerPage}
+            onChange={(e) => setItemsPerPage(Number(e.target.value))}
+          >
+            <option value={10}>10</option>
+            <option value={20}>20</option>
+            <option value={50}>50</option>
+          </select>
+          <span className="me-2 align-self-center">entries</span>
+          <input
+            className="search"
+            type="search"
+            placeholder="Search..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <button className="button-table px-5 py-1 ml-auto" onClick={() => setIsFileUploadOpen(true)}>ADD NEW</button>
         </div>
 
-        <table className="w-100  justify-content-around">
-          <thead>
-            <tr>
-              <th className="border-bottom p-2 fw-normal">Files</th>
-              <th className="border-bottom p-2 text-end fw-normal">Filename</th>
-              <th className="border-bottom p-2 text-end fw-normal">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <TransitionGroup component={null}>
-              {currentFiles.map((file) => (
-                <CSSTransition key={file.id} timeout={500} classNames="fade">
-                  <tr>
-                    <td className="border-bottom p-2">
-                      <div className="d-flex align-items-center">
-                        <FileText className="file-icon me-2" />
-                        <div>
-                          <div className="file-title mb-1">{file.studentMedia_name}</div>
-                          <div className="file-date">{file.created_at}</div>
+        <div style={{ overflowX: 'auto' }}>
+          <table className="w-100  justify-content-around" >
+            <thead>
+              <tr>
+                <th className="border-bottom p-2 fw-normal">Files</th>
+                <th className="border-bottom p-2 text-end fw-normal">Filename</th>
+                <th className="border-bottom p-2 text-end fw-normal">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <TransitionGroup component={null}>
+                {currentFiles.map((file) => (
+                  <CSSTransition key={file.id} timeout={500} classNames="fade">
+                    <tr>
+                      <td className="border-bottom p-2">
+                        <div className="d-flex align-items-center">
+                          <FileText className="file-icon me-2" />
+                          <div>
+                            <div className="file-title mb-1">{file.studentMedia_name}</div>
+                            <div className="file-date">{file.created_at}</div>
+                          </div>
                         </div>
-                      </div>
-                    </td>
-                    <td className="border-bottom p-2 text-end text-secondary">{file.studentMedia_location || 'N/A'}</td>
-                    <td className="border-bottom p-2">
-                      <div className="d-flex justify-content-end align-items-center">
-                        <Trash2 size={18} className="iconat-trash mx-2" onClick={() => openDeletePopup(file)} />
-                        <Edit2 size={18} className="iconat mx-2" onClick={() => openEditModal(file)} />
-                        <Eye size={18} className="iconat ms-2" onClick={() => viewFile(file)} />
-                      </div>
-                    </td>
-                  </tr>
-                </CSSTransition>
-              ))}
-            </TransitionGroup>
-          </tbody>
-        </table>
-
+                      </td>
+                      <td className="border-bottom p-2 text-end text-secondary">{file.studentMedia_location || 'N/A'}</td>
+                      <td className="border-bottom p-2">
+                        <div className="d-flex justify-content-end align-items-center">
+                          <Trash2 size={18} className="iconat-trash mx-2" onClick={() => openDeletePopup(file)} />
+                          <Edit2 size={18} className="iconat mx-2" onClick={() => openEditModal(file)} />
+                          <Eye size={18} className="iconat ms-2" onClick={() => viewFile(file)} />
+                        </div>
+                      </td>
+                    </tr>
+                  </CSSTransition>
+                ))}
+              </TransitionGroup>
+            </tbody>
+          </table>
+        </div>
         <div className="pagination">
           <button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1}>
             &lt;
@@ -1012,6 +1050,12 @@ const AcademicTranscript = () => {
           setFileToDelete(null);
         }}
         onConfirm={deleteFile}
+      />
+
+      <WidgetPopUpSubmission
+        isOpen={isSubmissionPopupOpen}
+        onClose={() => setIsSubmissionPopupOpen(false)}
+        onConfirm={handleSaveAll}
       />
     </div>
   );

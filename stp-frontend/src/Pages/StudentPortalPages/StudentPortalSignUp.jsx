@@ -1,15 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  Form,
-  Button,
-  Container,
-  Row,
-  Col,
-  Alert,
-  Modal,
-  InputGroup,
-} from "react-bootstrap";
+import { Form, Button, Container, Row, Col, Alert, Modal, InputGroup } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../css/StudentPortalStyles/StudentPortalLoginForm.css";
 import studentPortalLogin from "../../assets/StudentPortalAssets/studentPortalLogin.png";
@@ -33,6 +24,7 @@ const StudentPortalSignUp = () => {
   const [isFormValid, setIsFormValid] = useState(false);
   const navigate = useNavigate();
 
+  /*Checking if have token or not if dont have navigate back to studentportalbasicinformations page */
   useEffect(() => {
     const token =
       sessionStorage.getItem("token") || localStorage.getItem("token");
@@ -41,6 +33,9 @@ const StudentPortalSignUp = () => {
     }
   }, [navigate]);
 
+  /*end */
+
+  /*checking if user ipnut the required information or not */
   useEffect(() => {
     const isValid =
       name.trim() !== "" &&
@@ -51,12 +46,16 @@ const StudentPortalSignUp = () => {
       confirmPassword === password;
     setIsFormValid(isValid);
   }, [name, phone, identityCard, email, password, confirmPassword]);
+  /*end */
 
+  /* handle phone value*/
   const handlePhoneChange = (value, country) => {
     setPhone(value);
     setCountryCode(country.dialCode);
   };
+/*end */
 
+/*signup api */
   const handleSubmit = (e) => {
     e.preventDefault();
     setSignupStatus(null);
@@ -120,8 +119,7 @@ const StudentPortalSignUp = () => {
             setSignupStatus("email_exists");
           } else if (error.errors.contact_no) {
             setSignupStatus("phone_exists");
-          } else if (error.erros.ic)
-          {
+          } else if (error.erros.ic) {
             setSignupStatus("ic_exists")
           }
           else {
@@ -132,6 +130,7 @@ const StudentPortalSignUp = () => {
         }
       });
   };
+/*end */
 
   return (
     <Container fluid className="h-100">
@@ -323,25 +322,25 @@ const StudentPortalSignUp = () => {
                       {(confirmPassword.length === 0 ||
                         (confirmPassword === password &&
                           password.length >= 8)) && (
-                        <div
-                          className="position-absolute top-50 end-0 translate-middle-y pe-3"
-                          style={{ zIndex: 10 }}
-                        >
-                          <span
-                            className="password-toggle"
-                            onClick={() =>
-                              setShowConfirmPassword(!showConfirmPassword)
-                            }
-                            style={{ cursor: "pointer" }}
+                          <div
+                            className="position-absolute top-50 end-0 translate-middle-y pe-3"
+                            style={{ zIndex: 10 }}
                           >
-                            {showConfirmPassword ? (
-                              <Eye size={18} />
-                            ) : (
-                              <EyeOff size={18} />
-                            )}
-                          </span>
-                        </div>
-                      )}
+                            <span
+                              className="password-toggle"
+                              onClick={() =>
+                                setShowConfirmPassword(!showConfirmPassword)
+                              }
+                              style={{ cursor: "pointer" }}
+                            >
+                              {showConfirmPassword ? (
+                                <Eye size={18} />
+                              ) : (
+                                <EyeOff size={18} />
+                              )}
+                            </span>
+                          </div>
+                        )}
                       <Form.Control.Feedback type="invalid">
                         Passwords do not match.
                       </Form.Control.Feedback>

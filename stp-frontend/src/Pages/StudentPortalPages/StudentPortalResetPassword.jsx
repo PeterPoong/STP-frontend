@@ -19,13 +19,16 @@ const StudentPortalResetPassword = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  /*loading to check whether have token or not if dont will navigate back to login page */
   useEffect(() => {
     if (!location.state || !location.state.token || !location.state.userId) {
       setError("No authentication token or user ID provided. Please log in first.");
       setTimeout(() => navigate('/studentPortalLogin'), 3000);
     }
   }, [location.state, navigate]);
+/*end */
 
+/*api for reset Dummy Account Password */
   const handleResetPassword = async (e) => {
     e.preventDefault();
     setError("");
@@ -34,7 +37,6 @@ const StudentPortalResetPassword = () => {
       setError("Passwords do not match.");
       return;
     }
-
     const token = location.state?.token;
     const userId = location.state?.userId;
     if (!token || !userId) {
@@ -54,12 +56,10 @@ const StudentPortalResetPassword = () => {
           newPassword: newPassword,
           confirmPassword: confirmPassword,
         }),
-      });
-      
+      });     
       console.log("Response status:", response.status);
       const responseData = await response.json();
-      console.log("Response data:", responseData);
-  
+      console.log("Response data:", responseData); 
       if (response.ok) {
         console.log("Password reset successful");
         setSuccess("Password reset successfully. You can now login with your new password.");
@@ -73,6 +73,7 @@ const StudentPortalResetPassword = () => {
       setError("An error occurred while resetting the password. Please check your internet connection and try again.");
     }
   };
+  /*end*/
 
   return (
     <Container fluid className="h-100">

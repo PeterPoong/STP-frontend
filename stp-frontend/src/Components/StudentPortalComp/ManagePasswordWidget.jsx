@@ -4,6 +4,8 @@ import { Eye, EyeOff } from 'react-feather';
 import { Form, Button, Container, Row, Col, InputGroup, Card, Alert } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../css/StudentPortalStyles/StudentButtonGroup.css";
+import "../../css/StudentPortalStyles/StudentManagePassword.css";
+
 
 const ManagePasswordWidget = () => {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -19,10 +21,12 @@ const ManagePasswordWidget = () => {
   const [passwordFeedback, setPasswordFeedback] = useState([]);
   const [isSameAsCurrentPassword, setIsSameAsCurrentPassword] = useState(false);
 
+  /* Fetch other documents and certificates from the API */
   useEffect(() => {
     validatePassword(newPassword);
     setIsSameAsCurrentPassword(newPassword === currentPassword && newPassword !== "");
   }, [newPassword, currentPassword]);
+  /*end*/
 
   const validatePassword = (password) => {
     let strength = 0;
@@ -63,6 +67,7 @@ const ManagePasswordWidget = () => {
     setPasswordFeedback(feedback);
   };
 
+  /*password validation handling function */
   const validatePasswords = () => {
     if (newPassword.length < 8 || confirmPassword.length < 8) {
       setError("New password and confirm password must be at least 8 characters long");
@@ -86,7 +91,9 @@ const ManagePasswordWidget = () => {
 
     return true;
   };
+  /*end */
 
+  /*resetSutdentPassword API */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -144,6 +151,7 @@ const ManagePasswordWidget = () => {
       setIsLoading(false);
     }
   };
+  /*end */
 
 
   return (
@@ -156,8 +164,8 @@ const ManagePasswordWidget = () => {
           </div>
           {error && <Alert variant="danger">{error}</Alert>}
           {success && <Alert variant="success">{success}</Alert>}
-          <Form onSubmit={handleSubmit} className="w-100 px-4  ">
-            <Form.Group className="mb-3 px-5" controlId="formCurrentPassword">
+          <Form onSubmit={handleSubmit} className="w-100  ">
+            <Form.Group className="mb-3  mpw-inputholder" controlId="formCurrentPassword">
               <Form.Label className="fw-bold small formlabel">Current Password<span className="text-danger">    *</span></Form.Label>
               <InputGroup className="password-input-group">
                 <Form.Control
@@ -175,7 +183,7 @@ const ManagePasswordWidget = () => {
                 </InputGroup.Text>
               </InputGroup>
             </Form.Group>
-            <Form.Group className="mb-3 px-5" controlId="formNewPassword">
+            <Form.Group className="mb-3  mpw-inputholder" controlId="formNewPassword">
               <Form.Label className="fw-bold small formlabel">New Password<span className="text-danger">    *</span></Form.Label>
               <InputGroup className="password-input-group">
                 <Form.Control
@@ -203,7 +211,7 @@ const ManagePasswordWidget = () => {
                 <small className="text-danger d-block">New password must be different from the current password</small>
               )}
             </Form.Group>
-            <Form.Group className="mb-3 px-5" controlId="formConfirmPassword">
+            <Form.Group className="mb-3  mpw-inputholder" controlId="formConfirmPassword">
               <Form.Label className="fw-bold small formlabel">Confirm New Password<span className="text-danger">    *</span></Form.Label>
               <InputGroup className="password-input-group">
                 <Form.Control
@@ -226,7 +234,7 @@ const ManagePasswordWidget = () => {
               )}
             </Form.Group>
             <div className="d-flex justify-content-end my-4">
-              <div className="d-flex justify-content-end w-50 ">
+              <div className="d-flex justify-content-end  ">
                 <Button 
                   variant="danger" 
                   type="submit" 

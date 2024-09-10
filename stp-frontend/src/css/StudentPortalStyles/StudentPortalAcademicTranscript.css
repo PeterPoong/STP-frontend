@@ -316,3 +316,73 @@ tbody {
   max-width:12.5rem;
   outline: none;
 }
+
+/*table*/
+.transcript-search-bar-container
+{
+display: flex;
+justify-content: start;
+align-items:  center;
+flex-wrap: wrap;
+margin-bottom: 2rem;
+}
+
+.transcript-search-bar-padmar
+{
+  padding:3rem 2rem;
+  
+}
+
+
+
+/*responsive*/
+@media (max-width: 768px) {
+
+
+
+  input.search {
+    width: 12.5rem;
+    height: 1.75rem;
+    border-radius: 0.5rem;
+    color: black;
+    border: 2px solid #9E9E9E;
+    background-color: white;
+    display: block;
+    padding: 9px 4px 9px 40px;
+    background: transparent url("../../assets/StudentPortalAssets/iconSearch.svg") no-repeat;
+    background-size: 18.25px 18.25px;
+    background-position: 10px center;
+    align-self: center;
+  }
+  
+  input.search:focus {
+    outline: none;
+  }
+
+
+  
+}
+
+@media (max-width:576px)
+{
+  input.search {
+    width: 10.5rem;
+    height: 1.25rem;
+    border-radius: 0.5rem;
+    color: black;
+    border: 2px solid #9E9E9E;
+    background-color: white;
+    display: block;
+    padding: 9px 4px 9px 40px;
+    background: transparent url("../../assets/StudentPortalAssets/iconSearch.svg") no-repeat;
+    background-size: 15px 15px;
+    background-position: 10px center;
+    align-self: center;
+  }
+  
+  input.search:focus {
+    outline: none;
+  }
+
+}
+

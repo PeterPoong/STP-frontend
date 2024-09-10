@@ -98,7 +98,7 @@ const CoCurriculum = () => {
     };
 
     const filteredData = Array.isArray(data) ? data.filter(item =>
-        (item?.club_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (item?.club_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item?.student_position?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item?.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item?.year?.toString().includes(searchTerm))
@@ -236,75 +236,74 @@ const CoCurriculum = () => {
     if (error) return <div>Error: {error}</div>;
 
     return (
-        <div className='p-5'>
-            <div className="mb-4">
-                <div className="d-flex justify-content-start align-item-centger flex-wrap ">
-                    <span className="me-3 align-self-center">Show</span>
-                    <select className="show-option-table me-3"
-                        value={itemsPerPage}
-                        onChange={(e) => setItemsPerPage(Number(e.target.value))}>
-                        <option value={10}>10</option>
-                        <option value={20}>20</option>
-                        <option value={50}>50</option>
-                    </select>
-                    <span className="me-2 align-self-center">entries</span>
-                    <input
-                        type="search"
-                        className="search"
-                        placeholder="Search..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                    <button className="button-table px-5 py-1 ml-auto" onClick={() => {
-                        setCurrentItem(null);
-                        setIsPopupOpen(true);
-                    }}>
-                        ADD NEW
-                    </button>
-                </div>
+        <div className="transcript-search-bar-padmar">
+            <div className="transcript-search-bar-container  ">
+                <span className="me-3 align-self-center">Show</span>
+                <select className="show-option-table me-3"
+                    value={itemsPerPage}
+                    onChange={(e) => setItemsPerPage(Number(e.target.value))}>
+                    <option value={10}>10</option>
+                    <option value={20}>20</option>
+                    <option value={50}>50</option>
+                </select>
+                <span className="me-2 align-self-center">entries</span>
+                <input
+                    type="search"
+                    className="search"
+                    placeholder="Search..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <button className="button-table px-5 py-1 ml-auto" onClick={() => {
+                    setCurrentItem(null);
+                    setIsPopupOpen(true);
+                }}>
+                    ADD NEW
+                </button>
             </div>
-
-            {Array.isArray(currentItems) && currentItems.length > 0 ? (
-                <table className="w-100 ">
-                    <thead >
-                        <tr>
-                            <th className="border-bottom p-2 fw-normal">Club</th>
-                            <th className="border-bottom p-2 fw-normal">Position</th>
-                            <th className="border-bottom p-2 fw-normal">Year</th>
-                            <th className="border-bottom p-2 text-end fw-normal">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <TransitionGroup component={null}>
-                            {currentItems.map((item) => (
-                                <CSSTransition key={item.id || item.club_name} timeout={300} classNames="fade">
-                                    <tr>
-                                        <td className="border-bottom py-2 px-2">
-                                            <div className="d-flex align-items-center">
-                                                <div>
-                                                    <div className="file-title mb-1">{item.club_name}</div>
-                                                    <div className="file-date">{item.location}</div>
+            <div style={{ overflowX: 'auto' }}>
+                {Array.isArray(currentItems) && currentItems.length > 0 ? (
+                    <table className="w-100 ">
+                        <thead >
+                            <tr>
+                                <th className="border-bottom p-2 fw-normal">Club</th>
+                                <th className="border-bottom p-2 fw-normal">Position</th>
+                                <th className="border-bottom p-2 fw-normal">Year</th>
+                                <th className="border-bottom p-2 text-end fw-normal">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <TransitionGroup component={null}>
+                                {currentItems.map((item) => (
+                                    <CSSTransition key={item.id || item.club_name} timeout={300} classNames="fade">
+                                        <tr>
+                                            <td className="border-bottom py-2 px-2">
+                                                <div className="d-flex align-items-center">
+                                                    <div>
+                                                        <div className="file-title mb-1">{item.club_name}</div>
+                                                        <div className="file-date">{item.location}</div>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <td className="border-bottom p-2">{item.student_position}</td>
-                                        <td className="border-bottom p-2">{item.year}</td>
-                                        <td className="border-bottom p-2">
-                                            <div className="d-flex justify-content-end align-items-center">
-                                                <Trash2 size={20}  className="iconat-trash mx-2" onClick={() => openDeletePopup(item)} />
-                                                <Edit2 size={20}  className="iconat mx-2" onClick={() => editEntry(item)} />
-                                                <Eye size={20}  className="iconat ms-2" onClick={() => viewEntry(item)} />
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </CSSTransition>
-                            ))}
-                        </TransitionGroup>
-                    </tbody>
-                </table>
-            ) : (
-                <div>No other certificate or documentation found</div>
-            )}
+                                            </td>
+                                            <td className="border-bottom p-2">{item.student_position}</td>
+                                            <td className="border-bottom p-2">{item.year}</td>
+                                            <td className="border-bottom p-2">
+                                                <div className="d-flex justify-content-end align-items-center">
+                                                    <Trash2 size={20} className="iconat-trash mx-2" onClick={() => openDeletePopup(item)} />
+                                                    <Edit2 size={20} className="iconat mx-2" onClick={() => editEntry(item)} />
+                                                    <Eye size={20} className="iconat ms-2" onClick={() => viewEntry(item)} />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </CSSTransition>
+                                ))}
+                            </TransitionGroup>
+                        </tbody>
+                    </table>
+                ) : (
+                    <div>No other certificate or documentation found</div>
+                )}
+            </div>
             <div className="pagination">
                 <button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1}>
                     &lt;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { Form, Button, Row, Col } from 'react-bootstrap';
 import { Trash2, Edit, Calendar, User, Building, LucideFileChartColumnIncreasing, Save, Trophy, FileText, Upload, X, Plus, ChevronDown, Clock4, Landmark, CircleX, AlignJustify } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
@@ -30,8 +30,10 @@ import "react-datepicker/dist/react-datepicker.css";
 import WidgetPopUpRemind from "../../Components/StudentPortalComp/WidgetPopUpRemind";
 import WidgetPopUpSubmission from "../../Components/StudentPortalComp/WidgetPopUpSubmission";
 import WidgetPopUpFillIn from "../../Components/StudentPortalComp/WidgetPopUpFillIn";
-
+import { useNavigate } from "react-router-dom";
 // ... existing code ...
+
+
 
 const CustomConnector = styled(StepConnector)(({ theme }) => ({
   [`&.${stepConnectorClasses.alternativeLabel}`]: {
@@ -177,6 +179,10 @@ const StudentApplyCourse = () => {
   // const [showRemindPopup, setShowRemindPopup] = useState(false);
   const [showSubmissionPopup, setShowSubmissionPopup] = useState(false);
   // const [showFillInPopup, setShowFillInPopup] = useState(false);
+
+
+ 
+  
 
   //
   const [formData, setFormData] = useState({

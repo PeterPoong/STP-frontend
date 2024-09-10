@@ -14,11 +14,11 @@ import "../../css/StudentPortalStyles/StudentPortalBasicInformation.css";
 const StudentPortalBasicInformations = () => {
   const [selectedContent, setSelectedContent] = useState("basicInfo");
   const [profilePic, setProfilePic] = useState(null);
-
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
+  /*loading to check if have  token or not if dont have will navigaate back to studentPortalLogin Page */
   useEffect(() => {
     const token =
       sessionStorage.getItem("token") || localStorage.getItem("token");
@@ -30,7 +30,9 @@ const StudentPortalBasicInformations = () => {
       verifyToken(token);
     }
   }, [navigate]);
+/*end */
 
+/*validate Token api t check if have token or not if dont have will navigate back to studentPortalLoginPage and will remove the token */
   const verifyToken = async (token) => {
     try {
       console.log("Verifying token:", token);
@@ -68,11 +70,15 @@ const StudentPortalBasicInformations = () => {
       setIsLoading(false);
     }
   };
+  /*end */
 
+  /*passing the profilepic url from basicInfomationWidget t MyProfileWidget */
   const handleProfilePicUpdate = (newProfilePic) => {
     setProfilePic(newProfilePic);
   };
+  /*end */
 
+  /*rendercontent function */
   const renderContent = () => {
     switch (selectedContent) {
       case "basicInfo":
@@ -93,15 +99,15 @@ const StudentPortalBasicInformations = () => {
         return <BasicInformationWidget />;
     }
   };
+  /*end */
 
   if (isLoading) {
     return <div>Loading...</div>;
   }
-
   if (!isAuthenticated) {
     return null; // Or you could render a "Not Authorized" message
   }
-
+  
   return (
     <div className="app-container">
       <NavButtonsSP />

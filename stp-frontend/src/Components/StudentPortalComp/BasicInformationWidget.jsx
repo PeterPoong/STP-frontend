@@ -3,6 +3,7 @@ import { Card, Form, Button, Row, Col, Alert } from 'react-bootstrap';
 import "../../css/StudentPortalStyles/StudentPortalLoginForm.css";
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
+import "../../css/StudentPortalStyles/StudentButtonGroup.css";
 import axios from 'axios';
 
 const BasicInformationWidget = ({ onProfilePicUpdate }) => {
@@ -573,7 +574,7 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
             </Col>
           </Row>
           <div className="d-flex justify-content-end mt-3">
-            <div className="w-25">
+            <div className="my-2">
               <Button variant="danger" type="submit" className="mpbtndiv m-0 fw-bold rounded-pill">
                 Save
               </Button>

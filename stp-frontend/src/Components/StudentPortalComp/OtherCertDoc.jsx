@@ -21,21 +21,25 @@ const OtherCertDoc = () => {
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [isViewMode, setIsViewMode] = useState(false);
 
+    /* Fetch other documents and certificates from the API */
     const nodeRef = useRef(null);
     useEffect(() => {
         fetchOtherDocsCerts();
     }, [currentPage, itemsPerPage]);
+    /*end */
 
-
+    /* Normalize item structure for consistent data handling */
     const normalizeItem = (item) => {
         return {
             id: item.id,
             name: item.name || item.certificate_name,
             media: item.media || item.certificate_media,
-            createdAt: item.created_at || item.createdAt || 'No date'
+            created_at: item.created_at || item.createdAt || 'No date'
         };
     };
+    /*end*/
 
+    /* Fetch other documents and certificates from the API */
     const fetchOtherDocsCerts = async () => {
         setIsLoading(true);
         setError(null);
@@ -93,13 +97,15 @@ const OtherCertDoc = () => {
             setIsLoading(false);
         }
     };
-
+    /*end*/
 
     // Filter data based on search term
     const filteredData = Array.isArray(data) ? data.filter(item =>
     (item?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item?.media?.toLowerCase().includes(searchTerm.toLowerCase()))
     ) : [];
+    //end
+
     // Change page
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
@@ -108,6 +114,7 @@ const OtherCertDoc = () => {
     for (let i = 1; i <= paginationInfo.lastPage; i++) {
         pageNumbers.push(i);
     }
+    //end
 
     // Function to add new entry or update existing entry                                    
     const saveEntry = async (entry) => {
@@ -164,12 +171,14 @@ const OtherCertDoc = () => {
             return { success: false, message: error.message || 'Failed to save certificate. Please try again.' };
         }
     };
+    //end
 
     // Function to open delete popup
     const openDeletePopup = (item) => {
         setItemToDelete(item);
         setIsDeletePopupOpen(true);
     };
+    //end
 
     // Function to delete entry
     const deleteEntry = async () => {
@@ -232,6 +241,7 @@ const OtherCertDoc = () => {
             setError(error.message || 'Failed to delete achievement. Please try again.');
         }
     };
+    //end
 
     // Function to open popup for editing
     const editEntry = (item) => {
@@ -239,6 +249,7 @@ const OtherCertDoc = () => {
         setIsViewMode(false);
         setIsPopupOpen(true);
     };
+    //end
 
     // Function to open popup for viewing
     const viewEntry = (item) => {
@@ -246,6 +257,7 @@ const OtherCertDoc = () => {
         setIsViewMode(true);
         setIsPopupOpen(true);
     };
+    //end
 
     if (isLoading) return <div>Loading...</div>;
     if (error) return <div>Error: {error}</div>;
@@ -253,74 +265,73 @@ const OtherCertDoc = () => {
 
 
     return (
-        <div className='p-5'>
-            <div className="mb-4">
-                <div className="d-flex justify-content-start align-item-centger flex-wrap ">
-                    <span className="me-3 align-self-center">Show</span>
-                    <select className="show-option-table me-3"
-                        value={itemsPerPage}
-                        onChange={(e) => setItemsPerPage(Number(e.target.value))}>
-                        <option value={10}>10</option>
-                        <option value={20}>20</option>
-                        <option value={50}>50</option>
-                    </select>
-                    <span className="me-2 align-self-center">entries</span>
-                    <input
-                        type="search"
-                        className="search"
-                        placeholder="Search..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                    <button className="button-table px-5 py-1 ml-auto" onClick={() => {
-                        setCurrentItem(null);
-                        setIsPopupOpen(true);
-                    }}>
-                        ADD NEW
-                    </button>
-                </div>
+        <div className="transcript-search-bar-padmar">
+            <div className="transcript-search-bar-container ">
+                <span className="me-3 align-self-center">Show</span>
+                <select className="show-option-table me-3"
+                    value={itemsPerPage}
+                    onChange={(e) => setItemsPerPage(Number(e.target.value))}>
+                    <option value={10}>10</option>
+                    <option value={20}>20</option>
+                    <option value={50}>50</option>
+                </select>
+                <span className="me-2 align-self-center">entries</span>
+                <input
+                    type="search"
+                    className="search"
+                    placeholder="Search..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <button className="button-table px-5 py-1 ml-auto" onClick={() => {
+                    setCurrentItem(null);
+                    setIsPopupOpen(true);
+                }}>
+                    ADD NEW
+                </button>
             </div>
-
-            {Array.isArray(filteredData) && filteredData.length > 0 ? (
-                <table className="w-100 ">
-                    <thead>
-                        <tr>
-                            <th className="border-bottom fw-normal ps-2">Files</th>
-                            <th className="border-bottom p-2 fw-normal text-end">Filename</th>
-                            <th className="border-bottom p-2  fw-normal text-end">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <TransitionGroup component={null}>
-                            {filteredData.map((item) => (
-                                <CSSTransition key={item.id || item.certificate_name} timeout={300} classNames="fade">
-                                    <tr>
-                                        <td className="border-bottom py-2 px-2">
-                                            <div className="d-flex align-items-center ">
-                                                <FileText className="file-icon me-2" />
-                                                <div>
-                                                    <div className="file-title mb-1">{item.name}</div>
-                                                    <div className="file-date">{item.created_at || 'No date'}</div>
+            <div style={{ overflowX: 'auto' }}>
+                {Array.isArray(filteredData) && filteredData.length > 0 ? (
+                    <table className="w-100  ">
+                        <thead>
+                            <tr>
+                                <th className="border-bottom fw-normal ps-2">Files</th>
+                                <th className="border-bottom p-2 fw-normal text-end">Filename</th>
+                                <th className="border-bottom p-2  fw-normal text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <TransitionGroup component={null}>
+                                {filteredData.map((item) => (
+                                    <CSSTransition key={item.id || item.certificate_name} timeout={300} classNames="fade">
+                                        <tr>
+                                            <td className="border-bottom py-2 px-2">
+                                                <div className="d-flex align-items-center ">
+                                                    <FileText className="file-icon me-2" />
+                                                    <div>
+                                                        <div className="file-title mb-1">{item.name}</div>
+                                                        <div className="file-date">{item.created_at || 'No date'}</div>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <td className="border-bottom p-2 text-end text-secondary">{item.media || 'No file'}</td>
-                                        <td className="border-bottom p-2">
-                                            <div className="d-flex justify-content-end align-items-center">
-                                                <Trash2 size={18}  className="iconat-trash mx-2" onClick={() => openDeletePopup(item)} />
-                                                <Edit2 size={18}  className="iconat mx-2" onClick={() => editEntry(item)} />
-                                                <Eye size={18}  className="iconat ms-2" onClick={() => viewEntry(item)} />
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </CSSTransition>
-                            ))}
-                        </TransitionGroup>
-                    </tbody>
-                </table>
-            ) : (
-                <div>No other certificate or documentation found</div>
-            )}
+                                            </td>
+                                            <td className="border-bottom p-2 text-end text-secondary">{item.media || 'No file'}</td>
+                                            <td className="border-bottom p-2">
+                                                <div className="d-flex justify-content-end align-items-center">
+                                                    <Trash2 size={18} className="iconat-trash mx-2" onClick={() => openDeletePopup(item)} />
+                                                    <Edit2 size={18} className="iconat mx-2" onClick={() => editEntry(item)} />
+                                                    <Eye size={18} className="iconat ms-2" onClick={() => viewEntry(item)} />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </CSSTransition>
+                                ))}
+                            </TransitionGroup>
+                        </tbody>
+                    </table>
+                ) : (
+                    <div>No other certificate or documentation found</div>
+                )}
+            </div>
             {paginationInfo.lastPage > 1 && (
                 <div className="pagination">
                     <button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1}>

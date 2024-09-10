@@ -1,16 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  Form,
-  Button,
-  Container,
-  Row,
-  Col,
-  Alert,
-  InputGroup,
-} from "react-bootstrap";
+import { Form, Button, Container, Row, Col, Alert, InputGroup } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-
 import studentPortalLogin from "../../assets/StudentPortalAssets/studentPortalLogin.png";
 import studentPortalLoginLogo from "../../assets/StudentPortalAssets/studentPortalLoginLogo.png";
 import PhoneInput from "react-phone-input-2";
@@ -25,11 +16,12 @@ const StudentPortalLogin = () => {
   const [phone, setPhone] = useState("");
   const [countryCode, setCountryCode] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
-  const [countryCodes, setCountryCodes] = useState([]);
+  // const [countryCodes, setCountryCodes] = useState([]);
   const [loginStatus, setLoginStatus] = useState(null);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  /*Loading to check remember me, token for session and local storage, navigations to studentportalbasicinformation if have token*/
   useEffect(() => {
     const rememberMe = JSON.parse(
       localStorage.getItem("rememberMe") || "false"
@@ -37,34 +29,29 @@ const StudentPortalLogin = () => {
     const token = rememberMe
       ? localStorage.getItem("token")
       : sessionStorage.getItem("token");
-
     if (token) {
       navigate("/studentPortalBasicInformations");
     }
-
     const handleTabClosing = () => {
       if (!rememberMe) {
         sessionStorage.removeItem("token");
       }
     };
-
     window.addEventListener("beforeunload", handleTabClosing);
 
-    fetch(`${import.meta.env.VITE_BASE_URL}api/countryCode`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.success) {
-          setCountryCodes(data.data);
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching country codes:", error);
-      });
-
+    //fetch(`${import.meta.env.VITE_BASE_URL}api/countryCode`)
+    //  .then((response) => response.json())
+    //  .then((data) => {
+    //    if (data.success) {
+    //      setCountryCodes(data.data);
+    //    }
+    //  })
+    //  .catch((error) => {
+    //    console.error("Error fetching country codes:", error);
+    //  });
     const rememberedCountryCode = localStorage.getItem("rememberedCountryCode");
     const rememberedContactNumber = localStorage.getItem("rememberedContactNumber");
     const rememberedPassword = localStorage.getItem("rememberedPassword");
-    
     if (rememberedCountryCode && rememberedContactNumber) {
       setCountryCode(rememberedCountryCode);
       setPhone(rememberedCountryCode + rememberedContactNumber);
@@ -73,17 +60,20 @@ const StudentPortalLogin = () => {
     if (rememberedPassword) {
       setPassword(rememberedPassword);
     }
-
     return () => {
       window.removeEventListener("beforeunload", handleTabClosing);
     };
   }, [navigate]);
+  /*end*/
 
+  /* handle phone change */
   const handlePhoneChange = (value, country, e, formattedValue) => {
     setPhone(value);
     setCountryCode(country.dialCode);
   };
+ /*end*/
 
+ /*Longin api*/
   const handleSubmit = (e) => {
     e.preventDefault();
     setLoginStatus(null);
@@ -183,6 +173,8 @@ const StudentPortalLogin = () => {
         setLoginStatus("error");
       });
   };
+  /*end*/
+  
   return (
     <Container fluid className="h-100">
       <Row className="h-50">

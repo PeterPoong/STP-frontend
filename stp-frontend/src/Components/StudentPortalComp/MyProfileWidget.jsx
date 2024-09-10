@@ -17,6 +17,7 @@ const MyProfileWidget = ({ onSelectContent, profilePic }) => {
     const fileInputRef = useRef(null);
     const token = sessionStorage.getItem("token");
 
+    /* Effect to set local profile picture based on props */
     useEffect(() => {
         if (profilePic) {
             setLocalProfilePic(`${import.meta.env.VITE_BASE_URL}storage/${profilePic}`);
@@ -24,12 +25,16 @@ const MyProfileWidget = ({ onSelectContent, profilePic }) => {
             setLocalProfilePic(defaultProfilePic);
         }
     }, [profilePic]);
+    /*end */
 
+    /* Handle content selection for profile sections */
     const handleContentSelect = (content) => {
         setSelectedContent(content);
         onSelectContent(content);
     };
+    /*end */
 
+    /* Get item style based on selection */
     const getItemStyle = (content) => {
         return {
             cursor: 'pointer',
@@ -37,18 +42,24 @@ const MyProfileWidget = ({ onSelectContent, profilePic }) => {
             fontWeight: selectedContent === content ? 'nomal' : 'normal'
         };
     };
+    /*end */
 
+    /* Handle button click to show modal */
     const handleButtonClick = () => {
         setShowModal(true);
     };
+    /* end */
 
+    /* Handle file input change */
     const handleFileChange = (event) => {
         const file = event.target.files[0];
         setSelectedFile(file);
         setSelectedFileName(file ? file.name : '');
         setErrorUploadMessage('');
     };
+    /* end */
 
+     /* Handle file deletion */
     const handleDeleteFile = () => {
         setSelectedFile(null);
         setSelectedFileName('');
@@ -56,7 +67,9 @@ const MyProfileWidget = ({ onSelectContent, profilePic }) => {
             fileInputRef.current.value = '';
         }
     };
+    /* end */
 
+    /* Handle file upload to the server */
     const handleUpload = async () => {
         if (selectedFile) {
             const formData = new FormData();
@@ -90,6 +103,7 @@ const MyProfileWidget = ({ onSelectContent, profilePic }) => {
             }
         }
     };
+    /*end */
 
     return (
         <Card className="boxshadow">
@@ -149,8 +163,8 @@ const MyProfileWidget = ({ onSelectContent, profilePic }) => {
                                 </div>
                             )}
                             {!selectedFileName && (
-                                <Button 
-                                    variant="outline-primary" 
+                                <Button
+                                    variant="outline-primary"
                                     onClick={() => fileInputRef.current.click()}
                                     className="mt-2"
                                 >
@@ -167,8 +181,8 @@ const MyProfileWidget = ({ onSelectContent, profilePic }) => {
                             <Button variant="secondary" onClick={() => setShowModal(false)}>
                                 Cancel
                             </Button>
-                            <Button 
-                                variant="primary" 
+                            <Button
+                                variant="primary"
                                 onClick={handleUpload}
                                 disabled={!selectedFile}
                             >
@@ -192,15 +206,15 @@ const MyProfileWidget = ({ onSelectContent, profilePic }) => {
                 </ListGroup.Item>
                 <Collapse in={isProfileExpanded}>
                     <div>
-                        <ListGroup.Item 
-                            className="ps-4" 
+                        <ListGroup.Item
+                            className="ps-4"
                             onClick={() => handleContentSelect('basicInfo')}
                             style={getItemStyle('basicInfo')}
                         >
                             Basic Information
                         </ListGroup.Item>
-                        <ListGroup.Item 
-                            className="ps-4" 
+                        <ListGroup.Item
+                            className="ps-4"
                             onClick={() => handleContentSelect('managePassword')}
                             style={getItemStyle('managePassword')}
                         >
@@ -208,8 +222,8 @@ const MyProfileWidget = ({ onSelectContent, profilePic }) => {
                         </ListGroup.Item>
                     </div>
                 </Collapse>
-                <ListGroup.Item 
-                    className="transcript-item" 
+                <ListGroup.Item
+                    className="transcript-item"
                     onClick={() => handleContentSelect('transcript')}
                     style={getItemStyle('transcript')}
                 >
@@ -228,15 +242,15 @@ const MyProfileWidget = ({ onSelectContent, profilePic }) => {
                 </ListGroup.Item>
                 <Collapse in={isCoursesExpanded}>
                     <div>
-                        <ListGroup.Item 
-                            className="ps-4" 
+                        <ListGroup.Item
+                            className="ps-4"
                             onClick={() => handleContentSelect('appliedCoursesPending')}
                             style={getItemStyle('appliedCoursesPending')}
                         >
                             Pending
                         </ListGroup.Item>
-                        <ListGroup.Item 
-                            className="ps-4" 
+                        <ListGroup.Item
+                            className="ps-4"
                             onClick={() => handleContentSelect('appliedCoursesHistory')}
                             style={getItemStyle('appliedCoursesHistory')}
                         >

@@ -7,6 +7,7 @@ const WidgetPending = ({ isOpen, onClose, date, feedbacks, formID }) => {
 
   if (!isOpen) return null;
 
+  /*sendReminder api */
   const sendReminder = async () => {
     console.log('Sending reminder for formID:', formID);
     setIsSending(true);
@@ -16,7 +17,6 @@ const WidgetPending = ({ isOpen, onClose, date, feedbacks, formID }) => {
         console.error('No authentication token found');
         throw new Error('No authentication token found');
       }
-
       console.log('Sending POST request to sendReminder API...');
       const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/sendReminder`, {
         method: 'POST',
@@ -26,15 +26,12 @@ const WidgetPending = ({ isOpen, onClose, date, feedbacks, formID }) => {
         },
         body: JSON.stringify({ formID: formID }),
       });
-
       console.log('Response status:', response.status);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-
       const result = await response.json();
       console.log('API response:', result);
-
       if (result.success) {
         console.log('Reminder sent successfully');
         setReminderSent(true);
@@ -48,6 +45,7 @@ const WidgetPending = ({ isOpen, onClose, date, feedbacks, formID }) => {
       console.log('Reminder sending process completed');
     }
   };
+  /*end */
 
   return (
     <div className="popup-overlay">
@@ -64,8 +62,8 @@ const WidgetPending = ({ isOpen, onClose, date, feedbacks, formID }) => {
             {feedbacks.map((feedback, index) => (
               <p key={index}>{feedback}</p>
             ))}
-            <button 
-              className="buttonpending" 
+            <button
+              className="buttonpending"
               onClick={sendReminder}
               disabled={isSending || reminderSent}
             >
