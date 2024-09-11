@@ -91,13 +91,34 @@
     color: red !important;
     padding: 5px;
     text-align: center;
+    text-indent: -9999px; /* Hide the actual content off-screen */
+    position: relative;
+}
+
+.status-disable::before {
+    content: "Disabled"; /* Add "Disabled" text */
+    text-indent: 0; /* Ensure the custom text is visible */
+    position: absolute;
+    left: 0;
+    right: 0;
 }
 
 .status-active {
     color: green !important;
     padding: 5px;
     text-align: center;
+    text-indent: -9999px; /* Hide the actual content off-screen */
+    position: relative;
 }
+
+.status-active::before {
+    content: "Active"; /* Add "Active" text */
+    text-indent: 0; /* Ensure the custom text is visible */
+    position: absolute;
+    left: 0;
+    right: 0;
+}
+
 
 .status-pending {
     color: #FFAA1D !important;
@@ -154,13 +175,21 @@ button.addNew:hover{
 }
 
 button.accept,
-button.reject{
+button.rejected{
     width: 70px;
     height: 29px;
     border-radius: 15px;
     line-height: 14.4px;
     font-size: 14px;
     
+}
+button.rejected{
+    background-color: #D32F2F;
+}
+
+button.rejected:hover{
+    background-color: #8b0000;
+    border-color: #8b0000;
 }
 .btn-primary{
 background-color: #D32F2F;
@@ -222,5 +251,36 @@ background-color: #D32F2F;
 }
 
 button.confirm:hover{
-    background-color: #8b0000;
+    background-color: #8b0000 !important;
+}
+.dataFilter{
+    margin-bottom: -40px;
+}
+
+.dataFilterLabel{
+    font-size: 25px;
+   font-weight: 400 !important;
+}
+
+.categoryBox {
+    background-color: #F5F5F5;
+    border: 1px solid black;
+    width: 16px;
+    height: 16px;
+    appearance: none; /* Hide the default checkbox appearance */
+}
+
+.categoryBox:checked {
+    background-color: #4CAF50; /* Optional: change the background color when checked */
+    border-color: #4CAF50;
+    position: relative;
+}
+
+.categoryBox:checked::after {
+    content: '✔'; /* This adds a tick mark for a custom style */
+    position: absolute;
+    color: white;
+    font-size: 12px;
+    top: -1px;
+    left: 2px;
 }

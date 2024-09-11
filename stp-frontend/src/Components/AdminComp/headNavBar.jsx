@@ -29,6 +29,18 @@ const HeadNavBar = () => {
 
       case '/adminSubject':
         return 'Subject';
+
+      case '/adminList':
+      return 'Admin';
+
+      case '/adminApplicant':
+      return 'Applicant';
+
+      case '/adminPackage':
+        return 'Package';
+
+      case '/adminData':
+      return 'Data';
       // Add more cases as needed
       default:
         return 'Dashboard'; // Default title if path doesn't match any case

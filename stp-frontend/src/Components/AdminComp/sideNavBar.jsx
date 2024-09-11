@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Nav } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTachometerAlt, faAd,faSchool, faUserGraduate, faBook, faThList, faClipboardList, faUserShield, faFileAlt, faDatabase, faBars } from '@fortawesome/free-solid-svg-icons';import { NavLink } from 'react-router-dom';
+import { faTachometerAlt, faAd,faSchool, faUserGraduate, faBullhorn, faBook, faThList, faClipboardList, faUserShield, faFileAlt, faDatabase, faBars } from '@fortawesome/free-solid-svg-icons';import { NavLink } from 'react-router-dom';
 import '../../css/AdminStyles/AdminSideNav.css';
 import logo from '../../assets/AdminAssets/Images/logo.png';
 import logoIcon from '../../assets/AdminAssets/Images/logo-icon.png'
@@ -22,7 +22,7 @@ const SideNavBar = () => {
         <img src={logo} alt='Logo' />
           <div className="collapse-btn-container">
             <button className="collapse-btn" onClick={toggleCollapse}>
-              <FontAwesomeIcon icon={faBars} fixedWidth/>
+              <FontAwesomeIcon icon={faBars} fixedWidth/> 
             </button>
           </div>
       </div>
@@ -51,17 +51,23 @@ const SideNavBar = () => {
           <FontAwesomeIcon icon={faClipboardList} fixedWidth /><span className="link-text">Subject</span>
         </NavLink>
 
-        <NavLink to='/adminDashboard' className='nav-link'>
+        <NavLink to='/adminList' className='nav-link'>
           <FontAwesomeIcon icon={faUserShield} fixedWidth /><span className="link-text">Admin</span>
         </NavLink>
 
-        <NavLink to='/adminDashboard' className='nav-link'>
+        <NavLink to='/adminApplicant' className='nav-link'>
           <FontAwesomeIcon icon={faFileAlt} fixedWidth /><span className="link-text">Applicants</span>
         </NavLink>
+
         <NavLink to='/adminBanner' className='nav-link'>
           <FontAwesomeIcon icon={faAd} fixedWidth /><span className="link-text">Banner</span>
         </NavLink>
-        <NavLink to='/adminDashboard' className='nav-link'>
+
+        <NavLink to='/adminPackage' className='nav-link'>
+          <FontAwesomeIcon icon={faBullhorn} fixedWidth /><span className="link-text">Package</span>
+        </NavLink>
+        
+        <NavLink to='/adminData' className='nav-link'>
           <FontAwesomeIcon icon={faDatabase} fixedWidth /><span className="link-text">Data</span>
         </NavLink>
       </Nav>

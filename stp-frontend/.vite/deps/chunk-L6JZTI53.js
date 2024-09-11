@@ -29,6 +29,10 @@ import {
   useUncontrolled
 } from "./chunk-SACBWDNG.js";
 import {
+  require_classnames,
+  useBootstrapPrefix
+} from "./chunk-V45P6XYM.js";
+import {
   addClass,
   init_addClass,
   init_removeClass,
@@ -41,10 +45,6 @@ import {
   EXITING,
   init_Transition
 } from "./chunk-KTCTU4ET.js";
-import {
-  require_classnames,
-  useBootstrapPrefix
-} from "./chunk-V45P6XYM.js";
 import {
   require_jsx_runtime
 } from "./chunk-43ZI66F5.js";
@@ -1530,4 +1530,4 @@ export {
   NavbarText_default,
   Navbar_default
 };
-//# sourceMappingURL=chunk-EFWUVQJZ.js.map
+//# sourceMappingURL=chunk-L6JZTI53.js.map

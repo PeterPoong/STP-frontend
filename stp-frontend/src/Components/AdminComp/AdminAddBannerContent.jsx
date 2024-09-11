@@ -13,57 +13,64 @@ const AdminAddBannerContent = () => {
         banner_start: "",
         banner_end: "",
         banner_file: null,
-        featured_id: ""
+        featured_id: []
     });
     const [selectedFeatures, setSelectedFeatures] = useState([]);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`;
-    const [startDate, setStartDate] = useState(null);
+     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
-
     const handleSubmit = async (event) => {
         event.preventDefault();
-        
-        // Validate the form fields before submission (optional)
+    
+        // Debug logging
+        console.log("Form data:", formData);
+        console.log("Selected features:", selectedFeatures);
+    
+        // Check if all required fields are filled
         if (!formData.banner_name || !formData.banner_url || !formData.banner_start || !formData.banner_end || !formData.banner_file) {
+            // Debugging missing fields
+            if (!formData.banner_name) console.error("Missing banner_name");
+            if (!formData.banner_url) console.error("Missing banner_url");
+            if (!formData.banner_start) console.error("Missing banner_start");
+            if (!formData.banner_end) console.error("Missing banner_end");
+            if (!formData.banner_file) console.error("Missing banner_file");
+    
             setError("Please fill out all required fields.");
             return;
         }
     
-        // Prepare FormData object for multipart form data
+        const bannerStartFormatted = formatDateTime(new Date(formData.banner_start));
+        const bannerEndFormatted = formatDateTime(new Date(formData.banner_end));
+    
         const submissionData = new FormData();
         submissionData.append("banner_name", formData.banner_name);
         submissionData.append("banner_url", formData.banner_url);
-        submissionData.append("banner_start", formData.banner_start);
-        submissionData.append("banner_end", formData.banner_end);
+        submissionData.append("banner_start", bannerStartFormatted);
+        submissionData.append("banner_end", bannerEndFormatted);
         submissionData.append("banner_file", formData.banner_file);
-        
-        // Append selected features if any
+    
         selectedFeatures.forEach(featureId => {
-            submissionData.append("featured_id[]", featureId);  // Assuming the API accepts an array
+            submissionData.append("featured_id[]", featureId);
         });
     
         try {
-           
             const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/addBanner`, {
                 method: 'POST',
                 headers: {
                     'Authorization': Authenticate,
-                    // 'Content-Type': multipart form data will be automatically set by the browser
                 },
                 body: submissionData
             });
     
             const result = await response.json();
-            
+    
             if (response.ok) {
-                // Handle success (navigate or show a success message)
                 console.log("Banner added successfully!", result);
-                navigate("/admin/banners");  // Redirect to another page after success
+                navigate("/adminBanner");
             } else {
-                // Handle server errors
                 console.error("Error adding banner:", result.message);
                 setError(result.message || "Failed to add banner.");
             }
@@ -99,6 +106,7 @@ const AdminAddBannerContent = () => {
         fetchFeatured();
     }, [Authenticate]);
 
+
     const handleFeatureChange = (event) => {
         const featureId = parseInt(event.target.value);
         setSelectedFeatures(prevFeatures =>
@@ -114,14 +122,39 @@ const AdminAddBannerContent = () => {
         }));
     };
 
-const handleFieldChange = (e) => {
-  const { id, value } = e.target;
-  setFormData(prev => ({
-    ...prev,
-    [id]: value
-  }));
-};
+    const handleFieldChange = (e) => {
+        const { id, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [id]: value
+        }));
+    };
 
+    const formatDateTime = (dateTime) => {
+        console.log("Formatting date:", dateTime);
+        const date = new Date(dateTime);
+        const formattedDate = date.toISOString().slice(0, 19).replace('T', ' ');
+        console.log("Formatted date:", formattedDate);
+        return formattedDate;
+    };
+    console.log("Banner Start:", formData.banner_start);
+    console.log("Banner End:", formData.banner_end);
+
+    const handleDateChange = (date, type) => {
+        const formattedDate = formatDateTime(date);
+        if (type === 'start') {
+            setFormData(prev => ({
+                ...prev,
+                banner_start: banner_start
+            }));
+        } else if (type === 'end') {
+            setFormData(prev => ({
+                ...prev,
+                banner_end: banner_end
+            }));
+        }
+    };
+    
 
     const formFields = [
         {
@@ -129,7 +162,7 @@ const handleFieldChange = (e) => {
             label: "Banner Name",
             type: "text",
             placeholder: "Enter Banner name",
-            value: formData.name,
+            value: formData.banner_name,
             onChange: handleFieldChange,
             required: true
         },
@@ -147,12 +180,11 @@ const handleFieldChange = (e) => {
         },
     ];
 
-    // Check if the period dates are provided or not.
-    const formPeriod =[
+    const formPeriod = [
         {
             id: "banner_start",
             label: "From",
-            type: "date",
+            type: "datetime-local",
             value: formData.banner_start,
             onChange: handleFieldChange,
             required: true
@@ -160,11 +192,11 @@ const handleFieldChange = (e) => {
         {
             id: "banner_end",
             label: "To",
-            type: "date",
+            type: "datetime-local",
             value: formData.banner_end,
             onChange: handleFieldChange,
             required: true
-        },
+        }
     ];
 
     const formCheckboxes = bannerFeaturedList.map(feature => ({
@@ -190,7 +222,7 @@ const handleFieldChange = (e) => {
                 formFields={formFields}
                 formUrl={formUrl}
                 formCheckboxes={formCheckboxes}
-                formPeriod={formPeriod}  // Pass the period or null
+                formPeriod={formPeriod}
                 onSubmit={handleSubmit}
                 error={error}
                 buttons={buttons}
@@ -198,16 +230,7 @@ const handleFieldChange = (e) => {
                 handleBannerFileChange={handleBannerFileChange}
                 startDate={startDate}
                 endDate={endDate}
-                onDateChange={({ startDate, endDate }) => {
-                    setStartDate(startDate);
-                    setEndDate(endDate);
-                    setFormData(prev => ({
-                        ...prev,
-                        banner_start: startDate,
-                        banner_end: endDate
-                    }));
-                }}
-                
+                onDateChange={({ startDate, endDate }) => handleDateChange(startDate, endDate)}
             />
         </Container>
     );
