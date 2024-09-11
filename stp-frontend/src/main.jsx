@@ -40,6 +40,8 @@ import StudentPortalForgetPassword from "./Pages/StudentPortalPages/StudentPorta
 import StudentPortalResetPassword from "./Pages/StudentPortalPages/StudentPortalResetPassword";
 import StudentPortalSignUp from "./Pages/StudentPortalPages/StudentPortalSignUp";
 import StudentPortalBasicInformations from "./Pages/StudentPortalPages/StudentPortalBasicInformations";
+import StudentApplyCourses from "./Pages/StudentPortalPages/StudentApplyCourses";
+import StudentApplyCourse from "./Pages/StudentPortalPages/StudentApplyCourse";
 
 //schoolPortal Page
 import SchoolPortalLogin from "./Pages/SchoolPages/SchoolPortalLogin";
@@ -48,7 +50,7 @@ import SchoolDashboard from "./Pages/SchoolPages/SchoolDashboard";
 import SchoolPortalForgetPassword from "./Pages/SchoolPages/schoolPortalForgetPassword";
 import ExistSchool from "./Pages/SchoolPages/ExistSchool";
 
-import StudentApplyCourse from "./Pages/StudentPortalPages/StudentApplyCourse";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -222,6 +224,12 @@ const router = createBrowserRouter([
   {
     path: "/studentApplyCourse",
     element: <StudentApplyCourse />,
+  },
+
+  
+  {
+    path: "/studentApplyCourses",
+    element: <StudentApplyCourses />,
   },
 ]);
 

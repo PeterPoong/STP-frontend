@@ -1505,8 +1505,9 @@ p {
 .acp-application-body {
     display: flex;
     flex-wrap: wrap; /* Allow wrapping for smaller screens */
-    padding: 15px;
+    padding: 0.825rem 0.825rem 0.825rem 0;
     flex-direction: row;
+    justify-content: space-between;
 }
 
 .acp-status-badge {
@@ -1515,14 +1516,14 @@ p {
     right: 0;
     background-color: #FF6B00;
     color: white;
-    padding: 0rem 2.5rem 0.125rem 2.5rem;
+    padding: 0.25rem 3.5rem 0.25rem 3.5rem;
     border-radius: 0;
-    border-bottom-left-radius: 2rem;
+    border-bottom-left-radius: 1.25rem;
     font-size: 1.25rem;
 }
 
 .acp-left-section {
-    width: 50%;
+    width: 45%;
     padding-right: 15px;
 }
 
@@ -1603,12 +1604,13 @@ p {
 .acp-action-buttons {
     display: flex;
     flex-direction: column;
-    margin-top: 1.5rem;
+    margin-top: 2rem;
 }
 
 .acp-view-btn, .acp-withdraw-btn {
-    min-width: 1rem;
-    max-width: 7rem;
+    
+    padding:0rem 1rem;
+    max-width: 10rem;
     margin-top: 0.5rem;
 }
 

@@ -8,8 +8,9 @@ import 'react-select-search/style.css';
 import "../../../css/StudentPortalStyles/StudentPortalAcademicTranscript.css";
 import WidgetFileUploadAcademicTranscript from "../../../Components/StudentPortalComp/WidgetFileUploadAcademicTranscript";
 import WidgetPopUpDelete from "../../../Components/StudentPortalComp/WidgetPopUpDelete";
-import WidgetPopUpSubmission from "../../../Components/StudentPortalComp/WidgetPopUpSubmission";
+
 import "../../../css/StudentPortalStyles/StudentButtonGroup.css";
+import WidgetPopUpSubmission from "../../../Components/StudentPortalComp/Widget/WidgetPopUpSubmission";
 
 const ExamSelector = ({ exams, selectedExam, setSelectedExam }) => {
   const itemsPerPage = 5;

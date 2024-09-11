@@ -3,7 +3,7 @@ import { X, Edit2, ChevronDown, Upload, Check, FileText, Trash2 } from 'lucide-r
 import DatePicker from 'react-datepicker';
 import { Alert } from 'react-bootstrap';
 import 'react-datepicker/dist/react-datepicker.css';
-import '../../css/StudentPortalStyles/StudentPortalWidget.css';
+import '../../../css/StudentPortalStyles/StudentPortalWidget.css';
 
 const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
   const [achievement_name, setAchievementName] = useState('');

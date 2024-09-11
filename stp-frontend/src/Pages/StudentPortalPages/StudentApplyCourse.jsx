@@ -28,7 +28,7 @@ import "react-datepicker/dist/react-datepicker.css";
 
 //testing
 
-import WidgetPopUpSubmission from "../../Components/StudentPortalComp/WidgetPopUpSubmission";
+import WidgetPopUpSubmission from "../../Components/StudentPortalComp/Widget/WidgetPopUpSubmission";
 
 import { useNavigate } from "react-router-dom";
 // ... existing code ...
