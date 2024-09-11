@@ -1,12 +1,34 @@
-.PageContainer{
+/* Ensure the sidebar and main content take the full height of the viewport */
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+.PageContainer {
     display: flex;
+    min-height: 100vh; /* Full viewport height */
 }
 
-.SideNavContainer{
-    border: 1px solid #4A4A4A;
+.SideNavContainer {
+    background-color: #d9d9d9;
+    flex-shrink: 0; /* Prevent the sidebar from shrinking */
+    width: 250px; /* Set a fixed width for the sidebar */
+    height: 100vh; /* Ensure sidebar takes full height */
 }
 
-.HeadNavBarContainer{
-    width: 100%;
-    background: #ffffff;
+.MainContent {
+    flex-grow: 1; /* Allow main content to take remaining space */
+    padding: 20px;
+    height: 100vh; /* Ensure main content takes full height */
+    overflow-y: auto; /* Enable scrolling if content overflows */
+}
+
+/* Optional: Adjust sidebar and page container height for large screens */
+@media (min-width: 1920px) {
+    .PageContainer {
+        height: 100vh; /* Full viewport height */
+    }
+    .SideNavContainer {
+        width: 300px; /* Adjust width for larger screens if needed */
+    }
 }

@@ -377,8 +377,9 @@ const AdminAddSchoolContent = () => {
     ];
 
     return (
-        <Container fluid className="admin-add-school-container">
-            <AdminFormComponent
+        
+                <Container fluid className="admin-add-school-container">
+                    <AdminFormComponent
                 formTitle="School Information"
                 checkboxTitle="School Advertising Feature"
                 formFields={formFields}
@@ -399,9 +400,8 @@ const AdminAddSchoolContent = () => {
                 phone={formData.contact_number} 
                 personPhone={formData.person_in_charge_contact}  
                 country_code={formData.country_code}  
-            />
-
-        </Container>
+                />
+                </Container>
     );
 };
 

@@ -8,7 +8,7 @@
 /* Sidebar Styles */
 .SidebarContainer {
   width: 250px;
-  height: 100vh;
+  height: auto !important;
   background-color: #d9d9d9;
 }
 
@@ -56,30 +56,68 @@
   font-size: 12px;
 }
 
+/* Normal state */
 .nav-link {
   color: #B22222;
   padding: 15px 20px;
   display: flex;
   align-items: center;
+  background-color: transparent;
+  transition: background-color 0.3s ease;
 }
 
+/* Hover state */
 .nav-link:hover {
   background-color: #D32F2F;
   color: #fff;
 }
 
+/* Active state */
+.nav-link.active {
+  background-color: #D32F2F;
+  color: #fff;
+}
+
+.nav-link.active .link-text{
+  color: #fff;
+}
 .link-text {
   color: #000000;
   padding-left: 1rem;
 }
 
-/* Media Queries for Responsive Design */
+/* Media Queries */
 
-/* Small screens (max-width: 767px) */
-@media (max-width: 767px) {
+/* For screens wider than 1920px */
+@media (min-width: 1920px) {
   .SidebarContainer {
-    width: 200px;
-    
+    width: 300px;
+    height: auto !important;
+  }
+
+  .SidebarContainer.collapsed {
+    width: 100px;
+  }
+
+  .LogoContainer img {
+    width: 300px;
+    height: 90px;
+  }
+
+  .nav-link {
+    padding: 20px 30px;
+  }
+
+  .collapse-btn {
+    font-size: 14px;
+  }
+}
+
+/* For mobile screens */
+@media (max-width: 768px) {
+  .SidebarContainer {
+    width: 100px;
+    height: auto;
   }
 
   .SidebarContainer.collapsed {
@@ -87,63 +125,20 @@
   }
 
   .LogoContainer img {
-    width: 200px;
-    height: 70px;
+    width: 100px;
+    height: 40px;
+  }
+
+  .nav-link {
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .link-text {
+    display: none;
   }
 
   .collapse-btn {
     font-size: 10px;
-  }
-
-  .nav-link {
-    padding: 12px 15px;
-  }
-}
-
-/* Medium screens (min-width: 768px and max-width: 1024px) */
-@media (min-width: 768px) and (max-width: 1024px) {
-  .SidebarContainer {
-    width: 220px;
-  }
-
-  .SidebarContainer.collapsed {
-    width: 70px;
-  }
-
-  .LogoContainer img {
-    width: 220px;
-    height: 75px;
-  }
-
-  .collapse-btn {
-    font-size: 11px;
-  }
-
-  .nav-link {
-    padding: 13px 18px;
-  }
-}
-
-/* Large screens (min-width: 1025px) */
-@media (min-width: 1025px) {
-  .SidebarContainer {
-    width: 250px;
-  }
-
-  .SidebarContainer.collapsed {
-    width: 80px;
-  }
-
-  .LogoContainer img {
-    width: 250px;
-    height: 80px;
-  }
-
-  .collapse-btn {
-    font-size: 12px;
-  }
-
-  .nav-link {
-    padding: 15px 20px;
   }
 }
