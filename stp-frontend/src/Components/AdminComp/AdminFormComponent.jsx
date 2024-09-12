@@ -17,6 +17,7 @@ const AdminFormComponent = ({
   formPersonInCharge,
   formCategory,
   formAccount,
+  formCountry,
   formWebsite,
   formAddress,
   checkboxTitle,
@@ -328,7 +329,7 @@ console.log("Banner End Date:", formData.banner_end);
         </Row>
       </div>
       {formAddress && formAddress.map((Address, index) => (
-              <Form.Group key={index} controlId={Address.id} className="mb-5">
+              <Form.Group key={index} controlId={Address.id} className="mb-5 ms-2">
                 <Form.Label>{Address.label}</Form.Label>
                 <Form.Control
                   as={Address.as || "input"}
@@ -340,6 +341,31 @@ console.log("Banner End Date:", formData.banner_end);
                 />
               </Form.Group>
             ))}
+             
+        <Col md={12}>
+          <Row>
+              {formCountry && formCountry.map((country, index) => (
+                <Col md={4}>
+                            <Form.Group key={index} controlId={country.id} className="mb-5">
+                              <Form.Label>{country.label}</Form.Label>
+                              <Form.Control 
+                                as="select" 
+                                value={country.value} 
+                                onChange={country.onChange} 
+                                required={country.required || false}
+                              >
+                                <option value="">Select School Account Type</option>
+                                {country.options.map((option, optIndex) => (
+                                  <option key={optIndex} value={option.value}>
+                                    {option.label}
+                                  </option>
+                                ))}
+                              </Form.Control>
+                            </Form.Group>
+                  </Col>
+                          ))}
+            </Row>
+          </Col>
       {formTextarea && formTextarea.map((Textarea) => (
         <Form.Group key={Textarea.id} controlId={Textarea.id} className="mb-5 ms-2">
           <Form.Label>{Textarea.label}</Form.Label>

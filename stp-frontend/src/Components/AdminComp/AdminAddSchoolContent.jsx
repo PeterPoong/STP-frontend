@@ -23,6 +23,9 @@ const AdminAddSchoolContent = () => {
         school_address:"",
         category:"",
         account:"",
+        country:"",
+        state:"",
+        city:"",
         password: "",
         confirm_password: "",
         school_shortDesc: "",
@@ -38,7 +41,7 @@ const AdminAddSchoolContent = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         console.log("Submitting form data:", formData); // Debugging line
-        const { name, email, category, account, school_address, school_website, contact_number,person_in_charge_email,person_in_charge_name,person_in_charge_contact, country_code, confirm_password, school_shortDesc, school_fullDesc, password } = formData;
+        const { name, email, category, state, city, account, country, school_address, school_website, contact_number,person_in_charge_email,person_in_charge_name,person_in_charge_contact, country_code, confirm_password, school_shortDesc, school_fullDesc, password } = formData;
         
         const formPayload = new FormData();
         formPayload.append("school_address", formData.school_address);
@@ -53,6 +56,9 @@ const AdminAddSchoolContent = () => {
         formPayload.append("school_address", school_address);
         formPayload.append("category", category);
         formPayload.append("account", account);
+        formPayload.append("country", country);
+        formPayload.append("state", state);
+        formPayload.append("city", city);
         formPayload.append("password", password);
         formPayload.append("confirm_password", confirm_password);
         formPayload.append("school_shortDesc", school_shortDesc);
@@ -369,6 +375,44 @@ const AdminAddSchoolContent = () => {
             }))
         }
     ];
+    
+    const formCountry =[
+        {
+            id:"country",
+            label:"Country",
+            value: formData.country,
+            onChange: handleFieldChange,
+            required: true,
+            options: countryList.map(country => ({
+                label:country.country_name,
+                value:country.id
+            }))
+        },
+
+        {
+            id:"state",
+            label:"State",
+            value: formData.state,
+            onChange: handleFieldChange,
+            required: true,
+            options: stateList.map(state => ({
+                label:state.state_name,
+                value:state.id
+            }))
+        },
+
+        {
+            id:"city",
+            label:"City",
+            value: formData.city,
+            onChange: handleFieldChange,
+            required: true,
+            options: cityList.map(city => ({
+                label:city.city_name,
+                value:city.id
+            }))
+        },
+    ];
 
     const formHTML = [
         {
@@ -405,6 +449,7 @@ const AdminAddSchoolContent = () => {
                 formPassword={formPassword}
                 formTextarea={formTextarea}
                 formHTML={formHTML}
+                formCountry={formCountry}
                 formCategory={formCategory}
                 formAccount={formAccount}
                 formWebsite={formWebsite}
