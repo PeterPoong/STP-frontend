@@ -237,6 +237,7 @@ const StudentPortalSignUp = () => {
                       disableCountryCode={false}
                       disableDropdown={false}
                       autoFormat={true}
+                      style={{ zIndex: 11 }} 
                     />
                   </Form.Group>
                 </Col>
@@ -281,7 +282,7 @@ const StudentPortalSignUp = () => {
                       {(password.length === 0 || password.length >= 8) && (
                         <div
                           className="position-absolute top-50 end-0 translate-middle-y pe-3"
-                          style={{ zIndex: 0 }}
+                          style={{ zIndex: 10 }}
                         >
                           <span
                             className="password-toggle"

@@ -4,7 +4,7 @@ import { Trash2, Edit, Save, Clock, User, Building } from 'lucide-react';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-const CoCurriculum = ({ data, updateData }) => {
+const CoCurriculum = ({ }) => {
   const [activities, setActivities] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -40,7 +40,7 @@ const CoCurriculum = ({ data, updateData }) => {
           year: item.year || ''
         }));
         setActivities(normalizedData);
-        updateData(normalizedData);
+       
       } else {
         throw new Error(result.message || 'Failed to fetch co-curriculum activities');
       }
@@ -59,6 +59,13 @@ const CoCurriculum = ({ data, updateData }) => {
 
   const handleSaveActivity = async (index) => {
     const activity = activities[index];
+
+    // Validate required fields
+    if (!activity.club_name || !activity.student_position || !activity.location || !activity.year) {
+      alert('Please fill in all fields before saving.'); // Notify user
+      return; // Exit the function if validation fails
+    }
+
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
 
@@ -106,7 +113,7 @@ const CoCurriculum = ({ data, updateData }) => {
           i === index ? { ...a, id: result.data.id, isEditing: false } : a
         );
         setActivities(updatedActivities);
-        updateData(updatedActivities);
+        
         await fetchCoCurriculum();
       } else {
         throw new Error(result.message || 'Failed to save co-curriculum activity');
@@ -153,7 +160,7 @@ const CoCurriculum = ({ data, updateData }) => {
       if (result.success) {
         const updatedActivities = activities.filter((_, i) => i !== index);
         setActivities(updatedActivities);
-        updateData(updatedActivities);
+       
       } else {
         throw new Error(result.message || 'Failed to delete co-curriculum activity');
       }

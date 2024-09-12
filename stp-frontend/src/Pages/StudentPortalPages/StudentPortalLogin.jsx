@@ -234,6 +234,7 @@ const StudentPortalLogin = () => {
                       buttonClass="btn btn-outline-secondary"
                       dropdownClass="country-dropdown custom-dropdown"
                       countryCodeEditable={false}
+                      style={{zIndex:11}}
                       required
                     />
                   </Form.Group>

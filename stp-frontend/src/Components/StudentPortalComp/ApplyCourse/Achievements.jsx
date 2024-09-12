@@ -4,13 +4,15 @@ import { Trash2, Edit, Save, Clock, Trophy, Building, FileText, X } from 'lucide
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-const Achievements = ({ data, updateData }) => {
+const Achievements = ({ }) => {
   const [achievements, setAchievements] = useState([]);
+  const [achievementTypes, setAchievementTypes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchAchievements();
+    fetchAchievementTypes();
   }, []);
 
   const fetchAchievements = async () => {
@@ -31,7 +33,7 @@ const Achievements = ({ data, updateData }) => {
       const result = await response.json();
       if (result.success) {
         setAchievements(result.data.data);
-        updateData(result.data.data);
+        
       } else {
         throw new Error(result.message || 'Failed to fetch achievements');
       }
@@ -40,6 +42,33 @@ const Achievements = ({ data, updateData }) => {
       setError(error.message);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const fetchAchievementTypes = async () => {
+    try {
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/achievementTypeList`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch achievement types');
+      }
+
+      const result = await response.json();
+      if (result.success) {
+        setAchievementTypes(result.data);
+      } else {
+        throw new Error(result.message || 'Failed to fetch achievement types');
+      }
+    } catch (error) {
+      console.error('Error fetching achievement types:', error);
+      setError(error.message);
     }
   };
 
@@ -70,10 +99,16 @@ const Achievements = ({ data, updateData }) => {
   };
 
   const handleSaveAchievement = async (index) => {
+    const achievement = achievements[index];
+
+    // Validate required fields
+    if (!achievement.achievement_name || !achievement.title || !achievement.awarded_by || !achievement.date || !achievement.achievement_media) {
+      alert('Please fill in all fields before saving.'); // Notify user
+      return; // Exit the function if validation fails
+    }
+
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      const achievement = achievements[index];
-
       const dateToSave = achievement.date instanceof Date ? achievement.date : new Date(achievement.date);
 
       const formData = new FormData();
@@ -81,7 +116,7 @@ const Achievements = ({ data, updateData }) => {
       formData.append('date', dateToSave.toISOString().split('T')[0]);
       formData.append('title', achievement.title);
       formData.append('awarded_by', achievement.awarded_by);
-      
+
       if (achievement.achievement_media instanceof File) {
         formData.append('achievement_media', achievement.achievement_media);
       } else if (achievement.fileRemoved) {
@@ -111,7 +146,7 @@ const Achievements = ({ data, updateData }) => {
           i === index ? { ...a, id: result.data.id, isEditing: false, fileRemoved: false } : a
         );
         setAchievements(updatedAchievements);
-        updateData(updatedAchievements);
+       
         await fetchAchievements();
       } else {
         throw new Error(result.message || 'Failed to save achievement');
@@ -131,7 +166,7 @@ const Achievements = ({ data, updateData }) => {
         // If the achievement doesn't have an ID, it's not saved in the backend yet
         const updatedAchievements = achievements.filter((_, i) => i !== index);
         setAchievements(updatedAchievements);
-        updateData(updatedAchievements);
+        
         return;
       }
 
@@ -152,7 +187,7 @@ const Achievements = ({ data, updateData }) => {
       if (result.success) {
         const updatedAchievements = achievements.filter((_, i) => i !== index);
         setAchievements(updatedAchievements);
-        updateData(updatedAchievements);
+        
         await fetchAchievements();
       } else {
         throw new Error(result.message || 'Failed to delete achievement');
@@ -219,12 +254,18 @@ const Achievements = ({ data, updateData }) => {
                     <div className="d-flex align-items-center me-3 flex-shrink-0">
                       <Trophy size={18} className="me-2" />
                       <Form.Control
-                        type="text"
-                        placeholder="Title Obtained"
-                        value={achievement.title}
+                        as="select"
+                        value={achievement.title} 
                         onChange={(e) => handleAchievementChange(index, 'title', e.target.value)}
                         className="py-0 px-2 input-short"
-                      />
+                      >
+                        <option value="">Select Title</option>
+                        {achievementTypes.map((type) => (
+                          <option key={type.id} value={type.id}>
+                            {type.core_metaName}
+                          </option>
+                        ))}
+                      </Form.Control>
                     </div>
                     <div className="d-flex align-items-center me-3 flex-shrink-0">
                       <Building size={18} className="me-2" />
@@ -241,9 +282,11 @@ const Achievements = ({ data, updateData }) => {
                         <div className="d-flex align-items-center">
                           <FileText size={18} className="me-2" />
                           <span className="mx-0 text-decoration-underline text-truncate file-name">
-                            {achievement.achievement_media instanceof File 
-                              ? achievement.achievement_media.name 
-                              : achievement.achievement_media}
+                            {achievement.achievement_media instanceof File
+                              ? achievement.achievement_media.name
+                              : typeof achievement.achievement_media === 'string'
+                                ? achievement.achievement_media
+                                : 'File uploaded'}
                           </span>
                           <Button
                             variant="link"
@@ -297,7 +340,13 @@ const Achievements = ({ data, updateData }) => {
                     {achievement.achievement_media && (
                       <div className="d-flex align-items-center text-decoration-underline">
                         <FileText size={18} className="me-2" />
-                        <span>{achievement.achievement_media}</span>
+                        <span>
+                          {achievement.achievement_media instanceof File
+                            ? achievement.achievement_media.name
+                            : typeof achievement.achievement_media === 'string'
+                              ? achievement.achievement_media
+                              : 'File uploaded'}
+                        </span>
                       </div>
                     )}
                   </div>

@@ -3,7 +3,7 @@ import { Form, Row, Col, Alert } from 'react-bootstrap';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 
-const BasicInformation = ({ updateData }) => {
+const BasicInformation = ({onSubmit}) => {
     const [formData, setFormData] = useState({
         username: '',
         firstName: '',
@@ -87,21 +87,21 @@ const BasicInformation = ({ updateData }) => {
             const result = await response.json();
             if (result.success && result.data) {
                 setFormData({
-                    username: result.data.username,
-                    firstName: result.data.firstName,
-                    lastName: result.data.lastName,
-                    icNumber: result.data.ic,
-                    gender: result.data.gender,
-                    contactNumber: result.data.contact,
-                    country_code: result.data.country_code,
-                    emailAddress: result.data.email,
-                    address: result.data.address,
-                    country: result.data.country,
-                    state: result.data.state,
-                    city: result.data.city,
-                    postcode: result.data.postcode,
+                    username: result.data.username || '',
+                    firstName: result.data.firstName || '',
+                    lastName: result.data.lastName || '',
+                    icNumber: result.data.ic || '',
+                    gender: result.data.gender || '',
+                    contactNumber: result.data.contact || '',
+                    country_code: result.data.country_code || '',
+                    emailAddress: result.data.email || '',
+                    address: result.data.address || '',
+                    country: result.data.country || '',
+                    state: result.data.state || '',
+                    city: result.data.city || '',
+                    postcode: result.data.postcode || '',
                 });
-                updateData(result.data);
+                
             }
         } catch (error) {
             console.error('Error fetching student details:', error);
@@ -223,6 +223,7 @@ const BasicInformation = ({ updateData }) => {
         e.preventDefault();
         setError('');
         setSuccess('');
+        onSubmit(formData);
         try {
             const token = sessionStorage.getItem('token') || localStorage.getItem('token');
             const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/editStudentDetail`, {
@@ -250,7 +251,7 @@ const BasicInformation = ({ updateData }) => {
             const responseData = await response.json();
             if (responseData.success) {
                 setSuccess('Student details updated successfully!');
-                updateData(formData);
+                
             } else {
                 setError(responseData.message || 'Failed to update student details');
             }
@@ -269,7 +270,7 @@ const BasicInformation = ({ updateData }) => {
             {success && <Alert variant="success">{success}</Alert>}
             <div className="sap-content-caseone w-100 d-flex justify-content-center">
                 <div className="sap-content-caseone w-100 py-5 px-5">
-                    <Form onSubmit={handleSubmit}>
+                    <div>
                         <Row className="mb-5">
                             <Col md={6}>
                                 <Form.Group className="sac-form-group d-flex align-items-center">
@@ -474,11 +475,11 @@ const BasicInformation = ({ updateData }) => {
                             </Col>
                         </Row>
                         <div className="d-flex justify-content-end mt-3">
-                            <button type="submit" className="button-table px-5 py-1">
+                            <button onClick={handleSubmit}  className="button-table px-5 py-1">
                                 Save
                             </button>
                         </div>
-                    </Form>
+                    </div>
                 </div>
             </div>
         </div>

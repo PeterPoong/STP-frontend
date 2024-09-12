@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Form, Button, Row, Col } from 'react-bootstrap';
 import { Trash2, Edit, Save, FileText, Upload, X } from 'lucide-react';
 
-const OtherDocuments = ({ data, updateData }) => {
+const OtherDocuments = ({ }) => {
   const [documents, setDocuments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -29,7 +29,7 @@ const OtherDocuments = ({ data, updateData }) => {
       const result = await response.json();
       if (result.success) {
         setDocuments(result.data.data);
-        updateData(result.data.data);
+        
       } else {
         throw new Error(result.message || 'Failed to fetch documents');
       }
@@ -57,10 +57,16 @@ const OtherDocuments = ({ data, updateData }) => {
   };
 
   const handleSaveDocument = async (index) => {
+    const doc = documents[index];
+
+    // Validate required fields
+    if (!doc.name || !doc.media) {
+      alert('Please fill in all fields before saving.'); // Notify user
+      return; // Exit the function if validation fails
+    }
+
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      const doc = documents[index];
-
       const formData = new FormData();
       formData.append('certificate_name', doc.name);
       if (doc.media instanceof File) {
@@ -89,7 +95,8 @@ const OtherDocuments = ({ data, updateData }) => {
           i === index ? { ...d, id: result.data.id, isEditing: false } : d
         );
         setDocuments(updatedDocuments);
-        updateData(updatedDocuments);
+        
+        await fetchDocuments();
       } else {
         throw new Error(result.message || 'Failed to save document');
       }
@@ -108,7 +115,7 @@ const OtherDocuments = ({ data, updateData }) => {
         // If the document doesn't have an ID, it's not saved in the backend yet
         const updatedDocuments = documents.filter((_, i) => i !== index);
         setDocuments(updatedDocuments);
-        updateData(updatedDocuments);
+        
         return;
       }
 
@@ -129,7 +136,7 @@ const OtherDocuments = ({ data, updateData }) => {
       if (result.success) {
         const updatedDocuments = documents.filter((_, i) => i !== index);
         setDocuments(updatedDocuments);
-        updateData(updatedDocuments);
+       
       } else {
         throw new Error(result.message || 'Failed to delete document');
       }
@@ -169,9 +176,10 @@ const OtherDocuments = ({ data, updateData }) => {
                   placeholder="Name of certificate/document..."
                   value={doc.name}
                   onChange={(e) => handleDocumentChange(index, 'name', e.target.value)}
-                  className="mb-2 border-0 p-0 fw-bold"
+                  className={`mb-2 border-0 p-0 fw-bold ${!doc.name && 'border-danger'}`} // {{ edit_1 }}
                   style={{ fontSize: '1.1rem' }}
                 />
+               
                 <div className="d-flex justify-content-between">
                   <div className="mt-2">
                     {doc.media ? (

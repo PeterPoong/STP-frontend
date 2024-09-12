@@ -334,6 +334,13 @@ margin-bottom: 2rem;
 }
 
 
+/*selec style*/
+/* Main container */
+.sac-at-select-style {
+  width: 10rem;
+  /* Adjust as needed */
+}
+
 
 /*responsive*/
 @media (max-width: 768px) {

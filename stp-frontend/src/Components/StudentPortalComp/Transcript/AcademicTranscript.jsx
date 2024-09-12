@@ -661,7 +661,7 @@ const AcademicTranscript = () => {
 
         // Manually categorize transcript categories
         const examBased = ['SPM', 'O-level', 'GCSE', 'IGCSE', 'SSCE', 'UEC', 'SAT / ACT'];
-        const programBased = ['STPM', 'A-level', 'Foundation', 'Diploma'];
+        const programBased = ['STPM', 'A-level', 'Foundation', 'Diploma','O-level'];
 
         setExamBasedCategories(result.data.data.filter(cat => examBased.includes(cat.transcript_category)));
         setProgramBasedCategories(result.data.data.filter(cat => programBased.includes(cat.transcript_category)));

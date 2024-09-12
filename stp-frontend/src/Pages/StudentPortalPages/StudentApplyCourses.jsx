@@ -154,9 +154,9 @@ const StudentApplyCourses = () => {
     switch (activeStep) {
       case 0:
         return <BasicInformation 
-          data={formData.basicInformation} 
-          updateData={(data) => updateFormData('basicInformation', data)} 
-        />;
+        data={formData.basicInformation} 
+        onSubmit={(data) => updateFormData('basicInformation', data)} 
+      />;
       case 1:
         return <AcademicTranscript 
           data={formData.academicTranscript} 
