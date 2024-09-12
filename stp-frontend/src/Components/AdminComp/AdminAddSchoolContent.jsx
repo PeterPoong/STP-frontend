@@ -37,10 +37,11 @@ const AdminAddSchoolContent = () => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-    
+        console.log("Submitting form data:", formData); // Debugging line
         const { name, email, category, account, school_address, school_website, contact_number,person_in_charge_email,person_in_charge_name,person_in_charge_contact, country_code, confirm_password, school_shortDesc, school_fullDesc, password } = formData;
         
         const formPayload = new FormData();
+        formPayload.append("school_address", formData.school_address);
         formPayload.append("name", name);
         formPayload.append("email", email);
         formPayload.append("country_code", country_code);
@@ -79,6 +80,7 @@ const AdminAddSchoolContent = () => {
                 console.log('School successfully registered:', addSchoolData);
                 navigate('/adminSchool');
             } else {
+                console.error('Validation Error:', addSchoolData.errors); // Debugging line
                 throw new Error(`School Registration failed: ${addSchoolData.message}`);
             }
         } catch (error) {
@@ -215,6 +217,7 @@ const AdminAddSchoolContent = () => {
 
     const handleFieldChange = (e) => {
         const { id, value, type, files } = e.target;
+        console.log(`Field ${id} updated with value: ${value}`); // Debugging line
         if (type === "file") {
             setFormData(prev => ({
                 ...prev,
@@ -227,7 +230,7 @@ const AdminAddSchoolContent = () => {
             }));
         }
     };
-
+    
     const handleEditorChange = (content) => {
         setFormData(prevFormData => ({
             ...prevFormData,
@@ -291,7 +294,7 @@ const AdminAddSchoolContent = () => {
         },
     ];
 
-    const formAddress=[
+    const formAddress = [
         {
             id: "school_address",
             label: "School Full Address",
@@ -302,6 +305,7 @@ const AdminAddSchoolContent = () => {
             required: true
         },
     ];
+    
 
     const formPassword = [
         {
