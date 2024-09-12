@@ -20,6 +20,7 @@ const AdminAddSchoolContent = () => {
         person_in_charge_email:"",
         person_in_charge_contact:"",
         school_website:"",
+        school_address:"",
         category:"",
         account:"",
         password: "",
@@ -37,7 +38,7 @@ const AdminAddSchoolContent = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
     
-        const { name, email, category, account,  school_website, contact_number,person_in_charge_email,person_in_charge_name,person_in_charge_contact, country_code, confirm_password, school_shortDesc, school_fullDesc, password } = formData;
+        const { name, email, category, account, school_address, school_website, contact_number,person_in_charge_email,person_in_charge_name,person_in_charge_contact, country_code, confirm_password, school_shortDesc, school_fullDesc, password } = formData;
         
         const formPayload = new FormData();
         formPayload.append("name", name);
@@ -48,6 +49,7 @@ const AdminAddSchoolContent = () => {
         formPayload.append("person_in_charge_name", person_in_charge_name);
         formPayload.append("person_in_charge_email", person_in_charge_email);
         formPayload.append("school_website", school_website);
+        formPayload.append("school_address", school_address);
         formPayload.append("category", category);
         formPayload.append("account", account);
         formPayload.append("password", password);
@@ -288,6 +290,19 @@ const AdminAddSchoolContent = () => {
             required: true
         },
     ];
+
+    const formAddress=[
+        {
+            id: "school_address",
+            label: "School Full Address",
+            type: "text",
+            placeholder: "Enter School Address",
+            value: formData.school_address,
+            onChange: handleFieldChange,
+            required: true
+        },
+    ];
+
     const formPassword = [
         {
             id: "password",
@@ -389,6 +404,7 @@ const AdminAddSchoolContent = () => {
                 formCategory={formCategory}
                 formAccount={formAccount}
                 formWebsite={formWebsite}
+                formAddress={formAddress}
                 onSubmit={handleSubmit}
                 formCheckboxes={formCheckboxes}
                 formPersonInCharge={formPersonInCharge}

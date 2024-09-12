@@ -18,6 +18,7 @@ const AdminFormComponent = ({
   formCategory,
   formAccount,
   formWebsite,
+  formAddress,
   checkboxTitle,
   checkboxDetail,
   formPeriod,
@@ -326,23 +327,35 @@ console.log("Banner End Date:", formData.banner_end);
           </Col>
         </Row>
       </div>
-
-      {formTextarea && formTextarea.map((field) => (
-        <Form.Group key={field.id} controlId={field.id} className="mb-5">
-          <Form.Label>{field.label}</Form.Label>
+      {formAddress && formAddress.map((Address, index) => (
+              <Form.Group key={index} controlId={Address.id} className="mb-5">
+                <Form.Label>{Address.label}</Form.Label>
+                <Form.Control
+                  as={Address.as || "input"}
+                  type={Address.type || "text"}
+                  placeholder={Address.placeholder || ""}
+                  value={Address.value}
+                  onChange={Address.onChange}
+                  required={Address.required || false}
+                />
+              </Form.Group>
+            ))}
+      {formTextarea && formTextarea.map((Textarea) => (
+        <Form.Group key={Textarea.id} controlId={Textarea.id} className="mb-5 ms-2">
+          <Form.Label>{Textarea.label}</Form.Label>
           <Form.Control
-            as={field.as}
-            rows={field.rows}
-            placeholder={field.placeholder}
-            value={field.value}
-            onChange={field.onChange}
-            required={field.required}
+            as={Textarea.as}
+            rows={Textarea.rows}
+            placeholder={Textarea.placeholder}
+            value={Textarea.value}
+            onChange={Textarea.onChange}
+            required={Textarea.required}
           />
         </Form.Group>
       ))}
 
       {formHTML && formHTML.map(field => (
-        <Form.Group key={field.id} controlId={field.id}>
+        <Form.Group key={field.id} controlId={field.id} className="ms-2">
           <Form.Label>{field.label}</Form.Label>
           <Editor
             apiKey="y5c72cgxrai71v1jmggt9a2gx878yajnqxrxxkhtylowcqbb"
