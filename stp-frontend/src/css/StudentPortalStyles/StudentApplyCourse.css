@@ -314,35 +314,46 @@ select__menu-list::-webkit-scrollbar-thumb:hover {
 }
 
 .president {
-  background-color: #007bff;
+  background-color: #50B5FE;
   color: white;
 }
 
 .secretary {
-  background-color: #6f42c1;
+  background-color: #8979FF;
   color: white;
 }
 
 .treasurer {
-  background-color: #17a2b8;
+  background-color: #537FF1;
   color: white;
 }
 
 .ajk {
   background-color: #ffc107;
+  color: white;
+  
 }
 
 .champion {
-  background-color: #ffc107;
-}
-
-.runner-up {
-  background-color: #6c757d;
+  background-color: #FEBD14;
   color: white;
 }
 
-.participation {
-  background-color: #28a745;
+.runner-up
+{
+  background-color: #C0C0C0;
+  color: white;
+}
+
+.participation
+{
+  background-color: #F07B00;
+  color: white;
+}
+
+.awarded
+{
+  background-color: #76fa39;
   color: white;
 }
 
@@ -628,6 +639,8 @@ ul {
   background-size: 8px 8px;
   padding-right: 1.5rem;
 }
+
+
 
 .sac-form-select:focus {
   border-color: #B71A18;

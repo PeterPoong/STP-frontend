@@ -230,6 +230,7 @@ const StudentApplyCourses = () => {
               className="sac-submit-button"
               onClick={() => navigate(`/studentApplicationSummary/${sessionStorage.getItem('lastAppliedCourseId')}`)}
             >
+              
               View Summary
             </Button>
             <Button className="sac-submit-button" onClick={() => navigate('/courses')}>

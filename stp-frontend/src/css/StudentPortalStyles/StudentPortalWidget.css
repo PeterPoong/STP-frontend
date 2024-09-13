@@ -1561,6 +1561,7 @@ p {
     height: 5rem;
     object-fit: contain;
     margin-right: 1.5rem;
+    margin-left:1.5rem;
 }
 
 .acp-university-name {
