@@ -42,6 +42,7 @@ import StudentPortalSignUp from "./Pages/StudentPortalPages/StudentPortalSignUp"
 import StudentPortalBasicInformations from "./Pages/StudentPortalPages/StudentPortalBasicInformations";
 import StudentApplyCourses from "./Pages/StudentPortalPages/StudentApplyCourses";
 import StudentApplyCourse from "./Pages/StudentPortalPages/StudentApplyCourse";
+import StudentApplicationSummary from "./Pages/StudentPortalPages/StudentApplicationSummary";
 
 //schoolPortal Page
 import SchoolPortalLogin from "./Pages/SchoolPages/SchoolPortalLogin";
@@ -228,9 +229,16 @@ const router = createBrowserRouter([
 
   
   {
-    path: "/studentApplyCourses",
+    path: "/studentApplyCourse/:courseId",
     element: <StudentApplyCourses />,
   },
+
+  {
+    path: "/studentApplicationSummary/:courseId",
+    element: < StudentApplicationSummary />,
+  },
+
+ 
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(

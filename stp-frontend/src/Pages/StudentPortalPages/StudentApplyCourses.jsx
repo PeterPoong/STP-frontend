@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
-import { Box, Stepper, Step, StepLabel} from '@mui/material';
+import { Box, Stepper, Step, StepLabel } from '@mui/material';
 import StepConnector, { stepConnectorClasses } from '@mui/material/StepConnector';
 import { styled } from '@mui/material/styles';
 import NavButtonsSP from "../../Components/StudentPortalComp/NavButtonsSP";
@@ -11,40 +11,40 @@ import CoCurriculum from '../../Components/StudentPortalComp/ApplyCourse/CoCurri
 import Achievements from '../../Components/StudentPortalComp/ApplyCourse/Achievements';
 import OtherDocuments from '../../Components/StudentPortalComp/ApplyCourse/OtherDocuments';
 import WidgetPopUpSubmission from "../../Components/StudentPortalComp/Widget/WidgetPopUpSubmission";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import "../../css/StudentPortalStyles/StudentApplyCourse.css";
 import "../../css/StudentPortalStyles/StudentButtonGroup.css";
 import image1 from "../../assets/StudentAssets/University Logo/image1.jpg";
 
 const CustomConnector = styled(StepConnector)(({ theme }) => ({
+  [`&.${stepConnectorClasses.alternativeLabel}`]: {
+    top: 25, // Half of the icon height (50/2) to center the connector
+  },
+  [`&.${stepConnectorClasses.active}`]: {
+    [`& .${stepConnectorClasses.line}`]: {
+      borderColor: '#B71A18',
+      borderWidth: "0.5rem"
+    },
+  },
+  [`&.${stepConnectorClasses.completed}`]: {
+    [`& .${stepConnectorClasses.line}`]: {
+      borderColor: '#B71A18',
+      borderWidth: "0.5rem"
+    },
+  },
+  [`& .${stepConnectorClasses.line}`]: {
+    borderColor: '#e0e0e0',
+    borderWidth: "0.5rem",
+  },
+  '@media (max-width: 375px)': {
     [`&.${stepConnectorClasses.alternativeLabel}`]: {
-      top: 25, // Half of the icon height (50/2) to center the connector
-    },
-    [`&.${stepConnectorClasses.active}`]: {
-      [`& .${stepConnectorClasses.line}`]: {
-        borderColor: '#B71A18',
-        borderWidth: "0.5rem"
-      },
-    },
-    [`&.${stepConnectorClasses.completed}`]: {
-      [`& .${stepConnectorClasses.line}`]: {
-        borderColor: '#B71A18',
-        borderWidth: "0.5rem"
-      },
+      top: 20,
     },
     [`& .${stepConnectorClasses.line}`]: {
-      borderColor: '#e0e0e0',
-      borderWidth: "0.5rem",
+      borderWidth: "0.3rem",
     },
-    '@media (max-width: 375px)': {
-      [`&.${stepConnectorClasses.alternativeLabel}`]: {
-        top: 20,
-      },
-      [`& .${stepConnectorClasses.line}`]: {
-        borderWidth: "0.3rem",
-      },
-    },
-  }));
+  },
+}));
 
 const CustomStepper = styled(Stepper)(({ theme }) => ({
   '& .MuiStepConnector-line': {
@@ -112,6 +112,7 @@ const steps = [
 
 const StudentApplyCourses = () => {
   const [activeStep, setActiveStep] = useState(0);
+  const { courseId } = useParams();
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showSubmissionPopup, setShowSubmissionPopup] = useState(false);
   const [formData, setFormData] = useState({
@@ -136,12 +137,34 @@ const StudentApplyCourses = () => {
     setShowSubmissionPopup(true);
   };
 
-  const handleConfirmSubmission = () => {
-    setShowSubmissionPopup(false);
-    setIsSubmitted(true);
-    // Here you would typically send the formData to your backend
-    console.log('Form submitted:', formData);
+
+
+  const handleConfirmSubmission = async () => {
+    try {
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/applyCourse`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ courseID: courseId }),
+      });
+
+      if (response.ok) {
+        setShowSubmissionPopup(false);
+        setIsSubmitted(true);
+
+        // Store only the most recently applied course ID
+        sessionStorage.setItem('lastAppliedCourseId', courseId);
+      } else {
+        console.error('Error submitting course application:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error submitting course application:', error);
+    }
   };
+
 
   const updateFormData = (step, data) => {
     setFormData(prevData => ({
@@ -153,29 +176,29 @@ const StudentApplyCourses = () => {
   const renderStep = () => {
     switch (activeStep) {
       case 0:
-        return <BasicInformation 
-        data={formData.basicInformation} 
-        onSubmit={(data) => updateFormData('basicInformation', data)} 
-      />;
+        return <BasicInformation
+          data={formData.basicInformation}
+          onSubmit={(data) => updateFormData('basicInformation', data)}
+        />;
       case 1:
-        return <AcademicTranscript 
-          data={formData.academicTranscript} 
-          updateData={(data) => updateFormData('academicTranscript', data)} 
+        return <AcademicTranscript
+          data={formData.academicTranscript}
+          updateData={(data) => updateFormData('academicTranscript', data)}
         />;
       case 2:
-        return <CoCurriculum 
-          data={formData.coCurriculum} 
-          updateData={(data) => updateFormData('coCurriculum', data)} 
+        return <CoCurriculum
+          data={formData.coCurriculum}
+          updateData={(data) => updateFormData('coCurriculum', data)}
         />;
       case 3:
-        return <Achievements 
-          data={formData.achievements} 
-          updateData={(data) => updateFormData('achievements', data)} 
+        return <Achievements
+          data={formData.achievements}
+          updateData={(data) => updateFormData('achievements', data)}
         />;
       case 4:
-        return <OtherDocuments 
-          data={formData.otherDocs} 
-          updateData={(data) => updateFormData('otherDocs', data)} 
+        return <OtherDocuments
+          data={formData.otherDocs}
+          updateData={(data) => updateFormData('otherDocs', data)}
         />;
       default:
         return null;
@@ -203,10 +226,13 @@ const StudentApplyCourses = () => {
             </div>
           </div>
           <div className="post-submission-buttons">
-            <Button className="sac-submit-button" onClick={() => {/* Add logic to view summary */}}>
+            <Button
+              className="sac-submit-button"
+              onClick={() => navigate(`/studentApplicationSummary/${sessionStorage.getItem('lastAppliedCourseId')}`)}
+            >
               View Summary
             </Button>
-            <Button className="sac-submit-button" onClick={() => navigate('/course-page')}>
+            <Button className="sac-submit-button" onClick={() => navigate('/courses')}>
               Back to Course Page
             </Button>
           </div>
