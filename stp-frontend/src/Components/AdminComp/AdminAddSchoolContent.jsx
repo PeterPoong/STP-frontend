@@ -1,16 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { Container } from "react-bootstrap";
+import { Container, Col, Button, Modal } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { useDropzone } from "react-dropzone";
 import AdminFormComponent from './AdminFormComponent';
 import 'typeface-ubuntu';
 import "../../css/AdminStyles/AdminFormStyle.css";
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
+import { FaTrashAlt } from 'react-icons/fa';
 
 const AdminAddSchoolContent = () => {
     const [schoolFeaturedList, setSchoolFeaturedList] = useState([]);
     const [categoryList, setCategoryList] = useState([]); 
     const [accountList, setAccountList] = useState([]); 
+    const [countryList, setCountryList]= useState ([]);
+    const [stateList, setStateList]= useState ([]);
+    const [cityList, setCityList]= useState ([]);
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -37,11 +42,15 @@ const AdminAddSchoolContent = () => {
     const navigate = useNavigate();
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`;
+    const [coverFile, setCoverFile] = useState(null);
+    const [albumFiles, setAlbumFiles] = useState([]);
+    const [showPreview, setShowPreview] = useState(false);
+    const [previewFile, setPreviewFile] = useState(null);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         console.log("Submitting form data:", formData); // Debugging line
-        const { name, email, category, state, city, account, country, school_address, school_website, contact_number,person_in_charge_email,person_in_charge_name,person_in_charge_contact, country_code, confirm_password, school_shortDesc, school_fullDesc, password } = formData;
+        const { name, email, category, state, city, account, country, school_address, school_website, contact_number, person_in_charge_email, person_in_charge_name, person_in_charge_contact, country_code, confirm_password, school_shortDesc, school_fullDesc, password } = formData;
         
         const formPayload = new FormData();
         formPayload.append("school_address", formData.school_address);
@@ -69,9 +78,19 @@ const AdminAddSchoolContent = () => {
             formPayload.append("featured[]", feature);
         });
     
+        // Append cover photo if available
+        if (coverFile) {
+            formPayload.append('cover_photo', coverFile);
+        }
+    
+        // Append album files if available
+        albumFiles.forEach((file, index) => {
+            formPayload.append(`album_photos[${index}]`, file);
+        });
+    
         try {
             console.log("FormData before submission:", formPayload);
-    
+            
             const addSchoolResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/addSchool`, {
                 method: 'POST',
                 headers: {
@@ -94,6 +113,7 @@ const AdminAddSchoolContent = () => {
             console.error('Error during school registration:', error);
         }
     };
+    
     useEffect(() => {
         const fetchFeatured = async () => {
             try {
@@ -183,6 +203,64 @@ const AdminAddSchoolContent = () => {
         fetchAccounts();
     }, [Authenticate]);
 
+    console.log(`${import.meta.env.VITE_BASE_URL}api/student/countryList`);
+    // Fetch country list (GET request)
+    useEffect(() => {
+      fetch(`${import.meta.env.VITE_BASE_URL}api/student/countryList`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            setCountryList(data.data);
+            console.log("Countries fetched: ", data.data);
+          }
+        })
+        .catch(error => console.error('Error fetching countries:', error));
+    }, []);
+  
+     // Fetch states (POST request)
+  const fetchStates = (countryId) => {
+    fetch(`${import.meta.env.VITE_BASE_URL}api/getState`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id: countryId }),
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          setStateList(data.data);
+        } else {
+          setStateList([]);
+        }
+      })
+      .catch(error => console.error('Error fetching states:', error));
+  };
+        // Fetch cities (POST request)
+  const fetchCities = (stateId) => {
+    fetch(`${import.meta.env.VITE_BASE_URL}api/getCities`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id: stateId }),
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          setCityList(data.data);
+        } else {
+          setCityList([]);
+        }
+      })
+      .catch(error => console.error('Error fetching cities:', error));
+  };
+
     const handleFeatureChange = (event) => {
         const featureId = parseInt(event.target.value);
         setSelectedFeatures(prevFeatures => {
@@ -210,9 +288,6 @@ const AdminAddSchoolContent = () => {
             }
         });
     };
-    
-    
-
     const handleLogoChange = (e) => {
         const file = e.target.files[0];
         setFormData(prev => ({
@@ -243,6 +318,55 @@ const AdminAddSchoolContent = () => {
             school_fullDesc: content,
         }));
     };
+    const handleCountryChange = (e) => {
+        const countryId = e.target.value;
+        setFormData({
+          ...formData,
+          country: countryId,
+          state: '',
+          city: ''
+        });
+        fetchStates(countryId); // Fetch states when country changes
+      };
+      
+      const handleStateChange = (e) => {
+        const stateId = e.target.value;
+        setFormData({
+          ...formData,
+          state: stateId,
+          city: ''
+        });
+        fetchCities(stateId); // Fetch cities when state changes
+      };
+      
+   // Handle city change
+   const handleCityChange = (e) => {
+    setFormData({ ...formData, city: e.target.value });
+  };
+
+  const { getRootProps: getCoverRootProps, getInputProps: getCoverInputProps } = useDropzone({
+    accept: 'image/*',
+    onDrop: acceptedFiles => setCoverFile(acceptedFiles[0])
+    });
+
+
+    const { getRootProps: getAlbumRootProps, getInputProps: getAlbumInputProps } = useDropzone({
+        accept: 'image/*',
+        onDrop: acceptedFiles => setAlbumFiles(prevFiles => [...prevFiles, ...acceptedFiles])
+    });
+
+    const handleRemoveCover = () => setCoverFile(null);
+
+    const handleRemoveAlbum = (fileToRemove) => {
+        setAlbumFiles(prevFiles => prevFiles.filter(file => file !== fileToRemove));
+    };
+
+    const handleShowPreview = (file) => {
+        setPreviewFile(file);
+        setShowPreview(true);
+    };
+
+    const handleClosePreview = () => setShowPreview(false);
 
     const formFields = [
         {
@@ -376,43 +500,45 @@ const AdminAddSchoolContent = () => {
         }
     ];
     
-    const formCountry =[
+    const formCountry = [
         {
-            id:"country",
-            label:"Country",
-            value: formData.country,
-            onChange: handleFieldChange,
-            required: true,
-            options: countryList.map(country => ({
-                label:country.country_name,
-                value:country.id
-            }))
+          id: "country",
+          label: "Country",
+          value: formData.country,
+          onChange: handleCountryChange,
+          required: true,
+          options: countryList.map(country => ({
+            label: country.country_name,
+            value: country.id
+          })),
+          placeholder: "Select Country"
         },
-
         {
-            id:"state",
-            label:"State",
-            value: formData.state,
-            onChange: handleFieldChange,
-            required: true,
-            options: stateList.map(state => ({
-                label:state.state_name,
-                value:state.id
-            }))
+          id: "state",
+          label: "State",
+          value: formData.state,
+          onChange: handleStateChange,
+          required: true,
+          options: stateList.map(state => ({
+            label: state.state_name,
+            value: state.id
+          })),
+          placeholder: "" // Placeholder hidden
         },
-
         {
-            id:"city",
-            label:"City",
-            value: formData.city,
-            onChange: handleFieldChange,
-            required: true,
-            options: cityList.map(city => ({
-                label:city.city_name,
-                value:city.id
-            }))
-        },
-    ];
+          id: "city",
+          label: "City",
+          value: formData.city,
+          onChange: handleCityChange,
+          required: true,
+          options: cityList.map(city => ({
+            label: city.city_name,
+            value: city.id
+          })),
+          placeholder: "" // Placeholder hidden
+        }
+      ];
+      
 
     const formHTML = [
         {
@@ -464,7 +590,21 @@ const AdminAddSchoolContent = () => {
                 handlePhoneChange={handlePhoneChange}  
                 phone={formData.contact_number} 
                 personPhone={formData.person_in_charge_contact}  
-                country_code={formData.country_code}  
+                country_code={formData.country_code}
+                showUploadFeature={true}
+                coverUploadProps={getCoverRootProps()}
+                coverInputProps={getCoverInputProps()}
+                coverFile={coverFile}
+                handleRemoveCover={handleRemoveCover}
+                albumUploadProps={getAlbumRootProps()}
+                albumInputProps={getAlbumInputProps()}
+                albumFiles={albumFiles}
+                handleRemoveAlbum={handleRemoveAlbum}
+                handleShowPreview={handleShowPreview}
+                handleClosePreview={handleClosePreview}
+                showPreview={showPreview}
+                previewFile={previewFile}
+    
                 />
                 </Container>
     );

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Form, Row, Col, Button, Image } from "react-bootstrap";
+import { Form, Row, Col, Button, Image, Modal } from "react-bootstrap";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { Editor } from '@tinymce/tinymce-react';
@@ -7,6 +7,8 @@ import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import TimePicker from 'react-time-picker';
 import 'react-time-picker/dist/TimePicker.css';
+import { useDropzone } from "react-dropzone";
+import { FaTrashAlt, FaUpload, FaFileImage} from 'react-icons/fa';
 
 const AdminFormComponent = ({
   formTitle,
@@ -40,24 +42,24 @@ const AdminFormComponent = ({
   handleBannerFileChange,
   startDate,
   endDate,
-  onDateChange
+  onDateChange,
+  showUploadFeature,
+  coverUploadProps,
+  coverInputProps,
+  albumUploadProps,
+  albumInputProps,
+
 }) => {
   const [formData, setFormData] = useState({});
   
   const handleFieldChange = (e) => {
     const { id, value, type, files } = e.target;
-    if (type === "file") {
-      setFormData(prev => ({
-        ...prev,
-        [id]: files[0]
-      }));
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [id]: value
-      }));
-    }
+    setFormData(prev => ({
+      ...prev,
+      [id]: type === 'file' ? files[0] : value
+    }));
   };
+  
   
   const [selectedStartDate, setSelectedStartDate] = useState(startDate ? new Date(startDate) : null);
   const [selectedEndDate, setSelectedEndDate] = useState(endDate ? new Date(endDate) : null);
@@ -109,6 +111,62 @@ const AdminFormComponent = ({
 console.log("Banner Start Date:", formData.banner_start);
 console.log("Banner End Date:", formData.banner_end);
 
+const [coverFile, setCoverFile] = useState(null);
+const [albumFiles, setAlbumFiles] = useState([]);
+const [showPreview, setShowPreview] = useState(false);
+const [showCoverPreview, setShowCoverPreview] = useState(false);
+const [previewFile, setPreviewFile] = useState(null);
+
+
+const [file, setFile] = useState(null);
+
+ 
+const handleRemoveCover = () => {
+  setCoverFile(null);
+};
+
+const handleRemoveAlbum = (fileToRemove) => {
+  setAlbumFiles(prevFiles => prevFiles.filter(file => file !== fileToRemove));
+};
+
+
+const handleShowPreview = (file) => {
+  setPreviewFile(file);
+  setShowPreview(true);
+};
+
+const handleShowCoverPreview = () => {
+  if (coverFile) {
+    setPreviewFile(coverFile);
+    setShowCoverPreview(true);
+  }
+};
+
+const handleCloseCoverPreview = () => {
+  setShowCoverPreview(false);
+};
+const handleClosePreview = () => {
+  setShowPreview(false);
+};
+const { getRootProps, getInputProps } = useDropzone({
+  accept: 'image/*',
+  onDrop: (acceptedFiles) => {
+    setFile(acceptedFiles[0]);
+  }
+});
+const { getRootProps: getCoverRootProps, getInputProps: getCoverInputProps } = useDropzone({
+  accept: 'image/*',
+  onDrop: (acceptedFiles) => {
+    setCoverFile(acceptedFiles[0]);
+  },
+});
+// Dropzone hooks for album photos
+const { getRootProps: getAlbumRootProps, getInputProps: getAlbumInputProps } = useDropzone({
+  accept: 'image/*',
+  onDrop: (acceptedFiles) => {
+    setAlbumFiles(prevFiles => [...prevFiles, ...acceptedFiles]);
+  },
+});
 
   return (
     <Form onSubmit={onSubmit} className="admin-form-component">
@@ -179,7 +237,6 @@ console.log("Banner End Date:", formData.banner_end);
                 />
               </Form.Group>
             )}
-
             {formPassword && formPassword.map((password, index) => (
               <Form.Group key={index} controlId={password.id} className="mb-5">
                 <Form.Label>{password.label}</Form.Label>
@@ -193,7 +250,6 @@ console.log("Banner End Date:", formData.banner_end);
                 />
               </Form.Group>
             ))}
-
             {formAccount && formAccount.map((account, index) => (
               <Form.Group key={index} controlId={account.id} className="mb-5">
                 <Form.Label>{account.label}</Form.Label>
@@ -248,6 +304,7 @@ console.log("Banner End Date:", formData.banner_end);
             ))}
 
             {formPeriod && (
+{formPeriod && (
               <Col md={12}>
                 <Row>
                   {formPeriod.map((periodField, index) => (
@@ -255,15 +312,15 @@ console.log("Banner End Date:", formData.banner_end);
                       <Form.Group controlId={periodField.id} className="mb-3">
                         <Form.Label>{periodField.label}</Form.Label>
                         <Form.Control
-                          type="datetime-local"
-                          value={periodField.id === "banner_start"
-                            ? (selectedStartDate ? formatDateTimeLocal(selectedStartDate) : '')
-                            : (selectedEndDate ? formatDateTimeLocal(selectedEndDate) : '')}
-                          onChange={(e) => {
-                            const newDate = new Date(e.target.value);
-                            handleDateChange(newDate, periodField.id === "banner_start" ? 'start' : 'end');
-                          }}
-                          required={periodField.required || false}
+                            type="datetime-local"
+                            value={periodField.id === "banner_start"
+                                ? (selectedStartDate ? formatDateTimeLocal(selectedStartDate) : '')
+                                : (selectedEndDate ? formatDateTimeLocal(selectedEndDate) : '')}
+                            onChange={(e) => {
+                                const newDate = new Date(e.target.value);
+                                handleDateChange(newDate, periodField.id === "banner_start" ? 'start' : 'end');
+                            }}
+                            required={periodField.required || false}
                         />
                       </Form.Group>
                     </Col>
@@ -280,7 +337,7 @@ console.log("Banner End Date:", formData.banner_end);
                 </Row>
               </Col>
             )}
-
+    
             {/* Person In Charge Contact Phone Input */}
             {handlePhoneChange && personPhone !== undefined && (
               <Form.Group controlId="person_in_charge_contact" className="mb-5">
@@ -297,7 +354,6 @@ console.log("Banner End Date:", formData.banner_end);
                 />
               </Form.Group>
             )}
-
             {formPersonInCharge && formPersonInCharge.map((PersonInCharge, index) => (
               <Form.Group key={index} controlId={PersonInCharge.id} className="mb-5">
                 <Form.Label>{PersonInCharge.label}</Form.Label>
@@ -311,7 +367,6 @@ console.log("Banner End Date:", formData.banner_end);
                 />
               </Form.Group>
             ))}
-
             {formWebsite && formWebsite.map((Website, index) => (
               <Form.Group key={index} controlId={Website.id} className="mb-5">
                 <Form.Label>{Website.label}</Form.Label>
@@ -329,43 +384,45 @@ console.log("Banner End Date:", formData.banner_end);
         </Row>
       </div>
       {formAddress && formAddress.map((Address, index) => (
-              <Form.Group key={index} controlId={Address.id} className="mb-5 ms-2">
-                <Form.Label>{Address.label}</Form.Label>
-                <Form.Control
-                  as={Address.as || "input"}
-                  type={Address.type || "text"}
-                  placeholder={Address.placeholder || ""}
-                  value={Address.value}
-                  onChange={Address.onChange}
-                  required={Address.required || false}
-                />
-              </Form.Group>
-            ))}
-             
-        <Col md={12}>
-          <Row>
-              {formCountry && formCountry.map((country, index) => (
-                <Col md={4}>
-                            <Form.Group key={index} controlId={country.id} className="mb-5">
-                              <Form.Label>{country.label}</Form.Label>
-                              <Form.Control 
-                                as="select" 
-                                value={country.value} 
-                                onChange={country.onChange} 
-                                required={country.required || false}
-                              >
-                                <option value="">Select School Account Type</option>
-                                {country.options.map((option, optIndex) => (
-                                  <option key={optIndex} value={option.value}>
-                                    {option.label}
-                                  </option>
-                                ))}
-                              </Form.Control>
-                            </Form.Group>
-                  </Col>
+        <Form.Group key={index} controlId={Address.id} className="mb-5 ms-2">
+          <Form.Label>{Address.label}</Form.Label>
+            <Form.Control
+              as={Address.as || "input"}
+              type={Address.type || "text"}
+              placeholder={Address.placeholder || ""}
+              value={Address.value}
+              onChange={Address.onChange}
+              required={Address.required || false}
+              />
+            </Form.Group>
+          ))}
+             <Col md={12}>
+                <Row>
+                  {formCountry && formCountry.map((field, index) => (
+                    <Col md={4} key={index}>
+                      <Form.Group controlId={field.id} className="mb-5 ms-2">
+                        <Form.Label>{field.label}</Form.Label>
+                        <Form.Control 
+                          as="select" 
+                          value={field.value} 
+                          onChange={field.onChange} 
+                          required={field.required}
+                        >
+                          {/* Conditionally render placeholder option */}
+                          {field.id === "country" && (
+                            <option value="">Select {field.label}</option>
+                          )}
+                          {field.options.map((option, optIndex) => (
+                            <option key={optIndex} value={option.value}>
+                              {option.label}
+                            </option>
                           ))}
-            </Row>
-          </Col>
+                        </Form.Control>
+                      </Form.Group>
+                    </Col>
+                  ))}
+                </Row>
+              </Col>
       {formTextarea && formTextarea.map((Textarea) => (
         <Form.Group key={Textarea.id} controlId={Textarea.id} className="mb-5 ms-2">
           <Form.Label>{Textarea.label}</Form.Label>
@@ -379,6 +436,118 @@ console.log("Banner End Date:", formData.banner_end);
           />
         </Form.Group>
       ))}
+
+       {/* Conditionally show the drag-and-drop upload for cover photo */}
+       {showUploadFeature && (
+          <div className="upload-section">
+            <div className="mb-4">
+              <h5>Cover Photo</h5>
+              <div className="cover-photo-dropzone">
+                {coverFile ? (
+                  <div className="file-info d-flex align-items-center">
+                    <FaFileImage className="me-2" />
+                    <span className="file-name me-3">{coverFile.name}</span>
+                    <Button variant="link" onClick={handleShowCoverPreview} className="p-0 me-2">
+                      Click to view
+                    </Button>
+                    <Button variant="link" onClick={handleRemoveCover} className="p-0">
+                      <FaTrashAlt />
+                    </Button>
+                  </div>
+                ) : (
+                  <div {...getCoverRootProps()} className="dropzone text-center p-3 border rounded">
+                    <input {...getCoverInputProps()} />
+                    <FaUpload size={32} className="mb-2" />
+                    <p>Click to upload or drag and drop</p>
+                    <small className="text-muted">JPG, JPEG, PNG less than 2MB</small>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="mb-4">
+              <h5>Photo Album</h5>
+              <div {...getAlbumRootProps()} className="dropzone text-center p-3 border rounded mb-3">
+                <input {...getAlbumInputProps()} />
+                <FaUpload size={32} className="mb-2" />
+                <p>Click to upload or drag and drop</p>
+                <small className="text-muted">JPG, JPEG, PNG less than 2MB</small>
+              </div>
+
+              {albumFiles.map((file, index) => (
+                <div key={index} className="file-info d-flex align-items-center mb-2">
+                  <FaFileImage className="me-2" />
+                  <span className="file-name me-3">{file.name}</span>
+                  <Button variant="link" onClick={() => handleShowPreview(file)} className="p-0 me-2">
+                    Click to view
+                  </Button>
+                  <Button variant="link" onClick={() => handleRemoveAlbum(file)} className="p-0">
+                    <FaTrashAlt />
+                  </Button>
+                </div>
+              ))}
+            </div>
+
+           {/* Modal for Cover Preview */}
+            {showCoverPreview && previewFile && (
+              <Modal
+                show={showCoverPreview}
+                onHide={handleCloseCoverPreview}
+                centered // To center the modal
+                size="lg" // To give it a larger size initially
+                dialogClassName="modal-preview" // Custom class for modal dialog
+              >
+                <Modal.Header closeButton>
+                  <Modal.Title>Cover Photo Preview</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  <div className="text-center"> {/* Center the image */}
+                    <Image 
+                      src={URL.createObjectURL(previewFile)} 
+                      alt="Cover Preview" 
+                      className="img-fluid preview-img" // Custom class for styling
+                    />
+                  </div>
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button variant="secondary" onClick={handleCloseCoverPreview}>
+                    Close
+                  </Button>
+                </Modal.Footer>
+              </Modal>
+            )}
+
+            {/* Modal for Album Preview */}
+            {showPreview && previewFile && (
+              <Modal
+                show={showPreview}
+                onHide={handleClosePreview}
+                centered // Center the modal
+                size="lg" // Start with larger modal size
+                dialogClassName="modal-preview" // Custom class for modal dialog
+              >
+                <Modal.Header closeButton>
+                  <Modal.Title>Album Photo Preview</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  <div className="text-center"> {/* Center the image */}
+                    <Image 
+                      src={URL.createObjectURL(previewFile)} 
+                      alt="Album Preview" 
+                      className="img-fluid preview-img" // Custom class for styling
+                    />
+                  </div>
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button variant="secondary" onClick={handleClosePreview}>
+                    Close
+                  </Button>
+                </Modal.Footer>
+              </Modal>
+            )}
+
+          </div>
+        )}
 
       {formHTML && formHTML.map(field => (
         <Form.Group key={field.id} controlId={field.id} className="ms-2">
@@ -436,7 +605,6 @@ console.log("Banner End Date:", formData.banner_end);
           />
         </Form.Group>
       ))}
-
       {/* Render checkboxes conditionally */}
       {formCheckboxes && formCheckboxes.length > 0 && (
         <div className="check">
@@ -458,7 +626,6 @@ console.log("Banner End Date:", formData.banner_end);
           </Form.Group>
         </div>
       )}
-
       {error && <div className="error-message">{error}</div>}
       {/* Submit Button */}
       <Row className="mb-3">
@@ -473,5 +640,4 @@ console.log("Banner End Date:", formData.banner_end);
     </Form>
   );
 };
-
 export default AdminFormComponent;

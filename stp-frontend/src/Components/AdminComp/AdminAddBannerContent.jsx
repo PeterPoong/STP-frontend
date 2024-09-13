@@ -145,15 +145,16 @@ const AdminAddBannerContent = () => {
         if (type === 'start') {
             setFormData(prev => ({
                 ...prev,
-                banner_start: banner_start
+                banner_start: formattedDate // Update to formatted date
             }));
         } else if (type === 'end') {
             setFormData(prev => ({
                 ...prev,
-                banner_end: banner_end
+                banner_end: formattedDate // Update to formatted date
             }));
         }
     };
+    
     
 
     const formFields = [
@@ -228,9 +229,9 @@ const AdminAddBannerContent = () => {
                 buttons={buttons}
                 banner_file={formData.banner_file ? URL.createObjectURL(formData.banner_file) : null}
                 handleBannerFileChange={handleBannerFileChange}
-                startDate={startDate}
-                endDate={endDate}
-                onDateChange={({ startDate, endDate }) => handleDateChange(startDate, endDate)}
+                startDate={formData.banner_start}  // Passing the banner_start state
+                endDate={formData.banner_end}      // Passing the banner_end state
+                onDateChange={handleDateChange}    // Ensure the callback is passed correctly
             />
         </Container>
     );
