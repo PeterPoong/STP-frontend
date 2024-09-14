@@ -44,10 +44,11 @@ const AdminFormComponent = ({
   endDate,
   onDateChange,
   showUploadFeature,
+  handleDateChange,
   coverUploadProps,
   coverInputProps,
   albumUploadProps,
-  albumInputProps,
+  albumInputProps
 
 }) => {
   const [formData, setFormData] = useState({});
@@ -60,88 +61,76 @@ const AdminFormComponent = ({
     }));
   };
   
-  
-  const [selectedStartDate, setSelectedStartDate] = useState(startDate ? new Date(startDate) : null);
-  const [selectedEndDate, setSelectedEndDate] = useState(endDate ? new Date(endDate) : null);
-
-  const handleDateChange = (date, type) => {
-    if (type === 'start') {
-      setSelectedStartDate(date);
-      setFormData(prev => ({
-        ...prev,
-        banner_start: formatDateTimeLocal(date)
-      }));
-    } else if (type === 'end') {
-      setSelectedEndDate(date);
-      setFormData(prev => ({
-        ...prev,
-        banner_end: formatDateTimeLocal(date)
-      }));
-    }
-  };
-
-  const handleDateClick = (date) => {
-    const adjustedDate = new Date(date);
-    adjustedDate.setHours(0, 0, 0, 0); // Set time to midnight
-
-    if (!selectedStartDate) {
-      setSelectedStartDate(adjustedDate);
-      setSelectedEndDate(null);
-      handleDateChange(adjustedDate, 'start');
-    } else if (selectedStartDate && !selectedEndDate) {
-      setSelectedEndDate(adjustedDate);
-      handleDateChange(adjustedDate, 'end');
-    } else {
-      // Reset both dates if a new start date is selected after end date
-      setSelectedStartDate(adjustedDate);
-      setSelectedEndDate(null);
-      handleDateChange(adjustedDate, 'start');
-    }
-  };
-
-  const formatDateTimeLocal = (date) => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
-    const day = String(date.getDate()).padStart(2, '0');
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    const seconds = String(date.getSeconds()).padStart(2, '0');
-    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-};
-console.log("Banner Start Date:", formData.banner_start);
-console.log("Banner End Date:", formData.banner_end);
-
+   // Add useState hooks for managing selected dates
+   const [selectedStartDate, setSelectedStartDate] = useState(null);
+   const [selectedEndDate, setSelectedEndDate] = useState(null);
+ 
+  //  const handleDateChange = (date, type) => {
+  //    if (!date) return;
+ 
+  //    const formattedDate = formatDateTimeLocal(date);
+ 
+  //    if (type === 'start') {
+  //      setSelectedStartDate(date);
+  //      // You can update the formData with the new banner start date here
+  //    } else if (type === 'end') {
+  //      setSelectedEndDate(date);
+  //      // You can update the formData with the new banner end date here
+  //    }
+  //  };
+ 
+   const handleDateClick = (date) => {
+     const adjustedDate = new Date(date);
+     adjustedDate.setHours(0, 0, 0, 0); // Set time to midnight
+ 
+     if (!selectedStartDate) {
+       // Set start date if no start date is selected
+       setSelectedStartDate(adjustedDate);
+       handleDateChange(adjustedDate, 'start');
+     } else if (selectedStartDate && !selectedEndDate) {
+       // Set end date if start date is selected and end date is not
+       setSelectedEndDate(adjustedDate);
+       handleDateChange(adjustedDate, 'end');
+     } else {
+       // Reset both dates if a new start date is selected after end date
+       setSelectedStartDate(adjustedDate);
+       setSelectedEndDate(null);
+       handleDateChange(adjustedDate, 'start');
+     }
+   };
+ 
+   const formatDateTimeLocal = (date) => {
+     const year = date.getFullYear();
+     const month = String(date.getMonth() + 1).padStart(2, '0');
+     const day = String(date.getDate()).padStart(2, '0');
+     const hours = String(date.getHours()).padStart(2, '0');
+     const minutes = String(date.getMinutes()).padStart(2, '0');
+     return `${year}-${month}-${day}T${hours}:${minutes}`;
+   };
+ 
 const [coverFile, setCoverFile] = useState(null);
 const [albumFiles, setAlbumFiles] = useState([]);
 const [showPreview, setShowPreview] = useState(false);
 const [showCoverPreview, setShowCoverPreview] = useState(false);
 const [previewFile, setPreviewFile] = useState(null);
-
-
 const [file, setFile] = useState(null);
 
- 
 const handleRemoveCover = () => {
   setCoverFile(null);
 };
-
 const handleRemoveAlbum = (fileToRemove) => {
   setAlbumFiles(prevFiles => prevFiles.filter(file => file !== fileToRemove));
 };
-
-
 const handleShowPreview = (file) => {
   setPreviewFile(file);
   setShowPreview(true);
 };
-
 const handleShowCoverPreview = () => {
   if (coverFile) {
     setPreviewFile(coverFile);
     setShowCoverPreview(true);
   }
 };
-
 const handleCloseCoverPreview = () => {
   setShowCoverPreview(false);
 };
@@ -167,7 +156,6 @@ const { getRootProps: getAlbumRootProps, getInputProps: getAlbumInputProps } = u
     setAlbumFiles(prevFiles => [...prevFiles, ...acceptedFiles]);
   },
 });
-
   return (
     <Form onSubmit={onSubmit} className="admin-form-component">
       <h3 className="fw-light text-left mt-4 mb-4">{formTitle}</h3>
@@ -303,41 +291,55 @@ const { getRootProps: getAlbumRootProps, getInputProps: getAlbumInputProps } = u
               </Form.Group>
             ))}
 
-            {formPeriod && (
 {formPeriod && (
-              <Col md={12}>
-                <Row>
-                  {formPeriod.map((periodField, index) => (
-                    <Col md={6} key={index}>
-                      <Form.Group controlId={periodField.id} className="mb-3">
-                        <Form.Label>{periodField.label}</Form.Label>
-                        <Form.Control
-                            type="datetime-local"
-                            value={periodField.id === "banner_start"
-                                ? (selectedStartDate ? formatDateTimeLocal(selectedStartDate) : '')
-                                : (selectedEndDate ? formatDateTimeLocal(selectedEndDate) : '')}
-                            onChange={(e) => {
-                                const newDate = new Date(e.target.value);
-                                handleDateChange(newDate, periodField.id === "banner_start" ? 'start' : 'end');
-                            }}
-                            required={periodField.required || false}
-                        />
-                      </Form.Group>
-                    </Col>
-                  ))}
-                  <Col md={12}>
-                    <div className="date-picker-container">
-                      <Calendar
-                        selectRange={false}
-                        onClickDay={handleDateClick}
-                        value={selectedStartDate ? (selectedEndDate ? [selectedStartDate, selectedEndDate] : selectedStartDate) : null}
-                      />
-                    </div>
-                  </Col>
-                </Row>
-              </Col>
-            )}
-    
+        <Col md={12}>
+          <Row>
+            <Col md={12}>
+              <Form.Group controlId="banner_start" className="mb-3">
+                <Form.Label>Banner Start</Form.Label>
+                <Form.Control
+                  type="datetime-local"
+                  value={selectedStartDate ? formatDateTimeLocal(selectedStartDate).replace(' ', 'T') : ''}
+                  onChange={(e) => {
+                    const newDate = new Date(e.target.value);
+                    handleDateChange(newDate, 'start');
+                  }}
+                  required
+                />
+              </Form.Group>
+            </Col>
+            <Col md={12}>
+              <Form.Group controlId="banner_end" className="mb-3">
+                <Form.Label>Banner End</Form.Label>
+                <Form.Control
+                  type="datetime-local"
+                  value={selectedEndDate ? formatDateTimeLocal(selectedEndDate).replace(' ', 'T') : ''}
+                  onChange={(e) => {
+                    const newDate = new Date(e.target.value);
+                    handleDateChange(newDate, 'end');
+                  }}
+                  required
+                />
+              </Form.Group>
+            </Col>
+            <Col md={12}>
+              <div className="date-picker-container">
+                <Calendar
+                  selectRange={false}
+                  onClickDay={handleDateClick}
+                  value={
+                    selectedStartDate
+                      ? selectedEndDate
+                        ? [selectedStartDate, selectedEndDate]
+                        : selectedStartDate
+                      : null
+                  }
+                />
+              </div>
+            </Col>
+          </Row>
+        </Col>
+      )}
             {/* Person In Charge Contact Phone Input */}
             {handlePhoneChange && personPhone !== undefined && (
               <Form.Group controlId="person_in_charge_contact" className="mb-5">
@@ -436,7 +438,6 @@ const { getRootProps: getAlbumRootProps, getInputProps: getAlbumInputProps } = u
           />
         </Form.Group>
       ))}
-
        {/* Conditionally show the drag-and-drop upload for cover photo */}
        {showUploadFeature && (
           <div className="upload-section">
@@ -464,7 +465,6 @@ const { getRootProps: getAlbumRootProps, getInputProps: getAlbumInputProps } = u
                 )}
               </div>
             </div>
-
             <div className="mb-4">
               <h5>Photo Album</h5>
               <div {...getAlbumRootProps()} className="dropzone text-center p-3 border rounded mb-3">
@@ -473,7 +473,6 @@ const { getRootProps: getAlbumRootProps, getInputProps: getAlbumInputProps } = u
                 <p>Click to upload or drag and drop</p>
                 <small className="text-muted">JPG, JPEG, PNG less than 2MB</small>
               </div>
-
               {albumFiles.map((file, index) => (
                 <div key={index} className="file-info d-flex align-items-center mb-2">
                   <FaFileImage className="me-2" />
@@ -487,7 +486,6 @@ const { getRootProps: getAlbumRootProps, getInputProps: getAlbumInputProps } = u
                 </div>
               ))}
             </div>
-
            {/* Modal for Cover Preview */}
             {showCoverPreview && previewFile && (
               <Modal
@@ -516,7 +514,6 @@ const { getRootProps: getAlbumRootProps, getInputProps: getAlbumInputProps } = u
                 </Modal.Footer>
               </Modal>
             )}
-
             {/* Modal for Album Preview */}
             {showPreview && previewFile && (
               <Modal
@@ -545,10 +542,8 @@ const { getRootProps: getAlbumRootProps, getInputProps: getAlbumInputProps } = u
                 </Modal.Footer>
               </Modal>
             )}
-
           </div>
         )}
-
       {formHTML && formHTML.map(field => (
         <Form.Group key={field.id} controlId={field.id} className="ms-2">
           <Form.Label>{field.label}</Form.Label>

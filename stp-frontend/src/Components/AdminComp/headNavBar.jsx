@@ -1,10 +1,10 @@
-// headNavBar.jsx
 import React from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import '../../css/AdminStyles/AdminHeadNav.css';
 
 const HeadNavBar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   // Function to get the title based on the path
   const getTitle = (pathname) => {
@@ -31,22 +31,29 @@ const HeadNavBar = () => {
         return 'Subject';
 
       case '/adminList':
-      return 'Admin';
+        return 'Admin';
 
       case '/adminApplicant':
-      return 'Applicant';
+        return 'Applicant';
 
       case '/adminPackage':
         return 'Package';
 
       case '/adminData':
-      return 'Data';
+        return 'Data';
       // Add more cases as needed
       default:
         return 'Dashboard'; // Default title if path doesn't match any case
     }
   };
 
+  // Function to handle logout
+  const handleLogout = () => {
+    localStorage.removeItem('token'); // For localStorage
+  // sessionStorage.removeItem('token'); // For sessionStorage
+  // document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/'; // For cookies
+    navigate('/adminLogin');
+  };
 
   return (
     <header className="head-nav-bar">
@@ -59,6 +66,9 @@ const HeadNavBar = () => {
           <span>Admin</span>
           <i className="dropdown-arrow"></i>
         </div>
+        <button className="logout-button" onClick={handleLogout}>
+          Logout
+        </button>
       </div>
     </header>
   );
