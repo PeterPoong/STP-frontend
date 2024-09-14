@@ -23,6 +23,16 @@
     background-color: #fff;
 }
 
+.admin-add-student-container{
+  width: 952px;
+  height: auto;
+  margin-bottom: 10px;
+  border-radius: 15px;
+  border: solid 1px #000000;
+  margin-top: 10px;
+  background-color: #fff;
+}
+
 .HeadNavBarContainer {
     width: 100%;
     background: #F5F7F8 ;
@@ -386,3 +396,35 @@ img.roundedCircle {
       height: auto; /* Auto adjust height */
     }
   }
+/* Ensure that radio buttons are displayed inline */
+.custom-radio {
+  display: inline-block;
+  margin-right: 10px;
+}
+
+/* Style the radio button itself */
+.custom-radio input[type="radio"] {
+  position: relative;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  background-color: #fff;
+  cursor: pointer;
+  outline: none;
+  margin-right: 8px;
+}
+
+/* Add styling for the selected radio button */
+.custom-radio input[type="radio"]:checked {
+  border-color: #007bff !important; /* Blue color for selected radio button border */
+  background-color: #007bff !important; /* Blue color for selected radio button background */
+}
+
+/* Add styling for the label */
+.custom-radio input[type="radio"]:checked + label {
+  color: #007bff !important; /* Blue color for selected radio button label */
+}
+
+

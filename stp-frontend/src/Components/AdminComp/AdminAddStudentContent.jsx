@@ -10,88 +10,58 @@ import 'react-phone-input-2/lib/style.css';
 import { FaTrashAlt } from 'react-icons/fa';
 
 const AdminAddStudentContent = () => {
-    const [schoolFeaturedList, setSchoolFeaturedList] = useState([]);
-    const [categoryList, setCategoryList] = useState([]); 
-    const [accountList, setAccountList] = useState([]); 
+    const [genderList, setGenderList] = useState([]); 
     const [countryList, setCountryList]= useState ([]);
     const [stateList, setStateList]= useState ([]);
     const [cityList, setCityList]= useState ([]);
     const [formData, setFormData] = useState({
         name: "",
+        first_name:"",
+        last_name:"",
+        gender:"",
+        ic:"",
+        postcode:"",    
         email: "",
         contact_number: "",
         country_code: "+60",
-        person_in_charge_name:"",
-        person_in_charge_email:"",
-        person_in_charge_contact:"",
-        school_website:"",
-        school_address:"",
         category:"",
-        account:"",
         country:"",
         state:"",
         city:"",
         password: "",
         confirm_password: "",
-        school_shortDesc: "",
-        school_fullDesc: "",
-        logo: null
     });
     const [selectedFeatures, setSelectedFeatures] = useState([]);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`;
-    const [coverFile, setCoverFile] = useState(null);
-    const [albumFiles, setAlbumFiles] = useState([]);
-    const [showPreview, setShowPreview] = useState(false);
-    const [previewFile, setPreviewFile] = useState(null);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         console.log("Submitting form data:", formData); // Debugging line
-        const { name, email, category, state, city, account, country, school_address, school_website, contact_number, person_in_charge_email, person_in_charge_name, person_in_charge_contact, country_code, confirm_password, school_shortDesc, school_fullDesc, password } = formData;
+        const { name, first_name, last_name, gender, ic, postcode, email, state, city, country, contact_number,  country_code, confirm_password, password } = formData;
         
         const formPayload = new FormData();
-        formPayload.append("school_address", formData.school_address);
         formPayload.append("name", name);
+        formPayload.append("first_name", first_name);
+        formPayload.append("last_name", last_name);
+        formPayload.append("gender", gender);
+        formPayload.append("ic", ic);
+        formPayload.append("postcode", postcode);
         formPayload.append("email", email);
         formPayload.append("country_code", country_code);
         formPayload.append("contact_number", contact_number);
-        formPayload.append("person_in_charge_contact", person_in_charge_contact);
-        formPayload.append("person_in_charge_name", person_in_charge_name);
-        formPayload.append("person_in_charge_email", person_in_charge_email);
-        formPayload.append("school_website", school_website);
-        formPayload.append("school_address", school_address);
-        formPayload.append("category", category);
-        formPayload.append("account", account);
         formPayload.append("country", country);
         formPayload.append("state", state);
         formPayload.append("city", city);
         formPayload.append("password", password);
         formPayload.append("confirm_password", confirm_password);
-        formPayload.append("school_shortDesc", school_shortDesc);
-        formPayload.append("school_fullDesc", school_fullDesc);
-    
-        // Append each feature id individually to formPayload as featured[]
-        selectedFeatures.forEach(feature => {
-            formPayload.append("featured[]", feature);
-        });
-    
-        // Append cover photo if available
-        if (coverFile) {
-            formPayload.append('cover_photo', coverFile);
-        }
-    
-        // Append album files if available
-        albumFiles.forEach((file, index) => {
-            formPayload.append(`album_photos[${index}]`, file);
-        });
-    
+
         try {
             console.log("FormData before submission:", formPayload);
             
-            const addSchoolResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/addSchool`, {
+            const addStudentResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/addStudent`, {
                 method: 'POST',
                 headers: {
                     'Authorization': Authenticate,
@@ -99,30 +69,29 @@ const AdminAddStudentContent = () => {
                 body: formPayload, // Using FormData directly as the body
             });
     
-            const addSchoolData = await addSchoolResponse.json();
+            const addStudentData = await addStudentResponse.json();
     
-            if (addSchoolResponse.ok) {
-                console.log('School successfully registered:', addSchoolData);
-                navigate('/adminSchool');
+            if (addStudentResponse.ok) {
+                console.log('Student successfully registered:', addStudentData);
+                navigate('/adminStudent');
             } else {
-                console.error('Validation Error:', addSchoolData.errors); // Debugging line
-                throw new Error(`School Registration failed: ${addSchoolData.message}`);
+                console.error('Validation Error:', addStudentData.errors); // Debugging line
+                throw new Error(`Student Registration failed: ${addStudentData.message}`);
             }
         } catch (error) {
-            setError('An error occurred during school registration. Please try again later.');
-            console.error('Error during school registration:', error);
+            setError('An error occurred during Student registration. Please try again later.');
+            console.error('Error during Student registration:', error);
         }
     };
-    
     useEffect(() => {
-        const fetchFeatured = async () => {
+        const fetchGenders = async () => {
             try {
-                const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/universityFeaturedList`, {
-                    method: 'POST',
+                const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/genderList`, {
+                    method: 'GET',  // Use GET method
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': Authenticate,
-                    },
+                    }
                 });
 
                 if (!response.ok) {
@@ -130,78 +99,22 @@ const AdminAddStudentContent = () => {
                 }
 
                 const data = await response.json();
-
                 if (data && data.data) {
-                    setSchoolFeaturedList(data.data);
-                } else {
-                    setSchoolFeaturedList([]);
+                    setGenderList(data.data.map(gender => ({
+                        label: gender.core_metaName,  // Adjust based on your API response structure
+                        value: gender.id
+                    })));
                 }
             } catch (error) {
-                console.error('Error fetching school featured list:', error.message);
+                console.error('Error fetching genders:', error.message);
                 setError(error.message);
             }
         };
 
-        fetchFeatured();
+        fetchGenders();
     }, [Authenticate]);
 
-    useEffect(() => {
-        const fetchCategories = async () => {
-            try {
-                const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/instituteCategoryList`, {
-                    method: 'POST', // Change to POST if required
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': Authenticate,
-                    },
-                    body: JSON.stringify({}) // Add any necessary body data
-                });
     
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-    
-                const data = await response.json();
-                if (data && data.data) {
-                    setCategoryList(data.data);  // Set the category list state
-                }
-            } catch (error) {
-                console.error('Error fetching categories:', error.message);
-                setError(error.message);
-            }
-        };
-    
-        fetchCategories();
-    }, [Authenticate]);
-    
-    useEffect(() => {
-        const fetchAccounts = async () => {
-            try {
-                const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/accountTypeList`, {
-                    method: 'POST', // Change to POST if required
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': Authenticate,
-                    },
-                    body: JSON.stringify({}) // Add any necessary body data
-                });
-    
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-    
-                const data = await response.json();
-                if (data && data.data) {
-                    setAccountList(data.data);  // Set the category list state
-                }
-            } catch (error) {
-                console.error('Error fetching accounts:', error.message);
-                setError(error.message);
-            }
-        };
-    
-        fetchAccounts();
-    }, [Authenticate]);
 
     console.log(`${import.meta.env.VITE_BASE_URL}api/student/countryList`);
     // Fetch country list (GET request)
@@ -261,17 +174,6 @@ const AdminAddStudentContent = () => {
       .catch(error => console.error('Error fetching cities:', error));
   };
 
-    const handleFeatureChange = (event) => {
-        const featureId = parseInt(event.target.value);
-        setSelectedFeatures(prevFeatures => {
-            if (prevFeatures.includes(featureId)) {
-                return prevFeatures.filter(id => id !== featureId);
-            } else {
-                return [...prevFeatures, featureId];
-            }
-        });
-    };
-
     const handlePhoneChange = (value, country, field) => {
         setFormData(prevFormData => {
             if (field === "contact_number") {
@@ -280,29 +182,23 @@ const AdminAddStudentContent = () => {
                     contact_number: value.slice(country.dialCode.length), // Update contact_number
                     country_code: `+${country.dialCode}`, // Update country code
                 };
-            } else if (field === "person_in_charge_contact") {
-                return {
-                    ...prevFormData,
-                    person_in_charge_contact: value, // Update person_in_charge_contact
-                };
             }
         });
     };
-    const handleLogoChange = (e) => {
-        const file = e.target.files[0];
-        setFormData(prev => ({
-            ...prev,
-            logo: file
-        }));
-    };
-
+  
     const handleFieldChange = (e) => {
         const { id, value, type, files } = e.target;
-        console.log(`Field ${id} updated with value: ${value}`); // Debugging line
+        console.log('Field changed:', { id, value, type, files }); // Debugging line
+    
         if (type === "file") {
             setFormData(prev => ({
                 ...prev,
                 [id]: files[0]
+            }));
+        } else if (type === "radio") {
+            setFormData(prev => ({
+                ...prev,
+                [id]: value
             }));
         } else {
             setFormData(prev => ({
@@ -312,12 +208,9 @@ const AdminAddStudentContent = () => {
         }
     };
     
-    const handleEditorChange = (content) => {
-        setFormData(prevFormData => ({
-            ...prevFormData,
-            school_fullDesc: content,
-        }));
-    };
+    
+    
+ 
     const handleCountryChange = (e) => {
         const countryId = e.target.value;
         setFormData({
@@ -344,40 +237,26 @@ const AdminAddStudentContent = () => {
     setFormData({ ...formData, city: e.target.value });
   };
 
-  const { getRootProps: getCoverRootProps, getInputProps: getCoverInputProps } = useDropzone({
-    accept: 'image/*',
-    onDrop: acceptedFiles => setCoverFile(acceptedFiles[0])
-    });
-
-
-    const { getRootProps: getAlbumRootProps, getInputProps: getAlbumInputProps } = useDropzone({
-        accept: 'image/*',
-        onDrop: acceptedFiles => setAlbumFiles(prevFiles => [...prevFiles, ...acceptedFiles])
-    });
-
-    const handleRemoveCover = () => setCoverFile(null);
-
-    const handleRemoveAlbum = (fileToRemove) => {
-        setAlbumFiles(prevFiles => prevFiles.filter(file => file !== fileToRemove));
-    };
-
-    const handleShowPreview = (file) => {
-        setPreviewFile(file);
-        setShowPreview(true);
-    };
-
-    const handleClosePreview = () => setShowPreview(false);
-
     const formFields = [
         {
             id: "name",
-            label: "School Name",
+            label: "Username",
             type: "text",
-            placeholder: "Enter school name",
+            placeholder: "Enter student username",
             value: formData.name,
             onChange: handleFieldChange,
             required: true
         },
+        {
+            id: "first_name",
+            label: "First Name",
+            type: "text",
+            placeholder: "Enter student first name",
+            value: formData.first_name,
+            onChange: handleFieldChange,
+            required: true
+        },
+     
         {
             id: "email",
             label: "Email Address",
@@ -390,53 +269,38 @@ const AdminAddStudentContent = () => {
         },
     ];
 
-    const formPersonInCharge=[
+    const formRadio = [
         {
-            id: "person_in_charge_name",
-            label: "Person in Charge's Name",
-            type: "text",
-            placeholder: "Enter name",
-            value: formData.person_in_charge_name,
-            onChange: handleFieldChange,
-            required: true
-        },
-        {
-            id: "person_in_charge_email",
-            label: "Person in Charge's Email Address",
-            type: "email",
-            placeholder: "Enter email address",
-            value: formData.person_in_charge_email,
-            onChange: handleFieldChange,
-            required: true,
-            autoComplete: "off"
-        },
-    ];
-
-    const formWebsite=[
-        {
-            id: "school_website",
-            label: "Official Website",
-            type: "text",
-            placeholder: "Enter Website URL",
-            value: formData.school_website,
+            id: "gender",
+            label: "Gender",
+            type: "radio",
+            options: genderList,  // Ensure genderList contains objects with label and value
+            value: formData.gender,
             onChange: handleFieldChange,
             required: true
         },
     ];
-
-    const formAddress = [
+    const formName = [
         {
-            id: "school_address",
-            label: "School Full Address",
+            id: "last_name",
+            label: "Last Name",
             type: "text",
-            placeholder: "Enter School Address",
-            value: formData.school_address,
+            placeholder: "Enter student last name",
+            value: formData.last_name,
             onChange: handleFieldChange,
             required: true
         },
+        {
+            id: "postcode",
+            label: "Postcode",  // Updated label to match the field
+            type: "text",
+            placeholder: "Enter postcode",
+            value: formData.postcode,
+            onChange: handleFieldChange,
+            required: true
+        }
     ];
     
-
     const formPassword = [
         {
             id: "password",
@@ -459,48 +323,7 @@ const AdminAddStudentContent = () => {
         },
     ];
 
-    const formTextarea = [
-        {
-            id: "school_shortDesc",
-            label: "Short Description",
-            as: "textarea",
-            rows: 3,
-            placeholder: "Enter short description",
-            value: formData.school_shortDesc,
-            onChange: handleFieldChange,
-            required: true
-        },
-    ];
-
-    const formCategory = [
-        {
-            id: "category",
-            label: "Institute Category",
-            value: formData.category,
-            onChange: handleFieldChange,
-            required: true,
-            options: categoryList.map(category => ({
-                label: category.name,
-                value: category.id
-            }))
-        }
-    ];
-
-    const formAccount = [
-        {
-            id: "account",
-            label: "School Account Type",
-            value: formData.account,
-            onChange: handleFieldChange,
-            required: true,
-            options: accountList.map(account => ({
-                label: account.name,
-                value: account.id
-            }))
-        }
-    ];
-    
-    const formCountry = [
+    const formStudentCountry = [
         {
           id: "country",
           label: "Country",
@@ -539,25 +362,6 @@ const AdminAddStudentContent = () => {
         }
       ];
       
-
-    const formHTML = [
-        {
-            id: "school_fullDesc",
-            label: "Full Description",
-            value: formData.school_fullDesc,
-            onChange: handleEditorChange,
-            required: true
-        }
-    ];
-
-    const formCheckboxes = schoolFeaturedList.map((feature) => ({
-        id: `feature-${feature.id}`,
-        label: feature.name,
-        value: feature.id,
-        checked: selectedFeatures.includes(feature.id),
-        onChange: handleFeatureChange,
-    }));
-
     const buttons = [
         {
             label: "SAVE",
@@ -567,44 +371,21 @@ const AdminAddStudentContent = () => {
 
     return (
         
-                <Container fluid className="admin-add-school-container">
+                <Container fluid className="admin-add-student-container">
                     <AdminFormComponent
-                formTitle="School Information"
-                checkboxTitle="School Advertising Feature"
+                formTitle="Student Information"
                 formFields={formFields}
+                formRadio={formRadio}
+                formName={formName}
                 formPassword={formPassword}
-                formTextarea={formTextarea}
-                formHTML={formHTML}
-                formCountry={formCountry}
-                formCategory={formCategory}
-                formAccount={formAccount}
-                formWebsite={formWebsite}
-                formAddress={formAddress}
+                formStudentCountry={formStudentCountry}
                 onSubmit={handleSubmit}
-                formCheckboxes={formCheckboxes}
-                formPersonInCharge={formPersonInCharge}
                 error={error}
                 buttons={buttons}
-                logo={formData.logo ? URL.createObjectURL(formData.logo) : null}
-                handleLogoChange={handleLogoChange}
+                handleFieldChange={handleFieldChange}
                 handlePhoneChange={handlePhoneChange}  
                 phone={formData.contact_number} 
-                personPhone={formData.person_in_charge_contact}  
                 country_code={formData.country_code}
-                showUploadFeature={true}
-                coverUploadProps={getCoverRootProps()}
-                coverInputProps={getCoverInputProps()}
-                coverFile={coverFile}
-                handleRemoveCover={handleRemoveCover}
-                albumUploadProps={getAlbumRootProps()}
-                albumInputProps={getAlbumInputProps()}
-                albumFiles={albumFiles}
-                handleRemoveAlbum={handleRemoveAlbum}
-                handleShowPreview={handleShowPreview}
-                handleClosePreview={handleClosePreview}
-                showPreview={showPreview}
-                previewFile={previewFile}
-    
                 />
                 </Container>
     );

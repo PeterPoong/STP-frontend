@@ -56,39 +56,42 @@ const AdminLogin = () => {
     const togglePassword = () => setShowPassword(!showPassword);
 
     const handleLogin = (e) => {
-      e.preventDefault();
-      setErrorMessage(''); // Clear any previous error messages
-
+        e.preventDefault();
+        setErrorMessage(''); // Clear any previous error messages
+      
         const formData = {
-            password: password,
-            country_code: `+${countryCode}`,
-            contact_number: phone.slice(countryCode.length),
+          password: password,
+          country_code: `+${countryCode}`,
+          contact_number: phone.slice(countryCode.length),
         };
-
+      
         fetch(`${import.meta.env.VITE_BASE_URL}api/admin/login`, {
-        method: 'POST',
-        headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formData),
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData),
         })
         .then(response => response.json())
         .then(data => {
-            console.log('API Response:', data); // Add this line
-            if (data.true === true) {
-                console.log('Login successful:', data);
-                sessionStorage.setItem('token', data.data.token);
-                navigate('/adminDashboard');
-            } else {
-                setErrorMessage('Login failed. Please try again.');
-                console.error('Login failed:', data);
-            }
+          console.log('API Response:', data); // Add this line
+          if (data.true === true) {
+            console.log('Login successful:', data);
+            const { token, user } = data.data;
+            sessionStorage.setItem('token', token);
+            sessionStorage.setItem('user', JSON.stringify(user)); // Store user data
+            navigate('/adminDashboard');
+          } else {
+            setErrorMessage('Login failed. Please try again.');
+            console.error('Login failed:', data);
+          }
         })
         .catch(error => {
-            setErrorMessage('An error occurred during login. Please try again later.');
-            console.error('Error during login:', error);
+          setErrorMessage('An error occurred during login. Please try again later.');
+          console.error('Error during login:', error);
         });
-    };
+      };
+      
 
     return (
         <div className="login-page">

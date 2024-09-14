@@ -1,11 +1,16 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { Button } from "react-bootstrap";
 import { useLocation, useNavigate } from 'react-router-dom';
 import '../../css/AdminStyles/AdminHeadNav.css';
+import { FaArrowCircleRight } from 'react-icons/fa';
+
 
 const HeadNavBar = () => {
   const location = useLocation();
   const navigate = useNavigate();
-
+  
+  const [userData, setUserData] = useState(null);
+  
   // Function to get the title based on the path
   const getTitle = (pathname) => {
     switch (pathname) {
@@ -41,18 +46,24 @@ const HeadNavBar = () => {
 
       case '/adminData':
         return 'Data';
-      // Add more cases as needed
       default:
         return 'Dashboard'; // Default title if path doesn't match any case
     }
   };
 
+  // Fetch user data from sessionStorage on component mount
+  useEffect(() => {
+    const user = JSON.parse(sessionStorage.getItem('user'));
+    if (user) {
+      setUserData(user);
+    }
+  }, []);
+
   // Function to handle logout
   const handleLogout = () => {
-    localStorage.removeItem('token'); // For localStorage
-  // sessionStorage.removeItem('token'); // For sessionStorage
-  // document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/'; // For cookies
-    navigate('/adminLogin');
+    sessionStorage.removeItem('token'); // Clear token
+    sessionStorage.removeItem('user');  // Clear user data
+    navigate('/adminLogin'); // Redirect to login page
   };
 
   return (
@@ -61,14 +72,20 @@ const HeadNavBar = () => {
         <h1>{getTitle(location.pathname)}</h1>
       </div>
       <div className="right-side">
-        <span>Welcome John Doe</span>
-        <div className="profile-info">
-          <span>Admin</span>
-          <i className="dropdown-arrow"></i>
-        </div>
-        <button className="logout-button" onClick={handleLogout}>
-          Logout
-        </button>
+        {userData ? (
+          <div className="user-info">
+            <span>Welcome {userData.name}</span>
+            <div className="profile-info">
+              <span>{userData.user_role === 1 ? 'Admin' : 'User'}</span>
+              <i className="dropdown-arrow"></i>
+            </div>
+          </div>
+        ) : (
+          <span>Loading...</span>
+        )}
+          <Button className="logout-button" variant="dark" onClick={handleLogout}>
+          Logout< FaArrowCircleRight className='ms-2'/> 
+        </Button>
       </div>
     </header>
   );
