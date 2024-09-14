@@ -6,44 +6,19 @@ import "../../css/StudentPortalStyles/StudentApplyCourse.css";
 import image1 from "../../assets/StudentAssets/University Logo/image1.jpg";
 import "../../css/StudentPortalStyles/StudentButtonGroup.css";
 import SpcFooter from "../../Components/StudentPortalComp/SpcFooter";
+import { useParams } from 'react-router-dom';
+import WidgetFileUploadAcademicTranscript from "../../Components/StudentPortalComp/WidgetFileUploadAcademicTranscript";
+import WidgetFileUpload from "../../Components/StudentPortalComp/WidgetFileUpload";
+import WidgetAchievement from "../../Components/StudentPortalComp/Widget/WidgetAchievement";
 
-const fakeFormData = {
 
-    spmResults: [
-        { name: "Bahasa Melayu", grade: "A+" },
-        { name: "English", grade: "A" },
-        { name: "Mathematics", grade: "A+" },
-        { name: "Science", grade: "A" },
-        { name: "History", grade: "A-" },
-        { name: "Geography", grade: "B+" },
-    ],
-    igcseResults: [
-        { name: "English Language", grade: "A*" },
-        { name: "Mathematics", grade: "A" },
-        { name: "Physics", grade: "A" },
-        { name: "Chemistry", grade: "B" },
-        { name: "Biology", grade: "A" },
-        { name: "Geography", grade: "A*" },
-    ],
-    oLevelResults: [
-        { name: "English Language", grade: "A1" },
-        { name: "Mathematics", grade: "A2" },
-        { name: "Physics", grade: "B3" },
-        { name: "Chemistry", grade: "A1" },
-        { name: "Biology", grade: "B3" },
-        { name: "History", grade: "A2" },
-    ],
-    overallGrade: "A"
-};
-
-const StudentApplicationSummary = ({ formData = fakeFormData }) => {
+const StudentApplicationSummary = ({ }) => {
     const [activeTab, setActiveTab] = useState('info');
     const [activeDocumentTab, setActiveDocumentTab] = useState('achievements');
     const [showFullOverview, setShowFullOverview] = useState(false);
     const [showFullRequirements, setShowFullRequirements] = useState(false);
     const [selectedExam, setSelectedExam] = useState('SPM');
-    const [examResults, setExamResults] = useState(formData.spmResults);
-    const [overallGrade, setOverallGrade] = useState(formData.overallGrade);
+
     // New state for basic information
     const [basicInfo, setBasicInfo] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -52,15 +27,22 @@ const StudentApplicationSummary = ({ formData = fakeFormData }) => {
     const [achievements, setAchievements] = useState([]);
     const [transcriptCategories, setTranscriptCategories] = useState([]);
     const [transcriptSubjects, setTranscriptSubjects] = useState([]);
+    const [courseInfo, setCourseInfo] = useState(null);
+    const { courseId } = useParams();
+    const [academicTranscripts, setAcademicTranscripts] = useState([]);
+    const [otherDocuments, setOtherDocuments] = useState([]);
+    const [isViewAcademicTranscriptOpen, setIsViewAcademicTranscriptOpen] = useState(false);
+    const [isViewAchievementOpen, setIsViewAchievementOpen] = useState(false);
+    const [isViewOtherDocOpen, setIsViewOtherDocOpen] = useState(false);
+    const [currentViewDocument, setCurrentViewDocument] = useState(null);
 
 
-    const examTypes = {
-        SPM: 'Sijil Pelajaran Malaysia (SPM)',
-        IGCSE: 'International General Certificate of Secondary Education (IGCSE)',
-        'O-Level': 'General Certificate of Education Ordinary Level (O-Level)',
-    };
 
     const calculateOverallGrade = (subjects) => {
+        if (!subjects || subjects.length === 0) {
+            return 'N/A';
+        }
+
         const gradeCounts = subjects.reduce((counts, subject) => {
             const grade = subject.grade || subject.subject_grade || subject.higherTranscript_grade;
             counts[grade] = (counts[grade] || 0) + 1;
@@ -76,7 +58,7 @@ const StudentApplicationSummary = ({ formData = fakeFormData }) => {
             }
         }
 
-        return overallGrade.trim();
+        return overallGrade.trim() || 'N/A';
     };
 
     useEffect(() => {
@@ -84,7 +66,21 @@ const StudentApplicationSummary = ({ formData = fakeFormData }) => {
         fetchAchievements();
         fetchCoCurriculum();
         fetchBasicInfo();
-    }, []);
+        if (courseId) {
+            fetchCourseInfo();
+        } else {
+            setError('No course ID provided');
+        }
+    }, [courseId]);
+
+    useEffect(() => {
+        if (activeTab === 'documents') {
+            fetchAcademicTranscripts();
+            fetchAchievementsDoc();
+            fetchOtherDocuments();
+        }
+    }, [activeTab]);
+
 
     const fetchTranscriptCategories = async () => {
         try {
@@ -147,7 +143,7 @@ const StudentApplicationSummary = ({ formData = fakeFormData }) => {
         }
     };
 
-    const fetchAchievements = async () => {
+    const fetchAchievementsDoc = async () => {
         try {
             const token = sessionStorage.getItem('token') || localStorage.getItem('token');
             const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/achievementsList`, {
@@ -238,13 +234,98 @@ const StudentApplicationSummary = ({ formData = fakeFormData }) => {
         }
     };
 
+    const fetchCourseInfo = async () => {
+        setIsLoading(true);
+        try {
+            const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+            console.log('Fetching course info for courseId:', courseId);
+            console.log('Using token:', token);
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/courseDetail`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ courseID: courseId })
+            });
+            const result = await response.json();
 
+            console.log('API response:', result);
 
+            if (!response.ok) {
+                throw new Error(result.message || `HTTP error! status: ${response.status}`);
+            }
 
-    useEffect(() => {
-        const newOverallGrade = calculateOverallGrade(examResults);
-        setOverallGrade(newOverallGrade);
-    }, [examResults]);
+            if (result.success) {
+                setCourseInfo(result.data);
+            } else {
+                throw new Error(result.message || 'Failed to fetch course information');
+            }
+        } catch (error) {
+            console.error('Error fetching course information:', error);
+            setError(`Failed to fetch course information: ${error.message}`);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const fetchAcademicTranscripts = async () => {
+        try {
+            const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/mediaListByCategory`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(), // Adjust category_id as needed
+            });
+            const data = await response.json();
+            if (data.success) {
+                setAcademicTranscripts(data.data.data);
+            }
+        } catch (error) {
+            console.error('Error fetching academic transcripts:', error);
+        }
+    };
+
+    const fetchAchievements = async () => {
+        try {
+            const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/achievementsList`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+            const data = await response.json();
+            if (data.success) {
+                setAchievements(data.data.data);
+            }
+        } catch (error) {
+            console.error('Error fetching achievements:', error);
+        }
+    };
+
+    const fetchOtherDocuments = async () => {
+        try {
+            const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/otherFileCertList`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+            const data = await response.json();
+            if (data.success) {
+                setOtherDocuments(data.data.data);
+            }
+        } catch (error) {
+            console.error('Error fetching other documents:', error);
+        }
+    };
 
     const handleExamChange = (e) => {
         const newExamId = e.target.value;
@@ -264,29 +345,61 @@ const StudentApplicationSummary = ({ formData = fakeFormData }) => {
         }
     };
 
+    const handleViewDocument = (document) => {
+        setCurrentViewDocument(document);
+        switch (activeDocumentTab) {
+            case 'academic':
+                setIsViewAcademicTranscriptOpen(true);
+                break;
+            case 'achievements':
+                setIsViewAchievementOpen(true);
+                break;
+            case 'other':
+                setIsViewOtherDocOpen(true);
+                break;
+            default:
+                console.error('Unknown document type');
+        }
+    };
+
     const renderDocumentsContent = () => {
-        const documents = {
-            achievements: [
-                { name: "Swimming Competition 2022", filename: "examplefilename.pdf" },
-                { name: "National Science Olympiad 2023", filename: "examplefilename.pdf" },
-                // ... other achievements
-            ],
-            // Add other document categories here
-        };
+
+        // Calculate total document count
+        const totalDocumentCount = academicTranscripts.length + achievements.length + otherDocuments.length;
+
+        let documents = [];
+        let columns = [];
+
+        switch (activeDocumentTab) {
+            case 'academic':
+                documents = academicTranscripts;
+                columns = ['Name', 'File Name', 'Actions'];
+                break;
+            case 'achievements':
+                documents = achievements;
+                columns = ['Name', 'File Name', 'Actions'];
+                break;
+            case 'other':
+                documents = otherDocuments;
+                columns = ['Name', 'File Name', 'Actions'];
+                break;
+            default:
+                break;
+        }
 
         return (
             <div className="summary-content-yourdocument">
                 <div className="documents-content pt-2 w-100">
                     <div>
-                        <p className='lead'>You have uploaded <span className="fw-bold">30</span> documents.</p>
+                        <p className='lead'>You have uploaded <span className="fw-bold">{totalDocumentCount}</span> documents.</p>
                         <div className="document-tabs d-flex column mb-3 w-100">
                             <Button
                                 variant="link"
                                 className={activeDocumentTab === 'academic' ? 'active' : ''}
                                 onClick={() => setActiveDocumentTab('academic')}
-                                style={{ fontSize: '1rem', whiteSpace: 'nowrap' }} // Prevent text from wrapping
+                                style={{ fontSize: '1rem', whiteSpace: 'nowrap' }}
                             >
-                                Academic Transcript (2)
+                                Academic Transcript ({academicTranscripts.length})
                             </Button>
                             <Button
                                 variant="link"
@@ -294,7 +407,7 @@ const StudentApplicationSummary = ({ formData = fakeFormData }) => {
                                 onClick={() => setActiveDocumentTab('achievements')}
                                 style={{ fontSize: '1rem', whiteSpace: 'nowrap' }}
                             >
-                                Achievements (13)
+                                Achievements ({achievements.length})
                             </Button>
                             <Button
                                 variant="link"
@@ -302,38 +415,70 @@ const StudentApplicationSummary = ({ formData = fakeFormData }) => {
                                 onClick={() => setActiveDocumentTab('other')}
                                 style={{ fontSize: '1rem', whiteSpace: 'nowrap' }}
                             >
-                                Other Certificates/ Documents (15)
+                                Other Certificates/ Documents ({otherDocuments.length})
                             </Button>
                         </div>
-                        <div className="search-bar mb-3">
-                            <Search size={20} />
-                            <input type="text" placeholder="Search..." className="form-control" />
+                        <div className="search-bar-sas mb-3 ">
+                            <Search size={20}  style={{ color: '#9E9E9E' }} />
+                            <input type="text" placeholder="Search..." className="form-control custom-input-size" />
                         </div>
                     </div>
                     <table className="w-100">
                         <thead>
                             <tr>
-                                <th className="border-bottom p-2">Name</th>
-                                <th className="border-bottom p-2 text-end">Filename</th>
-                                <th className="border-bottom p-2 text-end">Actions</th>
+                                {columns.map((column, index) => (
+                                    <th key={index} className="border-bottom p-2">{column}</th>
+                                ))}
                             </tr>
                         </thead>
                         <tbody>
-                            {documents[activeDocumentTab]?.map((doc, index) => (
+                            {documents.map((doc, index) => (
                                 <tr key={index}>
-                                    <td className="border-bottom p-4" data-label="Name">
-                                        <div className="d-flex align-items-center">
-                                            <FileText className="file-icon me-2" />
-                                            <div>
-                                                <div className="file-title">{doc.name}</div>
-                                                <div className="file-date">{doc.date || 'No date'}</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td className="border-bottom p-2 text-end" data-label="Filename">{doc.filename}</td>
+                                    {activeDocumentTab === 'academic' && (
+                                        <>
+                                            <td className="border-bottom p-4" data-label="Name">
+                                                <div className="d-flex align-items-center">
+                                                    <FileText className="file-icon me-2" />
+                                                    <div>
+                                                        <div className="file-title">{doc.studentMedia_name}</div>
+                                                        <div className="file-date">{doc.created_at}</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="border-bottom p-2" data-label="File Name">{doc.studentMedia_location}</td>
+                                        </>
+                                    )}
+                                    {activeDocumentTab === 'achievements' && (
+                                        <>
+                                            <td className="border-bottom p-4" data-label="Name">
+                                                <div className="d-flex align-items-center">
+                                                    <FileText className="file-icon me-2" />
+                                                    <div>
+                                                        <div className="file-title">{doc.achievement_name}</div>
+                                                        <div className="file-date">{doc.year}</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="border-bottom p-2 " data-label="File Name">{doc.achievement_media}</td>
+                                        </>
+                                    )}
+                                    {activeDocumentTab === 'other' && (
+                                        <>
+                                            <td className="border-bottom p-4" data-label="Name">
+                                                <div className="d-flex align-items-center">
+                                                    <FileText className="file-icon me-2" />
+                                                    <div>
+                                                        <div className="file-title">{doc.name}</div>
+                                                        <div className="file-date">{doc.created_at}</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="border-bottom p-2" data-label="File Name">{doc.media}</td>
+                                        </>
+                                    )}
                                     <td className="border-bottom p-2" data-label="Actions">
                                         <div className="d-flex justify-content-end align-items-center">
-                                            <Button variant="link" className="p-0">
+                                            <Button variant="link" className="p-0" onClick={() => handleViewDocument(doc)}>
                                                 <Eye size={20} className="iconat" />
                                             </Button>
                                         </div>
@@ -343,24 +488,46 @@ const StudentApplicationSummary = ({ formData = fakeFormData }) => {
                         </tbody>
                     </table>
                 </div>
+                <WidgetFileUploadAcademicTranscript
+                    isOpen={isViewAcademicTranscriptOpen}
+                    onClose={() => setIsViewAcademicTranscriptOpen(false)}
+                    item={currentViewDocument}
+                    isViewMode={true}
+                />
+                <WidgetAchievement
+                    isOpen={isViewAchievementOpen}
+                    onClose={() => setIsViewAchievementOpen(false)}
+                    item={currentViewDocument}
+                    isViewMode={true}
+                />
+                <WidgetFileUpload
+                    isOpen={isViewOtherDocOpen}
+                    onClose={() => setIsViewOtherDocOpen(false)}
+                    item={currentViewDocument}
+                    isViewMode={true}
+                />
             </div>
         );
     };
 
-    const renderCourseInformation = () => {
-        return (
 
+    const renderCourseInformation = () => {
+        if (!courseInfo) {
+            return <div>Loading course information...</div>;
+        }
+
+        return (
             <div className="summary-content-course-info">
                 <div className="school-info text-center" style={{ margin: '0 0' }}>
                     <div className="school-logo-name">
-                        <img src={image1} className="school-logo" style={{ width: '25%', height: 'auto', maxHeight: '9rem' }} />
-                        <h1 className="sac-school-name">Swinburne University of Technology</h1>
+                        <img src={`${import.meta.env.VITE_BASE_URL}storage/${courseInfo.logo}`} className="school-logo" style={{ width: '25%', height: 'auto', maxHeight: '9rem' }} alt="School Logo" />
+                        <h1 className="sac-school-name">{courseInfo.school}</h1>
                     </div>
                     <Button className="mx-auto mt-5 w-25 as-knowmore-button" style={{ padding: '0.5rem 1.5rem', fontSize: '1rem' }}>Know More</Button>
                 </div>
 
                 <div className="bg-white mt-3 rounded-1 shadow p-4 ">
-                    <h3 className="fw-bold">Degree of Business Management</h3>
+                    <h3 className="fw-bold">{courseInfo.course}</h3>
                 </div>
                 <div className="bg-white p-4 mb-1 rounded-1 shadow mt-3">
                     <h5 className="fw-bold mb-3">Summary</h5>
@@ -368,25 +535,25 @@ const StudentApplicationSummary = ({ formData = fakeFormData }) => {
                         <div className="col-6 mb-3">
                             <div className="d-flex align-items-center">
                                 <GraduationCap size={16} className="me-2" />
-                                <span className="summary-label">Degree</span>
+                                <span className="summary-label">{courseInfo.qualification || 'N/A'}</span>
                             </div>
                         </div>
                         <div className="col-6 mb-3">
                             <div className="d-flex align-items-center">
                                 <Clock size={16} className="me-2" />
-                                <span >30 months</span>
+                                <span>{courseInfo.period}</span>
                             </div>
                         </div>
                         <div className="col-6 mb-3">
                             <div className="d-flex align-items-center">
                                 <CalendarCheck size={16} className="me-2" />
-                                <span className="summary-label">Full time</span>
+                                <span className="summary-label">{courseInfo.mode}</span>
                             </div>
                         </div>
                         <div className="col-6 mb-3">
                             <div className="d-flex align-items-center">
                                 <BookOpenText size={16} className="me-2" />
-                                <span >January, July or September</span>
+                                <span>{courseInfo.intake.join(', ')}</span>
                             </div>
                         </div>
                     </div>
@@ -394,14 +561,13 @@ const StudentApplicationSummary = ({ formData = fakeFormData }) => {
 
                 <div className="d-flex justify-content-between align-item-center bg-white p-4 mb-1 rounded-1 shadow mt-3">
                     <h5 className="fw-bold">Estimate Fee</h5>
-                    <span className='lead'>RM 24,000 / year</span>
+                    <span className='lead'>RM {courseInfo.cost.toLocaleString()} / year</span>
                 </div>
 
                 <div className="bg-white p-4 mb-1 rounded-1 shadow-lg mt-3">
                     <h5 className="fw-bold">Course Overview</h5>
                     <div className={`overview-content ${showFullOverview ? 'expanded' : ''}`}>
-                        <p>The purpose of this programme is to produce graduates with in-depth knowledge of Arabic linguistics. From the aspects of national aspiration and global importance, this programme aims to produce graduates who demonstrate those aspects.</p>
-                        <p>Having the ability to apply their knowledge and skills as well as communicate well in Arabic would further enable them to contribute at the international stage and realise the features of a Malaysian society as envisioned in Vision 2020.</p>
+                        <p>{courseInfo.description}</p>
                     </div>
                     <div className="text-center">
                         <Button variant="link" onClick={() => setShowFullOverview(!showFullOverview)}>
@@ -413,12 +579,7 @@ const StudentApplicationSummary = ({ formData = fakeFormData }) => {
                 <div className="entry-requirements bg-white p-4 mb-1 rounded-1 shadow-lg mt-3">
                     <h5 className="fw-bold">Entry Requirement</h5>
                     <div className={`requirements-content ${showFullRequirements ? 'expanded' : ''}`}>
-                        <ul>
-                            <li>Pass in STPM with 2 principal passes including Mathematics and one relevant Natural Science subject</li>
-                            <li>Pass in A-Level with 2 principal passes including Mathematics and one relevant Natural Science subject</li>
-                            <li>Pass in UEC with 5 Bs (must include Mathematics and one relevant Natural Science subject)</li>
-                            <li>Pass in Foundation Studies in Sciences or Engineering with CGPA at least 2.00 in relevant field from institute of higher education recognised by the Malaysian Government</li>
-                        </ul>
+                        <p>{courseInfo.requirement}</p>
                     </div>
                     <div className="text-center">
                         <Button variant="link" onClick={() => setShowFullRequirements(!showFullRequirements)}>
@@ -427,7 +588,6 @@ const StudentApplicationSummary = ({ formData = fakeFormData }) => {
                     </div>
                 </div>
             </div>
-
         );
     };
 
@@ -439,10 +599,10 @@ const StudentApplicationSummary = ({ formData = fakeFormData }) => {
                     <div className="application-summary-container-inside rounded ">
                         <div className="summary-header p-3 border border-bottom">
                             <div className="applicant-info">
-                                <img src={basicInfo?.student_profilePic || formData.profilePicture} alt={basicInfo?.student_userName || formData.name} className="applicant-photo ms-3 bg-black" />
+                                <img src={`${import.meta.env.VITE_BASE_URL}storage/${basicInfo?.profilePic}`} className="applicant-photo ms-3 bg-black" />
                                 <div>
                                     <h3 className="ms-3">{`${basicInfo?.firstName || ''} ${basicInfo?.lastName || ''}`.trim()}</h3>
-                                    <p className="ms-3 text-secondary">Applied For: <span className="fw-bold text-black">{formData.course}</span></p>
+                                    <p className="ms-3 text-secondary">Applied For: <span className="fw-bold text-black">{courseInfo?.course}</span></p>
                                 </div>
                             </div>
                             <Button className="sac-submit-button">Print Summary</Button>
@@ -534,7 +694,7 @@ const StudentApplicationSummary = ({ formData = fakeFormData }) => {
                                         <div className="grade-summary d-flex justify-content-between align-items-stretch border-top">
                                             <div className="overall-grade text-white w-75 d-flex justify-content-start">
                                                 <h3 className="align-self-center px-5">
-                                                    Grade: {transcriptSubjects && transcriptSubjects.length > 0 ? calculateOverallGrade(transcriptSubjects) : 'N/A'}
+                                                    Grade: {calculateOverallGrade(transcriptSubjects)}
                                                 </h3>
                                             </div>
                                             <Button variant="link" className="text-danger w-25 " disabled={!transcriptSubjects || transcriptSubjects.length === 0}>

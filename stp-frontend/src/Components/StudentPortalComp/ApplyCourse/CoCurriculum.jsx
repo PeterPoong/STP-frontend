@@ -135,6 +135,15 @@ const CoCurriculum = ({ }) => {
 
   const handleDeleteActivity = async (index) => {
     try {
+      const activity = activities[index];
+    
+      // Check if the activity is new (no ID)
+      if (!activity.id) {
+        // Remove the new activity directly
+        const updatedActivities = activities.filter((_, i) => i !== index);
+        setActivities(updatedActivities);
+        return; // Exit the function
+      }
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       const activityId = activities[index].id; // Ensure this ID is valid
 

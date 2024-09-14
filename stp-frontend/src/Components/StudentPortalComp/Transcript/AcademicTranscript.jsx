@@ -958,13 +958,14 @@ const AcademicTranscript = () => {
             <option value={50}>50</option>
           </select>
           <span className="me-2 align-self-center">entries</span>
-          <input
-            className="search"
-            type="search"
-            placeholder="Search..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+          <div className="search-bar-sas  ">
+                    <Search size={20} style={{ color: '#9E9E9E' }} />
+                    <input
+                        type="text" placeholder="Search..." className="form-control custom-input-size"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </div>
           <button className="button-table px-5 py-1 ml-auto" onClick={() => setIsFileUploadOpen(true)}>ADD NEW</button>
         </div>
 

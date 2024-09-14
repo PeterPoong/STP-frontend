@@ -50,9 +50,11 @@ const WidgetPending = ({ isOpen, onClose, date, feedbacks, formID }) => {
   return (
     <div className="popup-overlay">
       <div className="popup-content-pending">
+      <div className="trophy-image-pending"></div>
         <button className="close-button" onClick={onClose}>×</button>
-        <h1 className='display-6 fw-bolder'>Your application is pending.</h1>
-        <p className='fw-normal'>We hope you got accepted!</p>
+        <div className='position-absolute  text-center'><h1 className='display-6 fw-bolder'>Your application is pending.</h1></div>
+
+        <p className='fw-normal mb-5 mt-5'>We hope you got accepted!</p>
         <div className="date-container">
           <span className="date-icon">🕒</span>
           <span>Applied on {date}</span>
@@ -72,7 +74,7 @@ const WidgetPending = ({ isOpen, onClose, date, feedbacks, formID }) => {
           </div>
           <span className="feedback-label-pending">Feedbacks</span>
         </div>
-        <div className="trophy-image"></div>
+
       </div>
     </div>
   );

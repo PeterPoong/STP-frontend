@@ -29,7 +29,7 @@
   border-radius: 15px;
   padding: 30px;
   width: 100%;
-  max-width: 1000px;
+  max-width: 775px;
   color: white;
   position: relative;
   overflow: hidden;
@@ -201,6 +201,20 @@ p {
   background-size: contain;
   background-repeat: no-repeat;
 }
+
+.trophy-image-pending {
+  position: absolute;
+  padding: 0;
+  margin: 0;
+  top: 0;
+  left:23rem;
+  width: 100rem;
+  height: 12.125rem;
+  background-image: url("../../assets/StudentPortalAssets/menPending.png");
+  background-size: 49vh 39vh;
+  background-repeat: no-repeat;
+}
+
 
 @media (max-width: 768px) {
   .popup-content {
@@ -648,7 +662,7 @@ p {
   border-radius: 15px;
   padding: 30px;
   width: 100%;
-  max-width: 1000px;
+  max-width: 775px;
   color: white;
   position: relative;
   overflow: hidden;
@@ -666,6 +680,17 @@ p {
   overflow: hidden;
 }
 
+.wa-margin
+{
+  margin-top: 5rem;
+  margin-bottom:4rem;
+}
+
+.wa-margin-reject
+{
+  margin-top: 3.5rem;
+  margin-bottom:4rem;
+}
 
 .close-button {
   position: absolute;
@@ -813,11 +838,24 @@ p {
   padding: 0;
   margin: 0;
   top: 0;
+  left:24rem;
+  width: 80rem;
+  height: 12.5rem;
+  background-image: url("../../assets/StudentPortalAssets/menChampion.png");
+  background-size: 90vh 33vh;
+  background-repeat: no-repeat;
+}
+
+.trophy-image-rejected {
+  position: absolute;
+  padding: 0;
+  margin: 0;
+  top: 0;
   left:35rem;
   width: 80rem;
-  height: 10.125rem;
-  background-image: url("../../assets/StudentPortalAssets/menChampion.png");
-  background-size: contain;
+  height: 14.5rem;
+  background-image: url("../../assets/StudentPortalAssets/menReject.png");
+  background-size: 42vh 47vh;
   background-repeat: no-repeat;
 }
 

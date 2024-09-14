@@ -72,9 +72,10 @@ const MyProfileWidget = ({ onSelectContent, profilePic }) => {
     /* Handle file upload to the server */
     const handleUpload = async () => {
         if (selectedFile) {
+            const token = sessionStorage.getItem('token') || localStorage.getItem('token');
             const formData = new FormData();
-            formData.append("porfilePic", selectedFile);
-
+            formData.append("porfilePic", selectedFile); // Note the spelling: "porfilePic", not "profilePic"
+    
             try {
                 const response = await fetch(
                     `${import.meta.env.VITE_BASE_URL}api/student/updateProfilePic`,
@@ -82,19 +83,20 @@ const MyProfileWidget = ({ onSelectContent, profilePic }) => {
                         method: "POST",
                         headers: {
                             Authorization: `Bearer ${token}`,
+                            // Remove 'Content-Type' header, let the browser set it automatically for FormData
                         },
                         body: formData,
                     }
                 );
-
-                const data = await response.json();
-
+    
                 if (!response.ok) {
-                    setErrorUploadMessage(data.message || 'An error occurred while uploading the image.');
-                    throw new Error(data.message || 'Upload failed');
+                    const errorText = await response.text();
+                    console.error("Error response:", errorText);
+                    throw new Error(`Upload failed: ${response.status} ${response.statusText}`);
                 }
-
-                console.log("File uploaded successfully:", data.data);
+    
+                const data = await response.json();
+                console.log("File uploaded successfully:", data);
                 setShowModal(false);
                 setLocalProfilePic(`${import.meta.env.VITE_BASE_URL}storage/${data.data.porfilePic}`);
             } catch (error) {

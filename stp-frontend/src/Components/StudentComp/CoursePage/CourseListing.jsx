@@ -618,7 +618,7 @@ const CourseListing = ({
   };
 
   const handleApplyNow = (program) => {
-    navigate(`/studentApplyCourse/${program.id}`, { state: { program } });
+    navigate(`/studentApplyCourses/${program.id}`, { state: { program } });
   };
   const handleInstituteChange = (institute) => {
     setSelectedInstitute(institute);
