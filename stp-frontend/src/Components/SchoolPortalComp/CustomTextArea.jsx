@@ -8,7 +8,7 @@ const CustomTextArea = ({ value, onChange }) => {
       apiKey="y5c72cgxrai71v1jmggt9a2gx878yajnqxrxxkhtylowcqbb" // Your API key
       value={value}
       init={{
-        height: 500,
+        height: 400,
         menubar: false,
         plugins: [
           "advlist",

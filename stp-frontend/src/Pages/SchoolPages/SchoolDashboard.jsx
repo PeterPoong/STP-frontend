@@ -7,7 +7,7 @@ import ManagePassword from "../../Components/SchoolPortalComp/MyProfile/ManagePa
 import ManageAccount from "../../Components/SchoolPortalComp/MyProfile/ManageAccount/ManageAccount";
 import Applicant from "../../Components/SchoolPortalComp/Application/test";
 import Dashboard from "../../Components/SchoolPortalComp/Dashboard";
-import Courses from "../../Components/SchoolPortalComp/Courses";
+import Courses from "../../Components/SchoolPortalComp/Courses/Courses";
 
 const SchoolDashboard = () => {
   const [schoolDetail, setSchoolDetail] = useState();

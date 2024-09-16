@@ -47,6 +47,8 @@ import SchoolPortalSignup from "./Pages/SchoolPages/SchoolPortalSignup";
 import SchoolDashboard from "./Pages/SchoolPages/SchoolDashboard";
 import SchoolPortalForgetPassword from "./Pages/SchoolPages/schoolPortalForgetPassword";
 import ExistSchool from "./Pages/SchoolPages/ExistSchool";
+import SchoolBasicInformation from "./Pages/SchoolPages/SchoolBasicInformation";
+import SchoolManagePassword from "./Pages/SchoolPages/ManagePassword";
 
 import StudentApplyCourse from "./Pages/StudentPortalPages/StudentApplyCourse";
 const router = createBrowserRouter([
@@ -198,6 +200,13 @@ const router = createBrowserRouter([
     path: "/studentPortalBasicInformations",
     element: <StudentPortalBasicInformations />,
   },
+
+  {
+    path: "/studentApplyCourse",
+    element: <StudentApplyCourse />,
+  },
+
+  //School Portal
   {
     path: "/schoolPortalLogin",
     element: <SchoolPortalLogin />,
@@ -218,11 +227,14 @@ const router = createBrowserRouter([
     path: "/schoolExistingAccount",
     element: <ExistSchool />,
   },
-
-  {
-    path: "/studentApplyCourse",
-    element: <StudentApplyCourse />,
-  },
+  // {
+  //   path: "/schoolBasicInformation",
+  //   element: <SchoolBasicInformation />,
+  // },
+  // {
+  //   path: "/schoolManagePassword",
+  //   element: <SchoolManagePassword />,
+  // },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(

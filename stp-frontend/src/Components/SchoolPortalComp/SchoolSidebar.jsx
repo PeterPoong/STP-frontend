@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Nav, Image, Button, Modal } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import 'typeface-ubuntu';
+import "typeface-ubuntu";
+import { ArrowClockwise } from "react-bootstrap-icons";
 
 import {
   House,
@@ -19,21 +20,53 @@ import studyPayLogo from "../../assets/SchoolPortalAssets/SchoolPortalLoginLogo.
 import defaultProfilePic from "../../assets/SchoolPortalAssets/profileDefaultIcon.png";
 import "../../css/SchoolPortalStyle/SchoolPortalSidebar.css";
 
-const Sidebar = ({ detail, onDropdownItemSelect, selectTabPage }) => {
+// const Sidebar = ({ detail, onDropdownItemSelect, selectTabPage }) => {
+const Sidebar = ({ onDropdownItemSelect, selectTabPage }) => {
   // Destructure `detail` from props
 
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState("dashboard");
   const [selectedDropdownItem, setSelectedDropdownItem] = useState("");
-  const [accountType, setAccountType] = useState(detail.data.account_type);
+  // const [accountType, setAccountType] = useState(detail.data.account_type);
+  const [accountType, setAccountType] = useState("");
+  const [schoolLogo, setSchoolLogo] = useState(defaultProfilePic);
+
+  const [detail, setDetail] = useState("");
 
   const navigate = useNavigate();
   const token = sessionStorage.getItem("token");
 
-  const logo = detail?.data?.school_logo
-    ? `${import.meta.env.VITE_BASE_URL}storage/${detail.data.school_logo}`
-    : defaultProfilePic;
-  const [schoolLogo, setSchoolLogo] = useState(logo);
+  useEffect(() => {
+    const fetchSchoolDetail = async () => {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_BASE_URL}api/school/schoolDetail`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        console.log("testing", data);
+        setDetail(data.data);
+      } catch (error) {
+        console.error("Failed to fetch school details:", error);
+      }
+    };
+    fetchSchoolDetail();
+  }, [token]);
+
+  if (!setDetail) {
+    return <ArrowClockwise />;
+  }
+
+  //getDetail
 
   useEffect(() => {
     // This will run once when the component mounts or when `detail` changes
@@ -48,6 +81,11 @@ const Sidebar = ({ detail, onDropdownItemSelect, selectTabPage }) => {
           return;
         }
       }
+      // console.log("detail", detail.id);
+      setAccountType(detail.account_type);
+      setSchoolLogo(
+        `${import.meta.env.VITE_BASE_URL}storage/${detail.school_logo}`
+      );
       console.log("All keys have values.");
     };
 
@@ -78,6 +116,21 @@ const Sidebar = ({ detail, onDropdownItemSelect, selectTabPage }) => {
     onDropdownItemSelect(itemName);
   };
 
+  const testHandleTabClick = (tab) => {
+    switch (tab) {
+      case "basicInfo":
+        setSelectedDropdownItem(tab);
+        onDropdownItemSelect(tab);
+        navigate("/schoolBasicInformation");
+        break;
+      case "managePassword":
+        setSelectedDropdownItem(tab);
+        onDropdownItemSelect(tab);
+        navigate("/schoolManagePassword");
+        break;
+    }
+  };
+
   const isProfileSelected = selectedTab === "profile";
 
   //upload file
@@ -101,6 +154,9 @@ const Sidebar = ({ detail, onDropdownItemSelect, selectTabPage }) => {
       // Create FormData and append the selected file
       const formData = new FormData();
       formData.append("logo", selectedFile);
+      formData.forEach((value, key) => {
+        console.log(`${key}: ${value}`);
+      });
 
       try {
         const response = await fetch(
@@ -279,6 +335,7 @@ const Sidebar = ({ detail, onDropdownItemSelect, selectTabPage }) => {
           >
             <Nav.Link
               onClick={() => handleDropdownItemClick("basicInfo")}
+              // onClick={() => testHandleTabClick("basicInfo")}
               className={`text-dark py-2 small-text ${
                 selectedDropdownItem === "basicInfo" ? "selected-tab" : ""
               }`}
@@ -286,8 +343,10 @@ const Sidebar = ({ detail, onDropdownItemSelect, selectTabPage }) => {
               <ArrowReturnRight />
               Basic Information
             </Nav.Link>
+
             <Nav.Link
               onClick={() => handleDropdownItemClick("managePassword")}
+              // onClick={() => testHandleTabClick("managePassword")}
               className={`text-dark py-2 small-text ${
                 selectedDropdownItem === "managePassword" ? "selected-tab" : ""
               }`}

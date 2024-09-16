@@ -11,6 +11,7 @@ function GeneralInformationForm() {
   // State for form fields
   const token = sessionStorage.getItem("token");
 
+  const [accountType, setAccountType] = useState("");
   const [schoolName, setSchoolName] = useState("");
 
   const [schoolContact, setSchoolContact] = useState("");
@@ -56,6 +57,7 @@ function GeneralInformationForm() {
       state: state,
       city: city,
       category: instituteCategory,
+      account_type: accountType,
     };
 
     console.log("formData", formData);
@@ -107,6 +109,7 @@ function GeneralInformationForm() {
         }
 
         const data = await response.json();
+        setAccountType(data.data.account_type);
         setSchoolName(data.data.school_name);
         setSchoolCountryCode(data.data.school_countryCode);
         const code = data.data.school_countryCode;
