@@ -390,10 +390,10 @@ const { getRootProps: getAlbumRootProps, getInputProps: getAlbumInputProps } = u
                 />
               ))}
             </Form.Group>
-          ))}
+          ))} */}
 
 
-            {formName && formName.map((Name, index) => (
+            {/* {formName && formName.map((Name, index) => (
               <Form.Group key={index} controlId={Name.id} className="mb-5">
                 <Form.Label>{Name.label}</Form.Label>
                 <Form.Control
