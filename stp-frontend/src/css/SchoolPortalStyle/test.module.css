@@ -97,16 +97,6 @@
   position: relative;
 }
 
-.filter-dropdowns .dropdown::after {
-  content: "▼";
-  font-size: 10px;
-  position: absolute;
-  right: 10px;
-  top: 51%;
-  transform: translateY(-50%);
-  pointer-events: none;
-  color: #666;
-}
 
 /* Reset Filter Styles */
 .reset-filter {
@@ -361,4 +351,79 @@
   border: none;
   border-top: 1px solid #6e7485;
   margin: 20px 20px; /* Adjust spacing above and below the line */
+}
+
+/* Fourth Row Styles */
+.fourth-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+}
+
+/* Awards and Curriculum Wrapper */
+.awards-curriculum {
+  display: flex;
+  width: 60%;
+  align-items: center;
+  gap: 20px; /* Adjust the gap between elements */
+  margin-left: 30px;
+}
+
+/* Awards Section */
+.awards {
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  padding-right: 20px; /* Adds spacing between the content and border */
+}
+
+/* Curriculum Section with Left Border as Divider */
+.curriculum {
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  padding-left: 25px; /* Adds spacing between the content and border */
+  border-left: 1px solid #e9eaf0; /* Vertical line (divider) */
+}
+
+/* Number and Label Styles */
+.awards-number,
+.curriculum-number {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+}
+
+.awards-label,
+.curriculum-label {
+  font-size: 14px;
+  color: #6e7485;
+  margin: 5px 0 0 0;
+}
+
+/* Aceept and Reject Buttons */
+.reject-accept {
+  width: 40%;
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Adds space between the buttons */
+}
+
+.custom-btn {
+  padding: 5px 60px;
+  font-size: 20px;
+  border-radius: 30px;
+  transition: background-color 0.3s ease;
+}
+
+.custom-btn-accept {
+  background-color: #146a17;
+  color: white;
+}
+
+.custom-btn-reject {
+  background-color: #b71a18;
+  color: white;
 }
