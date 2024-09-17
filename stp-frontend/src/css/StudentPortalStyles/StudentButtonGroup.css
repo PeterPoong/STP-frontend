@@ -75,6 +75,25 @@
     color:#B71A18;
 }
 
+.sac-save-button
+{
+  background-color: #9da2a6;
+  border-color: transparent;
+  margin:0 0;
+}
+
+.sac-save-button:hover,
+.sac-save-button:focus,
+.sac-save-button:active,
+.sac-save-button:active:hover
+{
+  background-color: white;
+  border-color: #9da2a6;
+  color: #9da2a6;
+
+}
+
+
 
 .as-knowmore-button
 {

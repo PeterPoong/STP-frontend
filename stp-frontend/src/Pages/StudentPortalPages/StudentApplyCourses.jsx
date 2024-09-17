@@ -178,27 +178,37 @@ const StudentApplyCourses = () => {
       case 0:
         return <BasicInformation
           data={formData.basicInformation}
-          onSubmit={(data) => updateFormData('basicInformation', data)}
+          onSubmit={(data) => {
+            updateFormData('basicInformation', data);
+            handleNext();
+          }}
         />;
       case 1:
         return <AcademicTranscript
           data={formData.academicTranscript}
-          updateData={(data) => updateFormData('academicTranscript', data)}
+          onNext={handleNext}  // Pass handleNext for the "Next" button
+          onBack={handleBack}  // Pass handleBack for the "Previous" button
         />;
       case 2:
         return <CoCurriculum
           data={formData.coCurriculum}
-          updateData={(data) => updateFormData('coCurriculum', data)}
+          onNext={handleNext}  // Pass handleNext for the "Next" button
+          onBack={handleBack}  
         />;
       case 3:
         return <Achievements
           data={formData.achievements}
-          updateData={(data) => updateFormData('achievements', data)}
+          onNext={handleNext}  // Pass handleNext for the "Next" button
+          onBack={handleBack}  
         />;
       case 4:
         return <OtherDocuments
           data={formData.otherDocs}
-          updateData={(data) => updateFormData('otherDocs', data)}
+          onSubmit={(data) => {
+            updateFormData('otherDocs', data);
+            handleSubmit();
+          }}
+          onBack={handleBack}
         />;
       default:
         return null;
@@ -267,31 +277,8 @@ const StudentApplyCourses = () => {
             ))}
           </CustomStepper>
         </Box>
-        <Form onSubmit={(e) => e.preventDefault()}>
-          {renderStep()}
-          <div className="d-flex justify-content-between mt-4">
-            {activeStep > 0 && (
-              <Button onClick={handleBack} className="me-2 rounded-pill px-5 sac-previous-button">
-                Previous
-              </Button>
-            )}
-            {activeStep < steps.length - 1 ? (
-              <Button
-                onClick={handleNext}
-                className={`${activeStep === 0 ? "ms-auto" : ""} sac-next-button rounded-pill px-5`}
-              >
-                Next
-              </Button>
-            ) : (
-              <Button
-                onClick={handleSubmit}
-                className="sac-next-button rounded-pill px-5"
-              >
-                Submit
-              </Button>
-            )}
-          </div>
-        </Form>
+        {renderStep()}
+       
       </div>
       <WidgetPopUpSubmission
         isOpen={showSubmissionPopup}

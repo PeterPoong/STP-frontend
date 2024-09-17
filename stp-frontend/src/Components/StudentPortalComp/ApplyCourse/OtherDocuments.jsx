@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Form, Button, Row, Col } from 'react-bootstrap';
 import { Trash2, Edit, Save, FileText, Upload, X } from 'lucide-react';
 
-const OtherDocuments = ({ }) => {
+const OtherDocuments = ({onBack, onSubmit }) => {
   const [documents, setDocuments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -176,7 +176,7 @@ const OtherDocuments = ({ }) => {
                   placeholder="Name of certificate/document..."
                   value={doc.name}
                   onChange={(e) => handleDocumentChange(index, 'name', e.target.value)}
-                  className={`mb-2 border-0 p-0 fw-bold ${!doc.name && 'border-danger'}`} // {{ edit_1 }}
+                  className={`mb-2 border p-0 fw-bold w-25 ps-2 ${!doc.name && 'border-danger'}`} // {{ edit_1 }}
                   style={{ fontSize: '1.1rem' }}
                 />
                
@@ -258,6 +258,14 @@ const OtherDocuments = ({ }) => {
       >
         Add New Document +
       </Button>
+      <div className="d-flex justify-content-between mt-4">
+        <Button onClick={onBack} className="me-2 rounded-pill px-5 sac-previous-button">
+          Previous
+        </Button>
+        <Button onClick={onSubmit} className="sac-next-button rounded-pill px-5">
+          Submit
+        </Button>
+      </div>
     </div>
   );
 };

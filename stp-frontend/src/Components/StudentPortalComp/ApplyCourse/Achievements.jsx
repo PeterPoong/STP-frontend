@@ -4,7 +4,7 @@ import { Trash2, Edit, Save, Clock, Trophy, Building, FileText, X } from 'lucide
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-const Achievements = ({ }) => {
+const Achievements = ({ onBack, onNext }) => {
   const [achievements, setAchievements] = useState([]);
   const [achievementTypes, setAchievementTypes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -236,7 +236,7 @@ const Achievements = ({ }) => {
                   placeholder="Name of Achievement..."
                   value={achievement.achievement_name}
                   onChange={(e) => handleAchievementChange(index, 'achievement_name', e.target.value)}
-                  className="mb-2 border-0 p-0 fw-bold w-25"
+                  className="mb-2  ps-2 border p-0 fw-bold w-25"
                   style={{ fontSize: '1.1rem' }}
                 />
                 <div className="d-flex justify-content-between ps-0">
@@ -371,6 +371,14 @@ const Achievements = ({ }) => {
       >
         Add New Achievement +
       </Button>
+      <div className="d-flex justify-content-between mt-4">
+        <Button onClick={onBack} className="me-2 rounded-pill px-5 sac-previous-button">
+          Previous
+        </Button>
+        <Button onClick={onNext} className="sac-next-button rounded-pill px-5">
+          Next
+        </Button>
+      </div>
     </div>
   );
 };

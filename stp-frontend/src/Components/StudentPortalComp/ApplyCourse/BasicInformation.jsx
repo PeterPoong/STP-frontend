@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Form, Row, Col, Alert } from 'react-bootstrap';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
-
-const BasicInformation = ({onSubmit}) => {
+import WidgetPopUpFillIn from "../../../Components/StudentPortalComp/Widget/WidgetPopUpFillIn";
+const BasicInformation = ({ onSubmit, nextStep }) => { // Added nextStep as a prop
     const [formData, setFormData] = useState({
         username: '',
         firstName: '',
@@ -26,6 +26,7 @@ const BasicInformation = ({onSubmit}) => {
     const [states, setStates] = useState([]);
     const [cities, setCities] = useState([]);
     const [genderList, setGenderList] = useState([]);
+    const [showPopup, setShowPopup] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -221,9 +222,26 @@ const BasicInformation = ({onSubmit}) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Basic form validation (check for required fields)
+        const missingFields = [];
+        Object.entries(formData).forEach(([key, value]) => {
+            if (!value) missingFields.push(key);
+        });
+
+        if (missingFields.length > 0) {
+            // Show the popup if there are missing fields
+            setShowPopup(true);
+            return;
+        }
+
+       
+
+        // Clear error messages on valid submission
         setError('');
         setSuccess('');
         onSubmit(formData);
+        
         try {
             const token = sessionStorage.getItem('token') || localStorage.getItem('token');
             const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/editStudentDetail`, {
@@ -251,14 +269,18 @@ const BasicInformation = ({onSubmit}) => {
             const responseData = await response.json();
             if (responseData.success) {
                 setSuccess('Student details updated successfully!');
-                
+                nextStep();
             } else {
-                setError(responseData.message || 'Failed to update student details');
+                setShowPopup(true); // Show the popup in case of a server error
             }
         } catch (error) {
             console.error('Error in handleSubmit:', error);
-            setError(`Error updating student details: ${error.message}`);
+            setShowPopup(true); // Show the popup if there's an error
+
         }
+
+         // This will trigger the navigation to the next step
+    
     };
 
     if (isLoading) return <div>Loading...</div>;
@@ -475,13 +497,15 @@ const BasicInformation = ({onSubmit}) => {
                             </Col>
                         </Row>
                         <div className="d-flex justify-content-end mt-3">
-                            <button onClick={handleSubmit}  className="button-table px-5 py-1">
+                            <button onClick={handleSubmit}  className="sac-next-button rounded-pill px-5 py-2">
                                 Save
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
+               {/* Popup for missing fields */}
+               <WidgetPopUpFillIn isOpen={showPopup} onClose={() => setShowPopup(false)} />
         </div>
     );
 };

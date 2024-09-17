@@ -383,7 +383,7 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
       </form>
       <div className="d-flex justify-content-end mt-4">
         <button
-          className="button-table w-25 px-5 text-center"
+          className="button-table px-5 py-1 text-center"
           onClick={() => {
             console.log('Save button clicked. Current subjects:', subjects);
             onSaveAll();
@@ -1025,9 +1025,7 @@ const AcademicTranscript = () => {
           </button>
         </div>
 
-        <div className="d-flex justify-content-end mt-4">
-          <button className="button-table px-5 py-1 text-center">SAVE</button>
-        </div>
+       
       </div>
 
       <WidgetFileUploadAcademicTranscript

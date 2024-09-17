@@ -2,12 +2,14 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Form, Button, Row, Col } from 'react-bootstrap';
 import { Trash2, Edit, Plus, Upload, Save, FileText, X, AlignJustify } from 'lucide-react';
 import Select from 'react-select';
+import WidgetPopUpRemind from "../../../Components/StudentPortalComp/Widget/WidgetPopUpRemind";
 
-const AcademicTranscript = ({ data = []}) => {
+const AcademicTranscript = ({ data = [], onBack, onNext }) => {
   const [academicTranscripts, setAcademicTranscripts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isPopupOpen, setIsPopupOpen] = useState(false); // Popup state
 
   useEffect(() => {
     fetchTranscriptCategories();
@@ -166,6 +168,17 @@ const AcademicTranscript = ({ data = []}) => {
     }
   };
 
+  // Helper function to get available categories for a specific transcript
+  const getAvailableCategories = (currentTranscriptIndex) => {
+    const selectedCategoryIds = academicTranscripts
+      .filter((transcript, index) => transcript.id && index !== currentTranscriptIndex)
+      .map(transcript => transcript.id);
+
+    return categories
+      .filter(cat => !selectedCategoryIds.includes(cat.id))
+      .map(cat => ({ value: cat.id, label: cat.transcript_category }));
+  };
+
   const handleAddTranscript = () => {
     const availableCategories = categories.filter(
       category => !academicTranscripts.some(transcript => transcript.id === category.id)
@@ -180,17 +193,15 @@ const AcademicTranscript = ({ data = []}) => {
       alert('All available exam types have been added.');
     }
   };
-  const handleTranscriptChange = (index, field, value) => {
+
+  const handleTranscriptChange = (index, { id, name }) => {
     const updatedTranscripts = academicTranscripts.map((transcript, i) =>
-      i === index ? { ...transcript, [field]: value } : transcript
+      i === index ? { ...transcript, id, name } : transcript
     );
     setAcademicTranscripts(updatedTranscripts);
 
-    if (field === 'name') {
-      const selectedCategory = categories.find(cat => cat.transcript_category === value);
-      if (selectedCategory) {
-        fetchSubjects(selectedCategory.id, index);
-      }
+    if (id) {
+      fetchSubjects(id, index);
     }
   };
 
@@ -269,7 +280,7 @@ const AcademicTranscript = ({ data = []}) => {
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       const transcript = academicTranscripts[transcriptIndex];
-  
+
       const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/mediaListByCategory`, {
         method: 'POST',
         headers: {
@@ -278,14 +289,14 @@ const AcademicTranscript = ({ data = []}) => {
         },
         body: JSON.stringify({ category_id: transcript.id }),
       });
-  
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-  
+
       const result = await response.json();
       console.log('Fetched documents:', result);
-  
+
       if (result.success && result.data && result.data.data) {
         const updatedDocuments = result.data.data.map(doc => ({
           id: doc.id,
@@ -293,9 +304,9 @@ const AcademicTranscript = ({ data = []}) => {
           file: doc.studentMedia_location,
           isEditing: false
         }));
-  
-        setAcademicTranscripts(prevTranscripts => 
-          prevTranscripts.map((t, index) => 
+
+        setAcademicTranscripts(prevTranscripts =>
+          prevTranscripts.map((t, index) =>
             index === transcriptIndex ? { ...t, documents: updatedDocuments } : t
           )
         );
@@ -305,25 +316,25 @@ const AcademicTranscript = ({ data = []}) => {
       setError('Failed to fetch updated documents. Please try again later.');
     }
   };
-  
+
   const handleSaveDocument = async (transcriptIndex, documentIndex) => {
     try {
       console.log('Starting handleSaveDocument');
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       const transcript = academicTranscripts[transcriptIndex];
       const document = transcript.documents[documentIndex];
-  
+
       if (!document.name.trim()) {
         throw new Error('Document title cannot be empty');
       }
-  
+
       const formData = new FormData();
       formData.append('studentMedia_type', transcript.id.toString());
       formData.append('studentMedia_name', document.name);
       if (document.file instanceof File) {
         formData.append('studentMedia_location', document.file);
       }
-  
+
       let url;
       if (document.id) {
         // Editing existing document
@@ -333,7 +344,7 @@ const AcademicTranscript = ({ data = []}) => {
         // Adding new document
         url = `${import.meta.env.VITE_BASE_URL}api/student/addTranscriptFile`;
       }
-  
+
       const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -341,10 +352,10 @@ const AcademicTranscript = ({ data = []}) => {
         },
         body: formData,
       });
-  
+
       const result = await response.json();
       console.log('Response data:', result);
-  
+
       if (result.success) {
         console.log('Document saved successfully');
         // Fetch updated documents instead of updating state directly
@@ -357,12 +368,12 @@ const AcademicTranscript = ({ data = []}) => {
       setError(error.message);
     }
   };
-  
+
   const handleRemoveDocument = async (transcriptIndex, documentIndex) => {
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       const document = academicTranscripts[transcriptIndex].documents[documentIndex];
-  
+
       if (!document.id) {
         // If the document doesn't have an ID, it's not saved in the backend yet
         const updatedTranscripts = academicTranscripts.map((transcript, i) =>
@@ -373,7 +384,7 @@ const AcademicTranscript = ({ data = []}) => {
         setAcademicTranscripts(updatedTranscripts);
         return;
       }
-  
+
       const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/deleteTranscriptFile`, {
         method: 'POST',
         headers: {
@@ -382,7 +393,7 @@ const AcademicTranscript = ({ data = []}) => {
         },
         body: JSON.stringify({ id: document.id, type: 'delete' }),
       });
-  
+
       const result = await response.json();
       if (result.success) {
         console.log('Document removed successfully');
@@ -396,14 +407,14 @@ const AcademicTranscript = ({ data = []}) => {
       setError(error.message);
     }
   };
-  
+
 
   const handleDocumentFileUpload = (transcriptIndex, docIndex, file) => {
     console.log('handleDocumentFileUpload called');
     console.log('transcriptIndex:', transcriptIndex);
     console.log('docIndex:', docIndex);
     console.log('file:', file);
-  
+
     const updatedTranscripts = academicTranscripts.map((transcript, i) =>
       i === transcriptIndex ? {
         ...transcript,
@@ -412,7 +423,7 @@ const AcademicTranscript = ({ data = []}) => {
         )
       } : transcript
     );
-  
+
     console.log('Updated transcript:', updatedTranscripts[transcriptIndex]);
     setAcademicTranscripts(updatedTranscripts);
   };
@@ -480,6 +491,20 @@ const AcademicTranscript = ({ data = []}) => {
     }
   };
 
+  const handleNext = () => {
+    if (academicTranscripts.length === 0) {
+      setIsPopupOpen(true);
+    } else {
+      onNext();
+    }
+  };
+
+  const handleClosePopup = () => {
+    setIsPopupOpen(false);
+  };
+
+
+
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
@@ -491,13 +516,19 @@ const AcademicTranscript = ({ data = []}) => {
           <div className="sac-container-casetwo d-flex justify-content-between align-items-start align-items-sm-center mb-3 px-4">
             <div className="d-flex align-items-center mb-2 mb-sm-0">
               <AlignJustify className="me-2 align-self-center" size={15} />
-              {transcript.name ? ( // Check if transcript.name exists
-                <span className="fw-bold">{transcript.name}</span> // Display the transcript name
+              {transcript.name ? (
+                <span className="fw-bold">{transcript.name}</span>
               ) : (
                 <Select
-                  options={categories.map(cat => ({ value: cat.id, label: cat.transcript_category }))}
-                  value={{ value: transcript.name, label: transcript.name }}
-                  onChange={(selected) => handleTranscriptChange(index, 'name', selected.label)}
+                  options={getAvailableCategories(index)}
+                  value={
+                    transcript.id
+                      ? { value: transcript.id, label: transcript.name }
+                      : null
+                  }
+                  onChange={(selected) =>
+                    handleTranscriptChange(index, { id: selected.value, name: selected.label })
+                  }
                   className="fw-bold border-0 sac-at-bg sac-at-select-style"
                   placeholder="Choose an education"
                 />
@@ -582,7 +613,7 @@ const AcademicTranscript = ({ data = []}) => {
               ))}
             </div>
           ) : null}
-         <div className="upload-documents mt-3 border border-4 border-top-3 border-bottom-0 border-start-0 border-end-0">
+          <div className="upload-documents mt-3 border border-4 border-top-3 border-bottom-0 border-start-0 border-end-0">
             <div className="d-flex justify-content-between align-items-center px-4">
               <h6 className="mb-0">Upload Documents</h6>
               <Button variant="link" className="p-0 me-2" onClick={() => handleAddDocument(index)}>
@@ -679,7 +710,7 @@ const AcademicTranscript = ({ data = []}) => {
             <Button
               variant="primary"
               onClick={() => saveTranscript(index)}
-              className="sac-save-button"
+              className="sac-save-button "
             >
               Save
             </Button>
@@ -693,6 +724,17 @@ const AcademicTranscript = ({ data = []}) => {
       >
         Add New Transcript +
       </Button>
+
+      <div className="d-flex justify-content-between mt-4">
+        <Button onClick={onBack} className="me-2 rounded-pill px-5 sac-previous-button">
+          Previous
+        </Button>
+        <Button onClick={handleNext} className="sac-next-button rounded-pill px-5">
+          Next
+        </Button>
+
+      </div>
+      <WidgetPopUpRemind isOpen={isPopupOpen} onClose={handleClosePopup} />
     </div>
   );
 };

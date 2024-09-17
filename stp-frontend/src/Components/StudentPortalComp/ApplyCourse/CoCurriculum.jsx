@@ -4,7 +4,7 @@ import { Trash2, Edit, Save, Clock, User, Building } from 'lucide-react';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-const CoCurriculum = ({ }) => {
+const CoCurriculum = ({onNext, onBack }) => {
   const [activities, setActivities] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -195,7 +195,7 @@ const CoCurriculum = ({ }) => {
                   placeholder="Name of Co-curriculum..."
                   value={activity.club_name || ''} // Ensure it's always a string
                   onChange={(e) => handleActivityChange(index, 'club_name', e.target.value)}
-                  className="mb-2 border-0 p-0 fw-bold"
+                  className="mb-2 border p-0 fw-bold w-25 ps-2"
                   style={{ fontSize: '1.1rem' }}
                 />
                 <div className="d-flex justify-content-between ps-0">
@@ -276,6 +276,14 @@ const CoCurriculum = ({ }) => {
       >
         Add New +
       </Button>
+      <div className="d-flex justify-content-between mt-4">
+        <Button onClick={onBack} className="me-2 rounded-pill px-5 sac-previous-button">
+          Previous
+        </Button>
+        <Button onClick={onNext} className="sac-next-button rounded-pill px-5">
+          Next
+        </Button>
+      </div>
     </div>
   );
 };
