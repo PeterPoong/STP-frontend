@@ -1,12 +1,64 @@
-.PageContainer{
+.PageContainer {
     display: flex;
+    height: 100%; /* Ensure full viewport height */
 }
 
-.SideNavContainer{
-    border: 1px solid #4A4A4A;
+.SideNavContainer {
+    width: 250px; /* Adjust width as needed */
+    background-color: #d9d9d9;
+    /* Ensure the sidebar is full height */
+    display: flex;
+    flex-direction: column;
 }
 
-.HeadNavBarContainer{
-    width: 100%;
-    background: #ffffff;
+.HeadNavBarContainer {
+    flex: 1; /* Take up the remaining space */
+    display: flex;
+    flex-direction: column;
+    height: 100% !important;
+}
+
+.HeadNavBarContainer > div {
+    flex: 1; /* Ensure the content takes up the remaining space */
+    overflow: hidden; /* Hide any overflow if necessary */
+    
+}
+
+
+/* Optional: Adjust sidebar and page container height for large screens/* Adjust width for larger screens if needed */
+@media (min-width: 1920px) {   
+    .SideNavContainer {
+        width: 300px; /* Sidebar width */
+        height: 100vh; /* Full viewport height for the sidebar */
+        position: fixed; /* Fixes sidebar in place */
+        top: 0;
+        left: 0;
+        overflow-y: auto; /* Allows the sidebar itself to scroll if its content is long */
+    }
+
+    .PageContainer {
+        margin-left: 300px; /* Offset for the sidebar width */
+        height: auto; /* Full viewport height */
+        overflow-y: auto !important; /* Enable vertical scrolling for the page content */
+        overflow-x: auto;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .HeadNavBarContainer {
+        flex-grow: 1;
+        padding: 20px;
+        overflow-y: auto !important; /* Allows scrolling within the content if it overflows */
+    }
+
+    .HeadNavBarContainer > div {
+        flex: 1; /* Ensure the content takes up the remaining space */
+        overflow: hidden; /* Hide any overflow if necessary */
+        
+    }
+}
+
+
+body{
+    background-color: #F5F7F8 !important;
 }

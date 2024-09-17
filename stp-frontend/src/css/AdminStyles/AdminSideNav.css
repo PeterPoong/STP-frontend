@@ -1,15 +1,17 @@
-/* *{
-  border: 1px solid red ;
-} */
-
-.SidebarContainer {
-  width: 250px;
-  height: 100vh;
-  /* border-radius: 15px; */
-  background-color: #d9d9d9;
+/* Universal Box Sizing */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
-/* Collapsed Sidebar Styles Start */
+/* Sidebar Styles */
+.SidebarContainer {
+  width: 250px;
+  height: auto !important;
+ 
+}
+
 .SidebarContainer.collapsed {
   width: 80px;
 }
@@ -26,50 +28,117 @@
   display: none;
 }
 
-.SidebarContainer.collapsed img{
+.SidebarContainer.collapsed img {
   display: none;
-  /* width: 80px;
-  height: 80px; */
 }
 
-.SidebarContainer.collapsed .LogoContainer{
+.SidebarContainer.collapsed .LogoContainer {
   display: flex;
   align-items: center;
 }
 
-.SidebarContainer.collapsed .collapse-btn{
+.SidebarContainer.collapsed .collapse-btn {
   margin-top: 80px;
 }
-/* Collapsed Sidebar Styles END */
 
-.LogoContainer img{
+.LogoContainer img {
   width: 250px;
   height: 80px;
 }
 
-.LogoContainer{
+.LogoContainer {
   display: flex;
   flex-direction: column;
-  align-items:end;
+  align-items: end;
 }
 
-.collapse-btn{
+.collapse-btn {
   font-size: 12px;
 }
 
-.nav-link{
+/* Normal state */
+.nav-link {
   color: #B22222;
   padding: 15px 20px;
   display: flex;
   align-items: center;
+  background-color: transparent;
+  transition: background-color 0.3s ease;
 }
 
+/* Hover state */
 .nav-link:hover {
   background-color: #D32F2F;
   color: #fff;
 }
 
-.link-text{
+/* Active state */
+.nav-link.active {
+  background-color: #D32F2F;
+  color: #fff;
+}
+
+.nav-link.active .link-text{
+  color: #fff;
+}
+.link-text {
   color: #000000;
   padding-left: 1rem;
+}
+
+/* Media Queries */
+
+/* For screens wider than 1920px */
+@media (min-width: 1920px) {
+  .SidebarContainer {
+    width: 300px;
+    height: auto !important;
+  }
+
+  .SidebarContainer.collapsed {
+    width: 100px;
+  }
+
+  .LogoContainer img {
+    width: 300px;
+    height: 90px;
+  }
+
+  .nav-link {
+    padding: 20px 30px;
+  }
+
+  .collapse-btn {
+    font-size: 14px;
+  }
+}
+
+/* For mobile screens */
+@media (max-width: 768px) {
+  .SidebarContainer {
+    width: 100px;
+    height: auto;
+  }
+
+  .SidebarContainer.collapsed {
+    width: 60px;
+  }
+
+  .LogoContainer img {
+    width: 100px;
+    height: 40px;
+  }
+
+  .nav-link {
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .link-text {
+    display: none;
+  }
+
+  .collapse-btn {
+    font-size: 10px;
+  }
 }

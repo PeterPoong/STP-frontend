@@ -25,10 +25,15 @@ import AdminResetPass from "./Pages/AdminPages/AdminResetPass";
 // Admin Dashboard Pages
 import AdminDashboard from "./Pages/AdminPages/AdminDashboard";
 import AdminSchool from "./Pages/AdminPages/AdminSchool";
+import AdminApplicant from "./Pages/AdminPages/AdminApplicant";
 import AdminStudent from "./Pages/AdminPages/AdminStudent";
+import AdminAddStudent from "./Pages/AdminPages/AdminAddStudent";
 import AdminCourses from "./Pages/AdminPages/AdminCourses";
 import AdminCategory from "./Pages/AdminPages/AdminCategory";
 import AdminSubject from "./Pages/AdminPages/AdminSubject";
+import AdminList from "./Pages/AdminPages/AdminList";
+import AdminPackage from "./Pages/AdminPages/AdminPackage";
+import AdminData from "./Pages/AdminPages/AdminData";
 import AdminAddSchool from "./Pages/AdminPages/AdminAddSchool";
 import AdminEditSchool from "./Pages/AdminPages/AdminEditSchool";
 import AdminBanner from "./Pages/AdminPages/AdminBanner";
@@ -144,12 +149,17 @@ const router = createBrowserRouter([
 
   {
     path: "/adminEditSchool",
-    element: <AdminAddSchool />,
+    element: <AdminEditSchool />,
   },
 
   {
     path: "/adminStudent",
     element: <AdminStudent />,
+  },
+
+  {
+    path: "/adminAddStudent",
+    element: <AdminAddStudent />,
   },
 
   {
@@ -168,6 +178,16 @@ const router = createBrowserRouter([
   },
 
   {
+    path: "/adminList",
+    element: <AdminList />,
+  },
+
+  {
+    path: "/adminApplicant",
+    element: <AdminApplicant />,
+  },
+
+  {
     path: "/adminBanner",
     element: <AdminBanner />,
   },
@@ -177,6 +197,15 @@ const router = createBrowserRouter([
     element: <AdminAddBanner />,
   },
 
+  {
+    path: "/adminPackage",
+    element: <AdminPackage />,
+  },
+
+  {
+    path: "/adminData",
+    element: <AdminData />,
+  },
   //Student Portal Page
   {
     path: "/studentPortalLogin",

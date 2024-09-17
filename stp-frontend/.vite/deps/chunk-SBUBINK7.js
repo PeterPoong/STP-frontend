@@ -3,16 +3,8 @@ import {
   useForceUpdate
 } from "./chunk-IEYIYD2T.js";
 import {
-  Anchor_default,
-  useCallbackRef,
-  useEventListener
-} from "./chunk-L7QK2FJY.js";
-import {
   Button_default as Button_default2
 } from "./chunk-NNCWS4B3.js";
-import {
-  Button_default
-} from "./chunk-47HZ5FLN.js";
 import {
   contains,
   useWindow
@@ -24,6 +16,14 @@ import {
   makeEventKey,
   qsa
 } from "./chunk-IBU2J2BI.js";
+import {
+  Anchor_default,
+  useCallbackRef,
+  useEventListener
+} from "./chunk-L7QK2FJY.js";
+import {
+  Button_default
+} from "./chunk-47HZ5FLN.js";
 import {
   addEventListener_default,
   listen_default,
@@ -43,9 +43,6 @@ import {
   useBootstrapPrefix,
   useIsRTL
 } from "./chunk-V45P6XYM.js";
-import {
-  require_warning
-} from "./chunk-J5P6RILA.js";
 import {
   arrow_default,
   computeStyles_default,
@@ -67,6 +64,9 @@ import {
   popperOffsets_default,
   preventOverflow_default
 } from "./chunk-YR7MIILV.js";
+import {
+  require_warning
+} from "./chunk-J5P6RILA.js";
 import {
   require_jsx_runtime
 } from "./chunk-43ZI66F5.js";
@@ -1387,4 +1387,4 @@ export {
   DropdownToggle_default2 as DropdownToggle_default,
   Dropdown_default2 as Dropdown_default
 };
-//# sourceMappingURL=chunk-5DEFI7E3.js.map
+//# sourceMappingURL=chunk-SBUBINK7.js.map

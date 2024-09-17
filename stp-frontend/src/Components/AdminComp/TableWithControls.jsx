@@ -15,32 +15,39 @@ const TableWithControls = ({
      totalPages, 
      currentPage, 
      onPageChange, 
+     showSearch = true,          // New prop to toggle search visibility
+    showRowsPerPage = true,     // New prop to toggle rows-per-page visibility
      onRowsPerPageChange }) => {
     return (
         <Container fluid>
          <div className="topbar container">
             <div className="row align-items-center">
                 <div className="col d-flex">
-                    <div className="me-1 mb-3 mt-3 custom-dropdown">
-                        Show <span></span>
-                        <select onChange={(e) => onRowsPerPageChange(parseInt(e.target.value, 10))}>
-                            <option value="10">10</option>
-                            <option value="20">20</option>
-                            <option value="50">50</option>
-                            <option value="All">All</option>
-                        </select>
-                    </div>
-                    {/* Search Input */}
-                    <div className="search-input-wrapper mt-2 mb-3">
-                        <Form.Control
-                            type="text"
-                            placeholder="Search Name"
+                     {/* Conditionally render the rows-per-page dropdown */}
+                        {showRowsPerPage && (
+                            <div className="me-1 mb-3 mt-3 custom-dropdown">
+                                Show <span></span>
+                                <select onChange={(e) => onRowsPerPageChange(parseInt(e.target.value, 10))}>
+                                    <option value="10">10</option>
+                                    <option value="20">20</option>
+                                    <option value="50">50</option>
+                                    <option value="All">All</option>
+                                </select>
+                            </div>
+                        )}
                         
-                            onChange={(e) => onSearch(e.target.value)}
-                            className="search-input"
-                        />
-                        <FontAwesomeIcon icon={faSearch} className="search-icon" />
-                    </div>
+                        {/* Conditionally render the search input */}
+                        {showSearch && (
+                            <div className="search-input-wrapper mt-2 mb-3">
+                                <Form.Control
+                                    type="text"
+                                    placeholder="Search Name"
+                                    onChange={(e) => onSearch(e.target.value)}
+                                    className="search-input"
+                                />
+                                <FontAwesomeIcon icon={faSearch} className="search-icon" />
+                            </div>
+                        )}
                 </div>
                     <div className="col-auto">
                     {/* Add Button */}
