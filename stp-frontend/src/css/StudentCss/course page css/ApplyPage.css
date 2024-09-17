@@ -33,6 +33,7 @@
   
   .apply-now-card {
     margin-top: 5rem;
+    max-height: fit-content;
   }
 
   .about-institute-image {
@@ -66,6 +67,8 @@
     align-items: center;
     margin-top: 50px;
   }
+
+
   /* .carousel-item .text-center {
     display: flex;
     justify-content: center;

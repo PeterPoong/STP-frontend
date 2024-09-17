@@ -9,11 +9,15 @@
 
 .nav-link-custom {
   color: #333333; /* Default color for navigation links */
-  
+  text-decoration: none;
 }
 
 .nav-link-custom:hover {
   color: #b71a18;
+}
+
+.nav-link-custom.active {
+  color: #b71a18; /* Active color */
 }
 
 .nav-dropdown-custom {
@@ -34,6 +38,7 @@
 .nav-button:hover {
   background-color: #9c1515; /* Hover background color */
 }
+
 
 .navbutton-section {
   display: flex;

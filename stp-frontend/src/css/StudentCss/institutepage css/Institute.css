@@ -125,6 +125,7 @@
 .institute-card .card-image {
   flex-shrink: 0;
   margin-right: 20px;
+  margin-bottom: 10px; /* Adjusted for smaller screens */
 }
 
 .institute-card .card-image img {
@@ -147,15 +148,18 @@
 }
 
 .institute-card .fee-apply {
-  width: 35%;
+  display: flex;
   text-align: right;
-  margin-left: auto;
+  flex-direction: column;
+  align-items: flex-end;
 }
 
 .institute-card .institute-card-body {
+  margin-left: 100px; /* Pushes the fee-apply div to the right side */
   display: flex;
+  flex-direction: row;
   align-items: flex-start;
-  padding: 20px;
+  position: relative;
 }
 
 /* General Styling */
@@ -165,6 +169,7 @@
   height: auto; /* Adjusted for better responsiveness */
   padding: 20px;
 }
+
 
 .location-text,
 .detail-text {
@@ -283,7 +288,7 @@
   margin-bottom: 1rem;
 }
 
-.country-button,
+.country-dropdown-institute,
 .university-button {
   width: 100%;
   min-width: 160px; /* Remove fixed min-width */
@@ -303,4 +308,47 @@
   background-color: #9c1515;
   color: #ffffff;
   border: none;
+}
+
+
+@media (max-width: 576px) {
+  .country-dropdown-institute,
+  .university-dropdown-institute {
+    width: 100%;
+  }
+  .location-container {
+    width: 100%;
+  }
+  .institute-card  {
+    flex-direction: column;
+    width: 100%;
+    height: auto;
+  }
+  .institute-card  .card-body {
+    flex-direction: row;
+  }
+  
+  .institute-card  .details-div, .institute-card  .fee-apply {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .institute-card  .fee-apply {
+    text-align: right;
+  }
+
+  .card-body {
+    flex-direction: column;
+  }
+  .studypal-image {
+    width: 100%;
+  }
+}
+
+@media (max-width: 992px) {
+  .country-dropdown-institute,
+  .university-dropdown-institute{
+    width: 100%;
+    min-width: 160px; /* Remove fixed min-width */
+  }
 }

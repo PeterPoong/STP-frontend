@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
 import NavDropdown from "react-bootstrap/NavDropdown";
@@ -11,6 +11,7 @@ import logo from "../../assets/StudentAssets/nav logo/logo.png";
 import "../../css/StudentCss/NavButtons.css";
 
 const NavigationBar = () => {
+  const location = useLocation();
   return (
     <Navbar
       expand="lg"
@@ -29,8 +30,13 @@ const NavigationBar = () => {
               variant="link"
               as={Link}
               to="/courses"
-              className="nav-link-custom"
-              style={{ marginLeft: "10px 0" }}
+              className={`nav-link-custom ${
+                location.pathname === "/courses" ||
+                location.pathname.startsWith("/courses")
+                  ? "active"
+                  : ""
+              }`}
+              style={{ marginLeft: "10px" }}
             >
               Courses
             </Button>
@@ -38,8 +44,13 @@ const NavigationBar = () => {
               variant="link"
               as={Link}
               to="/institute"
-              className="nav-link-custom"
-              style={{ marginLeft: "10px 0" }}
+              className={`nav-link-custom ${
+                location.pathname === "/institute" ||
+                location.pathname.startsWith("/institute")
+                  ? "active"
+                  : ""
+              }`}
+              style={{ marginLeft: "10px" }}
             >
               Schools
             </Button>

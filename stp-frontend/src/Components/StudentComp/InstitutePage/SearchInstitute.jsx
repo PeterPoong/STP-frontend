@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
+
 import {
   ButtonGroup,
   Container,
@@ -36,10 +38,53 @@ const SearchInstitute = () => {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [countries, setCountries] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [institutes, setInstitutes] = useState([]);
   const [selectedInstitute, setSelectedInstitute] = useState(null);
+  const [countryFilter, setCountryFilter] = useState("");
+  const [countries, setCountries] = useState([]);
+
+  const location = useLocation();
+
+  /* Reset Filter here */
+  const [resetTrigger, setResetTrigger] = useState(false);
+
+  const resetAllFilters = () => {
+    setSelectedCountry(null);
+    setSelectedInstitute(null);
+    setCountryFilter("");
+    setSearchQuery("");
+    setCurrentPage(1);
+
+    setResetTrigger((prev) => !prev);
+
+    fetchData("");
+  };
+
+  /* End of Reset Filter here */
+
+  const handleCountryFilterChange = (event) => {
+    setCountryFilter(event.target.value.toLowerCase());
+  };
+
+  const filteredCountries = Array.isArray(countries)
+    ? countries.filter((country) =>
+        country.country_name.toLowerCase().includes(countryFilter)
+      )
+    : [];
+
+  useEffect(() => {
+    if (location.state) {
+      const { country } = location.state;
+
+      if (country) {
+        const selectedCountry = countries.find(
+          (c) => c.country_name === country
+        );
+        setSelectedCountry(selectedCountry);
+      }
+    }
+  }, [location.state, countries]);
 
   // Fetch countries from API
   useEffect(() => {
@@ -79,20 +124,15 @@ const SearchInstitute = () => {
 
   // Fetch countries from API
   useEffect(() => {
-    const fetchCountries = async (countryID) => {
+    const fetchCountries = async () => {
       try {
-        const response = await fetch(countriesURL, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
+        const response = await fetch(countriesURL);
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
-
         const result = await response.json();
+
+        // Ensure the response is an array
         setCountries(result.data || []);
       } catch (error) {
         console.error("Error fetching countries:", error);
@@ -137,10 +177,10 @@ const SearchInstitute = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          search: query.trim(),
+          search: selectedCountry ? "" : query.trim(),
           page: currentPage,
-          country: selectedCountry?.country_id,
-          category: selectedInstitute?.id || null,
+          country: selectedCountry?.id || "",
+          category: selectedInstitute?.id,
         }),
       });
 
@@ -166,7 +206,7 @@ const SearchInstitute = () => {
   };
 
   useEffect(() => {
-    if (searchQuery.trim()) {
+    if (searchQuery.trim() || selectedCountry) {
       fetchData(searchQuery); // Pass the search query to fetchData
     }
   }, [searchQuery, currentPage, selectedCountry, selectedInstitute]);
@@ -182,7 +222,8 @@ const SearchInstitute = () => {
 
   const handleCountryChange = (country) => {
     setSelectedCountry(country);
-    console.log("Selected Country ID:", country?.id); // Debugging line
+    // setSearchQuery(""); // Clear search query when a country is selected
+    setCurrentPage(1); // Reset pagination
   };
 
   const handleInstituteChange = (institute) => {
@@ -192,7 +233,7 @@ const SearchInstitute = () => {
 
   return (
     <Container>
-      <h3 style={{ textAlign: "left", paddingTop: "15px" }}>
+      <h3 style={{ textAlign: "left", paddingTop: "20px" }}>
         Institute in Malaysia
       </h3>
       {/* Country Dropdown */}
@@ -227,8 +268,26 @@ const SearchInstitute = () => {
                 )}
               </Dropdown.Toggle>
               <Dropdown.Menu className="scrollable-dropdown">
-                {countries.length > 0 ? (
-                  countries.map((country, index) => (
+                <InputGroup className="mb-2">
+                  <Form.Control
+                    placeholder="Filter countries"
+                    onChange={handleCountryFilterChange}
+                    value={countryFilter}
+                  />
+                  <i
+                    className="bi bi-search"
+                    style={{
+                      position: "absolute",
+                      left: "90%",
+                      top: "50%",
+                      transform: "translate(-50%, -50%)",
+                      fontSize: "14px",
+                      color: "#808080",
+                    }}
+                  ></i>
+                </InputGroup>
+                {filteredCountries.length > 0 ? (
+                  filteredCountries.map((country, index) => (
                     <Dropdown.Item
                       key={index}
                       className="dropdown"
@@ -289,6 +348,32 @@ const SearchInstitute = () => {
           </ButtonGroup>
         </Col>
 
+        <Col xs={12} sm={4} md={3} lg={2} className="mb-2 mb-sm-0">
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              resetAllFilters();
+            }}
+            style={{
+              backgroundColor: "transparent",
+              border: "none",
+              color: "#B71A18",
+              fontWeight: "lighter",
+              textDecoration: "none",
+              cursor: "pointer",
+              marginTop: "30px",
+            }}
+          >
+            <i
+              className="bi bi-funnel"
+              style={{
+                marginRight: "5px",
+              }}
+            />{" "}
+            Reset Filters
+          </button>
+        </Col>
+
         <Col className="d-flex justify-content-end">
           <Pagination className="ml-auto mb-2 mb-md-0">
             <Pagination.Prev
@@ -344,6 +429,7 @@ const SearchInstitute = () => {
         searchResults={searchResults}
         countryID={selectedCountry?.id}
         selectedInstitute={selectedInstitute?.core_metaName}
+        resetTrigger={resetTrigger}
       />
     </Container>
   );

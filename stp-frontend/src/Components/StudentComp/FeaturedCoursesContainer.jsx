@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Container } from "react-bootstrap";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 import "../../css/StudentCss/homePageStudent/Unicard.css";
-// Remove FontAwesome imports if not used elsewhere
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
 
 const baseURL = import.meta.env.VITE_BASE_URL;
 const apiURL = `${baseURL}api/student/hpFeaturedCoursesList`;
@@ -14,6 +15,8 @@ const FeaturedCoursesContainer = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  const navigate = useNavigate(); // Initialize useNavigate
 
   useEffect(() => {
     loadCourses();
@@ -58,6 +61,10 @@ const FeaturedCoursesContainer = () => {
     }
   };
 
+  const handleKnowMoreClick = (courseID) => {
+    navigate(`/courseDetails/${courseID}`); // Navigate to CourseDetail with the courseID
+  };
+
   return (
     <div>
       {error && <div>Error: {error}</div>}
@@ -65,10 +72,10 @@ const FeaturedCoursesContainer = () => {
       {!loading && !error && courses.length > 0 && (
         <Container className="course-container">
           <Swiper
+            modules={[Navigation, Pagination]} // Add required modules here
             spaceBetween={30}
-            slidesPerView={3}
+            slidesPerView={4}
             loop={true}
-            pagination={{ clickable: true }}
             navigation
             style={{ padding: "0 50px" }}
             breakpoints={{
@@ -81,7 +88,7 @@ const FeaturedCoursesContainer = () => {
                 spaceBetween: 15,
               },
               1024: {
-                slidesPerView: 3,
+                slidesPerView: 4,
                 spaceBetween: 10,
               },
             }}
@@ -151,7 +158,10 @@ const FeaturedCoursesContainer = () => {
                     </div>
                   </div>
                   <div className="d-flex justify-content-center ">
-                    <button className="button-know-more">
+                    <button
+                      className="button-know-more"
+                      onClick={() => handleKnowMoreClick(course.id)} // Add onClick event
+                    >
                       {course.knowMoreText || "Know More"}
                     </button>
                     <button className="button-apply-now">
