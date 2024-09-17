@@ -634,11 +634,11 @@ const CourseListing = ({
   };
 
   const handleApplyNow = (program) => {
-    navigate("/studentApplyCourse", { state: { program } });
-  };
-  const handleInstituteChange = (institute) => {
+     navigate(`/studentApplyCourses/${program.id}`, { state: { program } });
+     };
+    const handleInstituteChange = (institute) => {
     setSelectedInstitute(institute);
-  };
+     };
 
   const mappedPrograms = currentCourses.map((program, index) => (
     <>
