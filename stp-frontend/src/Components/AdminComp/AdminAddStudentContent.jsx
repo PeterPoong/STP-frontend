@@ -36,7 +36,9 @@ const AdminAddStudentContent = () => {
     const navigate = useNavigate();
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`;
-
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [passwordsMatch, setPasswordsMatch] = useState(true);
     const handleSubmit = async (event) => {
         event.preventDefault();
         console.log("Submitting form data:", formData); // Debugging line
@@ -207,10 +209,6 @@ const AdminAddStudentContent = () => {
             }));
         }
     };
-    
-    
-    
- 
     const handleCountryChange = (e) => {
         const countryId = e.target.value;
         setFormData({
@@ -236,7 +234,8 @@ const AdminAddStudentContent = () => {
    const handleCityChange = (e) => {
     setFormData({ ...formData, city: e.target.value });
   };
-
+  const togglePasswordVisibility = () => setShowPassword(prev => !prev);
+    const toggleConfirmPasswordVisibility = () => setShowConfirmPassword(prev => !prev);
     const formFields = [
         {
             id: "name",

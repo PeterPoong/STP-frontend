@@ -7,6 +7,7 @@ import 'typeface-ubuntu';
 import "../../css/AdminStyles/AdminFormStyle.css";
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
+
 import { FaTrashAlt } from 'react-icons/fa';
 
 const AdminAddSchoolContent = () => {
@@ -45,7 +46,11 @@ const AdminAddSchoolContent = () => {
     const [coverFile, setCoverFile] = useState(null);
     const [albumFiles, setAlbumFiles] = useState([]);
     const [showPreview, setShowPreview] = useState(false);
+    const [showCoverPreview, setShowCoverPreview] = useState(false);
     const [previewFile, setPreviewFile] = useState(null);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [passwordsMatch, setPasswordsMatch] = useState(true);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -261,6 +266,10 @@ const AdminAddSchoolContent = () => {
       .catch(error => console.error('Error fetching cities:', error));
   };
 
+  useEffect(() => {
+    setPasswordsMatch(formData.password === formData.confirm_password);
+}, [formData.password, formData.confirm_password]);
+
     const handleFeatureChange = (event) => {
         const featureId = parseInt(event.target.value);
         setSelectedFeatures(prevFeatures => {
@@ -311,6 +320,9 @@ const AdminAddSchoolContent = () => {
             }));
         }
     };
+    
+    const togglePasswordVisibility = () => setShowPassword(prev => !prev);
+    const toggleConfirmPasswordVisibility = () => setShowConfirmPassword(prev => !prev);
     
     const handleEditorChange = (content) => {
         setFormData(prevFormData => ({
@@ -364,6 +376,11 @@ const AdminAddSchoolContent = () => {
     const handleShowPreview = (file) => {
         setPreviewFile(file);
         setShowPreview(true);
+    };
+
+    const handleShowCoverPreview = (file) => {
+        setPreviewFile(file);
+        setShowCoverPreview(true);
     };
 
     const handleClosePreview = () => setShowPreview(false);
@@ -437,26 +454,31 @@ const AdminAddSchoolContent = () => {
     ];
     
 
+    
     const formPassword = [
         {
             id: "password",
             label: "Password",
-            type: "password",
+            type: showPassword ? "text" : "password",
             placeholder: "Enter new password",
             value: formData.password,
             onChange: handleFieldChange,
             required: true,
-            autoComplete: "new-password"
+            autoComplete: "new-password",
+            toggleVisibility: togglePasswordVisibility,
+            showVisibility: showPassword
         },
         {
             id: "confirm_password",
             label: "Confirm Password",
-            type: "password",
+            type: showConfirmPassword ? "text" : "password",
             placeholder: "Enter password again",
             value: formData.confirm_password,
             onChange: handleFieldChange,
-            required: true
-        },
+            required: true,
+            toggleVisibility: toggleConfirmPasswordVisibility,
+            showVisibility: showConfirmPassword
+        }
     ];
 
     const formTextarea = [
@@ -569,43 +591,49 @@ const AdminAddSchoolContent = () => {
         
                 <Container fluid className="admin-add-school-container">
                     <AdminFormComponent
-                formTitle="School Information"
-                checkboxTitle="School Advertising Feature"
-                formFields={formFields}
-                formPassword={formPassword}
-                formTextarea={formTextarea}
-                formHTML={formHTML}
-                formCountry={formCountry}
-                formCategory={formCategory}
-                formAccount={formAccount}
-                formWebsite={formWebsite}
-                formAddress={formAddress}
-                onSubmit={handleSubmit}
-                formCheckboxes={formCheckboxes}
-                formPersonInCharge={formPersonInCharge}
-                error={error}
-                buttons={buttons}
-                logo={formData.logo ? URL.createObjectURL(formData.logo) : null}
-                handleLogoChange={handleLogoChange}
-                handlePhoneChange={handlePhoneChange}  
-                phone={formData.contact_number} 
-                personPhone={formData.person_in_charge_contact}  
-                country_code={formData.country_code}
-                showUploadFeature={true}
-                coverUploadProps={getCoverRootProps()}
-                coverInputProps={getCoverInputProps()}
-                coverFile={coverFile}
-                handleRemoveCover={handleRemoveCover}
-                albumUploadProps={getAlbumRootProps()}
-                albumInputProps={getAlbumInputProps()}
-                albumFiles={albumFiles}
-                handleRemoveAlbum={handleRemoveAlbum}
-                handleShowPreview={handleShowPreview}
-                handleClosePreview={handleClosePreview}
-                showPreview={showPreview}
-                previewFile={previewFile}
+           formTitle="School Information"
+           checkboxTitle="School Advertising Feature"
+           formFields={formFields}
+           formPassword={formPassword}
+           formTextarea={formTextarea}
+           formHTML={formHTML}
+           formCountry={formCountry}
+           formCategory={formCategory}
+           formAccount={formAccount}
+           formWebsite={formWebsite}
+           formAddress={formAddress}
+           onSubmit={handleSubmit}
+           formCheckboxes={formCheckboxes}
+           formPersonInCharge={formPersonInCharge}
+           error={error}
+           buttons={buttons}
+           logo={formData.logo ? URL.createObjectURL(formData.logo) : null}
+           handleLogoChange={handleLogoChange}
+           handlePhoneChange={handlePhoneChange}  
+           phone={formData.contact_number} 
+           personPhone={formData.person_in_charge_contact}  
+           country_code={formData.country_code}
+           showUploadFeature={true}
+           coverUploadProps={getCoverRootProps()}
+           coverInputProps={getCoverInputProps()}
+           coverFile={coverFile}
+           handleRemoveCover={handleRemoveCover}
+           albumUploadProps={getAlbumRootProps()}
+           albumInputProps={getAlbumInputProps()}
+           albumFiles={albumFiles}
+           handleRemoveAlbum={handleRemoveAlbum}
+           handleShowPreview={handleShowPreview}
+           handleClosePreview={handleClosePreview}
+           showPreview={showPreview}
+           previewFile={previewFile}
+
     
                 />
+                 {!passwordsMatch && (
+                <div className="text-danger">
+                    Passwords do not match.
+                </div>
+            )}
                 </Container>
     );
 };

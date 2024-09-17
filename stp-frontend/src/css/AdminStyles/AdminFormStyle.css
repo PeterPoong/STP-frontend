@@ -427,4 +427,17 @@ img.roundedCircle {
   color: #007bff !important; /* Blue color for selected radio button label */
 }
 
+.error {
+  color: red;
+  font-size: 0.875em;
+  margin-top: 0.25em;
+}
 
+.password-toggle {
+  position: absolute;
+  right: 10px;
+  top: 73% !important;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #007bff; /* Customize as needed */
+}

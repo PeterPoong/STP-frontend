@@ -8,7 +8,7 @@ import 'react-calendar/dist/Calendar.css';
 import TimePicker from 'react-time-picker';
 import 'react-time-picker/dist/TimePicker.css';
 import { useDropzone } from "react-dropzone";
-import { FaTrashAlt, FaUpload, FaFileImage} from 'react-icons/fa';
+import { FaTrashAlt, FaUpload, FaFileImage, FaEye, FaEyeSlash} from 'react-icons/fa';
 
 const AdminFormComponent = ({
   formTitle,
@@ -117,10 +117,59 @@ const [showPreview, setShowPreview] = useState(false);
 const [showCoverPreview, setShowCoverPreview] = useState(false);
 const [previewFile, setPreviewFile] = useState(null);
 const [file, setFile] = useState(null);
-
+const [errorMessage, setErrorMessage] = useState('');
 const handleRemoveCover = () => {
   setCoverFile(null);
 };
+
+// Define the acceptable file types and size limit
+const acceptedFormats = ['image/jpeg', 'image/png'];
+const maxFileSize = 2 * 1024 * 1024; // 2MB
+
+// Handler for cover photo drop
+const handleCoverDrop = (acceptedFiles) => {
+  const file = acceptedFiles[0];
+  
+  // Check file format and size
+  if (!acceptedFormats.includes(file.type)) {
+    setErrorMessage('Invalid file format. Only JPG, JPEG, and PNG are allowed.');
+    return;
+  }
+  
+  if (file.size > maxFileSize) {
+    setErrorMessage('File size exceeds the limit of 2MB.');
+    return;
+  }
+
+  // Clear any previous error
+  setErrorMessage('');
+  
+  // Set the cover photo file
+  setCoverFile(file);
+};
+
+// Handler for album photo drop
+const handleAlbumDrop = (acceptedFiles) => {
+  const file = acceptedFiles[0];
+  
+  // Check file format and size
+  if (!acceptedFormats.includes(file.type)) {
+    setErrorMessage('Invalid file format. Only JPG, JPEG, and PNG are allowed.');
+    return;
+  }
+  
+  if (file.size > maxFileSize) {
+    setErrorMessage('File size exceeds the limit of 2MB.');
+    return;
+  }
+
+  // Clear any previous error
+  setErrorMessage('');
+
+  // Add the album file
+  setAlbumFiles([...albumFiles, file]);
+};
+
 const handleRemoveAlbum = (fileToRemove) => {
   setAlbumFiles(prevFiles => prevFiles.filter(file => file !== fileToRemove));
 };
@@ -159,6 +208,7 @@ const { getRootProps: getAlbumRootProps, getInputProps: getAlbumInputProps } = u
     setAlbumFiles(prevFiles => [...prevFiles, ...acceptedFiles]);
   },
 });
+
   return (
     <Form onSubmit={onSubmit} className="admin-form-component">
       <h3 className="fw-light text-left mt-4 mb-4">{formTitle}</h3>
@@ -228,18 +278,25 @@ const { getRootProps: getAlbumRootProps, getInputProps: getAlbumInputProps } = u
                 />
               </Form.Group>
             )}
-            {formPassword && formPassword.map((password, index) => (
-              <Form.Group key={index} controlId={password.id} className="mb-5">
+           {formPassword && formPassword.map((password, index) => (
+             <Form.Group key={index} controlId={password.id} className="mb-5 position-relative">
                 <Form.Label>{password.label}</Form.Label>
                 <Form.Control
-                  type={password.type}
-                  placeholder={password.placeholder}
-                  value={password.value}
-                  onChange={password.onChange}
-                  required={password.required}
-                  autoComplete={password.autoComplete}
+                    type={password.type}
+                    placeholder={password.placeholder}
+                    value={password.value}
+                    onChange={password.onChange}
+                    required={password.required}
+                    autoComplete={password.autoComplete}
                 />
-              </Form.Group>
+                <span
+                    className="password-toggle"
+                    onClick={password.toggleVisibility}
+                    role="button"
+                >
+                    {password.showVisibility ? <FaEyeSlash /> : <FaEye />}
+                </span>
+            </Form.Group>
             ))}
             {formAccount && formAccount.map((account, index) => (
               <Form.Group key={index} controlId={account.id} className="mb-5">
@@ -265,7 +322,7 @@ const { getRootProps: getAlbumRootProps, getInputProps: getAlbumInputProps } = u
             {/* Logo Upload */}
             {handleLogoChange && (
               <Form.Group controlId="logo" className="mb-5">
-                <Form.Label>Logo</Form.Label>
+                <Form.Label>Logo (2MB)</Form.Label>
                 <Form.Control type="file" accept="image/*" onChange={handleLogoChange} />
               </Form.Group>
             )}
@@ -498,8 +555,8 @@ const { getRootProps: getAlbumRootProps, getInputProps: getAlbumInputProps } = u
           />
         </Form.Group>
       ))}
-       {/* Conditionally show the drag-and-drop upload for cover photo */}
-       {showUploadFeature && (
+             {/* Conditionally show the drag-and-drop upload for cover photo */}
+             {showUploadFeature && (
           <div className="upload-section">
             <div className="mb-4">
               <h5>Cover Photo</h5>
