@@ -373,7 +373,7 @@ const { getRootProps: getAlbumRootProps, getInputProps: getAlbumInputProps } = u
               </Form.Group>
             ))}
 
-          {formRadio.map(radio => (
+          {/* {formRadio.map(radio => (
             <Form.Group key={radio.id} controlId={radio.id}>
               <Form.Label>{radio.label}</Form.Label>
               {radio.options.map(option => (
@@ -405,7 +405,7 @@ const { getRootProps: getAlbumRootProps, getInputProps: getAlbumInputProps } = u
                   required={Name.required || false}
                 />
               </Form.Group>
-            ))}
+            ))} */}
              {formStudentCountry && formStudentCountry.map((field, index) => (
                     <Col md={12} key={index}>
                       <Form.Group controlId={field.id} className="mb-5 ms-2">
