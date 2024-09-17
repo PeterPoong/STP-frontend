@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Button, Modal } from "react-bootstrap";
-import {GraduationCap,CalendarCheck,BookOpenText } from 'lucide-react';
+import { GraduationCap, CalendarCheck, BookOpenText } from 'lucide-react';
 import { MapPin, BookOpen, Clock, Calendar, ChevronLeft, ChevronRight } from 'react-feather';
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../../css/StudentPortalStyles/StudentPortalWidget.css";
-import WidgetPending from "../../Components/StudentPortalComp/WidgetPending";
+import "../../../css/StudentPortalStyles/StudentPortalWidget.css";
+import WidgetPending from "../../../Components/StudentPortalComp/Widget/WidgetPending";
 
-const AppliedCoursesPending = () => {
+const AppliedCoursePending = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(3);
     const [isPendingOpen, setIsPendingOpen] = useState(false);
@@ -45,7 +45,7 @@ const AppliedCoursesPending = () => {
 
             const responseData = await response.json();
             console.log('API response:', responseData);
-            
+
             // Check if the response has the expected structure
             if (responseData.success && responseData.data && Array.isArray(responseData.data.data)) {
                 setPendingApplications(responseData.data.data);
@@ -103,7 +103,7 @@ const AppliedCoursesPending = () => {
     };
 
     // Get current items
-    const currentItems = Array.isArray(pendingApplications) 
+    const currentItems = Array.isArray(pendingApplications)
         ? pendingApplications.slice(indexOfFirstItem, indexOfLastItem)
         : [];
 
@@ -131,7 +131,7 @@ const AppliedCoursesPending = () => {
                                     <div className="acp-left-section">
                                         <h3 className="acp-degree-title">{app.course_name}</h3>
                                         <div className="acp-university-info">
-                                            <img 
+                                            <img
                                                 src={`${import.meta.env.VITE_BASE_URL}storage/${app.course_logo}`}
                                                 alt={app.school_name}
                                                 className="acp-university-logo"
@@ -171,8 +171,8 @@ const AppliedCoursesPending = () => {
                                     <div className="acp-right-section">
                                         <span className="acp-status-badge">Pending</span>
                                         <div className="acp-action-buttons">
-                                            <Button 
-                                                className="acp-view-btn danger btn-danger" 
+                                            <Button
+                                                className="acp-view-btn danger btn-danger"
                                                 onClick={() => {
                                                     setSelectedApplication(app);
                                                     setIsPendingOpen(true);
@@ -180,7 +180,7 @@ const AppliedCoursesPending = () => {
                                             >
                                                 View
                                             </Button>
-                                            <Button 
+                                            <Button
                                                 className="acp-withdraw-btn btn-danger"
                                                 onClick={() => handleWithdraw(app.id)}
                                             >
@@ -190,11 +190,11 @@ const AppliedCoursesPending = () => {
                                     </div>
                                 </Card.Body>
                             </Card>
-                         ))
-                        )}
+                        ))
+                    )}
                     <div className="pagination">
-                        <button 
-                            onClick={() => paginate(currentPage - 1)} 
+                        <button
+                            onClick={() => paginate(currentPage - 1)}
                             disabled={currentPage === 1}
                         >
                             <ChevronLeft size={20} />
@@ -208,9 +208,9 @@ const AppliedCoursesPending = () => {
                                 {number}
                             </button>
                         ))}
-                        <button 
-                            onClick={() => paginate(currentPage + 1)} 
-                            disabled={currentPage === pageNumbers.length} 
+                        <button
+                            onClick={() => paginate(currentPage + 1)}
+                            disabled={currentPage === pageNumbers.length}
                         >
                             <ChevronRight size={20} />
                         </button>
@@ -231,14 +231,15 @@ const AppliedCoursesPending = () => {
                     </Button>
                 </Modal.Footer>
             </Modal>
-            <WidgetPending 
-                isOpen={isPendingOpen} 
+            <WidgetPending
+                isOpen={isPendingOpen}
                 onClose={() => setIsPendingOpen(false)}
                 date={selectedApplication ? selectedApplication.date_applied : ""}
                 feedbacks={selectedApplication && selectedApplication.feedback ? [selectedApplication.feedback] : []}
+                formID={selectedApplication ? selectedApplication.id : null}
             />
         </div>
     );
 };
 
-export default AppliedCoursesPending;
+export default AppliedCoursePending;

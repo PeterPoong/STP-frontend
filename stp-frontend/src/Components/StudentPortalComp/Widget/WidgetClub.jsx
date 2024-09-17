@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Edit2, Check } from 'lucide-react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import '../../css/StudentPortalStyles/StudentPortalWidget.css';
+import '../../../css/StudentPortalStyles/StudentPortalWidget.css';
 
 const WidgetClub = ({ isOpen, onClose, onSave, item, isViewMode }) => {
 

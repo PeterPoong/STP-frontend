@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import Collapsible from 'react-collapsible';
 import { ChevronDown, ChevronUp } from 'lucide-react';
-import AcademicTranscript from "../../Components/StudentPortalComp/AcademicTranscript";
-import CoCurriculum from "../../Components/StudentPortalComp/CoCurriculum";
-import Achievements from '../../Components/StudentPortalComp/Achievements';
-import OtherCertDoc from '../../Components/StudentPortalComp/OtherCertDoc'
+import AcademicTranscript from "../../Components/StudentPortalComp/Transcript/AcademicTranscript";
+import CoCurriculum from "../../Components/StudentPortalComp/Transcript/CoCurriculum";
+import Achievements from '../../Components/StudentPortalComp/Transcript/Achievements';
+import OtherCertDoc from '../../Components/StudentPortalComp/Transcript/OtherCertDoc'
 import "../../css/StudentPortalStyles/StudentPortalBasicInformation.css";
 
 const CollapsibleSections = () => {

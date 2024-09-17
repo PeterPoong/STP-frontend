@@ -3,7 +3,7 @@ import { X, Edit2, ChevronDown, Upload, Check, FileText, Trash2 } from 'lucide-r
 import DatePicker from 'react-datepicker';
 import { Alert } from 'react-bootstrap';
 import 'react-datepicker/dist/react-datepicker.css';
-import '../../css/StudentPortalStyles/StudentPortalWidget.css';
+import '../../../css/StudentPortalStyles/StudentPortalWidget.css';
 
 const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
   const [achievement_name, setAchievementName] = useState('');
@@ -15,6 +15,7 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
   const [errors, setErrors] = useState({});
   const [achievementTypes, setAchievementTypes] = useState([]);
 
+  /*loading and pop up the widget can check if open will set the info that retrieve from api respsonse or null, if close will reset the form */
   useEffect(() => {
     if (isOpen) {
       if (item) {
@@ -30,7 +31,9 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
       fetchAchievementTypes();
     }
   }, [isOpen, item]);
+  /*end */
 
+  /*reset form function*/
   const resetForm = () => {
     setAchievementName('');
     setDate(null);
@@ -39,12 +42,16 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
     setAchievementMedia(null);
     setErrors({});
   };
+  /*end */
 
+  /*close popup widget function */
   const handleClose = () => {
     resetForm();
     onClose();
   };
+  /*end */
 
+  /*title obtained api */
   const fetchAchievementTypes = async () => {
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
@@ -67,7 +74,9 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
       setError('Failed to load achievement types. Please try again later.');
     }
   };
+  /*end */
 
+  /*date format handling function */
   const formatDate = (date) => {
     if (!date) return '';
     const day = date.getDate().toString().padStart(2, '0');
@@ -76,9 +85,11 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
     console.log(`Formatted date: ${day}/${month}/${year}`); // Add this log
     return `${day}/${month}/${year}`;
   };
+  /*end */
 
   if (!isOpen) return null;
 
+  /*save button function when user press save button */
   const handleSave = async () => {
     // Validate all fields
     const newErrors = {};
@@ -91,10 +102,8 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
       setErrors(newErrors);
       return; // Don't proceed with save if there are errors
     }
-
     // Clear any previous errors
     setErrors({});
-
     // Proceed with save
     const formattedDate = date ? formatDate(date) : '';
     try {
@@ -106,7 +115,6 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
         awarded_by,
         achievement_media
       });
-
       if (!result.success) {
         if (result.message === "Validation Error" && result.error) {
           // Handle validation errors
@@ -123,7 +131,9 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
       setErrors({ general: "An error occurred. Please try again later." });
     }
   };
+  /*end */
 
+  
   const handleTitleEdit = () => {
     setIsEditingTitle(true);
   };
@@ -143,6 +153,7 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
     setAchievementMedia(null);
   };
 
+  /*click to view button function */
   const handleViewClick = () => {
     if (achievement_media instanceof File) {
       // For newly uploaded files
@@ -154,7 +165,7 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
       window.open(fullUrl, '_blank');
     }
   };
-
+/*end */
   return (
     <div className="achievement-overlay">
       <div className="achievement-popup">
@@ -217,11 +228,11 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
                   onChange={(e) => setTitle(e.target.value)}
                   disabled={isViewMode}
                   required
-                  style={{ 
-                    appearance: 'none', 
-                    borderBottom: 'none', 
+                  style={{
+                    appearance: 'none',
+                    borderBottom: 'none',
                     outline: 'none',
-                    color: 'white' 
+                    color: 'white'
                   }}
                   onFocus={(e) => e.target.style.outline = 'none'}
                   onBlur={(e) => e.target.style.outline = 'none'}
@@ -235,7 +246,7 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
                 </select>
                 <ChevronDown size={20} color="white" style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)' }} />
               </div>
-            
+
               {errors.title && <div className="error-message">{errors.title}</div>}
             </div>
             <div className="achievement-input-field">
@@ -290,7 +301,7 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
             )}
           </div>
         </div>
-        
+
         {!isViewMode && (
           <div className="d-flex justify-content-center">
             <button className="achievement-save-btn" onClick={handleSave}>

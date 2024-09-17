@@ -10,6 +10,7 @@ const WidgetFileUploadAcademicTranscript = ({ isOpen, onClose, onSave, item, isV
     const [errors, setErrors] = useState({});
     const [alert, setAlert] = useState(null);
 
+    /*loading and pop up the widget can check if open will set the info that retrieve from api respsonse or null, if close will reset the form */
     useEffect(() => {
         if (isOpen) {
             if (item) {
@@ -22,7 +23,9 @@ const WidgetFileUploadAcademicTranscript = ({ isOpen, onClose, onSave, item, isV
             }
         }
     }, [isOpen, item]);
+    /*end */
 
+    /*reset form function*/
     const resetForm = () => {
         setTitle('');
         setFile(null);
@@ -30,14 +33,18 @@ const WidgetFileUploadAcademicTranscript = ({ isOpen, onClose, onSave, item, isV
         setErrors({});
         setAlert(null);
     };
+    /*end*/
 
+    /*close popup widget function */
     const handleClose = () => {
         resetForm();
         onClose();
     };
+    /*end */
 
     if (!isOpen) return null;
 
+    /*save button function when user press save button */
     const handleSave = async () => {
         if (isViewMode) return;
 
@@ -61,21 +68,18 @@ const WidgetFileUploadAcademicTranscript = ({ isOpen, onClose, onSave, item, isV
             });
 
             if (!result.success) {
-                if (result.error) {
-                    const errorMessages = Object.entries(result.error).map(([key, value]) => `${key}: ${value.join(', ')}`);
-                    setAlert({ type: 'danger', message: errorMessages.join('. ') });
-                } else {
-                    setAlert({ type: 'danger', message: result.message || "Failed to save file. Please try again." });
-                }
+                setAlert({ type: 'error', message: result.message || "Failed to save file. Please try again." });
             } else {
                 handleClose();
             }
         } catch (error) {
             console.error('Error saving file:', error);
-            setAlert({ type: 'danger', message: "An unexpected error occurred. Please try again later." });
+            setAlert({ type: 'error', message: "An unexpected error occurred. Please try again later." });
         }
     };
+    /*end */
 
+    /*file change handle function */
     const handleFileChange = (event) => {
         const uploadedFile = event.target.files[0];
         if (uploadedFile) {
@@ -83,12 +87,16 @@ const WidgetFileUploadAcademicTranscript = ({ isOpen, onClose, onSave, item, isV
             setFile(uploadedFile);
         }
     };
+    /*end */
 
+  /*click to view button function */
     const handleFileDelete = () => {
         setFile(null);
         setExistingFileUrl(null); // Add this line to clear the existing file URL
     };
+    /*end */
 
+    /*click to view button function */
     const handleViewClick = () => {
         if (file instanceof File) {
             // For newly uploaded files
@@ -100,6 +108,7 @@ const WidgetFileUploadAcademicTranscript = ({ isOpen, onClose, onSave, item, isV
             window.open(fullUrl, '_blank');
         }
     };
+    /*end*/
 
     return (
         <div className="upload-widget-overlay">
@@ -108,13 +117,11 @@ const WidgetFileUploadAcademicTranscript = ({ isOpen, onClose, onSave, item, isV
                     <h5 className="small">{isViewMode ? 'View' : (item ? 'Edit' : 'Upload')}</h5>
                     <button className="close-button" onClick={handleClose}><X size={20} /></button>
                 </div>
-
                 {alert && (
                     <Alert variant={alert.type} onClose={() => setAlert(null)} dismissible>
                         {alert.message}
                     </Alert>
                 )}
-
                 <div className="upload-title-input">
                     <input
                         type="text"
@@ -126,7 +133,6 @@ const WidgetFileUploadAcademicTranscript = ({ isOpen, onClose, onSave, item, isV
                     />
                     {errors.title && <div className="error-message">{errors.title}</div>}
                 </div>
-
                 {!file && !existingFileUrl ? (
                     <div className="upload-area">
                         {!isViewMode && (

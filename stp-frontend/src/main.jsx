@@ -40,6 +40,9 @@ import StudentPortalForgetPassword from "./Pages/StudentPortalPages/StudentPorta
 import StudentPortalResetPassword from "./Pages/StudentPortalPages/StudentPortalResetPassword";
 import StudentPortalSignUp from "./Pages/StudentPortalPages/StudentPortalSignUp";
 import StudentPortalBasicInformations from "./Pages/StudentPortalPages/StudentPortalBasicInformations";
+import StudentApplyCourses from "./Pages/StudentPortalPages/StudentApplyCourses";
+import StudentApplyCourse from "./Pages/StudentPortalPages/StudentApplyCourse";
+import StudentApplicationSummary from "./Pages/StudentPortalPages/StudentApplicationSummary";
 
 //schoolPortal Page
 import SchoolPortalLogin from "./Pages/SchoolPages/SchoolPortalLogin";
@@ -50,7 +53,6 @@ import ExistSchool from "./Pages/SchoolPages/ExistSchool";
 import SchoolBasicInformation from "./Pages/SchoolPages/SchoolBasicInformation";
 import SchoolManagePassword from "./Pages/SchoolPages/ManagePassword";
 
-import StudentApplyCourse from "./Pages/StudentPortalPages/StudentApplyCourse";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -227,14 +229,21 @@ const router = createBrowserRouter([
     path: "/schoolExistingAccount",
     element: <ExistSchool />,
   },
-  // {
-  //   path: "/schoolBasicInformation",
-  //   element: <SchoolBasicInformation />,
-  // },
-  // {
-  //   path: "/schoolManagePassword",
-  //   element: <SchoolManagePassword />,
-  // },
+
+  {
+    path: "/studentApplyCourse",
+    element: <StudentApplyCourse />,
+  },
+
+  {
+    path: "/studentApplyCourses/:courseId",
+    element: <StudentApplyCourses />,
+  },
+
+  {
+    path: "/studentApplicationSummary/:courseId",
+    element: <StudentApplicationSummary />,
+  },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(

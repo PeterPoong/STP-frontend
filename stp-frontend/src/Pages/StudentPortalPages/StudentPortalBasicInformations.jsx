@@ -3,22 +3,23 @@ import { useNavigate } from "react-router-dom";
 import NavButtonsSP from "../../Components/StudentPortalComp/NavButtonsSP";
 import MyProfileWidget from "../../Components/StudentPortalComp/MyProfileWidget";
 import SpcFooter from "../../Components/StudentPortalComp/SpcFooter";
-import BasicInformationWidget from "../../Components/StudentPortalComp/BasicInformationWidget";
-import ManagePasswordWidget from "../../Components/StudentPortalComp/ManagePasswordWidget";
+import BasicInformationWidget from "../../Components/StudentPortalComp/MyProfile/BasicInformationWidget";
+import ManagePasswordWidget from "../../Components/StudentPortalComp/MyProfile/ManagePasswordWidget";
 import CollapsibleSections from "../../Components/StudentPortalComp/CollapsibleSections";
-import AppliedCoursesHistory from "../../Components/StudentPortalComp/AppliedCoursesHistory";
-import AppliedCoursesPending from "../../Components/StudentPortalComp/AppliedCoursesPending";
+import AppliedCourseHistory from "../../Components/StudentPortalComp/AppliedCourse/AppliedCourseHistory";
+import AppliedCoursePending from "../../Components/StudentPortalComp/AppliedCourse/AppliedCoursePending";
 import "aos/dist/aos.css";
 import "../../css/StudentPortalStyles/StudentPortalBasicInformation.css";
+
 
 const StudentPortalBasicInformations = () => {
   const [selectedContent, setSelectedContent] = useState("basicInfo");
   const [profilePic, setProfilePic] = useState(null);
-
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
+  /*loading to check if have  token or not if dont have will navigaate back to studentPortalLogin Page */
   useEffect(() => {
     const token =
       sessionStorage.getItem("token") || localStorage.getItem("token");
@@ -30,7 +31,9 @@ const StudentPortalBasicInformations = () => {
       verifyToken(token);
     }
   }, [navigate]);
+/*end */
 
+/*validate Token api t check if have token or not if dont have will navigate back to studentPortalLoginPage and will remove the token */
   const verifyToken = async (token) => {
     try {
       console.log("Verifying token:", token);
@@ -68,11 +71,15 @@ const StudentPortalBasicInformations = () => {
       setIsLoading(false);
     }
   };
+  /*end */
 
+  /*passing the profilepic url from basicInfomationWidget t MyProfileWidget */
   const handleProfilePicUpdate = (newProfilePic) => {
     setProfilePic(newProfilePic);
   };
+  /*end */
 
+  /*rendercontent function */
   const renderContent = () => {
     switch (selectedContent) {
       case "basicInfo":
@@ -85,23 +92,23 @@ const StudentPortalBasicInformations = () => {
         return <ManagePasswordWidget />;
       case "transcript":
         return <CollapsibleSections />;
-      case "appliedCoursesPending":
-        return <AppliedCoursesPending status="pending" />;
-      case "appliedCoursesHistory":
-        return <AppliedCoursesHistory status="history" />;
+      case "appliedCoursePending": // Ensure this matches the case of the component name
+        return <AppliedCoursePending status="pending" />; // Check if this is correctly imported
+      case "appliedCourseHistory":
+        return <AppliedCourseHistory status="history" />;
       default:
         return <BasicInformationWidget />;
     }
   };
+  /*end */
 
   if (isLoading) {
     return <div>Loading...</div>;
   }
-
   if (!isAuthenticated) {
     return null; // Or you could render a "Not Authorized" message
   }
-
+  
   return (
     <div className="app-container">
       <NavButtonsSP />

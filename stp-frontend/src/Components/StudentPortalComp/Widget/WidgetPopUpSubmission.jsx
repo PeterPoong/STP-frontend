@@ -1,5 +1,5 @@
 import React from 'react';
-import "../../css/StudentPortalStyles/StudentPortalWidget.css";
+import "../../../css/StudentPortalStyles/StudentPortalWidget.css";
 
 const WidgetPopUpSubmission = ({ isOpen, onClose, onConfirm }) => {
     if (!isOpen) return null;

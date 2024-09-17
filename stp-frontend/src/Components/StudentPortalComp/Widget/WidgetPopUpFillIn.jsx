@@ -1,7 +1,7 @@
 import React from 'react';
-import "../../css/StudentPortalStyles/StudentPortalWidget.css";
+import "../../../css/StudentPortalStyles/StudentPortalWidget.css";
 
-const WidgetPopUpRemind = ({ isOpen, onClose}) => {
+const WidgetPopUpFillIn = ({ isOpen, onClose }) => {
     if (!isOpen) return null;
 
     return (
@@ -11,12 +11,9 @@ const WidgetPopUpRemind = ({ isOpen, onClose}) => {
                     <div className="delete-popup-icon-wrap">
                         <div className="delete-popup-icon">!</div>
                     </div>
-                    <div className="delete-popup-text">
-                        <h2 className="delete-popup-title">Please include at least one academic qualification.</h2>
-                        <p className="delete-popup-message">
-                            "It is recommended to provide your <strong> highest</strong> qualification"
-                        </p>
-                    </div>
+
+                    <h2 className="delete-popup-title mt-4 ">Please fill in a mandatory fields.</h2>
+
                 </div>
                 <div className="delete-popup-buttons">
                     <button className="delete-popup-cancel" onClick={onClose}>Ok</button>
@@ -25,4 +22,4 @@ const WidgetPopUpRemind = ({ isOpen, onClose}) => {
         </div>
     );
 };
-export default WidgetPopUpRemind ;
+export default WidgetPopUpFillIn;

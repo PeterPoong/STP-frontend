@@ -1,7 +1,7 @@
 .app-container-applycourse {
   display: flex;
   flex-direction: column;
-  min-height: 200vh;
+  
   background-color: #F5F5F5;
 }
 
@@ -314,35 +314,46 @@ select__menu-list::-webkit-scrollbar-thumb:hover {
 }
 
 .president {
-  background-color: #007bff;
+  background-color: #50B5FE;
   color: white;
 }
 
 .secretary {
-  background-color: #6f42c1;
+  background-color: #8979FF;
   color: white;
 }
 
 .treasurer {
-  background-color: #17a2b8;
+  background-color: #537FF1;
   color: white;
 }
 
 .ajk {
   background-color: #ffc107;
+  color: white;
+  
 }
 
 .champion {
-  background-color: #ffc107;
-}
-
-.runner-up {
-  background-color: #6c757d;
+  background-color: #FEBD14;
   color: white;
 }
 
-.participation {
-  background-color: #28a745;
+.runner-up
+{
+  background-color: #C0C0C0;
+  color: white;
+}
+
+.participation
+{
+  background-color: #F07B00;
+  color: white;
+}
+
+.awarded
+{
+  background-color: #76fa39;
   color: white;
 }
 
@@ -385,7 +396,7 @@ select__menu-list::-webkit-scrollbar-thumb:hover {
 }
 
 .overall-grade {
-  background-color: #dc3545;
+  background-color: #B71A18;
   color: white;
   border-bottom-left-radius: 2rem;
 
@@ -445,20 +456,36 @@ select__menu-list::-webkit-scrollbar-thumb:hover {
   padding-bottom: 0.5rem;
 }
 
-.search-bar {
-  position: relative;
+.search-bar-sas {
+  position: relative;  
 }
 
-.search-bar input {
+.search-bar-sas input {
   padding-left: 2.5rem;
+  border: 0.1rem solid #9E9E9E; /* Adjust the border color and width */
+  border-radius: 0.5rem; /* Optional: Add rounded corners */
+  outline: none; /* Remove default outline */
+  width:15rem;
+  color:#9E9E9E;
 }
 
-.search-bar svg {
+/* If you want to adjust the border on focus */
+.search-bar-sas input:focus {
+  border-color: #B71A18; /* Change border color on focus */
+  box-shadow: 0 0.25rem 0.25rem rgba(0, 0, 0, 0.05); /* Optional: Add shadow on focus */
+}
+
+.search-bar-sas svg {
   position: absolute;
   left: 0.75rem;
   top: 50%;
   transform: translateY(-50%);
-  color: #6c757d;
+  
+}
+
+.custom-input-size
+{
+width:50%;
 }
 
 .table .btn-link {
@@ -628,6 +655,8 @@ ul {
   background-size: 8px 8px;
   padding-right: 1.5rem;
 }
+
+
 
 .sac-form-select:focus {
   border-color: #B71A18;
@@ -898,12 +927,13 @@ ul {
   }
 
   .grade-summary {
-    flex-direction: column;
+    flex-direction: row;
+    
   }
 
   .overall-grade {
     width: 100%;
-    border-bottom-left-radius: 0;
+    border-bottom-left-radius: auto;
     padding: 1rem;
   }
 
@@ -1182,8 +1212,9 @@ ul {
     margin: 0;
   }
 
+  
+
   .basic-info,
-  .academic-results,
   .co-curriculum,
   .achievements {
     margin: 1rem 0;
@@ -1208,6 +1239,8 @@ ul {
     margin-top: 0.5rem;
   }
 
+  
+ 
   /*submit success*/
   .widget-applying-course-success {
     margin: 0 1rem;
@@ -1443,8 +1476,7 @@ ul {
     margin: 0;
   }
 
-  .basic-info,
-  .academic-results {
+  .basic-info {
     margin: 0.5rem 0;
     padding: 0.75rem;
     border-radius: 0;
@@ -1475,12 +1507,12 @@ ul {
 
 
   .grade-summary {
-    flex-direction: column;
+    flex-direction: row;
   }
 
   .overall-grade {
     width: 100%;
-    border-bottom-left-radius: 0;
+    border-bottom-left-radius: auto;
     padding: 0.5rem;
   }
 

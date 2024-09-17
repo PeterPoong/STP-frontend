@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
 import { FileText, Search, Eye, ChevronDown, ChevronUp, Clock, Copy } from 'react-feather';
 import { GraduationCap, CalendarCheck, BookOpenText } from 'lucide-react';
-import "../../css/StudentPortalStyles/StudentApplyCourse.css";
-import image1 from "../../assets/StudentAssets/University Logo/image1.jpg";
-import "../../css/StudentPortalStyles/StudentButtonGroup.css";
+import "../../../css/StudentPortalStyles/StudentApplyCourse.css";
+import image1 from "../../../assets/StudentAssets/University Logo/image1.jpg";
+import "../../../css/StudentPortalStyles/StudentButtonGroup.css";
+import SpcFooter from "../../../Components/StudentPortalComp/SpcFooter";
+
 const fakeFormData = {
   profilePicture: "https://example.com/fake-profile-pic.jpg",
   name: "John Doe",
@@ -231,7 +233,7 @@ const ApplicationSummary = ({ formData = fakeFormData }) => {
             <div className="col-6 mb-3">
               <div className="d-flex align-items-center">
                 <Clock size={16} className="me-2" />
-                <span className="summary-value">30 months</span>
+                <span >30 months</span>
               </div>
             </div>
             <div className="col-6 mb-3">
@@ -243,7 +245,7 @@ const ApplicationSummary = ({ formData = fakeFormData }) => {
             <div className="col-6 mb-3">
               <div className="d-flex align-items-center">
                 <BookOpenText size={16} className="me-2" />
-                <span className="summary-value">January, July or September</span>
+                <span >January, July or September</span>
               </div>
             </div>
           </div>
@@ -363,7 +365,7 @@ const ApplicationSummary = ({ formData = fakeFormData }) => {
                   <div className="academic-results m-3 shadow-lg rounded-5 pt-4 d-flex flex-column">
                     <div className="px-4">
                       <select
-                        className="sac-form-select mb-3"
+                        className="sac-form-select mb-3 px-0"
                         value={selectedExam}
                         onChange={handleExamChange}
                       >
@@ -381,7 +383,7 @@ const ApplicationSummary = ({ formData = fakeFormData }) => {
                       ))}
                     </div>
                     <div className="grade-summary d-flex justify-content-between align-items-stretch border-top">
-                      <div className="overall-grade bg-danger text-white w-75 d-flex justify-content-start">
+                      <div className="overall-grade  text-white w-75 d-flex justify-content-start">
                         <h3 className="align-self-center px-5">Grade: {overallGrade}</h3>
                       </div>
                       <Button variant="link" className="text-danger w-25 ">View Result Slip »</Button>

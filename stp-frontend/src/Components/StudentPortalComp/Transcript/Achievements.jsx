@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { Edit2, Trash2, Eye, Plus, Search } from 'lucide-react';
-import WidgetAchievement from "../../Components/StudentPortalComp/WidgetAchievement";
-import WidgetPopUpDelete from "../../Components/StudentPortalComp/WidgetPopUpDelete";
-import "../../css/StudentPortalStyles/StudentPortalAcademicTranscript.css";
-import "../../css/StudentPortalStyles/StudentButtonGroup.css";
+import WidgetAchievement from "../../../Components/StudentPortalComp/Widget/WidgetAchievement";
+import WidgetPopUpDelete from "../../../Components/StudentPortalComp/WidgetPopUpDelete";
+import "../../../css/StudentPortalStyles/StudentPortalAcademicTranscript.css";
+import "../../../css/StudentPortalStyles/StudentButtonGroup.css";
 
 const Achievements = () => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -100,7 +100,7 @@ const Achievements = () => {
         const totalPages = paginationInfo.lastPage;
         const current = paginationInfo.currentPage;
         const pages = [];
-        
+
         if (totalPages <= 7) {
             for (let i = 1; i <= totalPages; i++) {
                 pages.push(i);
@@ -131,28 +131,41 @@ const Achievements = () => {
         return pages;
     };
 
-    // Function to add new entry or update existing entry                                    
     const saveEntry = async (entry) => {
         try {
-            const token =
-                sessionStorage.getItem("token") || localStorage.getItem("token");
+            const token = sessionStorage.getItem("token") || localStorage.getItem("token");
             if (!token) {
                 throw new Error('No authentication token found');
             }
-    
+
             const url = entry.id
                 ? `${import.meta.env.VITE_BASE_URL}api/student/editAchievement?id=${entry.id}`
                 : `${import.meta.env.VITE_BASE_URL}api/student/addAchievement`;
-    
+
             const formData = new FormData();
             formData.append('achievement_name', entry.achievement_name);
             formData.append('date', entry.date);
             formData.append('title', entry.title);
             formData.append('awarded_by', entry.awarded_by);
+
+            // Handle file upload logic
             if (entry.achievement_media instanceof File) {
+                // If a new file is selected, append it to formData
                 formData.append('achievement_media', entry.achievement_media);
+                console.log('New file being uploaded:', entry.achievement_media.name);
+            } else if (entry.id && entry.achievement_media && typeof entry.achievement_media === 'string') {
+                // If editing and the file hasn't changed, don't send the achievement_media field
+                console.log('Existing file, not changing:', entry.achievement_media);
+            } else if (!entry.id) {
+                // If adding a new entry and no file is selected, send an empty string
+                formData.append('achievement_media', '');
+                console.log('No file selected for new entry');
             }
-    
+            // Log the formData contents
+            for (let [key, value] of formData.entries()) {
+                console.log(`${key}:`, value);
+            }
+
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {
@@ -160,16 +173,16 @@ const Achievements = () => {
                 },
                 body: formData,
             });
-    
+
             const result = await response.json();
             console.log('Save/Edit response:', result);
-    
+
             if (result.success) {
                 setIsPopupOpen(false);
                 setCurrentItem(null);
                 fetchAchievements(); // Refresh the list after adding/updating
             }
-    
+
             return result; // Return the entire result object
         } catch (error) {
             console.error('Error saving achievement:', error);
@@ -272,34 +285,33 @@ const Achievements = () => {
         : data;
 
     return (
-        <div className='p-5'>
-            <div className="mb-4">
-                <div className="d-flex justify-content-start align-item-centger flex-wrap ">
-                    <span className="me-3 align-self-center">Show</span>
-                    <select className="show-option-table me-3"
-                        value={itemsPerPage}
-                        onChange={(e) => setItemsPerPage(Number(e.target.value))}>
-                        <option value={10}>10</option>
-                        <option value={20}>20</option>
-                        <option value={50}>50</option>
-                    </select>
-                    <span className="me-2 align-self-center">entries</span>
+        <div className='transcript-search-bar-padmar'>
+            <div className="transcript-search-bar-container">
+                <span className="me-3 align-self-center">Show</span>
+                <select className="show-option-table me-3"
+                    value={itemsPerPage}
+                    onChange={(e) => setItemsPerPage(Number(e.target.value))}>
+                    <option value={10}>10</option>
+                    <option value={20}>20</option>
+                    <option value={50}>50</option>
+                </select>
+                <span className="me-2 align-self-center">entries</span>
+                <div className="search-bar-sas  ">
+                    <Search size={20} style={{ color: '#9E9E9E' }} />
                     <input
-                        type="search"
-                        className="search"
-                        placeholder="Search..."
+                        type="text" placeholder="Search..." className="form-control custom-input-size"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
-                    <button className="button-table px-5 py-1 ml-auto" onClick={() => {
-                        setCurrentItem(null);
-                        setIsPopupOpen(true);
-                    }}>
-                        ADD NEW
-                    </button>
                 </div>
+                <button className="button-table px-5 py-1 ml-auto" onClick={() => {
+                    setCurrentItem(null);
+                    setIsPopupOpen(true);
+                }}>
+                    ADD NEW
+                </button>
             </div>
-
+            <div style={{ overflowX: 'auto' }}>
             {Array.isArray(filteredData) && filteredData.length > 0 ? (
                 <table className="w-100">
                     <thead>
@@ -329,9 +341,9 @@ const Achievements = () => {
                                         <td className="border-bottom p-2 text-end file-date">{item.achievement_media}</td>
                                         <td className="border-bottom p-2">
                                             <div className="d-flex justify-content-end align-items-center">
-                                                <Trash2 size={20}   className="iconat-trash mx-2" onClick={() => openDeletePopup(item)} />
-                                                <Edit2 size={20}   className="iconat mx-2" onClick={() => editEntry(item)} />
-                                                <Eye size={20}  className="iconat ms-2" onClick={() => viewEntry(item)} />
+                                                <Trash2 size={20} className="iconat-trash mx-2" onClick={() => openDeletePopup(item)} />
+                                                <Edit2 size={20} className="iconat mx-2" onClick={() => editEntry(item)} />
+                                                <Eye size={20} className="iconat ms-2" onClick={() => viewEntry(item)} />
                                             </div>
                                         </td>
                                     </tr>
@@ -343,6 +355,7 @@ const Achievements = () => {
             ) : (
                 <div>No achievements found</div>
             )}
+            </div>
 
             <div className="pagination">
                 <button onClick={() => paginate(paginationInfo.currentPage - 1)} disabled={paginationInfo.currentPage === 1}>

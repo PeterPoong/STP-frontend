@@ -3,12 +3,12 @@ import { Card, Button } from "react-bootstrap";
 import { GraduationCap, CalendarCheck, BookOpenText } from 'lucide-react';
 import { MapPin, BookOpen, Clock, Calendar, ChevronLeft, ChevronRight } from 'react-feather';
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../../css/StudentPortalStyles/StudentPortalWidget.css";
-import image1 from "../../assets/StudentAssets/University Logo/image1.jpg";
-import WidgetAccepted from "../../Components/StudentPortalComp/WidgetAccepted";
-import WidgetRejected from "../../Components/StudentPortalComp/WidgetRejected";
+import WidgetAccepted from "../../../Components/StudentPortalComp/Widget/WidgetAccepted";
+import WidgetRejected from "../../../Components/StudentPortalComp/Widget/WidgetRejected";
 
-const AppliedCoursesHistory = () => {
+import "../../../css/StudentPortalStyles/StudentPortalWidget.css";
+
+const AppliedCourseHistory = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(3);
     const [isAcceptedOpen, setIsAcceptedOpen] = useState(false);
@@ -192,4 +192,4 @@ const AppliedCoursesHistory = () => {
     );
 };
 
-export default AppliedCoursesHistory;
+export default AppliedCourseHistory;
