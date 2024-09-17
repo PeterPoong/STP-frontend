@@ -408,3 +408,45 @@
   object-fit: cover;
   margin-bottom: 40px;
 }
+
+.custom-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+  padding: 10px;
+}
+
+.pagination-course {
+  font-size: 1rem;
+}
+
+.pagination-arrow {
+  color: white;
+  border-radius: 50%;
+  transition: background-color 0.3s ease;
+}
+
+
+.pagination-item {
+  margin: 0 5px;
+  padding: 0.5rem 0.75rem;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.pagination-item:hover {
+  background-color: #f0f0f0;
+}
+
+.pagination-item.active {
+  color: white;
+  border: none;
+}
+
+@media (max-width: 768px) {
+  .pagination-item, .pagination-arrow {
+    padding: 0.5rem;
+    font-size: 0.9rem;
+  }
+}

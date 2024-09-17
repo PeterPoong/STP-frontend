@@ -3,7 +3,15 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import NavButtons from "../NavButtons";
 import headerImage from "../../../assets/StudentAssets/institute image/StudyPal10.png";
 import "../../../css/StudentCss/institutepage css/KnowMoreInstitute.css";
-import { Container, Row, Col, Button, Collapse, Card } from "react-bootstrap";
+import {
+  Container,
+  Row,
+  Col,
+  Button,
+  Collapse,
+  Card,
+  Modal,
+} from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faGraduationCap,
@@ -15,10 +23,6 @@ import {
   faBookOpen,
 } from "@fortawesome/free-solid-svg-icons";
 
-import studypal1 from "../../../assets/StudentAssets/institute image/StudyPal1.png";
-import studypal2 from "../../../assets/StudentAssets/institute image/StudyPal2.png";
-import studypal3 from "../../../assets/StudentAssets/institute image/StudyPal3.png";
-import studypal4 from "../../../assets/StudentAssets/institute image/StudyPal4.png";
 import studypal11 from "../../../assets/StudentAssets/institute image/StudyPal11.png";
 import Footer from "../../../Components/StudentComp/Footer";
 
@@ -32,12 +36,39 @@ const baseURL = import.meta.env.VITE_BASE_URL;
 const schoolDetailAPIURL = `${baseURL}api/student/schoolDetail`;
 
 const KnowMoreInstitute = () => {
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [showAllPhotosModal, setShowAllPhotosModal] = useState(false);
+  const [selectedPhotos, setSelectedPhotos] = useState([]);
+  const [startIndex, setStartIndex] = useState(0);
+
+  const openModal = (photos, index) => {
+    setSelectedPhotos(photos);
+    setStartIndex(index);
+    setModalIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalIsOpen(false);
+  };
+
+  const handleShowMore = (photos) => {
+    setSelectedPhotos(photos);
+    setShowAllPhotosModal(true);
+  };
+
+  const handleCloseAllPhotosModal = () => {
+    setShowAllPhotosModal(false);
+  };
+
   const [open, setOpen] = useState(false);
   const [openCourses, setOpenCourses] = useState(false);
   const [openAbout, setOpenAbout] = useState(false);
   const [courses, setCourses] = useState([]);
 
   const { id } = useParams();
+
+  const [showModal, setShowModal] = useState(false);
+  const handleClose = () => setShowModal(false);
 
   const location = useLocation();
   const [institutes, setInstitutes] = useState([]);
@@ -117,6 +148,10 @@ const KnowMoreInstitute = () => {
     navigate("/applynow", { state: { program } }); // Navigate with state
   };
 
+  const handleKnowMoreClick = (id) => {
+    navigate(`/knowMoreInstitute/${id}`); // Navigate to CourseDetail with the courseID
+  };
+
   return (
     <div style={{ backgroundColor: "#F5F4F4" }}>
       <NavButtons />
@@ -149,15 +184,15 @@ const KnowMoreInstitute = () => {
                     <h4>{institute.name}</h4>
                     <Row>
                       <p>
-                        <FontAwesomeIcon icon={faLocationDot} />
+                        <i className="bi bi-geo-alt"></i>
                         <span style={{ paddingLeft: "10px" }}>
                           {institute.city}, {institute.state},{" "}
                           {institute.country}
                         </span>
-                        <FontAwesomeIcon
-                          icon={faGraduationCap}
-                          style={{ paddingLeft: "20px" }}
-                        />
+                        <i
+                          className="bi bi-mortarboard"
+                          style={{ marginLeft: "30px" }}
+                        ></i>
                         <span style={{ paddingLeft: "10px" }}>
                           {institute.category}
                         </span>
@@ -188,15 +223,120 @@ const KnowMoreInstitute = () => {
 
               <div className="image-gallery" style={{ marginTop: "20px" }}>
                 {institutes.map((institute) =>
-                  institute.school_photo.map((photo) => (
-                    <img
+                  institute.school_photo.map((photo, index) => (
+                    <div
                       key={photo.id}
-                      src={`${baseURL}storage/${photo.schoolMedia_location}`}
-                      className="gallery-image"
-                      alt={`Slide ${photo.id}`}
-                    />
+                      style={{ display: "inline-block", position: "relative" }}
+                      onClick={() => openModal(institute.school_photo, index)}
+                    >
+                      <img
+                        src={`${baseURL}storage/${photo.schoolMedia_location}`}
+                        className="gallery-image"
+                        alt={`Slide ${photo.id}`}
+                      />
+                      {index === 4 && (
+                        <div
+                          style={{
+                            position: "absolute",
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            backgroundColor: "rgba(0, 0, 0, 0.5)",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            zIndex: 1,
+                          }}
+                        >
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleShowMore(institute.school_photo);
+                            }}
+                            style={{
+                              color: "white",
+                              backgroundColor: "transparent",
+                              padding: "10px 20px",
+                              border: "none",
+                              width: "100%",
+                              height: "100%",
+                            }}
+                          >
+                            see more
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   ))
                 )}
+
+                <Modal
+                  show={modalIsOpen}
+                  onHide={closeModal}
+                  size="md"
+                  centered
+                >
+                  <Modal.Header closeButton>
+                    <Modal.Title>Image Gallery</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    <Swiper
+                      initialSlide={startIndex}
+                      spaceBetween={10}
+                      slidesPerView={1}
+                      navigation
+                      loop={true}
+                      pagination={{ clickable: true }}
+                      modules={[Navigation, Pagination]}
+                    >
+                      {selectedPhotos.map((photo) => (
+                        <SwiperSlide key={photo.id}>
+                          <img
+                            src={`${baseURL}storage/${photo.schoolMedia_location}`}
+                            className="w-100"
+                            alt={`Slide ${photo.id}`}
+                          />
+                        </SwiperSlide>
+                      ))}
+                    </Swiper>
+                  </Modal.Body>
+                </Modal>
+
+                <Modal
+                  show={showAllPhotosModal}
+                  onHide={handleCloseAllPhotosModal}
+                  size="lg"
+                  centered
+                >
+                  <Modal.Header closeButton>
+                    <Modal.Title>All Photos</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    <div className="image-gallery-institute-modal">
+                      {selectedPhotos.map((photo) => (
+                        <img
+                          key={photo.id}
+                          src={`${baseURL}storage/${photo.schoolMedia_location}`}
+                          className="gallery-image"
+                          alt={photo.schoolMedia_name}
+                          style={{
+                            margin: "5px",
+                            display: "inline-block",
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <Button
+                      variant="secondary"
+                      onClick={handleCloseAllPhotosModal}
+                    >
+                      Close
+                    </Button>
+                  </Modal.Footer>
+                </Modal>
               </div>
 
               <div className="card mt-4 know-more-card">
@@ -341,8 +481,13 @@ const KnowMoreInstitute = () => {
               <div
                 style={{
                   position: "relative",
+                  top: 0,
+                  left: 0,
+                  zIndex: 0,
                   marginBottom: openAbout ? "20px" : "0px",
                   marginTop: "10%",
+                  overflow: "hidden",
+                  transition: "height 0.5s ease",
                 }}
               >
                 {/* Background Image */}
@@ -384,7 +529,7 @@ const KnowMoreInstitute = () => {
                       <Row>
                         <Col md={10} className="d-flex align-items-center">
                           <div>
-                            <h5 className="card-title" style={{ zIndex: 1 }}>
+                            <h5 className="card-title">
                               About {institute.name}
                             </h5>
                           </div>
@@ -429,12 +574,13 @@ const KnowMoreInstitute = () => {
               <div className="d-flex justify-content-center">
                 <Button
                   style={{
+                    fontWeight: "lighter",
+
                     backgroundColor: "#FF6B00",
                     border: "none",
                     width: "180px",
                     height: "50px",
                     // marginTop: openAbout ? "30px" : "10%", // Adjust margin when expanded
-                    fontWeight: "bold",
                   }}
                 >
                   Contact School
@@ -479,7 +625,7 @@ const KnowMoreInstitute = () => {
                                   <h5 className="card-text">
                                     {institute.name}
                                   </h5>
-                                  <FontAwesomeIcon icon={faLocationDot} />
+                                  <i className="bi bi-geo-alt"></i>
                                   <span style={{ paddingLeft: "10px" }}>
                                     {institute.city}, {institute.state}
                                   </span>
@@ -502,31 +648,37 @@ const KnowMoreInstitute = () => {
                                     <div>
                                       <Row style={{ paddingTop: "20px" }}>
                                         <div>
-                                          <FontAwesomeIcon
-                                            icon={faGraduationCap}
-                                          />
+                                          <i
+                                            className="bi bi-mortarboard"
+                                            style={{ marginRight: "10px" }}
+                                          ></i>
                                           <span style={{ paddingLeft: "20px" }}>
-                                            {course.qualification_id}
+                                            {course.qualification}
                                           </span>
                                         </div>
                                         <div>
-                                          <FontAwesomeIcon
-                                            icon={faCalendarCheck}
-                                          />
+                                          <i
+                                            className="bi bi-calendar-check"
+                                            style={{ marginRight: "10px" }}
+                                          ></i>
                                           <span style={{ paddingLeft: "20px" }}>
                                             {course.study_mode}
                                           </span>
                                         </div>
                                         <div>
-                                          <FontAwesomeIcon icon={faClock} />
+                                          <i
+                                            className="bi bi-clock"
+                                            style={{ marginRight: "10px" }}
+                                          ></i>{" "}
                                           <span style={{ paddingLeft: "20px" }}>
                                             {course.course_period}
                                           </span>
                                         </div>
                                         <div>
-                                          <FontAwesomeIcon
-                                            icon={faCalendarAlt}
-                                          />
+                                          <i
+                                            className="bi bi-calendar2-week"
+                                            style={{ marginRight: "10px" }}
+                                          ></i>
                                           <span style={{ paddingLeft: "20px" }}>
                                             {course.course_intake}
                                           </span>
@@ -601,9 +753,7 @@ const KnowMoreInstitute = () => {
                                           <h5 className="card-text">
                                             {institute.name}
                                           </h5>
-                                          <FontAwesomeIcon
-                                            icon={faLocationDot}
-                                          />
+                                          <i className="bi bi-geo-alt"></i>
                                           <span style={{ paddingLeft: "10px" }}>
                                             {institute.city}, {institute.state}
                                           </span>
@@ -628,21 +778,27 @@ const KnowMoreInstitute = () => {
                                                 style={{ paddingTop: "20px" }}
                                               >
                                                 <div>
-                                                  <FontAwesomeIcon
-                                                    icon={faGraduationCap}
-                                                  />
+                                                  <i
+                                                    className="bi bi-mortarboard"
+                                                    style={{
+                                                      marginRight: "10px",
+                                                    }}
+                                                  ></i>
                                                   <span
                                                     style={{
                                                       paddingLeft: "20px",
                                                     }}
                                                   >
-                                                    {course.qualification_id}
+                                                    {course.qualification}
                                                   </span>
                                                 </div>
                                                 <div>
-                                                  <FontAwesomeIcon
-                                                    icon={faCalendarCheck}
-                                                  />
+                                                  <i
+                                                    className="bi bi-calendar-check"
+                                                    style={{
+                                                      marginRight: "10px",
+                                                    }}
+                                                  ></i>
                                                   <span
                                                     style={{
                                                       paddingLeft: "20px",
@@ -652,9 +808,12 @@ const KnowMoreInstitute = () => {
                                                   </span>
                                                 </div>
                                                 <div>
-                                                  <FontAwesomeIcon
-                                                    icon={faClock}
-                                                  />
+                                                  <i
+                                                    className="bi bi-clock"
+                                                    style={{
+                                                      marginRight: "10px",
+                                                    }}
+                                                  ></i>
                                                   <span
                                                     style={{
                                                       paddingLeft: "20px",
@@ -664,9 +823,12 @@ const KnowMoreInstitute = () => {
                                                   </span>
                                                 </div>
                                                 <div>
-                                                  <FontAwesomeIcon
-                                                    icon={faCalendarAlt}
-                                                  />
+                                                  <i
+                                                    className="bi bi-calendar2-week"
+                                                    style={{
+                                                      marginRight: "10px",
+                                                    }}
+                                                  ></i>
                                                   <span
                                                     style={{
                                                       paddingLeft: "20px",
@@ -776,7 +938,7 @@ const KnowMoreInstitute = () => {
                                   </span>
                                 )}
                                 <img
-                                  src={`${baseURL}storage/${institute.institute_logo}`}
+                                  src={`${baseURL}storage/${institute.school_logo}`}
                                   alt={institute.school_name}
                                   className="section-image"
                                   style={{
@@ -796,7 +958,7 @@ const KnowMoreInstitute = () => {
                                     marginBottom: "15px",
                                   }}
                                 >
-                                  Institute ID: {institute.school_id}
+                                  {institute.school_name}
                                 </p>
                                 <p
                                   className="featured-type"
@@ -827,7 +989,7 @@ const KnowMoreInstitute = () => {
                                   className="button-know-more"
                                   onClick={() =>
                                     navigate(
-                                      `/knowMoreInstitute/${institute.school_id}`
+                                      `/knowMoreInstitute/${institute.id}`
                                     )
                                   }
                                 >
@@ -837,7 +999,7 @@ const KnowMoreInstitute = () => {
                                   className="button-apply-now"
                                   onClick={() =>
                                     navigate(
-                                      `/knowMoreInstitute/${institute.school_id}`
+                                      `/studentApplyCourse/${institute.school_id}`
                                     )
                                   }
                                 >

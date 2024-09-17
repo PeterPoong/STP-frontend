@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import {
@@ -30,7 +30,11 @@ const CourseListing = ({
   countryID,
   selectedInstitute,
   selectedQualification,
+  resetTrigger,
 }) => {
+  const location = useLocation();
+  const { searchQuery = "" } = location.state || {};
+  const { selectedCategory } = location.state || {};
   const [locationFilters, setLocationFilters] = useState([]);
   const [locationsData, setLocationsData] = useState([]);
   const [categoryFilters, setCategoryFilters] = useState([]);
@@ -51,9 +55,10 @@ const CourseListing = ({
   const [selectedCountry, setSelectedCountry] = useState({});
   const [locationOptions, setLocationOptions] = useState([]);
   const [selectedLocationFilters, setSelectedLocationFilters] = useState([]);
+
   const [currentPage, setCurrentPage] = useState(1);
 
-  const itemsPerPage = 10;
+  const itemsPerPage = 5;
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -62,46 +67,60 @@ const CourseListing = ({
     indexOfLastItem
   );
 
-  const location = useLocation();
-  const { searchQuery = "" } = location.state || {};
-  const { selectedCategory } = location.state || {};
+  // Calculate the total number of pages
+  const totalPages = Math.ceil(filteredPrograms.length / itemsPerPage);
 
+  // Handle page change
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  // Function to reset all filters in CourseListing
+  const resetFilters = () => {
+    setSelectedLocationFilters([]);
+    setCategoryFilters([]);
+    setIntakeFilters([]);
+    setModeFilters([]);
+    setTuitionFee("");
+  };
+
+  // Watch for changes in resetTrigger and reset the filters accordingly
   useEffect(() => {
+    resetFilters();
+  }, [resetTrigger]);
+
+  const fetchCourses = useCallback(async () => {
     if (!selectedCategory) return;
 
-    const fetchCourses = async () => {
-      setLoading(true);
-      setError(null);
+    setLoading(true);
+    setError(null);
 
-      try {
-        const response = await fetch(`${baseURL}api/student/courseList`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ category: selectedCategory }), // Sending selectedCategory in the request body
-        });
+    try {
+      const response = await fetch(apiURL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ category: selectedCategory }),
+      });
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
-        const contentType = response.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-          throw new Error("Response is not JSON");
-        }
-
-        const result = await response.json();
-        setCourses(result.data || []);
-      } catch (error) {
-        setError(error.message);
-      } finally {
-        setLoading(false);
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
-    };
 
+      const result = await response.json();
+      setCourses(result.data || []);
+      setFilteredPrograms(result.data || []);
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
     fetchCourses();
-  }, [selectedCategory]);
+  }, [fetchCourses]);
 
   /* ----------------------University Dropdown--------------------------- */
 
@@ -157,7 +176,7 @@ const CourseListing = ({
 
   /* --------------------End of University Dropdown------------------------ */
 
-  /* ---------------Qualification Dropdown-------------------------------- */
+  /* ----------------Qualification Dropdown-------------------------------- */
   useEffect(() => {
     if (selectedQualification) {
       fetchCoursesForQualification(selectedQualification);
@@ -194,14 +213,11 @@ const CourseListing = ({
 
   useEffect(() => {
     if (programs.length > 0) {
-      console.log("Programs before filtering qualification: ", programs);
-      const filtered = programs.filter((program) => {
-        console.log(
-          `Program: ${program.name}, Course Qualification: ${program.qualification}`
-        );
-        return program.qualification === selectedQualification;
-      });
-      console.log("Filtered Qualification Programs:", filtered);
+      const filtered = programs.filter(
+        (program) =>
+          !selectedQualification ||
+          program.qualification === selectedQualification.qualification_name
+      );
       setFilteredPrograms(filtered);
     }
   }, [programs, selectedQualification]);
@@ -326,6 +342,7 @@ const CourseListing = ({
               intakeFilters: intakeFilters,
               modeFilters: modeFilters,
               tuitionFee: tuitionFee,
+              category: selectedCategory?.category_name,
             }),
           });
 
@@ -348,11 +365,10 @@ const CourseListing = ({
           const result = await response.json();
           setPrograms(result.data);
           filterPrograms();
-
           break; // Exit while loop if successful
         } catch (error) {
-          setError(error.message);
-          console.error("Error fetching course data:", error);
+          // setError(error.message);
+          // console.error("Error fetching course data:", error);
           break; // Exit while loop if an error occurs
         }
       }
@@ -369,6 +385,7 @@ const CourseListing = ({
     tuitionFee,
     searchResults,
     searchQuery,
+    selectedCategory,
   ]);
 
   useEffect(() => {
@@ -449,10 +466,10 @@ const CourseListing = ({
         : [];
 
     const filtered = programs.filter((program) => {
-      (searchQuery
-        ? program.name.toLowerCase().includes(searchQuery.toLowerCase())
-        : true) &&
-        (selectedCategory ? program.category === selectedCategory : true);
+      // (searchQuery
+      //   ? program.name.toLowerCase().includes(searchQuery.toLowerCase())
+      //   : true) &&
+      //   (selectedCategory ? program.category === selectedCategory : true);
 
       const matchesSearchResults =
         searchResultIDs.length === 0 || searchResultIDs.includes(program.id);
@@ -463,10 +480,9 @@ const CourseListing = ({
           : true;
 
       const matchesLocation =
+        locationFilters.length === 0 ||
         selectedLocationFilters.length === 0 ||
-        selectedLocationFilters.some((filter) =>
-          program.location.includes(filter)
-        );
+        selectedLocationFilters.includes(program.state);
 
       const matchesCategory =
         categoryFilters.length === 0 ||
@@ -513,7 +529,7 @@ const CourseListing = ({
 
   useEffect(() => {
     console.log("Filtering programs with:", {
-      locationFilters,
+      selectedLocationFilters,
       categoryFilters,
       intakeFilters,
       modeFilters,
@@ -525,7 +541,7 @@ const CourseListing = ({
     filterPrograms();
   }, [
     categoryFilters,
-    locationFilters,
+    selectedLocationFilters,
     intakeFilters,
     modeFilters,
     tuitionFee,
@@ -556,19 +572,19 @@ const CourseListing = ({
     }
   };
 
-  useEffect(() => {
-    if (selectedCategory) {
-      setCategoryFilters([selectedCategory]);
-      filterPrograms();
-    }
-  }, [
-    selectedCategory,
-    locationFilters,
-    intakeFilters,
-    modeFilters,
-    tuitionFee,
-    programs,
-  ]);
+  // useEffect(() => {
+  //   if (selectedCategory) {
+  //     setCategoryFilters([selectedCategory]);
+  //     filterPrograms();
+  //   }
+  // }, [
+  //   selectedCategory,
+  //   locationFilters,
+  //   intakeFilters,
+  //   modeFilters,
+  //   tuitionFee,
+  //   programs,
+  // ]);
 
   const handleCategoryChange = (category) => {
     const categoryName = category.category_name;
@@ -618,139 +634,155 @@ const CourseListing = ({
   };
 
   const handleApplyNow = (program) => {
-    navigate(`/studentApplyCourses/${program.id}`, { state: { program } });
+    navigate("/studentApplyCourse", { state: { program } });
   };
   const handleInstituteChange = (institute) => {
     setSelectedInstitute(institute);
   };
 
   const mappedPrograms = currentCourses.map((program, index) => (
-    <div
-      key={index}
-      className="card mb-4 degree-card"
-      style={{ position: "relative", height: "auto" }}
-    >
-      {program.featured && <div className="featured-badge">Featured</div>}
-      <div className="card-body d-flex flex-column flex-md-row align-items-start">
-        <Row>
-          <Col md={6} lg={6}>
-            <div className="card-image mb-3 mb-md-0">
-              <h5 className="card-title">
-                <Link
-                  style={{ color: "black" }}
-                  to={{
-                    pathname: `/courseDetails/${program.id}`,
-                    state: { program: program },
-                  }}
-                >
-                  {program.name}
-                </Link>
-              </h5>
-              <div className="d-flex align-items-center">
-                <div style={{ paddingLeft: "20px" }}>
-                  <img
-                    src={`${baseURL}storage/${program.logo}`}
-                    alt={program.school_name}
-                    width="100"
-                  />
-                </div>
-                <div style={{ paddingLeft: "30px" }}>
-                  <h5 className="card-text">{program.school_name}</h5>
-                  <i
-                    className="bi bi-geo-alt"
-                    style={{ marginRight: "10px", color: "#AAAAAA" }}
-                  ></i>
-                  <span style={{ paddingLeft: "10px" }}>
-                    {program.location}
-                  </span>
-                  <a
-                    href="#"
-                    className="map-link"
-                    style={{ paddingLeft: "5px" }}
+    <>
+      <div
+        key={program.id} // Use a unique key for each item
+        className="card mb-4 degree-card"
+        style={{ position: "relative", height: "auto" }}
+      >
+        {program.featured && <div className="featured-badge">Featured</div>}
+        <div className="card-body d-flex flex-column flex-md-row align-items-start">
+          <Row>
+            <Col md={6} lg={6}>
+              <div className="card-image mb-3 mb-md-0">
+                <h5 className="card-title">
+                  <Link
+                    style={{ color: "black" }}
+                    to={{
+                      pathname: `/courseDetails/${program.id}`,
+                      state: { program: program },
+                    }}
                   >
-                    Click and view on map
-                  </a>
+                    {program.name}
+                  </Link>
+                </h5>
+                <div className="d-flex align-items-center">
+                  <div style={{ paddingLeft: "20px" }}>
+                    <img
+                      src={`${baseURL}storage/${program.logo}`}
+                      alt={program.school_name}
+                      width="100"
+                    />
+                  </div>
+                  <div style={{ paddingLeft: "30px" }}>
+                    <h5 className="card-text">{program.school_name}</h5>
+                    <i
+                      className="bi bi-geo-alt"
+                      style={{ marginRight: "10px", color: "#AAAAAA" }}
+                    ></i>
+                    <span style={{ paddingLeft: "10px" }}>
+                      {program.state || "N/A"}, {program.country || "N/A"}
+                    </span>
+                    <a
+                      href="#"
+                      className="map-link"
+                      style={{
+                        paddingLeft: "30px",
+                        fontWeight: "lighter",
+                        color: "#1745BA",
+                      }}
+                    >
+                      click and view on map
+                    </a>
+                  </div>
                 </div>
               </div>
-            </div>
-          </Col>
-          <Col md={6} lg={6}>
-            <div className="d-flex flex-grow-1 justify-content-between">
-              <div className="details-div" style={{ width: "60%" }}>
-                <div className="d-flex align-items-center flex-wrap">
-                  <Col>
-                    <div>
-                      <Row style={{ paddingTop: "10px" }}>
-                        <div>
-                          <i
-                            className="bi bi-mortarboard"
-                            style={{ marginRight: "10px" }}
-                          ></i>
-                          <span style={{ paddingLeft: "20px" }}>
-                            {program.qualification}
-                          </span>
-                        </div>
-                        <div style={{ marginTop: "10px" }}>
-                          <i
-                            className="bi bi-calendar-check"
-                            style={{ marginRight: "10px" }}
-                          ></i>
-                          <span style={{ paddingLeft: "20px" }}>
-                            {program.mode}
-                          </span>
-                        </div>
-                        <div style={{ marginTop: "10px" }}>
-                          <i
-                            className="bi bi-clock"
-                            style={{ marginRight: "10px" }}
-                          ></i>
-                          <span style={{ paddingLeft: "20px" }}>
-                            {program.period}
-                          </span>
-                        </div>
-                        <div style={{ marginTop: "10px" }}>
-                          <i
-                            className="bi bi-calendar2-week"
-                            style={{ marginRight: "10px" }}
-                          ></i>
-                          <span style={{ paddingLeft: "20px" }}>
-                            {Array.isArray(program.intake) &&
-                            program.intake.length > 0
-                              ? program.intake.join(", ")
-                              : "N/A"}{" "}
-                          </span>
-                        </div>
-                      </Row>
-                    </div>
-                  </Col>
+            </Col>
+            <Col md={6} lg={6}>
+              <div className="d-flex flex-grow-1 justify-content-between">
+                <div className="details-div" style={{ width: "60%" }}>
+                  <div className="d-flex align-items-center flex-wrap">
+                    <Col>
+                      <div>
+                        <Row style={{ paddingTop: "10px" }}>
+                          <div>
+                            <i
+                              className="bi bi-mortarboard"
+                              style={{ marginRight: "10px" }}
+                            ></i>
+                            <span style={{ paddingLeft: "20px" }}>
+                              {program.qualification}
+                            </span>
+                          </div>
+                          <div style={{ marginTop: "10px" }}>
+                            <i
+                              className="bi bi-calendar-check"
+                              style={{ marginRight: "10px" }}
+                            ></i>
+                            <span style={{ paddingLeft: "20px" }}>
+                              {program.mode}
+                            </span>
+                          </div>
+                          <div style={{ marginTop: "10px" }}>
+                            <i
+                              className="bi bi-clock"
+                              style={{ marginRight: "10px" }}
+                            ></i>
+                            <span style={{ paddingLeft: "20px" }}>
+                              {program.period}
+                            </span>
+                          </div>
+                          <div style={{ marginTop: "10px" }}>
+                            <i
+                              className="bi bi-calendar2-week"
+                              style={{ marginRight: "10px" }}
+                            ></i>
+                            <span style={{ paddingLeft: "20px" }}>
+                              {Array.isArray(program.intake) &&
+                              program.intake.length > 0
+                                ? program.intake.join(", ")
+                                : "N/A"}{" "}
+                            </span>
+                          </div>
+                        </Row>
+                      </div>
+                    </Col>
+                  </div>
                 </div>
-              </div>
-              <div className="fee-apply">
-                <div
-                  className="fee-info text-right"
-                  style={{ marginTop: "25px" }}
-                >
-                  <p style={{ fontSize: "14px" }}>
-                    estimate fee<br></br>
-                    <p style={{ fontSize: "16px" }}>
-                      <strong>RM </strong> {program.cost}
+                <div className="fee-apply">
+                  <div
+                    className="fee-info text-right"
+                    style={{ marginTop: "25px" }}
+                  >
+                    <p style={{ fontSize: "14px" }}>
+                      estimate fee<br></br>
+                      <p style={{ fontSize: "16px" }}>
+                        <strong>RM </strong> {program.cost}
+                      </p>
                     </p>
-                  </p>
-                </div>
-                <div className="apply-button ">
-                  <button
-                    className="featured"
-                    onClick={() => handleApplyNow(program)}
-                  >
-                    Apply Now
-                  </button>
+                  </div>
+                  <div className="apply-button ">
+                    <button
+                      className="featured"
+                      onClick={() => handleApplyNow(program)}
+                    >
+                      Apply Now
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          </Col>
-        </Row>
+            </Col>
+          </Row>
+        </div>
       </div>
-    </div>
+      {index === 2 && (
+        <div key="ad" className="ad-container">
+          <img
+            src={StudyPal}
+            alt="Study Pal"
+            className="studypal-image"
+            style={{ height: "100px" }}
+          />
+        </div>
+      )}
+    </>
   ));
 
   return (
@@ -961,7 +993,12 @@ const CourseListing = ({
         </Col>
         <Col xs={12} md={8} className="degreeprograms-division">
           <div>
-            <img src={StudyPal} alt="Study Pal" className="studypal-image" />
+            <img
+              src={StudyPal}
+              alt="Study Pal"
+              className="studypal-image"
+              style={{ height: "175px" }}
+            />
           </div>
           {loading ? (
             <div className="text-center">
@@ -1030,6 +1067,7 @@ const CourseListing = ({
           )}
         </Col>
 
+        {/* Pagination */}
         <Pagination className="d-flex justify-content-end">
           <Pagination.Prev
             onClick={() => handlePageChange(currentPage - 1)}
@@ -1038,9 +1076,7 @@ const CourseListing = ({
             <span aria-hidden="true">&laquo;</span>
           </Pagination.Prev>
 
-          {[
-            ...Array(Math.ceil(filteredPrograms.length / itemsPerPage)).keys(),
-          ].map((number) => (
+          {[...Array(totalPages).keys()].map((number) => (
             <Pagination.Item
               key={number + 1}
               active={number + 1 === currentPage}
@@ -1052,9 +1088,7 @@ const CourseListing = ({
 
           <Pagination.Next
             onClick={() => handlePageChange(currentPage + 1)}
-            disabled={
-              currentPage === Math.ceil(filteredPrograms.length / itemsPerPage)
-            }
+            disabled={currentPage === totalPages}
           >
             <span aria-hidden="true">&raquo;</span>
           </Pagination.Next>
