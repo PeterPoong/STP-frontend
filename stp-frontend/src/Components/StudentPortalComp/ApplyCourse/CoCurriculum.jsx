@@ -4,7 +4,7 @@ import { Trash2, Edit, Save, Clock, User, Building } from 'lucide-react';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-const CoCurriculum = ({onNext, onBack }) => {
+const CoCurriculum = ({ onNext, onBack }) => {
   const [activities, setActivities] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -40,7 +40,7 @@ const CoCurriculum = ({onNext, onBack }) => {
           year: item.year || ''
         }));
         setActivities(normalizedData);
-       
+
       } else {
         throw new Error(result.message || 'Failed to fetch co-curriculum activities');
       }
@@ -113,7 +113,7 @@ const CoCurriculum = ({onNext, onBack }) => {
           i === index ? { ...a, id: result.data.id, isEditing: false } : a
         );
         setActivities(updatedActivities);
-        
+
         await fetchCoCurriculum();
       } else {
         throw new Error(result.message || 'Failed to save co-curriculum activity');
@@ -136,7 +136,7 @@ const CoCurriculum = ({onNext, onBack }) => {
   const handleDeleteActivity = async (index) => {
     try {
       const activity = activities[index];
-    
+
       // Check if the activity is new (no ID)
       if (!activity.id) {
         // Remove the new activity directly
@@ -169,7 +169,7 @@ const CoCurriculum = ({onNext, onBack }) => {
       if (result.success) {
         const updatedActivities = activities.filter((_, i) => i !== index);
         setActivities(updatedActivities);
-       
+
       } else {
         throw new Error(result.message || 'Failed to delete co-curriculum activity');
       }
@@ -248,9 +248,22 @@ const CoCurriculum = ({onNext, onBack }) => {
                 <div className="fw-bold mb-2" style={{ fontSize: '1.1rem' }}>{activity.club_name}</div>
                 <div className="d-flex justify-content-between align-items-center">
                   <div className="d-flex flex-grow-1">
-                    <div className="me-3"><Clock size={18} className="me-2" />{activity.year}</div>
-                    <div className="me-3"><User size={18} className="me-2" />{activity.student_position}</div> {/* Updated to match naming */}
-                    <div><Building size={18} className="me-2" />{activity.location}</div> {/* Updated to match naming */}
+                    <div className="me-3">
+                      <Clock size={18} className="me-2" />
+                      <span className="border-end border-2 border-dark pe-2 me-2">Year</span>
+                      <a className='mx-2 text-dark fw-normal'>{activity.year}</a>
+                    </div>
+                    <div className="me-3">
+                      <User size={18} className="me-2" />
+                      <span className="border-end  border-2 border-dark pe-2 me-2">Poition</span>
+                      <a className='mx-2 text-dark fw-normal'>{activity.student_position}</a>
+                    </div>
+                    <div className="me-3">
+                      <Building size={18} className="me-2" />
+                      <span className="border-end border-2 border-dark pe-2 me-2">Institute</span>
+                      <a className='mx-2 text-dark fw-normal'>{activity.location}</a>
+                    </div>
+                   
                   </div>
                   <div>
                     <Button variant="link" onClick={() => {
