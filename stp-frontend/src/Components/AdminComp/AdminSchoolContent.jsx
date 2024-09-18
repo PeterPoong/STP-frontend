@@ -109,7 +109,7 @@ const AdminSchoolContent = () => {
     const handleEdit = (id) => {
         console.log(`Edit school with ID: ${id}`);
         sessionStorage.setItem('token', Authenticate);
-        navigate(`/adminEditSchool/${id}`);
+        navigate(`/adminEditSchool`);
     };
     
 

@@ -103,11 +103,11 @@ const AdminPackageContent = () => {
         sessionStorage.setItem('token', Authenticate);
         navigate('/adminAddPackage');
     };
-    
+
     const handleEdit = (id) => {
-        console.log(`Edit Package with ID: ${id}`);
-        sessionStorage.setItem('token', Authenticate);
-        navigate(`/adminEditPackage/${id}`);
+        console.log(`Edit Package with ID: ${id}`); // Log the ID being passed
+        sessionStorage.setItem('packageId', id); // Store package ID in session storage
+        navigate(`/adminEditPackage`); // Navigate to the edit page
     };
     
 
@@ -175,9 +175,6 @@ const AdminPackageContent = () => {
             <th onClick={() => handleSort("name")}>
                 Package Name {sortColumn === "name" && (sortDirection === "asc" ? "↑" : "↓")}
             </th>
-            <th onClick={() => handleSort("details")}>
-                Details {sortColumn === "details" && (sortDirection === "asc" ? "↑" : "↓")}
-            </th>
             <th onClick={() => handleSort("type")}>
                 Type {sortColumn === "type" && (sortDirection === "asc" ? "↑" : "↓")}
             </th>
@@ -194,7 +191,6 @@ const AdminPackageContent = () => {
     const tbodyContent = sortedPackages.map((Package) => (
         <tr key={Package.id}>
             <td>{Package.package_name}</td>
-            <td >{Package.package_detail}</td>
             <td>{Package.package_type}</td>
             <td>{Package.package_price}</td>
             <td className={getStatusClass(Package.package_status)}>

@@ -2,14 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Container, Button } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import AdminFormComponent from './AdminFormComponent';
-import 'typeface-ubuntu';
 import "../../css/AdminStyles/AdminFormStyle.css";
-import PhoneInput from 'react-phone-input-2';
-import 'react-phone-input-2/lib/style.css';
 
 const AdminEditPackageContent = () => {
     const { id } = useParams(); // Get package ID from URL
-    const [categoryList, setCategoryList] = useState([]); 
     const [packageList, setPackageList] = useState([]); 
     const [formData, setFormData] = useState({
         package_name: "",
@@ -21,12 +17,19 @@ const AdminEditPackageContent = () => {
     const navigate = useNavigate();
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`;
+    const packageId = sessionStorage.getItem('packageId'); 
 
+    // Fetch package details
     useEffect(() => {
+        if (!packageId) {
+            console.error("Package ID is not available in sessionStorage");
+            return;
+        }
+
         const fetchPackageDetails = async () => {
             try {
-                const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/getPackage/${id}`, {
-                    method: 'GET',
+                const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/packageList`, {
+                    method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': Authenticate,
@@ -38,20 +41,26 @@ const AdminEditPackageContent = () => {
                 }
 
                 const data = await response.json();
-                if (data && data.data) {
+                const packageDetails = data.data.find(pkg => pkg.id === parseInt(packageId)); // Use the packageId
+
+                if (packageDetails) {
                     setFormData({
-                        package_name: data.data.package_name,
-                        package_detail: data.data.package_detail,
-                        package_type: data.data.package_type,
-                        package_price: data.data.package_price,
+                        package_name: packageDetails.package_name,
+                        package_detail: packageDetails.package_detail,
+                        package_type: packageDetails.package_type,
+                        package_price: packageDetails.package_price,
                     });
+                } else {
+                    console.error("Package not found with ID:", packageId);
                 }
             } catch (error) {
                 console.error('Error fetching package details:', error.message);
                 setError(error.message);
             }
         };
-
+        
+    
+       
         const fetchPackages = async () => {
             try {
                 const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/packageTypeList`, {
@@ -60,7 +69,6 @@ const AdminEditPackageContent = () => {
                         'Content-Type': 'application/json',
                         'Authorization': Authenticate,
                     },
-                    body: JSON.stringify({})
                 });
 
                 if (!response.ok) {
@@ -79,38 +87,42 @@ const AdminEditPackageContent = () => {
 
         fetchPackageDetails();
         fetchPackages();
-    }, [id, Authenticate]);
+    }, [packageId, Authenticate]);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        console.log("Submitting form data:", formData); // Debugging line
-
+        
         const { package_name, package_detail, package_type, package_price } = formData;
-
+        const packageId = sessionStorage.getItem('packageId'); // Retrieve the ID from session storage
+    
+        // Simple validation
+        if (!package_name || !package_detail || !package_type || !package_price) {
+            setError("Please fill out all required fields.");
+            return;
+        }
+    
         const formPayload = new FormData();
+        formPayload.append("id", packageId); // Include the package ID
         formPayload.append("package_name", package_name);
         formPayload.append("package_detail", package_detail);
         formPayload.append("package_type", package_type);
         formPayload.append("package_price", package_price);
-
+    
         try {
-            console.log("FormData before submission:", formPayload);
-
-            const updatePackageResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/updatePackage/${id}`, {
+            const updatePackageResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/editPackage`, {
                 method: 'POST',
                 headers: {
                     'Authorization': Authenticate,
                 },
                 body: formPayload,
             });
-
+    
             const updatePackageData = await updatePackageResponse.json();
-
+    
             if (updatePackageResponse.ok) {
-                console.log('Package successfully updated:', updatePackageData);
                 navigate('/adminPackage');
             } else {
-                console.error('Validation Error:', updatePackageData.errors); // Debugging line
+                console.error('Validation Error:', updatePackageData.errors);
                 throw new Error(`Package Update failed: ${updatePackageData.message}`);
             }
         } catch (error) {
@@ -118,10 +130,10 @@ const AdminEditPackageContent = () => {
             console.error('Error during Package update:', error);
         }
     };
+    
 
     const handleFieldChange = (e) => {
         const { id, value, type, files } = e.target;
-        console.log(`Field ${id} updated with value: ${value}`); // Debugging line
         if (type === "file") {
             setFormData(prev => ({
                 ...prev,
