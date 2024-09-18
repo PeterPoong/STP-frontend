@@ -133,7 +133,7 @@ const WidgetFileUpload = ({ isOpen, onClose, onSave, item, isViewMode }) => {
           </div>
         ) : (
           <div className="file-uploaded">
-            <div className="file-info">
+            <div className="file-info-wfu">
               <FileText size={18} />
               <div className="file-details">
                 <span className="file-name">

@@ -11,6 +11,7 @@ import WidgetFileUploadAcademicTranscript from "../../Components/StudentPortalCo
 import WidgetFileUpload from "../../Components/StudentPortalComp/WidgetFileUpload";
 import WidgetAchievement from "../../Components/StudentPortalComp/Widget/WidgetAchievement";
 import NavButtonsSP from "../../Components/StudentPortalComp/NavButtonsSP";
+import { grey } from '@mui/material/colors';
 
 const StudentApplicationSummary = ({ }) => {
     const [activeTab, setActiveTab] = useState('info');
@@ -366,10 +367,10 @@ const StudentApplicationSummary = ({ }) => {
     const renderDocumentsContent = () => {
         // Calculate total document count
         const totalDocumentCount = academicTranscripts.length + achievements.length + otherDocuments.length;
-    
+
         let documents = [];
         let columns = [];
-    
+
         switch (activeDocumentTab) {
             case 'academic':
                 documents = academicTranscripts;
@@ -386,7 +387,7 @@ const StudentApplicationSummary = ({ }) => {
             default:
                 break;
         }
-    
+
         // Filter documents based on searchTerm
         const filteredDocuments = documents.filter((doc) => {
             if (activeDocumentTab === 'academic') {
@@ -407,7 +408,7 @@ const StudentApplicationSummary = ({ }) => {
             }
             return false;
         });
-    
+
         return (
             <div className="summary-content-yourdocument">
                 <div className="documents-content pt-2 w-100">
@@ -507,7 +508,7 @@ const StudentApplicationSummary = ({ }) => {
                                         <td className="border-bottom p-2" data-label="Actions">
                                             <div className="d-flex justify-content-start align-items-center">
                                                 <Button variant="link" className="p-0" onClick={() => handleViewDocument(doc)}>
-                                                    <Eye size={20} className="iconat" />
+                                                    <Eye size={20} className="iconat" color="grey" />
                                                 </Button>
                                             </div>
                                         </td>
@@ -523,7 +524,7 @@ const StudentApplicationSummary = ({ }) => {
                         </tbody>
                     </table>
                 </div>
-    
+
                 <WidgetFileUploadAcademicTranscript
                     isOpen={isViewAcademicTranscriptOpen}
                     onClose={() => setIsViewAcademicTranscriptOpen(false)}
@@ -544,7 +545,7 @@ const StudentApplicationSummary = ({ }) => {
                 />
             </div>
         );
-    
+
     };
     const renderCourseInformation = () => {
         if (!courseInfo) {
@@ -734,7 +735,12 @@ const StudentApplicationSummary = ({ }) => {
                                                         Grade: {calculateOverallGrade(transcriptSubjects)}
                                                     </h3>
                                                 </div>
-                                                <Button variant="link" className="text-danger w-25 " disabled={!transcriptSubjects || transcriptSubjects.length === 0}>
+                                                <Button variant="link" className="text-danger w-25 "
+                                                    onClick={() => {
+                                                        setActiveTab('documents'); // Navigate to Your Documents tab
+                                                        setActiveDocumentTab('academic'); // Navigate to Academic Transcript tab
+                                                    }}
+                                                    disabled={!transcriptSubjects || transcriptSubjects.length === 0}>
                                                     View Result Slip »
                                                 </Button>
                                             </div>
