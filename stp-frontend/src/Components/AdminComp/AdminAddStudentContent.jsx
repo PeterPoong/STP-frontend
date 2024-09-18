@@ -85,36 +85,37 @@ const AdminAddStudentContent = () => {
             console.error('Error during Student registration:', error);
         }
     };
+  
     useEffect(() => {
-        const fetchGenders = async () => {
-            try {
-                const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/genderList`, {
-                    method: 'GET',  // Use GET method
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': Authenticate,
-                    }
-                });
+      const fetchGenders = async () => {
+          try {
+              const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/genderList`, {
+                  method: 'GET',
+                  headers: {
+                      'Content-Type': 'application/json',
+                      'Authorization': Authenticate,
+                  }
+              });
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
+              if (!response.ok) {
+                  throw new Error(`HTTP error! status: ${response.status}`);
+              }
 
-                const data = await response.json();
-                if (data && data.data) {
-                    setGenderList(data.data.map(gender => ({
-                        label: gender.core_metaName,  // Adjust based on your API response structure
-                        value: gender.id
-                    })));
-                }
-            } catch (error) {
-                console.error('Error fetching genders:', error.message);
-                setError(error.message);
-            }
-        };
+              const data = await response.json();
+              if (data && data.data) {
+                  setGenderList(data.data.map(gender => ({
+                      label: gender.core_metaName,
+                      value: gender.id
+                  })));
+              }
+          } catch (error) {
+              console.error('Error fetching genders:', error.message);
+              setError(error.message);
+          }
+      };
 
-        fetchGenders();
-    }, [Authenticate]);
+      fetchGenders();
+  }, [Authenticate]);
 
     
 
@@ -189,26 +190,22 @@ const AdminAddStudentContent = () => {
     };
   
     const handleFieldChange = (e) => {
-        const { id, value, type, files } = e.target;
-        console.log('Field changed:', { id, value, type, files }); // Debugging line
-    
-        if (type === "file") {
-            setFormData(prev => ({
-                ...prev,
-                [id]: files[0]
-            }));
-        } else if (type === "radio") {
-            setFormData(prev => ({
-                ...prev,
-                [id]: value
-            }));
-        } else {
-            setFormData(prev => ({
-                ...prev,
-                [id]: value
-            }));
-        }
-    };
+      const { id, value, type } = e.target;
+  
+      if (type === "radio") {
+          setFormData(prev => ({
+              ...prev,
+              [id]: value
+          }));
+      } else {
+          setFormData(prev => ({
+              ...prev,
+              [id]: value
+          }));
+      }
+  };
+  
+  
     const handleCountryChange = (e) => {
         const countryId = e.target.value;
         setFormData({
@@ -267,18 +264,17 @@ const AdminAddStudentContent = () => {
             autoComplete: "off"
         },
     ];
-
     const formRadio = [
-        {
-            id: "gender",
-            label: "Gender",
-            type: "radio",
-            options: genderList,  // Ensure genderList contains objects with label and value
-            value: formData.gender,
-            onChange: handleFieldChange,
-            required: true
-        },
-    ];
+      {
+          id: "gender",
+          label: "Gender",
+          type: "radio",
+          options: genderList,  // Ensure genderList contains objects with label and value
+          value: formData.gender,
+          onChange: handleFieldChange,
+          required: true
+      },
+  ];
     const formName = [
         {
             id: "last_name",
@@ -369,7 +365,6 @@ const AdminAddStudentContent = () => {
     ];
 
     return (
-        
                 <Container fluid className="admin-add-student-container">
                     <AdminFormComponent
                 formTitle="Student Information"

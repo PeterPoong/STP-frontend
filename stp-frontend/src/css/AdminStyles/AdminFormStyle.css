@@ -23,6 +23,16 @@
     background-color: #fff;
 }
 
+.admin-add-package-container {
+  width: 952px;
+  height: auto;
+  margin-bottom: 10px;
+  border-radius: 15px;
+  border: solid 1px #000000;
+  margin-top: 10px;
+  background-color: #fff;
+}
+
 .admin-add-student-container{
   width: 952px;
   height: auto;

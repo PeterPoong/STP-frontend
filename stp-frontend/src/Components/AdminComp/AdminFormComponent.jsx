@@ -30,6 +30,8 @@ const AdminFormComponent = ({
   formHTML,
   formRadio,
   formName,
+  formPrice,
+  formPackage,
   onSubmit,
   error,
   buttons,
@@ -332,6 +334,37 @@ const { getRootProps: getAlbumRootProps, getInputProps: getAlbumInputProps } = u
               </div>
             )}
 
+            {formPrice && formPrice.map((Price, index) => (
+                <Form.Group key={index} controlId={Price.id} className="mb-5">
+                  <Form.Label>{Price.label}</Form.Label>
+                  <Form.Control
+                    as={Price.as || "input"}
+                    type={Price.type || "text"}
+                    placeholder={Price.placeholder || ""}
+                    value={Price.value}
+                    onChange={Price.onChange}
+                    required={Price.required || false}
+                  />
+                </Form.Group>
+              ))}
+       {formPackage && formPackage.map((packages, index) => (
+              <Form.Group key={index} controlId={packages.id} className="mb-5">
+                <Form.Label>{packages.label}</Form.Label>
+                <Form.Control 
+                  as="select" 
+                  value={packages.value} 
+                  onChange={packages.onChange} 
+                  required={packages.required || false}
+                >
+                  <option value="">Package Type</option>
+                  {packages.options.map((option, optIndex) => (
+                    <option key={optIndex} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </Form.Control>
+              </Form.Group>
+            ))}
             {formCategory && formCategory.map((category, index) => (
               <Form.Group key={index} controlId={category.id} className="mb-5">
                 <Form.Label>{category.label}</Form.Label>
@@ -430,27 +463,26 @@ const { getRootProps: getAlbumRootProps, getInputProps: getAlbumInputProps } = u
               </Form.Group>
             ))}
 
-          {/* {formRadio.map(radio => (
-            <Form.Group key={radio.id} controlId={radio.id}>
+       {/* Render radio buttons dynamically */}
+       {formRadio && formRadio.map(radio => (
+          <Form.Group key={radio.id} controlId={radio.id}>
               <Form.Label>{radio.label}</Form.Label>
               {radio.options.map(option => (
-                <Form.Check
-                  key={option.value}
-                  type={radio.type}
-                  id={`${radio.id}-${option.value}`}
-                  label={option.label}
-                  value={option.value}
-                  checked={radio.value === option.value}
-                  onChange={radio.onChange}
-                  required={radio.required}
-                  className="custom-radio"
-                />
+                  <Form.Check
+                      key={option.value}
+                      type={radio.type}
+                      id={`${radio.id}-${option.value}`}
+                      label={option.label}
+                      value={option.value}
+                      checked={radio.value === option.value}
+                      onChange={radio.onChange}
+                      required={radio.required}
+                      className="custom-radio"
+                  />
               ))}
-            </Form.Group>
-          ))} */}
-
-
-            {/* {formName && formName.map((Name, index) => (
+          </Form.Group>
+      ))}
+            {formName && formName.map((Name, index) => (
               <Form.Group key={index} controlId={Name.id} className="mb-5">
                 <Form.Label>{Name.label}</Form.Label>
                 <Form.Control
@@ -462,7 +494,7 @@ const { getRootProps: getAlbumRootProps, getInputProps: getAlbumInputProps } = u
                   required={Name.required || false}
                 />
               </Form.Group>
-            ))} */}
+            ))}
              {formStudentCountry && formStudentCountry.map((field, index) => (
                     <Col md={12} key={index}>
                       <Form.Group controlId={field.id} className="mb-5 ms-2">
