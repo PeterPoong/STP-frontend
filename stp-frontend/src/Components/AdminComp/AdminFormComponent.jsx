@@ -725,6 +725,9 @@ const { getRootProps: getAlbumRootProps, getInputProps: getAlbumInputProps } = u
                 "undo redo | bold italic | alignleft aligncenter alignright alignjustify | " +
                 "bullist numlist outdent indent",
               menubar: false,
+              content_style: "ul {list-style-type: disc; margin-left: 20px;}", // Ensuring the correct bullet formatting
+              forced_root_block: 'div', // Prevents adding unwanted <p> tags around the content
+              entity_encoding: "raw",  // Ensures that the raw HTML is saved without escaping
               setup: (editor) => {
                 editor.on('init', () => {
                   // Additional CSS adjustments if needed

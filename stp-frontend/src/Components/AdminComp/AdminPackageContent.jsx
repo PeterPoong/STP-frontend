@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { MDBSwitch } from 'mdb-react-ui-kit';
 import '../../css/AdminStyles/AdminTableStyles.css';
 import TableWithControls from './TableWithControls';
-
+import he from 'he';
 const AdminPackageContent = () => {
     const [Packages, setPackages] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -97,15 +97,13 @@ const AdminPackageContent = () => {
             setCurrentPage(page);
         }
     };
-    const handlePendingAction = (id, action) => {
-        setTargetPackage({ id, action });
-        setShowModal(true);
-    };
+
     
     const handleAddPackage = () => {
         sessionStorage.setItem('token', Authenticate);
         navigate('/adminAddPackage');
     };
+    
     const handleEdit = (id) => {
         console.log(`Edit Package with ID: ${id}`);
         sessionStorage.setItem('token', Authenticate);
@@ -114,13 +112,17 @@ const AdminPackageContent = () => {
     
 
     const handleToggleSwitch = (id, currentStatus) => {
-        const action = (currentStatus === 'Active') ? 'Delete' : 'enable';
+        const action = (currentStatus === 'Active') ? 'Delete' : 'Enable';
+        console.log(`Toggle Switch Clicked: id=${id}, action=${action}`);
         setTargetPackage({ id, action });
         setShowModal(true);
     };
+    
 
     const confirmAction = async () => {
         if (!targetPackage) return;
+    
+        console.log(`Confirm Action: ${JSON.stringify(targetPackage)}`);
     
         try {
             const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/deletePackage`, {
@@ -135,17 +137,20 @@ const AdminPackageContent = () => {
                 }),
             });
     
+            console.log(`API Response Status: ${response.status}`);
+    
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.package_status}`);
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
     
             const result = await response.json();
+            console.log('API Response Data:', result);
     
             if (result.success) {
-                // Fetch the updated data from the database
+                // Action was successful, fetch the updated package data
                 await fetchPackages(currentPage, rowsPerPage, searchQuery);
             } else {
-                console.error(result.message);
+                console.error(result.message || "Failed to process the action.");
             }
         } catch (error) {
             console.error("Error processing the action:", error);
@@ -155,20 +160,13 @@ const AdminPackageContent = () => {
         }
     };
     
+    
     const getStatusClass = (package_status) => {
         switch (package_status) {
             case 'Disable':
                 return 'status-disable';
-            case 'Temporary-Disable':
-                return 'status-disable';
             case 'Active':
                 return 'status-active';
-            case 'Pending':
-                return 'status-pending';
-            case 'Temporary':
-                return 'status-temporary';
-            default:
-                return '';
         }
     };
 
@@ -196,7 +194,7 @@ const AdminPackageContent = () => {
     const tbodyContent = sortedPackages.map((Package) => (
         <tr key={Package.id}>
             <td>{Package.package_name}</td>
-            <td>{Package.package_detail}</td>
+            <td >{Package.package_detail}</td>
             <td>{Package.package_type}</td>
             <td>{Package.package_price}</td>
             <td className={getStatusClass(Package.package_status)}>
@@ -252,7 +250,7 @@ const AdminPackageContent = () => {
                     <Button variant="secondary" onClick={() => setShowModal(false)}>
                         Cancel
                     </Button>
-                    <Button variant="primary" onClick={confirmAction}>
+                    <Button className="confirm" variant="primary" onClick={confirmAction}>
                         Confirm
                     </Button>
                 </Modal.Footer>

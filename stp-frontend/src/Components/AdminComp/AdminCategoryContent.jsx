@@ -303,7 +303,7 @@ const AdminCategoryContent = () => {
                     <Button variant="secondary" onClick={() => setShowModal(false)}>
                         Cancel
                     </Button>
-                    <Button variant="primary" onClick={confirmModalAction}>
+                    <Button className="confirm" variant="primary" onClick={confirmModalAction}>
                         Confirm
                     </Button>
                 </Modal.Footer>

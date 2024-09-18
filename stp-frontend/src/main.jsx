@@ -25,6 +25,8 @@ import AdminResetPass from "./Pages/AdminPages/AdminResetPass";
 // Admin Dashboard Pages
 import AdminDashboard from "./Pages/AdminPages/AdminDashboard";
 import AdminSchool from "./Pages/AdminPages/AdminSchool";
+import AdminAddSchool from "./Pages/AdminPages/AdminAddSchool";
+import AdminEditSchool from "./Pages/AdminPages/AdminEditSchool";
 import AdminApplicant from "./Pages/AdminPages/AdminApplicant";
 import AdminStudent from "./Pages/AdminPages/AdminStudent";
 import AdminAddStudent from "./Pages/AdminPages/AdminAddStudent";
@@ -34,9 +36,8 @@ import AdminSubject from "./Pages/AdminPages/AdminSubject";
 import AdminList from "./Pages/AdminPages/AdminList";
 import AdminPackage from "./Pages/AdminPages/AdminPackage";
 import AdminAddPackage from "./Pages/AdminPages/AdminAddPackage";
+import AdminEditPackage from "./Pages/AdminPages/AdminEditPackage";
 import AdminData from "./Pages/AdminPages/AdminData";
-import AdminAddSchool from "./Pages/AdminPages/AdminAddSchool";
-import AdminEditSchool from "./Pages/AdminPages/AdminEditSchool";
 import AdminBanner from "./Pages/AdminPages/AdminBanner";
 import AdminAddBanner from "./Pages/AdminPages/AdminAddBanner";
 
@@ -205,6 +206,10 @@ const router = createBrowserRouter([
   {
     path: "/adminAddPackage",
     element: <AdminAddPackage />,
+  },
+  {
+    path: "/adminEditPackage",
+    element: <AdminEditPackage />,
   },
   {
     path: "/adminData",

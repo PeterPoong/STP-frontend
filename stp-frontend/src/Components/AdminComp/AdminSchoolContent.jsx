@@ -268,7 +268,7 @@ const AdminSchoolContent = () => {
                     <Button variant="secondary" onClick={() => setShowModal(false)}>
                         Cancel
                     </Button>
-                    <Button variant="primary" onClick={confirmAction}>
+                    <Button className="confirm" variant="primary" onClick={confirmAction}>
                         Confirm
                     </Button>
                 </Modal.Footer>

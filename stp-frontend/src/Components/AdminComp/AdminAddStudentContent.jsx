@@ -117,8 +117,6 @@ const AdminAddStudentContent = () => {
       fetchGenders();
   }, [Authenticate]);
 
-    
-
     console.log(`${import.meta.env.VITE_BASE_URL}api/student/countryList`);
     // Fetch country list (GET request)
     useEffect(() => {
@@ -189,23 +187,25 @@ const AdminAddStudentContent = () => {
         });
     };
   
-    const handleFieldChange = (e) => {
-      const { id, value, type } = e.target;
-  
-      if (type === "radio") {
-          setFormData(prev => ({
-              ...prev,
-              [id]: value
-          }));
-      } else {
-          setFormData(prev => ({
-              ...prev,
-              [id]: value
-          }));
-      }
-  };
-  
-  
+  const handleFieldChange = (e) => {
+        const { id, value, type, files } = e.target;
+        console.log(`Field ${id} updated with value: ${value}`); // Debugging line
+        if (type === "file") {
+            setFormData(prev => ({
+                ...prev,
+                [id]: files[0]
+            }));
+        } else {
+            setFormData(prev => ({
+                ...prev,
+                [id]: value
+            }));
+        }
+    };
+
+    const togglePasswordVisibility = () => setShowPassword(prev => !prev);
+    const toggleConfirmPasswordVisibility = () => setShowConfirmPassword(prev => !prev);
+
     const handleCountryChange = (e) => {
         const countryId = e.target.value;
         setFormData({
@@ -231,8 +231,6 @@ const AdminAddStudentContent = () => {
    const handleCityChange = (e) => {
     setFormData({ ...formData, city: e.target.value });
   };
-  const togglePasswordVisibility = () => setShowPassword(prev => !prev);
-    const toggleConfirmPasswordVisibility = () => setShowConfirmPassword(prev => !prev);
     const formFields = [
         {
             id: "name",
@@ -293,30 +291,43 @@ const AdminAddStudentContent = () => {
             value: formData.postcode,
             onChange: handleFieldChange,
             required: true
-        }
+        },
+        {
+          id: "ic",
+          label: "Identity Card No.",  // Updated label to match the field
+          type: "text",
+          placeholder: "Enter IC Number",
+          value: formData.ic,
+          onChange: handleFieldChange,
+          required: true
+      }
     ];
     
     const formPassword = [
-        {
-            id: "password",
-            label: "Password",
-            type: "password",
-            placeholder: "Enter new password",
-            value: formData.password,
-            onChange: handleFieldChange,
-            required: true,
-            autoComplete: "new-password"
-        },
-        {
-            id: "confirm_password",
-            label: "Confirm Password",
-            type: "password",
-            placeholder: "Enter password again",
-            value: formData.confirm_password,
-            onChange: handleFieldChange,
-            required: true
-        },
-    ];
+      {
+          id: "password",
+          label: "Password",
+          type: showPassword ? "text" : "password",
+          placeholder: "Enter new password",
+          value: formData.password,
+          onChange: handleFieldChange,
+          required: true,
+          autoComplete: "new-password",
+          toggleVisibility: togglePasswordVisibility,
+          showVisibility: showPassword
+      },
+      {
+          id: "confirm_password",
+          label: "Confirm Password",
+          type: showConfirmPassword ? "text" : "password",
+          placeholder: "Enter password again",
+          value: formData.confirm_password,
+          onChange: handleFieldChange,
+          required: true,
+          toggleVisibility: toggleConfirmPasswordVisibility,
+          showVisibility: showConfirmPassword
+      }
+  ];
 
     const formStudentCountry = [
         {
