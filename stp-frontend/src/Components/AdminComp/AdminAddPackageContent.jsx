@@ -39,7 +39,7 @@ const AdminAddPackageContent = () => {
         try {
             console.log("FormData before submission:", formPayload);
             
-            const addSchoolResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/addPackage`, {
+            const addPackageResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/addPackage`, {
                 method: 'POST',
                 headers: {
                     'Authorization': Authenticate,
@@ -47,18 +47,18 @@ const AdminAddPackageContent = () => {
                 body: formPayload, // Using FormData directly as the body
             });
     
-            const addSchoolData = await addSchoolResponse.json();
+            const addPackageData = await addPackageResponse.json();
     
-            if (addSchoolResponse.ok) {
-                console.log('School successfully registered:', addSchoolData);
-                navigate('/adminSchool');
+            if (addPackageResponse.ok) {
+                console.log('Package successfully registered:', addPackageData);
+                navigate('/adminPackage');
             } else {
-                console.error('Validation Error:', addSchoolData.errors); // Debugging line
-                throw new Error(`School Registration failed: ${addSchoolData.message}`);
+                console.error('Validation Error:', addPackageData.errors); // Debugging line
+                throw new Error(`Package Registration failed: ${addPackageData.message}`);
             }
         } catch (error) {
-            setError('An error occurred during school registration. Please try again later.');
-            console.error('Error during school registration:', error);
+            setError('An error occurred during Package registration. Please try again later.');
+            console.error('Error during Package registration:', error);
         }
     };
     
@@ -110,7 +110,7 @@ const AdminAddPackageContent = () => {
     const handleEditorChange = (content) => {
         setFormData(prevFormData => ({
             ...prevFormData,
-            school_fullDesc: content,
+            package_detail: content,
         }));
     };
 
@@ -146,7 +146,7 @@ const AdminAddPackageContent = () => {
             onChange: handleFieldChange,
             required: true,
             options: packageList.map(packages => ({
-                label: packages.package_name,
+                label: packages.name,
                 value: packages.id
             }))
         }
