@@ -11,6 +11,8 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
   const [error, setError] = useState(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false); // Popup state
   const [availableSubjects, setAvailableSubjects] = useState([]);
+  const [documentErrors, setDocumentErrors] = useState({});
+ 
 
   useEffect(() => {
     fetchTranscriptCategories();
@@ -353,7 +355,16 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
         : transcript
     );
     setAcademicTranscripts(updatedTranscripts);
+
+    // Clear any existing errors for this document
+    setDocumentErrors(prevErrors => {
+      const newErrors = { ...prevErrors };
+      delete newErrors[`${transcriptIndex}-${documentIndex}`];
+      return newErrors;
+    });
   };
+
+
 
   const fetchDocumentsForTranscript = async (transcriptIndex) => {
     try {
@@ -402,28 +413,40 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       const transcript = academicTranscripts[transcriptIndex];
       const document = transcript.documents[documentIndex];
+  
+      // Validate document title
       if (!document.name.trim()) {
-        alert('Document title cannot be empty');
-        return; // Exit the function early
+        setDocumentErrors(prevErrors => ({
+          ...prevErrors,
+          [`${transcriptIndex}-${documentIndex}`]: 'Document title cannot be empty'
+        }));
+        return;
       }
-
+  
+      // Validate file upload
+      if (!document.file) {
+        setDocumentErrors(prevErrors => ({
+          ...prevErrors,
+          [`${transcriptIndex}-${documentIndex}`]: 'File upload is required'
+        }));
+        return;
+      }
+  
       const formData = new FormData();
       formData.append('studentMedia_type', transcript.id.toString());
       formData.append('studentMedia_name', document.name);
       if (document.file instanceof File) {
         formData.append('studentMedia_location', document.file);
       }
-
+  
       let url;
       if (document.id) {
-        // Editing existing document
         url = `${import.meta.env.VITE_BASE_URL}api/student/editTranscriptFile`;
         formData.append('id', document.id.toString());
       } else {
-        // Adding new document
         url = `${import.meta.env.VITE_BASE_URL}api/student/addTranscriptFile`;
       }
-
+  
       const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -431,22 +454,38 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
         },
         body: formData,
       });
-
+  
       const result = await response.json();
       console.log('Response data:', result);
-
+  
       if (result.success) {
         console.log('Document saved successfully');
-        // Fetch updated documents instead of updating state directly
         await fetchDocumentsForTranscript(transcriptIndex);
+        // Clear errors for this document
+        setDocumentErrors(prevErrors => {
+          const newErrors = { ...prevErrors };
+          delete newErrors[`${transcriptIndex}-${documentIndex}`];
+          return newErrors;
+        });
       } else {
-        throw new Error(result.message || 'Failed to save document');
+        if (result.message === "Validation Error" && result.error && result.error.transcripts) {
+          setDocumentErrors(prevErrors => ({
+            ...prevErrors,
+            [`${transcriptIndex}-${documentIndex}`]: result.error.transcripts[0]
+          }));
+        } else {
+          throw new Error(result.message || 'Failed to save document');
+        }
       }
     } catch (error) {
       console.error('Error in handleSaveDocument:', error);
-      setError(error.message);
+      setDocumentErrors(prevErrors => ({
+        ...prevErrors,
+        [`${transcriptIndex}-${documentIndex}`]: error.message
+      }));
     }
   };
+  
 
   const handleRemoveDocument = async (transcriptIndex, documentIndex) => {
     try {
@@ -523,11 +562,11 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       const transcript = academicTranscripts[transcriptIndex];
       const category = categories.find(cat => cat.transcript_category === transcript.name);
-
+  
       if (!category) {
         throw new Error('Invalid transcript category');
       }
-
+  
       let url, payload;
       if (category.id === 32) { // SPM
         // Fetch the correct subject IDs for new subjects
@@ -547,7 +586,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
           }
           return subject;
         }));
-
+  
         url = `${import.meta.env.VITE_BASE_URL}api/student/addEditTranscript`;
         payload = {
           category: category.id,
@@ -569,7 +608,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
         };
       }
       console.log('Saving transcript with payload:', payload);
-
+  
       const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -578,20 +617,38 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
         },
         body: JSON.stringify(payload),
       });
-
       const data = await response.json();
       if (data.success) {
         console.log('Transcript saved successfully');
         fetchSubjects(category.id, transcriptIndex);
+        // Clear any errors for this transcript
+        setDocumentErrors(prevErrors => {
+          const newErrors = { ...prevErrors };
+          delete newErrors[transcriptIndex];
+          return newErrors;
+        });
       } else {
         console.error('Server responded with an error:', data);
-        throw new Error(data.message || 'Server responded with an error');
+        if (data.message === "Validation Error" && data.error && data.error.transcripts) {
+          // Assign the error to the last document
+          const lastDocIndex = transcript.documents.length - 1;
+          setDocumentErrors(prevErrors => ({
+            ...prevErrors,
+            [`${transcriptIndex}-${lastDocIndex}`]: data.error.transcripts[0]
+          }));
+        } else {
+          throw new Error(data.message || 'Server responded with an error');
+        }
       }
     } catch (error) {
       console.error('Error saving transcript:', error);
-      setError(`Failed to save transcript: ${error.message}`);
+      setDocumentErrors(prevErrors => ({
+        ...prevErrors,
+        [transcriptIndex]: `Failed to save transcript: ${error.message}`
+      }));
     }
   };
+  
 
   const getGradeColor = (grade) => {
     if (grade.includes('A')) return 'success';
@@ -656,6 +713,8 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
               </Button>
             </div>
           </div>
+
+
           {transcript.subjects.length > 0 ? (
             <div className="px-4">
               {transcript.subjects.map((subject, subIndex) => (
@@ -711,14 +770,14 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                           <option value="A-">A-</option>
                           <option value="B+">B+</option>
                           <option value="B">B</option>
-                         
+
                           <option value="C+">C+</option>
                           <option value="C">C</option>
-                       
+
                           <option value="D">D</option>
                           <option value="E">E</option>
                           <option value="G">G</option>
-                         
+
                         </Form.Control>
                       </div>
                       <div className="d-flex">
@@ -734,7 +793,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                     <>
                       <div className="d-flex align-items-center flex-grow-1">
                         <AlignJustify className="me-2" style={{ alignSelf: 'center' }} />
-                        <span className="me-2" style={{ fontSize: '0.9rem', fontWeight: "500" }}>{subject.name}</span>
+                        <span className="me-2" style={{ fontSize: '0.9rem', fontWeight: "500", width: "150px" }}>{subject.name}</span>
                         <span style={{ fontSize: '0.9rem', fontWeight: "500" }}
                           className={`ms-3 me-2 px-2 py-1 px-3 rounded-5 text-white bg-${getGradeColor(subject.grade)}`}>
                           Grade: {subject.grade}
@@ -761,6 +820,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                 <Plus size={18} color="grey" />
               </Button>
             </div>
+
             {transcript.documents.map((doc, docIndex) => (
               <div key={docIndex} className="px-4">
                 <div className="document-item d-flex align-items-center mb-2 bg-white p-1 gap-1 justify-content-between rounded-3">
@@ -826,7 +886,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                       <div className="d-flex flex-grow-1">
                         <div className="border-end me-4 px-3 align-items-center">
                           <FileText size={15} className="me-2 ms-2" style={{ alignSelf: 'center' }} />
-                          <span className="me-2" style={{ fontSize: '0.825rem', textAlign: 'center', flex: 1 }}>{doc.name}</span>
+                          <span className="me-2" style={{ fontSize: '0.825rem', textAlign: 'left', flex: 1, width: "100px" }}>{doc.name}</span>
                         </div>
                         <div className="align-items-center">
                           <span style={{ fontSize: '0.825rem' }}>{doc.mediaName || doc.file || 'No file uploaded'}</span>
@@ -843,6 +903,14 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                     </>
                   )}
                 </div>
+               
+
+
+                {documentErrors[`${index}-${docIndex}`] && (
+                  <div className="text-danger" style={{ fontSize: '0.825rem' }}>
+                    {documentErrors[`${index}-${docIndex}`]}
+                  </div>
+                )}
               </div>
             ))}
 

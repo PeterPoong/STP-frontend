@@ -48,6 +48,7 @@ const WidgetFileUploadAcademicTranscript = ({ isOpen, onClose, onSave, item, isV
     const handleSave = async () => {
         if (isViewMode) return;
 
+        setErrors({}); // Clear previous errors
         const newErrors = {};
         if (!title.trim()) newErrors.title = "Title is required";
         if (!file && !existingFileUrl && !item) newErrors.file = "File is required";
@@ -56,8 +57,6 @@ const WidgetFileUploadAcademicTranscript = ({ isOpen, onClose, onSave, item, isV
             setErrors(newErrors);
             return;
         }
-
-        setErrors({});
 
         try {
             const result = await onSave({
@@ -68,7 +67,13 @@ const WidgetFileUploadAcademicTranscript = ({ isOpen, onClose, onSave, item, isV
             });
 
             if (!result.success) {
-                setAlert({ type: 'error', message: result.message || "Failed to save file. Please try again." });
+                if (result.message === "Validation Error" && result.error) {
+                    // Handle validation errors
+                    const errorMessages = Object.values(result.error).flat();
+                    setErrors({ file: errorMessages.join('. ') || "Validation failed. Please check your input." });
+                } else {
+                    setAlert({ type: 'error', message: result.message || "Failed to save file. Please try again." });
+                }
             } else {
                 handleClose();
             }
@@ -133,6 +138,9 @@ const WidgetFileUploadAcademicTranscript = ({ isOpen, onClose, onSave, item, isV
                     />
                     {errors.title && <div className="error-message">{errors.title}</div>}
                 </div>
+               
+                {errors.file && <div className="error-message">{errors.file}</div>}
+
                 {!file && !existingFileUrl ? (
                     <div className="upload-area">
                         {!isViewMode && (
@@ -167,7 +175,7 @@ const WidgetFileUploadAcademicTranscript = ({ isOpen, onClose, onSave, item, isV
                         )}
                     </div>
                 )}
-                {!isViewMode && errors.file && <div className="error-message">{errors.file}</div>}
+                
 
                 {!isViewMode && (
                     <div className="save-button-container">

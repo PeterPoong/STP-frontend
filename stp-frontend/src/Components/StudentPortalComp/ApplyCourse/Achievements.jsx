@@ -33,7 +33,7 @@ const Achievements = ({ onBack, onNext }) => {
       const result = await response.json();
       if (result.success) {
         setAchievements(result.data.data);
-        
+
       } else {
         throw new Error(result.message || 'Failed to fetch achievements');
       }
@@ -146,7 +146,7 @@ const Achievements = ({ onBack, onNext }) => {
           i === index ? { ...a, id: result.data.id, isEditing: false, fileRemoved: false } : a
         );
         setAchievements(updatedAchievements);
-       
+
         await fetchAchievements();
       } else {
         throw new Error(result.message || 'Failed to save achievement');
@@ -166,7 +166,7 @@ const Achievements = ({ onBack, onNext }) => {
         // If the achievement doesn't have an ID, it's not saved in the backend yet
         const updatedAchievements = achievements.filter((_, i) => i !== index);
         setAchievements(updatedAchievements);
-        
+
         return;
       }
 
@@ -187,7 +187,7 @@ const Achievements = ({ onBack, onNext }) => {
       if (result.success) {
         const updatedAchievements = achievements.filter((_, i) => i !== index);
         setAchievements(updatedAchievements);
-        
+
         await fetchAchievements();
       } else {
         throw new Error(result.message || 'Failed to delete achievement');
@@ -213,13 +213,17 @@ const Achievements = ({ onBack, onNext }) => {
   };
 
   const formatDate = (date) => {
-    return new Date(date).toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    });
+    if (!date) return '';
+    if (date instanceof Date) {
+      return date.toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+    }
+    // If date is already a string, return it as is
+    return date;
   };
-
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
@@ -255,7 +259,7 @@ const Achievements = ({ onBack, onNext }) => {
                       <Trophy size={18} className="me-2" />
                       <Form.Control
                         as="select"
-                        value={achievement.title} 
+                        value={achievement.title}
                         onChange={(e) => handleAchievementChange(index, 'title', e.target.value)}
                         className="py-0 px-2 input-short"
                       >
@@ -333,10 +337,21 @@ const Achievements = ({ onBack, onNext }) => {
                   <div className="d-flex flex-grow-1 align-items-center">
                     <div className="me-3">
                       <Clock size={18} className="me-2" />
-                      {formatDate(achievement.date)}
+                      <span className="border-end border-2 border-dark pe-2 me-2">Date</span>
+                      <a className='mx-2 text-dark fw-normal'>{formatDate(achievement.date)}</a>
                     </div>
-                    <div className="me-3"><Trophy size={18} className="me-2" />{achievement.title_obtained}</div>
-                    <div className="me-3"><Building size={18} className="me-2" />{achievement.awarded_by}</div>
+                    <div className="me-3" style={{ width: '225px' }}>
+                      <Trophy size={18} className="me-2" />
+                      <span className="border-end border-2 border-dark pe-2 me-2">Title</span>
+                      <a className='mx-2 text-dark fw-normal'>{achievement.title_obtained}</a>
+                    </div>
+                    <div className="me-3">
+                      <Building size={18} className="me-2" />
+                      <span className="border-end border-2 border-dark pe-2 me-2">Awarded by</span>
+                      <a className='mx-2 text-dark fw-normal'>{achievement.awarded_by}</a>
+                    </div>
+                   
+                    
                     {achievement.achievement_media && (
                       <div className="d-flex align-items-center text-decoration-underline">
                         <FileText size={18} className="me-2" />

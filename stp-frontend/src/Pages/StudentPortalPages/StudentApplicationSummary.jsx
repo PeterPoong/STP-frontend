@@ -37,7 +37,17 @@ const StudentApplicationSummary = ({ }) => {
     const [isViewOtherDocOpen, setIsViewOtherDocOpen] = useState(false);
     const [currentViewDocument, setCurrentViewDocument] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
-
+    const [currentPage, setCurrentPage] = useState({
+        academicTranscripts: 1,
+        achievements: 1,
+        otherDocuments: 1
+    });
+    const [itemsPerPage, setItemsPerPage] = useState(10);
+    const [paginationInfo, setPaginationInfo] = useState({
+        academicTranscripts: {},
+        achievements: {},
+        otherDocuments: {}
+    });
 
 
     const calculateOverallGrade = (subjects) => {
@@ -271,64 +281,158 @@ const StudentApplicationSummary = ({ }) => {
         }
     };
 
-    const fetchAcademicTranscripts = async () => {
+    const fetchAcademicTranscripts = async (page = 1) => {
         try {
-            const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+            const token = sessionStorage.getItem("token") || localStorage.getItem("token");
             const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/mediaListByCategory`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(), // Adjust category_id as needed
+                body: JSON.stringify({
+                    page: page,
+                    per_page: itemsPerPage
+                }),
             });
             const data = await response.json();
             if (data.success) {
                 setAcademicTranscripts(data.data.data);
+                setPaginationInfo(prevState => ({
+                    ...prevState,
+                    academicTranscripts: {
+                        currentPage: data.data.current_page,
+                        lastPage: data.data.last_page,
+                        total: data.data.total,
+                        perPage: data.data.per_page
+                    }
+                }));
             }
         } catch (error) {
             console.error('Error fetching academic transcripts:', error);
         }
     };
 
-    const fetchAchievements = async () => {
+    const fetchAchievements = async (page = 1) => {
         try {
-            const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+            const token = sessionStorage.getItem("token") || localStorage.getItem("token");
             const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/achievementsList`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
+                body: JSON.stringify({
+                    page: page,
+                    per_page: itemsPerPage
+                }),
             });
             const data = await response.json();
             if (data.success) {
                 setAchievements(data.data.data);
+                setPaginationInfo(prevState => ({
+                    ...prevState,
+                    achievements: {
+                        currentPage: data.data.current_page,
+                        lastPage: data.data.last_page,
+                        total: data.data.total,
+                        perPage: data.data.per_page
+                    }
+                }));
             }
         } catch (error) {
             console.error('Error fetching achievements:', error);
         }
     };
 
-    const fetchOtherDocuments = async () => {
+    const fetchOtherDocuments = async (page = 1) => {
         try {
-            const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+            const token = sessionStorage.getItem("token") || localStorage.getItem("token");
             const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/otherFileCertList`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
+                body: JSON.stringify({
+                    page: page,
+                    per_page: itemsPerPage
+                }),
             });
             const data = await response.json();
             if (data.success) {
                 setOtherDocuments(data.data.data);
+                setPaginationInfo(prevState => ({
+                    ...prevState,
+                    otherDocuments: {
+                        currentPage: data.data.current_page,
+                        lastPage: data.data.last_page,
+                        total: data.data.total,
+                        perPage: data.data.per_page
+                    }
+                }));
             }
         } catch (error) {
             console.error('Error fetching other documents:', error);
         }
     };
 
+
+    useEffect(() => {
+        if (activeTab === 'documents') {
+            fetchAcademicTranscripts(currentPage.academicTranscripts);
+            fetchAchievements(currentPage.achievements);
+            fetchOtherDocuments(currentPage.otherDocuments);
+        }
+    }, [activeTab, itemsPerPage]);
+
+    const handlePageChange = (section, page) => {
+        setCurrentPage(prevState => ({ ...prevState, [section]: page }));
+        switch(section) {
+            case 'academicTranscripts':
+                fetchAcademicTranscripts(page);
+                break;
+            case 'achievements':
+                fetchAchievements(page);
+                break;
+            case 'otherDocuments':
+                fetchOtherDocuments(page);
+                break;
+        }
+    };
+
+    const renderPagination = (section) => {
+        const info = paginationInfo[section];
+        if (!info || !info.lastPage) return null;
+
+        const pageNumbers = [];
+        for (let i = 1; i <= info.lastPage; i++) {
+            pageNumbers.push(i);
+        }
+
+        return (
+            <div className="pagination">
+                <button onClick={() => handlePageChange(section, info.currentPage - 1)} disabled={info.currentPage === 1}>
+                    &lt;
+                </button>
+                {pageNumbers.map(number => (
+                    <button
+                        key={number}
+                        onClick={() => handlePageChange(section, number)}
+                        className={info.currentPage === number ? 'active' : ''}
+                    >
+                        {number}
+                    </button>
+                ))}
+                <button onClick={() => handlePageChange(section, info.currentPage + 1)} disabled={info.currentPage === info.lastPage}>
+                    &gt;
+                </button>
+            </div>
+        );
+    };
+
+
+    
     const handleExamChange = (e) => {
         const newExamId = e.target.value;
         setSelectedExam(newExamId);
@@ -370,23 +474,29 @@ const StudentApplicationSummary = ({ }) => {
 
         let documents = [];
         let columns = [];
+        let paginationSection = '';
+
 
         switch (activeDocumentTab) {
             case 'academic':
                 documents = academicTranscripts;
                 columns = ['Name', 'File Name', 'Actions'];
+                paginationSection = 'academicTranscripts';
                 break;
             case 'achievements':
                 documents = achievements;
                 columns = ['Name', 'File Name', 'Actions'];
+                paginationSection = 'achievements';
                 break;
             case 'other':
                 documents = otherDocuments;
                 columns = ['Name', 'File Name', 'Actions'];
+                paginationSection = 'otherDocuments';
                 break;
             default:
                 break;
         }
+
 
         // Filter documents based on searchTerm
         const filteredDocuments = documents.filter((doc) => {
@@ -524,7 +634,8 @@ const StudentApplicationSummary = ({ }) => {
                         </tbody>
                     </table>
                 </div>
-
+                {renderPagination(paginationSection)}
+                
                 <WidgetFileUploadAcademicTranscript
                     isOpen={isViewAcademicTranscriptOpen}
                     onClose={() => setIsViewAcademicTranscriptOpen(false)}

@@ -248,17 +248,17 @@ const CoCurriculum = ({ onNext, onBack }) => {
                 <div className="fw-bold mb-2" style={{ fontSize: '1.1rem' }}>{activity.club_name}</div>
                 <div className="d-flex justify-content-between align-items-center">
                   <div className="d-flex flex-grow-1">
-                    <div className="me-3">
+                    <div className="me-3 "  >
                       <Clock size={18} className="me-2" />
                       <span className="border-end border-2 border-dark pe-2 me-2">Year</span>
                       <a className='mx-2 text-dark fw-normal'>{activity.year}</a>
                     </div>
-                    <div className="me-3">
+                    <div className="me-3" style={{ width: '200px' }}>
                       <User size={18} className="me-2" />
                       <span className="border-end  border-2 border-dark pe-2 me-2">Poition</span>
                       <a className='mx-2 text-dark fw-normal'>{activity.student_position}</a>
                     </div>
-                    <div className="me-3">
+                    <div className="me-3" >
                       <Building size={18} className="me-2" />
                       <span className="border-end border-2 border-dark pe-2 me-2">Institute</span>
                       <a className='mx-2 text-dark fw-normal'>{activity.location}</a>

@@ -15,6 +15,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import "../../css/StudentPortalStyles/StudentApplyCourse.css";
 import "../../css/StudentPortalStyles/StudentButtonGroup.css";
 import image1 from "../../assets/StudentAssets/University Logo/image1.jpg";
+import WidgetPopUpError from "../../Components/StudentPortalComp/Widget/WidgetPopUpError";
 
 const CustomConnector = styled(StepConnector)(({ theme }) => ({
   [`&.${stepConnectorClasses.alternativeLabel}`]: {
@@ -115,6 +116,8 @@ const StudentApplyCourses = () => {
   const { courseId } = useParams();
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showSubmissionPopup, setShowSubmissionPopup] = useState(false);
+  const [showErrorPopup, setShowErrorPopup] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const [formData, setFormData] = useState({
     basicInformation: {},
     academicTranscript: {},
@@ -122,6 +125,7 @@ const StudentApplyCourses = () => {
     achievements: [],
     otherDocs: []
   });
+
 
   const navigate = useNavigate();
 
@@ -151,20 +155,28 @@ const StudentApplyCourses = () => {
         body: JSON.stringify({ courseID: courseId }),
       });
 
-      if (response.ok) {
+      const data = await response.json();
+
+      if (data.success) {
         setShowSubmissionPopup(false);
         setIsSubmitted(true);
-
-        // Store only the most recently applied course ID
         sessionStorage.setItem('lastAppliedCourseId', courseId);
+      } else if (data.error && data.error.courses) {
+        setErrorMessage(data.error.courses[0]);
+        setShowErrorPopup(true);
+        setShowSubmissionPopup(false);
+        setTimeout(() => {
+          navigate('/courses');
+        }, 3000);
       } else {
-        console.error('Error submitting course application:', response.statusText);
+        throw new Error(data.message || 'An error occurred while submitting the application');
       }
     } catch (error) {
-      console.error('Error submitting course application:', error);
+      setErrorMessage(error.message);
+      setShowErrorPopup(true);
+      setShowSubmissionPopup(false);
     }
   };
-
 
   const updateFormData = (step, data) => {
     setFormData(prevData => ({
@@ -193,13 +205,13 @@ const StudentApplyCourses = () => {
         return <CoCurriculum
           data={formData.coCurriculum}
           onNext={handleNext}  // Pass handleNext for the "Next" button
-          onBack={handleBack}  
+          onBack={handleBack}
         />;
       case 3:
         return <Achievements
           data={formData.achievements}
           onNext={handleNext}  // Pass handleNext for the "Next" button
-          onBack={handleBack}  
+          onBack={handleBack}
         />;
       case 4:
         return <OtherDocuments
@@ -229,6 +241,7 @@ const StudentApplyCourses = () => {
       <div className="app-container-applycourse">
         <NavButtonsSP />
         <div className="main-content-applycourse">
+       
           <div className="backgroundimage">
             <div className="widget-applying-course-success">
               <h1 className="text-danger fw-bold mb-4">Congratulations!</h1>
@@ -240,7 +253,7 @@ const StudentApplyCourses = () => {
               className="sac-submit-button"
               onClick={() => navigate(`/studentApplicationSummary/${sessionStorage.getItem('lastAppliedCourseId')}`)}
             >
-              
+
               View Summary
             </Button>
             <Button className="sac-submit-button" onClick={() => navigate('/courses')}>
@@ -278,12 +291,17 @@ const StudentApplyCourses = () => {
           </CustomStepper>
         </Box>
         {renderStep()}
-       
+
       </div>
       <WidgetPopUpSubmission
         isOpen={showSubmissionPopup}
         onClose={() => setShowSubmissionPopup(false)}
         onConfirm={handleConfirmSubmission}
+      />
+       <WidgetPopUpError
+        isOpen={showErrorPopup}
+        onClose={() => setShowErrorPopup(false)}
+        errorMessage={errorMessage}
       />
       <SpcFooter />
     </div>

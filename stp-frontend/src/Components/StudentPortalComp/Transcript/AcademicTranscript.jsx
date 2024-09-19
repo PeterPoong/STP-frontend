@@ -256,10 +256,9 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
   };
 
   const getGradeColor = (grade) => {
-    const gradeNum = parseInt(grade);
-    if (gradeNum >= 17 && gradeNum <= 19) return 'bg-success';
-    if (gradeNum >= 20 && gradeNum <= 21) return 'bg-danger';
-    if (gradeNum >= 22 && gradeNum <= 23) return 'bg-warning text-dark';
+    if (grade.includes('A')) return 'bg-success';
+    if (grade.includes('B')) return 'bg-danger';
+    if (grade.includes('C')) return 'bg-warning text-dark';
     return 'bg-secondary';
   };
 
@@ -280,7 +279,7 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
         <div key={index} className="d-flex align-items-center justify-content-between bg-white p-2 mb-2 rounded border">
           <div className="d-flex align-items-center flex-grow-1">
             <GripVertical className="me-3" size={20} />
-            <span className="fw-medium h6 mb-0 me-3">{subject.name}</span>
+            <span className="fw-medium h6 mb-0 me-3" style={{width:"150px"}}>{subject.name}</span>
             {editingIndex === index || subject.isEditing ? (
               <input
                 type="text"
@@ -549,7 +548,7 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
                   </>
                 ) : (
                   <>
-                    <span className="fw-medium h6 mb-0 me-3">{subject.name}</span>
+                    <span className="fw-medium h6 mb-0 me-3" style={{width:"150px"}}>{subject.name}</span>
                     {subject.grade && (
                       <span className={`rounded-pill px-4 text-white ms-2 ${getGradeColor(subject.grade)}`}>
                         GRADE: {subject.grade}
