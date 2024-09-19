@@ -241,3 +241,18 @@ width:100%;
         width:100%;
       }
 }
+
+.grade-A
+{
+  background-color: #146A17;
+}
+
+.grade-B
+{
+  background-color: #E1D925;
+}
+.grade-C
+{
+  background-color: #BF3634;
+}
+

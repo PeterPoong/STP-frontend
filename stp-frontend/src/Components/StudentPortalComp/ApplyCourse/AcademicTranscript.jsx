@@ -12,7 +12,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
   const [isPopupOpen, setIsPopupOpen] = useState(false); // Popup state
   const [availableSubjects, setAvailableSubjects] = useState([]);
   const [documentErrors, setDocumentErrors] = useState({});
- 
+
 
   useEffect(() => {
     fetchTranscriptCategories();
@@ -91,6 +91,30 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
 
         const documentsResult = await documentsResponse.json();
 
+        // Fetch CGPA for non-SPM categories
+        let cgpa = null;
+        let programName = '';
+        let cgpaId = null;
+        if (category.id !== 32) {
+          const cgpaResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/programCgpaList`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify({ transcriptCategory: category.id }),
+          });
+
+          if (cgpaResponse.ok) {
+            const cgpaResult = await cgpaResponse.json();
+            if (cgpaResult.success && cgpaResult.data) {
+              cgpa = cgpaResult.data.cgpa;
+              programName = cgpaResult.data.program_name;
+              cgpaId = cgpaResult.data.id;
+            }
+          }
+        }
+
         if (subjectsResult.success && subjectsResult.data && subjectsResult.data.length > 0) {
           existingTranscripts.push({
             id: category.id,
@@ -106,7 +130,10 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                 name: doc.studentMedia_name,
                 file: doc.studentMedia_location,
               }))
-              : []
+              : [],
+            cgpa: cgpa,
+            programName: programName,
+            cgpaId:cgpaId
           });
         }
       }
@@ -119,6 +146,19 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
       setIsLoading(false);
     }
   };
+
+  const handleProgramNameChange = (transcriptIndex, value) => {
+    const updatedTranscripts = [...academicTranscripts];
+    updatedTranscripts[transcriptIndex].programName = value;
+    setAcademicTranscripts(updatedTranscripts);
+  };
+
+  const handleCGPAChange = (transcriptIndex, value) => {
+    const updatedTranscripts = [...academicTranscripts];
+    updatedTranscripts[transcriptIndex].cgpa = value;
+    setAcademicTranscripts(updatedTranscripts);
+  };
+
 
   const fetchAvailableSubjects = useCallback(async (categoryId, transcriptIndex) => {
     if (categoryId !== 32) return; // Only fetch for SPM
@@ -413,7 +453,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       const transcript = academicTranscripts[transcriptIndex];
       const document = transcript.documents[documentIndex];
-  
+
       // Validate document title
       if (!document.name.trim()) {
         setDocumentErrors(prevErrors => ({
@@ -422,7 +462,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
         }));
         return;
       }
-  
+
       // Validate file upload
       if (!document.file) {
         setDocumentErrors(prevErrors => ({
@@ -431,14 +471,14 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
         }));
         return;
       }
-  
+
       const formData = new FormData();
       formData.append('studentMedia_type', transcript.id.toString());
       formData.append('studentMedia_name', document.name);
       if (document.file instanceof File) {
         formData.append('studentMedia_location', document.file);
       }
-  
+
       let url;
       if (document.id) {
         url = `${import.meta.env.VITE_BASE_URL}api/student/editTranscriptFile`;
@@ -446,7 +486,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
       } else {
         url = `${import.meta.env.VITE_BASE_URL}api/student/addTranscriptFile`;
       }
-  
+
       const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -454,10 +494,10 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
         },
         body: formData,
       });
-  
+
       const result = await response.json();
       console.log('Response data:', result);
-  
+
       if (result.success) {
         console.log('Document saved successfully');
         await fetchDocumentsForTranscript(transcriptIndex);
@@ -485,7 +525,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
       }));
     }
   };
-  
+
 
   const handleRemoveDocument = async (transcriptIndex, documentIndex) => {
     try {
@@ -562,11 +602,11 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       const transcript = academicTranscripts[transcriptIndex];
       const category = categories.find(cat => cat.transcript_category === transcript.name);
-  
+
       if (!category) {
         throw new Error('Invalid transcript category');
       }
-  
+
       let url, payload;
       if (category.id === 32) { // SPM
         // Fetch the correct subject IDs for new subjects
@@ -586,7 +626,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
           }
           return subject;
         }));
-  
+
         url = `${import.meta.env.VITE_BASE_URL}api/student/addEditTranscript`;
         payload = {
           category: category.id,
@@ -606,9 +646,45 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
             grade: subject.grade
           }))
         };
+
+        // Add CGPA and program name to payload for non-SPM transcripts
+        if (transcript.cgpa !== null && transcript.programName) {
+          // Determine whether to use addProgramCgpa or editProgramCgpa
+          const cgpaUrl = transcript.cgpaId
+            ? `${import.meta.env.VITE_BASE_URL}api/student/editProgramCgpa`
+            : `${import.meta.env.VITE_BASE_URL}api/student/addProgramCgpa`;
+
+          const cgpaPayload = {
+            transcriptCategory: category.id,
+            cgpa: transcript.cgpa,
+            programName: transcript.programName,
+            ...(transcript.cgpaId && { cgpaId: transcript.cgpaId })
+          };
+
+          const cgpaResponse = await fetch(cgpaUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify(cgpaPayload),
+          });
+
+          const cgpaResult = await cgpaResponse.json();
+          if (!cgpaResult.success) {
+            throw new Error(cgpaResult.message || 'Failed to update CGPA and program name');
+          }
+
+          // Update the transcript with the new CGPA ID if it was just added
+          if (!transcript.cgpaId && cgpaResult.data && cgpaResult.data.id) {
+            const updatedTranscripts = [...academicTranscripts];
+            updatedTranscripts[transcriptIndex].cgpaId = cgpaResult.data.id;
+            setAcademicTranscripts(updatedTranscripts);
+          }
+        }
       }
       console.log('Saving transcript with payload:', payload);
-  
+
       const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -621,6 +697,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
       if (data.success) {
         console.log('Transcript saved successfully');
         fetchSubjects(category.id, transcriptIndex);
+       
         // Clear any errors for this transcript
         setDocumentErrors(prevErrors => {
           const newErrors = { ...prevErrors };
@@ -648,15 +725,19 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
       }));
     }
   };
-  
+
 
   const getGradeColor = (grade) => {
     if (grade.includes('A')) return 'success';
-    if (grade.includes('B')) return 'primary';
-    if (grade.includes('C')) return 'warning';
-    if (['D', 'E', 'F', 'G'].includes(grade)) return 'danger';
+    if (grade.includes('B')) return 'success';
+    if (grade.includes('C')) return 'success';
+    if (grade.includes('D')) return 'warning';
+    if (grade.includes('E')) return 'warning';
+    if (grade.includes('G')) return 'danger';
+
     return 'secondary';
   };
+
 
   const handleNext = () => {
     if (academicTranscripts.length === 0) {
@@ -813,6 +894,36 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
               ))}
             </div>
           ) : null}
+          {transcript.id !== 32 && (
+            <div className="px-4 mt-3">
+              <Form.Group as={Row} className="mb-3">
+                <Form.Label column sm="2">Program Name:</Form.Label>
+                <Col sm="4">
+                  <Form.Control
+                    type="text"
+                    value={transcript.programName || ''}
+                    onChange={(e) => handleProgramNameChange(index, e.target.value)}
+                    placeholder="Enter Program Name"
+                  />
+                </Col>
+              </Form.Group>
+              <Form.Group as={Row} className="mb-3">
+                <Form.Label column sm="2">CGPA:</Form.Label>
+                <Col sm="4">
+                  <Form.Control
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    max="4"
+                    value={transcript.cgpa || ''}
+                    onChange={(e) => handleCGPAChange(index, e.target.value)}
+                    placeholder="Enter CGPA"
+                  />
+                </Col>
+              </Form.Group>
+            </div>
+          )}
+
           <div className="upload-documents mt-3 border border-4 border-top-3 border-bottom-0 border-start-0 border-end-0">
             <div className="d-flex justify-content-between align-items-center px-4">
               <h6 className="mb-0">Upload Documents</h6>
@@ -903,7 +1014,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                     </>
                   )}
                 </div>
-               
+
 
 
                 {documentErrors[`${index}-${docIndex}`] && (

@@ -256,9 +256,15 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
   };
 
   const getGradeColor = (grade) => {
-    if (grade.includes('A')) return 'bg-success';
-    if (grade.includes('B')) return 'bg-danger';
-    if (grade.includes('C')) return 'bg-warning text-dark';
+    if (grade.includes('A')) return 'grade-A';
+    if (grade.includes('B')) return 'grade-A';
+    if (grade.includes('C')) return 'grade-A';
+    if (grade.includes('D')) return 'grade-B';
+    if (grade.includes('E')) return 'grade-B';
+    if (grade.includes('G')) return 'grade-C';
+
+
+
     return 'bg-secondary';
   };
 
@@ -433,9 +439,15 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
   };
 
   const getGradeColor = (grade) => {
-    if (grade.includes('A')) return 'bg-success';
-    if (grade.includes('B')) return 'bg-danger';
-    if (grade.includes('C')) return 'bg-warning text-dark';
+    if (grade.includes('A')) return 'grade-A';
+    if (grade.includes('B')) return 'grade-A';
+    if (grade.includes('C')) return 'grade-A';
+    if (grade.includes('D')) return 'grade-B';
+    if (grade.includes('E')) return 'grade-B';
+    if (grade.includes('G')) return 'grade-C';
+
+
+
     return 'bg-secondary';
   };
   const handleSaveAll = async () => {
@@ -860,7 +872,7 @@ const AcademicTranscript = () => {
         setCategories(result.data.data);
 
         // Manually categorize transcript categories
-        const examBased = ['SPM', 'O-level', 'GCSE', 'IGCSE', 'SSCE', 'UEC', 'SAT / ACT'];
+        const examBased = ['SPM', /*'O-level',*/ 'GCSE', 'IGCSE', 'SSCE', 'UEC', 'SAT / ACT'];
         const programBased = ['STPM', 'A-level', 'Foundation', 'Diploma','O-level'];
 
         setExamBasedCategories(result.data.data.filter(cat => examBased.includes(cat.transcript_category)));

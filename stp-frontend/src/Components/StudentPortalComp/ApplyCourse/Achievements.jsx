@@ -340,12 +340,12 @@ const Achievements = ({ onBack, onNext }) => {
                       <span className="border-end border-2 border-dark pe-2 me-2">Date</span>
                       <a className='mx-2 text-dark fw-normal'>{formatDate(achievement.date)}</a>
                     </div>
-                    <div className="me-3" style={{ width: '225px' }}>
+                    <div className="me-3" style={{ width: '205px' }}>
                       <Trophy size={18} className="me-2" />
                       <span className="border-end border-2 border-dark pe-2 me-2">Title</span>
                       <a className='mx-2 text-dark fw-normal'>{achievement.title_obtained}</a>
                     </div>
-                    <div className="me-3">
+                    <div className="me-3" style={{ width: '215px' }}>
                       <Building size={18} className="me-2" />
                       <span className="border-end border-2 border-dark pe-2 me-2">Awarded by</span>
                       <a className='mx-2 text-dark fw-normal'>{achievement.awarded_by}</a>
