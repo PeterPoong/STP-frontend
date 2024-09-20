@@ -1,7 +1,7 @@
 import React from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
-import styles from "../../../css/SchoolPortalStyle/test.module.css";
+import styles from "../../../css/SchoolPortalStyle/Applicant.module.css";
 import defaultProfilePic from "../../../assets/SchoolPortalAssets/student1.png";
 
 const StudentDetailView = ({ student, action, onBack }) => {

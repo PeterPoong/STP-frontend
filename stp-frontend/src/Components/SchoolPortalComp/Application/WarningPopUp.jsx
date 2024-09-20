@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from "../../../css/SchoolPortalStyle/test.module.css";
+import styles from "../../../css/SchoolPortalStyle/Applicant.module.css";
 
 const WarningPopup = ({ type, stage, onConfirm, onCancel, onYes, onNo }) => {
   const isAccept = type === 'accept';
