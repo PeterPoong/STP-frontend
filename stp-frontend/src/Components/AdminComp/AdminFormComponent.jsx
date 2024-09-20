@@ -32,6 +32,8 @@ const AdminFormComponent = ({
   formName,
   formPrice,
   formPackage,
+  formDrop,
+  formMode,
   onSubmit,
   error,
   buttons,
@@ -232,7 +234,24 @@ const { getRootProps: getAlbumRootProps, getInputProps: getAlbumInputProps } = u
                 />
               </Form.Group>
             ))}
-
+       {formDrop && formDrop.map((drop, index) => (
+              <Form.Group key={index} controlId={drop.id} className="mb-5">
+                <Form.Label>{drop.label}</Form.Label>
+                <Form.Control 
+                  as="select" 
+                  value={drop.value} 
+                  onChange={drop.onChange} 
+                  required={drop.required || false}
+                >
+                  <option value="">Select School</option>
+                  {drop.options.map((option, optIndex) => (
+                    <option key={optIndex} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </Form.Control>
+              </Form.Group>
+            ))}
 {formPackage && formPackage.map((packages, index) => (
               <Form.Group key={index} controlId={packages.id} className="mb-5">
                 <Form.Label>{packages.label}</Form.Label>
@@ -335,6 +354,25 @@ const { getRootProps: getAlbumRootProps, getInputProps: getAlbumInputProps } = u
                 </Form.Control>
               </Form.Group>
             ))}
+              {formMode && formMode.map((mode, index) => (
+              <Form.Group key={index} controlId={mode.id} className="mb-5">
+                <Form.Label>{mode.label}</Form.Label>
+                <Form.Control 
+                  as="select" 
+                  value={mode.value} 
+                  onChange={mode.onChange} 
+                  required={mode.required || false}
+                >
+                  <option value="">Select Study Mode</option>
+                  {mode.options.map((option, optIndex) => (
+                    <option key={optIndex} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </Form.Control>
+              </Form.Group>
+            ))}
+
 
           </Col>
           <Col md={6}>

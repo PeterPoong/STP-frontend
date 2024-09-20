@@ -107,8 +107,11 @@ const AdminBannerContent = () => {
         navigate('/adminAddbanner');
     };
     const handleEdit = (id) => {
-        console.log(`Edit banner with ID: ${id}`);
+        console.log(`Edit Banner with ID: ${id}`); // Log the ID being passed
+        sessionStorage.setItem('bannerId', id); // Store package ID in session storage
+        navigate(`/adminEditBanner`); // Navigate to the edit page
     };
+    
 
     const handleToggleSwitch = (id, currentStatus) => {
         const action = (currentStatus === 'Active' || currentStatus === 'Temporary') ? 'disable' : 'enable';
@@ -190,7 +193,18 @@ const AdminBannerContent = () => {
         <tr key={banner.id}>
             <td>{banner.name}</td>
             <td>{banner.file}</td>
-            <td>{banner.featured}</td>
+            <td>
+            {Array.isArray(banner.featured)
+                ? banner.featured.map((feature) => (
+                    <span key={feature.featured_id}>
+                    {feature.core_metaName} {/* Display only core_metaName */}
+                    </span>
+                ))
+                : typeof banner.featured === 'object' 
+                ? banner.featured.core_metaName // Directly access core_metaName
+                : banner.featured // Render non-array, non-object values directly
+            }
+                </td>
             <td>{banner.banner_duration}</td>
             <td className={getStatusClass(banner.status)}>
                 {banner.status}

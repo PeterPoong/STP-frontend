@@ -106,7 +106,7 @@ const AdminCoursesContent = () => {
     
     const handleAddCourse = () => {
         sessionStorage.setItem('token', Authenticate);
-        navigate('/adminAddCourses');
+        navigate('/adminAddCourse');
     };
 
     const handleEdit = (id) => {
