@@ -498,7 +498,7 @@ const BasicInformation = ({ onSubmit, nextStep }) => { // Added nextStep as a pr
                         </Row>
                         <div className="d-flex justify-content-end mt-3">
                             <button onClick={handleSubmit}  className="sac-next-button rounded-pill px-5 py-2">
-                                Save
+                               Next
                             </button>
                         </div>
                     </div>

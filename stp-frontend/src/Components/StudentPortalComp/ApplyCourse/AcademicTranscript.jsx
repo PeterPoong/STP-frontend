@@ -1,8 +1,10 @@
+//applu course
 import React, { useState, useEffect, useCallback } from 'react';
 import { Form, Button, Row, Col } from 'react-bootstrap';
 import { Trash2, Edit, Plus, Upload, Save, FileText, X, AlignJustify } from 'lucide-react';
 import Select from 'react-select';
 import WidgetPopUpRemind from "../../../Components/StudentPortalComp/Widget/WidgetPopUpRemind";
+import WidgetPopUpAcademicRemind from "../../../Components/StudentPortalComp/Widget/WidgetPopUpAcademicRemind";
 
 const AcademicTranscript = ({ data = [], onBack, onNext }) => {
   const [academicTranscripts, setAcademicTranscripts] = useState([]);
@@ -12,12 +14,19 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
   const [isPopupOpen, setIsPopupOpen] = useState(false); // Popup state
   const [availableSubjects, setAvailableSubjects] = useState([]);
   const [documentErrors, setDocumentErrors] = useState({});
+  const [isAcademicRemindPopupOpen, setIsAcademicRemindPopupOpen] = useState(false);
 
 
+  // Replace the existing useEffect hook with this:
   useEffect(() => {
-    fetchTranscriptCategories();
+    const fetchAllData = async () => {
+      await fetchTranscriptCategories();
+      setIsLoading(false);
+    };
+    fetchAllData();
   }, []);
 
+  // Replace the existing fetchTranscriptCategories function with this:
   const fetchTranscriptCategories = async () => {
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
@@ -36,109 +45,43 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
       const result = await response.json();
       if (result.success) {
         setCategories(result.data.data);
-        fetchExistingTranscripts(result.data.data);
+        await fetchExistingTranscripts(result.data.data);
       } else {
         throw new Error(result.message || 'Failed to fetch transcript categories');
       }
     } catch (error) {
       console.error('Error fetching transcript categories:', error);
       setError(error.message);
+      setIsLoading(false);
     }
   };
+  // Replace the existing fetchExistingTranscripts function with this:
   const fetchExistingTranscripts = async (categories) => {
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      const existingTranscripts = [];
 
-      for (const category of categories) {
-        const subjectsUrl = category.id === 32
-          ? `${import.meta.env.VITE_BASE_URL}api/student/transcriptSubjectList`
-          : `${import.meta.env.VITE_BASE_URL}api/student/higherTranscriptSubjectList`;
+      const transcriptPromises = categories.map(async (category) => {
+        const [subjectsResult, documentsResult, cgpaResult] = await Promise.all([
+          fetchSubjectsForCategory(category, token),
+          fetchDocumentsForCategory(category, token),
+          fetchCGPAForCategory(category, token)
+        ]);
 
-        const method = category.id === 32 ? 'GET' : 'POST';
-        const body = category.id === 32 ? null : JSON.stringify({ id: category.id });
+        return {
+          id: category.id,
+          name: category.transcript_category,
+          subjects: subjectsResult,
+          documents: documentsResult,
+          cgpa: cgpaResult.cgpa,
+          programName: cgpaResult.programName,
+          cgpaId: cgpaResult.cgpaId
+        };
+      });
 
-        const subjectsResponse = await fetch(subjectsUrl, {
-          method: method,
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-          ...(method === 'POST' && { body }),
-        });
-
-        if (!subjectsResponse.ok) {
-          console.error(`Failed to fetch subjects for category ${category.transcript_category}`);
-          continue;
-        }
-
-        const subjectsResult = await subjectsResponse.json();
-
-        // Fetch documents for this category
-        const documentsResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/mediaListByCategory`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-          body: JSON.stringify({ category_id: category.id }),
-        });
-
-        if (!documentsResponse.ok) {
-          console.error(`Failed to fetch documents for category ${category.transcript_category}`);
-          continue;
-        }
-
-        const documentsResult = await documentsResponse.json();
-
-        // Fetch CGPA for non-SPM categories
-        let cgpa = null;
-        let programName = '';
-        let cgpaId = null;
-        if (category.id !== 32) {
-          const cgpaResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/programCgpaList`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`,
-            },
-            body: JSON.stringify({ transcriptCategory: category.id }),
-          });
-
-          if (cgpaResponse.ok) {
-            const cgpaResult = await cgpaResponse.json();
-            if (cgpaResult.success && cgpaResult.data) {
-              cgpa = cgpaResult.data.cgpa;
-              programName = cgpaResult.data.program_name;
-              cgpaId = cgpaResult.data.id;
-            }
-          }
-        }
-
-        if (subjectsResult.success && subjectsResult.data && subjectsResult.data.length > 0) {
-          existingTranscripts.push({
-            id: category.id,
-            name: category.transcript_category,
-            subjects: subjectsResult.data.map(subject => ({
-              id: subject.id || subject.subject_id,
-              name: subject.name || subject.subject_name || subject.highTranscript_name,
-              grade: subject.grade || subject.subject_grade || subject.higherTranscript_grade || '',
-            })),
-            documents: documentsResult.success && documentsResult.data.data
-              ? documentsResult.data.data.map(doc => ({
-                id: doc.id,
-                name: doc.studentMedia_name,
-                file: doc.studentMedia_location,
-              }))
-              : [],
-            cgpa: cgpa,
-            programName: programName,
-            cgpaId:cgpaId
-          });
-        }
-      }
-
-      setAcademicTranscripts(existingTranscripts);
+      const existingTranscripts = await Promise.all(transcriptPromises);
+      setAcademicTranscripts(existingTranscripts.filter(transcript =>
+        transcript.subjects.length > 0 || transcript.documents.length > 0 || transcript.cgpa
+      ));
     } catch (error) {
       console.error('Error fetching existing transcripts:', error);
       setError('Failed to load existing transcripts. Please try again later.');
@@ -146,6 +89,96 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
       setIsLoading(false);
     }
   };
+
+  // Add these new functions after the fetchExistingTranscripts function
+
+  const fetchSubjectsForCategory = async (category, token) => {
+    const subjectsUrl = category.id === 32
+      ? `${import.meta.env.VITE_BASE_URL}api/student/transcriptSubjectList`
+      : `${import.meta.env.VITE_BASE_URL}api/student/higherTranscriptSubjectList`;
+
+    const method = category.id === 32 ? 'GET' : 'POST';
+    const body = category.id === 32 ? null : JSON.stringify({ id: category.id });
+
+    const response = await fetch(subjectsUrl, {
+      method: method,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      ...(method === 'POST' && { body }),
+    });
+
+    if (!response.ok) {
+      console.error(`Failed to fetch subjects for category ${category.transcript_category}`);
+      return [];
+    }
+
+    const result = await response.json();
+    return result.success && result.data
+      ? result.data.map(subject => ({
+        id: subject.id || subject.subject_id,
+        name: subject.name || subject.subject_name || subject.highTranscript_name,
+        grade: subject.grade || subject.subject_grade || subject.higherTranscript_grade || '',
+      }))
+      : [];
+  };
+
+  const fetchDocumentsForCategory = async (category, token) => {
+    const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/mediaListByCategory`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ category_id: category.id }),
+    });
+
+    if (!response.ok) {
+      console.error(`Failed to fetch documents for category ${category.transcript_category}`);
+      return [];
+    }
+
+    const result = await response.json();
+    return result.success && result.data && result.data.data
+      ? result.data.data.map(doc => ({
+        id: doc.id,
+        name: doc.studentMedia_name,
+        file: doc.studentMedia_location,
+      }))
+      : [];
+  };
+
+  const fetchCGPAForCategory = async (category, token) => {
+    if (category.id === 32) {
+      return { cgpa: null, programName: '', cgpaId: null };
+    }
+
+    const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/programCgpaList`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ transcriptCategory: category.id }),
+    });
+
+    if (!response.ok) {
+      console.error(`Failed to fetch CGPA for category ${category.transcript_category}`);
+      return { cgpa: null, programName: '', cgpaId: null };
+    }
+
+    const result = await response.json();
+    return result.success && result.data
+      ? {
+        cgpa: result.data.cgpa,
+        programName: result.data.program_name,
+        cgpaId: result.data.id,
+      }
+      : { cgpa: null, programName: '', cgpaId: null };
+  };
+
+
 
   const handleProgramNameChange = (transcriptIndex, value) => {
     const updatedTranscripts = [...academicTranscripts];
@@ -599,8 +632,20 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
 
   const saveTranscript = async (transcriptIndex) => {
     try {
-      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       const transcript = academicTranscripts[transcriptIndex];
+
+      // Check if the transcript is empty or if any required fields are missing
+      const isTranscriptEmpty = transcript.subjects.length === 0 && transcript.documents.length === 0;
+      const isCGPAMissing = transcript.id !== 32 && !transcript.cgpa;
+      const areSubjectsIncomplete = transcript.subjects.some(subject => !subject.name || !subject.grade);
+
+      if (isTranscriptEmpty || isCGPAMissing || areSubjectsIncomplete) {
+        setIsAcademicRemindPopupOpen(true);
+        return;
+      }
+
+      // Proceed with saving if all checks pass
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       const category = categories.find(cat => cat.transcript_category === transcript.name);
 
       if (!category) {
@@ -648,7 +693,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
         };
 
         // Add CGPA and program name to payload for non-SPM transcripts
-        if (transcript.cgpa !== null && transcript.programName) {
+        if (transcript.cgpa !== null) {
           // Determine whether to use addProgramCgpa or editProgramCgpa
           const cgpaUrl = transcript.cgpaId
             ? `${import.meta.env.VITE_BASE_URL}api/student/editProgramCgpa`
@@ -657,7 +702,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
           const cgpaPayload = {
             transcriptCategory: category.id,
             cgpa: transcript.cgpa,
-            programName: transcript.programName,
+            ...(transcript.programName && { programName: transcript.programName }),
             ...(transcript.cgpaId && { cgpaId: transcript.cgpaId })
           };
 
@@ -698,6 +743,17 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
         console.log('Transcript saved successfully');
         fetchSubjects(category.id, transcriptIndex);
        
+        if (category.id !== 32) {
+          const updatedCGPAData = await fetchCGPAForCategory(category, token);
+          const updatedTranscripts = [...academicTranscripts];
+          updatedTranscripts[transcriptIndex] = {
+            ...updatedTranscripts[transcriptIndex],
+            cgpa: updatedCGPAData.cgpa,
+            programName: updatedCGPAData.programName,
+            cgpaId: updatedCGPAData.cgpaId
+          };
+          setAcademicTranscripts(updatedTranscripts);
+        }
         // Clear any errors for this transcript
         setDocumentErrors(prevErrors => {
           const newErrors = { ...prevErrors };
@@ -897,7 +953,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
           {transcript.id !== 32 && (
             <div className="px-4 mt-3">
               <Form.Group as={Row} className="mb-3">
-                <Form.Label column sm="2">Program Name:</Form.Label>
+                <Form.Label column sm="2">Program Name (Optional):</Form.Label>
                 <Col sm="4">
                   <Form.Control
                     type="text"
@@ -1055,6 +1111,10 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
 
       </div>
       <WidgetPopUpRemind isOpen={isPopupOpen} onClose={handleClosePopup} />
+      <WidgetPopUpAcademicRemind
+        isOpen={isAcademicRemindPopupOpen}
+        onClose={() => setIsAcademicRemindPopupOpen(false)}
+      />
     </div>
   );
 };

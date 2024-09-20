@@ -1,3 +1,4 @@
+//transcript
 import React, { useState, useEffect, useCallback } from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { Edit2, Trash2, Eye, Plus, Search, GripVertical, ChevronDown, Info, FileText, X, Check } from 'lucide-react';
@@ -11,6 +12,8 @@ import WidgetPopUpDelete from "../../../Components/StudentPortalComp/WidgetPopUp
 
 import "../../../css/StudentPortalStyles/StudentButtonGroup.css";
 import WidgetPopUpSubmission from "../../../Components/StudentPortalComp/Widget/WidgetPopUpSubmission";
+
+import WidgetPopUpAcademicRemind from "../../../Components/StudentPortalComp/Widget/WidgetPopUpAcademicRemind";
 
 const ExamSelector = ({ exams, selectedExam, setSelectedExam }) => {
   const itemsPerPage = 5;
@@ -89,7 +92,17 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
   const [availableSubjects, setAvailableSubjects] = useState([]);
   const [hasCheckedForPreset, setHasCheckedForPreset] = useState(false);
 
-
+  // Function to convert letter grades to integer codes
+  const gradeToInt = (grade) => {
+    const gradeMap = {
+      'A+': 17, 'A': 18, 'A-': 19,
+      'B+': 20, 'B': 21,
+      'C+': 22, 'C': 23,
+      'D': 24, 'E': 25,
+      'G': 26
+    };
+    return gradeMap[grade] || 0; // Return 0 if grade not found
+  };
   useEffect(() => {
     if (examType === 'SPM') {
       fetchAvailableSubjects();
@@ -202,7 +215,7 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
         const formattedSubjects = result.data.map(subject => ({
           id: subject.subject_id,
           name: subject.subject_name,
-          grade: subject.subject_grade.toString() // Convert to string for display
+          grade: gradeToString(subject.subject_grade)// Convert to string for display
         }));
         onSubjectsChange(formattedSubjects);
       } else {
@@ -285,16 +298,27 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
         <div key={index} className="d-flex align-items-center justify-content-between bg-white p-2 mb-2 rounded border">
           <div className="d-flex align-items-center flex-grow-1">
             <GripVertical className="me-3" size={20} />
-            <span className="fw-medium h6 mb-0 me-3" style={{width:"150px"}}>{subject.name}</span>
+            <span className="fw-medium h6 mb-0 me-3" style={{ width: "150px" }}>{subject.name}</span>
             {editingIndex === index || subject.isEditing ? (
-              <input
-                type="text"
+              <select
                 value={subject.grade}
                 onChange={(e) => handleGradeChange(index, e.target.value)}
                 className="editingplaceholder"
-                placeholder="Enter grade"
                 required
-              />
+              >
+                <option value="" disabled>Select Grade</option>
+                <option value="A+">A+</option>
+                <option value="A">A</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B">B</option>
+                <option value="C+">C+</option>
+                <option value="C">C</option>
+                <option value="D">D</option>
+                <option value="E">E</option>
+                <option value="G">G</option>
+              </select>
+
             ) : (
               subject.grade && (
                 <span className={`rounded-pill px-4 text-white ${getGradeColor(subject.grade)}`}>
@@ -342,13 +366,13 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
     </div>
   );
 };
-const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveAll,categoryId }) => {
+const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveAll, categoryId }) => {
   const [newSubject, setNewSubject] = useState('');
   const [editingIndex, setEditingIndex] = useState(null);
   const [programName, setProgramName] = useState('');
   const [cgpa, setCgpa] = useState('');
   const [cgpaId, setCgpaId] = useState(null);
-
+  const [isRemindPopupOpen, setIsRemindPopupOpen] = useState(false);
   useEffect(() => {
     if (categoryId) {
       fetchProgramCgpa();
@@ -455,6 +479,18 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
       console.log('ProgramBasedExam handleSaveAll initiated');
       console.log('Current state before save:', { programName, cgpa, cgpaId, examType, categoryId, subjects });
 
+
+      // Validation
+      if (!cgpa.trim()) {
+        setIsRemindPopupOpen(true);
+        return;
+      }
+
+      if (subjects.length === 0 || subjects.some(subject => !subject.name.trim() || !subject.grade.trim())) {
+        setIsRemindPopupOpen(true);
+        return;
+      }
+
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       console.log('Token retrieved:', token ? 'Yes' : 'No');
 
@@ -463,7 +499,8 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
 
       if (cgpaId) {
         console.log('Updating existing CGPA');
-        cgpaPayload = { cgpaId, programName, cgpa };
+        cgpaPayload = { cgpaId, cgpa };
+        if (programName.trim()) cgpaPayload.programName = programName;
         cgpaResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/editProgramCgpa`, {
           method: 'POST',
           headers: {
@@ -474,7 +511,8 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
         });
       } else {
         console.log('Adding new CGPA');
-        cgpaPayload = { programName, transcriptCategory: categoryId, cgpa };
+        cgpaPayload = { transcriptCategory: categoryId, cgpa };
+        if (programName.trim()) cgpaPayload.programName = programName;
         cgpaResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/addProgramCgpa`, {
           method: 'POST',
           headers: {
@@ -514,7 +552,7 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
       <div className="mb-4">
         <div className="d-flex justify-content-around">
           <div className="w-1/2">
-            <label className="fw-bold small formlabel">Programme Name <span className="text-danger">*</span></label>
+            <label className="fw-bold small formlabel">Programme Name </label>
             <input
               type="text"
               className="inputat"
@@ -523,7 +561,7 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
             />
           </div>
           <div className="w-1/2">
-            <label className="fw-bold small formlabel">CGPA *</label>
+            <label className="fw-bold small formlabel">CGPA <span className="text-danger">*</span></label>
             <input
               type="text"
               className="inputat"
@@ -560,7 +598,7 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
                   </>
                 ) : (
                   <>
-                    <span className="fw-medium h6 mb-0 me-3" style={{width:"150px"}}>{subject.name}</span>
+                    <span className="fw-medium h6 mb-0 me-3" style={{ width: "150px" }}>{subject.name}</span>
                     {subject.grade && (
                       <span className={`rounded-pill px-4 text-white ms-2 ${getGradeColor(subject.grade)}`}>
                         GRADE: {subject.grade}
@@ -604,6 +642,10 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
           SAVE
         </button>
       </div>
+      <WidgetPopUpAcademicRemind
+        isOpen={isRemindPopupOpen}
+        onClose={() => setIsRemindPopupOpen(false)}
+      />
     </div>
   );
 };
@@ -625,6 +667,7 @@ const AcademicTranscript = () => {
   const [fileToDelete, setFileToDelete] = useState(null);
   const [isViewMode, setIsViewMode] = useState(false);
   const [subjects, setSubjects] = useState([]);
+  const [isRemindPopupOpen, setIsRemindPopupOpen] = useState(false);
 
   const [examData, setExamData] = useState({
     'SPM': [],
@@ -873,7 +916,7 @@ const AcademicTranscript = () => {
 
         // Manually categorize transcript categories
         const examBased = ['SPM', /*'O-level',*/ 'GCSE', 'IGCSE', 'SSCE', 'UEC', 'SAT / ACT'];
-        const programBased = ['STPM', 'A-level', 'Foundation', 'Diploma','O-level'];
+        const programBased = ['STPM', 'A-level', 'Foundation', 'Diploma', 'O-level'];
 
         setExamBasedCategories(result.data.data.filter(cat => examBased.includes(cat.transcript_category)));
         setProgramBasedCategories(result.data.data.filter(cat => programBased.includes(cat.transcript_category)));
@@ -1067,6 +1110,12 @@ const AcademicTranscript = () => {
         return;
       }
 
+
+      if (subjectsToSave.length === 0 || subjectsToSave.some(subject => !subject.name.trim() || !subject.grade.trim())) {
+        setIsRemindPopupOpen(true);
+        return;
+      }
+
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       console.log('Token retrieved:', token ? 'Yes' : 'No');
 
@@ -1115,7 +1164,7 @@ const AcademicTranscript = () => {
   };
 
 
- 
+
   const renderExamComponent = () => {
     const category = categories.find(cat => cat.transcript_category === selectedExam);
     const categoryId = category ? category.id : null;
@@ -1180,13 +1229,13 @@ const AcademicTranscript = () => {
           </select>
           <span className="me-2 align-self-center">entries</span>
           <div className="search-bar-sas  ">
-                    <Search size={20} style={{ color: '#9E9E9E' }} />
-                    <input
-                        type="text" placeholder="Search..." className="form-control custom-input-size"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                </div>
+            <Search size={20} style={{ color: '#9E9E9E' }} />
+            <input
+              type="text" placeholder="Search..." className="form-control custom-input-size"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
           <button className="button-table px-5 py-1 ml-auto" onClick={() => setIsFileUploadOpen(true)}>ADD NEW</button>
         </div>
 
@@ -1246,7 +1295,7 @@ const AcademicTranscript = () => {
           </button>
         </div>
 
-       
+
       </div>
 
       <WidgetFileUploadAcademicTranscript
@@ -1277,6 +1326,11 @@ const AcademicTranscript = () => {
         isOpen={isSubmissionPopupOpen}
         onClose={() => setIsSubmissionPopupOpen(false)}
         onConfirm={handleSaveAll}
+      />
+
+      <WidgetPopUpAcademicRemind
+        isOpen={isRemindPopupOpen}
+        onClose={() => setIsRemindPopupOpen(false)}
       />
     </div>
   );

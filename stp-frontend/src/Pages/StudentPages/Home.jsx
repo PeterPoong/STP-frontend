@@ -19,7 +19,7 @@ import "aos/dist/aos.css";
 const Home = () => {
   return (
     <div className="app-container" style={{ backgroundColor: " #F5F4F4" }}>
-      <NavButtons />
+      <NavButtonsSP />
       <main>
         <div className="home-container">
           <div className="featured-uni-section">

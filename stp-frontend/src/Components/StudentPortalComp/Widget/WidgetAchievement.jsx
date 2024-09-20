@@ -19,9 +19,7 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
     if (isOpen) {
       if (item) {
         setAchievementName(item.achievement_name || '');
-        // Safely parse the date
         setDate(item.date ? parseDate(item.date) : null);
-        setTitle(item.title_obtained || '');
         setAwardedBy(item.awarded_by || '');
         setAchievementMedia(item.achievement_media || null);
       } else {
@@ -31,6 +29,19 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
       fetchAchievementTypes();
     }
   }, [isOpen, item]);
+
+  useEffect(() => {
+    if (item && achievementTypes.length > 0) {
+      const matchingType = achievementTypes.find(
+        (type) => type.core_metaName === item.title_obtained
+      );
+      if (matchingType) {
+        setTitle(matchingType.id.toString());
+      } else {
+        setTitle('');
+      }
+    }
+  }, [item, achievementTypes]);
 
   // Helper function to safely parse date strings
   const parseDate = (dateString) => {
@@ -138,7 +149,7 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
   };
   /*end */
 
-  
+
   const handleTitleEdit = () => {
     setIsEditingTitle(true);
   };
@@ -172,7 +183,7 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
       window.open(fullUrl, '_blank');
     }
   };
-/*end */
+  /*end */
   return (
     <div className="achievement-overlay">
       <div className="achievement-popup">
@@ -241,12 +252,10 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
                     outline: 'none',
                     color: 'white'
                   }}
-                  onFocus={(e) => e.target.style.outline = 'none'}
-                  onBlur={(e) => e.target.style.outline = 'none'}
                 >
                   <option value="" style={{ color: 'black' }}>Select title</option>
                   {achievementTypes.map((type) => (
-                    <option key={type.id} value={type.id} style={{ color: 'black' }}>
+                    <option key={type.id} value={type.id.toString()} style={{ color: 'black' }}>
                       {type.core_metaName}
                     </option>
                   ))}
@@ -307,7 +316,7 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
                 )}
               </div>
             )}
-             {errors.achievement_media && <div className="error-message text-white">{errors.achievement_media}</div>}
+            {errors.achievement_media && <div className="error-message text-white">{errors.achievement_media}</div>}
           </div>
         </div>
 

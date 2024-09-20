@@ -3,12 +3,17 @@ import { Form, Button, Row, Col } from 'react-bootstrap';
 import { Trash2, Edit, Save, Clock, User, Building } from 'lucide-react';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import WidgetPopUpUnsavedChanges from "../../../Components/StudentPortalComp/Widget/WidgetPopUpUnsavedChanges"; // New import
+
+
 
 const CoCurriculum = ({ onNext, onBack }) => {
   const [activities, setActivities] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [isUnsavedChangesPopupOpen, setIsUnsavedChangesPopupOpen] = useState(false);
+  const [navigationDirection, setNavigationDirection] = useState(null);
   useEffect(() => {
     fetchCoCurriculum();
   }, []);
@@ -113,7 +118,7 @@ const CoCurriculum = ({ onNext, onBack }) => {
           i === index ? { ...a, id: result.data.id, isEditing: false } : a
         );
         setActivities(updatedActivities);
-
+        setHasUnsavedChanges(false);
         await fetchCoCurriculum();
       } else {
         throw new Error(result.message || 'Failed to save co-curriculum activity');
@@ -130,11 +135,13 @@ const CoCurriculum = ({ onNext, onBack }) => {
       i === index ? { ...activity, [field]: value } : activity
     );
     setActivities(updatedActivities);
+    setHasUnsavedChanges(true); // Set unsaved changes flag
     console.log('After update:', updatedActivities[index]); // Log after update
   };
 
   const handleDeleteActivity = async (index) => {
     try {
+      setHasUnsavedChanges(false);
       const activity = activities[index];
 
       // Check if the activity is new (no ID)
@@ -178,6 +185,42 @@ const CoCurriculum = ({ onNext, onBack }) => {
       setError(error.message);
     }
   };
+
+
+  const handleNext = () => {
+    if (hasUnsavedChanges) {
+      setIsUnsavedChangesPopupOpen(true);
+    } else {
+      onNext();
+    }
+  };
+ 
+  
+  const handleNavigation = (direction) => {
+    if (hasUnsavedChanges) {
+      setNavigationDirection(direction);
+      setIsUnsavedChangesPopupOpen(true);
+    } else {
+      direction === 'next' ? onNext() : onBack();
+    }
+  };
+
+  const handleUnsavedChangesConfirm = () => {
+    setIsUnsavedChangesPopupOpen(false);
+    if (navigationDirection === 'next') {
+      onNext();
+    } else if (navigationDirection === 'back') {
+      onBack();
+    }
+    setNavigationDirection(null);
+  };
+
+  const handleUnsavedChangesCancel = () => {
+    setIsUnsavedChangesPopupOpen(false);
+    setNavigationDirection(null);
+  };
+
+
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -290,13 +333,18 @@ const CoCurriculum = ({ onNext, onBack }) => {
         Add New +
       </Button>
       <div className="d-flex justify-content-between mt-4">
-        <Button onClick={onBack} className="me-2 rounded-pill px-5 sac-previous-button">
+        <Button onClick={() => handleNavigation('back')} className="me-2 rounded-pill px-5 sac-previous-button">
           Previous
         </Button>
-        <Button onClick={onNext} className="sac-next-button rounded-pill px-5">
+        <Button onClick={() => handleNavigation('next')} className="sac-next-button rounded-pill px-5">
           Next
         </Button>
       </div>
+      <WidgetPopUpUnsavedChanges 
+        isOpen={isUnsavedChangesPopupOpen}
+        onConfirm={handleUnsavedChangesConfirm}
+        onCancel={handleUnsavedChangesCancel}
+      />
     </div>
   );
 };

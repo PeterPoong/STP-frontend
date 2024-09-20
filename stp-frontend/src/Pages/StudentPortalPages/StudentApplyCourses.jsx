@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { Form, Button } from 'react-bootstrap';
+
 import { Box, Stepper, Step, StepLabel } from '@mui/material';
 import StepConnector, { stepConnectorClasses } from '@mui/material/StepConnector';
 import { styled } from '@mui/material/styles';
@@ -11,7 +12,7 @@ import CoCurriculum from '../../Components/StudentPortalComp/ApplyCourse/CoCurri
 import Achievements from '../../Components/StudentPortalComp/ApplyCourse/Achievements';
 import OtherDocuments from '../../Components/StudentPortalComp/ApplyCourse/OtherDocuments';
 import WidgetPopUpSubmission from "../../Components/StudentPortalComp/Widget/WidgetPopUpSubmission";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import "../../css/StudentPortalStyles/StudentApplyCourse.css";
 import "../../css/StudentPortalStyles/StudentButtonGroup.css";
 import image1 from "../../assets/StudentAssets/University Logo/image1.jpg";
@@ -118,6 +119,8 @@ const StudentApplyCourses = () => {
   const [showSubmissionPopup, setShowSubmissionPopup] = useState(false);
   const [showErrorPopup, setShowErrorPopup] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const location = useLocation();
+  const { schoolLogoUrl, schoolName, courseName } = location.state || {};
   const [formData, setFormData] = useState({
     basicInformation: {},
     academicTranscript: {},
@@ -125,9 +128,15 @@ const StudentApplyCourses = () => {
     achievements: [],
     otherDocs: []
   });
-
-
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const token =
+      sessionStorage.getItem("token") || localStorage.getItem("token");
+    if (!token) {
+      navigate("/studentPortalLogin");
+    }
+  }, [navigate]);
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -241,7 +250,7 @@ const StudentApplyCourses = () => {
       <div className="app-container-applycourse">
         <NavButtonsSP />
         <div className="main-content-applycourse">
-       
+
           <div className="backgroundimage">
             <div className="widget-applying-course-success">
               <h1 className="text-danger fw-bold mb-4">Congratulations!</h1>
@@ -273,10 +282,14 @@ const StudentApplyCourses = () => {
         <div className="backgroundimage">
           <div className="widget-applying-course justify-content-center">
             <h4 className="text-black align-self-center fw-normal mb-4">You are now applying for </h4>
-            <h3 className="text-danger align-self-center fw-bold mb-5">Bachelor in Mass Communication</h3>
+            <h3 className="text-danger align-self-center fw-bold mb-5">{courseName || "Bachelor in Mass Communication"}</h3>
             <div className="d-flex justify-content-center">
-              <img src={image1} className="sac-image me-5" alt="University Logo" />
-              <h3 className="text-black fw-bold align-self-center">Swinburne University of Technology</h3>
+              <img
+                src={schoolLogoUrl || image1}
+                className="sac-image me-5"
+                alt={`${schoolName || "University"} Logo`}
+              />
+              <h3 className="text-black fw-bold align-self-center">{schoolName || "Swinburne University of Technology"}</h3>
             </div>
           </div>
         </div>
@@ -298,7 +311,7 @@ const StudentApplyCourses = () => {
         onClose={() => setShowSubmissionPopup(false)}
         onConfirm={handleConfirmSubmission}
       />
-       <WidgetPopUpError
+      <WidgetPopUpError
         isOpen={showErrorPopup}
         onClose={() => setShowErrorPopup(false)}
         errorMessage={errorMessage}

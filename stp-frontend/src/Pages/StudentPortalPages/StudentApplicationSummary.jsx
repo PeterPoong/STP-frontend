@@ -6,7 +6,7 @@ import "../../css/StudentPortalStyles/StudentApplyCourse.css";
 import image1 from "../../assets/StudentAssets/University Logo/image1.jpg";
 import "../../css/StudentPortalStyles/StudentButtonGroup.css";
 import SpcFooter from "../../Components/StudentPortalComp/SpcFooter";
-import { useParams } from 'react-router-dom';
+import { useParams,useNavigate } from 'react-router-dom';
 import WidgetFileUploadAcademicTranscript from "../../Components/StudentPortalComp/WidgetFileUploadAcademicTranscript";
 import WidgetFileUpload from "../../Components/StudentPortalComp/WidgetFileUpload";
 import WidgetAchievement from "../../Components/StudentPortalComp/Widget/WidgetAchievement";
@@ -48,6 +48,14 @@ const StudentApplicationSummary = ({ }) => {
         achievements: {},
         otherDocuments: {}
     });
+    const navigate = useNavigate();
+    useEffect(() => {
+        const token =
+          sessionStorage.getItem("token") || localStorage.getItem("token");
+        if (!token) {
+          navigate("/studentPortalLogin");
+        }
+      }, [navigate]);
 
 
     const calculateOverallGrade = (subjects) => {

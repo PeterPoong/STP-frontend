@@ -37,7 +37,8 @@ const AppliedCourseHistory = () => {
                     'Authorization': `Bearer ${token}`,
                 },
             });
-
+            console.log('Response status:', response.status);
+            console.log('Response ok:', response.ok);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -46,13 +47,19 @@ const AppliedCourseHistory = () => {
             console.log('API response:', responseData);
 
             if (responseData.success && responseData.data && Array.isArray(responseData.data.data)) {
+                console.log('Setting applications:', responseData.data.data);
                 setApplications(responseData.data.data);
             } else {
                 console.error('Unexpected API response structure');
+                console.log('Response structure:', JSON.stringify(responseData, null, 2));
                 setApplications([]);
             }
         } catch (error) {
             console.error('Error fetching application history:', error);
+            console.error('Error details:', error.message);
+            if (error.response) {
+                console.error('Error response:', await error.response.text());
+            }
             setApplications([]);
         }
     };
