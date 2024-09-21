@@ -104,7 +104,20 @@ const OtherDocuments = ({ onBack, onSubmit }) => {
         setHasUnsavedChanges(false);
         await fetchDocuments();
       } else {
-        throw new Error(result.message || 'Failed to save document');
+        if (result.error) {
+          const backendErrors = [];
+          for (const key in result.error) {
+            if (Array.isArray(result.error[key])) {
+              backendErrors.push(...result.error[key]);
+            } else if (typeof result.error[key] === 'string') {
+              backendErrors.push(result.error[key]);
+            }
+          }
+          const errorMessage = backendErrors.join(' ');
+          alert(errorMessage); // Use browser alert instead of setting error state
+        } else {
+          alert(result.message || 'Failed to save achievement.');
+        }
       }
     } catch (error) {
       console.error('Error saving document:', error);
@@ -143,7 +156,7 @@ const OtherDocuments = ({ onBack, onSubmit }) => {
       if (result.success) {
         const updatedDocuments = documents.filter((_, i) => i !== index);
         setDocuments(updatedDocuments);
-        setHasUnsavedChanges(true);
+        setHasUnsavedChanges(false);
       } else {
         throw new Error(result.message || 'Failed to delete document');
       }

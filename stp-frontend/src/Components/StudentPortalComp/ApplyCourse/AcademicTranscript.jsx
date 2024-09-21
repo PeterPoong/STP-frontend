@@ -929,7 +929,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                   ) : (
                     <>
                       <div className="d-flex align-items-center flex-grow-1">
-                        <AlignJustify className="me-2" style={{ alignSelf: 'center' }} />
+                        <AlignJustify  size={15}  className="me-2 ms-2" style={{ alignSelf: 'center' }} />
                         <span className="me-2" style={{ fontSize: '0.9rem', fontWeight: "500", width: "150px" }}>{subject.name}</span>
                         <span style={{ fontSize: '0.9rem', fontWeight: "500" }}
                           className={`ms-3 me-2 px-2 py-1 px-3 rounded-5 text-white bg-${getGradeColor(subject.grade)}`}>
@@ -960,6 +960,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                     value={transcript.programName || ''}
                     onChange={(e) => handleProgramNameChange(index, e.target.value)}
                     placeholder="Enter Program Name"
+                    className="w-50"
                   />
                 </Col>
               </Form.Group>
@@ -974,6 +975,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                     value={transcript.cgpa || ''}
                     onChange={(e) => handleCGPAChange(index, e.target.value)}
                     placeholder="Enter CGPA"
+                     className="w-50"
                   />
                 </Col>
               </Form.Group>
@@ -1051,9 +1053,9 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                   ) : (
                     <>
                       <div className="d-flex flex-grow-1">
-                        <div className="border-end me-4 px-3 align-items-center">
+                        <div className="border-end me-4 px-1 align-items-center">
                           <FileText size={15} className="me-2 ms-2" style={{ alignSelf: 'center' }} />
-                          <span className="me-2" style={{ fontSize: '0.825rem', textAlign: 'left', flex: 1, width: "100px" }}>{doc.name}</span>
+                          <span className="me-2" style={{ fontSize: '0.825rem', textAlign: 'left', flex: 1, width: "112.5px" }}>{doc.name}</span>
                         </div>
                         <div className="align-items-center">
                           <span style={{ fontSize: '0.825rem' }}>{doc.mediaName || doc.file || 'No file uploaded'}</span>

@@ -92,6 +92,22 @@
 
 }
 
+.sac-image-applycourse
+{
+  width:auto;
+  height:6.5rem;
+}
+
+.coursetext-applycourse
+{
+  color:#B71A18;
+  font-size: 2.25rem;
+}
+
+.schooltext-applycourse
+{
+  font-size:2.5rem;
+}
 .custom-select {
   border: red;
 }
@@ -237,9 +253,9 @@ select__menu-list::-webkit-scrollbar-thumb:hover {
 }
 
 .summary-title {
-  color: #dc3545;
+  color: #B71A18;
   font-weight: bold;
-
+  font-size:2.25rem;
 }
 
 .summary-header {
@@ -273,9 +289,9 @@ select__menu-list::-webkit-scrollbar-thumb:hover {
 }
 
 .summary-tabs .btn-link.active {
-  color: #dc3545;
+  color: #B71A18;
   /* Active text color */
-  border-bottom: 2px solid #dc3545;
+  border-bottom: 2px solid #B71A18;
   /* Thicker border for active tab */
   font-weight: bold;
   /* Make the active tab bold */
@@ -458,8 +474,8 @@ select__menu-list::-webkit-scrollbar-thumb:hover {
 }
 
 .document-tabs .btn-link.active {
-  color: #dc3545;
-  border-bottom: 2px solid #dc3545;
+  color: #B71A18;
+  border-bottom: 2px solid #B71A18;
   font-weight: bold;
   padding-bottom: 0.5rem;
 }
@@ -547,13 +563,29 @@ width:50%;
   margin-right: 1rem;
 }
 
+.sas-school-logo {
+  width: auto;
+  height: 4.825rem;
+  margin-right: 1rem;
+}
+
+.sas-coursename
+{
+  font-weight: bold;
+  font-size: 1.5rem;
+  color: #B71A18;
+}
 .sac-school-name {
-  font-size: 3rem;
+  font-size: 1.825rem;
   margin: 1rem 0;
+  font-weight: bold;
   text-align: center;
 }
 
-
+.sas-summarytext
+{
+  color: #514E4E;
+}
 
 
 .overview-content,

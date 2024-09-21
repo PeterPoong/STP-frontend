@@ -147,6 +147,21 @@ width:100%;
 
 }
 
+.mpw-profilepic-btn
+{
+  background-color: #E21B1B;
+  border-color: transparent;
+}
+
+.mpw-profilepic-btn:hover,
+.mpw-profilepic-btn:focus,
+.mpw-profilepic-btn:active
+{
+  background-color: white;
+  color: #E21B1B;
+  border-color: #BF3634;
+}
+
 /*responsive button*/
 @media (max-width: 768px) {
     .sac-next-button, .sac-previous-button {

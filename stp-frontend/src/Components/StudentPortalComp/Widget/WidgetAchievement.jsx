@@ -190,7 +190,7 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
         <button className="achievement-close-btn" onClick={handleClose}>
           <X size={24} color="white" />
         </button>
-        <h2 className="achievement-title">
+        <h2 className="achievement-title mt-3">
           {isEditingTitle && !isViewMode ? (
             <>
               <input
@@ -205,11 +205,9 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
             </>
           ) : (
             <>
-              {achievement_name || 'New Achievement'}
+              {achievement_name || 'New Acievement'}
               {!isViewMode && (
-                <button className="buttoneditam">
-                  <Edit2 size={20} color="white" onClick={handleTitleEdit} />
-                </button>
+                  <Edit2 size={18} color="white" className="buttoneditam" onClick={handleTitleEdit} />        
               )}
             </>
           )}
@@ -241,7 +239,7 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
               <label className="achievement-label">Title Obtained</label>
               <div className="achievement-select-input" style={{ position: 'relative', outline: 'none' }}>
                 <select
-                  className="achievement-input"
+                  className="achievement-input w-100"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   disabled={isViewMode}

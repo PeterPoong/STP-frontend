@@ -221,9 +221,7 @@ const Achievements = ({ onBack, onNext }) => {
       } else {
         // Handle Validation Errors from Backend
         if (result.error) {
-          // Assuming 'error' contains field-specific errors as objects with arrays
           const backendErrors = [];
-
           for (const key in result.error) {
             if (Array.isArray(result.error[key])) {
               backendErrors.push(...result.error[key]);
@@ -231,12 +229,10 @@ const Achievements = ({ onBack, onNext }) => {
               backendErrors.push(result.error[key]);
             }
           }
-
-          // Join all error messages into a single string
           const errorMessage = backendErrors.join(' ');
-          setError(errorMessage);
+          alert(errorMessage); // Use browser alert instead of setting error state
         } else {
-          setError(result.message || 'Failed to save achievement.');
+          alert(result.message || 'Failed to save achievement.');
         }
       }
     } catch (error) {
@@ -553,12 +549,7 @@ const Achievements = ({ onBack, onNext }) => {
         onConfirm={handleUnsavedChangesConfirm}
         onCancel={handleUnsavedChangesCancel}
       />
-      {/* Display Server-Side Error Messages */}
-      {error && (
-        <Alert variant="danger" className="mt-3">
-          {error}
-        </Alert>
-      )}
+     
     </div>
   );
 };

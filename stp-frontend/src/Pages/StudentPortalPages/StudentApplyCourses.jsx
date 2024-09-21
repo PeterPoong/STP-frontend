@@ -62,13 +62,13 @@ const CustomStepper = styled(Stepper)(({ theme }) => ({
 
 const CustomStepLabel = styled(StepLabel)(({ theme }) => ({
   '& .MuiStepLabel-label': {
-    fontSize: '0.8rem',
+    fontSize: '0.9rem',
     color: '#e0e0e0',
     fontWeight: "bold",
     marginTop: '10px',
     '&.Mui-active': {
       color: '#000',
-      fontSize: '0.8rem',
+      fontSize: '0.9rem',
       fontWeight: "bold"
     },
     '&.Mui-completed': {
@@ -281,19 +281,19 @@ const StudentApplyCourses = () => {
       <div className="main-content-applycourse">
         <div className="backgroundimage">
           <div className="widget-applying-course justify-content-center">
-            <h4 className="text-black align-self-center fw-normal mb-4">You are now applying for </h4>
-            <h3 className="text-danger align-self-center fw-bold mb-5">{courseName || "Bachelor in Mass Communication"}</h3>
+            <h3 className="text-black align-self-center fw-normal mb-3">You are now applying for </h3>
+            <p className="coursetext-applycourse  align-self-center fw-bold mb-5">{courseName || "Bachelor in Mass Communication"}</p>
             <div className="d-flex justify-content-center">
               <img
                 src={schoolLogoUrl || image1}
-                className="sac-image me-5"
+                className="sac-image-applycourse me-5"
                 alt={`${schoolName || "University"} Logo`}
               />
-              <h3 className="text-black fw-bold align-self-center">{schoolName || "Swinburne University of Technology"}</h3>
+              <p className="schooltext-applycourse text-black fw-bold align-self-center">{schoolName || "Swinburne University of Technology"}</p>
             </div>
           </div>
         </div>
-        <h1 className="text-center mb-4">Student Course Application</h1>
+        
         <Box sx={{ width: '100%', mb: 4, mt: 4, mx: 0 }}>
           <CustomStepper activeStep={activeStep} alternativeLabel connector={<CustomConnector />}>
             {steps.map((label) => (

@@ -675,14 +675,14 @@ const StudentApplicationSummary = ({ }) => {
             <div className="summary-content-course-info">
                 <div className="school-info text-center" style={{ margin: '0 0' }}>
                     <div className="school-logo-name">
-                        <img src={`${import.meta.env.VITE_BASE_URL}storage/${courseInfo.logo}`} className="school-logo" style={{ width: '25%', height: 'auto', maxHeight: '9rem' }} alt="School Logo" />
-                        <h1 className="sac-school-name">{courseInfo.school}</h1>
+                        <img src={`${import.meta.env.VITE_BASE_URL}storage/${courseInfo.logo}`} className="sas-school-logo" alt="School Logo" />
+                        <p className="sac-school-name">{courseInfo.school}</p>
                     </div>
                     <Button className="mx-auto mt-5 w-25 as-knowmore-button" style={{ padding: '0.5rem 1.5rem', fontSize: '1rem' }}>Know More</Button>
                 </div>
 
-                <div className="bg-white mt-3 rounded-1 shadow p-4 ">
-                    <h3 className="fw-bold">{courseInfo.course}</h3>
+                <div className="bg-white mt-3 rounded-1 shadow px-4 pb-1 pt-3 ">
+                    <p className="sas-coursename">{courseInfo.course}</p>
                 </div>
                 <div className="bg-white p-4 mb-1 rounded-1 shadow mt-3">
                     <h5 className="fw-bold mb-3">Summary</h5>
@@ -690,25 +690,25 @@ const StudentApplicationSummary = ({ }) => {
                         <div className="col-6 mb-3">
                             <div className="d-flex align-items-center">
                                 <GraduationCap size={16} className="me-2" />
-                                <span className="summary-label">{courseInfo.qualification || 'N/A'}</span>
+                                <span className="summary-label sas-summarytext">{courseInfo.qualification || 'N/A'}</span>
                             </div>
                         </div>
                         <div className="col-6 mb-3">
                             <div className="d-flex align-items-center">
                                 <Clock size={16} className="me-2" />
-                                <span>{courseInfo.period}</span>
+                                <span className="sas-summarytext">{courseInfo.period}</span>
                             </div>
                         </div>
                         <div className="col-6 mb-3">
                             <div className="d-flex align-items-center">
                                 <CalendarCheck size={16} className="me-2" />
-                                <span className="summary-label">{courseInfo.mode}</span>
+                                <span className="summary-label sas-summarytext">{courseInfo.mode}</span>
                             </div>
                         </div>
                         <div className="col-6 mb-3">
                             <div className="d-flex align-items-center">
                                 <BookOpenText size={16} className="me-2" />
-                                <span>{courseInfo.intake.join(', ')}</span>
+                                <span className="sas-summarytext">{courseInfo.intake.join(', ')}</span>
                             </div>
                         </div>
                     </div>
@@ -716,13 +716,13 @@ const StudentApplicationSummary = ({ }) => {
 
                 <div className="d-flex justify-content-between align-item-center bg-white p-4 mb-1 rounded-1 shadow mt-3">
                     <h5 className="fw-bold">Estimate Fee</h5>
-                    <span className='lead'>RM {courseInfo.cost.toLocaleString()} / year</span>
+                    <span className='lead'> <strong>RM</strong> {courseInfo.cost.toLocaleString()} / year</span>
                 </div>
 
                 <div className="bg-white p-4 mb-1 rounded-1 shadow-lg mt-3">
-                    <h5 className="fw-bold">Course Overview</h5>
+                    <h5 className="fw-bold mb-3">Course Overview</h5>
                     <div className={`overview-content ${showFullOverview ? 'expanded' : ''}`}>
-                        <p>{courseInfo.description}</p>
+                        <p className="sas-summarytext">{courseInfo.description}</p>
                     </div>
                     <div className="text-center">
                         <Button variant="link" onClick={() => setShowFullOverview(!showFullOverview)}>
@@ -732,9 +732,9 @@ const StudentApplicationSummary = ({ }) => {
                 </div>
 
                 <div className="entry-requirements bg-white p-4 mb-1 rounded-1 shadow-lg mt-3">
-                    <h5 className="fw-bold">Entry Requirement</h5>
+                    <h5 className="fw-bold mb-3">Entry Requirement</h5>
                     <div className={`requirements-content ${showFullRequirements ? 'expanded' : ''}`}>
-                        <p>{courseInfo.requirement}</p>
+                        <p className="sas-summarytext"> {courseInfo.requirement}</p>
                     </div>
                     <div className="text-center">
                         <Button variant="link" onClick={() => setShowFullRequirements(!showFullRequirements)}>
@@ -752,19 +752,19 @@ const StudentApplicationSummary = ({ }) => {
             <div className="main-content-applycourse-clone">
                 <div className="backgroundimage">
                     <div className="application-summary-container">
-                        <div className="bg-white rounded mb-5 p-3"><h1 className="summary-title">Application Summary</h1></div>
+                        <div className="bg-white  mb-4 px-4 pt-2"><p className="summary-title">Application Summary</p></div>
                         <div className="application-summary-container-inside rounded ">
-                            <div className="summary-header p-3 border border-bottom">
+                            <div className="summary-header py-4 px-4 border border-bottom">
                                 <div className="applicant-info">
-                                    <img src={`${import.meta.env.VITE_BASE_URL}storage/${basicInfo?.profilePic}`} className="applicant-photo ms-3 bg-black" />
+                                    <img src={`${import.meta.env.VITE_BASE_URL}storage/${basicInfo?.profilePic}`} className="applicant-photo me-4 ms-2  bg-black" />
                                     <div>
-                                        <h3 className="ms-3">{`${basicInfo?.firstName || ''} ${basicInfo?.lastName || ''}`.trim()}</h3>
-                                        <p className="ms-3 text-secondary">Applied For: <span className="fw-bold text-black">{courseInfo?.course}</span></p>
+                                        <p className="my-0 fw-bold ">{`${basicInfo?.firstName || ''} ${basicInfo?.lastName || ''}`.trim()}</p>
+                                        <p className="my-0 text-secondary  mt-2">Applied For: <span className=" text-black ms-2">{courseInfo?.course}</span></p>
                                     </div>
                                 </div>
-                                <Button className="sac-submit-button">Print Summary</Button>
+                                <Button className="sac-submit-button px-4">Print Summary</Button>
                             </div>
-                            <div className="summary-tabs d-flex flex-wrap">
+                            <div className="summary-tabs d-flex flex-wrap px-4">
                                 <Button
                                     variant="link"
                                     className={activeTab === 'info' ? 'active' : ''}
