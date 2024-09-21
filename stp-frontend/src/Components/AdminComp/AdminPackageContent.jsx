@@ -19,6 +19,8 @@ const AdminPackageContent = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [searchQuery, setSearchQuery] = useState("");
+    const [isSearchResults, setIsSearchResults] = useState(false);
+
      // To track if there are search results
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`;
@@ -33,17 +35,17 @@ const AdminPackageContent = () => {
                     "Authorization": Authenticate,
                 },
             });
-
+    
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.package_status}`);
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
-
+    
             const result = await response.json();
             if (result && result.data) {
                 setPackages(result.data);
                 setTotalPages(result.last_page);
                 setCurrentPage(result.current_page);
-                setIsSearchResults(result.total > rowsPerPage);
+                setIsSearchResults(result.total > rowsPerPage); // Use the defined state
             } else {
                 setPackages([]);
             }
@@ -54,6 +56,7 @@ const AdminPackageContent = () => {
             setLoading(false);
         }
     };
+    
 
     useEffect(() => {
         fetchPackages(currentPage, rowsPerPage, searchQuery);
@@ -169,6 +172,22 @@ const AdminPackageContent = () => {
                 return 'status-active';
         }
     };
+    const getPackageClass = (package_type) => {
+        switch (package_type) {
+            case 60:
+                return 'Portal';
+            case 61:
+                return 'Banner';
+            case 62:
+                return 'Featured Course';
+            case 63:
+                return 'Featured University';
+            case 76:
+                return 'Basic Account Package';
+            case 77:
+            return 'Premium Account Package';
+        }
+    };
 
     const theadContent = (
         <tr>
@@ -191,7 +210,7 @@ const AdminPackageContent = () => {
     const tbodyContent = sortedPackages.map((Package) => (
         <tr key={Package.id}>
             <td>{Package.package_name}</td>
-            <td>{Package.package_type}</td>
+            <td>{getPackageClass(Package.package_type)}</td>
             <td>{Package.package_price}</td>
             <td className={getStatusClass(Package.package_status)}>
                 {Package.package_status}
