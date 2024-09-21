@@ -33,6 +33,7 @@ import AdminAddStudent from "./Pages/AdminPages/AdminAddStudent";
 import AdminCourses from "./Pages/AdminPages/AdminCourses";
 import AdminAddCourse from "./Pages/AdminPages/AdminAddCourse";
 import AdminCategory from "./Pages/AdminPages/AdminCategory";
+import AdminAddCategory from "./Pages/AdminPages/AdminAddCategory";
 import AdminSubject from "./Pages/AdminPages/AdminSubject";
 import AdminList from "./Pages/AdminPages/AdminList";
 import AdminPackage from "./Pages/AdminPages/AdminPackage";
@@ -180,6 +181,11 @@ const router = createBrowserRouter([
     path: "/adminCategory",
     element: <AdminCategory />,
   },
+  {
+    path: "/adminAddCategory",
+    element: <AdminAddCategory />,
+  },
+
 
   {
     path: "/adminSubject",

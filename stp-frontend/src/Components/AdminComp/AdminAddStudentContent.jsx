@@ -7,6 +7,7 @@ import 'typeface-ubuntu';
 import "../../css/AdminStyles/AdminFormStyle.css";
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
+
 import { FaTrashAlt } from 'react-icons/fa';
 
 const AdminAddStudentContent = () => {
@@ -20,18 +21,17 @@ const AdminAddStudentContent = () => {
         last_name:"",
         gender:"",
         ic:"",
-        postcode:"",    
+        postcode:"",
         email: "",
         contact_number: "",
         country_code: "+60",
-        category:"",
+        address:"",
         country:"",
         state:"",
         city:"",
         password: "",
         confirm_password: "",
     });
-    const [selectedFeatures, setSelectedFeatures] = useState([]);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
     const token = sessionStorage.getItem('token');
@@ -40,84 +40,96 @@ const AdminAddStudentContent = () => {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [passwordsMatch, setPasswordsMatch] = useState(true);
     const handleSubmit = async (event) => {
-        event.preventDefault();
-        console.log("Submitting form data:", formData); // Debugging line
-        const { name, first_name, last_name, gender, ic, postcode, email, state, city, country, contact_number,  country_code, confirm_password, password } = formData;
-        
-        const formPayload = new FormData();
-        formPayload.append("name", name);
-        formPayload.append("first_name", first_name);
-        formPayload.append("last_name", last_name);
-        formPayload.append("gender", gender);
-        formPayload.append("ic", ic);
-        formPayload.append("postcode", postcode);
-        formPayload.append("email", email);
-        formPayload.append("country_code", country_code);
-        formPayload.append("contact_number", contact_number);
-        formPayload.append("country", country);
-        formPayload.append("state", state);
-        formPayload.append("city", city);
-        formPayload.append("password", password);
-        formPayload.append("confirm_password", confirm_password);
-
-        try {
-            console.log("FormData before submission:", formPayload);
-            
-            const addStudentResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/addStudent`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': Authenticate,
-                },
-                body: formPayload, // Using FormData directly as the body
-            });
-    
-            const addStudentData = await addStudentResponse.json();
-    
-            if (addStudentResponse.ok) {
-                console.log('Student successfully registered:', addStudentData);
-                navigate('/adminStudent');
-            } else {
-                console.error('Validation Error:', addStudentData.errors); // Debugging line
-                throw new Error(`Student Registration failed: ${addStudentData.message}`);
-            }
-        } catch (error) {
-            setError('An error occurred during Student registration. Please try again later.');
-            console.error('Error during Student registration:', error);
-        }
-    };
+      event.preventDefault();
+      console.log("Submitting form data:", formData);
+  
+      const { name, first_name, last_name, gender, ic, postcode, email, state, city, country, address, contact_number, country_code, confirm_password, password } = formData;
+  
+      // Convert strings to integers where needed
+      const icInt = parseInt(ic, 10);
+      const cityInt = parseInt(city, 10);
+      const genderInt = parseInt(gender, 10);
+      const stateInt = parseInt(state, 10);
+      const countryInt = parseInt(country, 10);
+  
+      if ( isNaN(cityInt) || isNaN(genderInt) || isNaN(stateInt) || isNaN(countryInt)) {
+          setError("Some fields must be valid integers.");
+          return;
+      }
+  
+      const formPayload = new FormData();
+      formPayload.append("address", address);
+      formPayload.append("name", name);
+      formPayload.append("first_name", first_name);
+      formPayload.append("last_name", last_name);
+      formPayload.append("ic", ic);
+      formPayload.append("postcode", postcode);
+      formPayload.append("gender", genderInt);
+      formPayload.append("email", email);
+      formPayload.append("country_code", country_code);
+      formPayload.append("contact_number", contact_number);
+      formPayload.append("country", countryInt);
+      formPayload.append("state", stateInt);
+      formPayload.append("city", cityInt);
+      formPayload.append("password", password);
+      formPayload.append("confirm_password", confirm_password);
+  
+      try {
+          console.log("FormData before submission:", formPayload);
+  
+          const addStudentResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/addStudent`, {
+              method: 'POST',
+              headers: {
+                  'Authorization': Authenticate,
+              },
+              body: formPayload,
+          });
+  
+          const addStudentData = await addStudentResponse.json();
+  
+          if (addStudentResponse.ok) {
+              console.log('Student successfully registered:', addStudentData);
+              navigate('/adminStudent');
+          } else {
+              console.error('Validation Error:', addStudentData.errors);
+              throw new Error(`Student Registration failed: ${addStudentData.message}`);
+          }
+      } catch (error) {
+          setError('An error occurred during student registration. Please try again later.');
+          console.error('Error during student registration:', error);
+      }
+  };
   
     useEffect(() => {
       const fetchGenders = async () => {
           try {
               const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/genderList`, {
-                  method: 'GET',
+                  method: 'GET', // Use GET method
                   headers: {
                       'Content-Type': 'application/json',
-                      'Authorization': Authenticate,
-                  }
+                      
+                  },
+                  
               });
-
+  
               if (!response.ok) {
                   throw new Error(`HTTP error! status: ${response.status}`);
               }
-
+  
               const data = await response.json();
               if (data && data.data) {
-                  setGenderList(data.data.map(gender => ({
-                      label: gender.core_metaName,
-                      value: gender.id
-                  })));
+                  setGenderList(data.data);  // Set the category list state
               }
           } catch (error) {
               console.error('Error fetching genders:', error.message);
               setError(error.message);
           }
       };
-
+  
       fetchGenders();
-  }, [Authenticate]);
+  }, []);
 
-    console.log(`${import.meta.env.VITE_BASE_URL}api/student/countryList`);
+    // console.log(`${import.meta.env.VITE_BASE_URL}api/student/countryList`);
     // Fetch country list (GET request)
     useEffect(() => {
       fetch(`${import.meta.env.VITE_BASE_URL}api/student/countryList`, {
@@ -175,6 +187,21 @@ const AdminAddStudentContent = () => {
       .catch(error => console.error('Error fetching cities:', error));
   };
 
+  useEffect(() => {
+    setPasswordsMatch(formData.password === formData.confirm_password);
+}, [formData.password, formData.confirm_password]);
+
+    const handleFeatureChange = (event) => {
+        const featureId = parseInt(event.target.value);
+        setSelectedFeatures(prevFeatures => {
+            if (prevFeatures.includes(featureId)) {
+                return prevFeatures.filter(id => id !== featureId);
+            } else {
+                return [...prevFeatures, featureId];
+            }
+        });
+    };
+
     const handlePhoneChange = (value, country, field) => {
         setFormData(prevFormData => {
             if (field === "contact_number") {
@@ -183,11 +210,16 @@ const AdminAddStudentContent = () => {
                     contact_number: value.slice(country.dialCode.length), // Update contact_number
                     country_code: `+${country.dialCode}`, // Update country code
                 };
+            } else if (field === "person_in_charge_contact") {
+                return {
+                    ...prevFormData,
+                    person_in_charge_contact: value, // Update person_in_charge_contact
+                };
             }
         });
     };
   
-  const handleFieldChange = (e) => {
+    const handleFieldChange = (e) => {
         const { id, value, type, files } = e.target;
         console.log(`Field ${id} updated with value: ${value}`); // Debugging line
         if (type === "file") {
@@ -202,10 +234,10 @@ const AdminAddStudentContent = () => {
             }));
         }
     };
-
+    
     const togglePasswordVisibility = () => setShowPassword(prev => !prev);
     const toggleConfirmPasswordVisibility = () => setShowConfirmPassword(prev => !prev);
-
+    
     const handleCountryChange = (e) => {
         const countryId = e.target.value;
         setFormData({
@@ -227,109 +259,135 @@ const AdminAddStudentContent = () => {
         fetchCities(stateId); // Fetch cities when state changes
       };
       
-   // Handle city change
-   const handleCityChange = (e) => {
-    setFormData({ ...formData, city: e.target.value });
+    // Handle city change
+    const handleCityChange = (e) => {
+      setFormData({ ...formData, city: e.target.value });
+    };
+
+  // Handle radio button change
+  const handleRadioChange = (radioId, value) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      [radioId]: value,
+    }));
   };
     const formFields = [
         {
             id: "name",
-            label: "Username",
+            label: "Student Username",
             type: "text",
-            placeholder: "Enter student username",
+            placeholder: "Enter username",
             value: formData.name,
             onChange: handleFieldChange,
             required: true
         },
         {
-            id: "first_name",
-            label: "First Name",
-            type: "text",
-            placeholder: "Enter student first name",
-            value: formData.first_name,
-            onChange: handleFieldChange,
-            required: true
-        },
-     
-        {
-            id: "email",
-            label: "Email Address",
-            type: "email",
-            placeholder: "Enter email address",
-            value: formData.email,
-            onChange: handleFieldChange,
-            required: true,
-            autoComplete: "off"
-        },
+          id: "first_name",
+          label: "Student firstname",
+          type: "text",
+          placeholder: "Enter firstname",
+          value: formData.first_name,
+          onChange: handleFieldChange,
+          required: true
+      },
+    
+      
     ];
-    const formRadio = [
+    const formGender = [
       {
           id: "gender",
           label: "Gender",
-          type: "radio",
-          options: genderList,  // Ensure genderList contains objects with label and value
           value: formData.gender,
           onChange: handleFieldChange,
-          required: true
-      },
-  ];
-    const formName = [
-        {
-            id: "last_name",
-            label: "Last Name",
-            type: "text",
-            placeholder: "Enter student last name",
-            value: formData.last_name,
-            onChange: handleFieldChange,
-            required: true
-        },
-        {
-            id: "postcode",
-            label: "Postcode",  // Updated label to match the field
-            type: "text",
-            placeholder: "Enter postcode",
-            value: formData.postcode,
-            onChange: handleFieldChange,
-            required: true
-        },
-        {
-          id: "ic",
-          label: "Identity Card No.",  // Updated label to match the field
-          type: "text",
-          placeholder: "Enter IC Number",
-          value: formData.ic,
-          onChange: handleFieldChange,
-          required: true
+          required: true,
+          options: genderList.map(gender => ({
+              label: gender.core_metaName,
+              value: gender.id
+          }))
       }
+  ];
+    const formPersonInCharge=[
+      {
+        id: "last_name",
+        label: "Student lastname",
+        type: "text",
+        placeholder: "Enter lastname",
+        value: formData.last_name,
+        onChange: handleFieldChange,
+        required: true
+    },
+        {
+            id: "ic",
+            label: "Identity Card No.",
+            type: "text",
+            placeholder: "Enter IC number",
+            value: formData.ic,
+            onChange: handleFieldChange,
+            required: true
+        },
+        {
+          id: "email",
+          label: "Email Address",
+          type: "email",
+          placeholder: "Enter email address",
+          value: formData.email,
+          onChange: handleFieldChange,
+          required: true,
+          autoComplete: "off"
+      },
+      {
+        id: "postcode",
+        label: "Postcode",
+        type: "text",
+        placeholder: "Enter postcode",
+        value: formData.postcode,
+        onChange: handleFieldChange,
+        required: true,
+        autoComplete: "off"
+    },
+    ];
+
+    const formAddress = [
+        {
+            id: "address",
+            label: "Full Address",
+            type: "text",
+            placeholder: "Enter Address",
+            value: formData.address,
+            onChange: handleFieldChange,
+            required: true
+        },
     ];
     
-    const formPassword = [
-      {
-          id: "password",
-          label: "Password",
-          type: showPassword ? "text" : "password",
-          placeholder: "Enter new password",
-          value: formData.password,
-          onChange: handleFieldChange,
-          required: true,
-          autoComplete: "new-password",
-          toggleVisibility: togglePasswordVisibility,
-          showVisibility: showPassword
-      },
-      {
-          id: "confirm_password",
-          label: "Confirm Password",
-          type: showConfirmPassword ? "text" : "password",
-          placeholder: "Enter password again",
-          value: formData.confirm_password,
-          onChange: handleFieldChange,
-          required: true,
-          toggleVisibility: toggleConfirmPasswordVisibility,
-          showVisibility: showConfirmPassword
-      }
-  ];
 
-    const formStudentCountry = [
+    
+    const formPassword = [
+        {
+            id: "password",
+            label: "Password",
+            type: showPassword ? "text" : "password",
+            placeholder: "Enter new password",
+            value: formData.password,
+            onChange: handleFieldChange,
+            required: true,
+            autoComplete: "new-password",
+            toggleVisibility: togglePasswordVisibility,
+            showVisibility: showPassword
+        },
+        {
+            id: "confirm_password",
+            label: "Confirm Password",
+            type: showConfirmPassword ? "text" : "password",
+            placeholder: "Enter password again",
+            value: formData.confirm_password,
+            onChange: handleFieldChange,
+            required: true,
+            toggleVisibility: toggleConfirmPasswordVisibility,
+            showVisibility: showConfirmPassword
+        }
+    ];
+
+    const formCountry = [
         {
           id: "country",
           label: "Country",
@@ -367,7 +425,7 @@ const AdminAddStudentContent = () => {
           placeholder: "" // Placeholder hidden
         }
       ];
-      
+
     const buttons = [
         {
             label: "SAVE",
@@ -376,22 +434,30 @@ const AdminAddStudentContent = () => {
     ];
 
     return (
+        
                 <Container fluid className="admin-add-student-container">
                     <AdminFormComponent
-                formTitle="Student Information"
-                formFields={formFields}
-                formRadio={formRadio}
-                formName={formName}
-                formPassword={formPassword}
-                formStudentCountry={formStudentCountry}
-                onSubmit={handleSubmit}
-                error={error}
-                buttons={buttons}
-                handleFieldChange={handleFieldChange}
-                handlePhoneChange={handlePhoneChange}  
-                phone={formData.contact_number} 
-                country_code={formData.country_code}
+           formTitle="Student Information"
+           formFields={formFields}
+           formPassword={formPassword}
+           formCountry={formCountry}
+           formAddress={formAddress}
+           formGender={formGender}
+           onSubmit={handleSubmit}
+           formPersonInCharge={formPersonInCharge}
+           error={error}
+           buttons={buttons}
+           handlePhoneChange={handlePhoneChange}  
+           phone={formData.contact_number} 
+           country_code={formData.country_code}
+           handleRadioChange={handleRadioChange}
+           formData={formData}
                 />
+                 {!passwordsMatch && (
+                <div className="text-danger">
+                    Passwords do not match.
+                </div>
+            )}
                 </Container>
     );
 };

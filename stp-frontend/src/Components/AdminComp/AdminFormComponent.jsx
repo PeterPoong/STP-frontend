@@ -20,7 +20,6 @@ const AdminFormComponent = ({
   formCategory,
   formAccount,
   formCountry,
-  formStudentCountry,
   formWebsite,
   formAddress,
   checkboxTitle,
@@ -34,6 +33,7 @@ const AdminFormComponent = ({
   formPackage,
   formDrop,
   formMode,
+  formGender,
   onSubmit,
   error,
   buttons,
@@ -212,6 +212,12 @@ const { getRootProps: getAlbumRootProps, getInputProps: getAlbumInputProps } = u
     setAlbumFiles(prevFiles => [...prevFiles, ...acceptedFiles]);
   },
 });
+const handleRadioChange = (radioId, value) => {
+  setFormData((prevData) => ({
+    ...prevData,
+    [radioId]: value, // Update the selected radio value in formData
+  }));
+};
 
   return (
     <Form onSubmit={onSubmit} className="admin-form-component">
@@ -376,6 +382,24 @@ const { getRootProps: getAlbumRootProps, getInputProps: getAlbumInputProps } = u
 
           </Col>
           <Col md={6}>
+          {formGender && formGender.map((gender, index) => (
+              <Form.Group key={index} controlId={gender.id} className="mb-5">
+                <Form.Label>{gender.label}</Form.Label>
+                <Form.Control 
+                  as="select" 
+                  value={gender.value} 
+                  onChange={gender.onChange} 
+                  required={gender.required || false}
+                >
+                  <option value="">Select Gender</option>
+                  {gender.options.map((option, optIndex) => (
+                    <option key={optIndex} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </Form.Control>
+              </Form.Group>
+            ))}
             {/* Logo Upload */}
             {handleLogoChange && (
               <Form.Group controlId="logo" className="mb-5">
@@ -501,25 +525,8 @@ const { getRootProps: getAlbumRootProps, getInputProps: getAlbumInputProps } = u
               </Form.Group>
             ))}
 
-       {/* Render radio buttons dynamically */}
-       {formRadio && formRadio.map(radio => (
-          <Form.Group key={radio.id} controlId={radio.id}>
-              <Form.Label>{radio.label}</Form.Label>
-              {radio.options.map(option => (
-                  <Form.Check
-                      key={option.value}
-                      type={radio.type}
-                      id={`${radio.id}-${option.value}`}
-                      label={option.label}
-                      value={option.value}
-                      checked={radio.value === option.value}
-                      onChange={radio.onChange}
-                      required={radio.required}
-                      className="custom-radio"
-                  />
-              ))}
-          </Form.Group>
-      ))}
+      
+
             {formName && formName.map((Name, index) => (
               <Form.Group key={index} controlId={Name.id} className="mb-5">
                 <Form.Label>{Name.label}</Form.Label>
@@ -533,29 +540,7 @@ const { getRootProps: getAlbumRootProps, getInputProps: getAlbumInputProps } = u
                 />
               </Form.Group>
             ))}
-             {formStudentCountry && formStudentCountry.map((field, index) => (
-                    <Col md={12} key={index}>
-                      <Form.Group controlId={field.id} className="mb-5 ms-2">
-                        <Form.Label>{field.label}</Form.Label>
-                        <Form.Control 
-                          as="select" 
-                          value={field.value} 
-                          onChange={field.onChange} 
-                          required={field.required}
-                        >
-                          {/* Conditionally render placeholder option */}
-                          {field.id === "country" && (
-                            <option value="">Select {field.label}</option>
-                          )}
-                          {field.options.map((option, optIndex) => (
-                            <option key={optIndex} value={option.value}>
-                              {option.label}
-                            </option>
-                          ))}
-                        </Form.Control>
-                      </Form.Group>
-                    </Col>
-                  ))}
+            
             {formWebsite && formWebsite.map((Website, index) => (
               <Form.Group key={index} controlId={Website.id} className="mb-5">
                 <Form.Label>{Website.label}</Form.Label>
