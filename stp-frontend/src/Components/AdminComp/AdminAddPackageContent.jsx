@@ -28,21 +28,25 @@ const AdminAddPackageContent = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         console.log("Submitting form data:", formData); // Debugging line
-        const { package_name, package_detail, package_type, package_price  } = formData;
+        
+        const { package_name, package_detail, package_type, package_price } = formData;
         
         const formPayload = new FormData();
         formPayload.append("package_name", package_name);
-        formPayload.append("package_detail", package_detail);
+        formPayload.append("package_detail", package_detail); // TinyMCE raw HTML
         formPayload.append("package_type", package_type);
         formPayload.append("package_price", package_price);
     
+        // Debugging: Log FormData
+        for (let [key, value] of formPayload.entries()) {
+            console.log(key, value);
+        }
+    
         try {
-            console.log("FormData before submission:", formPayload);
-            
             const addPackageResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/addPackage`, {
                 method: 'POST',
                 headers: {
-                    'Authorization': Authenticate,
+                    'Authorization': Authenticate, // Ensure Authenticate contains a valid token
                 },
                 body: formPayload, // Using FormData directly as the body
             });
@@ -51,9 +55,9 @@ const AdminAddPackageContent = () => {
     
             if (addPackageResponse.ok) {
                 console.log('Package successfully registered:', addPackageData);
-                navigate('/adminPackage');
+                navigate('/adminPackage'); // Ensure navigate function is properly defined
             } else {
-                console.error('Validation Error:', addPackageData.errors); // Debugging line
+                console.error('Validation Error:', addPackageData.errors);
                 throw new Error(`Package Registration failed: ${addPackageData.message}`);
             }
         } catch (error) {
@@ -61,6 +65,7 @@ const AdminAddPackageContent = () => {
             console.error('Error during Package registration:', error);
         }
     };
+    
     
     useEffect(() => {
         const fetchPackages = async () => {
@@ -108,12 +113,15 @@ const AdminAddPackageContent = () => {
     };
     
     const handleEditorChange = (content) => {
+        // Remove newline characters
+        const cleanedContent = content.replace(/\n/g, '').replace(/\s{2,}/g, ' ');
+      
         setFormData(prevFormData => ({
-            ...prevFormData,
-            package_detail: content,
+          ...prevFormData,
+          package_detail: cleanedContent, // Store the cleaned content
         }));
-    };
-
+      };
+      
     const formFields = [
         {
             id: "package_name",

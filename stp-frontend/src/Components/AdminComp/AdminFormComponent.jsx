@@ -716,65 +716,46 @@ const handleRadioChange = (radioId, value) => {
             )}
           </div>
         )}
-      {formHTML && formHTML.map(field => (
-        <Form.Group key={field.id} controlId={field.id} className="ms-2">
-          <Form.Label>{field.label}</Form.Label>
-          <Editor
-            apiKey="y5c72cgxrai71v1jmggt9a2gx878yajnqxrxxkhtylowcqbb"
-            value={field.value}
-            onEditorChange={field.onChange}
-            init={{
-              height: 500,
-              menubar: false,
-              plugins: [
-                "advlist",
-                "autolink",
-                "link",
-                "lists",
-                "charmap",
-                "anchor",
-                "pagebreak",
-                "searchreplace",
-                "wordcount",
-                "visualblocks",
-                "code",
-                "fullscreen",
-                "insertdatetime",
-                "media",
-                "table",
-                "emoticons"
-              ],
-              toolbar:
-                "undo redo | bold italic | alignleft aligncenter alignright alignjustify | " +
-                "bullist numlist outdent indent",
-              menubar: false,
-              content_style: "ul {list-style-type: disc; margin-left: 20px;}", // Ensuring the correct bullet formatting
-              forced_root_block: 'div', // Prevents adding unwanted <p> tags around the content
-              entity_encoding: "raw",  // Ensures that the raw HTML is saved without escaping
-              setup: (editor) => {
-                editor.on('init', () => {
-                  // Additional CSS adjustments if needed
-                  const style = `
-                    .tox-toolbar {
-                      position: relative;
-                      z-index: 1000;
-                    }
-                    .tox-menu {
-                      position: absolute;
-                      top: 100%;
-                      z-index: 1001;
-                    }
-                  `;
-                  const styleSheet = document.createElement('style');
-                  styleSheet.type = 'text/css';
-                  styleSheet.innerText = style;
-                  document.head.appendChild(styleSheet);
-                });
-              }
-            }}
-          />
-        </Form.Group>
-      ))}
+      {formHTML &&
+        formHTML.map((field) => (
+          <Form.Group key={field.id} controlId={field.id} className="ms-2">
+            <Form.Label>{field.label}</Form.Label>
+            <Editor
+              apiKey="y5c72cgxrai71v1jmggt9a2gx878yajnqxrxxkhtylowcqbb"
+              value={field.value} // Bind TinyMCE's value to the field's value
+              onEditorChange={field.onChange} // Handle changes using field's onChange function
+              init={{
+                height: 500,
+                menubar: false,
+                plugins: [
+                  "advlist",
+                  "autolink",
+                  "link",
+                  "lists",
+                  "charmap",
+                  "anchor",
+                  "pagebreak",
+                  "searchreplace",
+                  "wordcount",
+                  "visualblocks",
+                  "code",
+                  "fullscreen",
+                  "insertdatetime",
+                  "media",
+                  "table",
+                  "emoticons",
+                ],
+                toolbar:
+                  "undo redo | bold italic | alignleft aligncenter alignright alignjustify | " +
+                  "bullist numlist outdent indent",
+                content_style:
+                  "ul {list-style-type: disc; margin-left: 20px;}", // Ensure correct bullet formatting
+                forced_root_block: "div", // Prevents unwanted <p> tags around content
+                entity_encoding: "raw", // Ensure the raw HTML is saved
+              }}
+            />
+          </Form.Group>
+        ))}
       {/* Render checkboxes conditionally */}
       {formCheckboxes && formCheckboxes.length > 0 && (
         <div className="check">
