@@ -147,7 +147,7 @@ const WidgetFileUpload = ({ isOpen, onClose, onSave, item, isViewMode }) => {
             <div className="file-info-wfu">
               <FileText size={18} />
               <div className="file-details">
-                <span className="file-name">
+                <span className="file-name text-wrap">
                   {media instanceof File ? media.name : media}
                 </span>
                 <button className="view-button" onClick={handleViewClick}>Click to view</button>

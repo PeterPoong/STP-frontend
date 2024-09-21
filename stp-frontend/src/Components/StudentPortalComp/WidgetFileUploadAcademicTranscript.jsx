@@ -162,7 +162,7 @@ const WidgetFileUploadAcademicTranscript = ({ isOpen, onClose, onSave, item, isV
                         <div className="file-info-wfu">
                             <FileText size={18} />
                             <div className="file-details">
-                                <span className="file-name">
+                                <span className="file-name text-wrap">
                                     {file instanceof File ? file.name : existingFileUrl}
                                 </span>
                                 <button className="view-button" onClick={handleViewClick}>Click to view</button>
