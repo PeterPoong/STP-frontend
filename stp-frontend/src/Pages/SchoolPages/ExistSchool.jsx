@@ -5,6 +5,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../../css/SchoolPortalStyle/SchoolPortalLoginForm.css";
 import schoolPortalLoginBanner from "../../assets/SchoolPortalAssets/SchoolPortalLogin.png";
 import schoolPortalLoginLogo from "../../assets/SchoolPortalAssets/SchoolPortalLoginLogo.png";
+
 import "react-phone-input-2/lib/style.css";
 import { Eye, EyeOff } from "react-feather";
 
