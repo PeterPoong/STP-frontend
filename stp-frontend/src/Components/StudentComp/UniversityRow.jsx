@@ -63,12 +63,12 @@ const UniversityRow = () => {
           <Container className="university-row-carousel" fluid>
             <Swiper
               modules={[Navigation, Pagination]} // Add required modules here
-              spaceBetween={30}
+              spaceBetween={10}
               slidesPerView={7}
               loop={true}
               // pagination={{ clickable: true }}
               navigation
-              style={{ padding: "0 50px" }}
+              // style={{ padding: "0 5px" }}
               breakpoints={{
                 640: {
                   slidesPerView: 1,

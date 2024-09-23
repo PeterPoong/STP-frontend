@@ -507,7 +507,7 @@ const CourseListing = ({
 
       const matchesSearchQuery = trimmedSearchQuery
         ? program.name.toLowerCase().includes(trimmedSearchQuery) ||
-        program.school_name.toLowerCase().includes(trimmedSearchQuery)
+          program.school_name.toLowerCase().includes(trimmedSearchQuery)
         : true;
 
       return (
@@ -634,15 +634,9 @@ const CourseListing = ({
   };
 
   const handleApplyNow = (program) => {
-    navigate(`/studentApplyCourses/${program.id}`, {
-      state: {
-        programId: program.id,
-        schoolLogoUrl: `${import.meta.env.VITE_BASE_URL}storage/${program.logo}`,
-        schoolName: program.school_name,
-        courseName: program.name
-      }
-    });
+    navigate(`/studentApplyCourses/${program.id}`, { state: { program } });
   };
+
   const handleInstituteChange = (institute) => {
     setSelectedInstitute(institute);
   };
@@ -743,7 +737,7 @@ const CourseListing = ({
                             ></i>
                             <span style={{ paddingLeft: "20px" }}>
                               {Array.isArray(program.intake) &&
-                                program.intake.length > 0
+                              program.intake.length > 0
                                 ? program.intake.join(", ")
                                 : "N/A"}{" "}
                             </span>
@@ -1032,40 +1026,21 @@ const CourseListing = ({
                   {console.log(
                     "No filtered programs available, showing empty state"
                   )}
-                  <div className="blankslate-courses text-center">
+                  <div
+                    className="blankslate-courses text-center"
+                    style={{ marginLeft: "100px" }}
+                  >
                     <img
                       className="blankslate-courses-top-img"
                       src={emptyStateImage}
                       alt="Empty State"
                     />
                     <div className="blankslate-courses-body">
-                      <h4>No programs found</h4>
+                      <h4>No programs found ☹️</h4>
                       <p>
                         There are no programs that match your selected filters.
                         Please try adjusting your filters and search criteria.
                       </p>
-                    </div>
-                    <div className="blankslate-actions mt-3">
-                      <button
-                        className="btn btn-default mx-2"
-                        type="button"
-                        onClick={() => {
-                          // Reset filters logic here
-                          console.log("Filters reset");
-                        }}
-                      >
-                        Reset Filters
-                      </button>
-                      <button
-                        className="btn btn-primary mx-2"
-                        type="button"
-                        onClick={() => {
-                          // Trigger a new search or provide feedback
-                          console.log("Search again");
-                        }}
-                      >
-                        Search Again
-                      </button>
                     </div>
                   </div>
                 </>

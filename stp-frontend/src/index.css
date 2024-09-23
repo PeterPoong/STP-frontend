@@ -211,7 +211,7 @@ button:focus-visible {
 .nav-reg-button:hover{
   background-color: #ea5b5b;
   color: #ffffff;
-  transform: translateY(-5px);
+  /* transform: translateY(-5px); */
 }
 
 .nav .btn-group,
@@ -370,7 +370,7 @@ button:focus-visible {
 
 .carousel {
   width: 100%;
-  height: 500px; /* Set the height of the carousel */
+  height: 500px;
   overflow: hidden;
   object-fit: fill; 
 }

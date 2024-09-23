@@ -165,8 +165,27 @@
   justify-items: center;
 }
 
+.image-gallery-institute-modal {
+  scrollbar-width: thin;
+  scrollbar-color: #B71A18 #f5f5f5;
+}
+
+.image-gallery-institute-modal::-webkit-scrollbar {
+  width: 8px;
+}
+
+.image-gallery-institute-modal::-webkit-scrollbar-track {
+  background: #f5f5f5;
+}
+
+.image-gallery-institute-modal::-webkit-scrollbar-thumb {
+  background-color: #B71A18;
+  border-radius: 10px;
+  border: 2px solid #f5f5f5;
+}
+
 .gallery-image {
-  max-width: 250px;
+  max-width: 290px;
   height: 140px;
   object-fit: fill;
 }

@@ -92,8 +92,21 @@
 .featured-uni-carousel .button-container .studyInMalaysia-button:hover  {
   background-color: #922010;
   color: white;
- 
+}
 
+.featured-uni-carousel .carousel-control-prev, .featured-uni-carousel .carousel-control-next {
+  z-index: 1050; /* Ensure arrows are above other elements */
+  margin: 0 10px; /* Add margin to ensure they're not too close to other elements */
+  width: 5%; /* Adjust width if needed */
+  height: 100%; /* Ensure full height of the carousel */
+}
+
+.featured-uni-carousel .carousel-control-prev {
+  left: 10px; /* Adjust position if needed */
+}
+
+.featured-uni-carousel .carousel-control-next {
+  right: 10px; /* Adjust position if needed */
 }
 
 .featured-uni-carousel .search-course-button {

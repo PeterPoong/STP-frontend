@@ -64,17 +64,18 @@
 } */
 
 .video-carousel-button {
-  margin-top: 60px; /* Adjusted to fit better */
+  margin-top: 170px; /* Adjusted to fit better */
   border-color: #B71A18;
-  color: #B71A18;
-  border: 5px solid;
-  font-size: 15px;
+  color: #ffffff;
+  border: 5px solid #B71A18;
+  font-size: 18px;
   width: 165px;
   background-color: transparent;
+  width: 240px;
+  font-weight: lighter;
 }
 
 .video-carousel-button:hover {
-  background-color: #bf2522;
+  background-color: #B71A18;
   color: white;
-  border-color: #bf2522;
 }

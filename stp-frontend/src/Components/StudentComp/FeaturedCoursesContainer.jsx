@@ -65,6 +65,14 @@ const FeaturedCoursesContainer = () => {
     navigate(`/courseDetails/${courseID}`); // Navigate to CourseDetail with the courseID
   };
 
+  const handleApplyNow = (course) => {
+    if (course && course.id) {
+      navigate(`/studentApplyCourses/${course.id}`);
+    } else {
+      console.error("Course ID is undefined");
+    }
+  };
+
   return (
     <div>
       {error && <div>Error: {error}</div>}
@@ -73,11 +81,11 @@ const FeaturedCoursesContainer = () => {
         <Container className="course-container">
           <Swiper
             modules={[Navigation, Pagination]} // Add required modules here
-            spaceBetween={30}
+            spaceBetween={5}
             slidesPerView={4}
             loop={true}
             navigation
-            style={{ padding: "0 50px" }}
+            // style={{ padding: "0 100px" }}
             breakpoints={{
               640: {
                 slidesPerView: 1,
@@ -164,7 +172,10 @@ const FeaturedCoursesContainer = () => {
                     >
                       {course.knowMoreText || "Know More"}
                     </button>
-                    <button className="button-apply-now">
+                    <button
+                      className="button-apply-now"
+                      onClick={() => handleApplyNow(course)} // Pass the whole course object
+                    >
                       {course.applyNowText || "Apply Now"}
                     </button>
                   </div>

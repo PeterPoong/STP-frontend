@@ -27,6 +27,18 @@ const CourseDetail = () => {
   const [selectedPhotos, setSelectedPhotos] = useState([]);
   const [startIndex, setStartIndex] = useState(0);
 
+  const [showSwiperModal, setShowSwiperModal] = useState(false);
+  const [activePhotoIndex, setActivePhotoIndex] = useState(0);
+
+  const openSwiperModal = (index) => {
+    setActivePhotoIndex(index);
+    setShowSwiperModal(true);
+  };
+
+  const handleCloseSwiperModal = () => {
+    setShowSwiperModal(false);
+  };
+
   const openModal = (photos, index) => {
     setSelectedPhotos(photos);
     setStartIndex(index);
@@ -446,23 +458,28 @@ const CourseDetail = () => {
               </div>
             </div>
 
-            <div
-              className="image-gallery-course"
-              style={{ position: "relative" }}
-            >
+            <div className="image-gallery-course">
               {programs.map((program) =>
-                program.photo.map((photo, index) => (
+                program.photo.slice(0, 5).map((photo, index) => (
                   <div
                     key={photo.id}
-                    style={{ display: "inline-block", position: "relative" }}
+                    style={{
+                      display: "inline-block",
+                      position: "relative",
+                      cursor: "pointer", // Indicates the images are clickable
+                    }}
                     onClick={() => openModal(program.photo, index)}
                   >
                     <img
                       src={`${baseURL}storage/${photo.schoolMedia_location}`}
-                      className="gallery-image"
+                      className="gallery-image-courses"
                       alt={photo.schoolMedia_name}
+                      width="500"
+                      style={{
+                        objectFit: "cover",
+                      }}
                     />
-                    {index === 4 && (
+                    {index === 4 && program.photo.length > 5 && (
                       <div
                         style={{
                           position: "absolute",
@@ -470,7 +487,7 @@ const CourseDetail = () => {
                           left: 0,
                           right: 0,
                           bottom: 0,
-                          backgroundColor: "rgba(0, 0, 0, 0.5)",
+                          backgroundColor: "rgba(0, 0, 0, 0.5)", // Dark overlay for emphasis
                           display: "flex",
                           justifyContent: "center",
                           alignItems: "center",
@@ -488,8 +505,12 @@ const CourseDetail = () => {
                             padding: "10px 20px",
                             border: "none",
                             width: "100%",
-                            height: "100%",
+                            height: "100%", // Smooth hover effect
                           }}
+                          onMouseOver={(e) =>
+                            (e.target.style.color = "#f8f9fa")
+                          } // Lighten on hover
+                          onMouseOut={(e) => (e.target.style.color = "white")} // Reset on hover out
                         >
                           see more
                         </button>
@@ -499,11 +520,18 @@ const CourseDetail = () => {
                 ))
               )}
 
+              {/* Modal for Swiper Gallery */}
               <Modal show={modalIsOpen} onHide={closeModal} size="md" centered>
-                <Modal.Header closeButton>
+                <Modal.Header
+                  closeButton
+                  style={{
+                    backgroundColor: "#B71A18", // Dark background for the Swiper modal
+                    color: "#fff",
+                  }}
+                >
                   <Modal.Title>Image Gallery</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>
+                <Modal.Body style={{ backgroundColor: "#fff", padding: "0" }}>
                   <Swiper
                     initialSlide={startIndex}
                     spaceBetween={10}
@@ -512,6 +540,9 @@ const CourseDetail = () => {
                     loop={true}
                     pagination={{ clickable: true }}
                     modules={[Navigation, Pagination]}
+                    style={{
+                      padding: "20px 0", // Padding to create breathing space for the swiper
+                    }}
                   >
                     {selectedPhotos.map((photo) => (
                       <SwiperSlide key={photo.id}>
@@ -519,6 +550,10 @@ const CourseDetail = () => {
                           src={`${baseURL}storage/${photo.schoolMedia_location}`}
                           className="w-100"
                           alt={`Slide ${photo.id}`}
+                          style={{
+                            objectFit: "contain", // Maintain aspect ratio
+                            maxHeight: "70vh", // Prevent image from being too large
+                          }}
                         />
                       </SwiperSlide>
                     ))}
@@ -526,17 +561,51 @@ const CourseDetail = () => {
                 </Modal.Body>
               </Modal>
 
+              {/* Modal for All Photos */}
               <Modal
                 show={showAllPhotosModal}
                 onHide={handleCloseAllPhotosModal}
                 size="lg"
                 centered
               >
-                <Modal.Header closeButton>
-                  <Modal.Title>All Photos</Modal.Title>
+                <Modal.Header
+                  closeButton
+                  style={{
+                    backgroundColor: "#B71A18", // Dark background color for contrast
+                    color: "#fff",
+                    padding: "20px",
+                    borderTopLeftRadius: "8px",
+                    borderTopRightRadius: "8px",
+                    borderBottom: "2px solid #dee2e6",
+                  }}
+                >
+                  <Modal.Title
+                    style={{
+                      fontSize: "1.5rem",
+                      fontWeight: "600",
+                      letterSpacing: "0.5px",
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    All Photos
+                  </Modal.Title>
                 </Modal.Header>
-                <Modal.Body>
-                  <div className="image-gallery-course-modal">
+                <Modal.Body
+                  style={{
+                    maxHeight: "70vh",
+                    overflowY: "auto",
+                    paddingRight: "15px", // Padding for a more spacious feel
+                  }}
+                >
+                  <div
+                    className="image-gallery-course-modal"
+                    style={{
+                      display: "grid", // Grid layout for image gallery
+                      gridTemplateColumns:
+                        "repeat(auto-fill, minmax(150px, 1fr))", // Responsive grid
+                      gridGap: "10px", // Spacing between images
+                    }}
+                  >
                     {selectedPhotos.map((photo) => (
                       <img
                         key={photo.id}
@@ -544,18 +613,95 @@ const CourseDetail = () => {
                         className="gallery-image"
                         alt={photo.schoolMedia_name}
                         style={{
-                          margin: "5px",
-                          display: "inline-block",
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover", // Ensure images are cropped nicely
+                          borderRadius: "4px", // Rounded corners
+                          cursor: "pointer", // Add a pointer cursor to indicate it's clickable
+                          boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)", // Subtle shadow
                         }}
                       />
                     ))}
                   </div>
                 </Modal.Body>
-                <Modal.Footer>
+                <Modal.Footer
+                  style={{
+                    backgroundColor: "#f8f9fa",
+                    padding: "15px 20px",
+                    borderTop: "2px solid #dee2e6",
+                    display: "flex",
+                    justifyContent: "flex-end",
+                  }}
+                >
                   <Button
-                    variant="secondary"
                     onClick={handleCloseAllPhotosModal}
+                    style={{
+                      backgroundColor: "#007bff",
+                      color: "#fff",
+                      borderRadius: "5px",
+                      padding: "8px 16px",
+                      fontWeight: "600",
+                      border: "none",
+                      transition: "background-color 0.3s ease",
+                    }}
+                    onMouseOver={(e) => {
+                      e.target.style.backgroundColor = "#0056b3";
+                    }}
+                    onMouseOut={(e) => {
+                      e.target.style.backgroundColor = "#007bff";
+                    }}
                   >
+                    Close
+                  </Button>
+                </Modal.Footer>
+              </Modal>
+              {/* Swiper Modal */}
+              <Modal
+                show={showSwiperModal}
+                onHide={handleCloseSwiperModal}
+                size="md"
+                centered
+              >
+                <Modal.Header
+                  closeButton
+                  style={{
+                    backgroundColor: "#B71A18", // Dark background for the Swiper modal
+                    color: "#fff",
+                  }}
+                >
+                  <Modal.Title>Photo Viewer</Modal.Title>
+                </Modal.Header>
+                <Modal.Body
+                  style={{
+                    backgroundColor: "#fff", // Keep the background dark for photo viewing
+                    padding: "0", // Remove padding for full-width Swiper
+                  }}
+                >
+                  <Swiper
+                    modules={[Navigation, Pagination]}
+                    initialSlide={activePhotoIndex} // Start Swiper on the clicked photo
+                    spaceBetween={30} // Space between slides
+                    slidesPerView={1} // Show one photo at a time
+                    navigation
+                    pagination={{ clickable: true }} // Optional: Add pagination
+                  >
+                    {selectedPhotos.map((photo) => (
+                      <SwiperSlide key={photo.id}>
+                        <img
+                          src={`${baseURL}storage/${photo.schoolMedia_location}`}
+                          alt={photo.schoolMedia_name}
+                          style={{
+                            width: "100%",
+                            height: "auto", // Maintain aspect ratio
+                            objectFit: "contain", // Ensure the image fits inside the slide
+                          }}
+                        />
+                      </SwiperSlide>
+                    ))}
+                  </Swiper>
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button variant="secondary" onClick={handleCloseSwiperModal}>
                     Close
                   </Button>
                 </Modal.Footer>
