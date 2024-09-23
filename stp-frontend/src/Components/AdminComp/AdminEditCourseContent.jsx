@@ -17,7 +17,10 @@ const AdminEditCourseContent = () => {
     const [qualificationList, setQualificationList] = useState([]); 
     const [modeList, setModeList] = useState([]); 
     const [schoolList, setSchoolList] = useState([]); 
-    const courseId = sessionStorage.getItem('courseId'); 
+    const courseId = sessionStorage.getItem('courseId');
+    const [logo, setLogo] = useState(null); 
+    const [newLogo, setNewLogo] = useState(null);
+    const [loading, setLoading] = useState(false); 
     const [formData, setFormData] = useState({
         
         name: "",
@@ -44,6 +47,7 @@ const AdminEditCourseContent = () => {
         const { name, schoolID, description, requirement, cost, period, category, qualification, mode } = formData;
         
         const formPayload = new FormData();
+        formPayload.append("id", courseId)
         formPayload.append("name", name);
         formPayload.append("schoolID", schoolID);
         formPayload.append("description", description);
@@ -53,17 +57,19 @@ const AdminEditCourseContent = () => {
         formPayload.append("category", category);
         formPayload.append("qualification", qualification);
         formPayload.append("mode", mode);
-
-    
+        
         // Append each selected intake value as "intake[]"
         selectedIntakes.forEach(intake => {
             formPayload.append("intake[]", intake);
         });
         selectedCourses.forEach(course => {
-            formPayload.append("course[]", course);
+            formPayload.append("courseFeatured[]", course);
         });
+    
+        setLoading(true);  // Set loading state to true
+    
         try {
-            const addCourseResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/addCourses`, {
+            const addCourseResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/editCourse`, {
                 method: 'POST',
                 headers: {
                     'Authorization': Authenticate,  // No need for 'Content-Type' because FormData is used
@@ -83,9 +89,62 @@ const AdminEditCourseContent = () => {
         } catch (error) {
             setError('An error occurred during course registration. Please try again later.');
             console.error('Error during course registration:', error);
+        } finally {
+            setLoading(false);  // Ensure loading state is set to false after completion
         }
-    };    
+    };
+     
     useEffect(() => {
+        if (!courseId) {
+            console.error("Course ID is not available in sessionStorage");
+            return;
+        }
+    
+        const fetchCourseDetails = async () => {
+            try {
+                const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/courseDetail`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': Authenticate,
+                    },
+                    body: JSON.stringify({ id: courseId }) // Pass courseId
+                });
+    
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+    
+                const data = await response.json();
+                const courseDetails = data.data; // Use courseDetails directly
+    
+                if (courseDetails) {
+                    setFormData({
+                        name: courseDetails.course,
+                        schoolID: courseDetails.schoolID,
+                        description: courseDetails.description,
+                        requirement: courseDetails.requirement,
+                        cost: courseDetails.cost,
+                        period: courseDetails.period,
+                        category: courseDetails.category,
+                        qualification: courseDetails.qualification,
+                        mode: courseDetails.mode
+                    });
+                    setLogo(courseDetails.logo ? `${import.meta.env.VITE_BASE_URL}storage/${courseDetails.logo}` : null);
+                    // Set selected intake and course feature IDs
+                    setSelectedIntakes(courseDetails.intake || []);  // Check for null/undefined
+                    setSelectedCourses(courseDetails.courseFeatured || []);  // Check for null/undefined
+                    
+                } else {
+                    console.error("Course not found with ID:", courseId);
+                }
+            } catch (error) {
+                console.error('Error fetching course details:', error.message);
+                setError(error.message);
+            }
+        };
+    
+    
         const fetchIntake = async () => {
             try {
                 const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/intakeList`, {
@@ -95,13 +154,13 @@ const AdminEditCourseContent = () => {
                         'Authorization': Authenticate,
                     },
                 });
-
+    
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-
+    
                 const data = await response.json();
-
+    
                 if (data && data.data) {
                     setCourseIntakeList(data.data);
                 } else {
@@ -112,9 +171,10 @@ const AdminEditCourseContent = () => {
                 setError(error.message);
             }
         };
-
+    
+        fetchCourseDetails();
         fetchIntake();
-    }, [Authenticate]);
+    }, [courseId, Authenticate]);
     useEffect(() => {
         const fetchCourse = async () => {
             try {
@@ -429,21 +489,22 @@ const AdminEditCourseContent = () => {
         }
     ];
 
-    const formCheckboxes = courseIntakeList.map((intake) => ({
-        id: `intake-${intake.id}`,
-        label: intake.name,
-        value: intake.id,
-        checked: selectedIntakes.includes(intake.id),
-        onChange: handleIntakeChange,
-    }));
+// Checkbox data generation
+const formCheckboxes = courseIntakeList.map((intake) => ({
+    id: `intake-${intake.id}`,
+    label: intake.name,
+    value: intake.id,
+    checked: selectedIntakes.includes(intake.id),
+    onChange: handleIntakeChange,
+}));
 
-    const formCourse = courseFeaturedList.map((course) => ({
-        id: `course-${course.id}`,
-        label: course.name,
-        value: course.id,
-        checked: selectedCourses.includes(course.id),
-        onChange: handleCourseChange,
-    }));
+const formCourse = courseFeaturedList.map((course) => ({
+    id: `course-${course.id}`,
+    label: course.name,
+    value: course.id,
+    checked: selectedCourses.includes(course.id),
+    onChange: handleCourseChange,
+}));
 
 
     const buttons = [
@@ -473,8 +534,10 @@ const AdminEditCourseContent = () => {
            formCourse={formCourse}
            error={error}
            buttons={buttons}
-           logo={formData.logo ? URL.createObjectURL(formData.logo) : null}
-           handleLogoChange={handleLogoChange}
+           logo={logo}
+            handleLogoChange={handleLogoChange}
+            newLogo={newLogo}
+            loading={loading}
                 />
                 </Container>
     );

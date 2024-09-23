@@ -58,7 +58,7 @@ const AdminAddCourseContent = () => {
             formPayload.append("intake[]", intake);
         });
         selectedCourses.forEach(course => {
-            formPayload.append("course[]", course);
+            formPayload.append("courseFeatured[]", course);
         });
         try {
             const addCourseResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/addCourses`, {
