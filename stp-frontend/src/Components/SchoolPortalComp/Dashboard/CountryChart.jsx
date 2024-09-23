@@ -31,11 +31,11 @@ export const barOptions = {
     position: "bottom",
     alignment: "center",
   },
-  animation: {
-    startup: true,
-    duration: 1000,
-    easing: "out",
-  },
+  // animation: {
+  //   startup: true,
+  //   duration: 1000,
+  //   easing: "out",
+  // },
 };
 
 const CountryChart = ({ typeOfFilter }) => {
@@ -54,6 +54,12 @@ const CountryChart = ({ typeOfFilter }) => {
     ["Country", "Pending", "Accept", "Reject"],
     ...barChartData.slice(0, itemBarNb),
   ];
+
+  // const modifiedBarData = [
+  //   ["Country", "Pending", "Accept", "Reject"],
+  //   ["USA", 100, 50, 20],
+  //   ["UK", 80, 40, 10],
+  // ];
 
   useEffect(() => {
     const getCountryStatistic = async () => {
@@ -121,7 +127,7 @@ const CountryChart = ({ typeOfFilter }) => {
         const statisticData = fetchedData.data;
 
         if (Array.isArray(statisticData) && statisticData.length > 0) {
-          // console.log("bar", statisticData);
+          console.log("bar", statisticData);
           setBarChartData(statisticData);
           setBarChartKey((prevKey) => prevKey + 1); // Update chartKey to trigger re-render
         } else {

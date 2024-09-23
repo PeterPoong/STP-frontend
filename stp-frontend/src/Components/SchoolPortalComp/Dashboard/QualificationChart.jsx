@@ -18,11 +18,11 @@ const options = {
     height: "70%",
     top: "10%",
   },
-  animation: {
-    startup: true,
-    duration: 1000,
-    easing: "out",
-  },
+  // animation: {
+  //   startup: true,
+  //   duration: 1000,
+  //   easing: "out",
+  // },
 };
 
 export const barOptions = {
@@ -31,11 +31,11 @@ export const barOptions = {
     position: "bottom",
     alignment: "center",
   },
-  animation: {
-    startup: true,
-    duration: 1000,
-    easing: "out",
-  },
+  // animation: {
+  //   startup: true,
+  //   duration: 1000,
+  //   easing: "out",
+  // },
 };
 
 const QualificationChart = ({ typeOfFilter }) => {
