@@ -81,7 +81,6 @@ const InstituteListing = ({
   const { selectedCategory } = location.state || {};
 
   /* Reset filter is here */
-
   const resetFilters = () => {
     setSelectedLocationFilters([]);
     setCategoryFilters([]);
@@ -133,16 +132,6 @@ const InstituteListing = ({
   }, [selectedCategory]);
 
   /*------- End of Reset filter --------*/
-
-  // // Pagination
-  // useEffect(() => {
-  //   setTotalPages(Math.ceil(institutes.length / itemsPerPage));
-  // }, [institutes, itemsPerPage]);
-
-  // const paginatedInstitutes = filteredPrograms.slice(
-  //   (currentPage - 1) * itemsPerPage,
-  //   currentPage * itemsPerPage
-  // );
 
   /* ----------------------University Dropdown--------------------------- */
 
@@ -302,6 +291,50 @@ const InstituteListing = ({
     fetchCategories();
   }, []);
 
+  const fetchInstitutesByCategory = async (selectedCategories) => {
+    if (!selectedCategories.length) {
+      setFilteredPrograms(institutes); // Reset if no categories are selected
+      return;
+    }
+
+    try {
+      const response = await fetch(apiURL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          courseCategory: selectedCategories.map((category) => category.id),
+        }),
+      });
+
+      const data = await response.json();
+      console.log("API Response Data:", data);
+
+      // Filter the institutes based on the selected categories
+      const filteredInstitutes = data.filter((institute) => {
+        if (!institute.courses || !Array.isArray(institute.courses))
+          return false;
+
+        return institute.courses.some((course) =>
+          course.courseCategory.some((courseCategoryId) =>
+            selectedCategories.some(
+              (selectedCategory) => selectedCategory.id === courseCategoryId
+            )
+          )
+        );
+      });
+
+      console.log("Filtered Institutes:", filteredInstitutes);
+
+      // Update the UI with the filtered institutes
+      setInstitutes(filteredInstitutes);
+      setFilteredPrograms(filteredInstitutes); // Ensure this is also updated
+    } catch (error) {
+      console.error("Error fetching institutes:", error);
+    }
+  };
+
   useEffect(() => {
     filterPrograms();
   }, [locationFilters, categoryFilters, institutes, searchResults]);
@@ -371,6 +404,7 @@ const InstituteListing = ({
     tuitionFee,
     searchResults,
     searchQuery,
+    selectedCountry,
   ]);
 
   useEffect(() => {
@@ -454,12 +488,39 @@ const InstituteListing = ({
     console.log("Institutes before filtering:", institutes);
     console.log("Search Results:", searchResults);
 
+    let results = institutes;
+
+    // Filter by selected country
+    if (selectedCountry) {
+      results = results.filter(
+        (institute) => institute.countryID === selectedCountry.country_id
+      );
+    }
+
+    // Apply category filter
+    if (categoryFilters.length > 0) {
+      results = results.filter((institute) => {
+        if (Array.isArray(institute.courses)) {
+          return institute.courses.some(
+            (course) =>
+              course.courseCategory &&
+              course.courseCategory.some((catId) =>
+                categoryFilters.some((cat) => cat.id === catId)
+              )
+          );
+        }
+        return false; // If courses is not an array, exclude this institute
+      });
+    }
+
+    // Prepare search result IDs for filtering
     const searchResultIDs =
       searchResults && Array.isArray(searchResults)
         ? searchResults.map((result) => result.id)
         : [];
 
-    const filtered = institutes.filter((institute) => {
+    // Apply various filters
+    const filtered = results.filter((institute) => {
       const matchesSearchResults =
         searchResultIDs.length === 0 || searchResultIDs.includes(institute.id);
 
@@ -473,11 +534,15 @@ const InstituteListing = ({
         selectedLocationFilters.length === 0 ||
         selectedLocationFilters.includes(institute.state);
 
-      const matchesCategory =
+      const matchesCategory = (institute) =>
         categoryFilters.length === 0 ||
-        categoryFilters.includes(institute.category);
+        (Array.isArray(institute.courses) &&
+          institute.courses.some((course) =>
+            course.courseCategory.some((categoryId) =>
+              categoryFilters.includes(categoryId)
+            )
+          ));
 
-      // Check if any of the selected intake filters match any of the intake values in the institute
       const matchesIntake =
         intakeFilters.length === 0 ||
         (Array.isArray(institute.intake) &&
@@ -503,7 +568,7 @@ const InstituteListing = ({
       return (
         matchesCountry &&
         matchesLocation &&
-        matchesCategory &&
+        matchesCategory(institute) &&
         matchesIntake &&
         matchesMode &&
         matchesInstitute &&
@@ -511,8 +576,11 @@ const InstituteListing = ({
         (matchesInstituteName || matchesCountryName)
       );
     });
+
     console.log("Filtered Institutes:", filtered);
-    setFilteredPrograms(filtered);
+
+    // Update state with the filtered results
+    setFilteredPrograms(filtered, results);
   };
 
   // useEffect(() => {
@@ -520,24 +588,20 @@ const InstituteListing = ({
   // }, [institutes, searchQuery]);
 
   useEffect(() => {
-    console.log("Filtering programs with:", {
-      selectedLocationFilters,
-      categoryFilters,
-      intakeFilters,
-      modeFilters,
-      tuitionFee,
-      institutes,
-      searchResults,
-      searchQuery, // Add this if searchQuery affects filtering
-    });
+    console.log("Institutes:", institutes);
+    console.log("Filtered Programs:", filteredPrograms);
+    console.log("Search Results:", searchResults);
+  }, [institutes, filteredPrograms, searchResults]);
+
+  useEffect(() => {
     filterPrograms();
   }, [
+    institutes,
     selectedLocationFilters,
     categoryFilters,
     intakeFilters,
     modeFilters,
     tuitionFee,
-    institutes,
     searchResults,
     searchQuery, // Ensure this is included for filtering
   ]);
@@ -564,14 +628,17 @@ const InstituteListing = ({
     }
   };
 
-  const handleCategoryChange = (category) => {
-    if (categoryFilters.includes(category.category_name)) {
-      setCategoryFilters(
-        categoryFilters.filter((c) => c !== category.category_name)
-      );
-    } else {
-      setCategoryFilters([...categoryFilters, category.category_name]);
-    }
+  const handleCategoryChange = (selectedCategory) => {
+    const updatedFilters = categoryFilters.some(
+      (category) => category.id === selectedCategory.id
+    )
+      ? categoryFilters.filter(
+          (category) => category.id !== selectedCategory.id
+        )
+      : [...categoryFilters, selectedCategory];
+
+    setCategoryFilters(updatedFilters);
+    fetchInstitutesByCategory(updatedFilters); // Call the fetching function to update institutes
   };
 
   const handleIntakeChange = (intake) => {
@@ -616,13 +683,16 @@ const InstituteListing = ({
           <Row>
             <Col md={6} lg={6}>
               <div className="card-image mb-3 mb-md-0">
-                <div className="d-flex" style={{ width: "100%" }}>
-                  <div style={{ paddingLeft: "20px" }}>
+                <div
+                  className="d-flex"
+                  style={{ width: "100%", marginTop: "10px" }}
+                >
+                  <div style={{ paddingLeft: "10px" }}>
                     <Link to={`/knowMoreInstitute/${institute.id}`}>
                       <img
                         src={`${baseURL}storage/${institute.logo}`}
                         alt={institute.name}
-                        width="100"
+                        width="120"
                         style={{ cursor: "pointer" }} // Optional: add a pointer cursor to indicate it's clickable
                       />
                     </Link>
@@ -641,17 +711,15 @@ const InstituteListing = ({
                       style={{ marginRight: "10px", color: "#AAAAAA" }}
                     ></i>
                     <span>
-                      {institute.city || "N/A"}
-                      <span style={{ margin: "0 10px" }}>,</span>
                       {institute.state || "N/A"}
-                      <span style={{ margin: "0 10px" }}>,</span>
+                      <span style={{ margin: "0 5px" }}>,</span>
                       {institute.country || "N/A"}
                     </span>
                     <a
                       href="#"
                       className="map-link"
                       style={{
-                        paddingLeft: "30px",
+                        paddingLeft: "10px",
                         fontWeight: "lighter",
                         color: "#1745BA",
                       }}
@@ -704,7 +772,7 @@ const InstituteListing = ({
                                 display: "inline-block",
                               }}
                             >
-                              {institute.id || "N/A"}
+                              {institute.courses || "N/A"} Courses offered
                             </span>
                           </div>
                           <div style={{ marginTop: "10px" }}>
@@ -800,12 +868,13 @@ const InstituteListing = ({
                     key={index}
                     type="checkbox"
                     label={category.category_name}
-                    checked={categoryFilters.includes(category.category_name)}
+                    checked={categoryFilters.some((c) => c.id === category.id)}
                     onChange={() => handleCategoryChange(category)}
                   />
                 ))}
               </Form.Group>
             </div>
+
             <div className="filter-group">
               <h5 style={{ marginTop: "25px" }}>Study Level</h5>
               <Form.Group>
@@ -996,6 +1065,7 @@ const InstituteListing = ({
             </Accordion.Item>
           </Accordion>
         </Col>
+
         <Col xs={12} md={8} className="degreeinstitutes-division">
           <div>
             <img
@@ -1028,28 +1098,23 @@ const InstituteListing = ({
                   {console.log(
                     "No filtered institutes available, showing empty state"
                   )}
-                  <div className="blankslate-institutes">
+                  <div
+                    className="blankslate-institutes"
+                    style={{ marginLeft: "250px" }}
+                  >
                     <img
                       className="blankslate-institutes-top-img"
                       src={emptyStateImage}
                       alt="Empty State"
                     />
                     <div className="blankslate-institutes-body">
-                      <h4>No institutes found</h4>
+                      <h4>No institutes found ☹️</h4>
                       <p>
                         There are no institutes that match your selected
                         filters. Please try adjusting your filters and search
                         criteria.
                       </p>
                     </div>
-                    {/* <div className="blankslate-actions">
-                      <button className="btn btn-default" type="button">
-                        Reset Filters
-                      </button>
-                      <button className="btn btn-primary" type="button">
-                        Search Again
-                      </button>
-                    </div> */}
                   </div>
                 </>
               )}

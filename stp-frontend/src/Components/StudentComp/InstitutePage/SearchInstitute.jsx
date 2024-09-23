@@ -20,6 +20,7 @@ import "../../../css/StudentCss/institutepage css/Institute.css";
 // import InstituteListing from "./InstituteListing";
 import InstituteListing from "../../../Components/StudentComp/InstitutePage/InstituteListing";
 import CountryFlag from "react-country-flag";
+import emptyStateImage from "../../../assets/StudentAssets/emptyStateImage/emptystate.png";
 
 const baseURL = import.meta.env.VITE_BASE_URL;
 
@@ -60,6 +61,9 @@ const SearchInstitute = () => {
 
     fetchData("");
   };
+
+  const shouldDisplayBlankSlate =
+    !loading && searchResults.length === 0 && selectedCountry !== null;
 
   /* End of Reset Filter here */
 
@@ -233,7 +237,7 @@ const SearchInstitute = () => {
 
   return (
     <Container>
-      <h3 style={{ textAlign: "left", paddingTop: "20px" }}>
+      <h3 style={{ textAlign: "left", paddingTop: "15px" }}>
         Institute in Malaysia
       </h3>
       {/* Country Dropdown */}
@@ -425,12 +429,32 @@ const SearchInstitute = () => {
 
       {error && <Alert variant="danger">{error}</Alert>}
 
-      <InstituteListing
-        searchResults={searchResults}
-        countryID={selectedCountry?.id}
-        selectedInstitute={selectedInstitute?.core_metaName}
-        resetTrigger={resetTrigger}
-      />
+      {shouldDisplayBlankSlate ? (
+        <div className="blankslate-institutes">
+          <img
+            className="blankslate-institutes-top-img"
+            src={emptyStateImage}
+            alt="Empty State"
+            style={{ height: "175px" }}
+          />
+          <div className="blankslate-institutes-body">
+            <h4>
+              <strong>No institutes found ☹️</strong>
+            </h4>
+            <p>
+              There are no institutes that match your selected country. Please
+              try adjusting your filters and search criteria.
+            </p>
+          </div>
+        </div>
+      ) : (
+        <InstituteListing
+          searchResults={searchResults}
+          countryID={selectedCountry?.id}
+          selectedInstitute={selectedInstitute?.core_metaName}
+          resetTrigger={resetTrigger}
+        />
+      )}
     </Container>
   );
 };

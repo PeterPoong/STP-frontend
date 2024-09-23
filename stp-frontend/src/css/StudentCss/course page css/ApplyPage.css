@@ -68,7 +68,15 @@
     margin-top: 50px;
   }
 
+  .gallery-image-courses{
+    max-width: 290px;
+    height: 140px;
+    object-fit: fill;
+  }
 
+  .gallery-image-courses:last-child{
+    margin-right: 0;
+  }
   /* .carousel-item .text-center {
     display: flex;
     justify-content: center;

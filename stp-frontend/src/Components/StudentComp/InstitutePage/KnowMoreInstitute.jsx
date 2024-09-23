@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import NavButtons from "../NavButtons";
+// import NavButtons from "../../StudentComp/NavButtons";
 import headerImage from "../../../assets/StudentAssets/institute image/StudyPal10.png";
 import "../../../css/StudentCss/institutepage css/KnowMoreInstitute.css";
 import {
@@ -40,6 +41,19 @@ const KnowMoreInstitute = () => {
   const [showAllPhotosModal, setShowAllPhotosModal] = useState(false);
   const [selectedPhotos, setSelectedPhotos] = useState([]);
   const [startIndex, setStartIndex] = useState(0);
+
+  const [showSwiperModal, setShowSwiperModal] = useState(false);
+  const [activePhotoIndex, setActivePhotoIndex] = useState(0); // To track the clicked photo
+
+  // Function to handle opening the Swiper modal and set the active photo
+  const openSwiperModal = (index) => {
+    setActivePhotoIndex(index);
+    setShowSwiperModal(true);
+  };
+
+  const handleCloseSwiperModal = () => {
+    setShowSwiperModal(false);
+  };
 
   const openModal = (photos, index) => {
     setSelectedPhotos(photos);
@@ -144,12 +158,12 @@ const KnowMoreInstitute = () => {
     );
   }
 
-  const handleApplyNow = (program) => {
-    navigate("/applynow", { state: { program } }); // Navigate with state
-  };
-
   const handleKnowMoreClick = (id) => {
     navigate(`/knowMoreInstitute/${id}`); // Navigate to CourseDetail with the courseID
+  };
+
+  const handleApplyNow = (program) => {
+    navigate(`/studentApplyCourses/${program.id}`, { state: { program } });
   };
 
   return (
@@ -208,7 +222,6 @@ const KnowMoreInstitute = () => {
                   <Button
                     style={{
                       backgroundColor: "#FF6B00",
-                      fontWeight: "lighter",
                       border: "none",
                       width: "180px",
                       height: "50px",
@@ -223,7 +236,7 @@ const KnowMoreInstitute = () => {
 
               <div className="image-gallery" style={{ marginTop: "20px" }}>
                 {institutes.map((institute) =>
-                  institute.school_photo.map((photo, index) => (
+                  institute.school_photo.slice(0, 5).map((photo, index) => (
                     <div
                       key={photo.id}
                       style={{ display: "inline-block", position: "relative" }}
@@ -233,8 +246,10 @@ const KnowMoreInstitute = () => {
                         src={`${baseURL}storage/${photo.schoolMedia_location}`}
                         className="gallery-image"
                         alt={`Slide ${photo.id}`}
+                        width="500"
+                        style={{ objectFit: "cover" }}
                       />
-                      {index === 4 && (
+                      {index === 4 && institute.school_photo.length > 5 && (
                         <div
                           style={{
                             position: "absolute",
@@ -270,17 +285,28 @@ const KnowMoreInstitute = () => {
                     </div>
                   ))
                 )}
-
                 <Modal
                   show={modalIsOpen}
                   onHide={closeModal}
                   size="md"
                   centered
                 >
-                  <Modal.Header closeButton>
+                  <Modal.Header
+                    closeButton
+                    style={{
+                      backgroundColor: "#B71A18", // Dark background for the Swiper modal
+                      color: "#fff",
+                    }}
+                  >
                     <Modal.Title>Image Gallery</Modal.Title>
                   </Modal.Header>
-                  <Modal.Body>
+
+                  <Modal.Body
+                    style={{
+                      backgroundColor: "#fff", // Black background to emphasize the photos
+                      padding: "0", // Remove padding for a full-width swiper
+                    }}
+                  >
                     <Swiper
                       initialSlide={startIndex}
                       spaceBetween={10}
@@ -289,6 +315,9 @@ const KnowMoreInstitute = () => {
                       loop={true}
                       pagination={{ clickable: true }}
                       modules={[Navigation, Pagination]}
+                      style={{
+                        padding: "20px 0", // Padding to add spacing around the Swiper content
+                      }}
                     >
                       {selectedPhotos.map((photo) => (
                         <SwiperSlide key={photo.id}>
@@ -296,6 +325,10 @@ const KnowMoreInstitute = () => {
                             src={`${baseURL}storage/${photo.schoolMedia_location}`}
                             className="w-100"
                             alt={`Slide ${photo.id}`}
+                            style={{
+                              objectFit: "contain", // Ensure the image maintains its aspect ratio
+                              maxHeight: "70vh", // Limit the height for better viewing on small screens
+                            }}
                           />
                         </SwiperSlide>
                       ))}
@@ -303,35 +336,154 @@ const KnowMoreInstitute = () => {
                   </Modal.Body>
                 </Modal>
 
+                {/*Show More Content*/}
+
                 <Modal
                   show={showAllPhotosModal}
                   onHide={handleCloseAllPhotosModal}
                   size="lg"
                   centered
                 >
-                  <Modal.Header closeButton>
-                    <Modal.Title>All Photos</Modal.Title>
+                  <Modal.Header
+                    closeButton
+                    style={{
+                      backgroundColor: "#B71A18", // Dark background color for contrast
+                      color: "#fff",
+                      padding: "20px",
+                      borderTopLeftRadius: "8px",
+                      borderTopRightRadius: "8px",
+                      borderBottom: "2px solid #dee2e6",
+                    }}
+                  >
+                    <Modal.Title
+                      style={{
+                        fontSize: "1.5rem",
+                        fontWeight: "600",
+                        letterSpacing: "0.5px",
+                        textTransform: "uppercase",
+                      }}
+                    >
+                      All Photos
+                    </Modal.Title>
                   </Modal.Header>
-                  <Modal.Body>
-                    <div className="image-gallery-institute-modal">
-                      {selectedPhotos.map((photo) => (
+
+                  <Modal.Body
+                    style={{
+                      maxHeight: "70vh",
+                      overflowY: "auto",
+                      paddingRight: "15px",
+                    }}
+                  >
+                    <div
+                      className="image-gallery-institute-modal"
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns:
+                          "repeat(auto-fill, minmax(150px, 1fr))",
+                        gridGap: "10px",
+                        justifyItems: "center",
+                      }}
+                    >
+                      {selectedPhotos.map((photo, index) => (
                         <img
                           key={photo.id}
                           src={`${baseURL}storage/${photo.schoolMedia_location}`}
                           className="gallery-image"
                           alt={photo.schoolMedia_name}
                           style={{
-                            margin: "5px",
-                            display: "inline-block",
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                            borderRadius: "4px",
+                            boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+                            cursor: "pointer", // Add a pointer cursor to indicate it's clickable
                           }}
+                          onClick={() => openSwiperModal(index)} // On click, open Swiper modal
                         />
                       ))}
                     </div>
                   </Modal.Body>
+                  <Modal.Footer
+                    style={{
+                      backgroundColor: "#f8f9fa",
+                      padding: "15px 20px",
+                      borderTop: "2px solid #dee2e6",
+                      display: "flex",
+                      justifyContent: "flex-end",
+                    }}
+                  >
+                    <Button
+                      onClick={handleCloseAllPhotosModal}
+                      style={{
+                        backgroundColor: "#007bff",
+                        color: "#fff",
+                        borderRadius: "5px",
+                        padding: "8px 16px",
+                        fontWeight: "600",
+                        letterSpacing: "0.5px",
+                        border: "none",
+                        transition: "background-color 0.3s ease",
+                      }}
+                      onMouseOver={(e) => {
+                        e.target.style.backgroundColor = "#0056b3";
+                      }}
+                      onMouseOut={(e) => {
+                        e.target.style.backgroundColor = "#007bff";
+                      }}
+                    >
+                      Close
+                    </Button>
+                  </Modal.Footer>
+                </Modal>
+                {/* Swiper Modal */}
+                <Modal
+                  show={showSwiperModal}
+                  onHide={handleCloseSwiperModal}
+                  size="md"
+                  centered
+                >
+                  <Modal.Header
+                    closeButton
+                    style={{
+                      backgroundColor: "#B71A18", // Dark background for the Swiper modal
+                      color: "#fff",
+                    }}
+                  >
+                    <Modal.Title>Photo Viewer</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body
+                    style={{
+                      backgroundColor: "#fff", // Keep the background dark for photo viewing
+                      padding: "0", // Remove padding for full-width Swiper
+                    }}
+                  >
+                    <Swiper
+                      modules={[Navigation, Pagination]}
+                      initialSlide={activePhotoIndex} // Start Swiper on the clicked photo
+                      spaceBetween={30} // Space between slides
+                      slidesPerView={1} // Show one photo at a time
+                      navigation
+                      pagination={{ clickable: true }} // Optional: Add pagination
+                    >
+                      {selectedPhotos.map((photo) => (
+                        <SwiperSlide key={photo.id}>
+                          <img
+                            src={`${baseURL}storage/${photo.schoolMedia_location}`}
+                            alt={photo.schoolMedia_name}
+                            style={{
+                              width: "100%",
+                              height: "auto", // Maintain aspect ratio
+                              objectFit: "contain", // Ensure the image fits inside the slide
+                            }}
+                          />
+                        </SwiperSlide>
+                      ))}
+                    </Swiper>
+                  </Modal.Body>
                   <Modal.Footer>
                     <Button
                       variant="secondary"
-                      onClick={handleCloseAllPhotosModal}
+                      onClick={handleCloseSwiperModal}
                     >
                       Close
                     </Button>
@@ -457,10 +609,12 @@ const KnowMoreInstitute = () => {
                               paddingTop: "10px",
                               fontStyle: "italic",
                               color: "#514E4E",
+                              whiteSpace: "normal", // Allow wrapping
+                              wordWrap: "break-word", // Break long words and wrap
                             }}
                           >
-                            {institute.intake && institute.intake.length > 0
-                              ? institute.intake.join(", ")
+                            {institute.month && institute.month.length > 0
+                              ? institute.month.join(", ")
                               : "N/A"}
                           </h5>
                         </div>
@@ -574,8 +728,6 @@ const KnowMoreInstitute = () => {
               <div className="d-flex justify-content-center">
                 <Button
                   style={{
-                    fontWeight: "lighter",
-
                     backgroundColor: "#FF6B00",
                     border: "none",
                     width: "180px",
@@ -591,7 +743,7 @@ const KnowMoreInstitute = () => {
               {courses.length > 0 && (
                 <Container className="my-4">
                   <h4>Courses Offered</h4>
-                  {courses.slice(0, 1).map((course) => (
+                  {courses.slice(0, 3).map((course) => (
                     <div className="card mt-3" key={course.id}>
                       <div className="card-body d-flex flex-column flex-md-row align-items-start">
                         <Row className="w-100">
@@ -680,7 +832,9 @@ const KnowMoreInstitute = () => {
                                             style={{ marginRight: "10px" }}
                                           ></i>
                                           <span style={{ paddingLeft: "20px" }}>
-                                            {course.course_intake}
+                                            {Array.isArray(course.course_intake)
+                                              ? course.course_intake.join(", ")
+                                              : course.course_intake}
                                           </span>
                                         </div>
                                       </Row>
@@ -834,7 +988,13 @@ const KnowMoreInstitute = () => {
                                                       paddingLeft: "20px",
                                                     }}
                                                   >
-                                                    {course.course_intake}
+                                                    {Array.isArray(
+                                                      course.course_intake
+                                                    )
+                                                      ? course.course_intake.join(
+                                                          ", "
+                                                        )
+                                                      : course.course_intake}
                                                   </span>
                                                 </div>
                                               </Row>
@@ -987,21 +1147,41 @@ const KnowMoreInstitute = () => {
                               <div className="d-flex justify-content-center">
                                 <button
                                   className="button-know-more"
-                                  onClick={() =>
-                                    navigate(
-                                      `/knowMoreInstitute/${institute.id}`
-                                    )
-                                  }
+                                  onClick={() => {
+                                    console.log(
+                                      "Institute for Know More:",
+                                      institute
+                                    );
+                                    if (institute && institute.school_id) {
+                                      navigate(
+                                        `/knowMoreInstitute/${institute.school_id}`
+                                      );
+                                    } else {
+                                      console.error(
+                                        "Institute ID is undefined"
+                                      );
+                                    }
+                                  }}
                                 >
                                   {institute.knowMoreText || "Know More"}
                                 </button>
                                 <button
                                   className="button-apply-now"
-                                  onClick={() =>
-                                    navigate(
-                                      `/studentApplyCourse/${institute.school_id}`
-                                    )
-                                  }
+                                  onClick={() => {
+                                    console.log(
+                                      "Institute for Apply Now:",
+                                      institute
+                                    );
+                                    if (institute && institute.school_id) {
+                                      navigate(
+                                        `/studentApplyCourses/${institute.id}`
+                                      );
+                                    } else {
+                                      console.error(
+                                        "Institute ID is undefined"
+                                      );
+                                    }
+                                  }}
                                 >
                                   {institute.applyNowText || "Apply Now"}
                                 </button>

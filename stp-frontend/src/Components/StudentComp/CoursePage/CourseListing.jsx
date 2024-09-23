@@ -634,11 +634,12 @@ const CourseListing = ({
   };
 
   const handleApplyNow = (program) => {
-     navigate(`/studentApplyCourses/${program.id}`, { state: { program } });
-     };
-    const handleInstituteChange = (institute) => {
+    navigate(`/studentApplyCourses/${program.id}`, { state: { program } });
+  };
+
+  const handleInstituteChange = (institute) => {
     setSelectedInstitute(institute);
-     };
+  };
 
   const mappedPrograms = currentCourses.map((program, index) => (
     <>
@@ -1025,40 +1026,21 @@ const CourseListing = ({
                   {console.log(
                     "No filtered programs available, showing empty state"
                   )}
-                  <div className="blankslate-courses text-center">
+                  <div
+                    className="blankslate-courses text-center"
+                    style={{ marginLeft: "100px" }}
+                  >
                     <img
                       className="blankslate-courses-top-img"
                       src={emptyStateImage}
                       alt="Empty State"
                     />
                     <div className="blankslate-courses-body">
-                      <h4>No programs found</h4>
+                      <h4>No programs found ☹️</h4>
                       <p>
                         There are no programs that match your selected filters.
                         Please try adjusting your filters and search criteria.
                       </p>
-                    </div>
-                    <div className="blankslate-actions mt-3">
-                      <button
-                        className="btn btn-default mx-2"
-                        type="button"
-                        onClick={() => {
-                          // Reset filters logic here
-                          console.log("Filters reset");
-                        }}
-                      >
-                        Reset Filters
-                      </button>
-                      <button
-                        className="btn btn-primary mx-2"
-                        type="button"
-                        onClick={() => {
-                          // Trigger a new search or provide feedback
-                          console.log("Search again");
-                        }}
-                      >
-                        Search Again
-                      </button>
                     </div>
                   </div>
                 </>

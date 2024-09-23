@@ -54,7 +54,7 @@ const NavigationBar = () => {
             >
               Schools
             </Button>
-            <NavDropdown
+            {/* <NavDropdown
               title="Scholarships"
               id="scholarship-nav-dropdown"
               className="nav-dropdown-custom"
@@ -93,7 +93,7 @@ const NavigationBar = () => {
               <NavDropdown.Item as={Link} to="#action/3.4">
                 Separated link
               </NavDropdown.Item>
-            </NavDropdown>
+            </NavDropdown> */}
           </Nav>
           <div className="ml-auto navbutton-section">
             <NavButtons />

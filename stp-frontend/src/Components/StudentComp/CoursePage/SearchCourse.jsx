@@ -18,6 +18,7 @@ import CourseListing from "../../../Components/StudentComp/CoursePage/CourseList
 import "../../../css/StudentCss/course page css/CoursesPage.css";
 import CountryFlag from "react-country-flag";
 import debounce from "lodash.debounce";
+import emptyStateImage from "../../../assets/StudentAssets/emptyStateImage/emptystate.png";
 
 const baseURL = import.meta.env.VITE_BASE_URL;
 const apiURL = `${baseURL}api/student/courseList`;
@@ -62,6 +63,9 @@ const SearchCourse = ({ currentCourses }) => {
     fetchData(searchQuery); // Fetch the new data based on the updated page
     scrollToTop(); // Optional, to scroll back to the top after the page change
   };
+
+  const shouldDisplayBlankSlate =
+    !loading && searchResults.length === 0 && selectedCountry !== null;
 
   const [resetTrigger, setResetTrigger] = useState(false);
 
@@ -215,7 +219,7 @@ const SearchCourse = ({ currentCourses }) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          search: query.trim(),
+          search: selectedCountry ? "" : query.trim(),
           page: currentPage,
           countryID: selectedCountry?.country_id,
           institute: selectedInstitute?.id,
@@ -532,13 +536,33 @@ const SearchCourse = ({ currentCourses }) => {
       )}
       {error && <Alert variant="danger">{error}</Alert>}
 
-      <CourseListing
-        searchResults={searchResults}
-        countryID={selectedCountry?.id}
-        selectedInstitute={selectedInstitute?.core_metaName}
-        selectedQualification={selectedQualification?.qualification_name}
-        resetTrigger={resetTrigger} // Pass reset trigger here
-      />
+      {shouldDisplayBlankSlate ? (
+        <div className="blankslate-courses">
+          <img
+            className="blankslate-courses-top-img"
+            src={emptyStateImage}
+            alt="Empty State"
+            style={{ height: "175px" }}
+          />
+          <div className="blankslate-courses-body">
+            <h4>
+              <strong>No programs found ☹️</strong>
+            </h4>
+            <p>
+              There are no courses that match your selected country. Please try
+              adjusting your filters and search criteria.
+            </p>
+          </div>
+        </div>
+      ) : (
+        <CourseListing
+          searchResults={searchResults}
+          countryID={selectedCountry?.id}
+          selectedInstitute={selectedInstitute?.core_metaName}
+          selectedQualification={selectedQualification?.qualification_name}
+          resetTrigger={resetTrigger} // Pass reset trigger here
+        />
+      )}
     </Container>
   );
 };
