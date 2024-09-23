@@ -216,6 +216,8 @@ const CoursesListing = ({ onAddCourseClick, courseID, editCourse }) => {
       try {
         const formData = {
           search: search,
+          category: category,
+          qualification: qualification,
         };
         getCourses(formData);
       } catch (error) {
@@ -223,7 +225,7 @@ const CoursesListing = ({ onAddCourseClick, courseID, editCourse }) => {
       }
     };
     searchCourse();
-  }, [search]);
+  }, [search, category, qualification]);
 
   // useEffect(() => {
   //   const filterByCategory = () => {
@@ -279,7 +281,6 @@ const CoursesListing = ({ onAddCourseClick, courseID, editCourse }) => {
         <Col md={6}>
           <Form.Group controlId="searchInput">
             <Form.Label className="ms-4 fw-light">Search:</Form.Label>
-
             <InputGroup>
               <InputGroup.Text style={{ border: "none", background: "none" }}>
                 <Search />

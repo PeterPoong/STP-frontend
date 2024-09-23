@@ -1,0 +1,284 @@
+/* Container for the Manage Account section */
+.manageAccountContainer {
+    background-color: #fce9e9;
+    padding: 2rem;
+    width: 100%; /* Make it full width */
+    height: 100%; /* Makes the container take the full height */
+    min-height: 100vh; /* Ensures the container fills the viewport height */
+    position: relative;
+    margin-left: 0%;
+    /* margin: 0 auto; Centers the content */
+}
+
+.basicText{
+  font-size: 15PX;
+    color: #B71A18; 
+    
+}
+
+.premiumText {
+    font-size: 15PX;
+    color: white; /* Set text color to white */
+}
+
+
+.customBtn {
+    background-color: #B71A18; /* Red fill */
+    color: white; /* White text */
+    border: none; /* Remove border */
+    padding: 5px 30px; /* Adjust padding as needed */
+    border-radius: 10px;
+    font-size: 16px; /* Adjust font size */
+    cursor: default; /* Remove pointer cursor */
+    transition: none; /* Disable transition for smoothness */
+}
+
+.customBtn:hover {
+    background-color: #B71A18; /* Keep the same red fill on hover */
+    color: white; /* Keep white text on hover */
+    cursor: default; /* Ensure cursor stays default on hover */
+}
+
+
+.customPremiumBtn {
+    background-color: white; /* Red fill */
+    color: #B71A18; /* White text */
+    border: none; /* Remove border */
+    padding: 5px 30px; /* Adjust padding as needed */
+    border-radius: 10px;
+    font-size: 16px; /* Adjust font size */
+    cursor: default; /* Remove pointer cursor */
+    transition: none; /* Disable transition for smoothness */
+}
+
+.customPremiumBtn:hover {
+    background-color: white; /* Keep the same red fill on hover */
+    color: white; /* Keep white text on hover */
+    cursor: default; /* Ensure cursor stays default on hover */
+}
+
+
+.customCurrentBtn
+{
+    background-color: #B71A18; /* Red fill */
+    color: white; /* White text */
+    border: none; /* Remove border */
+    padding: 10px 40px; /* Adjust padding as needed */
+    border-radius: 3px;
+    font-size: 16px; /* Adjust font size */
+    cursor: default; /* Remove pointer cursor */
+    transition: none; /* Disable transition for smoothness */
+}
+.customCurrentBtn:hover {
+    background-color: #B71A18; /* Keep the same red fill on hover */
+    color: white; /* Keep white text on hover */
+    cursor: default; /* Ensure cursor stays default on hover */
+}
+
+.packageName {
+    color: #B71A18;
+  }
+
+.premiumPackageName{
+    color: white;
+}
+
+  
+  /* Heading styling with responsive font size */
+  .heading {
+    font-size: 3rem;
+    /* font-weight: bold; */
+    color: #333;
+    position: relative;
+    z-index: 2;
+    text-align: left; /* Centers the heading */
+  }
+  
+  /* Description styling */
+  .description {
+    font-size: 1rem;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 2;
+    text-align: left; /* Centers the description */
+  }
+  
+  /* Stickman image stays behind, responsive adjustments */
+  .leftCornerImage {
+    width: 100%;
+    max-width: 400px; /* Limit the image width */
+    height: auto;
+    position: absolute;
+    bottom:0rem;
+    left: -12rem;
+    z-index: 1;
+
+  }
+
+  /* Package cards are responsive */
+
+  .packageBasicCard {
+    background-color: #fff;
+    border-radius: 15px;
+    padding: 30px; /* Increased padding for more space inside */
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 2;
+
+    width: 50%; 
+    height: 80%; 
+  }
+  
+  .basicPackage {
+    margin-top: 40%; 
+    margin-left: 55%; 
+  }
+  
+
+  .packagePremiumCard {
+    background-color: #B71A18;
+    border-radius: 15px;
+    padding: 20px; /* Keep padding for internal spacing */
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 2;
+    margin: 10px; /* Space between cards */
+    flex: 1; /* Allow the cards to grow */
+    max-height: 60%;
+    /* max-width: 100%; 
+    min-width: 250px;  */
+    width: 50%; 
+    height: 80%;
+
+  }
+   
+
+  .premiumPackage {
+    display: flex;
+    flex-direction: column; /* Allows content to stack */
+    justify-content: flex-end; /* Align content to the bottom */
+    padding: 20px;
+    margin-top: 45%;
+    margin-left: 10%;
+    /* max-height: 70%; 
+    max-width: 280px;  */
+  }
+  
+  /* Price font size adjustment */
+  .price {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 0; /* Remove bottom margin */
+  }
+  
+  .priceLabel {
+    font-size: 0.8rem; /* Adjust the size as needed */
+    margin-top: 0; /* Ensure there's no top margin */
+    margin-bottom: 0; /* Ensure there's no bottom margin */
+  }
+
+
+  .PremiumPrice {
+    font-size: 2rem;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 0; /* Remove bottom margin */
+  }
+  
+  .PremiumPriceLabel {
+    font-size: 0.8rem; /* Adjust the size as needed */
+    margin-top: 0; /* Ensure there's no top margin */
+    margin-bottom: 0; /* Ensure there's no bottom margin */
+  }
+  
+  
+  /* Button styling */
+  button {
+    margin-top: 10px;
+    background-color: #e74c3c;
+    color: white;
+    border-radius: 5px;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+  }
+
+
+.contactButton{
+  background-color: white;
+  color: #dc3545; /* Bootstrap danger color */
+  border: none;
+  transition: all 0.3s ease-in-out;
+}
+
+.contactButton:hover {
+  background-color: rgb(209, 122, 122);
+  color: white;
+  border: 1px solid #dc3545;
+}
+
+
+  
+  /* Media Queries for Responsive Adjustments */
+  @media (max-width: 768px) {
+    /* Adjust heading and description for smaller screens */
+    .heading {
+      font-size: 2rem;
+    }
+  
+    .description {
+      font-size: 1rem;
+    }
+  
+    /* Make the stickman image smaller */
+    .leftCornerImage {
+      max-width: 200px;
+      bottom: -10px;
+      z-index: 1; 
+    }
+  
+    /* Stack package cards on smaller screens */
+    .packageCard {
+      max-width: 100%; /* Full width */
+      margin: 10px 0; /* Stack vertically */
+    }
+  
+    /* Price adjustment */
+    .price {
+      font-size: 1.5rem;
+    }
+  
+    /* Button adjustments */
+    button {
+      padding: 8px 16px;
+      font-size: 1rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    /* Further font size reduction for very small screens */
+    .heading {
+      font-size: 1.8rem;
+    }
+  
+    .description {
+      font-size: 0.9rem;
+    }
+  
+    /* Further adjustments for stickman image */
+    .leftCornerImage {
+      max-width: 150px;
+    }
+  
+    /* Package card and price adjustments */
+    .price {
+      font-size: 1.2rem;
+    }
+  
+    button {
+      padding: 6px 12px;
+      font-size: 0.9rem;
+    }
+  }
+  

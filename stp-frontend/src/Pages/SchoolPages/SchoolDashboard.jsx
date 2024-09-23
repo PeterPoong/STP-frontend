@@ -6,7 +6,7 @@ import BasicInformation from "../../Components/SchoolPortalComp/BasicInformation
 import ManagePassword from "../../Components/SchoolPortalComp/MyProfile/ManagePassword/ManagePassword";
 import ManageAccount from "../../Components/SchoolPortalComp/MyProfile/ManageAccount/ManageAccount";
 import Applicant from "../../Components/SchoolPortalComp/Application/test";
-import Dashboard from "../../Components/SchoolPortalComp/Dashboard";
+import Dashboard from "../../Components/SchoolPortalComp/Dashboard/Dashboard";
 import Courses from "../../Components/SchoolPortalComp/Courses/Courses";
 
 const SchoolDashboard = () => {
