@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { Form, Button, Row, Col } from 'react-bootstrap';
 import { Trash2, Edit, Calendar, User, Building, LucideFileChartColumnIncreasing, Save, Trophy, FileText, Upload, X, Plus, ChevronDown, Clock4, Landmark, CircleX, AlignJustify } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
@@ -7,7 +7,7 @@ import Select from 'react-select';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import NavButtonsSP from "../../Components/StudentPortalComp/NavButtonsSP";
 import SpcFooter from "../../Components/StudentPortalComp/SpcFooter";
-import ApplicationSummary from "../../Components/StudentPortalComp/ApplicationSummary";
+import ApplicationSummary from "../../Components/StudentPortalComp/ApplyCourse/ApplicationSummary";
 import "../../css/StudentPortalStyles/StudentApplyCourse.css";
 import "../../css/StudentPortalStyles/StudentButtonGroup.css";
 import image1 from "../../assets/StudentAssets/University Logo/image1.jpg";
@@ -27,11 +27,13 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 //testing
-import WidgetPopUpRemind from "../../Components/StudentPortalComp/WidgetPopUpRemind";
-import WidgetPopUpSubmission from "../../Components/StudentPortalComp/WidgetPopUpSubmission";
-import WidgetPopUpFillIn from "../../Components/StudentPortalComp/WidgetPopUpFillIn";
 
+import WidgetPopUpSubmission from "../../Components/StudentPortalComp/Widget/WidgetPopUpSubmission";
+
+import { useNavigate } from "react-router-dom";
 // ... existing code ...
+
+
 
 const CustomConnector = styled(StepConnector)(({ theme }) => ({
   [`&.${stepConnectorClasses.alternativeLabel}`]: {
@@ -177,6 +179,10 @@ const StudentApplyCourse = () => {
   // const [showRemindPopup, setShowRemindPopup] = useState(false);
   const [showSubmissionPopup, setShowSubmissionPopup] = useState(false);
   // const [showFillInPopup, setShowFillInPopup] = useState(false);
+
+
+ 
+  
 
   //
   const [formData, setFormData] = useState({

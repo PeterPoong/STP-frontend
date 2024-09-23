@@ -2,10 +2,10 @@ import {
   createPopper,
   init_lib
 } from "./chunk-G2VN4B6H.js";
+import "./chunk-YR7MIILV.js";
 import {
   require_warning
 } from "./chunk-J5P6RILA.js";
-import "./chunk-YR7MIILV.js";
 import {
   require_jsx_runtime
 } from "./chunk-43ZI66F5.js";

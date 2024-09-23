@@ -5,7 +5,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import '../../css/StudentPortalStyles/StudentPortalWidget.css';
 
 const WidgetClub = ({ isOpen, onClose, onSave, item, isViewMode }) => {
- 
+
   const [club_name, setClubTitle] = useState('');
   const [year, setYearOfTerm] = useState(new Date());
   const [student_position, setPosition] = useState('');
@@ -13,6 +13,7 @@ const WidgetClub = ({ isOpen, onClose, onSave, item, isViewMode }) => {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [errors, setErrors] = useState({});
 
+  /*reset form function*/
   const resetForm = () => {
     setClubTitle('');
     setYearOfTerm(new Date());
@@ -21,7 +22,9 @@ const WidgetClub = ({ isOpen, onClose, onSave, item, isViewMode }) => {
     setIsEditingTitle(false);
     setErrors({});
   };
+  /*end */
 
+  /*loading and pop up the widget can check if open will set the info that retrieve from api respsonse or null, if close will reset the form */
   useEffect(() => {
     if (isOpen) {
       if (item) {
@@ -34,14 +37,17 @@ const WidgetClub = ({ isOpen, onClose, onSave, item, isViewMode }) => {
       }
     }
   }, [isOpen, item]);
+  /*end */
 
   if (!isOpen) return null;
 
+  /*close popup widget function */
   const handleClose = () => {
     resetForm();
     onClose();
   };
 
+  /*save button function when user press save button */
   const handleSave = () => {
     // Validate all fields
     const newErrors = {};
@@ -67,14 +73,19 @@ const WidgetClub = ({ isOpen, onClose, onSave, item, isViewMode }) => {
       student_position
     });
   };
+  /*end */
 
+  /*Club title edit handling function */
   const handleTitleEdit = () => {
     setIsEditingTitle(true);
   };
+  /*end */
 
+  /*Club title save handling function */
   const handleTitleSave = () => {
     setIsEditingTitle(false);
   };
+  /*end */
 
   return (
     <div className="club-widget-overlay">
@@ -93,7 +104,7 @@ const WidgetClub = ({ isOpen, onClose, onSave, item, isViewMode }) => {
                 autoFocus
                 required
               />
-              <Check size={20} color="white" onClick={handleTitleSave} className="buttonsaveam"/>
+              <Check size={20} color="white" onClick={handleTitleSave} className="buttonsaveam" />
             </>
           ) : (
             <>
@@ -107,7 +118,7 @@ const WidgetClub = ({ isOpen, onClose, onSave, item, isViewMode }) => {
           )}
         </h2>
         {errors.club_name && <div className="my-3">* {errors.club_name}</div>}
-        
+
         <div className="input-group-club">
           <div className="input-field-club w-50">
             <label className="label-club">Year of Term</label>
@@ -123,24 +134,24 @@ const WidgetClub = ({ isOpen, onClose, onSave, item, isViewMode }) => {
           </div>
           <div className="input-field-club w-50">
             <label className="label-club">Position</label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               className="input-club "
-              value={student_position} 
+              value={student_position}
               onChange={(e) => setPosition(e.target.value)}
               placeholder="Position"
               required
             />
-           
+
           </div>
-          
+
         </div>
         {errors.student_position && <div className="my-2">* {errors.student_position}</div>}
         <div className="input-field-club mb-3">
           <label>Institution</label>
-          <input 
-            type="text" 
-            value={location} 
+          <input
+            type="text"
+            value={location}
             className="input-club "
             onChange={(e) => setInstitution(e.target.value)}
             placeholder="Institution"
@@ -148,7 +159,7 @@ const WidgetClub = ({ isOpen, onClose, onSave, item, isViewMode }) => {
           />
           {errors.location && <div className="mt-2">* {errors.location}</div>}
         </div>
-        
+
         {!isViewMode && (
           <button className="save-button-club" onClick={handleSave}>
             {item ? 'UPDATE' : 'SAVE'}

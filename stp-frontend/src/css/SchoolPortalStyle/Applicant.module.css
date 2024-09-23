@@ -1,0 +1,517 @@
+/* Title Styles */
+.applicant-title {
+  text-align: left;
+  margin-top: 40px;
+  margin-left: 30px;
+}
+
+.applicant-title h1 {
+  font-size: 26px;
+  color: #333;
+}
+
+/* Search and Filter Styles */
+.search-filter-container {
+  margin-top: 20px;
+  margin-left: 30px;
+}
+
+.search-label {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 5px;
+}
+
+.filter-column {
+  display: flex;
+  align-items: flex-end;
+}
+
+.search-bar {
+  position: relative;
+  width: 300px;
+  margin-top: 5px;
+}
+
+.search-bar input[type="text"] {
+  background-color: #fff;
+  width: 100%;
+  padding: 10px 10px 10px 50px; /* Adjust padding for icon */
+  font-size: 16px;
+  border: none;
+  outline: none;
+  color: #333;
+}
+
+.search-bar input[type="text"]::placeholder {
+  color: #8c94a3; /* Placeholder color */
+}
+
+.search-bar .search-icon {
+  position: absolute;
+  left: 10px; /* Space between icon and input border */
+  top: 20%;
+  /* transform: translateY(-50%); */
+  width: 27px;
+  height: 27px;
+  background: url("../../assets/SchoolPortalAssets/magnifying-glass.png")
+    no-repeat center center;
+  background-size: contain;
+  pointer-events: none; /* Make the icon non-clickable */
+}
+
+/* Dropdown Styles */
+.filter-dropdowns {
+  margin-left: 30px;
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.filter-dropdowns .dropdown select {
+  padding: 10px 30px 10px 15px;
+  border: 1px solid #eff0f6;
+  border-radius: 20px;
+  background-color: #fff;
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+  outline: none;
+  appearance: none; /* Remove default dropdown arrow */
+  position: relative;
+}
+
+.filter-dropdowns .dropdown {
+  position: relative;
+}
+
+/* Reset Filter Styles */
+.reset-filter {
+  margin-right: 20px;
+}
+
+.reset-filter a {
+  font-size: 14px;
+  color: #07779a; /* Bootstrap blue, adjust as needed */
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.reset-filter a:hover {
+  text-decoration: underline; /* Underline on hover */
+}
+
+/* Results Message Styles */
+.results-message {
+  text-align: right;
+  margin: 20px 40px 10px 20px;
+}
+
+.results-message p {
+  font-size: small;
+}
+
+.results-message b {
+  font-weight: bold; /* Bolding the numbers */
+}
+
+.student-card {
+  display: flex;
+  border-radius: 10px; /* Rounded corners */
+  border: 1px solid #ccc; /* Light gray border */
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  padding: 28px 28px 25px 28px;
+  margin: 3px 30px 30px 40px;
+  background-color: #fff;
+  align-items: flex-start; /* Centers the content vertically */
+  position: relative; /* Make sure the card container is positioned relative for absolute positioning inside it */
+}
+
+.student-profile-container {
+  width: 16%;
+  height: 15rem;
+  border-radius: 10%;
+  margin-right: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.student-profile-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 10%;
+}
+
+@media (max-width: 768px) {
+  .student-profile-container {
+    width: 100%;
+    height: 200px;
+    margin-right: 0;
+    margin-bottom: 20px;
+  }
+}
+
+.information {
+  width: 84%;
+}
+
+/* Student Info Styles */
+.student-info {
+  display: flex;
+}
+
+.first-row {
+  display: flex;
+  gap: 15px;
+  margin-left: 20px;
+}
+
+.student-name {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.application-status {
+  height: 75%;
+  color: white;
+  padding: 4px 24px;
+  font-size: 15px;
+  border-radius: 10px;
+}
+
+.application-status p {
+  margin: 0;
+}
+
+.status-accepted {
+  background-color: #146a17;
+}
+
+.status-rejected {
+  background-color: #b71a18;
+}
+
+.status-pending {
+  background-color: #d95117;
+}
+
+.reminder-count {
+  height: 75%;
+  background-color: #b71a18;
+  color: white; /* White text color */
+  padding: 5px 24px;
+  font-size: 15px;
+  border-radius: 10px;
+}
+
+.reminder-count p {
+  margin: 0;
+}
+
+.options-menu {
+  position: absolute;
+  top: 15px;
+  right: 30px;
+  cursor: pointer;
+}
+
+.options-menu svg {
+  font-size: 25px;
+  color: #333;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 30px;
+  right: 0px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 100; /* Ensure it's on top of other elements */
+  width: w200px; /* Adjust dropdown width as needed */
+}
+
+.dropdown-menu ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 10px 0;
+}
+
+.dropdown-menu ul li {
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.dropdown-menu ul li:hover {
+  background-color: #b71a18;
+  color: #fff;
+}
+
+/*Contact Method Style*/
+.second-row {
+  display: flex;
+  gap: 40px;
+  margin-top: 10px;
+  margin-left: 20px;
+}
+
+.second-row div {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.email i,
+.contact-number i {
+  margin-right: 10px;
+}
+
+.email p,
+.contact-number p {
+  margin: 0; /* Remove default margin */
+  font-size: 14px; /* Adjust font size as needed */
+  color: #333; /* Adjust color as needed */
+}
+
+/* Applied Degree Section */
+.third-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  margin-left: 20px;
+  gap: 10rem;
+}
+
+.applied-degree {
+  display: flex;
+  flex-direction: column;
+  /* margin-left: 30px; */
+}
+
+.applied-degree .applied-for {
+  font-size: 15px;
+  font-weight: normal;
+  color: #6e7485;
+  margin: 0;
+}
+
+.applied-degree .degree-name {
+  font-size: 16px;
+  font-weight: normal;
+  color: #333;
+  margin: 5px 0 0 0;
+}
+
+/* Progress Bar */
+.profile-completion {
+  display: flex;
+  flex-direction: column;
+  margin-right: 30px;
+}
+
+.profile-completion .progress-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.profile-completion .profile-bar-title {
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.profile-completion .progress-bar {
+  width: 30rem; /* Adjust width as needed */
+  height: 7px;
+  background-color: #e0e0e0; /* Background color for the empty bar */
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.profile-completion .progress-fill {
+  height: 100%;
+  background-color: #b71a18; /* Color for the filled portion */
+  border-radius: 5px 0 0 5px; /* Round the left corners */
+  transition: width 0.3s ease; /* Smooth transition */
+}
+
+.profile-completion .progress-percentage {
+  font-size: 14px;
+  color: #333;
+}
+
+/* Horizontal Line (Separator) */
+.separator {
+  border: none;
+  border-top: 1px solid #6e7485;
+  margin: 20px 20px 3px 20px;
+}
+
+/* Fourth Row Styles */
+.fourth-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  /* flex-wrap: wrap;  */
+}
+
+/* Awards and Curriculum Wrapper */
+.awards-curriculum {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-left: 30px;
+  margin-right: 20px; /* Add some right margin */
+}
+
+/* Awards Section */
+.awards {
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  padding-right: 20px; /* Adds spacing between the content and border */
+}
+
+/* Curriculum Section with Left Border as Divider */
+.curriculum {
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  padding-left: 25px; /* Adds spacing between the content and border */
+  border-left: 1px solid #e9eaf0; /* Vertical line (divider) */
+}
+
+/* Number and Label Styles */
+.awards-number,
+.curriculum-number {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+}
+
+.awards-label,
+.curriculum-label {
+  font-size: 14px;
+  color: #6e7485;
+  margin: 5px 0 0 0;
+}
+
+/* Accept and Reject Buttons */
+.reject-accept {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto; /* Push to the right */
+}
+
+@media (max-width: 992px) {
+  .fourth-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .awards-curriculum,
+  .reject-accept {
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .awards-curriculum {
+    margin-bottom: 20px; /* Add space between sections on smaller screens */
+  }
+
+  .reject-accept {
+    justify-content: flex-start; /* Align buttons to the left on smaller screens */
+  }
+}
+
+.custom-btn {
+  padding: 4px 60px;
+  font-size: 20px;
+  border-radius: 30px;
+  transition: background-color 0.3s ease;
+}
+
+.custom-btn-accept {
+  background-color: #146a17;
+  color: white;
+}
+
+.custom-btn-reject {
+  background-color: #b71a18;
+  color: white;
+}
+
+.status-message {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  font-size: 22px;
+  font-style: italic;
+  margin-right: 30px;
+}
+
+.status-message.accepted {
+  color: #1e7e34;
+}
+
+.status-message.rejected {
+  color: #d32f2f;
+}
+
+.status-icon {
+  margin-right: 10px;
+}
+
+.no-results-message {
+  text-align: center;
+  margin: 20px 0;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 5px;
+  border: 1px solid #dee2e6;
+}
+
+.no-results-message p {
+  font-size: 16px;
+  color: #6c757d;
+  margin: 0;
+}
+
+.warningPopup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.warningPopup button {
+  margin: 0 10px;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.warningPopup button:first-of-type {
+  background-color: #b71a18;
+  color: white;
+}
+
+.warningPopup button:last-of-type {
+  background-color: #6c757d;
+  color: white;
+}

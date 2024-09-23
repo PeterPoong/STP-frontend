@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { useLocation } from "react-router-dom";
 import {
   ButtonGroup,
   Container,
@@ -8,7 +9,6 @@ import {
   Pagination,
   Row,
   Col,
-  Button,
   Spinner,
   Alert,
 } from "react-bootstrap";
@@ -17,18 +17,20 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import CourseListing from "../../../Components/StudentComp/CoursePage/CourseListing";
 import "../../../css/StudentCss/course page css/CoursesPage.css";
 import CountryFlag from "react-country-flag";
+import debounce from "lodash.debounce";
 
 const baseURL = import.meta.env.VITE_BASE_URL;
 const apiURL = `${baseURL}api/student/courseList`;
 const countriesURL = `${baseURL}api/student/countryList`;
 const instituteURL = `${baseURL}api/student/instituteType`;
 const locationAPIURL = `${baseURL}api/student/locationFilterList`;
-
 const qualificationURL = `${baseURL}api/student/qualificationFilterList`;
 
-const SearchCourse = () => {
+const SearchCourse = ({ currentCourses }) => {
+  const location = useLocation();
   const [locationFilters, setLocationFilters] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
+  const initialSearchQuery = location.state?.searchQuery || "";
+  const [searchQuery, setSearchQuery] = useState(initialSearchQuery); // Set initial search query
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -40,8 +42,81 @@ const SearchCourse = () => {
   const [selectedInstitute, setSelectedInstitute] = useState(null);
   const [qualifications, setQualifications] = useState([]);
   const [selectedQualification, setSelectedQualification] = useState(null);
+  const [countryFilter, setCountryFilter] = useState("");
 
-  // Fetch qualification from API
+  const itemsPerPage = 5;
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  currentCourses = searchResults.slice(indexOfFirstItem, indexOfLastItem);
+
+  // You can set this to whatever you like
+
+  useEffect(() => {
+    if (searchResults.length > 0) {
+      setTotalPages(Math.ceil(searchResults.length / itemsPerPage));
+    }
+  }, [searchResults]);
+
+  const handlePageChange = (page) => {
+    fetchData(searchQuery); // Fetch the new data based on the updated page
+    scrollToTop(); // Optional, to scroll back to the top after the page change
+  };
+
+  const [resetTrigger, setResetTrigger] = useState(false);
+
+  const resetAllFilters = () => {
+    setSelectedCountry(null);
+    setSelectedInstitute(null);
+    setSelectedQualification(null);
+    setCountryFilter("");
+    setSearchQuery("");
+    setCurrentPage(1);
+
+    // Toggle reset trigger to notify CourseListing of the reset
+    setResetTrigger((prev) => !prev);
+
+    fetchData(""); // Fetch data with reset filters
+  };
+
+  useEffect(() => {
+    fetchData(searchQuery);
+  }, [
+    searchQuery,
+    currentPage,
+    selectedCountry,
+    selectedInstitute,
+    selectedQualification,
+  ]);
+
+  const handleCountryFilterChange = (event) => {
+    setCountryFilter(event.target.value.toLowerCase());
+  };
+
+  const filteredCountries = countries.filter((country) =>
+    country.country_name.toLowerCase().includes(countryFilter)
+  );
+
+  useEffect(() => {
+    if (location.state) {
+      const { qualification, country } = location.state;
+
+      if (qualification) {
+        const qual = qualifications.find(
+          (q) => q.qualification_name === qualification
+        );
+        setSelectedQualification(qual);
+      }
+
+      if (country) {
+        const selectedCountry = countries.find(
+          (c) => c.country_name === country
+        );
+        setSelectedCountry(selectedCountry);
+      }
+    }
+  }, [location.state, qualifications, countries]);
+
   useEffect(() => {
     const fetchQualifications = async () => {
       try {
@@ -62,7 +137,6 @@ const SearchCourse = () => {
     fetchQualifications();
   }, []);
 
-  // Fetch countries from API
   useEffect(() => {
     const fetchCountries = async () => {
       try {
@@ -83,7 +157,6 @@ const SearchCourse = () => {
     fetchCountries();
   }, []);
 
-  // Fetch institutes from API
   useEffect(() => {
     const fetchInstitutes = async () => {
       try {
@@ -104,7 +177,6 @@ const SearchCourse = () => {
     fetchInstitutes();
   }, []);
 
-  // Fetch locations when a country is selected
   useEffect(() => {
     if (selectedCountry) {
       fetch(locationAPIURL, {
@@ -148,14 +220,14 @@ const SearchCourse = () => {
           countryID: selectedCountry?.country_id,
           institute: selectedInstitute?.id,
           qualification: selectedQualification?.id,
-          name: query.trim(), // Search by course name
-          school_name: query.trim(), // Search by institute name
+          name: query.trim(),
+          school_name: query.trim(),
         }),
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
+      // if (!response.ok) {
+      //   throw new Error(`HTTP error! Status: ${response.status}`);
+      // }
 
       const contentType = response.headers.get("content-type");
       if (!contentType || !contentType.includes("application/json")) {
@@ -163,19 +235,30 @@ const SearchCourse = () => {
       }
 
       const result = await response.json();
-      setSearchResults(result.data || []); // Use the returned data
-      setTotalPages(result.totalPages || 1); // Handle pagination if needed
+      setSearchResults(result.data || []);
+      setTotalPages(result.totalPages || 1);
     } catch (error) {
-      console.error("Error fetching search results:", error);
-      setError("Failed to fetch search results. Please try again.");
+      console.error("Error fetching search results:", error); // Log the full error
+      setError(`Failed to fetch search results. Error: ${error.message}`);
     } finally {
       setLoading(false);
     }
   };
 
+  const debouncedFetchData = useCallback(debounce(fetchData, 300), [
+    currentPage,
+    selectedCountry,
+    selectedInstitute,
+    selectedQualification,
+  ]);
+
+  const handleInputChange = debounce((value) => {
+    console.log("Input changed:", value);
+  }, 300);
+
   useEffect(() => {
     if (searchQuery.trim()) {
-      fetchData(searchQuery); // Pass the search query to fetchData
+      debouncedFetchData(searchQuery);
     }
   }, [
     searchQuery,
@@ -183,16 +266,17 @@ const SearchCourse = () => {
     selectedCountry,
     selectedInstitute,
     selectedQualification,
+    debouncedFetchData,
   ]);
 
+  // Handle input change in the search bar
   const handleSearchChange = (event) => {
-    const query = event.target.value;
-    setSearchQuery(query);
-    // Optionally you can fetch data here on search change if needed
+    setSearchQuery(event.target.value); // Update searchQuery state as user types
   };
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
+  const handleSearchSubmit = (event) => {
+    event.preventDefault();
+    fetchData(searchQuery); // Fetch data when user submits the search form
   };
 
   const handleCountryChange = (country) => {
@@ -208,7 +292,15 @@ const SearchCourse = () => {
 
   const handleQualificationChange = (qualification) => {
     setSelectedQualification(qualification);
-    console.log("Selected Qualification ID:", qualification?.id);
+  };
+
+  const resetFilters = () => {
+    setSelectedCountry(null);
+    setSelectedInstitute(null);
+    setSelectedQualification(null);
+    setSearchQuery("");
+    setCurrentPage(1);
+    fetchData(""); // Fetch data with reset filters
   };
 
   return (
@@ -217,7 +309,6 @@ const SearchCourse = () => {
         Courses in Degree
       </h3>
       <Row className="align-items-center mb-2 mb-md-0">
-        {/* Country Dropdown */}
         <Col xs={12} sm={4} md={3} lg={2} className="mb-2 mb-sm-0">
           <ButtonGroup className="w-100">
             <Dropdown as={ButtonGroup} className="w-100">
@@ -225,9 +316,9 @@ const SearchCourse = () => {
                 className="country-dropdown-course w-100"
                 id="dropdown-country"
                 style={{
-                  backgroundColor: selectedCountry ? "white" : "", // Set background color to white if a country is selected
-                  color: selectedCountry ? "#000" : "", // Optional: Change text color for better contrast
-                  border: selectedCountry ? "1px solid #B71A18" : "", // Set border width, style, and color
+                  backgroundColor: selectedCountry ? "white" : "",
+                  color: selectedCountry ? "#000" : "",
+                  border: selectedCountry ? "1px solid #B71A18" : "",
                 }}
               >
                 {selectedCountry ? (
@@ -248,8 +339,26 @@ const SearchCourse = () => {
                 )}
               </Dropdown.Toggle>
               <Dropdown.Menu className="scrollable-dropdown">
-                {countries.length > 0 ? (
-                  countries.map((country, index) => (
+                <InputGroup className="mb-2">
+                  <Form.Control
+                    placeholder="Filter countries"
+                    onChange={handleCountryFilterChange}
+                    value={countryFilter}
+                  />
+                  <i
+                    className="bi bi-search"
+                    style={{
+                      position: "absolute",
+                      left: "90%",
+                      top: "50%",
+                      transform: "translate(-50%, -50%)",
+                      fontSize: "14px",
+                      color: "#808080",
+                    }}
+                  ></i>
+                </InputGroup>
+                {filteredCountries.length > 0 ? (
+                  filteredCountries.map((country, index) => (
                     <Dropdown.Item
                       key={index}
                       className="dropdown"
@@ -275,7 +384,6 @@ const SearchCourse = () => {
           </ButtonGroup>
         </Col>
 
-        {/* University Dropdown */}
         <Col xs={12} sm={4} md={3} lg={2} className="mb-2 mb-sm-0">
           <ButtonGroup className="w-100">
             <Dropdown as={ButtonGroup} className="w-100">
@@ -283,9 +391,9 @@ const SearchCourse = () => {
                 className="university-dropdown-course w-100"
                 id="dropdown-university"
                 style={{
-                  backgroundColor: selectedInstitute ? "white" : "", // Set background color to white if a country is selected
-                  color: selectedInstitute ? "#000" : "", // Optional: Change text color for better contrast
-                  border: selectedInstitute ? "1px solid #B71A18" : "", // Set border width, style, and color
+                  backgroundColor: selectedInstitute ? "white" : "",
+                  color: selectedInstitute ? "#000" : "",
+                  border: selectedInstitute ? "1px solid #B71A18" : "",
                 }}
               >
                 {selectedInstitute
@@ -310,7 +418,6 @@ const SearchCourse = () => {
           </ButtonGroup>
         </Col>
 
-        {/* Qualification Dropdown */}
         <Col xs={12} sm={4} md={3} lg={2} className="mb-2 mb-sm-0">
           <ButtonGroup className="w-100">
             <Dropdown as={ButtonGroup} className="w-100">
@@ -318,9 +425,9 @@ const SearchCourse = () => {
                 className="qualification-dropdown-course w-100"
                 id="dropdown-degree"
                 style={{
-                  backgroundColor: selectedQualification ? "white" : "", // Set background color to white if a country is selected
-                  color: selectedQualification ? "#000" : "", // Optional: Change text color for better contrast
-                  border: selectedQualification ? "1px solid #B71A18" : "", // Set border width, style, and color
+                  backgroundColor: selectedQualification ? "white" : "",
+                  color: selectedQualification ? "#000" : "",
+                  border: selectedQualification ? "1px solid #B71A18" : "",
                 }}
               >
                 {selectedQualification
@@ -329,9 +436,9 @@ const SearchCourse = () => {
               </Dropdown.Toggle>
               <Dropdown.Menu>
                 {qualifications.length > 0 ? (
-                  qualifications.map((qualification, index) => (
+                  qualifications.map((qualification) => (
                     <Dropdown.Item
-                      key={index}
+                      key={qualification.id}
                       onClick={() => handleQualificationChange(qualification)}
                     >
                       {qualification.qualification_name}
@@ -345,6 +452,31 @@ const SearchCourse = () => {
           </ButtonGroup>
         </Col>
 
+        <Col xs={12} sm={4} md={3} lg={2} className="mb-2 mb-sm-0">
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              resetAllFilters();
+            }}
+            style={{
+              backgroundColor: "transparent",
+              border: "none",
+              color: "#B71A18",
+              fontWeight: "lighter",
+              textDecoration: "none",
+              cursor: "pointer",
+            }}
+          >
+            <i
+              className="bi bi-funnel"
+              style={{
+                marginRight: "5px",
+              }}
+            />{" "}
+            Reset Filters
+          </button>
+        </Col>
+
         <Col className="d-flex justify-content-end">
           <Pagination className="pagination-course ml-auto mb-2 mb-md-0">
             <Pagination.Prev
@@ -354,6 +486,7 @@ const SearchCourse = () => {
             >
               <span aria-hidden="true">&laquo;</span>
             </Pagination.Prev>
+
             {[...Array(totalPages)].map((_, index) => (
               <Pagination.Item
                 key={index}
@@ -363,6 +496,7 @@ const SearchCourse = () => {
                 {index + 1}
               </Pagination.Item>
             ))}
+
             <Pagination.Next
               aria-label="Next"
               onClick={() => handlePageChange(currentPage + 1)}
@@ -373,7 +507,12 @@ const SearchCourse = () => {
           </Pagination>
         </Col>
       </Row>
-      <Form>
+      <Form
+        onSubmit={(e) => {
+          e.preventDefault();
+          fetchData(searchQuery);
+        }}
+      >
         <InputGroup className="mb-3">
           <Form.Control
             className="custom-placeholder"
@@ -398,6 +537,7 @@ const SearchCourse = () => {
         countryID={selectedCountry?.id}
         selectedInstitute={selectedInstitute?.core_metaName}
         selectedQualification={selectedQualification?.qualification_name}
+        resetTrigger={resetTrigger} // Pass reset trigger here
       />
     </Container>
   );

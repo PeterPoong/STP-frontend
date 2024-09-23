@@ -23,9 +23,19 @@
     background-color: #fff;
 }
 
+.admin-add-student-container{
+  width: 952px;
+  height: auto;
+  margin-bottom: 10px;
+  border-radius: 15px;
+  border: solid 1px #000000;
+  margin-top: 10px;
+  background-color: #fff;
+}
+
 .HeadNavBarContainer {
     width: 100%;
-    background: #F5F7F8 !important;
+    background: #F5F7F8 ;
 }
 
 .featured {
@@ -226,7 +236,7 @@ img.roundedCircle {
   
   .banner{
     margin-bottom: 109px !important;
-    margin-top: 88px;
+    margin-top: 100px;
   }
 
   .check{
@@ -313,3 +323,108 @@ img.roundedCircle {
     color: #ccc;
   }
   
+  .upload-section {
+    padding: 20px;
+  }
+  
+  .dropzone {
+    background-color: #f9f9f9;
+    border: 2px dashed #ced4da;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .dropzone:hover {
+    background-color: #e9ecef;
+  }
+  
+  .file-info {
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+  }
+  
+  .file-info .file-name {
+    font-size: 0.9rem;
+    color: #495057;
+  }
+  
+  .file-info .btn-link {
+    color: #007bff;
+    font-size: 0.9rem;
+  }
+  
+  .file-info .btn-link:hover {
+    text-decoration: underline;
+  }
+  
+  .modal-header {
+    border-bottom: none;
+  }
+  
+  .modal-footer {
+    border-top: none;
+  }
+    /* Ensure the modal dynamically adjusts to the image size */
+  .modal-preview .modal-dialog {
+    max-width: unset; /* Disable the max-width limit */
+    width: auto; /* Allow it to auto adjust based on content */
+  }
+
+  .modal-preview .modal-body {
+    padding: 0; /* Remove padding to align with image */
+    display: flex;
+    justify-content: center; /* Center image horizontally */
+    align-items: center; /* Center image vertically */
+  }
+
+  .modal-preview .img-fluid {
+    max-width: 100%; /* Prevent the image from overflowing */
+    height: auto; /* Ensure the height is auto-adjusted */
+  }
+
+  @media (max-width: 768px) {
+    .modal-preview .modal-dialog {
+      max-width: 100%; /* Full width for smaller screens */
+      margin: 0 1rem; /* Add a small margin */
+    }
+    
+    .modal-preview .img-fluid {
+      max-width: 100%; /* Limit image size to screen width */
+      height: auto; /* Auto adjust height */
+    }
+  }
+/* Ensure that radio buttons are displayed inline */
+.custom-radio {
+  display: inline-block;
+  margin-right: 10px;
+}
+
+/* Style the radio button itself */
+.custom-radio input[type="radio"] {
+  position: relative;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  background-color: #fff;
+  cursor: pointer;
+  outline: none;
+  margin-right: 8px;
+}
+
+/* Add styling for the selected radio button */
+.custom-radio input[type="radio"]:checked {
+  border-color: #007bff !important; /* Blue color for selected radio button border */
+  background-color: #007bff !important; /* Blue color for selected radio button background */
+}
+
+/* Add styling for the label */
+.custom-radio input[type="radio"]:checked + label {
+  color: #007bff !important; /* Blue color for selected radio button label */
+}
+
+

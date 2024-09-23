@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import {
   Container,
   Row,
@@ -8,32 +9,13 @@ import {
   Accordion,
   Spinner,
 } from "react-bootstrap";
-import "../../../css/StudentCss/institutepage css/Institute.css";
-import SchoolIcon from "../../../assets/StudentAssets/icons/SchoolIcon.png";
-import GraduationCapIcon from "../../../assets/StudentAssets/icons/GraduationCapIcon.png";
-import BookOpenIcon from "../../../assets/StudentAssets/icons/BookOpenIcon.png";
-import LocationIcon from "../../../assets/StudentAssets/icons/LocationIcon.png";
+import { Link } from "react-router-dom";
 
+import "../../../css/StudentCss/institutepage css/Institute.css";
 import StudyPal from "../../../assets/StudentAssets/institute image/StudyPal.png";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faGraduationCap,
-  faClock,
-  faCalendarAlt,
-  faCalendarCheck,
-  faLocationDot,
-  faSchool,
-  faBookOpen,
-} from "@fortawesome/free-solid-svg-icons";
+
 import { useNavigate } from "react-router-dom";
 import emptyStateImage from "../../../assets/StudentAssets/emptyStateImage/emptystate.png";
-
-import {
-  GeoAltFill,
-  Building,
-  MortarboardFill,
-  BookFill,
-} from "react-bootstrap-icons";
 
 const baseURL = import.meta.env.VITE_BASE_URL;
 const apiURL = `${baseURL}api/student/schoolList`;
@@ -43,8 +25,14 @@ const studyModeAPIURL = `${baseURL}api/student/studyModeFilterlist`;
 const tuitionFeeAPIURL = `${baseURL}api/student/tuitionFeeFilterRange`;
 const categoryAPIURL = `${baseURL}api/student/categoryFilterList`;
 const intakeAPIURL = `${baseURL}api/student/intakeFilterList`;
+const schoolListAPI = `${baseURL}api/student/schoolList`;
 
-const InstituteListing = ({ searchResults, countryID, selectedInstitute }) => {
+const InstituteListing = ({
+  searchResults,
+  countryID,
+  selectedInstitute,
+  resetTrigger,
+}) => {
   const [locationFilters, setLocationFilters] = useState([]);
   const [categoryFilters, setCategoryFilters] = useState([]);
   const [studyLevelFilters, setStudyLevelFilters] = useState([]);
@@ -66,29 +54,95 @@ const InstituteListing = ({ searchResults, countryID, selectedInstitute }) => {
   const [studyModes, setStudyModes] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState(countryID);
   const [filteredPrograms, setFilteredPrograms] = useState([]);
+  const [school, setSchool] = useState([]);
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10); // Adjust the number of items per page as needed
-  const [totalPages, setTotalPages] = useState(1);
   const [selectedLocationFilters, setSelectedLocationFilters] = useState([]);
 
-  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
-  // Pagination
-  useEffect(() => {
-    setTotalPages(Math.ceil(institutes.length / itemsPerPage));
-  }, [institutes, itemsPerPage]);
-
-  const paginatedInstitutes = filteredPrograms.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentInstitutes = filteredPrograms.slice(
+    indexOfFirstItem,
+    indexOfLastItem
   );
 
-  const handlePageChange = (page) => {
-    if (page > 0 && page <= totalPages) {
-      setCurrentPage(page);
-    }
+  // Calculate the total number of pages
+  const totalPages = Math.ceil(filteredPrograms.length / itemsPerPage);
+
+  // Handle page change
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
   };
+
+  const location = useLocation();
+  const { searchQuery = "" } = location.state || {};
+  const { selectedCategory } = location.state || {};
+
+  /* Reset filter is here */
+
+  const resetFilters = () => {
+    setSelectedLocationFilters([]);
+    setCategoryFilters([]);
+    setStudyLevelFilters([]);
+    setIntakeFilters([]);
+    setModeFilters([]);
+    setTuitionFee([]);
+  };
+
+  useEffect(() => {
+    resetFilters();
+  }, [resetTrigger]);
+
+  useEffect(() => {
+    if (!selectedCategory) return;
+
+    const fetchInstitutes = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const response = await fetch(schoolListAPI, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ category: selectedCategory }), // Sending selectedCategory in the request body
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          throw new Error("Response is not JSON");
+        }
+
+        const result = await response.json();
+        setSchool(result.data || []);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchInstitutes();
+  }, [selectedCategory]);
+
+  /*------- End of Reset filter --------*/
+
+  // // Pagination
+  // useEffect(() => {
+  //   setTotalPages(Math.ceil(institutes.length / itemsPerPage));
+  // }, [institutes, itemsPerPage]);
+
+  // const paginatedInstitutes = filteredPrograms.slice(
+  //   (currentPage - 1) * itemsPerPage,
+  //   currentPage * itemsPerPage
+  // );
 
   /* ----------------------University Dropdown--------------------------- */
 
@@ -103,7 +157,7 @@ const InstituteListing = ({ searchResults, countryID, selectedInstitute }) => {
     setError(null);
 
     try {
-      const response = await fetch(`${baseURL}api/student/schoolList`, {
+      const response = await fetch(schoolListAPI, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -128,10 +182,10 @@ const InstituteListing = ({ searchResults, countryID, selectedInstitute }) => {
 
   useEffect(() => {
     if (institutes.length > 0) {
-      console.log("Programs before filtering:", institutes);
+      console.log("Insitutes before filtering:", institutes);
       const filtered = institutes.filter((institute) => {
         console.log(
-          `Program: ${institute.name}, Institute Category: ${institute.category}`
+          `Institute Name: ${institute.name}, Institute Category: ${institute.category}`
         );
         return institute.category === selectedInstitute;
       });
@@ -154,7 +208,7 @@ const InstituteListing = ({ searchResults, countryID, selectedInstitute }) => {
       }
 
       try {
-        console.log("Country ID received in CourseListing:", countryID);
+        console.log("Country ID received in InstituteListing:", countryID);
         const response = await fetch(
           `${baseURL}api/student/locationFilterList`,
           {
@@ -173,13 +227,12 @@ const InstituteListing = ({ searchResults, countryID, selectedInstitute }) => {
         const locationData = await response.json();
         console.log("Fetched Location Filters:", locationData);
 
-        // Check if the fetched data is an array and has elements
         if (Array.isArray(locationData.data) && locationData.data.length > 0) {
-          setLocationFilters(locationData.data); // Populate location filters
+          setLocationFilters(locationData.data);
         } else {
-          setLocationFilters([]); // Set to empty array if no data
+          setLocationFilters([]);
         }
-        // Filter programs after fetching location filters
+
         filterPrograms();
       } catch (error) {
         console.error("Error fetching locations:", error);
@@ -434,8 +487,7 @@ const InstituteListing = ({ searchResults, countryID, selectedInstitute }) => {
         modeFilters.length === 0 || modeFilters.includes(institute.mode);
 
       const matchesInstitute =
-        !selectedInstitute ||
-        institute.institute_category === selectedInstitute;
+        !selectedInstitute || institute.category === selectedInstitute;
 
       const trimmedSearchQuery = searchQuery?.trim().toLowerCase() || "";
 
@@ -552,127 +604,158 @@ const InstituteListing = ({ searchResults, countryID, selectedInstitute }) => {
     }); // Navigate with state_name
   };
 
-  const mappedInstitutes = filteredPrograms.map((institute, index) => (
-    <div
-      key={index}
-      className="card mb-4 institute-card"
-      style={{ position: "relative", height: "auto" }}
-    >
-      {institute.featured && <div className="featured-badge">Featured</div>}
-      <div className="card-body d-flex flex-column flex-md-row align-items-start">
-        <Row>
-          <Col md={6} lg={6}>
-            <div className="card-image mb-3 mb-md-0">
-              <div className="d-flex" style={{ width: "100%" }}>
-                <div style={{ paddingLeft: "20px" }}>
-                  <img
-                    src={`${baseURL}storage/${institute.logo}`}
-                    alt={institute.name}
-                    width="100"
-                  />
-                </div>
-                <div style={{ paddingLeft: "30px" }}>
-                  <h5 className="card-text">{institute.name || "N/A"}</h5>
-                  <i
-                    className="bi bi-geo-alt"
-                    style={{ marginRight: "10px", color: "#AAAAAA" }}
-                  ></i>
-                  <span style={{ paddingLeft: "10px" }}>
-                    {institute.city || "N/A"}, {institute.state || "N/A"},{" "}
-                    {institute.country || "N/A"}
-                  </span>
-                  <div>
+  const mappedInstitutes = currentInstitutes.map((institute, index) => (
+    <>
+      <div
+        key={institute.id} // Use a unique key for each item
+        className="card mb-4 institute-card"
+        style={{ position: "relative", height: "auto" }}
+      >
+        {institute.featured && <div className="featured-badge">Featured</div>}
+        <div className="card-body d-flex flex-column flex-md-row align-items-start">
+          <Row>
+            <Col md={6} lg={6}>
+              <div className="card-image mb-3 mb-md-0">
+                <div className="d-flex" style={{ width: "100%" }}>
+                  <div style={{ paddingLeft: "20px" }}>
+                    <Link to={`/knowMoreInstitute/${institute.id}`}>
+                      <img
+                        src={`${baseURL}storage/${institute.logo}`}
+                        alt={institute.name}
+                        width="100"
+                        style={{ cursor: "pointer" }} // Optional: add a pointer cursor to indicate it's clickable
+                      />
+                    </Link>
+                  </div>
+                  <div style={{ paddingLeft: "30px" }}>
+                    <Link
+                      to={`/knowMoreInstitute/${institute.id}`}
+                      style={{ textDecoration: "none", color: "black" }}
+                    >
+                      <h5 className="card-text" style={{ cursor: "pointer" }}>
+                        {institute.name || "N/A"}
+                      </h5>
+                    </Link>{" "}
+                    <i
+                      className="bi bi-geo-alt"
+                      style={{ marginRight: "10px", color: "#AAAAAA" }}
+                    ></i>
+                    <span>
+                      {institute.city || "N/A"}
+                      <span style={{ margin: "0 10px" }}>,</span>
+                      {institute.state || "N/A"}
+                      <span style={{ margin: "0 10px" }}>,</span>
+                      {institute.country || "N/A"}
+                    </span>
                     <a
                       href="#"
                       className="map-link"
-                      style={{ paddingLeft: "30px" }}
+                      style={{
+                        paddingLeft: "30px",
+                        fontWeight: "lighter",
+                        color: "#1745BA",
+                      }}
                     >
-                      Click and view on map
+                      click and view on map
                     </a>
-                  </div>
-
-                  <p className="card-text mt-2" style={{ paddingLeft: "10px" }}>
-                    {institute.description || "N/A"}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </Col>
-          <Col md={6} lg={6}>
-            <div className="d-flex flex-grow-1 justify-content-between">
-              <div className="details-div-institute" style={{ width: "70%" }}>
-                <div className="d-flex align-items-center flex-wrap">
-                  <Col>
                     <div>
-                      <Row style={{ paddingTop: "10px" }}>
-                        <div>
-                          <i
-                            className="bi bi-building"
-                            style={{ marginRight: "10px" }}
-                          ></i>
-                          <span
-                            style={{
-                              paddingLeft: "20px",
-                              minWidth: "100px",
-                              display: "inline-block",
-                            }}
-                          >
-                            {institute.category || "N/A"}
-                          </span>
-                        </div>
-                        <div style={{ marginTop: "10px" }}>
-                          <i
-                            className="bi bi-mortarboard"
-                            style={{ marginRight: "10px" }}
-                          ></i>
-                          <span
-                            style={{
-                              paddingLeft: "20px",
-                              minWidth: "100px",
-                              display: "inline-block",
-                            }}
-                          >
-                            {institute.id || "N/A"}
-                          </span>
-                        </div>
-                        <div style={{ marginTop: "10px" }}>
-                          <i
-                            className="bi bi-calendar2-week"
-                            style={{ marginRight: "10px" }}
-                          ></i>
-                          <span
-                            style={{
-                              paddingLeft: "20px",
-                              minWidth: "100px",
-                              display: "inline-block",
-                            }}
-                          >
-                            {institute.intake && institute.intake.length > 0
-                              ? institute.intake.join(", ")
-                              : "N/A"}
-                          </span>
-                        </div>
-                      </Row>
+                      <p
+                        className="card-text mt-2"
+                        style={{ paddingLeft: "5px" }}
+                      >
+                        {institute.description || "N/A"}
+                      </p>
                     </div>
-                  </Col>
+                  </div>
                 </div>
               </div>
-              <div className="fee-apply">
-                <div className="knowmore-button">
-                  <button
-                    className="featured-institute-button"
-                    onClick={() => handleKnowMoreInstitute(institute)}
-                    style={{ marginTop: "90px", width: "150px" }}
-                  >
-                    Know More
-                  </button>
+            </Col>
+            <Col md={6} lg={6}>
+              <div className="d-flex flex-grow-1 justify-content-between">
+                <div className="details-div-institute" style={{ width: "70%" }}>
+                  <div className="d-flex align-items-center flex-wrap">
+                    <Col>
+                      <div>
+                        <Row style={{ paddingTop: "10px" }}>
+                          <div>
+                            <i
+                              className="bi bi-building"
+                              style={{ marginRight: "10px" }}
+                            ></i>
+                            <span
+                              style={{
+                                paddingLeft: "20px",
+                                minWidth: "100px",
+                                display: "inline-block",
+                              }}
+                            >
+                              {institute.category || "N/A"}
+                            </span>
+                          </div>
+                          <div style={{ marginTop: "10px" }}>
+                            <i
+                              className="bi bi-mortarboard"
+                              style={{ marginRight: "10px" }}
+                            ></i>
+                            <span
+                              style={{
+                                paddingLeft: "20px",
+                                minWidth: "100px",
+                                display: "inline-block",
+                              }}
+                            >
+                              {institute.id || "N/A"}
+                            </span>
+                          </div>
+                          <div style={{ marginTop: "10px" }}>
+                            <i
+                              className="bi bi-calendar2-week"
+                              style={{ marginRight: "10px" }}
+                            ></i>
+                            <span
+                              style={{
+                                paddingLeft: "20px",
+                                minWidth: "100px",
+                                display: "inline-block",
+                              }}
+                            >
+                              {institute.intake && institute.intake.length > 0
+                                ? institute.intake.join(", ")
+                                : "N/A"}
+                            </span>
+                          </div>
+                        </Row>
+                      </div>
+                    </Col>
+                  </div>
+                </div>
+                <div className="fee-apply">
+                  <div className="knowmore-button">
+                    <button
+                      className="featured-institute-button"
+                      onClick={() => handleKnowMoreInstitute(institute)}
+                      style={{ marginTop: "90px", width: "150px" }}
+                    >
+                      Know More
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          </Col>
-        </Row>
+            </Col>
+          </Row>
+        </div>
       </div>
-    </div>
+      {index === 2 && (
+        <div key="ad" className="ad-container">
+          <img
+            src={StudyPal}
+            alt="Study Pal"
+            className="studypal-image"
+            style={{ height: "100px" }}
+          />
+        </div>
+      )}
+    </>
   ));
 
   return (
@@ -915,7 +998,12 @@ const InstituteListing = ({ searchResults, countryID, selectedInstitute }) => {
         </Col>
         <Col xs={12} md={8} className="degreeinstitutes-division">
           <div>
-            <img src={StudyPal} alt="Study Pal" className="studypal-image" />
+            <img
+              src={StudyPal}
+              alt="Study Pal"
+              className="studypal-image"
+              style={{ height: "175px" }}
+            />
           </div>
           {loading ? (
             <div className="text-center">

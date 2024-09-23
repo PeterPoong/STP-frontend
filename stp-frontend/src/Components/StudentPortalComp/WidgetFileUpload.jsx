@@ -8,6 +8,7 @@ const WidgetFileUpload = ({ isOpen, onClose, onSave, item, isViewMode }) => {
   const [media, setMedia] = useState(null);
   const [error, setError] = useState('');
 
+    /*loading and pop up the widget can check if open will set the info that retrieve from api respsonse or null, if close will reset the form */
   useEffect(() => {
     if (isOpen) {
       if (item) {
@@ -19,20 +20,26 @@ const WidgetFileUpload = ({ isOpen, onClose, onSave, item, isViewMode }) => {
       setError(''); // Clear any previous errors
     }
   }, [isOpen, item]);
+ /*end */
 
+   /*reset form function*/
   const resetForm = () => {
     setName('');
     setMedia(null);
     setError('');
   };
+   /*end */
 
+   /*close popup widget function */
   const handleClose = () => {
     resetForm();
     onClose();
   };
+   /*end */
 
   if (!isOpen) return null;
 
+  /*save button function when user press save button */
   const handleSave = async () => {
     setError('');
     try {
@@ -41,7 +48,7 @@ const WidgetFileUpload = ({ isOpen, onClose, onSave, item, isViewMode }) => {
         name,
         media
       });
-      
+
       if (!result.success) {
         if (result.message === "Validation Error" && result.error) {
           // Handle validation errors
@@ -58,18 +65,24 @@ const WidgetFileUpload = ({ isOpen, onClose, onSave, item, isViewMode }) => {
       setError("An error occurred. Please try again later.");
     }
   };
+   /*end */
 
+  /*file change handle function */
   const handleFileChange = (event) => {
     const uploadedFile = event.target.files[0];
     if (uploadedFile) {
       setMedia(uploadedFile);
     }
   };
+   /*end */
 
+  /*click to view button function */
   const handleFileDelete = () => {
     setMedia(null);
   };
+   /*end */
 
+  /*click to view button function */
   const handleViewClick = () => {
     if (media instanceof File) {
       // For newly uploaded files
@@ -81,6 +94,7 @@ const WidgetFileUpload = ({ isOpen, onClose, onSave, item, isViewMode }) => {
       window.open(fullUrl, '_blank');
     }
   };
+   /*end */
 
   return (
     <div className="upload-widget-overlay">
@@ -89,9 +103,8 @@ const WidgetFileUpload = ({ isOpen, onClose, onSave, item, isViewMode }) => {
           <h5 className="small">{isViewMode ? 'View' : 'Upload'}</h5>
           <button className="close-button" onClick={handleClose}><X size={20} /></button>
         </div>
-        
         {error && <Alert variant="danger" className="mt-3">{error}</Alert>}
-        
+
         <div className="upload-title-input">
           <input
             type="text"
@@ -102,7 +115,6 @@ const WidgetFileUpload = ({ isOpen, onClose, onSave, item, isViewMode }) => {
             readOnly={isViewMode}
           />
         </div>
-
         {!media ? (
           <div className="upload-area">
             {!isViewMode && (
@@ -137,7 +149,6 @@ const WidgetFileUpload = ({ isOpen, onClose, onSave, item, isViewMode }) => {
             )}
           </div>
         )}
-
         {!isViewMode && (
           <div className="save-button-container">
             <button className="save-button" onClick={handleSave}>

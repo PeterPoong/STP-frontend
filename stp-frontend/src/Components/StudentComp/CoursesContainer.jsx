@@ -11,7 +11,7 @@ import "swiper/css/navigation";
 import { Pagination, Navigation } from "swiper/modules";
 
 const baseURL = import.meta.env.VITE_BASE_URL;
-const apiURL = `${baseURL}api/student/categoryList`;
+const apiURL = "http://192.168.0.70:8000/api/student/hotPickCategoryList"; // Updated API URL
 
 const CoursesContainer = () => {
   const [buttons, setButtons] = useState([]);
@@ -26,11 +26,10 @@ const CoursesContainer = () => {
 
       try {
         const response = await fetch(apiURL, {
-          method: "POST",
+          method: "GET", // Changed to GET method
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({}),
         });
 
         if (!response.ok) {
@@ -47,7 +46,7 @@ const CoursesContainer = () => {
 
         const mappedButtons = data.map((item) => ({
           id: item.id,
-          src: `${baseURL}storage/${item.category_icon}`,
+          src: `${baseURL}storage/${item.category_icon}`, // Adjusted for proper icon path
           label: item.category_name,
         }));
 
@@ -69,14 +68,6 @@ const CoursesContainer = () => {
     });
   };
 
-  // Split buttons into two arrays of 7 each
-  const splitButtons = (buttons) => {
-    const mid = Math.ceil(buttons.length / 2);
-    return [buttons.slice(0, mid), buttons.slice(mid)];
-  };
-
-  const [firstRowButtons, secondRowButtons] = splitButtons(buttons);
-
   // Helper function to chunk array into slides
   const chunkArray = (arr, size) => {
     const result = [];
@@ -86,9 +77,8 @@ const CoursesContainer = () => {
     return result;
   };
 
-  // Chunk each row into slides of 6 buttons
-  const firstRowSlides = chunkArray(firstRowButtons, 6);
-  const secondRowSlides = chunkArray(secondRowButtons, 6);
+  // Split buttons into chunks of 12 (6 for each row)
+  const slides = chunkArray(buttons, 12);
 
   return (
     <div style={{ backgroundColor: "white" }}>
@@ -96,7 +86,7 @@ const CoursesContainer = () => {
         <h4
           style={{ color: "#a90000", textAlign: "center", paddingTop: "40px" }}
         >
-          Hot pick courses
+          Hot pick Courses
         </h4>
         {loading ? (
           <div style={{ textAlign: "center", padding: "40px" }}>Loading...</div>
@@ -105,68 +95,58 @@ const CoursesContainer = () => {
             Error: {error}
           </div>
         ) : buttons.length > 0 ? (
-          <>
-            <Swiper
-              modules={[Navigation, Pagination]}
-              spaceBetween={10}
-              slidesPerView={1}
-              navigation
-            >
-              {firstRowSlides.map((slide, index) => (
-                <SwiperSlide key={index}>
-                  <div
-                    style={{
-                      justifyContent: "center",
-                      display: "flex",
-                      flexWrap: "wrap",
-                      gap: "50px",
-                      padding: "0 50px",
-                    }}
-                  >
-                    {slide.map((button) => (
-                      <CoursesButton
-                        key={button.id}
-                        src={button.src}
-                        label={button.label}
-                        onClick={() => handleButtonClick(button)}
-                      />
-                    ))}
-                  </div>
-                </SwiperSlide>
-              ))}
-            </Swiper>
+          <Swiper
+            key={buttons.length} // This forces a re-render only when the data changes
+            modules={[Navigation, Pagination]}
+            spaceBetween={10}
+            slidesPerView={1}
+            effect="slide"
+            navigation
+          >
+            {slides.map((slide, index) => (
+              <SwiperSlide key={index}>
+                <div
+                  className="button-grid first-row"
+                  style={{
+                    justifyContent: "center",
+                    display: "flex",
+                    gap: "50px",
+                    padding: "0 50px",
+                  }}
+                >
+                  {/* First row */}
+                  {slide.slice(0, 6).map((button) => (
+                    <CoursesButton
+                      key={button.id}
+                      src={button.src}
+                      label={button.label}
+                      onClick={() => handleButtonClick(button)}
+                    />
+                  ))}
+                </div>
 
-            <Swiper
-              modules={[Navigation, Pagination]}
-              spaceBetween={10}
-              slidesPerView={1}
-              navigation
-              style={{ marginTop: "20px" }}
-            >
-              {secondRowSlides.map((slide, index) => (
-                <SwiperSlide key={index}>
-                  <div
-                    style={{
-                      justifyContent: "center",
-                      display: "flex",
-                      flexWrap: "wrap",
-                      gap: "50px",
-                      padding: "0 50px",
-                    }}
-                  >
-                    {slide.map((button) => (
-                      <CoursesButton
-                        key={button.id}
-                        src={button.src}
-                        label={button.label}
-                        onClick={() => handleButtonClick(button)}
-                      />
-                    ))}
-                  </div>
-                </SwiperSlide>
-              ))}
-            </Swiper>
-          </>
+                <div
+                  className="button-grid second-row"
+                  style={{
+                    justifyContent: "center",
+                    display: "flex",
+                    gap: "50px",
+                    padding: "0 50px",
+                  }}
+                >
+                  {/* Second row */}
+                  {slide.slice(6).map((button) => (
+                    <CoursesButton
+                      key={button.id}
+                      src={button.src}
+                      label={button.label}
+                      onClick={() => handleButtonClick(button)}
+                    />
+                  ))}
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
         ) : (
           <div style={{ textAlign: "center", padding: "40px" }}>
             No courses available.

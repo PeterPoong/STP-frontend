@@ -20,9 +20,17 @@ const FeaturedUni = () => {
 
     navigate(`/courses`, {
       state: {
-        searchQuery: trimmedQuery,
+        searchQuery: trimmedQuery, // Passing the searchQuery to the SearchCourse component
       },
     });
+  };
+
+  const handleNavigationClick = (qualification, country) => {
+    navigate("/courses", { state: { qualification, country } });
+  };
+
+  const handleNavigation = (query) => {
+    navigate("/courses", { state: { searchQuery: query } });
   };
 
   return (
@@ -68,6 +76,8 @@ const FeaturedUni = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
               style={{
                 textAlign: "center",
+                paddingLeft: "20px",
+                paddingRight: "20px",
               }}
             />
             <i
@@ -84,10 +94,28 @@ const FeaturedUni = () => {
           </InputGroup>
         </Form>
         <div className="button-container mt-3 d-flex justify-content-center">
-          <button className="diploma-button mb-2 mx-2">Diploma</button>
-          <button className="degree1-button mb-2 mx-2">Degree</button>
-          <button className="master-button mb-2 mx-2">Master</button>
-          <button className="studyInMalaysia-button mb-2 mx-2">
+          <button
+            className="diploma-button mb-2 mx-2"
+            onClick={() => handleNavigationClick("Diploma", null)}
+          >
+            Diploma
+          </button>
+          <button
+            className="degree1-button mb-2 mx-2"
+            onClick={() => handleNavigationClick("Degree", null)}
+          >
+            Degree
+          </button>
+          <button
+            className="master-button mb-2 mx-2"
+            onClick={() => handleNavigationClick("Master", null)}
+          >
+            Master
+          </button>
+          <button
+            className="studyInMalaysia-button mb-2 mx-2"
+            onClick={() => handleNavigationClick(null, "Malaysia")}
+          >
             Study in Malaysia
           </button>
         </div>

@@ -1,22 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  Form,
-  Button,
-  Container,
-  Row,
-  Col,
-  Alert,
-  InputGroup,
-} from "react-bootstrap";
+import { Form, Button, Container, Row, Col, Alert, InputGroup } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-
 import studentPortalLogin from "../../assets/StudentPortalAssets/studentPortalLogin.png";
 import studentPortalLoginLogo from "../../assets/StudentPortalAssets/studentPortalLoginLogo.png";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { Eye, EyeOff } from "react-feather";
 import "../../css/StudentPortalStyles/StudentPortalLoginForm.css";
+import "../../css/StudentPortalStyles/StudentButtonGroup.css";
 
 const StudentPortalLogin = () => {
   const [password, setPassword] = useState("");
@@ -24,11 +16,12 @@ const StudentPortalLogin = () => {
   const [phone, setPhone] = useState("");
   const [countryCode, setCountryCode] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
-  const [countryCodes, setCountryCodes] = useState([]);
+  // const [countryCodes, setCountryCodes] = useState([]);
   const [loginStatus, setLoginStatus] = useState(null);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  /*Loading to check remember me, token for session and local storage, navigations to studentportalbasicinformation if have token*/
   useEffect(() => {
     const rememberMe = JSON.parse(
       localStorage.getItem("rememberMe") || "false"
@@ -36,60 +29,51 @@ const StudentPortalLogin = () => {
     const token = rememberMe
       ? localStorage.getItem("token")
       : sessionStorage.getItem("token");
-
     if (token) {
       navigate("/studentPortalBasicInformations");
     }
-
     const handleTabClosing = () => {
       if (!rememberMe) {
         sessionStorage.removeItem("token");
       }
     };
-
     window.addEventListener("beforeunload", handleTabClosing);
 
-    fetch(`${import.meta.env.VITE_BASE_URL}api/countryCode`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.success) {
-          setCountryCodes(data.data);
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching country codes:", error);
-      });
-
-    const rememberedPhone = localStorage.getItem("rememberedPhone");
+    //fetch(`${import.meta.env.VITE_BASE_URL}api/countryCode`)
+    //  .then((response) => response.json())
+    //  .then((data) => {
+    //    if (data.success) {
+    //      setCountryCodes(data.data);
+    //    }
+    //  })
+    //  .catch((error) => {
+    //    console.error("Error fetching country codes:", error);
+    //  });
+    const rememberedCountryCode = localStorage.getItem("rememberedCountryCode");
+    const rememberedContactNumber = localStorage.getItem("rememberedContactNumber");
     const rememberedPassword = localStorage.getItem("rememberedPassword");
-    if (rememberedPhone && rememberedPassword) {
-      setPhone(rememberedPhone);
-      setPassword(rememberedPassword);
+    if (rememberedCountryCode && rememberedContactNumber) {
+      setCountryCode(rememberedCountryCode);
+      setPhone(rememberedCountryCode + rememberedContactNumber);
       setRememberMe(true);
     }
-
-  // // New implementation (commented out)
-  // const rememberedCountryCode = localStorage.getItem("rememberedCountryCode");
-  // const rememberedContactNumber = localStorage.getItem("rememberedContactNumber");
-  // if (rememberedCountryCode && rememberedContactNumber) {
-  //   setCountryCode(rememberedCountryCode);
-  //   setPhone(rememberedCountryCode + rememberedContactNumber);
-  //   setRememberMe(true);
-  // }
-  // if (rememberedPassword) {
-  //   setPassword(rememberedPassword);
-  // }
-
+    if (rememberedPassword) {
+      setPassword(rememberedPassword);
+    }
     return () => {
       window.removeEventListener("beforeunload", handleTabClosing);
     };
   }, [navigate]);
+  /*end*/
 
+  /* handle phone change */
   const handlePhoneChange = (value, country, e, formattedValue) => {
     setPhone(value);
     setCountryCode(country.dialCode);
   };
+ /*end*/
 
+ /*Longin api*/
   const handleSubmit = (e) => {
     e.preventDefault();
     setLoginStatus(null);
@@ -101,12 +85,6 @@ const StudentPortalLogin = () => {
       contact_number: phone.slice(countryCode.length),
     };
 
-     // // New implementation (commented out)
-  // const formData = {
-  //   password: password,
-  //   country_code: `+${countryCode}`,
-  //   contact_number: phone.slice(countryCode.length),
-  // };
     console.log("Sending login data:", formData);
     fetch(`${import.meta.env.VITE_BASE_URL}api/student/login`, {
       method: "POST",
@@ -149,17 +127,14 @@ const StudentPortalLogin = () => {
 
               if (rememberMe) {
                 localStorage.setItem("token", data.data.token);
-                localStorage.setItem("rememberedPhone", phone);
+                localStorage.setItem("rememberedContactNumber", phone.slice(countryCode.length));
                 localStorage.setItem("rememberedCountryCode", countryCode);
                 localStorage.setItem("rememberedPassword", password);
               } else {
                 localStorage.removeItem("token");
-                localStorage.removeItem("rememberedPhone");
+                localStorage.removeItem("rememberedContactNumber");
                 localStorage.removeItem("rememberedCountryCode");
                 localStorage.removeItem("rememberedPassword");
-                 // // New implementation (commented out)
-  // localStorage.setItem("rememberedContactNumber", phone.slice(countryCode.length));
-
               }
 
               const userId = data.data.user.id;
@@ -198,6 +173,8 @@ const StudentPortalLogin = () => {
         setLoginStatus("error");
       });
   };
+  /*end*/
+  
   return (
     <Container fluid className="h-100">
       <Row className="h-50">
@@ -257,6 +234,7 @@ const StudentPortalLogin = () => {
                       buttonClass="btn btn-outline-secondary"
                       dropdownClass="country-dropdown custom-dropdown"
                       countryCodeEditable={false}
+                      style={{zIndex:11}}
                       required
                     />
                   </Form.Group>
@@ -312,7 +290,7 @@ const StudentPortalLogin = () => {
                   <Button
                     variant="danger"
                     type="submit"
-                    className="my-3 m-0"
+                    className="my-3 m-0 btn-login-signup-forgetpassword"
                     style={{ width: "100%", height: "40px" }}
                   >
                     Login

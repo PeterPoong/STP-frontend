@@ -157,9 +157,12 @@
 
 
 .image-gallery {
+  place-items: center; /* Center both horizontally and vertically */
+
   display:inline-block;
   justify-content: space-between;
   align-items: center;
+  justify-items: center;
 }
 
 .gallery-image {

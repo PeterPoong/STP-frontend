@@ -104,6 +104,30 @@
   }
 
 
+/*manage password button*/
+.mpbtndiv
+{
+    background-color: #B71A18;
+    width: 15rem;
+
+}
+
+.mpbtndiv:hover,.btn-login-signup-forgetpassword:hover
+{
+    background-color:#ffffff;
+    border-color: #B71A18;
+    color:#B71A18;
+}
+
+/*login signup forgetpassword*/
+.btn-login-signup-forgetpassword
+{
+background-color: #B71A18;
+width:100%;
+
+
+}
+
 /*responsive button*/
 @media (max-width: 768px) {
     .sac-next-button, .sac-previous-button {
@@ -123,6 +147,21 @@
       .sac-upload-button .upload-icon {
         width: 13px;
         height: 13px;
+      }
+
+      .mpbtndiv
+      {
+        width:100%;
+        padding:0.25rem 2rem;
+        
+      }
+      
+      /*button table for add new button in transcript*/
+      .button-table {
+        background-color: #B71A18;
+        border-radius: 2rem;
+        align-self: center;
+        font-size: 0.825rem;
       }
 }
 
@@ -145,6 +184,11 @@
       .sac-upload-button .upload-icon {
         width: 12px;
         height: 12px;
+      }
+
+      .mpbtndiv
+      {
+        width:100%;
       }
 }
 
@@ -171,5 +215,10 @@
       }
       .sac-upload-button .button-text {
         display: none;
+      }
+
+      .mpbtndiv
+      {
+        width:100%;
       }
 }

@@ -5,9 +5,6 @@ import HeadNavBar from '../../Components/AdminComp/headNavBar';
 import SideNavBar from '../../Components/AdminComp/sideNavBar';
 import AdminDashContent from '../../Components/AdminComp/AdminDashContent';
 
-// Add New Row Component
-import AddTableRow from '../../Components/AdminComp/AddTableRow';
-
 //Other Page Content(Testing)
 import AdminSchoolContent from '../../Components/AdminComp/AdminSchoolContent';
 import AdminCategoryContent from '../../Components/AdminComp/AdminCategoryContent';
@@ -26,7 +23,6 @@ const AdminCategory = () => {
       <div className='HeadNavBarContainer'>
         <HeadNavBar />
         <div>
-          <AddTableRow />
           <AdminCategoryContent />
         </div>
       </div>

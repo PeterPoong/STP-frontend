@@ -212,7 +212,7 @@ const AdminSchoolContent = () => {
                         >
                             Accept
                         </Button>
-                        <Button className="reject"
+                        <Button className="rejected"
                             variant="danger"
                             onClick={() => handlePendingAction(school.id, 'disable')}
                         >

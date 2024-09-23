@@ -25,10 +25,15 @@ import AdminResetPass from "./Pages/AdminPages/AdminResetPass";
 // Admin Dashboard Pages
 import AdminDashboard from "./Pages/AdminPages/AdminDashboard";
 import AdminSchool from "./Pages/AdminPages/AdminSchool";
+import AdminApplicant from "./Pages/AdminPages/AdminApplicant";
 import AdminStudent from "./Pages/AdminPages/AdminStudent";
+import AdminAddStudent from "./Pages/AdminPages/AdminAddStudent";
 import AdminCourses from "./Pages/AdminPages/AdminCourses";
 import AdminCategory from "./Pages/AdminPages/AdminCategory";
 import AdminSubject from "./Pages/AdminPages/AdminSubject";
+import AdminList from "./Pages/AdminPages/AdminList";
+import AdminPackage from "./Pages/AdminPages/AdminPackage";
+import AdminData from "./Pages/AdminPages/AdminData";
 import AdminAddSchool from "./Pages/AdminPages/AdminAddSchool";
 import AdminEditSchool from "./Pages/AdminPages/AdminEditSchool";
 import AdminBanner from "./Pages/AdminPages/AdminBanner";
@@ -40,6 +45,9 @@ import StudentPortalForgetPassword from "./Pages/StudentPortalPages/StudentPorta
 import StudentPortalResetPassword from "./Pages/StudentPortalPages/StudentPortalResetPassword";
 import StudentPortalSignUp from "./Pages/StudentPortalPages/StudentPortalSignUp";
 import StudentPortalBasicInformations from "./Pages/StudentPortalPages/StudentPortalBasicInformations";
+import StudentApplyCourses from "./Pages/StudentPortalPages/StudentApplyCourses";
+import StudentApplyCourse from "./Pages/StudentPortalPages/StudentApplyCourse";
+import StudentApplicationSummary from "./Pages/StudentPortalPages/StudentApplicationSummary";
 
 //schoolPortal Page
 import SchoolPortalLogin from "./Pages/SchoolPages/SchoolPortalLogin";
@@ -50,7 +58,6 @@ import ExistSchool from "./Pages/SchoolPages/ExistSchool";
 import SchoolBasicInformation from "./Pages/SchoolPages/SchoolBasicInformation";
 import SchoolManagePassword from "./Pages/SchoolPages/ManagePassword";
 
-import StudentApplyCourse from "./Pages/StudentPortalPages/StudentApplyCourse";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -142,12 +149,17 @@ const router = createBrowserRouter([
 
   {
     path: "/adminEditSchool",
-    element: <AdminAddSchool />,
+    element: <AdminEditSchool />,
   },
 
   {
     path: "/adminStudent",
     element: <AdminStudent />,
+  },
+
+  {
+    path: "/adminAddStudent",
+    element: <AdminAddStudent />,
   },
 
   {
@@ -166,6 +178,16 @@ const router = createBrowserRouter([
   },
 
   {
+    path: "/adminList",
+    element: <AdminList />,
+  },
+
+  {
+    path: "/adminApplicant",
+    element: <AdminApplicant />,
+  },
+
+  {
     path: "/adminBanner",
     element: <AdminBanner />,
   },
@@ -175,6 +197,15 @@ const router = createBrowserRouter([
     element: <AdminAddBanner />,
   },
 
+  {
+    path: "/adminPackage",
+    element: <AdminPackage />,
+  },
+
+  {
+    path: "/adminData",
+    element: <AdminData />,
+  },
   //Student Portal Page
   {
     path: "/studentPortalLogin",
@@ -227,14 +258,21 @@ const router = createBrowserRouter([
     path: "/schoolExistingAccount",
     element: <ExistSchool />,
   },
-  // {
-  //   path: "/schoolBasicInformation",
-  //   element: <SchoolBasicInformation />,
-  // },
-  // {
-  //   path: "/schoolManagePassword",
-  //   element: <SchoolManagePassword />,
-  // },
+
+  {
+    path: "/studentApplyCourse",
+    element: <StudentApplyCourse />,
+  },
+
+  {
+    path: "/studentApplyCourses/:courseId",
+    element: <StudentApplyCourses />,
+  },
+
+  {
+    path: "/studentApplicationSummary/:courseId",
+    element: <StudentApplicationSummary />,
+  },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(

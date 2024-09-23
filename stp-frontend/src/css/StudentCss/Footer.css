@@ -3,6 +3,7 @@
   color: white;
   text-align: center;
   padding: 10px 0; /* Adjust this padding to reduce height */
+  margin-top:auto;
 }
 
 .footer-content {

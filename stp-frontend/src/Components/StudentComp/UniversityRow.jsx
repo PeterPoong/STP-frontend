@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Card } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
@@ -61,10 +62,11 @@ const UniversityRow = () => {
         {!loading && schools.length > 0 && (
           <Container className="university-row-carousel" fluid>
             <Swiper
+              modules={[Navigation, Pagination]} // Add required modules here
               spaceBetween={30}
-              slidesPerView={3}
+              slidesPerView={7}
               loop={true}
-              pagination={{ clickable: true }}
+              // pagination={{ clickable: true }}
               navigation
               style={{ padding: "0 50px" }}
               breakpoints={{

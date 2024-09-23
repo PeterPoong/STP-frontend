@@ -19,6 +19,7 @@ const AdminStudentContent = () => {
     const [targetstudent, setTargetstudent] = useState(null);
     const [isSearchResults, setIsSearchResults] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
+    const navigate = useNavigate();
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`;
 
@@ -164,9 +165,9 @@ const AdminStudentContent = () => {
     const handlePageChange = (page) => {
         setCurrentPage(page);
     };
-    const handleAddSchool = () => {
+    const handleAddStudent = () => {
         sessionStorage.setItem('token', Authenticate);
-        navigate('/adminAddSchool');
+        navigate('/adminAddStudent');
     };
     const handleSort = (column) => {
         const newDirection = sortColumn === column && sortDirection === "asc" ? "desc" : "asc";
@@ -244,7 +245,7 @@ const AdminStudentContent = () => {
             onPageChange={handlePageChange}
             onRowsPerPageChange={handleRowsPerPageChange}
             // onSearch={(query) => console.log(query)} // Implement search functionality
-            onAddButtonClick={() => console.log("Add new student")} // Implement add new student functionality
+            onAddButtonClick={handleAddStudent} // Implement add new student functionality
         />
         <Modal show={showModal} onHide={() => setShowModal(false)}>
             <Modal.Header closeButton>
