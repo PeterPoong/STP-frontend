@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { MDBSwitch } from 'mdb-react-ui-kit';
 import '../../css/AdminStyles/AdminTableStyles.css';
 import TableWithControls from './TableWithControls';
-import he from 'he';
+
 const AdminPackageContent = () => {
     const [Packages, setPackages] = useState([]);
     const [loading, setLoading] = useState(true);
