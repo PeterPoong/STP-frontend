@@ -15,13 +15,11 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
   const [errors, setErrors] = useState({});
   const [achievementTypes, setAchievementTypes] = useState([]);
 
-  /*loading and pop up the widget can check if open will set the info that retrieve from api respsonse or null, if close will reset the form */
   useEffect(() => {
     if (isOpen) {
       if (item) {
         setAchievementName(item.achievement_name || '');
-        setDate(item.date ? new Date(item.date) : null);
-        setTitle(item.title_obtained || '');
+        setDate(item.date ? parseDate(item.date) : null);
         setAwardedBy(item.awarded_by || '');
         setAchievementMedia(item.achievement_media || null);
       } else {
@@ -31,7 +29,25 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
       fetchAchievementTypes();
     }
   }, [isOpen, item]);
-  /*end */
+
+  useEffect(() => {
+    if (item && achievementTypes.length > 0) {
+      const matchingType = achievementTypes.find(
+        (type) => type.core_metaName === item.title_obtained
+      );
+      if (matchingType) {
+        setTitle(matchingType.id.toString());
+      } else {
+        setTitle('');
+      }
+    }
+  }, [item, achievementTypes]);
+
+  // Helper function to safely parse date strings
+  const parseDate = (dateString) => {
+    const parsedDate = new Date(dateString);
+    return isNaN(parsedDate.getTime()) ? null : parsedDate;
+  };
 
   /*reset form function*/
   const resetForm = () => {
@@ -97,7 +113,7 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
     if (!date) newErrors.date = "Date is required";
     if (!title.trim()) newErrors.title = "Title obtained is required";
     if (!awarded_by.trim()) newErrors.awarded_by = "Awarded by is required";
-
+    if (!achievement_media && !item) newErrors.achievement_media = "Certificate/Document is required";
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return; // Don't proceed with save if there are errors
@@ -133,7 +149,7 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
   };
   /*end */
 
-  
+
   const handleTitleEdit = () => {
     setIsEditingTitle(true);
   };
@@ -146,6 +162,8 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
     const uploadedFile = event.target.files[0];
     if (uploadedFile) {
       setAchievementMedia(uploadedFile);
+      // Clear the file upload error when a file is selected
+      setErrors(prevErrors => ({ ...prevErrors, achievement_media: null }));
     }
   };
 
@@ -165,14 +183,14 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
       window.open(fullUrl, '_blank');
     }
   };
-/*end */
+  /*end */
   return (
     <div className="achievement-overlay">
       <div className="achievement-popup">
         <button className="achievement-close-btn" onClick={handleClose}>
           <X size={24} color="white" />
         </button>
-        <h2 className="achievement-title">
+        <h2 className="achievement-title mt-3">
           {isEditingTitle && !isViewMode ? (
             <>
               <input
@@ -187,16 +205,14 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
             </>
           ) : (
             <>
-              {achievement_name || 'New Achievement'}
+              {achievement_name || 'New Acievement'}
               {!isViewMode && (
-                <button className="buttoneditam">
-                  <Edit2 size={20} color="white" onClick={handleTitleEdit} />
-                </button>
+                  <Edit2 size={18} color="white" className="buttoneditam" onClick={handleTitleEdit} />        
               )}
             </>
           )}
         </h2>
-        {errors.achievement_name && <div className="error-message">{errors.achievement_name}</div>}
+        {errors.achievement_name && <div className="error-message text-white">{errors.achievement_name}</div>}
 
         {errors.general && <Alert variant="danger" className="mt-3">{errors.general}</Alert>}
 
@@ -217,13 +233,13 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
                   required
                 />
               </div>
-              {errors.date && <div className="error-message">{errors.date}</div>}
+              {errors.date && <div className="error-message text-white">{errors.date}</div>}
             </div>
             <div className="achievement-input-field">
               <label className="achievement-label">Title Obtained</label>
               <div className="achievement-select-input" style={{ position: 'relative', outline: 'none' }}>
                 <select
-                  className="achievement-input"
+                  className="achievement-input w-100"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   disabled={isViewMode}
@@ -234,12 +250,10 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
                     outline: 'none',
                     color: 'white'
                   }}
-                  onFocus={(e) => e.target.style.outline = 'none'}
-                  onBlur={(e) => e.target.style.outline = 'none'}
                 >
                   <option value="" style={{ color: 'black' }}>Select title</option>
                   {achievementTypes.map((type) => (
-                    <option key={type.id} value={type.id} style={{ color: 'black' }}>
+                    <option key={type.id} value={type.id.toString()} style={{ color: 'black' }}>
                       {type.core_metaName}
                     </option>
                   ))}
@@ -247,7 +261,7 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
                 <ChevronDown size={20} color="white" style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)' }} />
               </div>
 
-              {errors.title && <div className="error-message">{errors.title}</div>}
+              {errors.title && <div className="error-message text-white">{errors.title}</div>}
             </div>
             <div className="achievement-input-field">
               <label className="achievement-label">Awarded By</label>
@@ -259,7 +273,7 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
                 readOnly={isViewMode}
                 required
               />
-              {errors.awarded_by && <div className="error-message">{errors.awarded_by}</div>}
+              {errors.awarded_by && <div className="error-message text-white">{errors.awarded_by}</div>}
             </div>
           </div>
 
@@ -277,6 +291,7 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
                       type="file"
                       onChange={handleFileChange}
                       style={{ display: 'none' }}
+                      reuiqred
                     />
                   </label>
                 )}
@@ -299,6 +314,7 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
                 )}
               </div>
             )}
+            {errors.achievement_media && <div className="error-message text-white">{errors.achievement_media}</div>}
           </div>
         </div>
 

@@ -6,9 +6,10 @@ import "../../css/StudentPortalStyles/StudentPortalWidget.css";
 const WidgetFileUpload = ({ isOpen, onClose, onSave, item, isViewMode }) => {
   const [name, setName] = useState('');
   const [media, setMedia] = useState(null);
-  const [error, setError] = useState('');
+  const [existingFileUrl, setExistingFileUrl] = useState(null);
+  const [errors, setErrors] = useState({}); // Keep this for multiple errors
 
-    /*loading and pop up the widget can check if open will set the info that retrieve from api respsonse or null, if close will reset the form */
+  /*loading and pop up the widget can check if open will set the info that retrieve from api respsonse or null, if close will reset the form */
   useEffect(() => {
     if (isOpen) {
       if (item) {
@@ -17,7 +18,7 @@ const WidgetFileUpload = ({ isOpen, onClose, onSave, item, isViewMode }) => {
       } else {
         resetForm();
       }
-      setError(''); // Clear any previous errors
+      setErrors({}); // Clear any previous errors
     }
   }, [isOpen, item]);
  /*end */
@@ -26,7 +27,8 @@ const WidgetFileUpload = ({ isOpen, onClose, onSave, item, isViewMode }) => {
   const resetForm = () => {
     setName('');
     setMedia(null);
-    setError('');
+    setExistingFileUrl(null);
+    setErrors({}); // Reset errors here
   };
    /*end */
 
@@ -41,7 +43,16 @@ const WidgetFileUpload = ({ isOpen, onClose, onSave, item, isViewMode }) => {
 
   /*save button function when user press save button */
   const handleSave = async () => {
-    setError('');
+    setErrors({}); // Clear previous errors
+    const newErrors = {};
+    if (!name.trim()) newErrors.title = "Title is required"; // Set title error
+    if (!media && !item) newErrors.file = "File is required"; // Set file error
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors); // Set errors if any
+      return;
+    }
+
     try {
       const result = await onSave({
         id: item ? item.id : null,
@@ -51,18 +62,17 @@ const WidgetFileUpload = ({ isOpen, onClose, onSave, item, isViewMode }) => {
 
       if (!result.success) {
         if (result.message === "Validation Error" && result.error) {
-          // Handle validation errors
           const errorMessages = Object.values(result.error).flat();
-          setError(errorMessages.join('. ') || "Validation failed. Please check your input.");
+          setErrors({ title: errorMessages.join('. ') || "Validation failed. Please check your input." }); // Set error message
         } else {
-          setError(result.message || "Failed to save certificate. Please try again.");
+          setErrors({ message: result.message || "Failed to save certificate. Please try again." }); // Set error message
         }
       } else {
         handleClose();
       }
     } catch (error) {
       console.error('Error saving certificate:', error);
-      setError("An error occurred. Please try again later.");
+      setErrors({ message: "An error occurred. Please try again later." }); // Set error message
     }
   };
    /*end */
@@ -103,8 +113,7 @@ const WidgetFileUpload = ({ isOpen, onClose, onSave, item, isViewMode }) => {
           <h5 className="small">{isViewMode ? 'View' : 'Upload'}</h5>
           <button className="close-button" onClick={handleClose}><X size={20} /></button>
         </div>
-        {error && <Alert variant="danger" className="mt-3">{error}</Alert>}
-
+       
         <div className="upload-title-input">
           <input
             type="text"
@@ -115,6 +124,8 @@ const WidgetFileUpload = ({ isOpen, onClose, onSave, item, isViewMode }) => {
             readOnly={isViewMode}
           />
         </div>
+        {errors.title && <div className="error-message">{errors.title}</div>} {/* Display title error */}
+        {errors.file && <div className="error-message">{errors.file}</div>} {/* Display file error */}
         {!media ? (
           <div className="upload-area">
             {!isViewMode && (
@@ -133,10 +144,10 @@ const WidgetFileUpload = ({ isOpen, onClose, onSave, item, isViewMode }) => {
           </div>
         ) : (
           <div className="file-uploaded">
-            <div className="file-info">
+            <div className="file-info-wfu">
               <FileText size={18} />
               <div className="file-details">
-                <span className="file-name">
+                <span className="file-name text-wrap">
                   {media instanceof File ? media.name : media}
                 </span>
                 <button className="view-button" onClick={handleViewClick}>Click to view</button>

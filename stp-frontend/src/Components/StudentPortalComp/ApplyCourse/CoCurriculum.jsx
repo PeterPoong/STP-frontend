@@ -3,12 +3,17 @@ import { Form, Button, Row, Col } from 'react-bootstrap';
 import { Trash2, Edit, Save, Clock, User, Building } from 'lucide-react';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import WidgetPopUpUnsavedChanges from "../../../Components/StudentPortalComp/Widget/WidgetPopUpUnsavedChanges"; // New import
 
-const CoCurriculum = ({ }) => {
+
+
+const CoCurriculum = ({ onNext, onBack }) => {
   const [activities, setActivities] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [isUnsavedChangesPopupOpen, setIsUnsavedChangesPopupOpen] = useState(false);
+  const [navigationDirection, setNavigationDirection] = useState(null);
   useEffect(() => {
     fetchCoCurriculum();
   }, []);
@@ -40,7 +45,7 @@ const CoCurriculum = ({ }) => {
           year: item.year || ''
         }));
         setActivities(normalizedData);
-       
+
       } else {
         throw new Error(result.message || 'Failed to fetch co-curriculum activities');
       }
@@ -113,7 +118,7 @@ const CoCurriculum = ({ }) => {
           i === index ? { ...a, id: result.data.id, isEditing: false } : a
         );
         setActivities(updatedActivities);
-        
+        setHasUnsavedChanges(false);
         await fetchCoCurriculum();
       } else {
         throw new Error(result.message || 'Failed to save co-curriculum activity');
@@ -130,13 +135,15 @@ const CoCurriculum = ({ }) => {
       i === index ? { ...activity, [field]: value } : activity
     );
     setActivities(updatedActivities);
+    setHasUnsavedChanges(true); // Set unsaved changes flag
     console.log('After update:', updatedActivities[index]); // Log after update
   };
 
   const handleDeleteActivity = async (index) => {
     try {
+      setHasUnsavedChanges(false);
       const activity = activities[index];
-    
+
       // Check if the activity is new (no ID)
       if (!activity.id) {
         // Remove the new activity directly
@@ -169,7 +176,7 @@ const CoCurriculum = ({ }) => {
       if (result.success) {
         const updatedActivities = activities.filter((_, i) => i !== index);
         setActivities(updatedActivities);
-       
+
       } else {
         throw new Error(result.message || 'Failed to delete co-curriculum activity');
       }
@@ -178,6 +185,42 @@ const CoCurriculum = ({ }) => {
       setError(error.message);
     }
   };
+
+
+  const handleNext = () => {
+    if (hasUnsavedChanges) {
+      setIsUnsavedChangesPopupOpen(true);
+    } else {
+      onNext();
+    }
+  };
+ 
+  
+  const handleNavigation = (direction) => {
+    if (hasUnsavedChanges) {
+      setNavigationDirection(direction);
+      setIsUnsavedChangesPopupOpen(true);
+    } else {
+      direction === 'next' ? onNext() : onBack();
+    }
+  };
+
+  const handleUnsavedChangesConfirm = () => {
+    setIsUnsavedChangesPopupOpen(false);
+    if (navigationDirection === 'next') {
+      onNext();
+    } else if (navigationDirection === 'back') {
+      onBack();
+    }
+    setNavigationDirection(null);
+  };
+
+  const handleUnsavedChangesCancel = () => {
+    setIsUnsavedChangesPopupOpen(false);
+    setNavigationDirection(null);
+  };
+
+
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -195,7 +238,7 @@ const CoCurriculum = ({ }) => {
                   placeholder="Name of Co-curriculum..."
                   value={activity.club_name || ''} // Ensure it's always a string
                   onChange={(e) => handleActivityChange(index, 'club_name', e.target.value)}
-                  className="mb-2 border-0 p-0 fw-bold"
+                  className="mb-2 border p-0 fw-bold w-25 ps-2"
                   style={{ fontSize: '1.1rem' }}
                 />
                 <div className="d-flex justify-content-between ps-0">
@@ -248,9 +291,22 @@ const CoCurriculum = ({ }) => {
                 <div className="fw-bold mb-2" style={{ fontSize: '1.1rem' }}>{activity.club_name}</div>
                 <div className="d-flex justify-content-between align-items-center">
                   <div className="d-flex flex-grow-1">
-                    <div className="me-3"><Clock size={18} className="me-2" />{activity.year}</div>
-                    <div className="me-3"><User size={18} className="me-2" />{activity.student_position}</div> {/* Updated to match naming */}
-                    <div><Building size={18} className="me-2" />{activity.location}</div> {/* Updated to match naming */}
+                    <div className="me-3 "  >
+                      <Clock size={18} className="me-2" />
+                      <span className="border-end border-2 border-dark pe-2 me-2">Year</span>
+                      <a className='mx-2 text-dark fw-normal'>{activity.year}</a>
+                    </div>
+                    <div className="me-3" style={{ width: '200px' }}>
+                      <User size={18} className="me-2" />
+                      <span className="border-end  border-2 border-dark pe-2 me-2">Poition</span>
+                      <a className='mx-2 text-dark fw-normal'>{activity.student_position}</a>
+                    </div>
+                    <div className="me-3" >
+                      <Building size={18} className="me-2" />
+                      <span className="border-end border-2 border-dark pe-2 me-2">Institute</span>
+                      <a className='mx-2 text-dark fw-normal'>{activity.location}</a>
+                    </div>
+                   
                   </div>
                   <div>
                     <Button variant="link" onClick={() => {
@@ -276,6 +332,19 @@ const CoCurriculum = ({ }) => {
       >
         Add New +
       </Button>
+      <div className="d-flex justify-content-between mt-4">
+        <Button onClick={() => handleNavigation('back')} className="me-2 rounded-pill px-5 sac-previous-button">
+          Previous
+        </Button>
+        <Button onClick={() => handleNavigation('next')} className="sac-next-button rounded-pill px-5">
+          Next
+        </Button>
+      </div>
+      <WidgetPopUpUnsavedChanges 
+        isOpen={isUnsavedChangesPopupOpen}
+        onConfirm={handleUnsavedChangesConfirm}
+        onCancel={handleUnsavedChangesCancel}
+      />
     </div>
   );
 };

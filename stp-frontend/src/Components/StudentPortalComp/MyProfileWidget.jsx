@@ -109,7 +109,7 @@ const MyProfileWidget = ({ onSelectContent, profilePic }) => {
 
     return (
         <Card className="boxshadow">
-            <Card.Body className="text-center p-4">
+            <Card.Body className="text-center p-4 ">
                 <div style={{
                     width: '80px',
                     height: '80px',
@@ -128,9 +128,9 @@ const MyProfileWidget = ({ onSelectContent, profilePic }) => {
                         }}
                     />
                     <Button
-                        variant="danger"
+                        
                         size="sm"
-                        className="rounded-circle position-absolute d-flex justify-content-center align-items-center"
+                        className="mpw-profilepic-btn rounded-circle position-absolute d-flex justify-content-center align-items-center"
                         style={{
                             bottom: "5px",
                             right: "10px",
@@ -159,14 +159,14 @@ const MyProfileWidget = ({ onSelectContent, profilePic }) => {
                             ) : (
                                 <div className="d-flex justify-content-between align-items-center">
                                     <span>{selectedFileName}</span>
-                                    <Button variant="outline-danger" size="sm" onClick={handleDeleteFile}>
+                                    <Button  variant="outline-secondary" size="sm" onClick={handleDeleteFile}>
                                         X
                                     </Button>
                                 </div>
                             )}
                             {!selectedFileName && (
                                 <Button
-                                    variant="outline-primary"
+                                    variant="outline-danger"
                                     onClick={() => fileInputRef.current.click()}
                                     className="mt-2"
                                 >
@@ -180,11 +180,11 @@ const MyProfileWidget = ({ onSelectContent, profilePic }) => {
                             )}
                         </Modal.Body>
                         <Modal.Footer>
-                            <Button variant="secondary" onClick={() => setShowModal(false)}>
+                            <Button variant="outline-secondary" onClick={() => setShowModal(false)}>
                                 Cancel
                             </Button>
                             <Button
-                                variant="primary"
+                                variant="outline-danger"
                                 onClick={handleUpload}
                                 disabled={!selectedFile}
                             >

@@ -507,7 +507,7 @@ const CourseListing = ({
 
       const matchesSearchQuery = trimmedSearchQuery
         ? program.name.toLowerCase().includes(trimmedSearchQuery) ||
-          program.school_name.toLowerCase().includes(trimmedSearchQuery)
+        program.school_name.toLowerCase().includes(trimmedSearchQuery)
         : true;
 
       return (
@@ -634,11 +634,18 @@ const CourseListing = ({
   };
 
   const handleApplyNow = (program) => {
-     navigate(`/studentApplyCourses/${program.id}`, { state: { program } });
-     };
-    const handleInstituteChange = (institute) => {
+    navigate(`/studentApplyCourses/${program.id}`, {
+      state: {
+        programId: program.id,
+        schoolLogoUrl: `${import.meta.env.VITE_BASE_URL}storage/${program.logo}`,
+        schoolName: program.school_name,
+        courseName: program.name
+      }
+    });
+  };
+  const handleInstituteChange = (institute) => {
     setSelectedInstitute(institute);
-     };
+  };
 
   const mappedPrograms = currentCourses.map((program, index) => (
     <>
@@ -736,7 +743,7 @@ const CourseListing = ({
                             ></i>
                             <span style={{ paddingLeft: "20px" }}>
                               {Array.isArray(program.intake) &&
-                              program.intake.length > 0
+                                program.intake.length > 0
                                 ? program.intake.join(", ")
                                 : "N/A"}{" "}
                             </span>

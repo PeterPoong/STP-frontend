@@ -1,3 +1,4 @@
+//transcript
 import React, { useState, useEffect, useCallback } from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { Edit2, Trash2, Eye, Plus, Search, GripVertical, ChevronDown, Info, FileText, X, Check } from 'lucide-react';
@@ -11,6 +12,8 @@ import WidgetPopUpDelete from "../../../Components/StudentPortalComp/WidgetPopUp
 
 import "../../../css/StudentPortalStyles/StudentButtonGroup.css";
 import WidgetPopUpSubmission from "../../../Components/StudentPortalComp/Widget/WidgetPopUpSubmission";
+
+import WidgetPopUpAcademicRemind from "../../../Components/StudentPortalComp/Widget/WidgetPopUpAcademicRemind";
 
 const ExamSelector = ({ exams, selectedExam, setSelectedExam }) => {
   const itemsPerPage = 5;
@@ -87,12 +90,27 @@ const ExamSelector = ({ exams, selectedExam, setSelectedExam }) => {
 const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveAll }) => {
   const [editingIndex, setEditingIndex] = useState(null);
   const [availableSubjects, setAvailableSubjects] = useState([]);
+  const [hasCheckedForPreset, setHasCheckedForPreset] = useState(false);
 
+  // Function to convert letter grades to integer codes
+  const gradeToInt = (grade) => {
+    const gradeMap = {
+      'A+': 17, 'A': 18, 'A-': 19,
+      'B+': 20, 'B': 21,
+      'C+': 22, 'C': 23,
+      'D': 24, 'E': 25,
+      'G': 26
+    };
+    return gradeMap[grade] || 0; // Return 0 if grade not found
+  };
   useEffect(() => {
     if (examType === 'SPM') {
       fetchAvailableSubjects();
+      if (!hasCheckedForPreset) {
+        checkAndPresetSubjectsForNewUser();
+      }
     }
-  }, [examType, subjects]);
+  }, [examType, hasCheckedForPreset]);
 
   const fetchAvailableSubjects = async () => {
     try {
@@ -110,7 +128,6 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
       });
       const data = await response.json();
       if (data.success) {
-        // Filter out subjects that are already in the subjects list
         const filteredSubjects = data.data.filter(subject =>
           !subjects.some(s => s.id === subject.id)
         );
@@ -121,12 +138,101 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
     }
   };
 
+  const checkAndPresetSubjectsForNewUser = async () => {
+    try {
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/transcriptSubjectList`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        if (result.data.length === 0) {
+          // User has no subjects, add preset subjects
+          await presetSubjectsForNewUser();
+        }
+        // Fetch subjects again to get the updated list (including presets if added)
+        await fetchSubjects();
+      } else {
+        console.error('Failed to check for existing subjects:', result);
+      }
+    } catch (error) {
+      console.error('Error checking for existing subjects:', error);
+    } finally {
+      setHasCheckedForPreset(true);
+    }
+  };
+
+  const presetSubjectsForNewUser = async () => {
+    try {
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      const presetSubjects = [
+        { subjectID: 1, grade: 17 },
+        { subjectID: 2, grade: 17 },
+        { subjectID: 3, grade: 17 },
+        { subjectID: 4, grade: 17 },
+        { subjectID: 5, grade: 17 }
+      ];
+
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/addEditTranscript`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          category: 32, // Assuming 32 is the category ID for SPM
+          data: presetSubjects
+        }),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        console.log('Preset subjects added successfully for new user');
+      } else {
+        console.error('Error adding preset subjects:', data.message);
+      }
+    } catch (error) {
+      console.error('Error in presetSubjectsForNewUser:', error);
+    }
+  };
+
+  const fetchSubjects = async () => {
+    try {
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/transcriptSubjectList`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        const formattedSubjects = result.data.map(subject => ({
+          id: subject.subject_id,
+          name: subject.subject_name,
+          grade: gradeToString(subject.subject_grade)// Convert to string for display
+        }));
+        onSubjectsChange(formattedSubjects);
+      } else {
+        console.error('Failed to fetch subjects:', result);
+      }
+    } catch (error) {
+      console.error('Error fetching subjects:', error);
+    }
+  };
+
+
   const handleAddSubject = (selectedSubject) => {
     const newSubject = availableSubjects.find(s => s.id === parseInt(selectedSubject));
     if (newSubject) {
       const updatedSubjects = [...subjects, { ...newSubject, grade: '', isEditing: true }];
       onSubjectsChange(updatedSubjects);
-      setEditingIndex(updatedSubjects.length - 1);  // Set the new subject to edit mode
+      setEditingIndex(updatedSubjects.length - 1);
       setAvailableSubjects(availableSubjects.filter(s => s.id !== newSubject.id));
     }
   };
@@ -159,38 +265,64 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
     const deletedSubject = subjects[index];
     const updatedSubjects = subjects.filter((_, i) => i !== index);
     onSubjectsChange(updatedSubjects);
-    // Add the deleted subject back to availableSubjects
     setAvailableSubjects([...availableSubjects, deletedSubject]);
   };
 
   const getGradeColor = (grade) => {
-    if (grade.includes('A')) return 'bg-success';
-    if (grade.includes('B')) return 'bg-danger';
-    if (grade.includes('C')) return 'bg-warning text-dark';
+    if (grade.includes('A')) return 'grade-A';
+    if (grade.includes('B')) return 'grade-A';
+    if (grade.includes('C')) return 'grade-A';
+    if (grade.includes('D')) return 'grade-B';
+    if (grade.includes('E')) return 'grade-B';
+    if (grade.includes('G')) return 'grade-C';
+
+
+
     return 'bg-secondary';
+  };
+
+  const gradeToString = (grade) => {
+    const gradeMap = {
+      17: 'A+', 18: 'A', 19: 'A-',
+      20: 'B+', 21: 'B',
+      22: 'C+', 23: 'C',
+      24: 'D', 25: 'E',
+      26: 'G'
+    };
+    return gradeMap[grade] || grade;
   };
 
   return (
     <div className="space-y-2 mb-4">
-
       {subjects.map((subject, index) => (
         <div key={index} className="d-flex align-items-center justify-content-between bg-white p-2 mb-2 rounded border">
           <div className="d-flex align-items-center flex-grow-1">
             <GripVertical className="me-3" size={20} />
-            <span className="fw-medium h6 mb-0 me-3">{subject.name}</span>
+            <span className="fw-medium h6 mb-0 me-3" style={{ width: "150px" }}>{subject.name}</span>
             {editingIndex === index || subject.isEditing ? (
-              <input
-                type="text"
+              <select
                 value={subject.grade}
                 onChange={(e) => handleGradeChange(index, e.target.value)}
                 className="editingplaceholder"
-                placeholder="Enter grade"
                 required
-              />
+              >
+                <option value="" disabled>Select Grade</option>
+                <option value="A+">A+</option>
+                <option value="A">A</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B">B</option>
+                <option value="C+">C+</option>
+                <option value="C">C</option>
+                <option value="D">D</option>
+                <option value="E">E</option>
+                <option value="G">G</option>
+              </select>
+
             ) : (
               subject.grade && (
                 <span className={`rounded-pill px-4 text-white ${getGradeColor(subject.grade)}`}>
-                  GRADE: {subject.grade}
+                  GRADE: {gradeToString(subject.grade)}
                 </span>
               )
             )}
@@ -225,7 +357,7 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
           className="button-table px-5 py-1 text-center"
           onClick={() => {
             onSaveAll();
-            fetchAvailableSubjects(); // Refresh available subjects after saving
+            fetchAvailableSubjects();
           }}
         >
           SAVE
@@ -234,14 +366,54 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
     </div>
   );
 };
-
-
-
-const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveAll }) => {
+const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveAll, categoryId }) => {
   const [newSubject, setNewSubject] = useState('');
   const [editingIndex, setEditingIndex] = useState(null);
+  const [programName, setProgramName] = useState('');
+  const [cgpa, setCgpa] = useState('');
+  const [cgpaId, setCgpaId] = useState(null);
+  const [isRemindPopupOpen, setIsRemindPopupOpen] = useState(false);
+  useEffect(() => {
+    if (categoryId) {
+      fetchProgramCgpa();
+    }
+  }, [categoryId]);
 
-  console.log('ProgramBasedExam rendered with subjects:', subjects);
+  const fetchProgramCgpa = async () => {
+    try {
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/programCgpaList`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ transcriptCategory: categoryId }),
+      });
+      const data = await response.json();
+      console.log('Fetched Program CGPA data:', data);
+      if (data.success && data.data) {
+        // Log the specific fields we're interested in
+        console.log('Fetched program_name:', data.data.program_name);
+        console.log('Fetched cgpa:', data.data.cgpa);
+        console.log('Fetched id:', data.data.id);
+
+        // Update state, using null coalescing operator to handle null values
+        setProgramName(data.data.program_name ?? '');
+        setCgpa(data.data.cgpa ?? '');
+        setCgpaId(data.data.id ?? null);
+      } else {
+        console.error('Failed to fetch program CGPA data or data is missing');
+        // Reset states if no data is found
+        setProgramName('');
+        setCgpa('');
+        setCgpaId(null);
+      }
+    } catch (error) {
+      console.error('Error fetching program CGPA:', error);
+    }
+  };
+
 
   const handleAddSubject = (e) => {
     e.preventDefault();
@@ -250,29 +422,25 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
       const updatedSubjects = [...subjects, newSubjectObj];
       onSubjectsChange(updatedSubjects);
       setNewSubject('');
-      setEditingIndex(updatedSubjects.length - 1);  // Set the new subject to edit mode
+      setEditingIndex(updatedSubjects.length - 1);
     }
   };
+
   const handleGradeChange = (index, grade) => {
-    console.log(`Changing grade for subject at index ${index} to:`, grade);
     const updatedSubjects = subjects.map((subject, i) =>
       i === index ? { ...subject, grade } : subject
     );
-    console.log('Updated subjects after grade change:', updatedSubjects);
     onSubjectsChange(updatedSubjects);
   };
 
   const handleNameChange = (index, name) => {
-    console.log(`Changing name for subject at index ${index} to:`, name);
     const updatedSubjects = subjects.map((subject, i) =>
       i === index ? { ...subject, name } : subject
     );
-    console.log('Updated subjects after name change:', updatedSubjects);
     onSubjectsChange(updatedSubjects);
   };
 
   const handleEdit = (index) => {
-    console.log('Editing subject at index:', index);
     setEditingIndex(index);
   };
 
@@ -289,39 +457,124 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
     setEditingIndex(null);
   };
 
-
   const handleDelete = (index) => {
-    console.log('Deleting subject at index:', index);
     const updatedSubjects = subjects.filter((_, i) => i !== index);
-    console.log('Updated subjects after deletion:', updatedSubjects);
     onSubjectsChange(updatedSubjects);
   };
 
   const getGradeColor = (grade) => {
-    if (grade.includes('A')) return 'bg-success';
-    if (grade.includes('B')) return 'bg-danger';
-    if (grade.includes('C')) return 'bg-warning text-dark';
+    if (grade.includes('A')) return 'grade-A';
+    if (grade.includes('B')) return 'grade-A';
+    if (grade.includes('C')) return 'grade-A';
+    if (grade.includes('D')) return 'grade-B';
+    if (grade.includes('E')) return 'grade-B';
+    if (grade.includes('G')) return 'grade-C';
+
+
+
     return 'bg-secondary';
   };
+  const handleSaveAll = async () => {
+    try {
+      console.log('ProgramBasedExam handleSaveAll initiated');
+      console.log('Current state before save:', { programName, cgpa, cgpaId, examType, categoryId, subjects });
 
+
+      // Validation
+      if (!cgpa.trim()) {
+        setIsRemindPopupOpen(true);
+        return;
+      }
+
+      if (subjects.length === 0 || subjects.some(subject => !subject.name.trim() || !subject.grade.trim())) {
+        setIsRemindPopupOpen(true);
+        return;
+      }
+
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      console.log('Token retrieved:', token ? 'Yes' : 'No');
+
+      let cgpaResponse;
+      let cgpaPayload;
+
+      if (cgpaId) {
+        console.log('Updating existing CGPA');
+        cgpaPayload = { cgpaId, cgpa };
+        if (programName.trim()) cgpaPayload.programName = programName;
+        cgpaResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/editProgramCgpa`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify(cgpaPayload),
+        });
+      } else {
+        console.log('Adding new CGPA');
+        cgpaPayload = { transcriptCategory: categoryId, cgpa };
+        if (programName.trim()) cgpaPayload.programName = programName;
+        cgpaResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/addProgramCgpa`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify(cgpaPayload),
+        });
+      }
+
+      console.log('CGPA API request payload:', cgpaPayload);
+      console.log('CGPA API response status:', cgpaResponse.status);
+
+      const cgpaData = await cgpaResponse.json();
+      console.log('CGPA API response data:', cgpaData);
+
+      if (!cgpaData.success) {
+        throw new Error(cgpaData.message || 'Failed to save program CGPA');
+      }
+
+      console.log('CGPA saved successfully, now saving subjects');
+      // After successfully saving CGPA, call the parent's onSaveAll function
+      await onSaveAll(subjects, examType);
+      console.log('Subjects saved successfully');
+
+      // Fetch updated data after saving
+      await fetchProgramCgpa();
+
+    } catch (error) {
+      console.error('Error in ProgramBasedExam handleSaveAll:', error);
+      console.error('Error details:', error.message);
+      alert('Failed to save program data. Please try again. Error: ' + error.message);
+    }
+  };
   return (
     <div>
       <div className="mb-4">
         <div className="d-flex justify-content-around">
           <div className="w-1/2">
-            <label className="fw-bold small formlabel">Programme Name <span className="text-danger">*</span></label>
-            <input type="text" className="inputat" />
+            <label className="fw-bold small formlabel">Programme Name </label>
+            <input
+              type="text"
+              className="inputat"
+              value={programName}
+              onChange={(e) => setProgramName(e.target.value)}
+            />
           </div>
           <div className="w-1/2">
-            <label className="fw-bold small formlabel">CGPA *</label>
-            <input type="text" className="inputat" />
+            <label className="fw-bold small formlabel">CGPA <span className="text-danger">*</span></label>
+            <input
+              type="text"
+              className="inputat"
+              value={cgpa}
+              onChange={(e) => setCgpa(e.target.value)}
+            />
           </div>
         </div>
       </div>
       <TransitionGroup className="space-y-2 mb-4">
         {subjects.map((subject, index) => (
           <CSSTransition key={index} classNames="fade" timeout={300}>
-            <div key={index} className="d-flex align-items-center justify-content-between bg-white p-2 mb-2 rounded border">
+            <div className="d-flex align-items-center justify-content-between bg-white p-2 mb-2 rounded border">
               <div className="d-flex align-items-center flex-grow-1">
                 <GripVertical className="me-3" size={20} />
                 {editingIndex === index || subject.isEditing ? (
@@ -345,7 +598,7 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
                   </>
                 ) : (
                   <>
-                    <span className="fw-medium h6 mb-0 me-3">{subject.name}</span>
+                    <span className="fw-medium h6 mb-0 me-3" style={{ width: "150px" }}>{subject.name}</span>
                     {subject.grade && (
                       <span className={`rounded-pill px-4 text-white ms-2 ${getGradeColor(subject.grade)}`}>
                         GRADE: {subject.grade}
@@ -383,15 +636,16 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
       </form>
       <div className="d-flex justify-content-end mt-4">
         <button
-          className="button-table w-25 px-5 text-center"
-          onClick={() => {
-            console.log('Save button clicked. Current subjects:', subjects);
-            onSaveAll();
-          }}
+          className="button-table px-5 py-1 text-center"
+          onClick={handleSaveAll}
         >
           SAVE
         </button>
       </div>
+      <WidgetPopUpAcademicRemind
+        isOpen={isRemindPopupOpen}
+        onClose={() => setIsRemindPopupOpen(false)}
+      />
     </div>
   );
 };
@@ -413,6 +667,7 @@ const AcademicTranscript = () => {
   const [fileToDelete, setFileToDelete] = useState(null);
   const [isViewMode, setIsViewMode] = useState(false);
   const [subjects, setSubjects] = useState([]);
+  const [isRemindPopupOpen, setIsRemindPopupOpen] = useState(false);
 
   const [examData, setExamData] = useState({
     'SPM': [],
@@ -660,8 +915,8 @@ const AcademicTranscript = () => {
         setCategories(result.data.data);
 
         // Manually categorize transcript categories
-        const examBased = ['SPM', 'O-level', 'GCSE', 'IGCSE', 'SSCE', 'UEC', 'SAT / ACT'];
-        const programBased = ['STPM', 'A-level', 'Foundation', 'Diploma','O-level'];
+        const examBased = ['SPM', /*'O-level',*/ 'GCSE', 'IGCSE', 'SSCE', 'UEC', 'SAT / ACT'];
+        const programBased = ['STPM', 'A-level', 'Foundation', 'Diploma', 'O-level'];
 
         setExamBasedCategories(result.data.data.filter(cat => examBased.includes(cat.transcript_category)));
         setProgramBasedCategories(result.data.data.filter(cat => programBased.includes(cat.transcript_category)));
@@ -841,28 +1096,39 @@ const AcademicTranscript = () => {
     setSubjects(updatedSubjects);
   }, []);
 
-  const handleSaveAll = async () => {
+  const handleSaveAll = async (subjectsToSave, examType) => {
     setIsSubmissionPopupOpen(false);
     try {
-      console.log('handleSaveAll initiated');
-      const category = categories.find(cat => cat.transcript_category === selectedExam);
+      console.log('AcademicTranscript handleSaveAll initiated');
+      console.log('Parameters:', { subjectsToSave, examType });
+
+      const category = categories.find(cat => cat.transcript_category === examType);
+      console.log('Found category:', category);
 
       if (!category) {
         console.error('Selected exam category not found');
         return;
       }
 
-      console.log('Current exam category:', category);
+
+      if (subjectsToSave.length === 0 || subjectsToSave.some(subject => !subject.name.trim() || !subject.grade.trim())) {
+        setIsRemindPopupOpen(true);
+        return;
+      }
+
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      console.log('Token retrieved:', token ? 'Yes' : 'No');
+
+      let response;
 
       if (category.id === 32) {
         console.log('Saving SPM subjects...');
-        await addEditSPMTranscript(subjects);
+        await addEditSPMTranscript(subjectsToSave);
       } else {
         console.log('Saving non-SPM subjects...');
-        const token = sessionStorage.getItem('token') || localStorage.getItem('token');
         const payload = {
           category: category.id,
-          data: subjects.map(subject => ({
+          data: subjectsToSave.map(subject => ({
             name: subject.name,
             grade: subject.grade
           }))
@@ -870,7 +1136,7 @@ const AcademicTranscript = () => {
 
         console.log('Payload prepared for non-SPM API:', payload);
 
-        const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/addEditHigherTranscript`, {
+        response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/addEditHigherTranscript`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -879,25 +1145,29 @@ const AcademicTranscript = () => {
           body: JSON.stringify(payload),
         });
 
+        console.log('API response status:', response.status);
         const data = await response.json();
         console.log('API response for non-SPM:', data);
 
         if (data.success) {
           console.log('Non-SPM Subjects saved successfully');
-          fetchSubjects(category.id.toString());
+          await fetchSubjects(category.id.toString());
         } else {
           console.error('Error saving non-SPM subjects:', data.message);
           alert(`Error saving subjects: ${data.message}`);
         }
       }
     } catch (error) {
-      console.error('Error in handleSaveAll:', error);
-      alert('An unexpected error occurred while saving subjects.');
+      console.error('Error in AcademicTranscript handleSaveAll:', error);
+      alert('An unexpected error occurred while saving subjects. Error: ' + error.message);
     }
   };
 
+
+
   const renderExamComponent = () => {
-    const categoryId = categories.find(cat => cat.transcript_category === selectedExam)?.id;
+    const category = categories.find(cat => cat.transcript_category === selectedExam);
+    const categoryId = category ? category.id : null;
     const files = mediaData[categoryId] || [];
 
     if (selectedExam === 'SPM' || examBasedCategories.some(cat => cat.transcript_category === selectedExam)) {
@@ -906,7 +1176,8 @@ const AcademicTranscript = () => {
         subjects={subjects}
         onSubjectsChange={updateSubjects}
         files={files}
-        onSaveAll={handleSaveConfirmation}
+        onSaveAll={() => handleSaveAll(subjects, selectedExam)}
+        categoryId={categoryId}
       />;
     } else if (programBasedCategories.some(cat => cat.transcript_category === selectedExam)) {
       return <ProgramBasedExam
@@ -914,13 +1185,12 @@ const AcademicTranscript = () => {
         subjects={subjects}
         onSubjectsChange={updateSubjects}
         files={files}
-        onSaveAll={handleSaveConfirmation}
+        onSaveAll={handleSaveAll}
+        categoryId={categoryId}
       />;
     }
     return <div>No data available for {selectedExam}</div>;
   };
-
-
   return (
     <div className='p-0'>
       <ExamSelector
@@ -959,13 +1229,13 @@ const AcademicTranscript = () => {
           </select>
           <span className="me-2 align-self-center">entries</span>
           <div className="search-bar-sas  ">
-                    <Search size={20} style={{ color: '#9E9E9E' }} />
-                    <input
-                        type="text" placeholder="Search..." className="form-control custom-input-size"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                </div>
+            <Search size={20} style={{ color: '#9E9E9E' }} />
+            <input
+              type="text" placeholder="Search..." className="form-control custom-input-size"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
           <button className="button-table px-5 py-1 ml-auto" onClick={() => setIsFileUploadOpen(true)}>ADD NEW</button>
         </div>
 
@@ -1025,9 +1295,7 @@ const AcademicTranscript = () => {
           </button>
         </div>
 
-        <div className="d-flex justify-content-end mt-4">
-          <button className="button-table px-5 py-1 text-center">SAVE</button>
-        </div>
+
       </div>
 
       <WidgetFileUploadAcademicTranscript
@@ -1058,6 +1326,11 @@ const AcademicTranscript = () => {
         isOpen={isSubmissionPopupOpen}
         onClose={() => setIsSubmissionPopupOpen(false)}
         onConfirm={handleSaveAll}
+      />
+
+      <WidgetPopUpAcademicRemind
+        isOpen={isRemindPopupOpen}
+        onClose={() => setIsRemindPopupOpen(false)}
       />
     </div>
   );

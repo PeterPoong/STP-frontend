@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { Form, Button } from 'react-bootstrap';
+
 import { Box, Stepper, Step, StepLabel } from '@mui/material';
 import StepConnector, { stepConnectorClasses } from '@mui/material/StepConnector';
 import { styled } from '@mui/material/styles';
@@ -11,10 +12,11 @@ import CoCurriculum from '../../Components/StudentPortalComp/ApplyCourse/CoCurri
 import Achievements from '../../Components/StudentPortalComp/ApplyCourse/Achievements';
 import OtherDocuments from '../../Components/StudentPortalComp/ApplyCourse/OtherDocuments';
 import WidgetPopUpSubmission from "../../Components/StudentPortalComp/Widget/WidgetPopUpSubmission";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import "../../css/StudentPortalStyles/StudentApplyCourse.css";
 import "../../css/StudentPortalStyles/StudentButtonGroup.css";
 import image1 from "../../assets/StudentAssets/University Logo/image1.jpg";
+import WidgetPopUpError from "../../Components/StudentPortalComp/Widget/WidgetPopUpError";
 
 const CustomConnector = styled(StepConnector)(({ theme }) => ({
   [`&.${stepConnectorClasses.alternativeLabel}`]: {
@@ -60,13 +62,13 @@ const CustomStepper = styled(Stepper)(({ theme }) => ({
 
 const CustomStepLabel = styled(StepLabel)(({ theme }) => ({
   '& .MuiStepLabel-label': {
-    fontSize: '0.8rem',
+    fontSize: '0.9rem',
     color: '#e0e0e0',
     fontWeight: "bold",
     marginTop: '10px',
     '&.Mui-active': {
       color: '#000',
-      fontSize: '0.8rem',
+      fontSize: '0.9rem',
       fontWeight: "bold"
     },
     '&.Mui-completed': {
@@ -115,6 +117,10 @@ const StudentApplyCourses = () => {
   const { courseId } = useParams();
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showSubmissionPopup, setShowSubmissionPopup] = useState(false);
+  const [showErrorPopup, setShowErrorPopup] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const location = useLocation();
+  const { schoolLogoUrl, schoolName, courseName } = location.state || {};
   const [formData, setFormData] = useState({
     basicInformation: {},
     academicTranscript: {},
@@ -122,8 +128,15 @@ const StudentApplyCourses = () => {
     achievements: [],
     otherDocs: []
   });
-
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const token =
+      sessionStorage.getItem("token") || localStorage.getItem("token");
+    if (!token) {
+      navigate("/studentPortalLogin");
+    }
+  }, [navigate]);
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -151,20 +164,28 @@ const StudentApplyCourses = () => {
         body: JSON.stringify({ courseID: courseId }),
       });
 
-      if (response.ok) {
+      const data = await response.json();
+
+      if (data.success) {
         setShowSubmissionPopup(false);
         setIsSubmitted(true);
-
-        // Store only the most recently applied course ID
         sessionStorage.setItem('lastAppliedCourseId', courseId);
+      } else if (data.error && data.error.courses) {
+        setErrorMessage(data.error.courses[0]);
+        setShowErrorPopup(true);
+        setShowSubmissionPopup(false);
+        setTimeout(() => {
+          navigate('/courses');
+        }, 3000);
       } else {
-        console.error('Error submitting course application:', response.statusText);
+        throw new Error(data.message || 'An error occurred while submitting the application');
       }
     } catch (error) {
-      console.error('Error submitting course application:', error);
+      setErrorMessage(error.message);
+      setShowErrorPopup(true);
+      setShowSubmissionPopup(false);
     }
   };
-
 
   const updateFormData = (step, data) => {
     setFormData(prevData => ({
@@ -178,27 +199,37 @@ const StudentApplyCourses = () => {
       case 0:
         return <BasicInformation
           data={formData.basicInformation}
-          onSubmit={(data) => updateFormData('basicInformation', data)}
+          onSubmit={(data) => {
+            updateFormData('basicInformation', data);
+            handleNext();
+          }}
         />;
       case 1:
         return <AcademicTranscript
           data={formData.academicTranscript}
-          updateData={(data) => updateFormData('academicTranscript', data)}
+          onNext={handleNext}  // Pass handleNext for the "Next" button
+          onBack={handleBack}  // Pass handleBack for the "Previous" button
         />;
       case 2:
         return <CoCurriculum
           data={formData.coCurriculum}
-          updateData={(data) => updateFormData('coCurriculum', data)}
+          onNext={handleNext}  // Pass handleNext for the "Next" button
+          onBack={handleBack}
         />;
       case 3:
         return <Achievements
           data={formData.achievements}
-          updateData={(data) => updateFormData('achievements', data)}
+          onNext={handleNext}  // Pass handleNext for the "Next" button
+          onBack={handleBack}
         />;
       case 4:
         return <OtherDocuments
           data={formData.otherDocs}
-          updateData={(data) => updateFormData('otherDocs', data)}
+          onSubmit={(data) => {
+            updateFormData('otherDocs', data);
+            handleSubmit();
+          }}
+          onBack={handleBack}
         />;
       default:
         return null;
@@ -219,6 +250,7 @@ const StudentApplyCourses = () => {
       <div className="app-container-applycourse">
         <NavButtonsSP />
         <div className="main-content-applycourse">
+
           <div className="backgroundimage">
             <div className="widget-applying-course-success">
               <h1 className="text-danger fw-bold mb-4">Congratulations!</h1>
@@ -230,7 +262,7 @@ const StudentApplyCourses = () => {
               className="sac-submit-button"
               onClick={() => navigate(`/studentApplicationSummary/${sessionStorage.getItem('lastAppliedCourseId')}`)}
             >
-              
+
               View Summary
             </Button>
             <Button className="sac-submit-button" onClick={() => navigate('/courses')}>
@@ -249,15 +281,19 @@ const StudentApplyCourses = () => {
       <div className="main-content-applycourse">
         <div className="backgroundimage">
           <div className="widget-applying-course justify-content-center">
-            <h4 className="text-black align-self-center fw-normal mb-4">You are now applying for </h4>
-            <h3 className="text-danger align-self-center fw-bold mb-5">Bachelor in Mass Communication</h3>
+            <h3 className="text-black align-self-center fw-normal mb-3">You are now applying for </h3>
+            <p className="coursetext-applycourse  align-self-center fw-bold mb-5">{courseName || "Bachelor in Mass Communication"}</p>
             <div className="d-flex justify-content-center">
-              <img src={image1} className="sac-image me-5" alt="University Logo" />
-              <h3 className="text-black fw-bold align-self-center">Swinburne University of Technology</h3>
+              <img
+                src={schoolLogoUrl || image1}
+                className="sac-image-applycourse me-5"
+                alt={`${schoolName || "University"} Logo`}
+              />
+              <p className="schooltext-applycourse text-black fw-bold align-self-center">{schoolName || "Swinburne University of Technology"}</p>
             </div>
           </div>
         </div>
-        <h1 className="text-center mb-4">Student Course Application</h1>
+        
         <Box sx={{ width: '100%', mb: 4, mt: 4, mx: 0 }}>
           <CustomStepper activeStep={activeStep} alternativeLabel connector={<CustomConnector />}>
             {steps.map((label) => (
@@ -267,36 +303,18 @@ const StudentApplyCourses = () => {
             ))}
           </CustomStepper>
         </Box>
-        <Form onSubmit={(e) => e.preventDefault()}>
-          {renderStep()}
-          <div className="d-flex justify-content-between mt-4">
-            {activeStep > 0 && (
-              <Button onClick={handleBack} className="me-2 rounded-pill px-5 sac-previous-button">
-                Previous
-              </Button>
-            )}
-            {activeStep < steps.length - 1 ? (
-              <Button
-                onClick={handleNext}
-                className={`${activeStep === 0 ? "ms-auto" : ""} sac-next-button rounded-pill px-5`}
-              >
-                Next
-              </Button>
-            ) : (
-              <Button
-                onClick={handleSubmit}
-                className="sac-next-button rounded-pill px-5"
-              >
-                Submit
-              </Button>
-            )}
-          </div>
-        </Form>
+        {renderStep()}
+
       </div>
       <WidgetPopUpSubmission
         isOpen={showSubmissionPopup}
         onClose={() => setShowSubmissionPopup(false)}
         onConfirm={handleConfirmSubmission}
+      />
+      <WidgetPopUpError
+        isOpen={showErrorPopup}
+        onClose={() => setShowErrorPopup(false)}
+        errorMessage={errorMessage}
       />
       <SpcFooter />
     </div>
