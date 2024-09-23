@@ -11,6 +11,8 @@ import 'react-phone-input-2/lib/style.css';
 const AdminEditSchoolContent = () => {
     const [schoolFeaturedList, setSchoolFeaturedList] = useState([]);
     const [categoryList, setCategoryList] = useState([]); 
+    const [logo, setLogo] = useState(null);
+    const [newLogo, setNewLogo] = useState(null);
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -45,8 +47,16 @@ const AdminEditSchoolContent = () => {
     const [countryList, setCountryList]= useState ([]);
     const [stateList, setStateList]= useState ([]);
     const [cityList, setCityList]= useState ([]);
+    const schoolId = sessionStorage.getItem('schoolId');
     useEffect(() => {
-        const fetchSchoolData = async () => {
+        const fetchSchoolDetails = async () => {
+            const schoolId = sessionStorage.getItem('schoolId');
+        
+            if (!schoolId) {
+                setError('No school ID found in session storage.');
+                return;
+            }
+        
             try {
                 const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/schoolDetail`, {
                     method: 'POST',
@@ -54,42 +64,84 @@ const AdminEditSchoolContent = () => {
                         'Content-Type': 'application/json',
                         'Authorization': Authenticate,
                     },
-                    body: JSON.stringify({ id }) // Send the ID in the request body
+                    body: JSON.stringify({ id: schoolId })
                 });
-
+        
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-
+        
                 const data = await response.json();
-
+        
                 if (data.success) {
-                    setFormData({
-                        ...formData,
-                        name: data.data.name,
-                        email: data.data.email,
-                        contact_number: data.data.contactNumber,
-                        country_code: data.data.countryCode,
-                        person_in_charge_name: data.data.person_in_charge_name,
-                        person_in_charge_email: data.data.person_in_charge_email,
-                        person_in_charge_contact: data.data.person_in_charge_contact,
-                        school_website: data.data.website,
-                        category: data.data.category,
-                        password: '',
-                        confirm_password: '',
-                        school_shortDesc: data.data.shortDescription,
-                        school_fullDesc: data.data.fullDescription,
-                        logo: data.data.logo ? new File([data.data.logo], 'logo.jpg') : null
+                    const schoolDetails = data.data;
+        
+                    // Separate media into cover photo and album
+                    let coverFile = null;
+                    const albumFiles = [];
+        
+                    schoolDetails.media.forEach(media => {
+                        if (media.schoolMedia_type === 66) {
+                            // It's a cover photo
+                            coverFile = {
+                                name: media.schoolMedia_name,
+                                location: `${import.meta.env.VITE_BASE_URL}storage/${media.schoolMedia_location}`
+                            };
+                        } else if (media.schoolMedia_type === 67) {
+                            // It's part of the photo album
+                            albumFiles.push({
+                                name: media.schoolMedia_name,
+                                location: `${import.meta.env.VITE_BASE_URL}storage/${media.schoolMedia_location}`
+                            });
+                        }
                     });
-                    setSelectedFeatures(data.data.schoolFeatured.map(feature => feature.featured_type)); // Assuming 'featured_type' is the ID
+        
+                    setFormData({
+                        name: schoolDetails.name || '',
+                        email: schoolDetails.email || '',
+                        contact_number: schoolDetails.contact_number || '',
+                        country_code: schoolDetails.country_code || '',
+                        person_in_charge_name: schoolDetails.PIC_name || '',
+                        person_in_charge_email: schoolDetails.PIC_email || '',
+                        person_in_charge_contact: schoolDetails.PIC_number || '',
+                        school_website: schoolDetails.school_website || '',
+                        school_address: schoolDetails.school_address || '',
+                        category: schoolDetails.category || '',
+                        account: schoolDetails.account || '',
+                        password: '', 
+                        confirm_password: '',
+                        school_shortDesc: schoolDetails.shortDescription || '',
+                        school_fullDesc: schoolDetails.fullDescripton || '',
+                        country: schoolDetails.country_id || '',
+                        state: schoolDetails.state_id || '',
+                        city: schoolDetails.city_id || '',
+                        logo: schoolDetails.logo ? `${import.meta.env.VITE_BASE_URL}storage/${schoolDetails.logo}` : null
+                    });
+        
+                    setLogo(schoolDetails.logo ? `${import.meta.env.VITE_BASE_URL}storage/${schoolDetails.logo}` : null);
+                    setSelectedFeatures(schoolDetails.schoolFeatured.map(feature => feature.featured_type));
+        
+                    // Set the cover file and album files
+                    setCoverFile(coverFile);
+                    setAlbumFiles(albumFiles);
+        
+                    // Fetch states and cities after setting the country and state
+                    if (schoolDetails.country_id) {
+                        await fetchStates(schoolDetails.country_id); // Fetch states based on country
+                    }
+                    
+                    if (schoolDetails.state_id) {
+                        await fetchCities(schoolDetails.state_id); // Fetch cities based on state
+                    }
                 } else {
                     setError(data.message);
                 }
             } catch (error) {
                 setError('An error occurred while fetching school details.');
+                console.error('Error fetching school details:', error);
             }
         };
-    
+        
         const fetchFeatured = async () => {
             try {
                 const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/universityFeaturedList`, {
@@ -142,17 +194,26 @@ const AdminEditSchoolContent = () => {
             }
         };
 
-        fetchSchoolData();
+        fetchSchoolDetails();
         fetchFeatured();
         fetchCategories();
     }, [id, Authenticate]);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+        console.log("Submitting form data:", formData); // Debugging line
     
-        const { name, email, category, school_website, contact_number, person_in_charge_email, person_in_charge_name, person_in_charge_contact, country_code, confirm_password, school_shortDesc, school_fullDesc, password } = formData;
+        const schoolId = sessionStorage.getItem('schoolId'); // Retrieve schoolId from sessionStorage
+        if (!schoolId) {
+            console.error('School ID is not found in sessionStorage.');
+            return;
+        }
+    
+        const { name, email, category, state, city, account, country, school_address, school_website, contact_number, person_in_charge_email, person_in_charge_name, person_in_charge_contact, country_code, confirm_password, school_shortDesc, school_fullDesc, password } = formData;
         
         const formPayload = new FormData();
+        formPayload.append("id", schoolId); // Include the school ID
+        formPayload.append("school_address", school_address);
         formPayload.append("name", name);
         formPayload.append("email", email);
         formPayload.append("country_code", country_code);
@@ -162,36 +223,57 @@ const AdminEditSchoolContent = () => {
         formPayload.append("person_in_charge_email", person_in_charge_email);
         formPayload.append("school_website", school_website);
         formPayload.append("category", category);
+        formPayload.append("account", account);
+        formPayload.append("country", country);
+        formPayload.append("state", state);
+        formPayload.append("city", city);
         formPayload.append("password", password);
         formPayload.append("confirm_password", confirm_password);
         formPayload.append("school_shortDesc", school_shortDesc);
         formPayload.append("school_fullDesc", school_fullDesc);
-    
+        
+        // Append each feature id individually to formPayload as featured[]
         selectedFeatures.forEach(feature => {
             formPayload.append("featured[]", feature);
         });
-    
+        
+        // Append cover photo if available
+        if (coverFile) {
+            formPayload.append('cover_photo', coverFile);
+        }
+        
+        // Append album files if available
+        albumFiles.forEach((file, index) => {
+            formPayload.append(`album_photos[${index}]`, file);
+        });
+        
         try {
-            const updateSchoolResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/updateSchool/${id}`, {
+            console.log("FormData before submission:", formPayload);
+            
+            const editSchoolResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/editSchool`, {
                 method: 'POST',
                 headers: {
                     'Authorization': Authenticate,
                 },
-                body: formPayload,
+                body: formPayload, // Using FormData directly as the body
             });
-    
-            const updateSchoolData = await updateSchoolResponse.json();
-    
-            if (updateSchoolResponse.ok) {
+        
+            const editSchoolData = await editSchoolResponse.json();
+        
+            if (editSchoolResponse.ok) {
+                console.log('School successfully updated:', editSchoolData);
                 navigate('/adminSchool');
             } else {
-                throw new Error(`School Update failed: ${updateSchoolData.message}`);
+                console.error('Validation Error:', editSchoolData.errors); // Debugging line
+                throw new Error(`School Update failed: ${editSchoolData.message}`);
             }
         } catch (error) {
             setError('An error occurred during school update. Please try again later.');
             console.error('Error during school update:', error);
         }
     };
+    
+    
     useEffect(() => {
         const fetchAccounts = async () => {
             try {
@@ -230,6 +312,79 @@ const AdminEditSchoolContent = () => {
             }
         });
     };
+   // Fetch country list on mount
+useEffect(() => {
+    fetch(`${import.meta.env.VITE_BASE_URL}api/student/countryList`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          setCountryList(data.data);
+          console.log("Countries fetched: ", data.data);
+        }
+      })
+      .catch(error => console.error('Error fetching countries:', error));
+  }, []);
+  
+  // Fetch states when country changes
+  useEffect(() => {
+    if (formData.country) {
+      fetchStates(formData.country);
+    }
+  }, [formData.country]);
+  
+  // Fetch cities when state changes
+  useEffect(() => {
+    if (formData.state) {
+      fetchCities(formData.state);
+    }
+  }, [formData.state]);
+  
+  // Fetch states (POST request)
+  const fetchStates = (countryId) => {
+    fetch(`${import.meta.env.VITE_BASE_URL}api/getState`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id: countryId }),
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          setStateList(data.data);
+        } else {
+          setStateList([]);
+        }
+      })
+      .catch(error => console.error('Error fetching states:', error));
+  };
+  
+  // Fetch cities (POST request)
+  const fetchCities = (stateId) => {
+    fetch(`${import.meta.env.VITE_BASE_URL}api/getCities`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id: stateId }),
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          setCityList(data.data);
+        } else {
+          setCityList([]);
+        }
+      })
+      .catch(error => console.error('Error fetching cities:', error));
+  };
+  
+  
 
     const handlePhoneChange = (value, country, field) => {
         setFormData(prevFormData => {
@@ -285,26 +440,37 @@ const AdminEditSchoolContent = () => {
         setFormData({
           ...formData,
           country: countryId,
-          state: '',
+          state: '',  // Reset state and city when a new country is selected
           city: ''
         });
-        fetchStates(countryId); // Fetch states when country changes
+        if (countryId) {
+          fetchStates(countryId);  // Fetch states based on the selected country
+        }
       };
       
+      
+      // Handle state change
       const handleStateChange = (e) => {
         const stateId = e.target.value;
         setFormData({
           ...formData,
           state: stateId,
-          city: ''
+          city: ''  // Reset city when a new state is selected
         });
-        fetchCities(stateId); // Fetch cities when state changes
+        if (stateId) {
+          fetchCities(stateId);  // Fetch cities based on the selected state
+        }
       };
       
-   // Handle city change
-   const handleCityChange = (e) => {
-    setFormData({ ...formData, city: e.target.value });
-  };
+      // Handle city change
+      const handleCityChange = (e) => {
+        const cityId = e.target.value;
+        setFormData({
+          ...formData,
+          city: cityId  // Just update the city when changed
+        });
+      };
+      
   const { getRootProps: getCoverRootProps, getInputProps: getCoverInputProps } = useDropzone({
     accept: 'image/*',
     onDrop: acceptedFiles => setCoverFile(acceptedFiles[0])
@@ -474,7 +640,7 @@ const AdminEditSchoolContent = () => {
         {
           id: "country",
           label: "Country",
-          value: formData.country,
+          value: formData.country,  // Existing country value
           onChange: handleCountryChange,
           required: true,
           options: countryList.map(country => ({
@@ -486,26 +652,28 @@ const AdminEditSchoolContent = () => {
         {
           id: "state",
           label: "State",
-          value: formData.state,
+          value: formData.state,  // Existing state value
           onChange: handleStateChange,
           required: true,
           options: stateList.map(state => ({
             label: state.state_name,
             value: state.id
           })),
-          placeholder: "" // Placeholder hidden
+          placeholder: "",
+          disabled: !formData.country  // Disable state field until a country is selected
         },
         {
           id: "city",
           label: "City",
-          value: formData.city,
+          value: formData.city,  // Existing city value
           onChange: handleCityChange,
           required: true,
           options: cityList.map(city => ({
             label: city.city_name,
             value: city.id
           })),
-          placeholder: "" // Placeholder hidden
+          placeholder: "",
+          disabled: !formData.state  // Disable city field until a state is selected
         }
       ];
       
@@ -555,8 +723,9 @@ const AdminEditSchoolContent = () => {
                    formPersonInCharge={formPersonInCharge}
                    error={error}
                    buttons={buttons}
-                   logo={formData.logo ? URL.createObjectURL(formData.logo) : null}
+                   logo={logo}
                    handleLogoChange={handleLogoChange}
+                   newLogo={newLogo}
                    handlePhoneChange={handlePhoneChange}  
                    phone={formData.contact_number} 
                    personPhone={formData.person_in_charge_contact}  

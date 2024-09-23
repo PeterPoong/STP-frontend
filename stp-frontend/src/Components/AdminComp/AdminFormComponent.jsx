@@ -45,6 +45,7 @@ const AdminFormComponent = ({
   value,
   banner_file,
   logo,
+  newLogo,
   handleLogoChange,
   handleBannerFileChange,
   startDate,
@@ -401,16 +402,22 @@ const handleRadioChange = (radioId, value) => {
               </Form.Group>
             ))}
             {/* Logo Upload */}
+            {error && <div className="alert alert-danger">{error}</div>}
             {handleLogoChange && (
-              <Form.Group controlId="logo" className="mb-5">
-                <Form.Label>Logo (2MB)</Form.Label>
-                <Form.Control type="file" accept="image/*" onChange={handleLogoChange} />
-              </Form.Group>
+               <Form.Group controlId="logo" className="mb-5">
+               <Form.Label>Logo (2MB)</Form.Label>
+               <Form.Control type="file" accept="image/*" onChange={handleLogoChange} />
+           </Form.Group>
             )}
-            {logo && (
-              <div className="mb-3">
-                <Image src={logo} alt="logo" className="img-fluid-admin" />
-              </div>
+              {logo && !newLogo && (
+                <div className="mb-3">
+                    <Image src={logo} alt="Existing logo" className="img-fluid-admin" />
+                </div>
+            )}
+                 {newLogo && (
+                <div className="mb-3">
+                    <Image src={newLogo} alt="New logo" className="img-fluid-admin" />
+                </div>
             )}
 
             {formPrice && formPrice.map((Price, index) => (
@@ -572,29 +579,26 @@ const handleRadioChange = (radioId, value) => {
           ))}
              <Col md={12}>
                 <Row>
-                  {formCountry && formCountry.map((field, index) => (
-                    <Col md={4} key={index}>
-                      <Form.Group controlId={field.id} className="mb-5 ms-2">
-                        <Form.Label>{field.label}</Form.Label>
-                        <Form.Control 
-                          as="select" 
-                          value={field.value} 
-                          onChange={field.onChange} 
-                          required={field.required}
-                        >
-                          {/* Conditionally render placeholder option */}
-                          {field.id === "country" && (
-                            <option value="">Select {field.label}</option>
-                          )}
-                          {field.options.map((option, optIndex) => (
-                            <option key={optIndex} value={option.value}>
-                              {option.label}
-                            </option>
-                          ))}
-                        </Form.Control>
-                      </Form.Group>
-                    </Col>
-                  ))}
+                 {formCountry.map((field, index) => (
+    <Col md={4} key={index}>
+      <Form.Group controlId={field.id} className="mb-5 ms-2">
+        <Form.Label>{field.label}</Form.Label>
+        <Form.Control
+          as="select"
+          value={field.value}
+          onChange={field.onChange}
+          required={field.required}
+          disabled={field.disabled}
+        >
+          {field.options.length > 0 && field.options.map((option, optIndex) => (
+            <option key={optIndex} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </Form.Control>
+      </Form.Group>
+    </Col>
+  ))}
                 </Row>
               </Col>
       {formTextarea && formTextarea.map((Textarea) => (

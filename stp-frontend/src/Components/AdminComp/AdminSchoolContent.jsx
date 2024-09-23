@@ -107,9 +107,9 @@ const AdminSchoolContent = () => {
         navigate('/adminAddSchool');
     };
     const handleEdit = (id) => {
-        console.log(`Edit school with ID: ${id}`);
-        sessionStorage.setItem('token', Authenticate);
-        navigate(`/adminEditSchool`);
+        console.log(`Edit school with ID: ${id}`); // Log the ID being passed
+        sessionStorage.setItem('schoolId', id); // Store package ID in session storage
+        navigate(`/adminEditSchool`); // Navigate to the edit page
     };
     
 
