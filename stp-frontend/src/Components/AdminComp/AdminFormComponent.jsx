@@ -24,6 +24,7 @@ const AdminFormComponent = ({
   formAddress,
   checkboxTitle,
   checkboxDetail,
+  courseTitle,
   formPeriod,
   formUrl,
   formHTML,
@@ -34,6 +35,7 @@ const AdminFormComponent = ({
   formDrop,
   formMode,
   formGender,
+  formCourse,
   onSubmit,
   error,
   buttons,
@@ -579,7 +581,7 @@ const handleRadioChange = (radioId, value) => {
           ))}
              <Col md={12}>
                 <Row>
-                 {formCountry.map((field, index) => (
+                 {formCountry && formCountry.map((field, index) => (
     <Col md={4} key={index}>
       <Form.Group controlId={field.id} className="mb-5 ms-2">
         <Form.Label>{field.label}</Form.Label>
@@ -762,25 +764,52 @@ const handleRadioChange = (radioId, value) => {
         ))}
       {/* Render checkboxes conditionally */}
       {formCheckboxes && formCheckboxes.length > 0 && (
-        <div className="check">
-          <h4 className="detail text-left">{checkboxDetail}</h4>
-          <h4 className="fw-light text-left mt-2 mb-2">{checkboxTitle}</h4>
-          <Form.Group controlId="formBasicCheckboxes">
-            {formCheckboxes.map((checkbox, index) => (
-              <Form.Check
-                key={index}
-                type="checkbox"
-                id={checkbox.id}
-                label={checkbox.label}
-                value={checkbox.value}
-                checked={checkbox.checked}
-                onChange={checkbox.onChange}
-                className="mb-2"
-              />
-            ))}
-          </Form.Group>
-        </div>
-      )}
+  <div className="check">
+    <h4 className="detail text-left">{checkboxDetail}</h4>
+    <h4 className="fw-light text-left mt-2 mb-2">{checkboxTitle}</h4>
+    <Form.Group controlId="formBasicCheckboxes">
+      <div className="row">
+        {formCheckboxes.map((checkbox, index) => (
+          <div key={index} className="col-md-6 col-lg-4 mb-2">
+            <Form.Check
+              type="checkbox"
+              id={checkbox.id}
+              label={checkbox.label}
+              value={checkbox.value}
+              checked={checkbox.checked}
+              onChange={checkbox.onChange}
+              className="mb-2"
+            />
+          </div>
+        ))}
+      </div>
+    </Form.Group>
+  </div>
+)}
+      {formCourse && formCourse.length > 0 && (
+  <div className="check">
+    <h4 className="detail text-left">{checkboxDetail}</h4>
+    <h4 className="fw-light text-left mt-2 mb-2">{courseTitle}</h4>
+    <Form.Group controlId="formBasicCheckboxes">
+      <div className="row">
+        {formCourse.map((course, index) => (
+          <div key={index} className="col-md-6 col-lg-4 mb-2">
+            <Form.Check
+              type="checkbox"
+              id={course.id}
+              label={course.label}
+              value={course.value}
+              checked={course.checked}
+              onChange={course.onChange}
+              className="mb-2"
+            />
+          </div>
+        ))}
+      </div>
+    </Form.Group>
+  </div>
+)}
+
       {error && <div className="error-message">{error}</div>}
       {/* Submit Button */}
       <Row className="mb-3">

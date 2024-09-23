@@ -12,10 +12,10 @@ import { FaTrashAlt } from 'react-icons/fa';
 
 const AdminAddCourseContent = () => {
     const [courseIntakeList, setCourseIntakeList] = useState([]);
+    const [courseFeaturedList, setCourseFeaturedList] = useState([]);
     const [categoryList, setCategoryList] = useState([]); 
     const [qualificationList, setQualificationList] = useState([]); 
     const [modeList, setModeList] = useState([]); 
-
     const [schoolList, setSchoolList] = useState([]); 
     const [formData, setFormData] = useState({
         name: "",
@@ -30,6 +30,8 @@ const AdminAddCourseContent = () => {
         logo: null
     });
     const [selectedIntakes, setSelectedIntakes] = useState([]);
+    const [selectedCourses, setSelectedCourses] = useState([]);
+
     const [error, setError] = useState(null);
     const navigate = useNavigate();
     const token = sessionStorage.getItem('token');
@@ -55,7 +57,9 @@ const AdminAddCourseContent = () => {
         selectedIntakes.forEach(intake => {
             formPayload.append("intake[]", intake);
         });
-    
+        selectedCourses.forEach(course => {
+            formPayload.append("course[]", course);
+        });
         try {
             const addCourseResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/addCourses`, {
                 method: 'POST',
@@ -108,6 +112,36 @@ const AdminAddCourseContent = () => {
         };
 
         fetchIntake();
+    }, [Authenticate]);
+    useEffect(() => {
+        const fetchCourse = async () => {
+            try {
+                const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/courseFeaturedList`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': Authenticate,
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data && data.data) {
+                    setCourseFeaturedList(data.data);
+                } else {
+                    setCourseFeaturedList([]);
+                }
+            } catch (error) {
+                console.error('Error fetching course featured list:', error.message);
+                setError(error.message);
+            }
+        };
+
+        fetchCourse();
     }, [Authenticate]);
 
     useEffect(() => {
@@ -235,6 +269,16 @@ const AdminAddCourseContent = () => {
                 return prevIntakes.filter(id => id !== intakeId);  // Deselect intake
             } else {
                 return [...prevIntakes, intakeId];  // Add intake to the list
+            }
+        });
+    };
+    const handleCourseChange = (event) => {
+        const courseId = parseInt(event.target.value);
+        setSelectedCourses(prevCourses => {
+            if (prevCourses.includes(courseId)) {
+                return prevCourses.filter(id => id !== courseId);  // Deselect intake
+            } else {
+                return [...prevCourses, courseId];  // Add intake to the list
             }
         });
     };
@@ -391,6 +435,15 @@ const AdminAddCourseContent = () => {
         onChange: handleIntakeChange,
     }));
 
+    const formCourse = courseFeaturedList.map((course) => ({
+        id: `course-${course.id}`,
+        label: course.name,
+        value: course.id,
+        checked: selectedCourses.includes(course.id),
+        onChange: handleCourseChange,
+    }));
+
+
     const buttons = [
         {
             label: "SAVE",
@@ -404,6 +457,7 @@ const AdminAddCourseContent = () => {
                     <AdminFormComponent
            formTitle="Course Details"
            checkboxTitle="Intake"
+           courseTitle="Course Featured"
            formFields={formFields}
            formPersonInCharge={formPersonInCharge}
            formTextarea={formTextarea}
@@ -414,6 +468,7 @@ const AdminAddCourseContent = () => {
            formMode={formMode}
            onSubmit={handleSubmit}
            formCheckboxes={formCheckboxes}
+           formCourse={formCourse}
            error={error}
            buttons={buttons}
            logo={formData.logo ? URL.createObjectURL(formData.logo) : null}
