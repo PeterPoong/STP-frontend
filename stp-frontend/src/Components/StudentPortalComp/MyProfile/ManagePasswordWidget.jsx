@@ -20,6 +20,26 @@ const ManagePasswordWidget = () => {
   const [passwordStrength, setPasswordStrength] = useState(0);
   const [passwordFeedback, setPasswordFeedback] = useState([]);
   const [isSameAsCurrentPassword, setIsSameAsCurrentPassword] = useState(false);
+  const [hasToken, setHasToken] = useState(false);
+  const [userName, setUserName] = useState("");
+
+  useEffect(() => {
+    const token =
+      sessionStorage.getItem("token") || localStorage.getItem("token");
+    if (token) {
+      setHasToken(true);
+  
+      // Retrieve the username
+      const storedUserName =
+        sessionStorage.getItem("userName") || localStorage.getItem("userName");
+      if (storedUserName) {
+        setUserName(storedUserName);
+      }
+    } else {
+      setHasToken(false);
+    }
+  }, []);
+
 
   /* Fetch other documents and certificates from the API */
   useEffect(() => {
@@ -156,11 +176,11 @@ const ManagePasswordWidget = () => {
 
   return (
     <div>
-      <h4 className="title-widget">David Lim's Profile</h4>
+      <h4 className="title-widget">{userName}'s Profile</h4>
       <Card className="mb-4">
         <Card.Body className="mx-4">
           <div className="border-bottom mb-4">
-            <h2 className="fw-light title-widgettwo" style={{ color: "black" }}>Basic Information</h2>
+            <h2 className="fw-light title-widgettwo" style={{ color: "black" }}>Manage Password</h2>
           </div>
           {error && <Alert variant="danger">{error}</Alert>}
           {success && <Alert variant="success">{success}</Alert>}
@@ -176,7 +196,7 @@ const ManagePasswordWidget = () => {
                 />
                 <InputGroup.Text
                   onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                  className="bg-transparent border-start-0 password-toggle"
+                  className="bg-transparent border-start-0 password-toggle-mp"
                   style={{ zIndex: 10 }}
                 >
                   {showCurrentPassword ? <Eye size={18} /> : <EyeOff size={18} />}
@@ -195,7 +215,7 @@ const ManagePasswordWidget = () => {
                 />
                 <InputGroup.Text
                   onClick={() => setShowNewPassword(!showNewPassword)}
-                  className="bg-transparent border-start-0 password-toggle"
+                  className="bg-transparent border-start-0 password-toggle-mp"
                   style={{ zIndex: 10 }}
                 >
                   {showNewPassword ? <Eye size={18} /> : <EyeOff size={18} />}
@@ -223,7 +243,7 @@ const ManagePasswordWidget = () => {
                 />
                 <InputGroup.Text
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="bg-transparent border-start-0 password-toggle"
+                  className="bg-transparent border-start-0 password-toggle-mp"
                   style={{ zIndex: 10 }}
                 >
                   {showConfirmPassword ? <Eye size={18} /> : <EyeOff size={18} />}

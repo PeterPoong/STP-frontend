@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Button } from "react-bootstrap";
 import { GraduationCap, CalendarCheck, BookOpenText } from 'lucide-react';
-import { MapPin, BookOpen, Clock, Calendar, ChevronLeft, ChevronRight } from 'react-feather';
+import { MapPin, Clock, ChevronLeft, ChevronRight } from 'react-feather';
 import "bootstrap/dist/css/bootstrap.min.css";
 import WidgetAccepted from "../../../Components/StudentPortalComp/Widget/WidgetAccepted";
 import WidgetRejected from "../../../Components/StudentPortalComp/Widget/WidgetRejected";
@@ -10,13 +10,14 @@ import "../../../css/StudentPortalStyles/StudentPortalWidget.css";
 
 const AppliedCourseHistory = () => {
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(3);
+    const itemsPerPage = 3; // Number of items to display per page
     const [isAcceptedOpen, setIsAcceptedOpen] = useState(false);
     const [isRejectedOpen, setIsRejectedOpen] = useState(false);
     const [applications, setApplications] = useState([]);
     const [selectedApplication, setSelectedApplication] = useState(null);
+    const [loading, setLoading] = useState(true); // Loading state
 
-    // Calculate first and last item index
+    // Calculate first and last item index for pagination
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 
@@ -26,55 +27,71 @@ const AppliedCourseHistory = () => {
 
     const fetchApplicationsHistory = async () => {
         try {
+            setLoading(true); // Start loading
             const token = sessionStorage.getItem("token") || localStorage.getItem("token");
             if (!token) {
                 throw new Error('No authentication token found');
             }
 
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/historyAppList`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-            });
-            console.log('Response status:', response.status);
-            console.log('Response ok:', response.ok);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+            let allApplications = [];
+            let currentPageAPI = 1;
+            let hasMoreData = true;
+
+            // Loop to fetch all pages
+            while (hasMoreData) {
+                const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/historyAppList?page=${currentPageAPI}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const responseData = await response.json();
+
+                if (responseData.success && responseData.data && Array.isArray(responseData.data.data)) {
+                    const applicationsArray = responseData.data.data;
+
+                    // Combine the applications
+                    allApplications = [...allApplications, ...applicationsArray];
+
+                    // Check if there's a next page
+                    if (responseData.data.next_page_url) {
+                        currentPageAPI++;
+                    } else {
+                        hasMoreData = false;
+                    }
+                } else {
+                    console.error('Unexpected API response structure');
+                    break;
+                }
             }
 
-            const responseData = await response.json();
-            console.log('API response:', responseData);
+            // Sort the applications by date_applied in descending order
+            allApplications.sort((a, b) => new Date(b.date_applied) - new Date(a.date_applied));
 
-            if (responseData.success && responseData.data && Array.isArray(responseData.data.data)) {
-                console.log('Setting applications:', responseData.data.data);
-                setApplications(responseData.data.data);
-            } else {
-                console.error('Unexpected API response structure');
-                console.log('Response structure:', JSON.stringify(responseData, null, 2));
-                setApplications([]);
-            }
+            setApplications(allApplications);
         } catch (error) {
             console.error('Error fetching application history:', error);
-            console.error('Error details:', error.message);
-            if (error.response) {
-                console.error('Error response:', await error.response.text());
-            }
             setApplications([]);
+        } finally {
+            setLoading(false); // End loading
         }
     };
 
-    // Get current items
-    const currentItems = Array.isArray(applications)
-        ? applications.slice(indexOfFirstItem, indexOfLastItem)
-        : [];
+    // Get current items for the current page
+    const currentItems = applications.slice(indexOfFirstItem, indexOfLastItem);
 
-    // Change page
+    // Function to change the current page
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-    // Calculate page numbers
+    // Calculate total number of pages
+    const totalPages = Math.ceil(applications.length / itemsPerPage);
     const pageNumbers = [];
-    for (let i = 1; i <= Math.ceil(applications.length / itemsPerPage); i++) {
+    for (let i = 1; i <= totalPages; i++) {
         pageNumbers.push(i);
     }
 
@@ -101,11 +118,13 @@ const AppliedCourseHistory = () => {
             <Card className="acp-card mb-4">
                 <Card.Body>
                     <h2 className="acp-section-title">All Applications</h2>
-                    {currentItems.length === 0 ? (
+                    {loading ? (
+                        <p>Loading...</p>
+                    ) : currentItems.length === 0 ? (
                         <p>No course history</p>
                     ) : (
                         currentItems.map((app) => (
-                            <Card key={app.student_id} className="acp-application-card mb-3">
+                            <Card key={app.id} className="acp-application-card mb-3">
                                 <Card.Body className="acp-application-body">
                                     <div className="acp-left-section">
                                         <h3 className="acp-degree-title">{app.course_name}</h3>
@@ -158,29 +177,32 @@ const AppliedCourseHistory = () => {
                             </Card>
                         ))
                     )}
-                    <div className="pagination">
-                        <button
-                            onClick={() => paginate(currentPage - 1)}
-                            disabled={currentPage === 1}
-                        >
-                            <ChevronLeft size={20} />
-                        </button>
-                        {pageNumbers.map(number => (
+                    {/* Pagination */}
+                    {applications.length > itemsPerPage && (
+                        <div className="pagination">
                             <button
-                                key={number}
-                                onClick={() => paginate(number)}
-                                className={currentPage === number ? 'active' : ''}
+                                onClick={() => paginate(currentPage - 1)}
+                                disabled={currentPage === 1}
                             >
-                                {number}
+                                <ChevronLeft size={20} />
                             </button>
-                        ))}
-                        <button
-                            onClick={() => paginate(currentPage + 1)}
-                            disabled={currentPage === pageNumbers.length}
-                        >
-                            <ChevronRight size={20} />
-                        </button>
-                    </div>
+                            {pageNumbers.map(number => (
+                                <button
+                                    key={number}
+                                    onClick={() => paginate(number)}
+                                    className={currentPage === number ? 'active' : ''}
+                                >
+                                    {number}
+                                </button>
+                            ))}
+                            <button
+                                onClick={() => paginate(currentPage + 1)}
+                                disabled={currentPage === totalPages}
+                            >
+                                <ChevronRight size={20} />
+                            </button>
+                        </div>
+                    )}
                 </Card.Body>
             </Card>
             <WidgetAccepted

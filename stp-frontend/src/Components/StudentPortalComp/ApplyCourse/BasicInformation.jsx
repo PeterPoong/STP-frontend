@@ -14,7 +14,7 @@ const BasicInformation = ({ onSubmit, nextStep }) => { // Added nextStep as a pr
         country_code: '',
         emailAddress: '',
         address: '',
-        country: '',
+        country: 'Malaysia',
         state: '',
         city: '',
         postcode: '',
@@ -38,11 +38,12 @@ const BasicInformation = ({ onSubmit, nextStep }) => { // Added nextStep as a pr
     }, []);
 
     useEffect(() => {
-        if (formData.country) {
+        if (countries.length > 0 && formData.country) {
             const countryId = countries.find(c => c.country_name === formData.country)?.id;
             if (countryId) fetchStates(countryId);
         }
     }, [formData.country, countries]);
+
 
     useEffect(() => {
         if (formData.state) {
@@ -97,12 +98,12 @@ const BasicInformation = ({ onSubmit, nextStep }) => { // Added nextStep as a pr
                     country_code: result.data.country_code || '',
                     emailAddress: result.data.email || '',
                     address: result.data.address || '',
-                    country: result.data.country || '',
+                    country: result.data.country || 'Malaysia',
                     state: result.data.state || '',
                     city: result.data.city || '',
                     postcode: result.data.postcode || '',
                 });
-                
+
             }
         } catch (error) {
             console.error('Error fetching student details:', error);
@@ -124,6 +125,13 @@ const BasicInformation = ({ onSubmit, nextStep }) => { // Added nextStep as a pr
             }
             const data = await response.json();
             setCountries(data.data || []);
+            if (!formData.country) {
+                const malaysia = data.data.find(c => c.country_name === 'Malaysia');
+                if (malaysia) {
+                    setFormData(prevData => ({ ...prevData, country: 'Malaysia' }));
+                    fetchStates(malaysia.id);
+                }
+            }
         } catch (error) {
             console.error('Error fetching countries:', error);
             setError('Failed to load countries. Please try again later.');
@@ -176,9 +184,19 @@ const BasicInformation = ({ onSubmit, nextStep }) => { // Added nextStep as a pr
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
+        let sanitizedValue = value;
+
+        if (name === 'username' || name === 'icNumber') {
+            sanitizedValue = value.replace(/[^a-zA-Z0-9]/g, '');
+        } else if (name === 'firstName' || name === 'lastName') {
+            sanitizedValue = value.replace(/[^a-zA-Z\s]/g, '');
+        } else if (name === 'postcode') {
+            sanitizedValue = value.replace(/[^0-9]/g, '');
+        }
+
         setFormData(prevData => ({
             ...prevData,
-            [name]: value
+            [name]: sanitizedValue
         }));
     };
 
@@ -235,13 +253,13 @@ const BasicInformation = ({ onSubmit, nextStep }) => { // Added nextStep as a pr
             return;
         }
 
-       
+
 
         // Clear error messages on valid submission
         setError('');
         setSuccess('');
         onSubmit(formData);
-        
+
         try {
             const token = sessionStorage.getItem('token') || localStorage.getItem('token');
             const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/editStudentDetail`, {
@@ -279,8 +297,8 @@ const BasicInformation = ({ onSubmit, nextStep }) => { // Added nextStep as a pr
 
         }
 
-         // This will trigger the navigation to the next step
-    
+        // This will trigger the navigation to the next step
+
     };
 
     if (isLoading) return <div>Loading...</div>;
@@ -303,8 +321,10 @@ const BasicInformation = ({ onSubmit, nextStep }) => { // Added nextStep as a pr
                                         name="username"
                                         value={formData.username}
                                         onChange={handleInputChange}
-                                        placeholder="Enter username"
+                                        placeholder="Enter username "
                                         required
+                                        pattern="[a-zA-Z0-9]+"
+                                        title="Username can only contain letters and numbers"
                                     />
                                 </Form.Group>
                             </Col>
@@ -319,8 +339,10 @@ const BasicInformation = ({ onSubmit, nextStep }) => { // Added nextStep as a pr
                                         name="firstName"
                                         value={formData.firstName}
                                         onChange={handleInputChange}
-                                        placeholder="Enter first name"
+                                        placeholder="Enter first name (letters and spaces only)"
                                         required
+                                        pattern="[a-zA-Z\s]+"
+                                        title="First name can only contain letters and spaces"
                                     />
                                 </Form.Group>
                             </Col>
@@ -333,8 +355,10 @@ const BasicInformation = ({ onSubmit, nextStep }) => { // Added nextStep as a pr
                                         name="lastName"
                                         value={formData.lastName}
                                         onChange={handleInputChange}
-                                        placeholder="Enter last name"
+                                        placeholder="Enter last name (letters and spaces only)"
                                         required
+                                        pattern="[a-zA-Z\s]+"
+                                        title="Last name can only contain letters and spaces"
                                     />
                                 </Form.Group>
                             </Col>
@@ -349,8 +373,10 @@ const BasicInformation = ({ onSubmit, nextStep }) => { // Added nextStep as a pr
                                         name="icNumber"
                                         value={formData.icNumber}
                                         onChange={handleInputChange}
-                                        placeholder="Enter IC number"
+                                        placeholder="Enter IC number (letters and numbers only)"
                                         required
+                                        pattern="[a-zA-Z0-9]+"
+                                        title="IC number can only contain letters and numbers"
                                     />
                                 </Form.Group>
                             </Col>
@@ -387,6 +413,7 @@ const BasicInformation = ({ onSubmit, nextStep }) => { // Added nextStep as a pr
                                             required: true,
                                             placeholder: 'Enter phone number'
                                         }}
+                                        inputStyle={{ fontSize: "16px" }}
                                     />
                                 </Form.Group>
                             </Col>
@@ -490,22 +517,24 @@ const BasicInformation = ({ onSubmit, nextStep }) => { // Added nextStep as a pr
                                         name="postcode"
                                         value={formData.postcode}
                                         onChange={handleInputChange}
-                                        placeholder="Enter postcode"
+                                        placeholder="Enter postcode (numbers only)"
                                         required
+                                        pattern="[0-9]+"
+                                        title="Postcode can only contain numbers"
                                     />
                                 </Form.Group>
                             </Col>
                         </Row>
                         <div className="d-flex justify-content-end mt-3">
-                            <button onClick={handleSubmit}  className="sac-next-button rounded-pill px-5 py-2">
-                               Next
+                            <button onClick={handleSubmit} className="sac-next-button rounded-pill px-5 py-2">
+                                Next
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
-               {/* Popup for missing fields */}
-               <WidgetPopUpFillIn isOpen={showPopup} onClose={() => setShowPopup(false)} />
+            {/* Popup for missing fields */}
+            <WidgetPopUpFillIn isOpen={showPopup} onClose={() => setShowPopup(false)} />
         </div>
     );
 };

@@ -266,7 +266,7 @@ const StudentApplicationSummary = ({ }) => {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ courseID: courseId })
+                body: JSON.stringify({ id: courseId })
             });
             const result = await response.json();
 

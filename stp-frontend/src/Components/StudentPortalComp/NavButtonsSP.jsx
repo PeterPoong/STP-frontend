@@ -14,23 +14,30 @@ const NavigationBar = () => {
   const [hasToken, setHasToken] = useState(false);
   const [userName, setUserName] = useState("");
   const navigate = useNavigate();
-
   useEffect(() => {
     const token =
       sessionStorage.getItem("token") || localStorage.getItem("token");
     if (token) {
       setHasToken(true);
-      // You should fetch the user's name here from your API or local storage
-      setUserName("David Lim"); // Replace with actual user name
+  
+      // Retrieve the username
+      const storedUserName =
+        sessionStorage.getItem("userName") || localStorage.getItem("userName");
+      if (storedUserName) {
+        setUserName(storedUserName);
+      }
     } else {
       setHasToken(false);
     }
   }, []);
+  
 
   const handleLogout = () => {
     sessionStorage.removeItem("token");
     sessionStorage.removeItem("loginTimestamp");
     localStorage.removeItem("token");
+    localStorage.removeItem("userName");
+    sessionStorage.removeItem("userName");
     setHasToken(false);
     navigate("/");
   };

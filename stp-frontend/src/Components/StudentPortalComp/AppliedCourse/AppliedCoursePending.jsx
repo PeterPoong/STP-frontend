@@ -1,21 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Button, Modal } from "react-bootstrap";
+import { Card, Button, Modal, Spinner } from "react-bootstrap";
 import { GraduationCap, CalendarCheck, BookOpenText } from 'lucide-react';
-import { MapPin, BookOpen, Clock, Calendar, ChevronLeft, ChevronRight } from 'react-feather';
+import { MapPin, Clock, ChevronLeft, ChevronRight } from 'react-feather';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../../css/StudentPortalStyles/StudentPortalWidget.css";
 import WidgetPending from "../../../Components/StudentPortalComp/Widget/WidgetPending";
 
 const AppliedCoursePending = () => {
+    // State variables
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(3);
+    const itemsPerPage = 3; // Number of items to display per page
     const [isPendingOpen, setIsPendingOpen] = useState(false);
     const [pendingApplications, setPendingApplications] = useState([]);
     const [selectedApplication, setSelectedApplication] = useState(null);
     const [showWithdrawModal, setShowWithdrawModal] = useState(false);
     const [withdrawingId, setWithdrawingId] = useState(null);
+    const [loading, setLoading] = useState(true); // Loading state
 
-    // Calculate first and last item index
+    // Calculate first and last item index for pagination
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 
@@ -23,50 +25,79 @@ const AppliedCoursePending = () => {
         fetchPendingApplications();
     }, []);
 
+    /**
+     * Fetch all pending applications by iterating through all available pages.
+     */
     const fetchPendingApplications = async () => {
         try {
+            setLoading(true); // Start loading
             const token = sessionStorage.getItem("token") || localStorage.getItem("token");
             if (!token) {
                 throw new Error('No authentication token found');
             }
 
-            // Change the method to GET
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/pendingAppList`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-            });
+            let allApplications = [];
+            let currentPageAPI = 1;
+            let hasMoreData = true;
 
-            // Check if the response is ok before parsing JSON
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+            // Loop to fetch all pages
+            while (hasMoreData) {
+                const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/pendingAppList?page=${currentPageAPI}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const responseData = await response.json();
+
+                // Validate the structure of the API response
+                if (responseData.success && responseData.data && Array.isArray(responseData.data.data)) {
+                    const applicationsArray = responseData.data.data;
+
+                    // Combine the applications
+                    allApplications = [...allApplications, ...applicationsArray];
+
+                    // Check if there's a next page
+                    if (responseData.data.next_page_url) {
+                        currentPageAPI++;
+                    } else {
+                        hasMoreData = false;
+                    }
+                } else {
+                    console.error('Unexpected API response structure');
+                    break;
+                }
             }
 
-            const responseData = await response.json();
-            console.log('API response:', responseData);
+            // Sort the applications by date_applied in descending order
+            allApplications.sort((a, b) => new Date(b.date_applied) - new Date(a.date_applied));
 
-            // Check if the response has the expected structure
-            if (responseData.success && responseData.data && Array.isArray(responseData.data.data)) {
-                setPendingApplications(responseData.data.data);
-                // You might want to update pagination state here as well
-                // setCurrentPage(responseData.data.current_page);
-                // setTotalPages(responseData.data.last_page);
-            } else {
-                console.error('Unexpected API response structure');
-                setPendingApplications([]);
-            }
+            setPendingApplications(allApplications);
         } catch (error) {
             console.error('Error fetching pending applications:', error);
             setPendingApplications([]);
+        } finally {
+            setLoading(false); // End loading
         }
     };
 
-    const handleWithdraw = async (id) => {
+    /**
+     * Handle the withdrawal process by opening the confirmation modal.
+     * @param {number} id - The ID of the application to withdraw.
+     */
+    const handleWithdraw = (id) => {
         setWithdrawingId(id);
         setShowWithdrawModal(true);
     };
 
+    /**
+     * Confirm the withdrawal action by making a POST request to the API.
+     */
     const confirmWithdraw = async () => {
         try {
             const token = sessionStorage.getItem("token") || localStorage.getItem("token");
@@ -102,17 +133,19 @@ const AppliedCoursePending = () => {
         }
     };
 
-    // Get current items
-    const currentItems = Array.isArray(pendingApplications)
-        ? pendingApplications.slice(indexOfFirstItem, indexOfLastItem)
-        : [];
+    // Get current items for the current page
+    const currentItems = pendingApplications.slice(indexOfFirstItem, indexOfLastItem);
 
-    // Change page
+    /**
+     * Change the current page.
+     * @param {number} pageNumber - The page number to navigate to.
+     */
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-    // Calculate page numbers
+    // Calculate total number of pages
+    const totalPages = Math.ceil(pendingApplications.length / itemsPerPage);
     const pageNumbers = [];
-    for (let i = 1; i <= Math.ceil(pendingApplications.length / itemsPerPage); i++) {
+    for (let i = 1; i <= totalPages; i++) {
         pageNumbers.push(i);
     }
 
@@ -122,8 +155,16 @@ const AppliedCoursePending = () => {
             <Card className="acp-card mb-4">
                 <Card.Body>
                     <h2 className="acp-section-title">Pending Applications</h2>
-                    {currentItems.length === 0 ? (
-                        <p>No course applied</p>
+                    
+                    {/* Loading Indicator */}
+                    {loading ? (
+                        <div className="d-flex justify-content-center align-items-center">
+                            <Spinner animation="border" role="status">
+                                <span className="visually-hidden">Loading...</span>
+                            </Spinner>
+                        </div>
+                    ) : currentItems.length === 0 ? (
+                        <p>No pending applications found.</p>
                     ) : (
                         currentItems.map((app) => (
                             <Card key={app.id} className="acp-application-card mb-3">
@@ -145,7 +186,7 @@ const AppliedCoursePending = () => {
                                                 <p className="acp-university-name">{app.school_name}</p>
                                                 <p className="acp-location">
                                                     <MapPin size={16} className="acp-icon" />
-                                                    {`${app.country_name}${app.state_name ? `, ${app.state_name}` : ''}${app.city_name ? `, ${app.city_name}` : ''}`} <span className="acp-link">click and view on map</span>
+                                                    {`${app.city_name ? app.city_name : ''}${app.state_name ? `, ${app.state_name}` : ''}${app.country_name ? `, ${app.country_name}` : ''}`} <span className="acp-link">click and view on map</span>
                                                 </p>
                                             </div>
                                         </div>
@@ -172,7 +213,7 @@ const AppliedCoursePending = () => {
                                         <span className="acp-status-badge">Pending</span>
                                         <div className="acp-action-buttons">
                                             <Button
-                                                className="acp-view-btn danger btn-danger"
+                                                className="acp-view-btn btn-danger me-2"
                                                 onClick={() => {
                                                     setSelectedApplication(app);
                                                     setIsPendingOpen(true);
@@ -192,31 +233,41 @@ const AppliedCoursePending = () => {
                             </Card>
                         ))
                     )}
-                    <div className="pagination">
-                        <button
-                            onClick={() => paginate(currentPage - 1)}
-                            disabled={currentPage === 1}
-                        >
-                            <ChevronLeft size={20} />
-                        </button>
-                        {pageNumbers.map(number => (
+
+                    {/* Pagination Controls */}
+                    {totalPages > 1 && (
+                        <div className="pagination d-flex justify-content-center align-items-center mt-3">
                             <button
-                                key={number}
-                                onClick={() => paginate(number)}
-                                className={currentPage === number ? 'active' : ''}
+                                variant="link"
+                                onClick={() => paginate(currentPage - 1)}
+                                disabled={currentPage === 1}
+                                className="me-2"
                             >
-                                {number}
+                                <ChevronLeft size={20} />
                             </button>
-                        ))}
-                        <button
-                            onClick={() => paginate(currentPage + 1)}
-                            disabled={currentPage === pageNumbers.length}
-                        >
-                            <ChevronRight size={20} />
-                        </button>
-                    </div>
+                            {pageNumbers.map(number => (
+                                <button
+                                    key={number}
+                                    className={currentPage === number ? 'active' : ''}
+                                    onClick={() => paginate(number)}
+                                    
+                                >
+                                    {number}
+                                </button>
+                            ))}
+                            <button
+                                variant="link"
+                                onClick={() => paginate(currentPage + 1)}
+                                disabled={currentPage === totalPages}
+                            >
+                                <ChevronRight size={20} />
+                            </button>
+                        </div>
+                    )}
                 </Card.Body>
             </Card>
+
+            {/* Withdraw Confirmation Modal */}
             <Modal show={showWithdrawModal} onHide={() => setShowWithdrawModal(false)}>
                 <Modal.Header closeButton>
                     <Modal.Title>Confirm Withdrawal</Modal.Title>
@@ -226,11 +277,13 @@ const AppliedCoursePending = () => {
                     <Button variant="secondary" onClick={() => setShowWithdrawModal(false)}>
                         Cancel
                     </Button>
-                    <Button variant="danger" onClick={confirmWithdraw}>
+                    <Button variant="outline-danger" onClick={confirmWithdraw}>
                         Confirm Withdraw
                     </Button>
                 </Modal.Footer>
             </Modal>
+
+            {/* WidgetPending Component */}
             <WidgetPending
                 isOpen={isPendingOpen}
                 onClose={() => setIsPendingOpen(false)}
@@ -240,6 +293,5 @@ const AppliedCoursePending = () => {
             />
         </div>
     );
-};
-
+}
 export default AppliedCoursePending;

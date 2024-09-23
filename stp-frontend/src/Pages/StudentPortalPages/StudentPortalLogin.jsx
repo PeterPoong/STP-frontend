@@ -113,7 +113,7 @@ const StudentPortalLogin = () => {
           const studentStatus = data.data.user.student_status;
           const token = data.data.token;
           const userId = data.data.user.id;
-
+          const userName = data.data.user.student_userName;
           if (studentStatus === 3) {
             // Redirect to password reset page with token and user ID
             navigate("/studentPortalResetPassword", {
@@ -124,7 +124,7 @@ const StudentPortalLogin = () => {
             if (data.data.token) {
               sessionStorage.setItem("token", data.data.token);
               localStorage.setItem("rememberMe", JSON.stringify(rememberMe));
-
+              sessionStorage.setItem("userName",userName)
               if (rememberMe) {
                 localStorage.setItem("token", data.data.token);
                 localStorage.setItem("rememberedContactNumber", phone.slice(countryCode.length));
