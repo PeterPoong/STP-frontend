@@ -50,6 +50,12 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
     if (countries.length > 0 && studentData.country) {
       const countryId = countries.find(c => c.country_name === studentData.country)?.id;
       if (countryId) fetchStates(countryId);
+    } 
+    // New logic for gender preselection
+    if (studentData.country_code === '+60' && studentData.ic && !studentData.gender) {
+      const lastDigit = parseInt(studentData.ic.slice(-1));
+      const presetGender = lastDigit % 2 === 0 ? 'Female' : 'Male';
+      setStudentData(prevData => ({ ...prevData, gender: presetGender }));
     }
   }, [studentData, countries]);
 
@@ -258,6 +264,15 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
         }));
       }
     }
+
+     // If IC number changes and country code is Malaysia, preset gender
+     if (name === 'ic' && studentData.country_code === '+60') {
+      const lastDigit = parseInt(sanitizedValue.slice(-1));
+      if (!isNaN(lastDigit)) {
+        const presetGender = lastDigit % 2 === 0 ? 'Female' : 'Male';
+        setStudentData(prevData => ({ ...prevData, gender: presetGender }));
+      }
+    }
   };
 
   const handlePhoneChange = (value, country, e, formattedValue) => {
@@ -268,6 +283,15 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
       contact: value.slice(country.dialCode.length),
       country_code: `+${country.dialCode}`
     }));
+
+    // If country code changes to Malaysia and IC exists, preset gender
+    if (country.dialCode === '60' && studentData.ic) {
+      const lastDigit = parseInt(studentData.ic.slice(-1));
+      if (!isNaN(lastDigit)) {
+        const presetGender = lastDigit % 2 === 0 ? 'Female' : 'Male';
+        setStudentData(prevData => ({ ...prevData, gender: presetGender }));
+      }
+    }
   };
 
   const handleCountryChange = (e) => {

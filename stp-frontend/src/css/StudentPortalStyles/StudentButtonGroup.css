@@ -118,10 +118,15 @@
     border-radius: 2rem;
     align-self: center;
     font-size: 1rem;
-  
+    border:#B71A18
   
   }
 
+  .button-table:hover
+  {
+    
+    border:0.05rem solid #B71A18
+  }
 
 /*manage password button*/
 .mpbtndiv

@@ -130,11 +130,13 @@ const StudentPortalLogin = () => {
                 localStorage.setItem("rememberedContactNumber", phone.slice(countryCode.length));
                 localStorage.setItem("rememberedCountryCode", countryCode);
                 localStorage.setItem("rememberedPassword", password);
+                localStorage.setItem("userName", userName);
               } else {
                 localStorage.removeItem("token");
                 localStorage.removeItem("rememberedContactNumber");
                 localStorage.removeItem("rememberedCountryCode");
                 localStorage.removeItem("rememberedPassword");
+                localStorage.setItem("userName", userName);
               }
 
               const userId = data.data.user.id;
@@ -302,7 +304,7 @@ const StudentPortalLogin = () => {
                       </p>
                     </Col>
                   </Row>
-                  <Row className="justify-content-center">
+                  {/* <Row className="justify-content-center">
                     <Col xs="auto">
                       <button
                         type="button"
@@ -349,7 +351,8 @@ const StudentPortalLogin = () => {
                         </svg>
                       </button>
                     </Col>
-                  </Row>
+                  </Row>*/}
+                 
                   <div className="text-center text-lg-center m-5 pt-2">
                     <p className="small pt-1 mb-0 text-secondary">
                       Not Registered Yet?{" "}

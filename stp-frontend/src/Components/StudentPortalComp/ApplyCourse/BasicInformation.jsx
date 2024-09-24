@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useCallback } from 'react';
 import { Form, Row, Col, Alert } from 'react-bootstrap';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
@@ -27,15 +27,36 @@ const BasicInformation = ({ onSubmit, nextStep }) => { // Added nextStep as a pr
     const [cities, setCities] = useState([]);
     const [genderList, setGenderList] = useState([]);
     const [showPopup, setShowPopup] = useState(false);
+    const [initialDataFetched, setInitialDataFetched] = useState(false);
+
+    const presetGender = useCallback((icNumber, countryCode) => {
+        if (countryCode === '+60' && icNumber) {
+            const lastDigit = parseInt(icNumber.slice(-1));
+            if (!isNaN(lastDigit)) {
+                return lastDigit % 2 === 0 ? 'Female' : 'Male';
+            }
+        }
+        return '';
+    }, []);
 
     useEffect(() => {
         const fetchData = async () => {
             await fetchGenderList();
             await fetchStudentDetails();
             await fetchCountries();
+            setInitialDataFetched(true);
         };
         fetchData();
     }, []);
+
+    useEffect(() => {
+        if (initialDataFetched && formData.country_code === '+60' && formData.icNumber && !formData.gender) {
+            const presetGenderValue = presetGender(formData.icNumber, formData.country_code);
+            if (presetGenderValue) {
+                setFormData(prevData => ({ ...prevData, gender: presetGenderValue }));
+            }
+        }
+    }, [initialDataFetched, formData.country_code, formData.icNumber, formData.gender, presetGender]);
 
     useEffect(() => {
         if (countries.length > 0 && formData.country) {
@@ -88,7 +109,7 @@ const BasicInformation = ({ onSubmit, nextStep }) => { // Added nextStep as a pr
             }
             const result = await response.json();
             if (result.success && result.data) {
-                setFormData({
+                const updatedData = {
                     username: result.data.username || '',
                     firstName: result.data.firstName || '',
                     lastName: result.data.lastName || '',
@@ -102,8 +123,14 @@ const BasicInformation = ({ onSubmit, nextStep }) => { // Added nextStep as a pr
                     state: result.data.state || '',
                     city: result.data.city || '',
                     postcode: result.data.postcode || '',
-                });
+                };
 
+                // Only preset gender if it's not already set
+                if (!updatedData.gender) {
+                    updatedData.gender = presetGender(updatedData.icNumber, updatedData.country_code);
+                }
+
+                setFormData(updatedData);
             }
         } catch (error) {
             console.error('Error fetching student details:', error);
@@ -194,18 +221,37 @@ const BasicInformation = ({ onSubmit, nextStep }) => { // Added nextStep as a pr
             sanitizedValue = value.replace(/[^0-9]/g, '');
         }
 
-        setFormData(prevData => ({
-            ...prevData,
-            [name]: sanitizedValue
-        }));
+        setFormData(prevData => {
+            const newData = { ...prevData, [name]: sanitizedValue };
+            
+            if (name === 'icNumber' && newData.country_code === '+60') {
+                const presetGenderValue = presetGender(sanitizedValue, newData.country_code);
+                if (presetGenderValue && !newData.gender) {
+                    newData.gender = presetGenderValue;
+                }
+            }
+            
+            return newData;
+        });
     };
 
-    const handlePhoneChange = (value, country, e, formattedValue) => {
-        setFormData(prevData => ({
-            ...prevData,
-            contactNumber: value.slice(country.dialCode.length),
-            country_code: `+${country.dialCode}`
-        }));
+    const handlePhoneChange = (value, country) => {
+        setFormData(prevData => {
+            const newData = {
+                ...prevData,
+                contactNumber: value.slice(country.dialCode.length),
+                country_code: `+${country.dialCode}`
+            };
+
+            if (country.dialCode === '60' && newData.icNumber) {
+                const presetGenderValue = presetGender(newData.icNumber, newData.country_code);
+                if (presetGenderValue && !newData.gender) {
+                    newData.gender = presetGenderValue;
+                }
+            }
+
+            return newData;
+        });
     };
 
     const handleCountryChange = (e) => {
