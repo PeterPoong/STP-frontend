@@ -5,7 +5,7 @@ import { Arrow90degLeft } from "react-bootstrap-icons";
 import styles from "../../../css/SchoolPortalStyle/Courses/AddCourseBasicInfo.module.css"; // Import the CSS module
 import CustomTextArea from "../../SchoolPortalComp/CustomTextArea";
 
-const CourseDetail = ({ courseId, handleGoBack }) => {
+const CourseDetail = ({ courseId, handleGoBack, editCourse }) => {
   const token = sessionStorage.getItem("token");
   const [courseName, setCourseName] = useState("");
 
@@ -25,6 +25,10 @@ const CourseDetail = ({ courseId, handleGoBack }) => {
   const [courseDescription, setCourseDescription] = useState(null);
 
   const [courseRequirement, setCourseRequirement] = useState(null);
+
+  const editCourseDetail = (id) => {
+    editCourse(id);
+  };
 
   useEffect(() => {
     const formData = {
@@ -88,6 +92,7 @@ const CourseDetail = ({ courseId, handleGoBack }) => {
           </Col>
           <Col md={2}>
             <button
+              onClick={() => editCourseDetail(courseId)}
               className={`btn btn-outline-danger px-5  mb-3 rounded-pill`}
             >
               Edit

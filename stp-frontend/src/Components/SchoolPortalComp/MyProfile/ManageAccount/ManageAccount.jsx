@@ -69,15 +69,126 @@ const ManageAccount = () => {
     <Container fluid className={` ${styles.manageAccountContainer}`}>
       <Row>
         <Col
-          md={6}
-          className={`border d-flex flex-column justify-content-start ${styles.basicText}`}
+          md={7}
+          className={` d-flex flex-column justify-content-start ${styles.basicText}`}
         >
           <h3 className={styles.heading}>Upgrade your Account</h3>
           <p className={styles.description}>
             Enhance your experience with advanced features and exclusive access.
           </p>
         </Col>
-        <Col></Col>
+      </Row>
+      <Row className="d-flex align-items-stretch">
+        <Col md={6}>
+          <img
+            src={stickman}
+            alt="Stickman Illustration"
+            className={styles.leftCornerImage}
+          />
+          <div
+            className={`px-5 py-5  ${styles.packageBasicCard} ${styles.basicPackage}`}
+          >
+            <div className="text-start">
+              <img src={basicIcon} alt="basic package icon" />
+            </div>
+
+            <h4 className={`mt-3 text-start ${styles.packageName}`}>
+              {basicPackage.package_name || "Basic Package"}
+            </h4>
+
+            <div className="d-flex">
+              <button className={`${styles.customBtn}`}>Features</button>
+            </div>
+
+            <p
+              className="text-start "
+              dangerouslySetInnerHTML={{
+                __html:
+                  decodeHTML(basicPackage.package_detail) ||
+                  "Basic package description",
+              }}
+            />
+
+            <div className="text-start">
+              <p className={styles.price}>
+                ${basicPackage.package_price || "350"}
+              </p>
+              <p className={styles.priceLabel}>per year/pack</p>
+            </div>
+
+            <button className={`mt-2 ${styles.customCurrentBtn}`}>
+              Current Package
+            </button>
+          </div>
+        </Col>
+        {/* Right Side: Package Cards */}
+        <Col
+          md={6}
+          className={` justify-content-around  ${styles.premiumText}`}
+        >
+          {/* Premium Package */}
+          <div
+            className={`${styles.packagePremiumCard} ${styles.premiumPackage}`}
+          >
+            {/* icon  */}
+            <Row className="my-1">
+              <div className="text-start">
+                <img src={premiumIcon} alt="premium icon" />
+              </div>
+            </Row>
+
+            {/* package name  */}
+            <Row className="my-1">
+              <h4 className={`mt-3 text-start ${styles.premiumPackageName}`}>
+                {premiumPackage.package_name || "Basic Package"}
+              </h4>
+            </Row>
+
+            {/* feeatured  */}
+            <Row className="mb-2">
+              <div className="d-flex">
+                <button className={`${styles.customPremiumBtn}`}>
+                  Features
+                </button>
+              </div>
+            </Row>
+
+            {/* description  */}
+            <Row>
+              <p
+                className="text-start fs-6"
+                dangerouslySetInnerHTML={{
+                  __html:
+                    decodeHTML(premiumPackage.package_detail) ||
+                    "Basic package description",
+                }}
+              />
+            </Row>
+
+            {/* price  */}
+            <Row>
+              <div className="text-start">
+                <p className={`text-start ${styles.PremiumPrice}`}>
+                  ${premiumPackage.package_price || "0"}
+                </p>
+                <p className={styles.PremiumPriceLabel}>per year/pack</p>
+              </div>
+            </Row>
+
+            {/* contact button  */}
+            <Row>
+              <div className="d-flex justify-content-center">
+                <Button
+                  variant="danger"
+                  onClick={handleRedirect}
+                  className={`px-5 ${styles.contactButton}`}
+                >
+                  Contact Now →
+                </Button>
+              </div>
+            </Row>
+          </div>
+        </Col>
       </Row>
     </Container>
   );

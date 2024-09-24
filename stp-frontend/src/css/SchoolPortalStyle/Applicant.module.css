@@ -92,13 +92,13 @@
 
 .reset-filter a {
   font-size: 14px;
-  color: #07779a; /* Bootstrap blue, adjust as needed */
+  color: #07779a; 
   text-decoration: none;
   cursor: pointer;
 }
 
 .reset-filter a:hover {
-  text-decoration: underline; /* Underline on hover */
+  text-decoration: underline; 
 }
 
 /* Results Message Styles */

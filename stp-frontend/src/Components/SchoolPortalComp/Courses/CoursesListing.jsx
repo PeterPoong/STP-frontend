@@ -22,6 +22,8 @@ const CoursesListing = ({ onAddCourseClick, courseID, editCourse }) => {
 
   const [selectedCourseId, setSelectedCourseId] = useState(null);
 
+  const [search, setSearch] = useState("");
+
   const [coursesList, setCoursesList] = useState("");
   const [loading, setLoading] = useState(true);
   const [loadingQualification, setLoadingQualification] = useState(true);
@@ -131,6 +133,12 @@ const CoursesListing = ({ onAddCourseClick, courseID, editCourse }) => {
     handleDeleteCourse(courseToDelete); // Call the delete function with the selected course ID
   };
 
+  const resetFilters = () => {
+    setSearch("");
+    setQualification("");
+    setCategory("");
+  };
+
   useEffect(() => {
     const getQualification = async () => {
       try {
@@ -209,8 +217,6 @@ const CoursesListing = ({ onAddCourseClick, courseID, editCourse }) => {
     console.log("Choose", qualification);
   }, [qualification]);
 
-  const [search, setSearch] = useState("");
-
   useEffect(() => {
     const searchCourse = () => {
       try {
@@ -278,7 +284,7 @@ const CoursesListing = ({ onAddCourseClick, courseID, editCourse }) => {
       <h5 className="mb-4 mt-5">Manage Course</h5>
 
       <Row className={`mb-4`}>
-        <Col md={6}>
+        <Col md={3}>
           <Form.Group controlId="searchInput">
             <Form.Label className="ms-4 fw-light">Search:</Form.Label>
             <InputGroup>
@@ -295,7 +301,8 @@ const CoursesListing = ({ onAddCourseClick, courseID, editCourse }) => {
             </InputGroup>
           </Form.Group>
         </Col>
-        <Col md={4}>
+
+        <Col md={7}>
           <div className="d-flex gap-5">
             {/* Sort By Dropdown */}
             <Form.Group controlId="sortBy">
@@ -345,8 +352,13 @@ const CoursesListing = ({ onAddCourseClick, courseID, editCourse }) => {
                 )}
               </Form.Select>
             </Form.Group>
+
+            <p className={`${styles.resetFilter}`} onClick={resetFilters}>
+              Reset Filter
+            </p>
           </div>
         </Col>
+
         <Col md={2}>
           <Button
             variant="danger"
@@ -368,13 +380,13 @@ const CoursesListing = ({ onAddCourseClick, courseID, editCourse }) => {
         <p>No courses available.</p>
       ) : (
         coursesList.map((course) => (
-          <div key={course.id} className="card mb-4">
+          <div key={course.id} className="card mb-4 mx-4 ">
             <Row>
               <Col md={7}>
                 <Row>
                   <Col md={12}>
                     <div
-                      className="card-header mt-3 mb-2"
+                      className="card-header mt-3 mb-2 px-2"
                       style={{ borderBottom: "none" }}
                     >
                       <h6>{course.name}</h6>
@@ -383,7 +395,7 @@ const CoursesListing = ({ onAddCourseClick, courseID, editCourse }) => {
                 </Row>
                 <Row>
                   <Col md={4}>
-                    <div className="d-flex flex-column align-items-start ms-2 ">
+                    <div className="d-flex flex-column align-items-start ms-4 mt-3">
                       <img
                         src={`${import.meta.env.VITE_BASE_URL}storage/${
                           course.logo
@@ -403,7 +415,7 @@ const CoursesListing = ({ onAddCourseClick, courseID, editCourse }) => {
                     </div>
                   </Col>
                   <Col md={8}>
-                    <div className="ms-4">
+                    <div className="ms-4 mt-3">
                       <h6>{course.school_name}</h6>
                       <p className="mb-1">
                         <GeoAlt className="me-2" />
@@ -482,7 +494,7 @@ const CoursesListing = ({ onAddCourseClick, courseID, editCourse }) => {
                     )}
                   </Row>
 
-                  <Row className="mt-5">
+                  <Row className="mt-5 me-2">
                     <div className="mb-4 me-3">
                       <span
                         className="d-block text-muted"

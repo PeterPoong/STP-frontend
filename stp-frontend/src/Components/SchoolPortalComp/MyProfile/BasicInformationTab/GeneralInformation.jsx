@@ -120,7 +120,7 @@ function GeneralInformationForm() {
         setSchoolEmail(data.data.school_email ?? "");
         setSchoolWebsite(data.data.school_officalWebsite ?? "");
         setSchoolAddress(data.data.school_address ?? "");
-        setCountry(data.data.country_id ?? "");
+        setCountry(data.data.country_id ?? 132);
         setState(data.data.state_id ?? "");
         setCity(data.data.city_id ?? "");
         setShortDescription(data.data.school_shortDesc ?? "");
@@ -622,9 +622,7 @@ function GeneralInformationForm() {
         </Col>
         <Col md={5}>
           <Form.Group controlId="schoolName">
-            <Form.Label>
-              School Website <span className="span-style">*</span>
-            </Form.Label>
+            <Form.Label>School Website</Form.Label>
             <Form.Control
               type="text"
               value={schoolWebsite}
