@@ -11,17 +11,17 @@ import styled from "styled-components";
 
 // Styled Components for Filter
 const FilterContainer = styled.div`
-  margin-top: 20px;
+  margin-top: 0px;
   display: flex;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 0px;
 `;
 
 const FilterButton = styled(motion.button)`
-  width: 50px;
-  height: 50px;
-  padding:0;
-  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  border-radius: 100%;
+  padding:5px;
   background-color: #b71a18;
   border: none;
   cursor: pointer;
@@ -41,31 +41,31 @@ const ExpandedMenu = styled(motion.div)`
   display: flex;
   flex-direction: row;
   align-items: center;
-  margin-left: 15px;
+  margin:0 0 0 15px;
   background-color: white;
-  border: 2px solid #b71a18;
   border-radius: 10px;
-  padding: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding:5px 10px;
   min-width: 500px;
-  
+ 
 `;
 
 const FilterOptionButton = styled(motion.button)`
   background-color: ${(props) => (props.active ? "#b71a18" : "white")};
   color: ${(props) => (props.active ? "white" : "#b71a18")};
   border: 2px solid #b71a18;
-  border-radius: 25px;
-  padding: 8px 16px;
-  margin: 0 10px;
+  border-radius: 5px;
+  padding: 0px 16px;
+  margin: 10px 15px;
   cursor: pointer;
   font-weight: bold;
   text-align: center;
   position: relative;
   transition: all 0.3s ease;
   width: 150px;
-  box-sizing: border-box;
-
+  box-sizing: border-box; /* Ensure padding is included in width */
+ overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   &:hover {
     background-color: #b71a18;
     color: white;
@@ -74,11 +74,11 @@ const FilterOptionButton = styled(motion.button)`
 
 const OptionsList = styled(motion.div)`
   position: absolute;
-  top: 60px;
-  left: 0;
+  top: 40px;
+  left: 12.5px;
   background-color: white;
   border: 1px solid #b71a18;
-  border-radius: 10px;
+  border-radius: 5px;
   padding: 8px 0;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   z-index: 2;
@@ -90,6 +90,7 @@ const OptionsList = styled(motion.div)`
   /* Custom Scrollbar Styles */
   &::-webkit-scrollbar {
     width: 8px;
+   padding:10px 0px;
     background-color: #F5F5F5;
   }
 
@@ -107,9 +108,9 @@ const OptionItem = styled(motion.div)`
   padding: 8px 16px;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  box-sizing: border-box;
-  width: 100%;
-  white-space: nowrap;
+  box-sizing: border-box; /* Ensure padding is included in width */
+  width: 100%; /* Ensure the option item doesn't exceed the container's width */
+  white-space: nowrap; /* Prevent text from wrapping */
 
   &:hover {
     background-color: #f0f0f0;
@@ -120,15 +121,16 @@ const ResetButton = styled(motion.button)`
   background-color: #b71a18;
   color: white;
   border: 2px solid #b71a18;
-  border-radius: 25px;
-  padding: 8px 16px;
+  border-radius: 5px;
+  padding: 0px 16px;
   margin-left: 10px;
   cursor: pointer;
   font-weight: bold;
   transition: all 0.3s ease;
   width: 150px;
-  box-sizing: border-box;
-
+  box-sizing: border-box; /* Ensure padding is included in width */
+margin-top:0;
+margin-bottom:0;
   &:hover {
     background-color: #a01717;
   }
@@ -182,6 +184,9 @@ const CustomFilterComponent = ({ filterOptions, onFilterChange }) => {
     visible: { opacity: 1, height: "auto" },
     exit: { opacity: 0, height: 0 },
   };
+  const truncateText = (text, maxLength = 15) => {
+    return text.length > maxLength ? text.substring(0, maxLength - 3) + '...' : text;
+  };
 
   return (
     <FilterContainer>
@@ -222,8 +227,7 @@ const CustomFilterComponent = ({ filterOptions, onFilterChange }) => {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  {option.charAt(0).toUpperCase() + option.slice(1)}
-                  {filters[option] && `: ${filters[option]}`}
+                  {filters[option] ? truncateText(filters[option]) : option.charAt(0).toUpperCase() + option.slice(1)}
                 </FilterOptionButton>
                 <AnimatePresence>
                   {activeOption === option && (
@@ -460,7 +464,7 @@ const AppliedCoursePending = () => {
       <h1 className="acp-main-title">Applied Courses</h1>
       <Card className="acp-card mb-4">
         <Card.Body>
-          <h2 className="acp-section-title">Pending Applications</h2>
+          <h2 className="acp-section-title mb-0">Pending Applications</h2>
           
           {/* Filter Component */}
           <CustomFilterComponent filterOptions={filterOptions} onFilterChange={handleFilterChange} />
