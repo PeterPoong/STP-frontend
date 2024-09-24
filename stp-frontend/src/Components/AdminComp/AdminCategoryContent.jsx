@@ -159,12 +159,10 @@ const AdminCategoryContent = () => {
         navigate('/adminAddCategory');
     };
     const handleEdit = (id) => {
-        console.log(`Edit Category with ID: ${id}`);
-        sessionStorage.setItem('token', Authenticate);
-        navigate(`/adminEditCategory/${id}`);
+        console.log(`Edit Category with ID: ${id}`); // Log the ID being passed
+        sessionStorage.setItem('categoryId', id); // Store course ID in session storage
+        navigate(`/adminEditCategory`); // Navigate to the edit page
     };
-    
-
     const handleToggleSwitch = (id, currentStatus) => {
         const action = currentStatus === 'Active' ? 'disable' : 'enable';
         setTargetCategory({ id, action });

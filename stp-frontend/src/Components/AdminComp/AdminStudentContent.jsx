@@ -103,9 +103,10 @@ const AdminStudentContent = () => {
     };
 
     const handleEdit = (id) => {
-        // Handle edit action
+        console.log(`Edit student with ID: ${id}`); // Log the ID being passed
+        sessionStorage.setItem('studentId', id); // Store package ID in session storage
+        navigate(`/adminEditStudent`); // Navigate to the edit page
     };
-
     const handleToggleSwitch = (id, currentStatus) => {
         const action = (currentStatus === 'Active' || currentStatus === 'Temporary') ? 'disable' : 'enable';
         setTargetstudent({ id, action });

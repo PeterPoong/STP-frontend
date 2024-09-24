@@ -105,9 +105,9 @@ const AdminSubjectContent = () => {
         navigate('/adminAddSubject');
     };
     const handleEdit = (id) => {
-        console.log(`Edit Subject with ID: ${id}`);
-        sessionStorage.setItem('token', Authenticate);
-        navigate(`/adminEditSubject/${id}`);
+        console.log(`Edit subject with ID: ${id}`); // Log the ID being passed
+        sessionStorage.setItem('subjectId', id); // Store package ID in session storage
+        navigate(`/adminEditSubject`); // Navigate to the edit page
     };
 
     const handleToggleSwitch = (id, currentStatus) => {

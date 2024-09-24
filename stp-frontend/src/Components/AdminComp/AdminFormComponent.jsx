@@ -46,9 +46,13 @@ const AdminFormComponent = ({
   onChange,
   value,
   banner_file,
+  newBannerFile,
   logo,
   newLogo,
   handleLogoChange,
+  icon,
+  newIcon,
+  handleIconChange,
   handleBannerFileChange,
   startDate,
   endDate,
@@ -295,18 +299,22 @@ const handleRadioChange = (radioId, value) => {
               </Col>
             ))}
             {/* Banner File Upload */}
+            {error && <div className="alert alert-danger">{error}</div>}
             {handleBannerFileChange && (
-              <Col md={12}>
-                <Form.Group controlId="banner_file" className="mb-3" >
-                  <Form.Label>Banner File (2MB)</Form.Label>
-                  <Form.Control type="file" accept="image/*" onChange={handleBannerFileChange} />
-                </Form.Group>
-                {banner_file && (
-                  <div className="mb-3">
-                    <Image src={banner_file} alt="bannerFile" fluid />
-                  </div>
-                )}
-              </Col>
+               <Form.Group controlId="banner_file" className="mb-5">
+               <Form.Label>Banner File (2MB)</Form.Label>
+               <Form.Control type="file" accept="image/*" onChange={handleBannerFileChange} />
+           </Form.Group>
+            )}
+              {banner_file && !newBannerFile && (
+                <div className="mb-3">
+                    <Image src={banner_file} alt="Existing banner" className="img-banner-admin" />
+                </div>
+            )}
+                 {newBannerFile && (
+                <div className="mb-3">
+                    <Image src={newBannerFile} alt="New banner file" className="img-banner-admin" />
+                </div>
             )}
 
             {/* Contact Number Phone Input */}
@@ -421,7 +429,22 @@ const handleRadioChange = (radioId, value) => {
                     <Image src={newLogo} alt="New logo" className="img-fluid-admin" />
                 </div>
             )}
-
+ {handleIconChange && (
+               <Form.Group controlId="icon" className="mb-5">
+               <Form.Label>Category Icon (2MB)</Form.Label>
+               <Form.Control type="file" accept="image/*" onChange={handleIconChange} />
+           </Form.Group>
+            )}
+              {icon && !newIcon && (
+                <div className="mb-3">
+                    <Image src={icon} alt="Existing icon" className="img-fluid-admin" />
+                </div>
+            )}
+                 {newIcon && (
+                <div className="mb-3">
+                    <Image src={newIcon} alt="New icon" className="img-fluid-admin" />
+                </div>
+            )}
             {formPrice && formPrice.map((Price, index) => (
                 <Form.Group key={index} controlId={Price.id} className="mb-5">
                   <Form.Label>{Price.label}</Form.Label>

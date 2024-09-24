@@ -13,6 +13,15 @@
     margin-top: 10px;
     background-color: #fff;
 }
+.admin-add-subject-container {
+  width: 952px;
+  height: auto;
+  margin-bottom: 10px;
+  border-radius: 15px;
+  border: solid 1px #000000;
+  margin-top: 10px;
+  background-color: #fff;
+}
 .admin-add-banner-content{
     width: 952px;
     height: auto;
@@ -225,6 +234,15 @@ form .form-check-label::first-letter {
     border: 1px solid #D6D5D5;
     object-fit: cover; /* Ensures the image scales properly within the circle */
 }
+.img-banner-admin {
+  margin-left: 96px;
+  margin-top: -41px;
+  max-width: 150px;
+  height: 150px; /* Ensure the height is the same as the width */
+  border: 1px solid #D6D5D5;
+  object-fit: cover; /* Ensures the image scales properly within the circle */
+}
+
 
 img.roundedCircle {
     border-radius: 50%; /* Ensure the image is rounded */
