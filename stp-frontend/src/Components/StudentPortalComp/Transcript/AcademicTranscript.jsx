@@ -13,7 +13,7 @@ import "../../../css/StudentPortalStyles/StudentButtonGroup.css";
 import WidgetPopUpSubmission from "../../../Components/StudentPortalComp/Widget/WidgetPopUpSubmission";
 import WidgetPopUpAcademicRemind from "../../../Components/StudentPortalComp/Widget/WidgetPopUpAcademicRemind";
 import WidgetPopUpUnsavedChanges from "../../../Components/StudentPortalComp/Widget/WidgetPopUpUnsavedChanges"; // New import
-
+import SaveButton from "../../../Components/StudentPortalComp/SaveButton"; // Import the SaveButton component
 const ExamSelector = ({ exams, selectedExam, setSelectedExam }) => {
   const itemsPerPage = 5;
   const pages = [];
@@ -86,7 +86,7 @@ const ExamSelector = ({ exams, selectedExam, setSelectedExam }) => {
   );
 };
 
-const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveAll,setHasUnsavedChanges }) => {
+const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveAll, setHasUnsavedChanges }) => {
   const [editingIndex, setEditingIndex] = useState(null);
   const [availableSubjects, setAvailableSubjects] = useState([]);
   const [hasCheckedForPreset, setHasCheckedForPreset] = useState(false);
@@ -261,7 +261,7 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
     );
     onSubjectsChange(updatedSubjects);
     setEditingIndex(null);
-  
+
   };
 
   const handleDelete = (index) => {
@@ -357,20 +357,18 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
         </div>
       )}
       <div className="d-flex justify-content-end mt-4">
-        <button
-          className="button-table px-5 py-1 text-center"
-          onClick={() => {
-            onSaveAll();
-            fetchAvailableSubjects();
+        <SaveButton
+          onSave={async () => {
+            const result = await onSaveAll();
+            await fetchAvailableSubjects();
+            return result;
           }}
-        >
-          SAVE
-        </button>
+        />
       </div>
     </div>
   );
 };
-const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveAll, categoryId ,setHasUnsavedChanges}) => {
+const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveAll, categoryId, setHasUnsavedChanges }) => {
   const [newSubject, setNewSubject] = useState('');
   const [editingIndex, setEditingIndex] = useState(null);
   const [programName, setProgramName] = useState('');
@@ -474,7 +472,7 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
     );
     onSubjectsChange(updatedSubjects);
     setEditingIndex(null);
-    
+
   };
 
   const handleDelete = (index) => {
@@ -556,16 +554,17 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
 
       console.log('CGPA saved successfully, now saving subjects');
       // After successfully saving CGPA, call the parent's onSaveAll function
-      await onSaveAll(subjects, examType);
+      const subjectsResult = await onSaveAll(subjects, examType);
       console.log('Subjects saved successfully');
 
       // Fetch updated data after saving
       await fetchProgramCgpa();
-
+      return subjectsResult;
     } catch (error) {
       console.error('Error in ProgramBasedExam handleSaveAll:', error);
       console.error('Error details:', error.message);
       alert('Failed to save program data. Please try again. Error: ' + error.message);
+      return { success: false, message: error.message };
     }
   };
   return (
@@ -656,12 +655,9 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
         </div>
       </form>
       <div className="d-flex justify-content-end mt-4">
-        <button
-          className="button-table px-5 py-1 text-center"
-          onClick={handleSaveAll}
-        >
-          SAVE
-        </button>
+        <SaveButton
+          onSave={handleSaveAll}
+        />
       </div>
       <WidgetPopUpAcademicRemind
         isOpen={isRemindPopupOpen}
@@ -1096,13 +1092,16 @@ const AcademicTranscript = () => {
         // Refresh the subjects
         fetchSubjects(category.id.toString());
         setHasUnsavedChanges(false);
+        return { success: true }; // Return success
       } else {
         console.error('Error saving SPM subjects:', data.message);
         alert(`Error saving SPM subjects: ${data.message}`);
+        return { success: false, message: data.message || 'Failed to save SPM subjects.' };
       }
     } catch (error) {
       console.error('Error in addEditSPMTranscript:', error);
       alert('An unexpected error occurred while saving SPM subjects.');
+      return { success: false, message: 'An unexpected error occurred while saving SPM subjects.' };
     }
   };
 
@@ -1132,13 +1131,14 @@ const AcademicTranscript = () => {
 
       if (!category) {
         console.error('Selected exam category not found');
-        return;
+        
+        return { success: false, message: 'Selected exam category not found.' };
       }
 
 
       if (subjectsToSave.length === 0 || subjectsToSave.some(subject => !subject.name.trim() || !subject.grade.trim())) {
         setIsRemindPopupOpen(true);
-        return;
+        return { success: false, message: 'Some subjects are incomplete.' };
       }
 
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
@@ -1148,7 +1148,8 @@ const AcademicTranscript = () => {
 
       if (category.id === 32) {
         console.log('Saving SPM subjects...');
-        await addEditSPMTranscript(subjectsToSave);
+        const spmResult = await addEditSPMTranscript(subjectsToSave);
+        return spmResult;
       } else {
         console.log('Saving non-SPM subjects...');
         const payload = {
@@ -1178,15 +1179,18 @@ const AcademicTranscript = () => {
           console.log('Non-SPM Subjects saved successfully');
           await fetchSubjects(category.id.toString());
           setHasUnsavedChanges(false);
-          
+          return { success: true };
+
         } else {
           console.error('Error saving non-SPM subjects:', data.message);
           alert(`Error saving subjects: ${data.message}`);
+          return { success: false, message: data.message || 'Failed to save non-SPM subjects.' };
         }
       }
     } catch (error) {
       console.error('Error in AcademicTranscript handleSaveAll:', error);
       alert('An unexpected error occurred while saving subjects. Error: ' + error.message);
+      return { success: false, message: error.message };
     }
   };
 
