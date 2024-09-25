@@ -654,7 +654,7 @@ const StudentApplicationSummary = ({ }) => {
         if (category.id === 32) {
             return { cgpa: null, programName: '', cgpaId: null };
         }
-        
+
         try {
             const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/programCgpaList`, {
                 method: 'POST',
@@ -664,11 +664,11 @@ const StudentApplicationSummary = ({ }) => {
                 },
                 body: JSON.stringify({ transcriptCategory: category.id }),
             });
-    
+
             if (!response.ok) {
                 throw new Error(`Failed to fetch CGPA for category ${category.transcript_category}`);
             }
-    
+
             const result = await response.json();
             return result.success && result.data
                 ? {
@@ -1278,40 +1278,48 @@ const StudentApplicationSummary = ({ }) => {
                                         <div className="co-curriculum m-3 shadow-lg p-4 rounded-5">
                                             <p className="text-secondary fw-bold border-bottom border-2 pb-3">Co-curriculum</p>
                                             <div className="activities-grid" style={{ maxHeight: '15rem', overflowY: 'auto' }}>
-                                                {coCurriculum.map((activity, index) => (
-                                                    <div key={index} className="activity-item d-flex flex-wrap justify-content-between align-items-start py-2">
-                                                        <div className="col-12 col-sm-6">
-                                                            <p className="mb-0"><strong>{activity.club_name}</strong></p>
-                                                            <p className="mb-0 text-muted">{activity.location}</p>
+                                                {coCurriculum.length > 0 ? (
+                                                    coCurriculum.map((activity, index) => (
+                                                        <div key={index} className="activity-item d-flex flex-wrap justify-content-between align-items-start py-2">
+                                                            <div className="col-12 col-sm-6">
+                                                                <p className="mb-0"><strong>{activity.club_name}</strong></p>
+                                                                <p className="mb-0 text-muted">{activity.location}</p>
+                                                            </div>
+                                                            <div className="col-6 col-sm-3 text-start text-sm-center">
+                                                                <p className="mb-0">{activity.year}</p>
+                                                            </div>
+                                                            <div className="col-6 col-sm-3 text-end">
+                                                                <span className={`position ${activity.student_position.toLowerCase()} py-1 px-2 rounded-pill`}>{activity.student_position}</span>
+                                                            </div>
                                                         </div>
-                                                        <div className="col-6 col-sm-3 text-start text-sm-center">
-                                                            <p className="mb-0">{activity.year}</p>
-                                                        </div>
-                                                        <div className="col-6 col-sm-3 text-end">
-                                                            <span className={`position ${activity.student_position.toLowerCase()} py-1 px-2 rounded-pill`}>{activity.student_position}</span>
-                                                        </div>
-                                                    </div>
-                                                ))}
+                                                    ))
+                                                ) : (
+                                                    <p className="text-center text-muted">No co-curricular activities added yet.</p>
+                                                )}
                                             </div>
                                         </div>
 
                                         <div className="achievements m-3 shadow-lg p-4 rounded-5">
                                             <p className="text-secondary fw-bold border-bottom border-2 pb-3">Achievements</p>
                                             <div className="achievements-grid" style={{ maxHeight: '15rem', overflowY: 'auto' }}>
-                                                {achievements.map((achievement, index) => (
-                                                    <div key={index} className="achievement-item d-flex flex-wrap justify-content-between align-items-start py-2">
-                                                        <div className="col-12 col-sm-6">
-                                                            <p className="mb-0"><strong>{achievement.achievement_name}</strong></p>
-                                                            <p className="mb-0 text-muted">{achievement.awarded_by}</p>
+                                                {achievements.length > 0 ? (
+                                                    achievements.map((achievement, index) => (
+                                                        <div key={index} className="achievement-item d-flex flex-wrap justify-content-between align-items-start py-2">
+                                                            <div className="col-12 col-sm-6">
+                                                                <p className="mb-0"><strong>{achievement.achievement_name}</strong></p>
+                                                                <p className="mb-0 text-muted">{achievement.awarded_by}</p>
+                                                            </div>
+                                                            <div className="col-6 col-sm-3 text-start text-sm-center">
+                                                                <p className="mb-0">{achievement.date}</p>
+                                                            </div>
+                                                            <div className="col-6 col-sm-3 text-end">
+                                                                <span className={`position ${achievement.title_obtained.toLowerCase().replace(/\s+/g, '-')} py-1 px-2 rounded-pill`}>{achievement.title_obtained}</span>
+                                                            </div>
                                                         </div>
-                                                        <div className="col-6 col-sm-3 text-start text-sm-center">
-                                                            <p className="mb-0">{achievement.date}</p>
-                                                        </div>
-                                                        <div className="col-6 col-sm-3 text-end">
-                                                            <span className={`position ${achievement.title_obtained.toLowerCase().replace(/\s+/g, '-')} py-1 px-2 rounded-pill`}>{achievement.title_obtained}</span>
-                                                        </div>
-                                                    </div>
-                                                ))}
+                                                    ))
+                                                ) : (
+                                                    <p className="text-center text-muted">No achievements added yet.</p>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
