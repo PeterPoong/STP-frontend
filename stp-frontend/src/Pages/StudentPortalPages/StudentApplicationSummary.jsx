@@ -1331,9 +1331,10 @@ const StudentApplicationSummary = ({ }) => {
                             ) : null}
                         </div>
                     </div>
+                    <SpcFooter />
                 </div>
             </div>
-            <SpcFooter />
+           
         </div>
 
     );
