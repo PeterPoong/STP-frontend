@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import NavButtons from "../NavButtons";
+import NavButtonsSP from "../../../Components/StudentPortalComp/NavButtonsSP";
 // import NavButtons from "../../StudentComp/NavButtons";
 import headerImage from "../../../assets/StudentAssets/institute image/StudyPal10.png";
 import "../../../css/StudentCss/institutepage css/KnowMoreInstitute.css";

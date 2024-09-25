@@ -113,7 +113,7 @@ const StudentPortalLogin = () => {
           const studentStatus = data.data.user.student_status;
           const token = data.data.token;
           const userId = data.data.user.id;
-
+          const userName = data.data.user.student_userName;
           if (studentStatus === 3) {
             // Redirect to password reset page with token and user ID
             navigate("/studentPortalResetPassword", {
@@ -124,17 +124,19 @@ const StudentPortalLogin = () => {
             if (data.data.token) {
               sessionStorage.setItem("token", data.data.token);
               localStorage.setItem("rememberMe", JSON.stringify(rememberMe));
-
+              sessionStorage.setItem("userName",userName)
               if (rememberMe) {
                 localStorage.setItem("token", data.data.token);
                 localStorage.setItem("rememberedContactNumber", phone.slice(countryCode.length));
                 localStorage.setItem("rememberedCountryCode", countryCode);
                 localStorage.setItem("rememberedPassword", password);
+                localStorage.setItem("userName", userName);
               } else {
                 localStorage.removeItem("token");
                 localStorage.removeItem("rememberedContactNumber");
                 localStorage.removeItem("rememberedCountryCode");
                 localStorage.removeItem("rememberedPassword");
+                localStorage.setItem("userName", userName);
               }
 
               const userId = data.data.user.id;
@@ -302,7 +304,7 @@ const StudentPortalLogin = () => {
                       </p>
                     </Col>
                   </Row>
-                  <Row className="justify-content-center">
+                  {/* <Row className="justify-content-center">
                     <Col xs="auto">
                       <button
                         type="button"
@@ -349,7 +351,8 @@ const StudentPortalLogin = () => {
                         </svg>
                       </button>
                     </Col>
-                  </Row>
+                  </Row>*/}
+                 
                   <div className="text-center text-lg-center m-5 pt-2">
                     <p className="small pt-1 mb-0 text-secondary">
                       Not Registered Yet?{" "}

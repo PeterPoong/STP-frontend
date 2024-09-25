@@ -35,6 +35,8 @@
     width: 100%;
   }
   
+
+
   /* Responsive layout */
   @media (min-width: 768px) {
     .content-wrapper {

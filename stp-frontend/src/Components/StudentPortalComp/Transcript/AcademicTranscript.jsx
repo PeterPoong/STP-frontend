@@ -1205,7 +1205,7 @@ const AcademicTranscript = () => {
       <div className="p-5 pt-0">
         {renderExamComponent()}
 
-        <div className="mb-4">
+        <div className="mb-4 border-top pt-4">
           <div className="flex items-center justify-between">
             <p className="fw-bold small formlabel">Upload {selectedExam} Result Slips
               <Tooltip title="Please upload trial results if full results not yet released" arrow>
