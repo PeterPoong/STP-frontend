@@ -14,6 +14,7 @@ import NavButtonsSP from "../../Components/StudentPortalComp/NavButtonsSP";
 import { grey } from '@mui/material/colors';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import { PDFDocument } from 'pdf-lib';
 
 const StudentApplicationSummary = ({ }) => {
     const [activeTab, setActiveTab] = useState('info');
@@ -21,7 +22,7 @@ const StudentApplicationSummary = ({ }) => {
     const [showFullOverview, setShowFullOverview] = useState(false);
     const [showFullRequirements, setShowFullRequirements] = useState(false);
     const [selectedExam, setSelectedExam] = useState('SPM');
-
+    const [cgpaInfo, setCgpaInfo] = useState(null);
     // New state for basic information
     const [basicInfo, setBasicInfo] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -102,231 +103,334 @@ const StudentApplicationSummary = ({ }) => {
             fetchOtherDocuments();
         }
     }, [activeTab]);
-    const generatePDF = () => {
+
+
+
+    const generateEnhancedPDF = async () => {
         const doc = new jsPDF();
-    
-        let yOffset = 10; // Initial Y position
-    
-        // 1. Header
-        doc.setFontSize(22);
-        doc.setFont('helvetica', 'bold');
-        doc.text("Application Summary", 105, yOffset, { align: 'center' });
-        yOffset += 15;
-    
-        // 2. Applicant Information
-        doc.setFontSize(16);
-        doc.setFont('helvetica', 'bold');
-        doc.text("Applicant Information", 10, yOffset);
-        yOffset += 8;
-    
-        doc.setFontSize(12);
-        doc.setFont('helvetica', 'normal');
-        const applicantInfo = [
-            `Name: ${basicInfo?.firstName || ''} ${basicInfo?.lastName || ''}`,
-            `Identity Card Number: ${basicInfo?.ic || 'N/A'}`,
-            `Contact Number: ${basicInfo?.country_code || ''} ${basicInfo?.contact || ''}`,
-            `Email Address: ${basicInfo?.email || ''}`,
-            `Address: ${basicInfo?.address || ''}`
-        ];
-    
-        applicantInfo.forEach(info => {
-            doc.text(info, 10, yOffset);
-            yOffset += 6;
-        });
-    
-        yOffset += 4; // Extra space
-    
-        // 3. Course Information
-        doc.setFontSize(16);
-        doc.setFont('helvetica', 'bold');
-        doc.text("Course Information", 10, yOffset);
-        yOffset += 8;
-    
-        doc.setFontSize(12);
-        doc.setFont('helvetica', 'normal');
-        const courseInfoData = [
-            `Course: ${courseInfo?.course || 'N/A'}`,
-            `Qualification: ${courseInfo?.qualification || 'N/A'}`,
-            `Period: ${courseInfo?.period || 'N/A'}`,
-            `Mode: ${courseInfo?.mode || 'N/A'}`,
-            `Intake: ${courseInfo?.intake?.join(', ') || 'N/A'}`,
-            `Estimate Fee: RM ${courseInfo?.cost?.toLocaleString() || '0.00'} / year`
-        ];
-    
-        courseInfoData.forEach(info => {
-            doc.text(info, 10, yOffset);
-            yOffset += 6;
-        });
-    
-        yOffset += 4; // Extra space
-    
-        // 4. Summary
-        doc.setFontSize(16);
-        doc.setFont('helvetica', 'bold');
-        doc.text("Summary", 10, yOffset);
-        yOffset += 8;
-    
-        doc.setFontSize(12);
-        doc.setFont('helvetica', 'normal');
-        const summaryText = courseInfo?.description || 'N/A';
-        doc.text(doc.splitTextToSize(summaryText, 190), 10, yOffset);
-        yOffset += doc.getTextDimensions(summaryText).h + 4;
-    
-        // 5. Entry Requirements
-        doc.setFontSize(16);
-        doc.setFont('helvetica', 'bold');
-        doc.text("Entry Requirements", 10, yOffset);
-        yOffset += 8;
-    
-        doc.setFontSize(12);
-        doc.setFont('helvetica', 'normal');
-        const requirementsText = courseInfo?.requirement || 'N/A';
-        doc.text(doc.splitTextToSize(requirementsText, 190), 10, yOffset);
-        yOffset += doc.getTextDimensions(requirementsText).h + 4;
-    
-        // 6. Academic Results
-        doc.setFontSize(16);
-        doc.setFont('helvetica', 'bold');
-        doc.text("Academic Results", 10, yOffset);
-        yOffset += 8;
-    
-        doc.setFontSize(12);
-        doc.setFont('helvetica', 'normal');
-        const subjects = transcriptSubjects || [];
-        const subjectRows = subjects.map(subject => [
-            subject.name || subject.subject_name || subject.highTranscript_name || 'N/A',
-            subject.grade || subject.subject_grade || subject.higherTranscript_grade || 'N/A'
-        ]);
-    
-        doc.autoTable({
-            startY: yOffset,
-            head: [['Subject Name', 'Grade']],
-            body: subjectRows,
-            theme: 'striped',
-            styles: { fontSize: 11 },
-            headStyles: { fillColor: [41, 128, 185] },
-        });
-    
-        yOffset = doc.previousAutoTable.finalY + 10;
-    
-        // Overall Grade (Underlined)
-        const overallGrade = calculateOverallGrade(transcriptSubjects);
-        doc.setFont('helvetica', 'normal');
-        doc.text(`Overall Grade: `, 10, yOffset);
-        doc.setFont('helvetica', 'bold');
-        doc.textWithLink(`${overallGrade}`, 45, yOffset, { url: '' });
-        doc.setLineWidth(0.5);
-        doc.line(45, yOffset + 1, 45 + doc.getTextWidth(overallGrade), yOffset + 1); // Underline
-        yOffset += 10;
-    
-        // 7. Co-curriculum Activities
-        doc.setFontSize(16);
-        doc.setFont('helvetica', 'bold');
-        doc.text("Co-curriculum Activities", 10, yOffset);
-        yOffset += 8;
-    
-        doc.setFontSize(12);
-        doc.setFont('helvetica', 'normal');
-        const coCurriculumData = coCurriculum || [];
-        const coCurriculumRows = coCurriculumData.map(activity => [
-            activity.club_name || 'N/A',
-            activity.location || 'N/A',
-            activity.year || 'N/A',
-            activity.student_position || 'N/A'
-        ]);
-    
-        doc.autoTable({
-            startY: yOffset,
-            head: [['Club Name', 'Location', 'Year', 'Position']],
-            body: coCurriculumRows,
-            theme: 'striped',
-            styles: { fontSize: 11 },
-            headStyles: { fillColor: [231, 76, 60] },
-        });
-    
-        yOffset = doc.previousAutoTable.finalY + 10;
-    
-        // 8. Achievements
-        doc.setFontSize(16);
-        doc.setFont('helvetica', 'bold');
-        doc.text("Achievements", 10, yOffset);
-        yOffset += 8;
-    
-        doc.setFontSize(12);
-        doc.setFont('helvetica', 'normal');
-        const achievementsData = achievements || [];
-        const achievementsRows = achievementsData.map(achievement => [
-            achievement.achievement_name || 'N/A',
-            achievement.awarded_by || 'N/A',
-            achievement.date || 'N/A',
-            achievement.title_obtained || 'N/A'
-        ]);
-    
-        doc.autoTable({
-            startY: yOffset,
-            head: [['Achievement Name', 'Awarded By', 'Date', 'Title Obtained']],
-            body: achievementsRows,
-            theme: 'striped',
-            styles: { fontSize: 11 },
-            headStyles: { fillColor: [39, 174, 96] },
-        });
-    
-        yOffset = doc.previousAutoTable.finalY + 10;
-    
-        // 9. Documents
-        doc.setFontSize(16);
-        doc.setFont('helvetica', 'bold');
-        doc.text("Documents", 10, yOffset);
-        yOffset += 8;
-    
-        doc.setFontSize(12);
-        doc.setFont('helvetica', 'normal');
-        // Combining all documents
-        const allDocuments = [
-            ...academicTranscripts.map(doc => ({
-                type: 'Academic Transcript',
-                name: doc.studentMedia_name || 'N/A',
-                file: doc.studentMedia_location || 'N/A'
-            })),
-            ...achievements.map(doc => ({
-                type: 'Achievement',
-                name: doc.achievement_name || 'N/A',
-                file: doc.achievement_media || 'N/A'
-            })),
-            ...otherDocuments.map(doc => ({
-                type: 'Other Document',
-                name: doc.name || 'N/A',
-                file: doc.media || 'N/A'
-            }))
-        ];
-    
-        const documentRows = allDocuments.map(docItem => [
-            docItem.type,
-            docItem.name,
-            docItem.file ? 'View Document' : 'N/A'
-        ]);
-    
-        doc.autoTable({
-            startY: yOffset,
-            head: [['Document Type', 'Name', 'File']],
-            body: documentRows,
-            theme: 'striped',
-            styles: { fontSize: 11 },
-            headStyles: { fillColor: [155, 89, 182] },
-            didDrawCell: (data) => {
-                if (data.column.index === 2 && data.cell.text[0] !== 'N/A') {
-                    const link = `${import.meta.env.VITE_BASE_URL}${allDocuments[data.row.index].file}`;
-                    doc.setTextColor(0, 0, 255); // Set text color to blue
-                    doc.textWithLink('View Document', data.cell.x + 2, data.cell.y + 6, { url: link });
-                    doc.setTextColor(0, 0, 0); // Reset text color
+        let yOffset = 10;
+        const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+        if (!token) {
+            throw new Error('No authentication token found');
+        }
+        // Helper function to add text with automatic page breaks
+        const addText = (text, x, y, options = {}) => {
+            const lines = doc.splitTextToSize(text, 190);
+            doc.text(lines, x, y, options);
+            return y + (lines.length * 5);
+        };
+
+        // Helper function to check if a new page is needed
+        const checkPageBreak = (height) => {
+            if (yOffset + height > 280) {
+                doc.addPage();
+                yOffset = 10;
+            }
+        };
+        try {
+            // 1. Header
+            doc.setFontSize(22);
+            doc.setFont('helvetica', 'bold');
+            yOffset = addText("Application Summary", 105, yOffset, { align: 'center' });
+            yOffset += 10;
+
+
+            // 2. School Logo and Information
+            if (courseInfo?.logo) {
+                try {
+                    const img = new Image();
+                    img.src = `${import.meta.env.VITE_BASE_URL}storage/${courseInfo.logo}`;
+                    await new Promise((resolve) => {
+                        img.onload = resolve;
+                    });
+                    const imgWidth = 50;
+                    const imgHeight = (img.height * imgWidth) / img.width;
+                    doc.addImage(img, 'PNG', 10, yOffset, imgWidth, imgHeight);
+                    yOffset += imgHeight + 5;
+                } catch (error) {
+                    console.error("Error loading school logo:", error);
                 }
             }
-        });
-    
-        // Save the PDF
-        doc.save('application_summary.pdf');
+
+            doc.setFontSize(16);
+            doc.setFont('helvetica', 'bold');
+            yOffset = addText(courseInfo?.school || 'School Name', 10, yOffset);
+            yOffset = addText(courseInfo?.course || 'Course Name', 10, yOffset);
+            yOffset += 10;
+
+            // 2. Applicant Information
+            doc.setFontSize(16);
+            doc.setFont('helvetica', 'bold');
+            yOffset = addText("Applicant Information", 10, yOffset);
+            yOffset += 5;
+
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'normal');
+            const applicantInfo = [
+                `Name: ${basicInfo?.firstName || ''} ${basicInfo?.lastName || ''}`,
+                `Identity Card Number: ${basicInfo?.ic || 'N/A'}`,
+                `Contact Number: ${basicInfo?.country_code || ''} ${basicInfo?.contact || ''}`,
+                `Email Address: ${basicInfo?.email || ''}`,
+                `Address: ${basicInfo?.address || ''}`
+            ];
+
+            applicantInfo.forEach(info => {
+                yOffset = addText(info, 10, yOffset);
+            });
+
+            yOffset += 10;
+
+            // 3. Course Information
+            doc.setFontSize(16);
+            doc.setFont('helvetica', 'bold');
+            yOffset = addText("Course Information", 10, yOffset);
+            yOffset += 5;
+
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'normal');
+            const courseInfoData = [
+                `Course: ${courseInfo?.course || 'N/A'}`,
+                `Qualification: ${courseInfo?.qualification || 'N/A'}`,
+                `Period: ${courseInfo?.period || 'N/A'}`,
+                `Mode: ${courseInfo?.mode || 'N/A'}`,
+                `Intake: ${courseInfo?.intake?.join(', ') || 'N/A'}`,
+                `Estimate Fee: RM ${courseInfo?.cost?.toLocaleString() || '0.00'} / year`
+            ];
+
+            courseInfoData.forEach(info => {
+                yOffset = addText(info, 10, yOffset);
+            });
+
+            yOffset += 10;
+
+            // 4. Summary
+            doc.setFontSize(16);
+            doc.setFont('helvetica', 'bold');
+            yOffset = addText("Summary", 10, yOffset);
+            yOffset += 5;
+
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'normal');
+            yOffset = addText(courseInfo?.description || 'N/A', 10, yOffset);
+
+            yOffset += 10;
+
+            // 5. Entry Requirements
+            doc.setFontSize(16);
+            doc.setFont('helvetica', 'bold');
+            yOffset = addText("Entry Requirements", 10, yOffset);
+            yOffset += 5;
+
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'normal');
+            yOffset = addText(courseInfo?.requirement || 'N/A', 10, yOffset);
+
+            yOffset += 10;
+            // 6. Academic Results (for all categories)
+            doc.setFontSize(16);
+            doc.setFont('helvetica', 'bold');
+            yOffset = addText("Academic Results", 10, yOffset);
+            yOffset += 5;
+
+            for (const category of transcriptCategories) {
+                doc.setFontSize(14);
+                doc.setFont('helvetica', 'bold');
+                yOffset = addText(category.transcript_category, 10, yOffset);
+                yOffset += 5;
+
+                // Add CGPA and Program Name for non-SPM categories
+                if (category.id !== 32) {
+                    const cgpaInfo = await fetchCGPAForCategory(category, token);
+                    if (cgpaInfo.cgpa !== null || cgpaInfo.programName) {
+                        doc.setFontSize(12);
+                        doc.setFont('helvetica', 'normal');
+                        if (cgpaInfo.programName) {
+                            yOffset = addText(`Program Name: ${cgpaInfo.programName}`, 15, yOffset);
+                        }
+                        if (cgpaInfo.cgpa !== null) {
+                            yOffset = addText(`CGPA: ${cgpaInfo.cgpa}`, 15, yOffset);
+                        }
+                        yOffset += 5;
+                    }
+                }
+
+                const subjects = await fetchTranscriptSubjectsForPDF(category.id);
+
+                if (subjects && subjects.length > 0) {
+                    doc.autoTable({
+                        startY: yOffset,
+                        head: [['Subject Name', 'Grade']],
+                        body: subjects.map(subject => [
+                            subject.name || subject.subject_name || subject.highTranscript_name || 'N/A',
+                            subject.grade || subject.subject_grade || subject.higherTranscript_grade || 'N/A'
+                        ]),
+                        theme: 'striped',
+                        styles: { fontSize: 10 },
+                        headStyles: { fillColor: [41, 128, 185] },
+                    });
+
+                    yOffset = doc.previousAutoTable.finalY + 10;
+                } else {
+                    yOffset = addText("No subjects available for this category.", 10, yOffset);
+                    yOffset += 5;
+                }
+            }
+
+            // 7. Co-curriculum Activities
+            doc.setFontSize(16);
+            doc.setFont('helvetica', 'bold');
+            yOffset = addText("Co-curriculum Activities", 10, yOffset);
+            yOffset += 5;
+
+            doc.autoTable({
+                startY: yOffset,
+                head: [['Club Name', 'Location', 'Year', 'Position']],
+                body: coCurriculum.map(activity => [
+                    activity.club_name || 'N/A',
+                    activity.location || 'N/A',
+                    activity.year || 'N/A',
+                    activity.student_position || 'N/A'
+                ]),
+                theme: 'striped',
+                styles: { fontSize: 10 },
+                headStyles: { fillColor: [231, 76, 60] },
+            });
+
+            yOffset = doc.previousAutoTable.finalY + 10;
+
+            // 8. Achievements
+            doc.setFontSize(16);
+            doc.setFont('helvetica', 'bold');
+            yOffset = addText("Achievements", 10, yOffset);
+            yOffset += 5;
+
+            doc.autoTable({
+                startY: yOffset,
+                head: [['Achievement Name', 'Awarded By', 'Date', 'Title Obtained']],
+                body: achievements.map(achievement => [
+                    achievement.achievement_name || 'N/A',
+                    achievement.awarded_by || 'N/A',
+                    achievement.date || 'N/A',
+                    achievement.title_obtained || 'N/A'
+                ]),
+                theme: 'striped',
+                styles: { fontSize: 10 },
+                headStyles: { fillColor: [39, 174, 96] },
+            });
+
+            yOffset = doc.previousAutoTable.finalY + 10;
+            // 8. Documents
+            checkPageBreak(40);
+            doc.setFontSize(16);
+            doc.setFont('helvetica', 'bold');
+            yOffset = addText("Documents", 10, yOffset);
+            yOffset += 5;
+
+            const allDocuments = [
+                ...academicTranscripts.map(doc => ({ type: 'Academic Transcript', name: doc.studentMedia_name, file: doc.studentMedia_location })),
+                ...achievements.map(doc => ({ type: 'Achievement', name: doc.achievement_name, file: doc.achievement_media })),
+                ...otherDocuments.map(doc => ({ type: 'Other Document', name: doc.name, file: doc.media }))
+            ];
+
+            for (const document of allDocuments) {
+                checkPageBreak(40);
+                doc.setFontSize(12);
+                doc.setFont('helvetica', 'bold');
+                yOffset = addText(`${document.type}: ${document.name}`, 10, yOffset);
+                yOffset += 5;
+
+                if (document.file) {
+                    try {
+                        const response = await fetch(`${import.meta.env.VITE_BASE_URL}${document.file}`);
+                        const blob = await response.blob();
+                        const fileType = blob.type;
+
+                        if (fileType.startsWith('image/')) {
+                            // Handle image files (PNG, JPEG)
+                            const img = new Image();
+                            img.src = URL.createObjectURL(blob);
+                            await new Promise((resolve) => {
+                                img.onload = resolve;
+                            });
+                            const imgWidth = 190;
+                            const imgHeight = (img.height * imgWidth) / img.width;
+                            checkPageBreak(imgHeight + 10);
+                            doc.addImage(img, fileType.split('/')[1].toUpperCase(), 10, yOffset, imgWidth, imgHeight);
+                            yOffset += imgHeight + 10;
+                        } else if (fileType === 'application/pdf') {
+                            // Handle PDF files
+                            const pdfBytes = await blob.arrayBuffer();
+                            const pdfDoc = await PDFDocument.load(pdfBytes);
+                            const pages = pdfDoc.getPages();
+                            for (let i = 0; i < pages.length; i++) {
+                                if (i > 0) {
+                                    doc.addPage();
+                                    yOffset = 10;
+                                }
+                                const page = pages[i];
+                                const { width, height } = page.getSize();
+                                const scale = Math.min(190 / width, 280 / height);
+                                checkPageBreak(height * scale + 10);
+                                const pdfImage = await pdfDoc.embedPage(page);
+                                doc.addImage(pdfImage, 'PDF', 10, yOffset, width * scale, height * scale);
+                                yOffset += height * scale + 10;
+                            }
+                        } else {
+                            yOffset = addText("Unsupported file type", 10, yOffset);
+                            yOffset += 5;
+                        }
+                    } catch (error) {
+                        console.error(`Error processing document: ${document.name}`, error);
+                        yOffset = addText("Error loading document", 10, yOffset);
+                        yOffset += 5;
+                    }
+                } else {
+                    yOffset = addText("No file available", 10, yOffset);
+                    yOffset += 5;
+                }
+            }
+
+            // Save the PDF
+            doc.save('enhanced_application_summary.pdf');
+        } catch (error) {
+            console.error("Error generating PDF:", error);
+            // You might want to show an error message to the user here
+        }
     };
-    
+
+    // Helper function to fetch transcript subjects for a specific category
+    const fetchTranscriptSubjectsForPDF = async (categoryId) => {
+        try {
+            const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+            const url = categoryId === 32
+                ? `${import.meta.env.VITE_BASE_URL}api/student/transcriptSubjectList`
+                : `${import.meta.env.VITE_BASE_URL}api/student/higherTranscriptSubjectList`;
+            const method = categoryId === 32 ? 'GET' : 'POST';
+            const body = categoryId === 32 ? null : JSON.stringify({ id: categoryId });
+
+            const response = await fetch(url, {
+                method: method,
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                ...(method === 'POST' && { body }),
+            });
+            if (!response.ok) {
+                throw new Error('Failed to fetch transcript subjects');
+            }
+            const result = await response.json();
+            if (result.success) {
+                return result.data;
+            } else {
+                throw new Error(result.message || 'Failed to fetch transcript subjects');
+            }
+        } catch (error) {
+            console.error('Error fetching transcript subjects:', error);
+            return null;
+        }
+    };
+
     const fetchTranscriptCategories = async () => {
         try {
             const token = sessionStorage.getItem('token') || localStorage.getItem('token');
@@ -546,6 +650,72 @@ const StudentApplicationSummary = ({ }) => {
         }
     };
 
+    const fetchCGPAForCategory = async (category, token) => {
+        if (category.id === 32) {
+            return { cgpa: null, programName: '', cgpaId: null };
+        }
+        
+        try {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/programCgpaList`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({ transcriptCategory: category.id }),
+            });
+    
+            if (!response.ok) {
+                throw new Error(`Failed to fetch CGPA for category ${category.transcript_category}`);
+            }
+    
+            const result = await response.json();
+            return result.success && result.data
+                ? {
+                    cgpa: result.data.cgpa,
+                    programName: result.data.program_name,
+                    cgpaId: result.data.id,
+                }
+                : { cgpa: null, programName: '', cgpaId: null };
+        } catch (error) {
+            console.error('Error fetching CGPA:', error);
+            return { cgpa: null, programName: '', cgpaId: null };
+        }
+    };
+
+    const fetchCGPAInfo = async (categoryId) => {
+        if (categoryId === 32) {
+            setCgpaInfo(null);
+            return;
+        }
+
+        try {
+            const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/programCgpaList`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ transcriptCategory: categoryId }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch CGPA information');
+            }
+
+            const result = await response.json();
+            if (result.success && result.data) {
+                setCgpaInfo(result.data);
+            } else {
+                setCgpaInfo(null);
+            }
+        } catch (error) {
+            console.error('Error fetching CGPA information:', error);
+            setCgpaInfo(null);
+        }
+    };
+
     const fetchAchievements = async (page = 1) => {
         try {
             const token = sessionStorage.getItem("token") || localStorage.getItem("token");
@@ -623,6 +793,7 @@ const StudentApplicationSummary = ({ }) => {
         setCurrentPage(prevState => ({ ...prevState, [section]: page }));
         switch (section) {
             case 'academicTranscripts':
+
                 fetchAcademicTranscripts(page);
                 break;
             case 'achievements':
@@ -666,10 +837,13 @@ const StudentApplicationSummary = ({ }) => {
 
 
 
+
+
     const handleExamChange = (e) => {
         const newExamId = e.target.value;
         setSelectedExam(newExamId);
         fetchTranscriptSubjects(parseInt(newExamId));
+        fetchCGPAInfo(parseInt(newExamId));
     };
 
     const copyToClipboard = (text) => {
@@ -987,7 +1161,7 @@ const StudentApplicationSummary = ({ }) => {
                                         <p className="my-0 text-secondary  mt-2">Applied For: <span className=" text-black ms-2">{courseInfo?.course}</span></p>
                                     </div>
                                 </div>
-                                <Button className="sac-submit-button px-4" onClick={generatePDF}>
+                                <Button className="sac-submit-button px-4" onClick={generateEnhancedPDF}>
                                     Print Summary
                                 </Button>
                             </div>
@@ -1061,6 +1235,14 @@ const StudentApplicationSummary = ({ }) => {
                                                     ))}
                                                 </select>
                                             </div>
+                                            {cgpaInfo && selectedExam !== '32' && (
+                                                <div className="px-4 mb-3">
+                                                    <div className="d-flex justify-content-between align-items-center">
+                                                        <p className="mb-0"><strong>Program Name:</strong> {cgpaInfo.program_name || 'N/A'}</p>
+                                                        <p className="mb-0"><strong>CGPA:</strong> {cgpaInfo.cgpa || 'N/A'}</p>
+                                                    </div>
+                                                </div>
+                                            )}
                                             <div className="results-grid flex-grow-1 px-4 " style={{ maxHeight: '15rem', overflowY: 'auto' }}>
                                                 {transcriptSubjects && transcriptSubjects.length > 0 ? (
                                                     transcriptSubjects.map((subject, index) => (
@@ -1071,10 +1253,11 @@ const StudentApplicationSummary = ({ }) => {
                                                     ))
                                                 ) : (
                                                     <div className="d-flex justify-content-between py-3">
-                                                        <p >No results available for this transcript.</p>
+                                                        <p>No results available for this transcript.</p>
                                                     </div>
                                                 )}
                                             </div>
+
                                             <div className="grade-summary d-flex justify-content-between align-items-stretch border-top">
                                                 <div className="overall-grade text-white w-75 d-flex justify-content-start">
                                                     <h3 className="align-self-center px-5">
