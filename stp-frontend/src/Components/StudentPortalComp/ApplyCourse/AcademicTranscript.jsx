@@ -5,7 +5,7 @@ import { Trash2, Edit, Plus, Upload, Save, FileText, X, AlignJustify } from 'luc
 import Select from 'react-select';
 import WidgetPopUpRemind from "../../../Components/StudentPortalComp/Widget/WidgetPopUpRemind";
 import WidgetPopUpAcademicRemind from "../../../Components/StudentPortalComp/Widget/WidgetPopUpAcademicRemind";
-
+import WidgetPopUpUnsavedChanges from "../../../Components/StudentPortalComp/Widget/WidgetPopUpUnsavedChanges";
 const AcademicTranscript = ({ data = [], onBack, onNext }) => {
   const [academicTranscripts, setAcademicTranscripts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -16,6 +16,10 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
   const [documentErrors, setDocumentErrors] = useState({});
   const [isAcademicRemindPopupOpen, setIsAcademicRemindPopupOpen] = useState(false);
   const [isNewUser, setIsNewUser] = useState(true);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [isUnsavedChangesPopupOpen, setIsUnsavedChangesPopupOpen] = useState(false);
+  const [navigationDirection, setNavigationDirection] = useState(null);
+
 
   // Replace the existing useEffect hook with this:
   useEffect(() => {
@@ -184,12 +188,14 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
     const updatedTranscripts = [...academicTranscripts];
     updatedTranscripts[transcriptIndex].programName = value;
     setAcademicTranscripts(updatedTranscripts);
+    setHasUnsavedChanges(true);
   };
 
   const handleCGPAChange = (transcriptIndex, value) => {
     const updatedTranscripts = [...academicTranscripts];
     updatedTranscripts[transcriptIndex].cgpa = value;
     setAcademicTranscripts(updatedTranscripts);
+    setHasUnsavedChanges(true);
   };
 
   const presetSPMSubjects = () => {
@@ -292,7 +298,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
     }
   }, [isNewUser]);
 
-  
+
   // Helper function to get available categories for a specific transcript
   const getAvailableCategories = (currentTranscriptIndex) => {
     const selectedCategoryIds = academicTranscripts
@@ -343,6 +349,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
 
   const handleRemoveTranscript = (index) => {
     setAcademicTranscripts(academicTranscripts.filter((_, i) => i !== index));
+    
   };
 
   const handleAddSubject = (transcriptIndex) => {
@@ -402,6 +409,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
         : transcript
     );
     setAcademicTranscripts(updatedTranscripts);
+    setHasUnsavedChanges(true);
 
     // If it's SPM and we're changing the subject, update available subjects
     if (updatedTranscripts[transcriptIndex].id === 32 && field === 'id') {
@@ -428,6 +436,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
         : transcript
     );
     setAcademicTranscripts(updatedTranscripts);
+    setHasUnsavedChanges(true);
 
     if (updatedTranscripts[transcriptIndex].id === 32) {
       fetchAvailableSubjects(32, transcriptIndex);
@@ -767,6 +776,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
       const data = await response.json();
       if (data.success) {
         console.log('Transcript saved successfully');
+        setHasUnsavedChanges(false);
         fetchSubjects(category.id, transcriptIndex);
        
         if (category.id !== 32) {
@@ -833,7 +843,30 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
     setIsPopupOpen(false);
   };
 
+  const handleNavigation = (direction) => {
+    if (hasUnsavedChanges) {
+      setNavigationDirection(direction);
+      setIsUnsavedChangesPopupOpen(true);
+    } else {
+      direction === 'next' ? onNext() : onBack();
+    }
+  };
 
+  const handleUnsavedChangesConfirm = () => {
+    setIsUnsavedChangesPopupOpen(false);
+    if (navigationDirection === 'next') {
+      onNext();
+    } else if (navigationDirection === 'back') {
+      onBack();
+    }
+    setNavigationDirection(null);
+    setHasUnsavedChanges(false);
+  };
+
+  const handleUnsavedChangesCancel = () => {
+    setIsUnsavedChangesPopupOpen(false);
+    setNavigationDirection(null);
+  };
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -1130,10 +1163,10 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
       </Button>
 
       <div className="d-flex justify-content-between mt-4">
-        <Button onClick={onBack} className="me-2 rounded-pill px-5 sac-previous-button">
+        <Button onClick={() => handleNavigation('back')}  className="me-2 rounded-pill px-5 sac-previous-button">
           Previous
         </Button>
-        <Button onClick={handleNext} className="sac-next-button rounded-pill px-5">
+        <Button onClick={() => handleNavigation('next')} className="sac-next-button rounded-pill px-5">
           Next
         </Button>
 
@@ -1142,6 +1175,11 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
       <WidgetPopUpAcademicRemind
         isOpen={isAcademicRemindPopupOpen}
         onClose={() => setIsAcademicRemindPopupOpen(false)}
+      />
+        <WidgetPopUpUnsavedChanges
+        isOpen={isUnsavedChangesPopupOpen}
+        onConfirm={handleUnsavedChangesConfirm}
+        onCancel={handleUnsavedChangesCancel}
       />
     </div>
   );
