@@ -6,11 +6,13 @@ import "../../css/AdminStyles/AdminFormStyle.css";
 const AdminEditApplicantContent = () => {
     const [courseList, setCourseList] = useState([]); 
     const [schoolList, setSchoolList] = useState([]); 
+    const [loading, setLoading] = useState(false); 
 
     const [formData, setFormData] = useState({
         courses_id: "",
         school_id: "",
-        feedback: ""
+        feedback: "",
+        created_at:"",
     });
     const [error, setError] = useState(null);
     const token = sessionStorage.getItem('token');
@@ -26,25 +28,26 @@ const AdminEditApplicantContent = () => {
                     'Content-Type': 'application/json',
                     'Authorization': Authenticate,
                 },
-                body: JSON.stringify({ school_id })  // Send school_id in the request body
+                body: JSON.stringify({ school_id })
             });
-
+    
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-
+    
             const data = await response.json();
             console.log('Fetched courses data:', data); 
             
             // Ensure the response data is set as an array for easy mapping
-            if (data && data.data) {
-                setCourseList([data.data]);  // Wrap the course data in an array
+            if (data && Array.isArray(data.data)) {
+                setCourseList(data.data);  // Set courseList directly from the array
             }
         } catch (error) {
             console.error('Error fetching courses:', error.message);
             setError(error.message);
         }
     };
+    
 
     // Fetch applicant details to populate the form
     const fetchApplicantDetails = async () => {
@@ -123,6 +126,7 @@ const AdminEditApplicantContent = () => {
         formPayload.append("courses_id", courses_id);
         formPayload.append("school_id", school_id);
         formPayload.append("feedback", feedback);
+        formPayload.append("")
 
         setLoading(true);  // Set loading state to true
     
@@ -141,8 +145,8 @@ const AdminEditApplicantContent = () => {
                 console.log('Applicant successfully registered:', addApplicantData);
                 navigate('/adminApplicant');
             } else {
-                console.error('Validation Error:', addSubjectData.errors);
-                throw new Error(`Applicant Registration failed: ${addSubjectData.message}`);
+                console.error('Validation Error:', addApplicantData.errors);
+                throw new Error(`Applicant Registration failed: ${addApplicantData.message}`);
             }
         } catch (error) {
             setError('An error occurred during applicant registration. Please try again later.');
@@ -204,15 +208,15 @@ const AdminEditApplicantContent = () => {
             value: formData.courses_id,  // Set the course_id correctly from formData
             onChange: handleFieldChange,
             required: true,
-            options: Array.isArray(courseList) ? courseList.map(course => ({
+            options: courseList.map(course => ({
                 label: course.name,  // Display course name
                 value: course.id      // The actual course ID
-            })) : [],
-            // Only show "Select Course" if no course is pre-selected
+            })),
             placeholder: formData.courses_id ? undefined : "Select Course",
-            disabled: !formData.school_id // Disable course selection if no school is selected
+            disabled: !formData.school_id  // Disable course selection if no school is selected
         }
     ];
+    
     
 
     const formDrop = [
