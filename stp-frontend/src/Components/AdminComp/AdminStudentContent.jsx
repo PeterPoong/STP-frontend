@@ -19,6 +19,7 @@ const AdminStudentContent = () => {
     const [targetstudent, setTargetstudent] = useState(null);
     const [isSearchResults, setIsSearchResults] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
+    const [showAddButton, setShowAddButton] = useState(true); // Set true if you want the button to always show
     const navigate = useNavigate();
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`;
@@ -245,6 +246,7 @@ const AdminStudentContent = () => {
             totalPages={totalPages}
             onPageChange={handlePageChange}
             onRowsPerPageChange={handleRowsPerPageChange}
+            showAddButton={showAddButton}
             // onSearch={(query) => console.log(query)} // Implement search functionality
             onAddButtonClick={handleAddStudent} // Implement add new student functionality
         />

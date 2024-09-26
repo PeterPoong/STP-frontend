@@ -7,6 +7,7 @@ import { MDBSwitch } from 'mdb-react-ui-kit';
 import '../../css/AdminStyles/AdminTableStyles.css';
 import TableWithControls from './TableWithControls';
 
+
 const AdminListContent = () => {
     const [admins, setAdmins] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -19,6 +20,8 @@ const AdminListContent = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [searchQuery, setSearchQuery] = useState("");
+    const [showAddButton, setShowAddButton] = useState(true); // Set true if you want the button to always show
+
      // To track if there are search results
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`;
@@ -255,6 +258,7 @@ const AdminListContent = () => {
                 totalPages={totalPages}
                 currentPage={currentPage}
                 onPageChange={handlePageChange}
+                showAddButton={showAddButton}
                 onRowsPerPageChange={handleRowsPerPageChange}
             />
             <Modal show={showModal} onHide={() => setShowModal(false)}>

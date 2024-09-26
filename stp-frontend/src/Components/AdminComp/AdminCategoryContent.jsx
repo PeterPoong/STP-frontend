@@ -21,6 +21,8 @@ const AdminCategoryContent = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [searchQuery, setSearchQuery] = useState("");
+    const [showAddButton, setShowAddButton] = useState(true); // Set true if you want the button to always show
+
      // To track if there are search results
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`;
@@ -286,6 +288,7 @@ const AdminCategoryContent = () => {
                 currentPage={currentPage}
                 onPageChange={handlePageChange}
                 onRowsPerPageChange={handleRowsPerPageChange}
+                showAddButton={showAddButton}
             />
             
             <Modal show={showModal} onHide={() => setShowModal(false)}>

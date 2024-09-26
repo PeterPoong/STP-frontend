@@ -21,6 +21,8 @@ const AdminDataContent = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [searchQuery, setSearchQuery] = useState("");
+    const [showAddButton, setShowAddButton] = useState(true); // Set true if you want the button to always show
+
      // To track if there are search results
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`;
@@ -273,6 +275,7 @@ const AdminDataContent = () => {
                 totalPages={totalPages}
                 currentPage={currentPage}
                 onRowsPerPageChange={setRowsPerPage}
+                showAddButton={showAddButton}
                 onSearch={handleSearch}
                 showSearch={false}  // Set to false if you don't want to show search
                 showRowsPerPage={false}  // Set to false if you don't want to show rows-per-page dropdown

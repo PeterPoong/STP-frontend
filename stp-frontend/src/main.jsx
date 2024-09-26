@@ -28,6 +28,7 @@ import AdminSchool from "./Pages/AdminPages/AdminSchool";
 import AdminAddSchool from "./Pages/AdminPages/AdminAddSchool";
 import AdminEditSchool from "./Pages/AdminPages/AdminEditSchool";
 import AdminApplicant from "./Pages/AdminPages/AdminApplicant";
+import AdminEditApplicant from "./Pages/AdminPages/AdminEditApplicant";
 import AdminStudent from "./Pages/AdminPages/AdminStudent";
 import AdminAddStudent from "./Pages/AdminPages/AdminAddStudent";
 import AdminEditStudent from "./Pages/AdminPages/AdminEditStudent";
@@ -224,7 +225,10 @@ const router = createBrowserRouter([
     path: "/adminApplicant",
     element: <AdminApplicant />,
   },
-
+  {
+    path: "/adminEditApplicant",
+    element: <AdminEditApplicant />,
+  },
   {
     path: "/adminBanner",
     element: <AdminBanner />,

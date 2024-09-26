@@ -31,8 +31,11 @@ const AdminEditCategoryContent = () => {
         const { name, description, icon } = formData; // Now, icon is the actual file
     
         const formPayload = new FormData();
+        formPayload.append("id", categoryId);
         formPayload.append("name", name);
         formPayload.append("description", description);
+
+
     
         // Append the icon if it exists
         if (icon) {
@@ -46,7 +49,7 @@ const AdminEditCategoryContent = () => {
         }
     
         try {
-            const addCategoryResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/addCategory`, {
+            const addCategoryResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/editCategory`, {
                 method: 'POST',
                 headers: {
                     'Authorization': Authenticate,

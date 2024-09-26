@@ -94,7 +94,12 @@
     text-indent: -9999px; /* Hide the actual content off-screen */
     position: relative;
 }
-
+.status-rejected {
+    color: red !important;
+    padding: 5px;
+    text-align: center;
+    position: relative;
+}
 .status-disable::before {
     content: "Disabled"; /* Add "Disabled" text */
     text-indent: 0; /* Ensure the custom text is visible */
@@ -108,6 +113,13 @@
     padding: 5px;
     text-align: center;
     text-indent: -9999px; /* Hide the actual content off-screen */
+    position: relative;
+}
+
+.status-accepted {
+    color: green !important;
+    padding: 5px;
+    text-align: center;
     position: relative;
 }
 

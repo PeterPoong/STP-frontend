@@ -36,6 +36,9 @@ const AdminFormComponent = ({
   formMode,
   formGender,
   formCourse,
+  formDates,
+  formCourses,
+  formStatus,
   onSubmit,
   error,
   buttons,
@@ -247,6 +250,7 @@ const handleRadioChange = (radioId, value) => {
                 />
               </Form.Group>
             ))}
+         
        {formDrop && formDrop.map((drop, index) => (
               <Form.Group key={index} controlId={drop.id} className="mb-5">
                 <Form.Label>{drop.label}</Form.Label>
@@ -258,6 +262,24 @@ const handleRadioChange = (radioId, value) => {
                 >
                   <option value="">Select School</option>
                   {drop.options.map((option, optIndex) => (
+                    <option key={optIndex} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </Form.Control>
+              </Form.Group>
+            ))}
+               {formCourses && formCourses.map((courses, index) => (
+              <Form.Group key={index} controlId={courses.id} className="mb-5">
+                <Form.Label>{courses.label}</Form.Label>
+                <Form.Control 
+                  as="select" 
+                  value={courses.value} 
+                  onChange={courses.onChange} 
+                  required={courses.required || false}
+                >
+                  <option value="">Select Course</option>
+                  {courses.options.map((option, optIndex) => (
                     <option key={optIndex} value={option.value}>
                       {option.label}
                     </option>
@@ -393,6 +415,19 @@ const handleRadioChange = (radioId, value) => {
 
           </Col>
           <Col md={6}>
+          {formDates && formDates.map((date, index) => (
+              <Form.Group key={index} controlId={date.id} className="mb-5">
+                <Form.Label>{date.label}</Form.Label>
+                <Form.Control
+                  as={date.as || "input"}
+                  type={date.type || "text"}
+                  placeholder={date.placeholder || ""}
+                  value={date.value}
+                  onChange={date.onChange}
+                  required={date.required || false}
+                />
+              </Form.Group>
+            ))}
           {formGender && formGender.map((gender, index) => (
               <Form.Group key={index} controlId={gender.id} className="mb-5">
                 <Form.Label>{gender.label}</Form.Label>
@@ -477,6 +512,26 @@ const handleRadioChange = (radioId, value) => {
                 </Form.Control>
               </Form.Group>
             ))}
+            
+            {formStatus && formStatus.map((status, index) => (
+              <Form.Group key={index} controlId={status.id} className="mb-5">
+                <Form.Label>{status.label}</Form.Label>
+                <Form.Control 
+                  as="select" 
+                  value={status.value} 
+                  onChange={status.onChange} 
+                  required={status.required || false}
+                >
+                  <option value="">Select Status</option>
+                  {status.options.map((option, optIndex) => (
+                    <option key={optIndex} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </Form.Control>
+              </Form.Group>
+            ))}
+            
 
 {formPeriod && (
         <Col md={12}>
