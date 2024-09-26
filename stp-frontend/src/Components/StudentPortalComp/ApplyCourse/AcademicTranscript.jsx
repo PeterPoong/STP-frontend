@@ -15,7 +15,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
   const [availableSubjects, setAvailableSubjects] = useState([]);
   const [documentErrors, setDocumentErrors] = useState({});
   const [isAcademicRemindPopupOpen, setIsAcademicRemindPopupOpen] = useState(false);
-
+  const [isNewUser, setIsNewUser] = useState(true);
 
   // Replace the existing useEffect hook with this:
   useEffect(() => {
@@ -192,7 +192,15 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
     setAcademicTranscripts(updatedTranscripts);
   };
 
-
+  const presetSPMSubjects = () => {
+    return [
+      { id: 1, name: "Bahasa Melayu", grade: "", isEditing: true },
+      { id: 2, name: "English", grade: "", isEditing: true },
+      { id: 3, name: "Mathematics", grade: "", isEditing: true },
+      { id: 4, name: "Science", grade: "", isEditing: true },
+      { id: 5, name: "History", grade: "", isEditing: true }
+    ];
+  };
   const fetchAvailableSubjects = useCallback(async (categoryId, transcriptIndex) => {
     if (categoryId !== 32) return; // Only fetch for SPM
 
@@ -225,11 +233,16 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
   }, [academicTranscripts]);
 
 
-  const fetchSubjects = async (categoryId, transcriptIndex) => {
+  const fetchSubjects = useCallback(async (categoryId, transcriptIndex) => {
+    if (categoryId === 32 && isNewUser) {
+      // Don't fetch for SPM if it's a new user, as we've already preset the subjects
+      return;
+    }
+
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       let url, method, body;
-      if (categoryId === 32) { // Assuming 32 is the ID for SPM
+      if (categoryId === 32) {
         url = `${import.meta.env.VITE_BASE_URL}api/student/transcriptSubjectList`;
         method = 'GET';
       } else {
@@ -267,14 +280,19 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
               : transcript
           )
         );
+
+        if (categoryId === 32 && formattedSubjects.length > 0) {
+          setIsNewUser(false);  // User has existing SPM subjects, so not a new user
+        }
       } else {
         console.error('Failed to fetch subjects:', result);
       }
     } catch (error) {
       console.error('Error fetching subjects:', error);
     }
-  };
+  }, [isNewUser]);
 
+  
   // Helper function to get available categories for a specific transcript
   const getAvailableCategories = (currentTranscriptIndex) => {
     const selectedCategoryIds = academicTranscripts
@@ -308,12 +326,20 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
     setAcademicTranscripts(updatedTranscripts);
 
     if (id) {
-      fetchSubjects(id, index);
-      if (id === 32) { // Only fetch available subjects for SPM
+      if (id === 32 && isNewUser) {  // 32 is the ID for SPM
+        const presetSubjects = presetSPMSubjects();
+        updatedTranscripts[index].subjects = presetSubjects;
+        setAcademicTranscripts(updatedTranscripts);
+        setIsNewUser(false);  // Set to false after applying preset
+      } else {
+        fetchSubjects(id, index);
+      }
+      if (id === 32) {
         fetchAvailableSubjects(id, index);
       }
     }
   };
+
 
   const handleRemoveTranscript = (index) => {
     setAcademicTranscripts(academicTranscripts.filter((_, i) => i !== index));
