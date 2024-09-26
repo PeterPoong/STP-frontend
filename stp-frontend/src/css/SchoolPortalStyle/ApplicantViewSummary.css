@@ -1,0 +1,114 @@
+.applicant-app-container-applycourse {
+    display: flex;
+    flex-direction: column;
+    background-color: #F5F5F5;
+
+}
+
+
+.applicant-main-content-applycourse-clone {
+    flex: 1;
+    padding: 3rem 0 8.25rem 0;
+    padding: 5rem 4rem;
+
+}
+
+
+.applicant-backgroundimage {
+
+    background: rgb(255, 208, 204);
+    background: linear-gradient(153deg, rgba(255, 208, 204, 1) 0%, rgba(252, 149, 149, 1) 100%);
+    height: 15rem;
+    flex-direction: row;
+    align-content: flex-end;
+}
+
+
+.applicant-summary-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2.75rem 2rem;
+
+}
+
+.detail-content {
+    padding: 2.5rem 0rem;
+}
+
+
+.applicant-actions-div
+{
+    background-color: #146A17;
+    height: 3.25rem;
+    margin:0 2.5rem;
+    width:35rem;
+    border-radius: 1rem;
+    color:#F5F5F5;
+    font-weight: 400;
+
+    align-content: center;
+}
+
+.applicant-form-control
+{
+    background-color: transparent;
+    width: 100%;
+    border-radius: 0.5rem;
+    padding:1rem;
+    border-color: #EFF0F6;
+    color:#1D2026;
+}
+
+.applicant-form-control::-webkit-scrollbar-thumb
+{
+    
+    border-radius: 10px;
+    background-color: #C6C6C6;
+}
+
+.applicant-form-control::-webkit-scrollbar
+{
+    padding:3rem 0;
+    width: 8px;
+    background-color: #F5F5F5;
+}
+.applicant-form-control::-webkit-scrollbar-thumb:hover
+{
+    padding:3rem 0;
+    background-color: #A8A8A8;
+}
+
+
+/*button*/
+.applicant-chat-button {
+    background-color: #25D366;
+    border-color: transparent;
+    padding: 0.25rem 1.75rem;
+    font-weight: bold;
+    width: 12.5rem;
+}
+
+.applicant-chat-button:hover {
+    background-color: white;
+    border-color: #25D366;
+    padding: 0.25rem 1.75rem;
+    font-weight: bold;
+    color: #25D366
+}
+
+.applicant-status-button {
+    background-color: #ED6126;
+    border-color: transparent;
+    padding: 0.25rem 1.75rem;
+    font-weight: bold;
+    width: 12.5rem;
+}
+
+.applicant-status-button:hover {
+    background-color: white;
+    border-color: #ED6126;
+    padding: 0.25rem 1.75rem;
+    font-weight: bold;
+    color: #ED6126;
+}
