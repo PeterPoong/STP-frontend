@@ -85,6 +85,8 @@ const AdminEditBannerContent = () => {
     }
   };
 
+
+    
   useEffect(() => {
     if (!bannerId) {
       console.error("Banner ID is not available in sessionStorage");
@@ -99,7 +101,7 @@ const AdminEditBannerContent = () => {
             'Content-Type': 'application/json',
             'Authorization': Authenticate,
           },
-          body: JSON.stringify({ id: bannerId })
+          body: JSON.stringify({ id: bannerId }),
         });
   
         if (!response.ok) {
@@ -107,18 +109,41 @@ const AdminEditBannerContent = () => {
         }
   
         const data = await response.json();
+         // Console log the entire response data
+      console.log('Response Data:', data);
         const bannerDetails = data.data[0]; // Access the first item in the data array
-  
+        console.log('Banner Details:', bannerDetails);
         if (bannerDetails) {
           setFormData({
             banner_name: bannerDetails.name,
             banner_url: bannerDetails.url,
             banner_file: bannerDetails.file ? `${import.meta.env.VITE_BASE_URL}${bannerDetails.file}` : null,
-            featured_id: bannerDetails.feature ? [bannerDetails.feature.featured_id] : []
-           
+            featured_id: bannerDetails.feature ? [bannerDetails.featured_id] : [],
           });
-          setSelectedStartDate(new Date(bannerDetails.banner_start));
-          setSelectedEndDate(new Date(bannerDetails.banner_end));
+  
+           // Console log the banner start and end dates before formatting
+        console.log('Banner Start:', bannerDetails.banner_start);
+        console.log('Banner End:', bannerDetails.banner_end);
+          // Convert banner_start and banner_end to Date objects and format them for the datetime-local input
+          const formatDateTimeLocal = (dateStr) => {
+            const date = new Date(dateStr);
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            return `${year}-${month}-${day}T${hours}:${minutes}`;
+          };
+  
+          // Format the start and end dates
+          const startDate = formatDateTimeLocal(bannerDetails.banner_start);
+          const endDate = formatDateTimeLocal(bannerDetails.banner_end);
+   // Console log the formatted start and end dates
+   console.log('Formatted Start Date:', startDate);
+   console.log('Formatted End Date:', endDate);
+          // Set the formatted dates to state variables
+          setSelectedStartDate(startDate);
+          setSelectedEndDate(endDate);
           setBanner_file(bannerDetails.file ? `${import.meta.env.VITE_BASE_URL}storage/${bannerDetails.file}` : null);
           setSelectedFeatures(bannerDetails.feature ? [bannerDetails.feature.featured_id] : []);
         } else {
@@ -214,22 +239,22 @@ const AdminEditBannerContent = () => {
   return (
     <Container fluid className="admin-edit-banner-content">
       <AdminFormComponent
-        formTitle="Edit Banner"
-        checkboxDetail="Featured Type(s)"
-        formFields={formFields}
-        formUrl={formUrl}
-        formCheckboxes={formCheckboxes}
-        formPeriod={true}
-        onSubmit={handleSubmit}
-        error={error}
-        buttons={buttons}
-        selectedStartDate={selectedStartDate}
-        selectedEndDate={selectedEndDate}
-        handleDateChange={handleDateChange}
-        banner_file={banner_file}
-        newBannerFile={newBannerFile}
-        handleBannerFileChange={handleBannerFileChange}
-      />
+  formTitle="Edit Banner"
+  checkboxDetail="Featured Type(s)"
+  formFields={formFields}
+  formUrl={formUrl}
+  formCheckboxes={formCheckboxes}
+  formPeriod={true}
+  onSubmit={handleSubmit}
+  error={error}
+  buttons={buttons}
+  selectedStartDate={selectedStartDate}  // Pass the start date
+  selectedEndDate={selectedEndDate}      // Pass the end date
+  handleDateChange={handleDateChange}
+  banner_file={banner_file}
+  newBannerFile={newBannerFile}
+  handleBannerFileChange={handleBannerFileChange}
+/>
     </Container>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Container, Col, Button, Modal } from "react-bootstrap";
+import { Container, Col, Button, Modal, Card } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useDropzone } from "react-dropzone";
 import AdminFormComponent from './AdminFormComponent';
@@ -39,6 +39,61 @@ const AdminEditStudentContent = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [passwordsMatch, setPasswordsMatch] = useState(true);
+    
+    const studentId = sessionStorage.getItem('studentId');
+    const fetchStudentDetails = async () => {
+      try {
+          const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/studentDetail`, {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': Authenticate,
+              },
+              body: JSON.stringify({ id: studentId })
+          });
+
+          if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const data = await response.json();
+          const studentDetails = data.data;
+
+          if (studentDetails) {
+              setFormData({
+                  name: studentDetails.name,
+                  first_name: studentDetails.first_name|| "",
+                  last_name: studentDetails.last_name|| "",
+                  ic: studentDetails.ic|| "",
+                  email: studentDetails.email,
+                  country_code: studentDetails.country_code,
+                  contact_number: studentDetails.contact_number,
+                  gender: studentDetails.gender,
+                  address: studentDetails.address,
+                  country: studentDetails.country,
+                  state: studentDetails.state,
+                  city: studentDetails.city,
+                  postcode: studentDetails.postcode,
+                  
+              });
+
+          } else {
+              console.error("Student not found with ID:", studentId);
+          }
+      } catch (error) {
+          console.error('Error fetching student details:', error.message);
+          setError(error.message);
+      }
+  };
+  useEffect(() => {
+    if (!studentId) {
+        console.error("StudentID is not available in sessionStorage");
+        return;
+    }
+
+    fetchStudentDetails();
+}, [studentId, Authenticate]);
+
     const handleSubmit = async (event) => {
       event.preventDefault();
       console.log("Submitting form data:", formData);
@@ -46,7 +101,6 @@ const AdminEditStudentContent = () => {
       const { name, first_name, last_name, gender, ic, postcode, email, state, city, country, address, contact_number, country_code, confirm_password, password } = formData;
   
       // Convert strings to integers where needed
-      const icInt = parseInt(ic, 10);
       const cityInt = parseInt(city, 10);
       const genderInt = parseInt(gender, 10);
       const stateInt = parseInt(state, 10);
@@ -58,6 +112,7 @@ const AdminEditStudentContent = () => {
       }
   
       const formPayload = new FormData();
+      formPayload.append("id", studentId);
       formPayload.append("address", address);
       formPayload.append("name", name);
       formPayload.append("first_name", first_name);
@@ -77,7 +132,7 @@ const AdminEditStudentContent = () => {
       try {
           console.log("FormData before submission:", formPayload);
   
-          const addStudentResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/addStudent`, {
+          const addStudentResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/editStudent`, {
               method: 'POST',
               headers: {
                   'Authorization': Authenticate,
@@ -131,62 +186,77 @@ const AdminEditStudentContent = () => {
 
     // console.log(`${import.meta.env.VITE_BASE_URL}api/student/countryList`);
     // Fetch country list (GET request)
-    useEffect(() => {
-      fetch(`${import.meta.env.VITE_BASE_URL}api/student/countryList`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-        .then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            setCountryList(data.data);
-            console.log("Countries fetched: ", data.data);
-          }
-        })
-        .catch(error => console.error('Error fetching countries:', error));
-    }, []);
-  
-     // Fetch states (POST request)
-  const fetchStates = (countryId) => {
-    fetch(`${import.meta.env.VITE_BASE_URL}api/getState`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ id: countryId }),
+     // Fetch country list on mount
+useEffect(() => {
+  fetch(`${import.meta.env.VITE_BASE_URL}api/student/countryList`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        setCountryList(data.data);
+        console.log("Countries fetched: ", data.data);
+      }
     })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          setStateList(data.data);
-        } else {
-          setStateList([]);
-        }
-      })
-      .catch(error => console.error('Error fetching states:', error));
-  };
-        // Fetch cities (POST request)
-  const fetchCities = (stateId) => {
-    fetch(`${import.meta.env.VITE_BASE_URL}api/getCities`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ id: stateId }),
-    })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          setCityList(data.data);
-        } else {
-          setCityList([]);
-        }
-      })
-      .catch(error => console.error('Error fetching cities:', error));
-  };
+    .catch(error => console.error('Error fetching countries:', error));
+}, []);
 
+// Fetch states when country changes
+useEffect(() => {
+  if (formData.country) {
+    fetchStates(formData.country);
+  }
+}, [formData.country]);
+
+// Fetch cities when state changes
+useEffect(() => {
+  if (formData.state) {
+    fetchCities(formData.state);
+  }
+}, [formData.state]);
+
+// Fetch states (POST request)
+const fetchStates = (countryId) => {
+  fetch(`${import.meta.env.VITE_BASE_URL}api/getState`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ id: countryId }),
+  })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        setStateList(data.data);
+      } else {
+        setStateList([]);
+      }
+    })
+    .catch(error => console.error('Error fetching states:', error));
+};
+
+// Fetch cities (POST request)
+const fetchCities = (stateId) => {
+  fetch(`${import.meta.env.VITE_BASE_URL}api/getCities`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ id: stateId }),
+  })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        setCityList(data.data);
+      } else {
+        setCityList([]);
+      }
+    })
+    .catch(error => console.error('Error fetching cities:', error));
+};
   useEffect(() => {
     setPasswordsMatch(formData.password === formData.confirm_password);
 }, [formData.password, formData.confirm_password]);
@@ -238,32 +308,42 @@ const AdminEditStudentContent = () => {
     const togglePasswordVisibility = () => setShowPassword(prev => !prev);
     const toggleConfirmPasswordVisibility = () => setShowConfirmPassword(prev => !prev);
     
+    
     const handleCountryChange = (e) => {
-        const countryId = e.target.value;
-        setFormData({
-          ...formData,
-          country: countryId,
-          state: '',
-          city: ''
-        });
-        fetchStates(countryId); // Fetch states when country changes
-      };
-      
-      const handleStateChange = (e) => {
-        const stateId = e.target.value;
-        setFormData({
-          ...formData,
-          state: stateId,
-          city: ''
-        });
-        fetchCities(stateId); // Fetch cities when state changes
-      };
-      
+      const countryId = e.target.value;
+      setFormData({
+        ...formData,
+        country: countryId,
+        state: '',  // Reset state and city when a new country is selected
+        city: ''
+      });
+      if (countryId) {
+        fetchStates(countryId);  // Fetch states based on the selected country
+      }
+    };
+    
+    
+    // Handle state change
+    const handleStateChange = (e) => {
+      const stateId = e.target.value;
+      setFormData({
+        ...formData,
+        state: stateId,
+        city: ''  // Reset city when a new state is selected
+      });
+      if (stateId) {
+        fetchCities(stateId);  // Fetch cities based on the selected state
+      }
+    };
+    
     // Handle city change
     const handleCityChange = (e) => {
-      setFormData({ ...formData, city: e.target.value });
+      const cityId = e.target.value;
+      setFormData({
+        ...formData,
+        city: cityId  // Just update the city when changed
+      });
     };
-
   // Handle radio button change
   const handleRadioChange = (radioId, value) => {
     setFormData((prevData) => ({
@@ -362,69 +442,71 @@ const AdminEditStudentContent = () => {
 
     
     const formPassword = [
-        {
-            id: "password",
-            label: "Password",
-            type: showPassword ? "text" : "password",
-            placeholder: "Enter new password",
-            value: formData.password,
-            onChange: handleFieldChange,
-            required: true,
-            autoComplete: "new-password",
-            toggleVisibility: togglePasswordVisibility,
-            showVisibility: showPassword
-        },
-        {
-            id: "confirm_password",
-            label: "Confirm Password",
-            type: showConfirmPassword ? "text" : "password",
-            placeholder: "Enter password again",
-            value: formData.confirm_password,
-            onChange: handleFieldChange,
-            required: true,
-            toggleVisibility: toggleConfirmPasswordVisibility,
-            showVisibility: showConfirmPassword
-        }
-    ];
-
-    const formCountry = [
-        {
-          id: "country",
-          label: "Country",
-          value: formData.country,
-          onChange: handleCountryChange,
-          required: true,
-          options: countryList.map(country => ({
-            label: country.country_name,
-            value: country.id
-          })),
-          placeholder: "Select Country"
-        },
-        {
-          id: "state",
-          label: "State",
-          value: formData.state,
-          onChange: handleStateChange,
-          required: true,
-          options: stateList.map(state => ({
-            label: state.state_name,
-            value: state.id
-          })),
-          placeholder: "" // Placeholder hidden
-        },
-        {
-          id: "city",
-          label: "City",
-          value: formData.city,
-          onChange: handleCityChange,
-          required: true,
-          options: cityList.map(city => ({
-            label: city.city_name,
-            value: city.id
-          })),
-          placeholder: "" // Placeholder hidden
-        }
-      ];
+      {
+          id: "password",
+          label: "New Password",
+          type: showPassword ? "text" : "password",
+          placeholder: "Enter new password",
+          value: formData.password,
+          onChange: handleFieldChange,
+          autoComplete: "new-password",
+          toggleVisibility: togglePasswordVisibility,
+          showVisibility: showPassword,
+          helperText: "If you wish to keep the current password, leave this field empty." // Add this line
+      },
+      {
+          id: "confirm_password",
+          label: "Confirm Password",
+          type: showConfirmPassword ? "text" : "password",
+          placeholder: "Enter password again",
+          value: formData.confirm_password,
+          onChange: handleFieldChange,
+          toggleVisibility: toggleConfirmPasswordVisibility,
+          showVisibility: showConfirmPassword
+      }
+  ];
+  
+  const shouldRenderPasswordCard = formPassword && formPassword.length > 0;
+  const formCountry = [
+    {
+      id: "country",
+      label: "Country",
+      value: formData.country,  // Existing country value
+      onChange: handleCountryChange,
+      required: true,
+      options: countryList.map(country => ({
+        label: country.country_name,
+        value: country.id
+      })),
+      placeholder: "Select Country"
+    },
+    {
+      id: "state",
+      label: "State",
+      value: formData.state,  // Existing state value
+      onChange: handleStateChange,
+      required: true,
+      options: stateList.map(state => ({
+        label: state.state_name,
+        value: state.id
+      })),
+      placeholder: "",
+      disabled: !formData.country  // Disable state field until a country is selected
+    },
+    {
+      id: "city",
+      label: "City",
+      value: formData.city,  // Existing city value
+      onChange: handleCityChange,
+      required: true,
+      options: cityList.map(city => ({
+        label: city.city_name,
+        value: city.id
+      })),
+      placeholder: "",
+      disabled: !formData.state  // Disable city field until a state is selected
+    }
+  ];
 
     const buttons = [
         {
@@ -439,6 +521,7 @@ const AdminEditStudentContent = () => {
                     <AdminFormComponent
            formTitle="Student Information"
            formFields={formFields}
+           shouldRenderPasswordCard={shouldRenderPasswordCard}
            formPassword={formPassword}
            formCountry={formCountry}
            formAddress={formAddress}

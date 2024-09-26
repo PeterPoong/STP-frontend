@@ -2,6 +2,11 @@ import React, { useState, useEffect } from "react";
 import { Container } from "react-bootstrap";
 import AdminFormComponent from './AdminFormComponent';
 import "../../css/AdminStyles/AdminFormStyle.css";
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { format, parseISO } from 'date-fns';
+import { useNavigate } from 'react-router-dom';
+
 
 const AdminEditApplicantContent = () => {
     const [courseList, setCourseList] = useState([]); 
@@ -13,12 +18,13 @@ const AdminEditApplicantContent = () => {
         school_id: "",
         feedback: "",
         created_at:"",
+        status:"",
     });
     const [error, setError] = useState(null);
     const token = sessionStorage.getItem('token');
     const applicantId = sessionStorage.getItem('applicantId');
     const Authenticate = `Bearer ${token}`;
-
+    const navigate = useNavigate();
     // Fetch courses based on selected school ID
     const fetchCourses = async (school_id) => {
         try {
@@ -77,8 +83,8 @@ const AdminEditApplicantContent = () => {
                     name: applicantDetails.name,
                     country_code: applicantDetails.country_code,
                     contact_number: applicantDetails.contact_number,
-                    applied: applicantDetails.applied,
-                    type:applicantDetails.status
+                    created_at: applicantDetails.applied ? format(parseISO(applicantDetails.applied), 'yyyy-MM-dd') : "", 
+                    status:applicantDetails.status
                 });
 
                 // Fetch courses for the existing schoolID
@@ -119,17 +125,22 @@ const AdminEditApplicantContent = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         
-        const { courses_id, school_id, feedback } = formData;
-        
+        const { courses_id, status, school_id, created_at, feedback } = formData;
+    
         const formPayload = new FormData();
-        formPayload.append("id", applicantId)
+        formPayload.append("id", applicantId);
         formPayload.append("courses_id", courses_id);
         formPayload.append("school_id", school_id);
         formPayload.append("feedback", feedback);
-        formPayload.append("")
-
+        formPayload.append("status", parseInt(status));
+        formPayload.append("created_at", created_at); // Already formatted as YYYY-MM-DD
+        
+    // Log each entry in FormData for debugging
+    for (let [key, value] of formPayload.entries()) {
+        console.log(key, value);
+    }
         setLoading(true);  // Set loading state to true
-    
+   
         try {
             const addApplicantResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/editApplicantForm`, {
                 method: 'POST',
@@ -140,7 +151,7 @@ const AdminEditApplicantContent = () => {
             });
     
             const addApplicantData = await addApplicantResponse.json();
-    
+
             if (addApplicantResponse.ok) {
                 console.log('Applicant successfully registered:', addApplicantData);
                 navigate('/adminApplicant');
@@ -155,7 +166,7 @@ const AdminEditApplicantContent = () => {
             setLoading(false);  // Ensure loading state is set to false after completion
         }
     };
-     
+    
     // Handle form field change
     const handleFieldChange = (e) => {
         const { id, value } = e.target;
@@ -164,11 +175,14 @@ const AdminEditApplicantContent = () => {
             setFormData(prev => ({
                 ...prev,
                 [id]: value,
-                courses_id: "" // Reset course_id when school is changed
+                courses_id: ""  // Reset course selection when school changes
             }));
-
-            // Fetch courses for the selected school
-            fetchCourses(value);
+            fetchCourses(value);  // Fetch courses for the new school ID
+        } else if (id === "status") {
+            setFormData(prev => ({
+                ...prev,
+                [id]: parseInt(value)  // Ensure status is an integer
+            }));
         } else {
             setFormData(prev => ({
                 ...prev,
@@ -176,7 +190,20 @@ const AdminEditApplicantContent = () => {
             }));
         }
     };
+    
 
+    const handleDateChange = (date) => {
+        if (date) {
+            // Format date as YYYY-MM-DD
+            const formattedDate = format(date, 'yyyy-MM-dd');
+            setFormData(prev => ({
+                ...prev,
+                created_at: formattedDate  // Update only if a new date is selected
+            }));
+        }
+    };
+    
+    
     // Load data on component mount
     useEffect(() => {
         if (!applicantId) {
@@ -188,15 +215,12 @@ const AdminEditApplicantContent = () => {
         fetchSchools();
     }, [applicantId, Authenticate]);
 
-    // Define the form fields
     const formDates = [
         {
-            id: "applied",
+            id: "created_at",
             label: "Date Applied",
-            type: "text",
-            placeholder: "Date Applied",
-            value: formData.applied,
-            onChange: handleFieldChange,
+            value: formData.created_at,
+            onChange: handleDateChange,
             required: true
         },
     ];
@@ -235,9 +259,9 @@ const AdminEditApplicantContent = () => {
 
     const formStatus = [
         {
-            id: "type",
+            id: "status",
             label: "Application Status",
-            value: formData.type,  // Prefill the dropdown with the current status from formData
+            value: formData.status,
             onChange: handleFieldChange,
             required: true,
             options: [
@@ -250,8 +274,6 @@ const AdminEditApplicantContent = () => {
         }
     ];
     
-
-
     const formTextarea = [
         {
             id: "feedback",

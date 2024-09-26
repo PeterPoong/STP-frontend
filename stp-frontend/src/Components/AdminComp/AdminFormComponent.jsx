@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Form, Row, Col, Button, Image, Modal } from "react-bootstrap";
+import { Form, Row, Col, Button, Image, Modal, Card} from "react-bootstrap";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { Editor } from '@tinymce/tinymce-react';
@@ -9,12 +9,16 @@ import TimePicker from 'react-time-picker';
 import 'react-time-picker/dist/TimePicker.css';
 import { useDropzone } from "react-dropzone";
 import { FaTrashAlt, FaUpload, FaFileImage, FaEye, FaEyeSlash} from 'react-icons/fa';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { format, parseISO } from 'date-fns';
 
 const AdminFormComponent = ({
   formTitle,
   formFields,
   formTextarea,
   formPassword,
+  shouldRenderPasswordCard,
   formCheckboxes,
   formPersonInCharge,
   formCategory,
@@ -355,26 +359,37 @@ const handleRadioChange = (radioId, value) => {
                 />
               </Form.Group>
             )}
-           {formPassword && formPassword.map((password, index) => (
-             <Form.Group key={index} controlId={password.id} className="mb-5 position-relative">
-                <Form.Label>{password.label}</Form.Label>
-                <Form.Control
-                    type={password.type}
-                    placeholder={password.placeholder}
-                    value={password.value}
-                    onChange={password.onChange}
-                    required={password.required}
-                    autoComplete={password.autoComplete}
-                />
-                <span
-                    className="password-toggle"
-                    onClick={password.toggleVisibility}
-                    role="button"
-                >
-                    {password.showVisibility ? <FaEyeSlash /> : <FaEye />}
-                </span>
-            </Form.Group>
-            ))}
+            {shouldRenderPasswordCard && (
+                <Card className="mt-5 mb-3">
+                    <Card.Body>
+                        {formPassword.map((password, index) => (
+                            <Form.Group key={index} controlId={password.id} className="mb-4 position-relative">
+                                <Form.Label>{password.label}</Form.Label>
+                                {password.helperText && (
+                                    <Form.Text className="text-danger mb-2" style={{ display: 'block' }}>
+                                        {password.helperText}
+                                    </Form.Text>
+                                )}
+                                <Form.Control
+                                    type={password.type}
+                                    placeholder={password.placeholder}
+                                    value={password.value}
+                                    onChange={password.onChange}
+                                    autoComplete={password.autoComplete}
+                                />
+                                <span
+                                    className="password-toggle mt-1"
+                                    onClick={password.toggleVisibility}
+                                    role="button"
+                                >
+                                    {password.showVisibility ? <FaEyeSlash /> : <FaEye />}
+                                </span>
+                            </Form.Group>
+                        ))}
+                    </Card.Body>
+                </Card>
+            )}
+
             {formAccount && formAccount.map((account, index) => (
               <Form.Group key={index} controlId={account.id} className="mb-5">
                 <Form.Label>{account.label}</Form.Label>
@@ -416,18 +431,26 @@ const handleRadioChange = (radioId, value) => {
           </Col>
           <Col md={6}>
           {formDates && formDates.map((date, index) => (
-              <Form.Group key={index} controlId={date.id} className="mb-5">
+           
+            <Form.Group key={index} controlId={date.id} className="mb-5">
+               
                 <Form.Label>{date.label}</Form.Label>
-                <Form.Control
-                  as={date.as || "input"}
-                  type={date.type || "text"}
-                  placeholder={date.placeholder || ""}
-                  value={date.value}
-                  onChange={date.onChange}
+                
+                <DatePicker
+                  selected={date.value ? new Date(date.value) : null}  // Convert value to Date object
+                  onChange={date.onChange}  // Call the provided onChange function
+                  placeholderText={date.placeholder || ""}
                   required={date.required || false}
+                  dateFormat="yyyy-MM-dd"  // Format date as Y-m-d
+                  className="form-control mb-2 mt-4 ms-2"  // Use Bootstrap styling
+                  showYearDropdown
+                  showMonthDropdown
+                  dropdownMode="select"  // Enable dropdown for selecting year/month
                 />
-              </Form.Group>
-            ))}
+            </Form.Group>
+            
+        ))}
+
           {formGender && formGender.map((gender, index) => (
               <Form.Group key={index} controlId={gender.id} className="mb-5">
                 <Form.Label>{gender.label}</Form.Label>
@@ -537,11 +560,11 @@ const handleRadioChange = (radioId, value) => {
         <Col md={12}>
           <Row>
             <Col md={12}>
-              <Form.Group controlId="banner_start" className="mb-3">
+            <Form.Group controlId="banner_start" className="mb-3">
                 <Form.Label>Banner Start</Form.Label>
                 <Form.Control
                   type="datetime-local"
-                  value={selectedStartDate ? formatDateTimeLocal(selectedStartDate).replace(' ', 'T') : ''}
+                  value={selectedStartDate ? formatDateTimeLocal(selectedStartDate) : ''}
                   onChange={(e) => {
                     const newDate = new Date(e.target.value);
                     handleDateChange(newDate, 'start');
@@ -551,11 +574,11 @@ const handleRadioChange = (radioId, value) => {
               </Form.Group>
             </Col>
             <Col md={12}>
-              <Form.Group controlId="banner_end" className="mb-3">
+            <Form.Group controlId="banner_end" className="mb-3">
                 <Form.Label>Banner End</Form.Label>
                 <Form.Control
                   type="datetime-local"
-                  value={selectedEndDate ? formatDateTimeLocal(selectedEndDate).replace(' ', 'T') : ''}
+                  value={selectedEndDate ? formatDateTimeLocal(selectedEndDate) : ''}
                   onChange={(e) => {
                     const newDate = new Date(e.target.value);
                     handleDateChange(newDate, 'end');

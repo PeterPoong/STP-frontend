@@ -386,7 +386,7 @@ const AdminAddStudentContent = () => {
             showVisibility: showConfirmPassword
         }
     ];
-
+    const shouldRenderPasswordCard = formPassword && formPassword.length > 0;
     const formCountry = [
         {
           id: "country",
@@ -446,6 +446,7 @@ const AdminAddStudentContent = () => {
            onSubmit={handleSubmit}
            formPersonInCharge={formPersonInCharge}
            error={error}
+           shouldRenderPasswordCard={shouldRenderPasswordCard}
            buttons={buttons}
            handlePhoneChange={handlePhoneChange}  
            phone={formData.contact_number} 
