@@ -90,8 +90,9 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
   const [editingIndex, setEditingIndex] = useState(null);
   const [availableSubjects, setAvailableSubjects] = useState([]);
   const [hasCheckedForPreset, setHasCheckedForPreset] = useState(false);
-
+  const [isNewUser, setIsNewUser] = useState(true); // New state to track if it's a new user
   // Function to convert letter grades to integer codes
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const gradeToInt = (grade) => {
     const gradeMap = {
       'A+': 17, 'A': 18, 'A-': 19,
@@ -103,40 +104,10 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
     return gradeMap[grade] || 0; // Return 0 if grade not found
   };
   useEffect(() => {
-    if (examType === 'SPM') {
-      fetchAvailableSubjects();
-      if (!hasCheckedForPreset) {
-        checkAndPresetSubjectsForNewUser();
-      }
+    if (examType === 'SPM' && isInitialLoad) {
+      checkAndPresetSubjectsForNewUser();
     }
-  }, [examType, hasCheckedForPreset]);
-
-  const fetchAvailableSubjects = async () => {
-    try {
-      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/subjectList`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          category: 32,
-          selectedSubject: subjects.map(s => s.id)
-        }),
-      });
-      const data = await response.json();
-      if (data.success) {
-        const filteredSubjects = data.data.filter(subject =>
-          !subjects.some(s => s.id === subject.id)
-        );
-        setAvailableSubjects(filteredSubjects);
-      }
-    } catch (error) {
-      console.error('Error fetching available subjects:', error);
-    }
-  };
-
+  }, [examType, isInitialLoad]);
   const checkAndPresetSubjectsForNewUser = async () => {
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
@@ -150,11 +121,17 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
       const result = await response.json();
       if (result.success) {
         if (result.data.length === 0) {
-          // User has no subjects, add preset subjects
-          await presetSubjectsForNewUser();
+          presetSubjectsForNewUser();
+          setIsNewUser(true);
+        } else {
+          setIsNewUser(false);
+          onSubjectsChange(result.data.map(subject => ({
+            id: subject.subject_id,
+            name: subject.subject_name,
+            grade: subject.subject_grade,
+            isEditing: false
+          })));
         }
-        // Fetch subjects again to get the updated list (including presets if added)
-        await fetchSubjects();
       } else {
         console.error('Failed to check for existing subjects:', result);
       }
@@ -162,42 +139,55 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
       console.error('Error checking for existing subjects:', error);
     } finally {
       setHasCheckedForPreset(true);
+      setIsInitialLoad(false);
     }
   };
 
-  const presetSubjectsForNewUser = async () => {
-    try {
-      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      const presetSubjects = [
-        { subjectID: 1, grade: 17 },
-        { subjectID: 2, grade: 17 },
-        { subjectID: 3, grade: 17 },
-        { subjectID: 4, grade: 17 },
-        { subjectID: 5, grade: 17 }
-      ];
+  const presetSubjectsForNewUser = () => {
+    const presetSubjects = [
+      { id: 1, name: "Bahasa Melayu", grade: "", isEditing: true },
+      { id: 2, name: "English", grade: "", isEditing: true },
+      { id: 3, name: "Mathematics", grade: "", isEditing: true },
+      { id: 4, name: "Science", grade: "", isEditing: true },
+      { id: 5, name: "History", grade: "", isEditing: true }
+    ];
+    onSubjectsChange(presetSubjects);
+    setHasUnsavedChanges(true);
+  };
 
-      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/addEditTranscript`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          category: 32, // Assuming 32 is the category ID for SPM
-          data: presetSubjects
-        }),
-      });
-
-      const data = await response.json();
-      if (data.success) {
-        console.log('Preset subjects added successfully for new user');
-      } else {
-        console.error('Error adding preset subjects:', data.message);
+  const fetchAvailableSubjects = useCallback(async () => {
+    if (!isNewUser) {
+      try {
+        const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+        const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/subjectList`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            category: 32,
+            selectedSubject: subjects.map(s => s.id)
+          }),
+        });
+        const data = await response.json();
+        if (data.success) {
+          const filteredSubjects = data.data.filter(subject =>
+            !subjects.some(s => s.id === subject.id)
+          );
+          setAvailableSubjects(filteredSubjects);
+        }
+      } catch (error) {
+        console.error('Error fetching available subjects:', error);
       }
-    } catch (error) {
-      console.error('Error in presetSubjectsForNewUser:', error);
     }
-  };
+  }, [subjects, isNewUser]);
+
+  useEffect(() => {
+    if (examType === 'SPM' && !isInitialLoad) {
+      fetchAvailableSubjects();
+    }
+  }, [examType, fetchAvailableSubjects, isInitialLoad]);
 
   const fetchSubjects = async () => {
     try {
@@ -688,7 +678,7 @@ const AcademicTranscript = () => {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isUnsavedChangesPopupOpen, setIsUnsavedChangesPopupOpen] = useState(false);
   const [pendingCategory, setPendingCategory] = useState(null);
-
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [examData, setExamData] = useState({
     'SPM': [],
     'UEC': [],
@@ -1110,10 +1100,12 @@ const AcademicTranscript = () => {
       const category = categories.find(cat => cat.transcript_category === selectedExam);
       if (category) {
         fetchMediaByCategory(category.id);
-        fetchSubjects(category.id.toString());
+        if (selectedExam !== 'SPM' || !isInitialLoad) {
+          fetchSubjects(category.id.toString());
+        }
       }
     }
-  }, [selectedExam, categories, fetchSubjects]);
+  }, [selectedExam, categories, fetchSubjects, isInitialLoad]);
 
   const updateSubjects = useCallback((updatedSubjects) => {
     console.log('updateSubjects called with:', updatedSubjects);
@@ -1131,7 +1123,7 @@ const AcademicTranscript = () => {
 
       if (!category) {
         console.error('Selected exam category not found');
-        
+
         return { success: false, message: 'Selected exam category not found.' };
       }
 

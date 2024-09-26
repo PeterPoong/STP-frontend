@@ -1069,6 +1069,11 @@ const StudentApplicationSummary = ({ }) => {
         if (!courseInfo) {
             return <div>Loading course information...</div>;
         }
+        const parseHTML = (html) => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            return doc.body.textContent || "";
+        };
 
         return (
             <div className="summary-content-course-info">
@@ -1121,7 +1126,7 @@ const StudentApplicationSummary = ({ }) => {
                 <div className="bg-white p-4 mb-1 rounded-1 shadow-lg mt-3">
                     <h5 className="fw-bold mb-3">Course Overview</h5>
                     <div className={`overview-content ${showFullOverview ? 'expanded' : ''}`}>
-                        <p className="sas-summarytext">{courseInfo.description}</p>
+                        <p className="sas-summarytext">{parseHTML(courseInfo.description)}</p>
                     </div>
                     <div className="text-center">
                         <Button variant="link" onClick={() => setShowFullOverview(!showFullOverview)}>
@@ -1133,7 +1138,7 @@ const StudentApplicationSummary = ({ }) => {
                 <div className="entry-requirements bg-white p-4 mb-1 rounded-1 shadow-lg mt-3">
                     <h5 className="fw-bold mb-3">Entry Requirement</h5>
                     <div className={`requirements-content ${showFullRequirements ? 'expanded' : ''}`}>
-                        <p className="sas-summarytext"> {courseInfo.requirement}</p>
+                        <p className="sas-summarytext"> {parseHTML(courseInfo.requirement)}</p>
                     </div>
                     <div className="text-center">
                         <Button variant="link" onClick={() => setShowFullRequirements(!showFullRequirements)}>
