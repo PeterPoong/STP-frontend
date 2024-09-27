@@ -118,6 +118,7 @@ const Sidebar = ({ onDropdownItemSelect, selectTabPage }) => {
 
   const handleSignOut = () => {
     sessionStorage.removeItem("token");
+    localStorage.removeItem("token");
     navigate("/schoolPortalLogin");
   };
 

@@ -60,6 +60,7 @@ import SchoolPortalSignup from "./Pages/SchoolPages/SchoolPortalSignup";
 import SchoolDashboard from "./Pages/SchoolPages/SchoolDashboard";
 import SchoolPortalForgetPassword from "./Pages/SchoolPages/schoolPortalForgetPassword";
 import ExistSchool from "./Pages/SchoolPages/ExistSchool";
+import SchoolViewApplicantDetail from "./Pages/SchoolPages/StudentApplicantDetail";
 import SchoolBasicInformation from "./Pages/SchoolPages/SchoolBasicInformation";
 
 const router = createBrowserRouter([
@@ -295,6 +296,10 @@ const router = createBrowserRouter([
   {
     path: "/studentApplicationSummary/:courseId",
     element: <StudentApplicationSummary />,
+  },
+  {
+    path: "/school/ApplicantDetail/:applicantID",
+    element: <SchoolViewApplicantDetail />,
   },
 ]);
 
