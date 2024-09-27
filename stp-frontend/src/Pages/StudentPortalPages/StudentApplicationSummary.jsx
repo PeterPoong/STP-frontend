@@ -43,7 +43,6 @@ const StudentApplicationSummary = ({}) => {
   const { courseId } = useParams();
   const [academicTranscripts, setAcademicTranscripts] = useState([]);
   const [otherDocuments, setOtherDocuments] = useState([]);
-
   const [isViewAcademicTranscriptOpen, setIsViewAcademicTranscriptOpen] =
     useState(false);
   const [isViewAchievementOpen, setIsViewAchievementOpen] = useState(false);
@@ -133,246 +132,432 @@ const StudentApplicationSummary = ({}) => {
   }, [activeTab]);
 
   const generateEnhancedPDF = async () => {
-    const doc = new jsPDF();
-    let yOffset = 10;
+    const doc = new jsPDF("p", "mm", "a4");
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    let yOffset = 30; // Start yOffset below the header
+
     const token =
       sessionStorage.getItem("token") || localStorage.getItem("token");
     if (!token) {
       throw new Error("No authentication token found");
     }
-    // Helper function to add text with automatic page breaks
-    const addText = (text, x, y, options = {}) => {
-      const lines = doc.splitTextToSize(text, 190);
-      doc.text(lines, x, y, options);
-      return y + lines.length * 5;
-    };
 
-    // Helper function to check if a new page is needed
-    const checkPageBreak = (height) => {
-      if (yOffset + height > 280) {
-        doc.addPage();
-        yOffset = 10;
+    // Load the logo image once
+    let logoImage = null;
+    if (courseInfo?.logo) {
+      try {
+        const img = new Image();
+        img.src = `${import.meta.env.VITE_BASE_URL}storage/${courseInfo.logo}`;
+        await new Promise((resolve) => {
+          img.onload = resolve;
+        });
+        logoImage = img;
+      } catch (error) {
+        console.error("Error loading school logo:", error);
       }
-    };
-    try {
-      // 1. Header
-      doc.setFontSize(22);
+    }
+
+    // Helper functions
+    const addHeader = () => {
+      // Clear the top margin
+      doc.setFillColor(255, 255, 255);
+      doc.rect(0, 0, pageWidth, 20, "F");
+
+      let logoHeight = 0;
+
+      // Add the school logo centered above the title
+      if (logoImage) {
+        const imgWidth = 30;
+        const imgHeight = (logoImage.height * imgWidth) / logoImage.width;
+        doc.addImage(
+          logoImage,
+          "PNG",
+          (pageWidth - imgWidth) / 2,
+          10,
+          imgWidth,
+          imgHeight
+        );
+        logoHeight = imgHeight;
+      }
+
+      // Adjust yOffset to add margin below the logo
+      yOffset = 10 + logoHeight + 10; // 10 is logo y position, plus logo height, plus 10 units margin
+
+      // Add Application Summary title centered
+      doc.setFontSize(18);
       doc.setFont("helvetica", "bold");
-      yOffset = addText("Application Summary", 105, yOffset, {
+      doc.text("Application Summary", pageWidth / 2, yOffset, {
         align: "center",
       });
-      yOffset += 10;
 
-      // 2. School Logo and Information
-      if (courseInfo?.logo) {
-        try {
-          const img = new Image();
-          img.src = `${import.meta.env.VITE_BASE_URL}storage/${
-            courseInfo.logo
-          }`;
-          await new Promise((resolve) => {
-            img.onload = resolve;
-          });
-          const imgWidth = 50;
-          const imgHeight = (img.height * imgWidth) / img.width;
-          doc.addImage(img, "PNG", 10, yOffset, imgWidth, imgHeight);
-          yOffset += imgHeight + 5;
-        } catch (error) {
-          console.error("Error loading school logo:", error);
-        }
+      // Add underline after Application Summary
+      yOffset += 4;
+      doc.setLineWidth(0.5);
+      doc.line(20, yOffset, pageWidth - 20, yOffset);
+
+      // Add School Name and Course Name
+      yOffset += 6;
+      doc.setFontSize(14);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(255, 18, 52); // Color #FF1234
+      doc.text(courseInfo?.school || "School Name", pageWidth / 2, yOffset, {
+        align: "center",
+      });
+
+      yOffset += 6;
+      doc.setFontSize(12);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(0, 0, 0); // Reset text color to black
+      doc.text(courseInfo?.course || "Course Name", pageWidth / 2, yOffset, {
+        align: "center",
+      });
+
+      yOffset += 10; // Add more space after header
+    };
+
+    const addFooter = () => {
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "normal");
+      const pageNum = doc.internal.getCurrentPageInfo().pageNumber;
+      doc.text(`Page ${pageNum}`, pageWidth / 2, pageHeight - 10, {
+        align: "center",
+      });
+    };
+
+    const checkPageBreak = (additionalHeight = 0) => {
+      if (yOffset + additionalHeight > pageHeight - 20) {
+        doc.addPage();
+        yOffset = 30; // Reset yOffset for new page below header
+        addHeader();
+        addFooter();
       }
+    };
 
-      doc.setFontSize(16);
+    const forcePageBreak = () => {
+      doc.addPage();
+      yOffset = 30;
+      addHeader();
+      addFooter();
+    };
+
+    const addSectionTitle = (title) => {
+      doc.setFontSize(14);
       doc.setFont("helvetica", "bold");
-      yOffset = addText(courseInfo?.school || "School Name", 10, yOffset);
-      yOffset = addText(courseInfo?.course || "Course Name", 10, yOffset);
       yOffset += 10;
+      doc.text(title, 20, yOffset); // Align with table left margin
+      yOffset += 6;
+    };
 
-      // 2. Applicant Information
-      doc.setFontSize(16);
-      doc.setFont("helvetica", "bold");
-      yOffset = addText("Applicant Information", 10, yOffset);
-      yOffset += 5;
+    // Start generating PDF
+    addHeader();
+    addFooter();
 
-      doc.setFontSize(12);
-      doc.setFont("helvetica", "normal");
+    try {
+      // 1. Applicant Information
+      addSectionTitle("Applicant Information");
+
       const applicantInfo = [
-        `Name: ${basicInfo?.firstName || ""} ${basicInfo?.lastName || ""}`,
-        `Identity Card Number: ${basicInfo?.ic || "N/A"}`,
-        `Contact Number: ${basicInfo?.country_code || ""} ${
-          basicInfo?.contact || ""
-        }`,
-        `Email Address: ${basicInfo?.email || ""}`,
-        `Address: ${basicInfo?.address || ""}`,
+        {
+          key: "Name",
+          value: `${basicInfo?.firstName || ""} ${basicInfo?.lastName || ""}`,
+        },
+        { key: "Identity Card Number", value: basicInfo?.ic || "N/A" },
+        {
+          key: "Contact Number",
+          value: `${basicInfo?.country_code || ""} ${basicInfo?.contact || ""}`,
+        },
+        { key: "Email Address", value: basicInfo?.email || "N/A" },
+        { key: "Address", value: basicInfo?.address || "N/A" },
       ];
 
-      applicantInfo.forEach((info) => {
-        yOffset = addText(info, 10, yOffset);
+      // Create a table for applicant information with background color for the first column
+      doc.autoTable({
+        startY: yOffset,
+        theme: "grid",
+        body: applicantInfo.map((info) => [info.key, info.value]),
+        styles: { fontSize: 12 },
+        headStyles: {
+          fillColor: [41, 128, 185],
+          textColor: 255,
+          halign: "center",
+        },
+        bodyStyles: { valign: "middle" },
+        columnStyles: {
+          0: {
+            cellWidth: 60,
+            fontStyle: "bold",
+            fillColor: [220, 220, 220],
+            halign: "left",
+          },
+          1: { cellWidth: pageWidth - 80, halign: "left" },
+        },
+        margin: { left: 10, right: 10 },
+        didDrawPage: (data) => {
+          yOffset = data.cursor.y;
+          addHeader();
+          addFooter();
+        },
       });
+      yOffset = doc.previousAutoTable.finalY + 10;
 
-      yOffset += 10;
+      // 2. Course Information
+      addSectionTitle("Course Information");
 
-      // 3. Course Information
-      doc.setFontSize(16);
-      doc.setFont("helvetica", "bold");
-      yOffset = addText("Course Information", 10, yOffset);
-      yOffset += 5;
-
-      doc.setFontSize(12);
-      doc.setFont("helvetica", "normal");
       const courseInfoData = [
-        `Course: ${courseInfo?.course || "N/A"}`,
-        `Qualification: ${courseInfo?.qualification || "N/A"}`,
-        `Period: ${courseInfo?.period || "N/A"}`,
-        `Mode: ${courseInfo?.mode || "N/A"}`,
-        `Intake: ${courseInfo?.intake?.join(", ") || "N/A"}`,
-        `Estimate Fee: RM ${
-          courseInfo?.cost?.toLocaleString() || "0.00"
-        } / year`,
+        { key: "Course", value: courseInfo?.course || "N/A" },
+        { key: "Qualification", value: courseInfo?.qualification || "N/A" },
+        { key: "Period", value: courseInfo?.period || "N/A" },
+        { key: "Mode", value: courseInfo?.mode || "N/A" },
+        { key: "Intake", value: courseInfo?.intake?.join(", ") || "N/A" },
+        {
+          key: "Estimate Fee",
+          value: `RM ${courseInfo?.cost?.toLocaleString() || "0.00"} / year`,
+        },
+        { key: "Summary", value: courseInfo?.description || "N/A" },
+        { key: "Entry Requirements", value: courseInfo?.requirement || "N/A" },
       ];
 
-      courseInfoData.forEach((info) => {
-        yOffset = addText(info, 10, yOffset);
+      // Create a table for course information with background color for the first column
+      doc.autoTable({
+        startY: yOffset,
+        theme: "grid",
+        body: courseInfoData.map((info) => [info.key, info.value]),
+        styles: { fontSize: 12 },
+        headStyles: {
+          fillColor: [41, 128, 185],
+          textColor: 255,
+          halign: "center",
+        },
+        bodyStyles: { valign: "middle" },
+        columnStyles: {
+          0: {
+            cellWidth: 60,
+            fontStyle: "bold",
+            fillColor: [220, 220, 220],
+            halign: "left",
+          },
+          1: { cellWidth: pageWidth - 80, halign: "left" },
+        },
+        margin: { left: 10, right: 10 },
+        didDrawPage: (data) => {
+          yOffset = data.cursor.y;
+          addHeader();
+          addFooter();
+        },
+        // Custom cell rendering to handle multi-line text
+        didParseCell: (data) => {
+          if (
+            data.cell.raw === courseInfo?.description ||
+            data.cell.raw === courseInfo?.requirement
+          ) {
+            data.cell.styles.cellPadding = 4;
+            data.cell.styles.fontSize = 11;
+            data.cell.styles.valign = "top";
+          }
+        },
       });
+      yOffset = doc.previousAutoTable.finalY + 10;
 
-      yOffset += 10;
+      // Force new page after Applicant Information and Course Information
+      forcePageBreak();
 
-      // 4. Summary
-      doc.setFontSize(16);
-      doc.setFont("helvetica", "bold");
-      yOffset = addText("Summary", 10, yOffset);
-      yOffset += 5;
-
-      doc.setFontSize(12);
-      doc.setFont("helvetica", "normal");
-      yOffset = addText(courseInfo?.description || "N/A", 10, yOffset);
-
-      yOffset += 10;
-
-      // 5. Entry Requirements
-      doc.setFontSize(16);
-      doc.setFont("helvetica", "bold");
-      yOffset = addText("Entry Requirements", 10, yOffset);
-      yOffset += 5;
-
-      doc.setFontSize(12);
-      doc.setFont("helvetica", "normal");
-      yOffset = addText(courseInfo?.requirement || "N/A", 10, yOffset);
-
-      yOffset += 10;
-      // 6. Academic Results (for all categories)
-      doc.setFontSize(16);
-      doc.setFont("helvetica", "bold");
-      yOffset = addText("Academic Results", 10, yOffset);
-      yOffset += 5;
+      // 3. Academic Results
+      addSectionTitle("Academic Results");
 
       for (const category of transcriptCategories) {
-        doc.setFontSize(14);
+        checkPageBreak(20);
+        doc.setFontSize(12);
         doc.setFont("helvetica", "bold");
-        yOffset = addText(category.transcript_category, 10, yOffset);
-        yOffset += 5;
+        doc.text("\u2022 " + category.transcript_category, 20, yOffset); // Add bullet before category
+        yOffset += 6;
 
-        // Add CGPA and Program Name for non-SPM categories
+        const tableBody = [];
+        let includeProgramInfo = false;
+
+        // CGPA and Program Name for non-SPM categories
         if (category.id !== 32) {
           const cgpaInfo = await fetchCGPAForCategory(category, token);
           if (cgpaInfo.cgpa !== null || cgpaInfo.programName) {
-            doc.setFontSize(12);
-            doc.setFont("helvetica", "normal");
+            includeProgramInfo = true;
             if (cgpaInfo.programName) {
-              yOffset = addText(
-                `Program Name: ${cgpaInfo.programName}`,
-                15,
-                yOffset
-              );
+              // Add Program Name to table
+              tableBody.push({
+                isProgramInfo: true,
+                data: ["Program Name", cgpaInfo.programName],
+              });
             }
             if (cgpaInfo.cgpa !== null) {
-              yOffset = addText(`CGPA: ${cgpaInfo.cgpa}`, 15, yOffset);
+              // Add CGPA to table
+              tableBody.push({
+                isProgramInfo: true,
+                data: ["CGPA", cgpaInfo.cgpa],
+              });
             }
-            yOffset += 5;
           }
         }
+
+        // Add header row for subjects
+        tableBody.push({ isHeader: true, data: ["Subject Name", "Grade"] });
 
         const subjects = await fetchTranscriptSubjectsForPDF(category.id);
 
         if (subjects && subjects.length > 0) {
-          doc.autoTable({
-            startY: yOffset,
-            head: [["Subject Name", "Grade"]],
-            body: subjects.map((subject) => [
-              subject.name ||
-                subject.subject_name ||
-                subject.highTranscript_name ||
-                "N/A",
-              subject.grade ||
-                subject.subject_grade ||
-                subject.higherTranscript_grade ||
-                "N/A",
-            ]),
-            theme: "striped",
-            styles: { fontSize: 10 },
-            headStyles: { fillColor: [41, 128, 185] },
+          subjects.forEach((subject) => {
+            tableBody.push({
+              isSubject: true,
+              data: [
+                subject.name ||
+                  subject.subject_name ||
+                  subject.highTranscript_name ||
+                  "N/A",
+                subject.grade ||
+                  subject.subject_grade ||
+                  subject.higherTranscript_grade ||
+                  "N/A",
+              ],
+            });
           });
 
+          checkPageBreak(30);
+          doc.autoTable({
+            startY: yOffset,
+            body: tableBody.map((row) => row.data),
+            theme: "grid",
+            styles: { fontSize: 10 },
+            margin: { left: 20, right: 20 },
+            columnStyles: {
+              0: { cellWidth: pageWidth - 70, halign: "left" },
+              1: { cellWidth: 30, halign: "center" },
+            },
+            didParseCell: (data) => {
+              const row = tableBody[data.row.index];
+              if (row.isProgramInfo) {
+                data.cell.styles.fontStyle = "bold";
+                data.cell.styles.fillColor = [220, 220, 220];
+                data.cell.styles.halign = "left";
+              } else if (row.isHeader) {
+                data.cell.styles.fontStyle = "bold";
+                data.cell.styles.fillColor = [41, 128, 185];
+                data.cell.styles.textColor = [255, 255, 255];
+                data.cell.styles.halign = "center";
+              } else if (row.isSubject) {
+                data.cell.styles.halign =
+                  data.column.index === 0 ? "left" : "center";
+              }
+            },
+            didDrawPage: (data) => {
+              yOffset = data.cursor.y;
+              addHeader();
+              addFooter();
+            },
+          });
           yOffset = doc.previousAutoTable.finalY + 10;
         } else {
-          yOffset = addText(
-            "No subjects available for this category.",
-            10,
-            yOffset
-          );
-          yOffset += 5;
+          checkPageBreak(10);
+          doc.setFontSize(12);
+          doc.setFont("helvetica", "normal");
+          doc.text("No subjects available for this category.", 25, yOffset);
+          yOffset += 6;
         }
       }
 
-      // 7. Co-curriculum Activities
-      doc.setFontSize(16);
-      doc.setFont("helvetica", "bold");
-      yOffset = addText("Co-curriculum Activities", 10, yOffset);
-      yOffset += 5;
+      // Force new page after Academic Results
+      forcePageBreak();
 
-      doc.autoTable({
-        startY: yOffset,
-        head: [["Club Name", "Location", "Year", "Position"]],
-        body: coCurriculum.map((activity) => [
-          activity.club_name || "N/A",
-          activity.location || "N/A",
-          activity.year || "N/A",
-          activity.student_position || "N/A",
-        ]),
-        theme: "striped",
-        styles: { fontSize: 10 },
-        headStyles: { fillColor: [231, 76, 60] },
-      });
+      // 4. Co-curriculum Activities
+      addSectionTitle("Co-curriculum Activities");
 
-      yOffset = doc.previousAutoTable.finalY + 10;
+      if (coCurriculum.length > 0) {
+        checkPageBreak(30);
+        doc.autoTable({
+          startY: yOffset,
+          head: [["Club Name", "Location", "Year", "Position"]],
+          body: coCurriculum.map((activity) => [
+            activity.club_name || "N/A",
+            activity.location || "N/A",
+            activity.year || "N/A",
+            activity.student_position || "N/A",
+          ]),
+          theme: "grid",
+          styles: { fontSize: 10 },
+          headStyles: {
+            fillColor: [231, 76, 60],
+            textColor: 255,
+            halign: "center",
+          },
+          bodyStyles: { halign: "center" },
+          columnStyles: {
+            0: { cellWidth: 50, halign: "left" },
+            1: { cellWidth: 50, halign: "left" },
+            2: { cellWidth: 30, halign: "center" },
+            3: { cellWidth: 30, halign: "center" },
+          },
+          margin: { left: 20, right: 20 },
+          didDrawPage: (data) => {
+            yOffset = data.cursor.y;
+            addHeader();
+            addFooter();
+          },
+        });
+        yOffset = doc.previousAutoTable.finalY + 10;
+      } else {
+        checkPageBreak(10);
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "normal");
+        doc.text("No co-curriculum activities available.", 25, yOffset);
+        yOffset += 6;
+      }
 
-      // 8. Achievements
-      doc.setFontSize(16);
-      doc.setFont("helvetica", "bold");
-      yOffset = addText("Achievements", 10, yOffset);
-      yOffset += 5;
+      // 5. Achievements
+      addSectionTitle("Achievements");
 
-      doc.autoTable({
-        startY: yOffset,
-        head: [["Achievement Name", "Awarded By", "Date", "Title Obtained"]],
-        body: achievements.map((achievement) => [
-          achievement.achievement_name || "N/A",
-          achievement.awarded_by || "N/A",
-          achievement.date || "N/A",
-          achievement.title_obtained || "N/A",
-        ]),
-        theme: "striped",
-        styles: { fontSize: 10 },
-        headStyles: { fillColor: [39, 174, 96] },
-      });
+      if (achievements.length > 0) {
+        checkPageBreak(30);
+        doc.autoTable({
+          startY: yOffset,
+          head: [["Achievement Name", "Awarded By", "Date", "Title Obtained"]],
+          body: achievements.map((achievement) => [
+            achievement.achievement_name || "N/A",
+            achievement.awarded_by || "N/A",
+            achievement.date || "N/A",
+            achievement.title_obtained || "N/A",
+          ]),
+          theme: "grid",
+          styles: { fontSize: 10 },
+          headStyles: {
+            fillColor: [39, 174, 96],
+            textColor: 255,
+            halign: "center",
+          },
+          bodyStyles: { halign: "center" },
+          columnStyles: {
+            0: { cellWidth: 50, halign: "left" },
+            1: { cellWidth: 50, halign: "left" },
+            2: { cellWidth: 30, halign: "center" },
+            3: { cellWidth: 30, halign: "center" },
+          },
+          margin: { left: 20, right: 20 },
+          didDrawPage: (data) => {
+            yOffset = data.cursor.y;
+            addHeader();
+            addFooter();
+          },
+        });
+        yOffset = doc.previousAutoTable.finalY + 10;
+      } else {
+        checkPageBreak(10);
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "normal");
+        doc.text("No achievements available.", 25, yOffset);
+        yOffset += 6;
+      }
 
-      yOffset = doc.previousAutoTable.finalY + 10;
-      // 8. Documents
-      checkPageBreak(40);
-      doc.setFontSize(16);
-      doc.setFont("helvetica", "bold");
-      yOffset = addText("Documents", 10, yOffset);
-      yOffset += 5;
+      // Force new page before Documents
+      forcePageBreak();
+
+      // 6. Documents
+      addSectionTitle("Documents");
 
       const allDocuments = [
         ...academicTranscripts.map((doc) => ({
@@ -392,85 +577,80 @@ const StudentApplicationSummary = ({}) => {
         })),
       ];
 
-      for (const document of allDocuments) {
-        checkPageBreak(40);
-        doc.setFontSize(12);
-        doc.setFont("helvetica", "bold");
-        yOffset = addText(`${document.type}: ${document.name}`, 10, yOffset);
-        yOffset += 5;
+      if (allDocuments.length > 0) {
+        for (const document of allDocuments) {
+          checkPageBreak(20);
+          doc.setFontSize(12);
+          doc.setFont("helvetica", "bold");
+          doc.text(`${document.type}: ${document.name}`, 20, yOffset);
+          yOffset += 6;
 
-        if (document.file) {
-          try {
-            const response = await fetch(
-              `${import.meta.env.VITE_BASE_URL}${document.file}`
-            );
-            const blob = await response.blob();
-            const fileType = blob.type;
-
-            if (fileType.startsWith("image/")) {
-              // Handle image files (PNG, JPEG)
-              const img = new Image();
-              img.src = URL.createObjectURL(blob);
-              await new Promise((resolve) => {
-                img.onload = resolve;
-              });
-              const imgWidth = 190;
-              const imgHeight = (img.height * imgWidth) / img.width;
-              checkPageBreak(imgHeight + 10);
-              doc.addImage(
-                img,
-                fileType.split("/")[1].toUpperCase(),
-                10,
-                yOffset,
-                imgWidth,
-                imgHeight
+          if (document.file) {
+            try {
+              const response = await fetch(
+                `${import.meta.env.VITE_BASE_URL}${document.file}`
               );
-              yOffset += imgHeight + 10;
-            } else if (fileType === "application/pdf") {
-              // Handle PDF files
-              const pdfBytes = await blob.arrayBuffer();
-              const pdfDoc = await PDFDocument.load(pdfBytes);
-              const pages = pdfDoc.getPages();
-              for (let i = 0; i < pages.length; i++) {
-                if (i > 0) {
-                  doc.addPage();
-                  yOffset = 10;
-                }
-                const page = pages[i];
-                const { width, height } = page.getSize();
-                const scale = Math.min(190 / width, 280 / height);
-                checkPageBreak(height * scale + 10);
-                const pdfImage = await pdfDoc.embedPage(page);
+              const blob = await response.blob();
+              const fileType = blob.type;
+
+              if (fileType.startsWith("image/")) {
+                // Handle image files (PNG, JPEG)
+                const img = new Image();
+                img.src = URL.createObjectURL(blob);
+                await new Promise((resolve) => {
+                  img.onload = resolve;
+                });
+                const imgWidth = pageWidth - 40;
+                const imgHeight = (img.height * imgWidth) / img.width;
+                checkPageBreak(imgHeight + 10);
                 doc.addImage(
-                  pdfImage,
-                  "PDF",
-                  10,
+                  img,
+                  fileType.split("/")[1].toUpperCase(),
+                  20,
                   yOffset,
-                  width * scale,
-                  height * scale
+                  imgWidth,
+                  imgHeight
                 );
-                yOffset += height * scale + 10;
+                yOffset += imgHeight + 10;
+              } else {
+                checkPageBreak(6);
+                doc.setFontSize(12);
+                doc.setFont("helvetica", "normal");
+                doc.text("Cannot display this file type in PDF.", 25, yOffset);
+                yOffset += 6;
               }
-            } else {
-              yOffset = addText("Unsupported file type", 10, yOffset);
-              yOffset += 5;
+            } catch (error) {
+              console.error(
+                `Error processing document: ${document.name}`,
+                error
+              );
+              checkPageBreak(6);
+              doc.setFontSize(12);
+              doc.setFont("helvetica", "normal");
+              doc.text("Error loading document.", 25, yOffset);
+              yOffset += 6;
             }
-          } catch (error) {
-            console.error(`Error processing document: ${document.name}`, error);
-            yOffset = addText("Error loading document", 10, yOffset);
-            yOffset += 5;
+          } else {
+            checkPageBreak(6);
+            doc.setFontSize(12);
+            doc.setFont("helvetica", "normal");
+            doc.text("No file available.", 25, yOffset);
+            yOffset += 6;
           }
-        } else {
-          yOffset = addText("No file available", 10, yOffset);
-          yOffset += 5;
         }
+      } else {
+        checkPageBreak(6);
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "normal");
+        doc.text("No documents available.", 25, yOffset);
+        yOffset += 6;
       }
 
       // Save the PDF
-      doc.save("enhanced_application_summary.pdf");
+      doc.save("application_summary.pdf");
     } catch (error) {
       console.error("Error generating PDF:", error);
-      // You might want to show an error message to the user here
+      // Optionally show an error message to the user
     }
   };
 
@@ -711,7 +891,7 @@ const StudentApplicationSummary = ({}) => {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ id: courseId }),
+          body: JSON.stringify({ courseID: parseInt(courseId) }),
         }
       );
       const result = await response.json();
@@ -1242,11 +1422,15 @@ const StudentApplicationSummary = ({}) => {
       </div>
     );
   };
-
   const renderCourseInformation = () => {
     if (!courseInfo) {
       return <div>Loading course information...</div>;
     }
+    const parseHTML = (html) => {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, "text/html");
+      return doc.body.textContent || "";
+    };
 
     return (
       <div className="summary-content-course-info">
@@ -1319,7 +1503,9 @@ const StudentApplicationSummary = ({}) => {
           <div
             className={`overview-content ${showFullOverview ? "expanded" : ""}`}
           >
-            <p className="sas-summarytext">{courseInfo.description}</p>
+            <p className="sas-summarytext">
+              {parseHTML(courseInfo.description)}
+            </p>
           </div>
           <div className="text-center">
             <Button
@@ -1343,7 +1529,10 @@ const StudentApplicationSummary = ({}) => {
               showFullRequirements ? "expanded" : ""
             }`}
           >
-            <p className="sas-summarytext"> {courseInfo.requirement}</p>
+            <p className="sas-summarytext">
+              {" "}
+              {parseHTML(courseInfo.requirement)}
+            </p>
           </div>
           <div className="text-center">
             <Button
@@ -1618,31 +1807,37 @@ const StudentApplicationSummary = ({}) => {
                         className="activities-grid"
                         style={{ maxHeight: "15rem", overflowY: "auto" }}
                       >
-                        {coCurriculum.map((activity, index) => (
-                          <div
-                            key={index}
-                            className="activity-item d-flex flex-wrap justify-content-between align-items-start py-2"
-                          >
-                            <div className="col-12 col-sm-6">
-                              <p className="mb-0">
-                                <strong>{activity.club_name}</strong>
-                              </p>
-                              <p className="mb-0 text-muted">
-                                {activity.location}
-                              </p>
+                        {coCurriculum.length > 0 ? (
+                          coCurriculum.map((activity, index) => (
+                            <div
+                              key={index}
+                              className="activity-item d-flex flex-wrap justify-content-between align-items-start py-2"
+                            >
+                              <div className="col-12 col-sm-6">
+                                <p className="mb-0">
+                                  <strong>{activity.club_name}</strong>
+                                </p>
+                                <p className="mb-0 text-muted">
+                                  {activity.location}
+                                </p>
+                              </div>
+                              <div className="col-6 col-sm-3 text-start text-sm-center">
+                                <p className="mb-0">{activity.year}</p>
+                              </div>
+                              <div className="col-6 col-sm-3 text-end">
+                                <span
+                                  className={`position ${activity.student_position.toLowerCase()} py-1 px-2 rounded-pill`}
+                                >
+                                  {activity.student_position}
+                                </span>
+                              </div>
                             </div>
-                            <div className="col-6 col-sm-3 text-start text-sm-center">
-                              <p className="mb-0">{activity.year}</p>
-                            </div>
-                            <div className="col-6 col-sm-3 text-end">
-                              <span
-                                className={`position ${activity.student_position.toLowerCase()} py-1 px-2 rounded-pill`}
-                              >
-                                {activity.student_position}
-                              </span>
-                            </div>
-                          </div>
-                        ))}
+                          ))
+                        ) : (
+                          <p className="text-center text-muted">
+                            No co-curricular activities added yet.
+                          </p>
+                        )}
                       </div>
                     </div>
 
@@ -1654,36 +1849,44 @@ const StudentApplicationSummary = ({}) => {
                         className="achievements-grid"
                         style={{ maxHeight: "15rem", overflowY: "auto" }}
                       >
-                        {achievements.map((achievement, index) => (
-                          <div
-                            key={index}
-                            className="achievement-item d-flex flex-wrap justify-content-between align-items-start py-2"
-                          >
-                            <div className="col-12 col-sm-6">
-                              <p className="mb-0">
-                                <strong>{achievement.achievement_name}</strong>
-                              </p>
-                              <p className="mb-0 text-muted">
-                                {achievement.awarded_by}
-                              </p>
+                        {achievements.length > 0 ? (
+                          achievements.map((achievement, index) => (
+                            <div
+                              key={index}
+                              className="achievement-item d-flex flex-wrap justify-content-between align-items-start py-2"
+                            >
+                              <div className="col-12 col-sm-6">
+                                <p className="mb-0">
+                                  <strong>
+                                    {achievement.achievement_name}
+                                  </strong>
+                                </p>
+                                <p className="mb-0 text-muted">
+                                  {achievement.awarded_by}
+                                </p>
+                              </div>
+                              <div className="col-6 col-sm-3 text-start text-sm-center">
+                                <p className="mb-0">{achievement.date}</p>
+                              </div>
+                              <div className="col-6 col-sm-3 text-end">
+                                <span
+                                  className={`position ${achievement.title_obtained
+                                    .toLowerCase()
+                                    .replace(
+                                      /\s+/g,
+                                      "-"
+                                    )} py-1 px-2 rounded-pill`}
+                                >
+                                  {achievement.title_obtained}
+                                </span>
+                              </div>
                             </div>
-                            <div className="col-6 col-sm-3 text-start text-sm-center">
-                              <p className="mb-0">{achievement.date}</p>
-                            </div>
-                            <div className="col-6 col-sm-3 text-end">
-                              <span
-                                className={`position ${achievement.title_obtained
-                                  .toLowerCase()
-                                  .replace(
-                                    /\s+/g,
-                                    "-"
-                                  )} py-1 px-2 rounded-pill`}
-                              >
-                                {achievement.title_obtained}
-                              </span>
-                            </div>
-                          </div>
-                        ))}
+                          ))
+                        ) : (
+                          <p className="text-center text-muted">
+                            No achievements added yet.
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -1695,9 +1898,9 @@ const StudentApplicationSummary = ({}) => {
               ) : null}
             </div>
           </div>
+          <SpcFooter />
         </div>
       </div>
-      <SpcFooter />
     </div>
   );
 };
