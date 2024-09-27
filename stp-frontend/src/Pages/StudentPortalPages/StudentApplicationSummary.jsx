@@ -396,6 +396,11 @@ const StudentApplicationSummary = ({}) => {
             }
           }
         }
+        const parseHTML = (html) => {
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(html, "text/html");
+          return doc.body.textContent || "";
+        };
 
         // Add header row for subjects
         tableBody.push({ isHeader: true, data: ["Subject Name", "Grade"] });
