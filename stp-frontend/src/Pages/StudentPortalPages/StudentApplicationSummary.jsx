@@ -1234,7 +1234,7 @@ const StudentApplicationSummary = ({ }) => {
                         <div className="col-6 mb-3">
                             <div className="d-flex align-items-center">
                                 <GraduationCap size={16} className="me-2" />
-                                <span className="summary-label sas-summarytext">{courseInfo.qualification_name || 'N/A'}</span>
+                                <span className="summary-label sas-summarytext">{courseInfo.qualification || 'N/A'}</span>
                             </div>
                         </div>
                         <div className="col-6 mb-3">
