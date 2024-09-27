@@ -135,9 +135,15 @@ const SearchInstitute = () => {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
         const result = await response.json();
-
-        // Ensure the response is an array
         setCountries(result.data || []);
+
+        // Set Malaysia as the default country if it exists
+        const malaysia = result.data.find(
+          (country) => country.country_name === "Malaysia"
+        );
+        if (malaysia) {
+          setSelectedCountry(malaysia);
+        }
       } catch (error) {
         console.error("Error fetching countries:", error);
         setCountries([]);
@@ -232,13 +238,14 @@ const SearchInstitute = () => {
 
   const handleInstituteChange = (institute) => {
     setSelectedInstitute(institute);
-    console.log("Selected University ID:", institute);
+    console.log("Selected University ID test:", institute);
   };
 
   return (
     <Container>
       <h3 style={{ textAlign: "left", paddingTop: "15px" }}>
-        Institute in Malaysia
+        Institute in{" "}
+        {selectedCountry ? selectedCountry.country_name : "Malaysia"}
       </h3>
       {/* Country Dropdown */}
       <Row className="align-items-center mb-2 mb-md-0">
@@ -249,9 +256,9 @@ const SearchInstitute = () => {
                 className="country-dropdown-institute w-100"
                 id="dropdown-country"
                 style={{
-                  backgroundColor: selectedCountry ? "white" : "", // Set background color to white if a country is selected
-                  color: selectedCountry ? "#000" : "", // Optional: Change text color for better contrast
-                  border: selectedCountry ? "1px solid #B71A18" : "", // Set border width, style, and color
+                  backgroundColor: selectedCountry ? "white" : "",
+                  color: selectedCountry ? "#000" : "",
+                  border: selectedCountry ? "1px solid #B71A18" : "",
                 }}
               >
                 {selectedCountry ? (

@@ -11,7 +11,7 @@ import SpcFooter from "../../Components/StudentPortalComp/SpcFooter";
 const CoursesPage = () => {
   return (
     <div style={{ backgroundColor: "#F5F4F4" }}>
-      <NavButtonsSP />
+      <NavButtons />
       <header className="masthead">
         <img src={headerImage} alt="Header" className="header-image" />
       </header>

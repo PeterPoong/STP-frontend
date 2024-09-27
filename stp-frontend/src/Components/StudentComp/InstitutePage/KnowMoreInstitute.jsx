@@ -3,6 +3,8 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import NavButtons from "../NavButtons";
 // import NavButtons from "../../StudentComp/NavButtons";
 import headerImage from "../../../assets/StudentAssets/institute image/StudyPal10.png";
+import studypal12 from "../../../assets/StudentAssets/coursepage image/StudyPal12.jpg";
+
 import "../../../css/StudentCss/institutepage css/KnowMoreInstitute.css";
 import {
   Container,
@@ -13,16 +15,6 @@ import {
   Card,
   Modal,
 } from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faGraduationCap,
-  faClock,
-  faCalendarAlt,
-  faCalendarCheck,
-  faLocationDot,
-  faSchool,
-  faBookOpen,
-} from "@fortawesome/free-solid-svg-icons";
 
 import studypal11 from "../../../assets/StudentAssets/institute image/StudyPal11.png";
 import Footer from "../../../Components/StudentComp/Footer";
@@ -44,6 +36,20 @@ const KnowMoreInstitute = () => {
 
   const [showSwiperModal, setShowSwiperModal] = useState(false);
   const [activePhotoIndex, setActivePhotoIndex] = useState(0); // To track the clicked photo
+
+  // State to track the number of displayed courses
+  const [visibleCourses, setVisibleCourses] = useState(5);
+  const [expanded, setExpanded] = useState(false); // Track if the list is expanded
+
+  // Function to handle displaying more courses
+  const handleViewMore = () => {
+    setExpanded(!expanded); // Toggle collapse state
+    if (!expanded) {
+      setVisibleCourses(courses.length); // Show all courses when expanded
+    } else {
+      setVisibleCourses(5); // Show only 5 courses when collapsed
+    }
+  };
 
   // Function to handle opening the Swiper modal and set the active photo
   const openSwiperModal = (index) => {
@@ -168,13 +174,18 @@ const KnowMoreInstitute = () => {
 
   return (
     <div style={{ backgroundColor: "#F5F4F4" }}>
-      <NavButtonsSP />
+      <NavButtons />
       {Array.isArray(institutes) &&
         institutes.map((institute) => (
           <div key={institute.id}>
             <header className="know-more-masthead">
               <img
-                src={`${baseURL}storage/${institute.school_cover.schoolMedia_location}`}
+                src={
+                  institute.school_cover &&
+                  institute.school_cover.schoolMedia_location
+                    ? `${baseURL}storage/${institute.school_cover.schoolMedia_location}`
+                    : headerImage // Use headerImage as the default if school_cover is not available
+                }
                 alt="Header"
                 className="know-more-header-image"
               />
@@ -190,11 +201,13 @@ const KnowMoreInstitute = () => {
                     src={`${baseURL}storage/${institute.logo}`}
                     alt="Institute"
                     className="img-fluid img-thumbnail know-more-program-image"
-                    width="250"
+                    style={{
+                      maxWidth: "80%",
+                    }}
                   />
                 </Col>
                 <Col xs={12} md={6} className="d-flex align-items-center">
-                  <div>
+                  <div style={{ marginLeft: "30px" }}>
                     <h4>{institute.name}</h4>
                     <Row>
                       <p>
@@ -234,56 +247,69 @@ const KnowMoreInstitute = () => {
                 </Col>
               </Row>
 
+              {/* Image Swiper */}
               <div className="image-gallery" style={{ marginTop: "20px" }}>
                 {institutes.map((institute) =>
-                  institute.school_photo.slice(0, 5).map((photo, index) => (
-                    <div
-                      key={photo.id}
-                      style={{ display: "inline-block", position: "relative" }}
-                      onClick={() => openModal(institute.school_photo, index)}
-                    >
-                      <img
-                        src={`${baseURL}storage/${photo.schoolMedia_location}`}
-                        className="gallery-image"
-                        alt={`Slide ${photo.id}`}
-                        width="500"
-                        style={{ objectFit: "cover" }}
-                      />
-                      {index === 4 && institute.school_photo.length > 5 && (
-                        <div
-                          style={{
-                            position: "absolute",
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            bottom: 0,
-                            backgroundColor: "rgba(0, 0, 0, 0.5)",
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            zIndex: 1,
-                          }}
-                        >
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleShowMore(institute.school_photo);
-                            }}
+                  // Check if school_photo exists, otherwise use studypal12
+                  (institute.school_photo && institute.school_photo.length > 0
+                    ? institute.school_photo.slice(0, 5)
+                    : [{ id: "default", schoolMedia_location: null }]
+                  ) // Use a placeholder with default image
+                    .map((photo, index) => (
+                      <div
+                        key={photo.id}
+                        style={{
+                          display: "inline-block",
+                          position: "relative",
+                        }}
+                        onClick={() => openModal(institute.school_photo, index)}
+                      >
+                        <img
+                          src={
+                            photo.schoolMedia_location
+                              ? `${baseURL}storage/${photo.schoolMedia_location}`
+                              : studypal12 // Use studypal12 as the default image if schoolMedia_location is not available
+                          }
+                          className="gallery-image"
+                          alt={`Slide ${photo.id}`}
+                          width="500"
+                          style={{ objectFit: "cover" }}
+                        />
+                        {index === 4 && institute.school_photo.length > 5 && (
+                          <div
                             style={{
-                              color: "white",
-                              backgroundColor: "transparent",
-                              padding: "10px 20px",
-                              border: "none",
-                              width: "100%",
-                              height: "100%",
+                              position: "absolute",
+                              top: 0,
+                              left: 0,
+                              right: 0,
+                              bottom: 0,
+                              backgroundColor: "rgba(0, 0, 0, 0.5)",
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                              zIndex: 1,
                             }}
                           >
-                            see more
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  ))
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleShowMore(institute.school_photo);
+                              }}
+                              style={{
+                                color: "white",
+                                backgroundColor: "transparent",
+                                padding: "10px 20px",
+                                border: "none",
+                                width: "100%",
+                                height: "100%",
+                              }}
+                            >
+                              see more
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    ))
                 )}
                 <Modal
                   show={modalIsOpen}
@@ -322,7 +348,11 @@ const KnowMoreInstitute = () => {
                       {selectedPhotos.map((photo) => (
                         <SwiperSlide key={photo.id}>
                           <img
-                            src={`${baseURL}storage/${photo.schoolMedia_location}`}
+                            src={
+                              photo.schoolMedia_location
+                                ? `${baseURL}storage/${photo.schoolMedia_location}`
+                                : studypal12 // Use studypal12 as the default image if schoolMedia_location is not available
+                            }
                             className="w-100"
                             alt={`Slide ${photo.id}`}
                             style={{
@@ -387,7 +417,11 @@ const KnowMoreInstitute = () => {
                       {selectedPhotos.map((photo, index) => (
                         <img
                           key={photo.id}
-                          src={`${baseURL}storage/${photo.schoolMedia_location}`}
+                          src={
+                            photo.schoolMedia_location
+                              ? `${baseURL}storage/${photo.schoolMedia_location}`
+                              : studypal12 // Use studypal12 as the default image if schoolMedia_location is not available
+                          }
                           className="gallery-image"
                           alt={photo.schoolMedia_name}
                           style={{
@@ -468,7 +502,11 @@ const KnowMoreInstitute = () => {
                       {selectedPhotos.map((photo) => (
                         <SwiperSlide key={photo.id}>
                           <img
-                            src={`${baseURL}storage/${photo.schoolMedia_location}`}
+                            src={
+                              photo.schoolMedia_location
+                                ? `${baseURL}storage/${photo.schoolMedia_location}`
+                                : studypal12 // Use studypal12 as the default image if schoolMedia_location is not available
+                            }
                             alt={photo.schoolMedia_name}
                             style={{
                               width: "100%",
@@ -490,6 +528,7 @@ const KnowMoreInstitute = () => {
                   </Modal.Footer>
                 </Modal>
               </div>
+              {/* End of Image Swiper */}
 
               <div className="card mt-4 know-more-card">
                 <div className="card-body">
@@ -521,15 +560,26 @@ const KnowMoreInstitute = () => {
                 </div>
               </div>
               <div className="card mt-4 know-more-card">
-                <div className="card-body" style={{ height: "250px" }}>
+                <div
+                  className="card-body"
+                  style={{ height: "250px", width: "auto" }}
+                >
                   <Row>
                     <Col md={12}>
-                      <div className="map-responsive">
+                      <div
+                        className="map-responsive"
+                        style={{ height: "100%" }}
+                      >
                         <iframe
                           src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d15909.76315163879!2d114.0178298!3d4.5143003!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x321f4826b4a6b637%3A0xe688be6fc8cd1d35!2sCurtin%20University%20Malaysia!5e0!3m2!1sen!2smy!4v1723620924688!5m2!1sen!2smy"
                           allowFullScreen=""
                           loading="lazy"
                           referrerPolicy="no-referrer-when-downgrade"
+                          style={{
+                            border: 0,
+                            width: "100%",
+                            height: "100%",
+                          }}
                         ></iframe>
                       </div>
                     </Col>
@@ -606,6 +656,7 @@ const KnowMoreInstitute = () => {
                         <div>
                           <h5
                             style={{
+                              display: "flex",
                               paddingTop: "10px",
                               fontStyle: "italic",
                               color: "#514E4E",
@@ -625,12 +676,7 @@ const KnowMoreInstitute = () => {
               </Row>
             </Container>
 
-            {/* <img
-              src={`${baseURL}storage/${institute.school_cover.schoolMedia_location}`}
-              alt="Header"
-              className="about-institute-image"
-            /> */}
-
+            {/* --------- About School --------- */}
             <Container className="my-4 about-institute-container">
               <div
                 style={{
@@ -658,7 +704,12 @@ const KnowMoreInstitute = () => {
                   }}
                 >
                   <img
-                    src={`${baseURL}storage/${institute.school_cover.schoolMedia_location}`}
+                    src={
+                      institute.school_cover &&
+                      institute.school_cover.schoolMedia_location
+                        ? `${baseURL}storage/${institute.school_cover.schoolMedia_location}`
+                        : headerImage // Use default headerImage if school_cover is not available
+                    }
                     alt="Header"
                     style={{
                       position: "absolute",
@@ -724,6 +775,8 @@ const KnowMoreInstitute = () => {
                 </div>
               </div>
 
+              {/* --------- End of About School --------- */}
+
               {/* Contact School Button */}
               <div className="d-flex justify-content-center">
                 <Button
@@ -738,12 +791,13 @@ const KnowMoreInstitute = () => {
                   Contact School
                 </Button>
               </div>
+              {/* End of Contact School Button */}
 
-              {/* Course Offered List */}
+              {/* ------  Course Offered List ------- */}
               {courses.length > 0 && (
                 <Container className="my-4">
                   <h4>Courses Offered</h4>
-                  {courses.slice(0, 3).map((course) => (
+                  {courses.slice(0, visibleCourses).map((course) => (
                     <div className="card mt-3" key={course.id}>
                       <div className="card-body d-flex flex-column flex-md-row align-items-start">
                         <Row className="w-100">
@@ -868,194 +922,34 @@ const KnowMoreInstitute = () => {
                       </div>
                     </div>
                   ))}
-                  {courses.length > 1 && (
-                    <>
-                      <Collapse in={openCourses}>
-                        <div id="collapse-courses">
-                          {courses.slice(1).map((course) => (
-                            <div className="card mt-3" key={course.id}>
-                              <div className="card-body d-flex flex-column flex-md-row align-items-start">
-                                <Row className="w-100">
-                                  <Col md={6} lg={6}>
-                                    <div className="card-image mb-3 mb-md-0">
-                                      <h5
-                                        className="card-title"
-                                        style={{
-                                          paddingLeft: "20px",
-                                          backgroundColor: "#efefef",
-                                        }}
-                                      >
-                                        <a
-                                          style={{ color: "black" }}
-                                          href={`/courseDetails/${course.id}`}
-                                        >
-                                          {course.course_name}
-                                        </a>
-                                      </h5>
-                                      <div className="d-flex align-items-center">
-                                        <div style={{ paddingLeft: "20px" }}>
-                                          <img
-                                            src={`${baseURL}storage/${
-                                              course.course_logo ||
-                                              institute.logo
-                                            }`}
-                                            alt={institute.name}
-                                            width="100"
-                                          />
-                                        </div>
-                                        <div style={{ paddingLeft: "30px" }}>
-                                          <h5 className="card-text">
-                                            {institute.name}
-                                          </h5>
-                                          <i className="bi bi-geo-alt"></i>
-                                          <span style={{ paddingLeft: "10px" }}>
-                                            {institute.city}, {institute.state}
-                                          </span>
-                                          <a
-                                            href="#"
-                                            className="map-link"
-                                            style={{ paddingLeft: "5px" }}
-                                          >
-                                            click and view on map
-                                          </a>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </Col>
-                                  <Col md={6} lg={6}>
-                                    <div className="d-flex flex-grow-1 justify-content-between">
-                                      <div className="details-div">
-                                        <div className="d-flex align-items-center flex-wrap">
-                                          <Col>
-                                            <div>
-                                              <Row
-                                                style={{ paddingTop: "20px" }}
-                                              >
-                                                <div>
-                                                  <i
-                                                    className="bi bi-mortarboard"
-                                                    style={{
-                                                      marginRight: "10px",
-                                                    }}
-                                                  ></i>
-                                                  <span
-                                                    style={{
-                                                      paddingLeft: "20px",
-                                                    }}
-                                                  >
-                                                    {course.qualification}
-                                                  </span>
-                                                </div>
-                                                <div>
-                                                  <i
-                                                    className="bi bi-calendar-check"
-                                                    style={{
-                                                      marginRight: "10px",
-                                                    }}
-                                                  ></i>
-                                                  <span
-                                                    style={{
-                                                      paddingLeft: "20px",
-                                                    }}
-                                                  >
-                                                    {course.study_mode}
-                                                  </span>
-                                                </div>
-                                                <div>
-                                                  <i
-                                                    className="bi bi-clock"
-                                                    style={{
-                                                      marginRight: "10px",
-                                                    }}
-                                                  ></i>
-                                                  <span
-                                                    style={{
-                                                      paddingLeft: "20px",
-                                                    }}
-                                                  >
-                                                    {course.course_period}
-                                                  </span>
-                                                </div>
-                                                <div>
-                                                  <i
-                                                    className="bi bi-calendar2-week"
-                                                    style={{
-                                                      marginRight: "10px",
-                                                    }}
-                                                  ></i>
-                                                  <span
-                                                    style={{
-                                                      paddingLeft: "20px",
-                                                    }}
-                                                  >
-                                                    {Array.isArray(
-                                                      course.course_intake
-                                                    )
-                                                      ? course.course_intake.join(
-                                                          ", "
-                                                        )
-                                                      : course.course_intake}
-                                                  </span>
-                                                </div>
-                                              </Row>
-                                            </div>
-                                          </Col>
-                                        </div>
-                                      </div>
-                                      <div className="fee-apply">
-                                        <div
-                                          className="fee-info text-right"
-                                          style={{ marginTop: "25px" }}
-                                        >
-                                          <p>Estimate fee</p>
-                                          <span>
-                                            <strong>RM </strong>
-                                            {course.course_cost}
-                                          </span>
-                                        </div>
-                                        <div className="apply-button mt-3">
-                                          <button
-                                            className="featured"
-                                            onClick={() =>
-                                              handleApplyNow(course)
-                                            }
-                                          >
-                                            Apply Now
-                                          </button>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </Col>
-                                </Row>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </Collapse>
-                      <Col className="d-flex justify-content-center">
-                        <Button
-                          onClick={() => setOpenCourses(!openCourses)}
-                          aria-controls="collapse-courses"
-                          aria-expanded={openCourses}
-                          style={{
-                            marginTop: "20px",
-                            textDecoration: "none",
-                            backgroundColor: "#B71A18",
-                            borderColor: "#B71A18",
-                            width: "200px",
-                            padding: "10px 20px",
-                            borderRadius: "5px",
-                            color: "white",
-                          }}
-                        >
-                          {openCourses
-                            ? "Hide More Courses"
-                            : "View More Courses"}
-                        </Button>
-                      </Col>
-                    </>
+
+                  {/* View More / Hide Courses Button */}
+                  {courses.length > 5 && (
+                    <Col className="d-flex justify-content-center">
+                      <Button
+                        onClick={handleViewMore}
+                        aria-controls="collapse-courses"
+                        aria-expanded={expanded}
+                        style={{
+                          marginTop: "20px",
+                          textDecoration: "none",
+                          backgroundColor: "#B71A18",
+                          borderColor: "#B71A18",
+                          width: "200px",
+                          padding: "10px 20px",
+                          borderRadius: "5px",
+                          color: "white",
+                          transition: "0.3s ease",
+                        }}
+                      >
+                        {expanded ? "Hide Courses" : "View More Courses"}
+                      </Button>
+                    </Col>
                   )}
-                  {/* Render featured institutes */}
+
+                  {/* ------ End of Course Offered List ------ */}
+
+                  {/* ------ Featured institutes ------- */}
                   {featuredInstitutes.length > 0 && (
                     <Container className="my-4">
                       <h4>Featured Institutes</h4>
@@ -1088,110 +982,23 @@ const KnowMoreInstitute = () => {
                               className="featured-institute-card"
                               style={{ width: "230px", height: "245px" }}
                             >
-                              <div style={{ position: "relative" }}>
-                                {institute.institute_qualification && (
-                                  <span
-                                    className="badge"
-                                    style={{ fontSize: "16px" }}
-                                  >
-                                    {institute.institute_qualification.toUpperCase()}
-                                  </span>
-                                )}
-                                <img
-                                  src={`${baseURL}storage/${institute.school_logo}`}
-                                  alt={institute.school_name}
-                                  className="section-image"
-                                  style={{
-                                    height: "80px",
-                                    width: "150px",
-                                    objectFit: "contain",
-                                  }}
-                                />
-                              </div>
-                              <div>
-                                <p
-                                  className="institute-title"
-                                  style={{
-                                    color: "#514E4E",
-                                    fontSize: "16px",
-                                    fontWeight: "500",
-                                    marginBottom: "15px",
-                                  }}
-                                >
-                                  {institute.school_name}
-                                </p>
-                                <p
-                                  className="featured-type"
-                                  style={{
-                                    color: "#B71A18",
-                                    fontSize: "18px",
-                                    fontWeight: "500",
-                                    marginBottom: "15px",
-                                  }}
-                                >
-                                  {institute.featured_type}
-                                </p>
-                                <div className="d-flex justify-content-center">
-                                  <i
-                                    className="bi bi-geo-alt"
-                                    style={{
-                                      marginRight: "10px",
-                                      color: "#AAAAAA",
-                                    }}
-                                  ></i>
-                                  <span style={{ color: "#AAAAAA" }}>
-                                    {institute.location}
-                                  </span>
-                                </div>
-                              </div>
-                              <div className="d-flex justify-content-center">
-                                <button
-                                  className="button-know-more"
-                                  onClick={() => {
-                                    console.log(
-                                      "Institute for Know More:",
-                                      institute
-                                    );
-                                    if (institute && institute.school_id) {
-                                      navigate(
-                                        `/knowMoreInstitute/${institute.school_id}`
-                                      );
-                                    } else {
-                                      console.error(
-                                        "Institute ID is undefined"
-                                      );
-                                    }
-                                  }}
-                                >
-                                  {institute.knowMoreText || "Know More"}
-                                </button>
-                                <button
-                                  className="button-apply-now"
-                                  onClick={() => {
-                                    console.log(
-                                      "Institute for Apply Now:",
-                                      institute
-                                    );
-                                    if (institute && institute.school_id) {
-                                      navigate(
-                                        `/studentApplyCourses/${institute.id}`
-                                      );
-                                    } else {
-                                      console.error(
-                                        "Institute ID is undefined"
-                                      );
-                                    }
-                                  }}
-                                >
-                                  {institute.applyNowText || "Apply Now"}
-                                </button>
-                              </div>
+                              <img
+                                src={`${baseURL}storage/${institute.school_logo}`}
+                                alt={institute.school_name}
+                                className="section-image"
+                                style={{
+                                  height: "80px",
+                                  width: "150px",
+                                  objectFit: "contain",
+                                }}
+                              />
                             </div>
                           </SwiperSlide>
                         ))}
                       </Swiper>
                     </Container>
                   )}
+                  {/* End of Featured institutes */}
                 </Container>
               )}
               <img src={studypal11} alt="Header" className="adverstise-image" />

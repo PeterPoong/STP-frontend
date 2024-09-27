@@ -56,9 +56,10 @@ const CourseListing = ({
   const [locationOptions, setLocationOptions] = useState([]);
   const [selectedLocationFilters, setSelectedLocationFilters] = useState([]);
 
+  // Function for Pagination
   const [currentPage, setCurrentPage] = useState(1);
 
-  const itemsPerPage = 5;
+  const itemsPerPage = 20;
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -75,7 +76,9 @@ const CourseListing = ({
     setCurrentPage(pageNumber);
   };
 
-  // Function to reset all filters in CourseListing
+  // End of Function for Pagination
+
+  // Reset Filter
   const resetFilters = () => {
     setSelectedLocationFilters([]);
     setCategoryFilters([]);
@@ -224,6 +227,7 @@ const CourseListing = ({
 
   /* ----------------------- End of Qualification Dropdown --------------- */
 
+  // Location Filter
   useEffect(() => {
     console.log("Country ID changed:", countryID);
     const fetchLocationFilters = async () => {
@@ -271,6 +275,7 @@ const CourseListing = ({
     }, 100);
   }, [countryID]);
 
+  // Study Mode Filter
   useEffect(() => {
     const fetchStudyModes = async () => {
       try {
@@ -290,6 +295,7 @@ const CourseListing = ({
     fetchStudyModes();
   }, []);
 
+  // Category Filter
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -320,6 +326,7 @@ const CourseListing = ({
     filterPrograms();
   }, [locationFilters, categoryFilters, programs, searchResults]);
 
+  // Call all filter
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -388,6 +395,28 @@ const CourseListing = ({
     selectedCategory,
   ]);
 
+  // Intakes filter
+  useEffect(() => {
+    const fetchIntakes = async () => {
+      try {
+        const response = await fetch(intakeAPIURL, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const intakeData = await response.json();
+        setIntakeData(intakeData.data);
+        console.log("Intakes: ", intakeData.data);
+      } catch (error) {
+        console.error("Error fetching intakes:", error);
+      }
+    };
+
+    fetchIntakes();
+  }, []);
+
+  // Tuition fee filter
   useEffect(() => {
     const fetchTuitionFeeRange = async () => {
       try {
@@ -410,26 +439,6 @@ const CourseListing = ({
     };
 
     fetchTuitionFeeRange();
-  }, []);
-
-  useEffect(() => {
-    const fetchIntakes = async () => {
-      try {
-        const response = await fetch(intakeAPIURL, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        const intakeData = await response.json();
-        setIntakeData(intakeData.data);
-        console.log("Intakes: ", intakeData.data);
-      } catch (error) {
-        console.error("Error fetching intakes:", error);
-      }
-    };
-
-    fetchIntakes();
   }, []);
 
   const handleLocationChange = (location) => {
@@ -685,7 +694,7 @@ const CourseListing = ({
                       href="#"
                       className="map-link"
                       style={{
-                        paddingLeft: "30px",
+                        paddingLeft: "35px",
                         fontWeight: "lighter",
                         color: "#1745BA",
                       }}
@@ -730,7 +739,7 @@ const CourseListing = ({
                               {program.period}
                             </span>
                           </div>
-                          <div style={{ marginTop: "10px" }}>
+                          <div style={{ marginTop: "10px", display: "flex" }}>
                             <i
                               className="bi bi-calendar2-week"
                               style={{ marginRight: "10px" }}
@@ -752,14 +761,14 @@ const CourseListing = ({
                     className="fee-info text-right"
                     style={{ marginTop: "25px" }}
                   >
-                    <p style={{ fontSize: "14px" }}>
+                    <p style={{ fontSize: "14px", marginRight: "10px" }}>
                       estimate fee<br></br>
                       <p style={{ fontSize: "16px" }}>
                         <strong>RM </strong> {program.cost}
                       </p>
                     </p>
                   </div>
-                  <div className="apply-button ">
+                  <div className="apply-button">
                     <button
                       className="featured"
                       onClick={() => handleApplyNow(program)}
