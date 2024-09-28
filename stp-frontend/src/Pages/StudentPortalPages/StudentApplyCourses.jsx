@@ -170,6 +170,7 @@ const StudentApplyCourses = () => {
         setShowSubmissionPopup(false);
         setIsSubmitted(true);
         sessionStorage.setItem('lastAppliedCourseId', courseId);
+        
       } else if (data.error && data.error.courses) {
         setErrorMessage(data.error.courses[0]);
         setShowErrorPopup(true);
