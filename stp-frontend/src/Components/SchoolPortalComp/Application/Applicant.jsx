@@ -261,9 +261,10 @@ const Applicant = () => {
   if (selectedStudent) {
     return (
       <StudentDetailView
-        student={selectedStudent}
-        action={selectedAction}
-        onBack={handleBackToList}
+      student={selectedStudent}
+      viewAction="details"
+      acceptRejectAction={warningType} // 'accept' or 'reject'
+      onBack={handleBackToList}
       />
     );
   }

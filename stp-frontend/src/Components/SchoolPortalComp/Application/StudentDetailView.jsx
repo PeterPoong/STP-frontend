@@ -9,8 +9,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import WidgetFileUpload from "../../../Components/StudentPortalComp/WidgetFileUpload";
 import WidgetAchievement from "../../../Components/StudentPortalComp/Widget/WidgetAchievement";
 import WidgetFileUploadAcademicTranscript from "../../../Components/StudentPortalComp/WidgetFileUploadAcademicTranscript";
-
-const StudentDetailView = ({ student, action, onBack }) => {
+import { BsWhatsapp } from 'react-icons/bs';
+const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack }) => {
 
   const [activeTab, setActiveTab] = useState('info');
   const [basicInfo, setBasicInfo] = useState(null);
@@ -65,6 +65,8 @@ const StudentDetailView = ({ student, action, onBack }) => {
   const [isViewAcademicTranscriptOpen, setIsViewAcademicTranscriptOpen] = useState(false);
   const navigate = useNavigate();
   const studentId = student?.student_id;
+  const applicantId = student?.id;
+  const [currentAction, setCurrentAction] = useState(acceptRejectAction);
   console.log('Current studentId:', studentId);
 
   useEffect(() => {
@@ -93,7 +95,7 @@ const StudentDetailView = ({ student, action, onBack }) => {
     };
 
     fetchData();
-  }, [studentId]);
+  }, [studentId, applicantId]);
 
   useEffect(() => {
     if (activeTab === 'documents') {
@@ -118,6 +120,21 @@ const StudentDetailView = ({ student, action, onBack }) => {
       fetchCgpaInfo();
     }
   }, [selectedCategory]);
+
+
+  useEffect(() => {
+    if (applicantDetails) {
+      console.log('applicantDetails:', applicantDetails);
+      console.log('action prop:', acceptRejectAction);
+      if (applicantDetails.form_status === 2) { // Pending
+        setCurrentAction(acceptRejectAction); // Use the acceptRejectAction prop
+      } else if (applicantDetails.form_status === 4) {
+        setCurrentAction('accept');
+      } else if (applicantDetails.form_status === 3) {
+        setCurrentAction('reject');
+      }
+    }
+  }, [applicantDetails, acceptRejectAction]);
 
   const fetchTranscriptCategories = async () => {
     try {
@@ -288,7 +305,7 @@ const StudentDetailView = ({ student, action, onBack }) => {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ applicantId: studentId })
+        body: JSON.stringify({ applicantId: applicantId })
       });
 
       if (!response.ok) {
@@ -460,11 +477,13 @@ const StudentDetailView = ({ student, action, onBack }) => {
 
       if (result.success) {
         setSubmitSuccess(true);
-        // Update the basicInfo state with the new status
-        setBasicInfo(prevInfo => ({
-          ...prevInfo,
-          form_status: actionType === 'Accepted' ? 'Accepted' : 'Rejected'
+
+        setApplicantDetails(prevDetails => ({
+          ...prevDetails,
+          form_status: actionType === 'Accepted' ? 4 : 3,
+          form_feedback: feedback
         }));
+        setCurrentAction(actionType === 'Accepted' ? 'accept' : 'reject');
       } else {
         throw new Error(result.message || 'Failed to update application status');
       }
@@ -942,19 +961,50 @@ const StudentDetailView = ({ student, action, onBack }) => {
       </div>
     );
   };
-
   const renderAcceptRejectContent = () => {
     if (!applicantDetails) {
       return <div>Loading application details...</div>;
     }
 
     const formStatus = applicantDetails.form_status;
+    const isPending = formStatus === 2; // Assuming 2 is the code for 'Pending'
 
-    if (formStatus === 2) { // Assuming 2 is the code for 'Pending'
-      return (
-        <div className="accept-reject-application ">
-          <div className="mb-4 px-5 mt-4">
-            <p className="fw-normal">Feedback to Student:</p>
+    const getStatusMessage = () => {
+      if (isPending) {
+        return currentAction === 'accept' ? 'This student will be accepted.' : 'This student will be rejected.';
+      } else {
+        return formStatus === 4 ? 'This student has been accepted.' : 'This student has been rejected.';
+      }
+    };
+
+    const getStatusColor = () => {
+      if (isPending) {
+        return currentAction === 'accept' ? 'bg-green-100' : 'bg-red-100';
+      } else {
+        return formStatus === 4 ? 'bg-green-100' : 'bg-red-100';
+      }
+    };
+
+    return (
+      <div className="accept-reject-application">
+        <div
+          className={`applicant-actions-div ${getStatusColor()} ${isPending ? 'pending' : ''}`}
+          style={{
+            color: isPending
+              ? (currentAction === 'accept' ? '#d1fae5' : '#fee2e2')
+              : (formStatus === 4 ? '#d1fae5' : '#fee2e2'),
+            backgroundColor: isPending
+              ? (currentAction === 'accept' ? '#146A17' : '#B71A18')
+              : (formStatus === 4 ? '#146A17' : '#B71A18'),
+          }}
+        >
+          <p className="mb-0 px-4">{getStatusMessage()}</p>
+        </div>
+
+
+        <div className="mb-4 px-5 mt-4">
+          <p className="fw-normal">Feedback to Student:</p>
+          {isPending ? (
             <textarea
               id="feedback"
               className="applicant-form-control"
@@ -963,49 +1013,37 @@ const StudentDetailView = ({ student, action, onBack }) => {
               onChange={handleFeedbackChange}
               placeholder="Enter your feedback here..."
             ></textarea>
-          </div>
+          ) : (
+            <div className='border border-1 rounded p-2 '>
+            <p>{applicantDetails.form_feedback || 'No feedback provided.'}</p>
+            </div>
+          )}
+        </div>
+
+        {isPending && (
           <div className="d-flex justify-content-end">
             <Button
-              variant="success"
-              className="me-2"
-              onClick={() => handleAcceptReject('Accepted')}
+              variant={currentAction === 'accept' ? 'success' : 'danger'}
+              onClick={() => handleAcceptReject(currentAction === 'accept' ? 'Accepted' : 'Rejected')}
               disabled={submitLoading}
             >
-              <Check size={18} className="me-2" />
-              Accept Application
-            </Button>
-            <Button
-              variant="danger"
-              onClick={() => handleAcceptReject('Rejected')}
-              disabled={submitLoading}
-            >
-              <X size={18} className="me-2" />
-              Reject Application
+              {currentAction === 'accept' ? 'Accept' : 'Reject'} Application
             </Button>
           </div>
-          {submitError && (
-            <div className="alert alert-danger mt-3" role="alert">
-              {submitError}
-            </div>
-          )}
-          {submitSuccess && (
-            <div className="alert alert-success mt-3" role="alert">
-              Application status updated successfully!
-            </div>
-          )}
-        </div>
-      );
-    } else {
-      const statusText = formStatus === 4 ? 'accepted' : formStatus === 3 ? 'rejected' : 'processed';
-      return (
-        <div className="accept-reject-application m-3 shadow-lg p-4 rounded-5">
-          <p className="text-secondary fw-bold border-bottom border-2 pb-3">Application Status</p>
-          <div className="alert alert-info" role="alert">
-            This application has already been {statusText}.
+        )}
+
+        {submitError && (
+          <div className="alert alert-danger mt-3" role="alert">
+            {submitError}
           </div>
-        </div>
-      );
-    }
+        )}
+        {submitSuccess && (
+          <div className="alert alert-success mt-3" role="alert">
+            Application status updated successfully!
+          </div>
+        )}
+      </div>
+    );
   };
 
   // Confirmation Modal
@@ -1039,17 +1077,26 @@ const StudentDetailView = ({ student, action, onBack }) => {
                 <div className="applicant-info">
                   <img src={`${import.meta.env.VITE_BASE_URL}storage/${basicInfo?.student_profilePic}`} className="applicant-photo me-4 ms-2" alt="Student" />
                   <div>
+
+                    <p>{currentAction}</p>
                     <p className="my-0 fw-bold">{`${basicInfo?.first_name} ${basicInfo?.last_name}`}</p>
                     <p className="my-0 text-secondary mt-2">Applied For: <span className="text-black ms-2">{basicInfo?.course_name}</span></p>
                   </div>
                 </div>
-                <Button className="applicant-status-button ms-auto">
-                  {applicantDetails ?
-                    (applicantDetails.form_status === 4 ? 'Accepted' :
-                      applicantDetails.form_status === 3 ? 'Rejected' : 'Pending')
-                    : 'Unknown'}
+                <span
+                  className={`applicant-status-button ms-auto ${applicantDetails?.form_status === 4 ? 'accepted' :
+                    applicantDetails?.form_status === 3 ? 'rejected' :
+                      'pending'
+                    } text-white`}
+                >
+                  {applicantDetails?.form_status === 4 ? 'Accepted' :
+                    applicantDetails?.form_status === 3 ? 'Rejected' :
+                      'Pending'}
+                </span>
+                <Button className="applicant-chat-button d-flex align-items-center justify-content-center">
+                  <BsWhatsapp className="me-2 whatsapp-button" size={20}  />
+                  Chat on WhatsApp
                 </Button>
-                <Button className="applicant-chat-button  ">Chat on WhatsApp</Button>
               </div>
               <div className="summary-tabs d-flex flex-wrap px-4">
                 <Button
@@ -1161,24 +1208,16 @@ const StudentDetailView = ({ student, action, onBack }) => {
                   </div>
                 </div>
               )}
-
-              {activeTab === 'documents' && (
-                <div className="detail-content">
-                  <div className="related-documents m-3 shadow-lg p-4 rounded-5">
-                    <p className="text-secondary fw-bold border-bottom border-2 pb-3">Related Documents</p>
-                    {renderRelatedDocumentsContent()}
-
+              {activeTab === 'documents' && (            
+                  <div className="related-documents  ">
+                     {renderRelatedDocumentsContent()}
                   </div>
-                </div>
               )}
 
               {activeTab === 'accept-reject' && (
                 <div className="detail-content">
                   <div className="accept-reject-application">
                     <p className="px-5 mb-3 ">Actions</p>
-                    <div className="applicant-actions-div ">
-                      <p className="mb-0 px-4">This student has already been <strong>accepted</strong></p>
-                    </div>
                     {renderAcceptRejectContent()}
 
                   </div>

@@ -36,12 +36,11 @@
     padding: 2.5rem 0rem;
 }
 
-
 .applicant-actions-div
 {
-    background-color: #146A17;
+    background-color: inherit;
     height: 3.25rem;
-    margin:0 2.5rem;
+    margin:0 3rem;
     width:35rem;
     border-radius: 1rem;
     color:#F5F5F5;
@@ -49,6 +48,36 @@
 
     align-content: center;
 }
+
+  
+  .applicant-status-button.accepted {
+    background-color: #146A17;
+  }
+  
+  .applicant-status-button.rejected {
+    background-color: #B71A18;
+  }
+  
+  .applicant-status-button.pending {
+    background-color: #EE6226;
+  }
+
+.applicant-actions-div.bg-green-100 {
+    background-color: #d1fae5;
+    color: #146A17 ;
+  }
+  
+  .applicant-actions-div.bg-red-100 {
+    background-color: #fee2e2 ;
+    color: #B71A18;
+  }
+  
+  .applicant-actions-div.pending {
+    background-color: #146A17 ;
+    color: #F5F5F5 ;
+  }
+  
+
 
 .applicant-form-control
 {
@@ -86,7 +115,7 @@
     border-color: transparent;
     padding: 0.25rem 1.75rem;
     font-weight: bold;
-    width: 12.5rem;
+    width: auto;
 }
 
 .applicant-chat-button:hover {
@@ -94,7 +123,8 @@
     border-color: #25D366;
     padding: 0.25rem 1.75rem;
     font-weight: bold;
-    color: #25D366
+    color: #25D366;
+    
 }
 
 .applicant-status-button {
@@ -103,12 +133,17 @@
     padding: 0.25rem 1.75rem;
     font-weight: bold;
     width: 12.5rem;
+    border-radius: 0.325rem;
+    text-align: center;
+    white-space: nowrap;
 }
 
-.applicant-status-button:hover {
-    background-color: white;
-    border-color: #ED6126;
-    padding: 0.25rem 1.75rem;
-    font-weight: bold;
-    color: #ED6126;
+.whatsapp-button
+{
+    color:white;
+}
+
+.whatsapp-button:hover
+{
+    color: #25D366;
 }
