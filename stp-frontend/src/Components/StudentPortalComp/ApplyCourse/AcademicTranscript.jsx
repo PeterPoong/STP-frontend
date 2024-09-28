@@ -848,7 +848,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
       setNavigationDirection(direction);
       setIsUnsavedChangesPopupOpen(true);
     } else {
-      direction === 'next' ? onNext() : onBack();
+      direction === 'next' ? handleNext() : onBack();
     }
   };
 
