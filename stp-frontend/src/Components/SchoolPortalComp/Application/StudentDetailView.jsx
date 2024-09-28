@@ -993,7 +993,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack }) 
         } else if (currentAction === 'reject') {
           return '#B71A18'; // Red
         } else {
-          return '#ED6126'; // Amber
+          return '#EE6226'; // Amber
         }
       } else if (formStatus === 4) {
         return '#146A17'; // Green
@@ -1037,8 +1037,8 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack }) 
         {isPending && !currentAction && (
           <div className="d-flex justify-content-end">
             <Button
-              variant="danger"
-              className="me-2"
+              
+              className="me-2 border border-0"
               onClick={() => handleAcceptReject('Rejected')}
               disabled={submitLoading}
             >
