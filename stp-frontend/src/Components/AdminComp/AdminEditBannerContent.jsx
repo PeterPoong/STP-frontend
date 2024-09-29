@@ -117,35 +117,16 @@ const AdminEditBannerContent = () => {
           setFormData({
             banner_name: bannerDetails.name,
             banner_url: bannerDetails.url,
+            banner_start: bannerDetails.startDate ? [bannerDetails.bannerStart] :[],
+            banner_end: bannerDetails.endDate ? [bannerDetails.bannerEnd]:[],
             banner_file: bannerDetails.file ? `${import.meta.env.VITE_BASE_URL}${bannerDetails.file}` : null,
             featured_id: bannerDetails.feature ? [bannerDetails.featured_id] : [],
           });
   
-           // Console log the banner start and end dates before formatting
-        console.log('Banner Start:', bannerDetails.banner_start);
-        console.log('Banner End:', bannerDetails.banner_end);
-          // Convert banner_start and banner_end to Date objects and format them for the datetime-local input
-          const formatDateTimeLocal = (dateStr) => {
-            const date = new Date(dateStr);
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-            const hours = String(date.getHours()).padStart(2, '0');
-            const minutes = String(date.getMinutes()).padStart(2, '0');
-            return `${year}-${month}-${day}T${hours}:${minutes}`;
-          };
-  
-          // Format the start and end dates
-          const startDate = formatDateTimeLocal(bannerDetails.banner_start);
-          const endDate = formatDateTimeLocal(bannerDetails.banner_end);
-   // Console log the formatted start and end dates
-   console.log('Formatted Start Date:', startDate);
-   console.log('Formatted End Date:', endDate);
-          // Set the formatted dates to state variables
-          setSelectedStartDate(startDate);
-          setSelectedEndDate(endDate);
+          setSelectedStartDate(bannerDetails.startDate);
+          setSelectedEndDate(bannerDetails.endDate);
           setBanner_file(bannerDetails.file ? `${import.meta.env.VITE_BASE_URL}storage/${bannerDetails.file}` : null);
-          setSelectedFeatures(bannerDetails.feature ? [bannerDetails.feature.featured_id] : []);
+          setSelectedFeatures(bannerDetails.featured ? [bannerDetails.featured.featured_id] : []);
         } else {
           console.error("Banner not found with ID:", bannerId);
         }

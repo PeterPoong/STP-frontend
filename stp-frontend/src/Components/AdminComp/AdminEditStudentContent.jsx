@@ -68,7 +68,7 @@ const AdminEditStudentContent = () => {
                   email: studentDetails.email,
                   country_code: studentDetails.country_code,
                   contact_number: studentDetails.contact_number,
-                  gender: studentDetails.gender,
+                  gender: studentDetails.gender_id,
                   address: studentDetails.address,
                   country: studentDetails.country,
                   state: studentDetails.state,
