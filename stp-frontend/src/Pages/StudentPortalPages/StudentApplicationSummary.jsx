@@ -6,12 +6,15 @@ import "../../css/StudentPortalStyles/StudentApplyCourse.css";
 import image1 from "../../assets/StudentAssets/University Logo/image1.jpg";
 import "../../css/StudentPortalStyles/StudentButtonGroup.css";
 import SpcFooter from "../../Components/StudentPortalComp/SpcFooter";
-import { useParams,useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import WidgetFileUploadAcademicTranscript from "../../Components/StudentPortalComp/WidgetFileUploadAcademicTranscript";
 import WidgetFileUpload from "../../Components/StudentPortalComp/WidgetFileUpload";
 import WidgetAchievement from "../../Components/StudentPortalComp/Widget/WidgetAchievement";
 import NavButtonsSP from "../../Components/StudentPortalComp/NavButtonsSP";
 import { grey } from '@mui/material/colors';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+import { PDFDocument } from 'pdf-lib';
 
 const StudentApplicationSummary = ({ }) => {
     const [activeTab, setActiveTab] = useState('info');
@@ -19,7 +22,7 @@ const StudentApplicationSummary = ({ }) => {
     const [showFullOverview, setShowFullOverview] = useState(false);
     const [showFullRequirements, setShowFullRequirements] = useState(false);
     const [selectedExam, setSelectedExam] = useState('SPM');
-
+    const [cgpaInfo, setCgpaInfo] = useState(null);
     // New state for basic information
     const [basicInfo, setBasicInfo] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -51,11 +54,11 @@ const StudentApplicationSummary = ({ }) => {
     const navigate = useNavigate();
     useEffect(() => {
         const token =
-          sessionStorage.getItem("token") || localStorage.getItem("token");
+            sessionStorage.getItem("token") || localStorage.getItem("token");
         if (!token) {
-          navigate("/studentPortalLogin");
+            navigate("/studentPortalLogin");
         }
-      }, [navigate]);
+    }, [navigate]);
 
 
     const calculateOverallGrade = (subjects) => {
@@ -101,6 +104,472 @@ const StudentApplicationSummary = ({ }) => {
         }
     }, [activeTab]);
 
+    const generateEnhancedPDF = async () => {
+        const doc = new jsPDF('p', 'mm', 'a4');
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+        let yOffset = 30; // Start yOffset below the header
+    
+        const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+        if (!token) {
+            throw new Error('No authentication token found');
+        }
+    
+        // Load the logo image once
+        let logoImage = null;
+        if (courseInfo?.logo) {
+            try {
+                const img = new Image();
+                img.src = `${import.meta.env.VITE_BASE_URL}storage/${courseInfo.logo}`;
+                await new Promise((resolve) => {
+                    img.onload = resolve;
+                });
+                logoImage = img;
+            } catch (error) {
+                console.error("Error loading school logo:", error);
+            }
+        }
+    
+        // Helper functions
+        const addHeader = () => {
+            // Clear the top margin
+            doc.setFillColor(255, 255, 255);
+            doc.rect(0, 0, pageWidth, 20, 'F');
+    
+            let logoHeight = 0;
+    
+            // Add the school logo centered above the title
+            if (logoImage) {
+                const imgWidth = 30;
+                const imgHeight = (logoImage.height * imgWidth) / logoImage.width;
+                doc.addImage(logoImage, 'PNG', (pageWidth - imgWidth) / 2, 10, imgWidth, imgHeight);
+                logoHeight = imgHeight;
+            }
+    
+            // Adjust yOffset to add margin below the logo
+            yOffset = 10 + logoHeight + 10; // 10 is logo y position, plus logo height, plus 10 units margin
+    
+            // Add Application Summary title centered
+            doc.setFontSize(18);
+            doc.setFont('helvetica', 'bold');
+            doc.text("Application Summary", pageWidth / 2, yOffset, { align: 'center' });
+    
+            // Add underline after Application Summary
+            yOffset += 4;
+            doc.setLineWidth(0.5);
+            doc.line(20, yOffset, pageWidth - 20, yOffset);
+    
+            // Add School Name and Course Name
+            yOffset += 6;
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(255, 18, 52); // Color #FF1234
+            doc.text(courseInfo?.school || 'School Name', pageWidth / 2, yOffset, { align: 'center' });
+    
+            yOffset += 6;
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(0, 0, 0); // Reset text color to black
+            doc.text(courseInfo?.course || 'Course Name', pageWidth / 2, yOffset, { align: 'center' });
+    
+            yOffset += 10; // Add more space after header
+        };
+    
+        const addFooter = () => {
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            const pageNum = doc.internal.getCurrentPageInfo().pageNumber;
+            doc.text(`Page ${pageNum}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+        };
+    
+        const checkPageBreak = (additionalHeight = 0) => {
+            if (yOffset + additionalHeight > pageHeight - 20) {
+                doc.addPage();
+                yOffset = 30; // Reset yOffset for new page below header
+                addHeader();
+                addFooter();
+            }
+        };
+    
+        const forcePageBreak = () => {
+            doc.addPage();
+            yOffset = 30;
+            addHeader();
+            addFooter();
+        };
+    
+        const addSectionTitle = (title) => {
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            yOffset += 10;
+            doc.text(title, 20, yOffset); // Align with table left margin
+            yOffset += 6;
+        };
+    
+        // Start generating PDF
+        addHeader();
+        addFooter();
+    
+        try {
+            // 1. Applicant Information
+            addSectionTitle("Applicant Information");
+    
+            const applicantInfo = [
+                { key: "Name", value: `${basicInfo?.firstName || ''} ${basicInfo?.lastName || ''}` },
+                { key: "Identity Card Number", value: basicInfo?.ic || 'N/A' },
+                { key: "Contact Number", value: `${basicInfo?.country_code || ''} ${basicInfo?.contact || ''}` },
+                { key: "Email Address", value: basicInfo?.email || 'N/A' },
+                { key: "Address", value: basicInfo?.address || 'N/A' }
+            ];
+    
+            // Create a table for applicant information with background color for the first column
+            doc.autoTable({
+                startY: yOffset,
+                theme: 'grid',
+                body: applicantInfo.map(info => [info.key, info.value]),
+                styles: { fontSize: 12 },
+                headStyles: { fillColor: [41, 128, 185], textColor: 255, halign: 'center' },
+                bodyStyles: { valign: 'middle' },
+                columnStyles: {
+                    0: { cellWidth: 60, fontStyle: 'bold', fillColor: [220, 220, 220], halign: 'left' },
+                    1: { cellWidth: pageWidth - 80, halign: 'left' }
+                },
+                margin: { left: 10, right: 10 },
+                didDrawPage: (data) => {
+                    yOffset = data.cursor.y;
+                    addHeader();
+                    addFooter();
+                },
+            });
+            yOffset = doc.previousAutoTable.finalY + 10;
+    
+            // 2. Course Information
+            addSectionTitle("Course Information");
+    
+            const courseInfoData = [
+                { key: "Course", value: courseInfo?.course || 'N/A' },
+                { key: "Qualification", value: courseInfo?.qualification || 'N/A' },
+                { key: "Period", value: courseInfo?.period || 'N/A' },
+                { key: "Mode", value: courseInfo?.mode || 'N/A' },
+                { key: "Intake", value: courseInfo?.intake?.join(', ') || 'N/A' },
+                { key: "Estimate Fee", value: `RM ${courseInfo?.cost?.toLocaleString() || '0.00'} / year` },
+                { key: "Summary", value: courseInfo?.description || 'N/A' },
+                { key: "Entry Requirements", value: courseInfo?.requirement || 'N/A' }
+            ];
+    
+            // Create a table for course information with background color for the first column
+            doc.autoTable({
+                startY: yOffset,
+                theme: 'grid',
+                body: courseInfoData.map(info => [info.key, info.value]),
+                styles: { fontSize: 12 },
+                headStyles: { fillColor: [41, 128, 185], textColor: 255, halign: 'center' },
+                bodyStyles: { valign: 'middle' },
+                columnStyles: {
+                    0: { cellWidth: 60, fontStyle: 'bold', fillColor: [220, 220, 220], halign: 'left' },
+                    1: { cellWidth: pageWidth - 80, halign: 'left' }
+                },
+                margin: { left: 10, right: 10 },
+                didDrawPage: (data) => {
+                    yOffset = data.cursor.y;
+                    addHeader();
+                    addFooter();
+                },
+                // Custom cell rendering to handle multi-line text
+                didParseCell: (data) => {
+                    if (data.cell.raw === courseInfo?.description || data.cell.raw === courseInfo?.requirement) {
+                        data.cell.styles.cellPadding = 4;
+                        data.cell.styles.fontSize = 11;
+                        data.cell.styles.valign = 'top';
+                    }
+                }
+            });
+            yOffset = doc.previousAutoTable.finalY + 10;
+    
+            // Force new page after Applicant Information and Course Information
+            forcePageBreak();
+    
+            // 3. Academic Results
+            addSectionTitle("Academic Results");
+    
+            for (const category of transcriptCategories) {
+                checkPageBreak(20);
+                doc.setFontSize(12);
+                doc.setFont('helvetica', 'bold');
+                doc.text('\u2022 ' + category.transcript_category, 20, yOffset); // Add bullet before category
+                yOffset += 6;
+    
+                const tableBody = [];
+                let includeProgramInfo = false;
+    
+                // CGPA and Program Name for non-SPM categories
+                if (category.id !== 32) {
+                    const cgpaInfo = await fetchCGPAForCategory(category, token);
+                    if (cgpaInfo.cgpa !== null || cgpaInfo.programName) {
+                        includeProgramInfo = true;
+                        if (cgpaInfo.programName) {
+                            // Add Program Name to table
+                            tableBody.push({ isProgramInfo: true, data: ['Program Name', cgpaInfo.programName] });
+                        }
+                        if (cgpaInfo.cgpa !== null) {
+                            // Add CGPA to table
+                            tableBody.push({ isProgramInfo: true, data: ['CGPA', cgpaInfo.cgpa] });
+                        }
+                    }
+                }
+    
+                // Add header row for subjects
+                tableBody.push({ isHeader: true, data: ['Subject Name', 'Grade'] });
+    
+                const subjects = await fetchTranscriptSubjectsForPDF(category.id);
+    
+                if (subjects && subjects.length > 0) {
+                    subjects.forEach(subject => {
+                        tableBody.push({
+                            isSubject: true,
+                            data: [
+                                subject.name || subject.subject_name || subject.highTranscript_name || 'N/A',
+                                subject.grade || subject.subject_grade || subject.higherTranscript_grade || 'N/A'
+                            ]
+                        });
+                    });
+    
+                    checkPageBreak(30);
+                    doc.autoTable({
+                        startY: yOffset,
+                        body: tableBody.map(row => row.data),
+                        theme: 'grid',
+                        styles: { fontSize: 10 },
+                        margin: { left: 20, right: 20 },
+                        columnStyles: {
+                            0: { cellWidth: pageWidth - 70, halign: 'left' },
+                            1: { cellWidth: 30, halign: 'center' }
+                        },
+                        didParseCell: (data) => {
+                            const row = tableBody[data.row.index];
+                            if (row.isProgramInfo) {
+                                data.cell.styles.fontStyle = 'bold';
+                                data.cell.styles.fillColor = [220, 220, 220];
+                                data.cell.styles.halign = 'left';
+                            } else if (row.isHeader) {
+                                data.cell.styles.fontStyle = 'bold';
+                                data.cell.styles.fillColor = [41, 128, 185];
+                                data.cell.styles.textColor = [255, 255, 255];
+                                data.cell.styles.halign = 'center';
+                            } else if (row.isSubject) {
+                                data.cell.styles.halign = data.column.index === 0 ? 'left' : 'center';
+                            }
+                        },
+                        didDrawPage: (data) => {
+                            yOffset = data.cursor.y;
+                            addHeader();
+                            addFooter();
+                        },
+                    });
+                    yOffset = doc.previousAutoTable.finalY + 10;
+                } else {
+                    checkPageBreak(10);
+                    doc.setFontSize(12);
+                    doc.setFont('helvetica', 'normal');
+                    doc.text("No subjects available for this category.", 25, yOffset);
+                    yOffset += 6;
+                }
+            }
+    
+            // Force new page after Academic Results
+            forcePageBreak();
+    
+            // 4. Co-curriculum Activities
+            addSectionTitle("Co-curriculum Activities");
+    
+            if (coCurriculum.length > 0) {
+                checkPageBreak(30);
+                doc.autoTable({
+                    startY: yOffset,
+                    head: [['Club Name', 'Location', 'Year', 'Position']],
+                    body: coCurriculum.map(activity => [
+                        activity.club_name || 'N/A',
+                        activity.location || 'N/A',
+                        activity.year || 'N/A',
+                        activity.student_position || 'N/A'
+                    ]),
+                    theme: 'grid',
+                    styles: { fontSize: 10 },
+                    headStyles: { fillColor: [231, 76, 60], textColor: 255, halign: 'center' },
+                    bodyStyles: { halign: 'center' },
+                    columnStyles: {
+                        0: { cellWidth: 50, halign: 'left' },
+                        1: { cellWidth: 50, halign: 'left' },
+                        2: { cellWidth: 30, halign: 'center' },
+                        3: { cellWidth: 30, halign: 'center' },
+                    },
+                    margin: { left: 20, right: 20 },
+                    didDrawPage: (data) => {
+                        yOffset = data.cursor.y;
+                        addHeader();
+                        addFooter();
+                    },
+                });
+                yOffset = doc.previousAutoTable.finalY + 10;
+            } else {
+                checkPageBreak(10);
+                doc.setFontSize(12);
+                doc.setFont('helvetica', 'normal');
+                doc.text("No co-curriculum activities available.", 25, yOffset);
+                yOffset += 6;
+            }
+    
+            // 5. Achievements
+            addSectionTitle("Achievements");
+    
+            if (achievements.length > 0) {
+                checkPageBreak(30);
+                doc.autoTable({
+                    startY: yOffset,
+                    head: [['Achievement Name', 'Awarded By', 'Date', 'Title Obtained']],
+                    body: achievements.map(achievement => [
+                        achievement.achievement_name || 'N/A',
+                        achievement.awarded_by || 'N/A',
+                        achievement.date || 'N/A',
+                        achievement.title_obtained || 'N/A'
+                    ]),
+                    theme: 'grid',
+                    styles: { fontSize: 10 },
+                    headStyles: { fillColor: [39, 174, 96], textColor: 255, halign: 'center' },
+                    bodyStyles: { halign: 'center' },
+                    columnStyles: {
+                        0: { cellWidth: 50, halign: 'left' },
+                        1: { cellWidth: 50, halign: 'left' },
+                        2: { cellWidth: 30, halign: 'center' },
+                        3: { cellWidth: 30, halign: 'center' },
+                    },
+                    margin: { left: 20, right: 20 },
+                    didDrawPage: (data) => {
+                        yOffset = data.cursor.y;
+                        addHeader();
+                        addFooter();
+                    },
+                });
+                yOffset = doc.previousAutoTable.finalY + 10;
+            } else {
+                checkPageBreak(10);
+                doc.setFontSize(12);
+                doc.setFont('helvetica', 'normal');
+                doc.text("No achievements available.", 25, yOffset);
+                yOffset += 6;
+            }
+    
+            // Force new page before Documents
+            forcePageBreak();
+    
+            // 6. Documents
+            addSectionTitle("Documents");
+    
+            const allDocuments = [
+                ...academicTranscripts.map(doc => ({ type: 'Academic Transcript', name: doc.studentMedia_name, file: doc.studentMedia_location })),
+                ...achievements.map(doc => ({ type: 'Achievement', name: doc.achievement_name, file: doc.achievement_media })),
+                ...otherDocuments.map(doc => ({ type: 'Other Document', name: doc.name, file: doc.media }))
+            ];
+    
+            if (allDocuments.length > 0) {
+                for (const document of allDocuments) {
+                    checkPageBreak(20);
+                    doc.setFontSize(12);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text(`${document.type}: ${document.name}`, 20, yOffset);
+                    yOffset += 6;
+    
+                    if (document.file) {
+                        try {
+                            const response = await fetch(`${import.meta.env.VITE_BASE_URL}${document.file}`);
+                            const blob = await response.blob();
+                            const fileType = blob.type;
+    
+                            if (fileType.startsWith('image/')) {
+                                // Handle image files (PNG, JPEG)
+                                const img = new Image();
+                                img.src = URL.createObjectURL(blob);
+                                await new Promise((resolve) => {
+                                    img.onload = resolve;
+                                });
+                                const imgWidth = pageWidth - 40;
+                                const imgHeight = (img.height * imgWidth) / img.width;
+                                checkPageBreak(imgHeight + 10);
+                                doc.addImage(img, fileType.split('/')[1].toUpperCase(), 20, yOffset, imgWidth, imgHeight);
+                                yOffset += imgHeight + 10;
+                            } else {
+                                checkPageBreak(6);
+                                doc.setFontSize(12);
+                                doc.setFont('helvetica', 'normal');
+                                doc.text("Cannot display this file type in PDF.", 25, yOffset);
+                                yOffset += 6;
+                            }
+                        } catch (error) {
+                            console.error(`Error processing document: ${document.name}`, error);
+                            checkPageBreak(6);
+                            doc.setFontSize(12);
+                            doc.setFont('helvetica', 'normal');
+                            doc.text("Error loading document.", 25, yOffset);
+                            yOffset += 6;
+                        }
+                    } else {
+                        checkPageBreak(6);
+                        doc.setFontSize(12);
+                        doc.setFont('helvetica', 'normal');
+                        doc.text("No file available.", 25, yOffset);
+                        yOffset += 6;
+                    }
+                }
+            } else {
+                checkPageBreak(6);
+                doc.setFontSize(12);
+                doc.setFont('helvetica', 'normal');
+                doc.text("No documents available.", 25, yOffset);
+                yOffset += 6;
+            }
+    
+            // Save the PDF
+            doc.save('application_summary.pdf');
+        } catch (error) {
+            console.error("Error generating PDF:", error);
+            // Optionally show an error message to the user
+        }
+    };
+    
+    
+
+    // Helper function to fetch transcript subjects for a specific category
+    const fetchTranscriptSubjectsForPDF = async (categoryId) => {
+        try {
+            const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+            const url = categoryId === 32
+                ? `${import.meta.env.VITE_BASE_URL}api/student/transcriptSubjectList`
+                : `${import.meta.env.VITE_BASE_URL}api/student/higherTranscriptSubjectList`;
+            const method = categoryId === 32 ? 'GET' : 'POST';
+            const body = categoryId === 32 ? null : JSON.stringify({ id: categoryId });
+
+            const response = await fetch(url, {
+                method: method,
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                ...(method === 'POST' && { body }),
+            });
+            if (!response.ok) {
+                throw new Error('Failed to fetch transcript subjects');
+            }
+            const result = await response.json();
+            if (result.success) {
+                return result.data;
+            } else {
+                throw new Error(result.message || 'Failed to fetch transcript subjects');
+            }
+        } catch (error) {
+            console.error('Error fetching transcript subjects:', error);
+            return null;
+        }
+    };
 
     const fetchTranscriptCategories = async () => {
         try {
@@ -266,7 +735,7 @@ const StudentApplicationSummary = ({ }) => {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ courseID: courseId })
+                body: JSON.stringify({ courseID: parseInt(courseId) }) 
             });
             const result = await response.json();
 
@@ -318,6 +787,72 @@ const StudentApplicationSummary = ({ }) => {
             }
         } catch (error) {
             console.error('Error fetching academic transcripts:', error);
+        }
+    };
+
+    const fetchCGPAForCategory = async (category, token) => {
+        if (category.id === 32) {
+            return { cgpa: null, programName: '', cgpaId: null };
+        }
+
+        try {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/programCgpaList`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({ transcriptCategory: category.id }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Failed to fetch CGPA for category ${category.transcript_category}`);
+            }
+
+            const result = await response.json();
+            return result.success && result.data
+                ? {
+                    cgpa: result.data.cgpa,
+                    programName: result.data.program_name,
+                    cgpaId: result.data.id,
+                }
+                : { cgpa: null, programName: '', cgpaId: null };
+        } catch (error) {
+            console.error('Error fetching CGPA:', error);
+            return { cgpa: null, programName: '', cgpaId: null };
+        }
+    };
+
+    const fetchCGPAInfo = async (categoryId) => {
+        if (categoryId === 32) {
+            setCgpaInfo(null);
+            return;
+        }
+
+        try {
+            const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/programCgpaList`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ transcriptCategory: categoryId }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch CGPA information');
+            }
+
+            const result = await response.json();
+            if (result.success && result.data) {
+                setCgpaInfo(result.data);
+            } else {
+                setCgpaInfo(null);
+            }
+        } catch (error) {
+            console.error('Error fetching CGPA information:', error);
+            setCgpaInfo(null);
         }
     };
 
@@ -396,8 +931,9 @@ const StudentApplicationSummary = ({ }) => {
 
     const handlePageChange = (section, page) => {
         setCurrentPage(prevState => ({ ...prevState, [section]: page }));
-        switch(section) {
+        switch (section) {
             case 'academicTranscripts':
+
                 fetchAcademicTranscripts(page);
                 break;
             case 'achievements':
@@ -440,11 +976,14 @@ const StudentApplicationSummary = ({ }) => {
     };
 
 
-    
+
+
+
     const handleExamChange = (e) => {
         const newExamId = e.target.value;
         setSelectedExam(newExamId);
         fetchTranscriptSubjects(parseInt(newExamId));
+        fetchCGPAInfo(parseInt(newExamId));
     };
 
     const copyToClipboard = (text) => {
@@ -643,7 +1182,7 @@ const StudentApplicationSummary = ({ }) => {
                     </table>
                 </div>
                 {renderPagination(paginationSection)}
-                
+
                 <WidgetFileUploadAcademicTranscript
                     isOpen={isViewAcademicTranscriptOpen}
                     onClose={() => setIsViewAcademicTranscriptOpen(false)}
@@ -670,6 +1209,11 @@ const StudentApplicationSummary = ({ }) => {
         if (!courseInfo) {
             return <div>Loading course information...</div>;
         }
+        const parseHTML = (html) => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            return doc.body.textContent || "";
+        };
 
         return (
             <div className="summary-content-course-info">
@@ -722,7 +1266,7 @@ const StudentApplicationSummary = ({ }) => {
                 <div className="bg-white p-4 mb-1 rounded-1 shadow-lg mt-3">
                     <h5 className="fw-bold mb-3">Course Overview</h5>
                     <div className={`overview-content ${showFullOverview ? 'expanded' : ''}`}>
-                        <p className="sas-summarytext">{courseInfo.description}</p>
+                        <p className="sas-summarytext">{parseHTML(courseInfo.description)}</p>
                     </div>
                     <div className="text-center">
                         <Button variant="link" onClick={() => setShowFullOverview(!showFullOverview)}>
@@ -734,7 +1278,7 @@ const StudentApplicationSummary = ({ }) => {
                 <div className="entry-requirements bg-white p-4 mb-1 rounded-1 shadow-lg mt-3">
                     <h5 className="fw-bold mb-3">Entry Requirement</h5>
                     <div className={`requirements-content ${showFullRequirements ? 'expanded' : ''}`}>
-                        <p className="sas-summarytext"> {courseInfo.requirement}</p>
+                        <p className="sas-summarytext"> {parseHTML(courseInfo.requirement)}</p>
                     </div>
                     <div className="text-center">
                         <Button variant="link" onClick={() => setShowFullRequirements(!showFullRequirements)}>
@@ -762,7 +1306,9 @@ const StudentApplicationSummary = ({ }) => {
                                         <p className="my-0 text-secondary  mt-2">Applied For: <span className=" text-black ms-2">{courseInfo?.course}</span></p>
                                     </div>
                                 </div>
-                                <Button className="sac-submit-button px-4">Print Summary</Button>
+                                <Button className="sac-submit-button px-4" onClick={generateEnhancedPDF}>
+                                    Print Summary
+                                </Button>
                             </div>
                             <div className="summary-tabs d-flex flex-wrap px-4">
                                 <Button
@@ -834,6 +1380,14 @@ const StudentApplicationSummary = ({ }) => {
                                                     ))}
                                                 </select>
                                             </div>
+                                            {cgpaInfo && selectedExam !== '32' && (
+                                                <div className="px-4 mb-3">
+                                                    <div className="d-flex justify-content-between align-items-center">
+                                                        <p className="mb-0"><strong>Program Name:</strong> {cgpaInfo.program_name || 'N/A'}</p>
+                                                        <p className="mb-0"><strong>CGPA:</strong> {cgpaInfo.cgpa || 'N/A'}</p>
+                                                    </div>
+                                                </div>
+                                            )}
                                             <div className="results-grid flex-grow-1 px-4 " style={{ maxHeight: '15rem', overflowY: 'auto' }}>
                                                 {transcriptSubjects && transcriptSubjects.length > 0 ? (
                                                     transcriptSubjects.map((subject, index) => (
@@ -844,10 +1398,11 @@ const StudentApplicationSummary = ({ }) => {
                                                     ))
                                                 ) : (
                                                     <div className="d-flex justify-content-between py-3">
-                                                        <p >No results available for this transcript.</p>
+                                                        <p>No results available for this transcript.</p>
                                                     </div>
                                                 )}
                                             </div>
+
                                             <div className="grade-summary d-flex justify-content-between align-items-stretch border-top">
                                                 <div className="overall-grade text-white w-75 d-flex justify-content-start">
                                                     <h3 className="align-self-center px-5">
@@ -868,40 +1423,48 @@ const StudentApplicationSummary = ({ }) => {
                                         <div className="co-curriculum m-3 shadow-lg p-4 rounded-5">
                                             <p className="text-secondary fw-bold border-bottom border-2 pb-3">Co-curriculum</p>
                                             <div className="activities-grid" style={{ maxHeight: '15rem', overflowY: 'auto' }}>
-                                                {coCurriculum.map((activity, index) => (
-                                                    <div key={index} className="activity-item d-flex flex-wrap justify-content-between align-items-start py-2">
-                                                        <div className="col-12 col-sm-6">
-                                                            <p className="mb-0"><strong>{activity.club_name}</strong></p>
-                                                            <p className="mb-0 text-muted">{activity.location}</p>
+                                                {coCurriculum.length > 0 ? (
+                                                    coCurriculum.map((activity, index) => (
+                                                        <div key={index} className="activity-item d-flex flex-wrap justify-content-between align-items-start py-2">
+                                                            <div className="col-12 col-sm-6">
+                                                                <p className="mb-0"><strong>{activity.club_name}</strong></p>
+                                                                <p className="mb-0 text-muted">{activity.location}</p>
+                                                            </div>
+                                                            <div className="col-6 col-sm-3 text-start text-sm-center">
+                                                                <p className="mb-0">{activity.year}</p>
+                                                            </div>
+                                                            <div className="col-6 col-sm-3 text-end">
+                                                                <span className={`position ${activity.student_position.toLowerCase()} py-1 px-2 rounded-pill`}>{activity.student_position}</span>
+                                                            </div>
                                                         </div>
-                                                        <div className="col-6 col-sm-3 text-start text-sm-center">
-                                                            <p className="mb-0">{activity.year}</p>
-                                                        </div>
-                                                        <div className="col-6 col-sm-3 text-end">
-                                                            <span className={`position ${activity.student_position.toLowerCase()} py-1 px-2 rounded-pill`}>{activity.student_position}</span>
-                                                        </div>
-                                                    </div>
-                                                ))}
+                                                    ))
+                                                ) : (
+                                                    <p className="text-center text-muted">No co-curricular activities added yet.</p>
+                                                )}
                                             </div>
                                         </div>
 
                                         <div className="achievements m-3 shadow-lg p-4 rounded-5">
                                             <p className="text-secondary fw-bold border-bottom border-2 pb-3">Achievements</p>
                                             <div className="achievements-grid" style={{ maxHeight: '15rem', overflowY: 'auto' }}>
-                                                {achievements.map((achievement, index) => (
-                                                    <div key={index} className="achievement-item d-flex flex-wrap justify-content-between align-items-start py-2">
-                                                        <div className="col-12 col-sm-6">
-                                                            <p className="mb-0"><strong>{achievement.achievement_name}</strong></p>
-                                                            <p className="mb-0 text-muted">{achievement.awarded_by}</p>
+                                                {achievements.length > 0 ? (
+                                                    achievements.map((achievement, index) => (
+                                                        <div key={index} className="achievement-item d-flex flex-wrap justify-content-between align-items-start py-2">
+                                                            <div className="col-12 col-sm-6">
+                                                                <p className="mb-0"><strong>{achievement.achievement_name}</strong></p>
+                                                                <p className="mb-0 text-muted">{achievement.awarded_by}</p>
+                                                            </div>
+                                                            <div className="col-6 col-sm-3 text-start text-sm-center">
+                                                                <p className="mb-0">{achievement.date}</p>
+                                                            </div>
+                                                            <div className="col-6 col-sm-3 text-end">
+                                                                <span className={`position ${achievement.title_obtained.toLowerCase().replace(/\s+/g, '-')} py-1 px-2 rounded-pill`}>{achievement.title_obtained}</span>
+                                                            </div>
                                                         </div>
-                                                        <div className="col-6 col-sm-3 text-start text-sm-center">
-                                                            <p className="mb-0">{achievement.date}</p>
-                                                        </div>
-                                                        <div className="col-6 col-sm-3 text-end">
-                                                            <span className={`position ${achievement.title_obtained.toLowerCase().replace(/\s+/g, '-')} py-1 px-2 rounded-pill`}>{achievement.title_obtained}</span>
-                                                        </div>
-                                                    </div>
-                                                ))}
+                                                    ))
+                                                ) : (
+                                                    <p className="text-center text-muted">No achievements added yet.</p>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
@@ -913,9 +1476,10 @@ const StudentApplicationSummary = ({ }) => {
                             ) : null}
                         </div>
                     </div>
+                    <SpcFooter />
                 </div>
             </div>
-            <SpcFooter />
+           
         </div>
 
     );

@@ -53,9 +53,9 @@ const StudentPortalSignUp = () => {
     setPhone(value);
     setCountryCode(country.dialCode);
   };
-/*end */
+  /*end */
 
-/*signup api */
+  /*signup api */
   const handleSubmit = (e) => {
     e.preventDefault();
     setSignupStatus(null);
@@ -119,7 +119,7 @@ const StudentPortalSignUp = () => {
             setSignupStatus("email_exists");
           } else if (error.errors.contact_no) {
             setSignupStatus("phone_exists");
-          } else if (error.erros.ic) {
+          } else if (error.errors.ic) {
             setSignupStatus("ic_exists")
           }
           else {
@@ -130,7 +130,19 @@ const StudentPortalSignUp = () => {
         }
       });
   };
-/*end */
+
+
+
+  const handleNameChange = (e) => {
+    const value = e.target.value.replace(/[^a-zA-Z0-9]/g, '');
+    setName(value);
+  };
+
+  const handleIdentityCardChange = (e) => {
+    const value = e.target.value.replace(/[^a-zA-Z0-9]/g, '');
+    setIdentityCard(value);
+  };
+  /*end */
 
   return (
     <Container fluid className="h-100">
@@ -185,12 +197,7 @@ const StudentPortalSignUp = () => {
                 or try logging in.
               </Alert>
             )}
-            {signupStatus === "phone_exists" && (
-              <Alert variant="warning">
-                This contact number is already registered. Please use a
-                different number or try logging in.
-              </Alert>
-            )}
+           
             {signupStatus === "ic_exists" && (
               <Alert variant="warning">
                 This ic is already registered. Please use a different email
@@ -205,13 +212,15 @@ const StudentPortalSignUp = () => {
             )}
             <Form onSubmit={handleSubmit}>
               <Form.Group className="mb-3">
-                <Form.Label className="custom-label">Name</Form.Label>
+                <Form.Label className="custom-label">Username</Form.Label>
                 <Form.Control
                   type="text"
-                  placeholder="Your Name"
+                  placeholder="Your Name "
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={handleNameChange}
                   required
+                  pattern="[a-zA-Z0-9]+"
+                  title="Username can only contain letters and numbers"
                 />
               </Form.Group>
               <Row>
@@ -222,6 +231,7 @@ const StudentPortalSignUp = () => {
                     </Form.Label>
                     <PhoneInput
                       country={"my"}
+
                       value={phone}
                       onChange={handlePhoneChange}
                       inputProps={{
@@ -237,7 +247,8 @@ const StudentPortalSignUp = () => {
                       disableCountryCode={false}
                       disableDropdown={false}
                       autoFormat={true}
-                      style={{ zIndex: 11 }} 
+                      style={{ zIndex: 13 }}
+                      inputStyle={{ fontSize: "16px" }}
                     />
                   </Form.Group>
                 </Col>
@@ -248,10 +259,12 @@ const StudentPortalSignUp = () => {
                     </Form.Label>
                     <Form.Control
                       type="text"
-                      placeholder="XXXXXXXX"
+                      placeholder="XXXXXXXX "
                       value={identityCard}
-                      onChange={(e) => setIdentityCard(e.target.value)}
+                      onChange={handleIdentityCardChange}
                       required
+                      pattern="[a-zA-Z0-9]+"
+                      title="IC can only contain letters and numbers"
                     />
                   </Form.Group>
                 </Col>
@@ -359,7 +372,7 @@ const StudentPortalSignUp = () => {
               <p className="text-center text-muted small">
                 or Login/Sign Up using
               </p>
-              <Row className="justify-content-center">
+              {/* <Row className="justify-content-center">
                 <Col xs="auto">
                   <button
                     type="button"
@@ -406,8 +419,9 @@ const StudentPortalSignUp = () => {
                     </svg>
                   </button>
                 </Col>
-              </Row>
-              <p className="text-center small mb-0">
+              </Row>*/}
+
+              <p className="text-center small mb-0 mt-5">
                 Already have an account?{" "}
                 <Link to="/studentPortalLogin" className="text-danger">
                   Login now

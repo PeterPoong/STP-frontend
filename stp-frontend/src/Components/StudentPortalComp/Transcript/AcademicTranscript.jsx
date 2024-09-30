@@ -9,12 +9,11 @@ import 'react-select-search/style.css';
 import "../../../css/StudentPortalStyles/StudentPortalAcademicTranscript.css";
 import WidgetFileUploadAcademicTranscript from "../../../Components/StudentPortalComp/WidgetFileUploadAcademicTranscript";
 import WidgetPopUpDelete from "../../../Components/StudentPortalComp/WidgetPopUpDelete";
-
 import "../../../css/StudentPortalStyles/StudentButtonGroup.css";
 import WidgetPopUpSubmission from "../../../Components/StudentPortalComp/Widget/WidgetPopUpSubmission";
-
 import WidgetPopUpAcademicRemind from "../../../Components/StudentPortalComp/Widget/WidgetPopUpAcademicRemind";
-
+import WidgetPopUpUnsavedChanges from "../../../Components/StudentPortalComp/Widget/WidgetPopUpUnsavedChanges"; // New import
+import SaveButton from "../../../Components/StudentPortalComp/SaveButton"; // Import the SaveButton component
 const ExamSelector = ({ exams, selectedExam, setSelectedExam }) => {
   const itemsPerPage = 5;
   const pages = [];
@@ -87,12 +86,13 @@ const ExamSelector = ({ exams, selectedExam, setSelectedExam }) => {
   );
 };
 
-const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveAll }) => {
+const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveAll, setHasUnsavedChanges }) => {
   const [editingIndex, setEditingIndex] = useState(null);
   const [availableSubjects, setAvailableSubjects] = useState([]);
   const [hasCheckedForPreset, setHasCheckedForPreset] = useState(false);
-
+  const [isNewUser, setIsNewUser] = useState(true); // New state to track if it's a new user
   // Function to convert letter grades to integer codes
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const gradeToInt = (grade) => {
     const gradeMap = {
       'A+': 17, 'A': 18, 'A-': 19,
@@ -104,40 +104,10 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
     return gradeMap[grade] || 0; // Return 0 if grade not found
   };
   useEffect(() => {
-    if (examType === 'SPM') {
-      fetchAvailableSubjects();
-      if (!hasCheckedForPreset) {
-        checkAndPresetSubjectsForNewUser();
-      }
+    if (examType === 'SPM' && isInitialLoad) {
+      checkAndPresetSubjectsForNewUser();
     }
-  }, [examType, hasCheckedForPreset]);
-
-  const fetchAvailableSubjects = async () => {
-    try {
-      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/subjectList`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          category: 32,
-          selectedSubject: subjects.map(s => s.id)
-        }),
-      });
-      const data = await response.json();
-      if (data.success) {
-        const filteredSubjects = data.data.filter(subject =>
-          !subjects.some(s => s.id === subject.id)
-        );
-        setAvailableSubjects(filteredSubjects);
-      }
-    } catch (error) {
-      console.error('Error fetching available subjects:', error);
-    }
-  };
-
+  }, [examType, isInitialLoad]);
   const checkAndPresetSubjectsForNewUser = async () => {
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
@@ -151,11 +121,17 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
       const result = await response.json();
       if (result.success) {
         if (result.data.length === 0) {
-          // User has no subjects, add preset subjects
-          await presetSubjectsForNewUser();
+          presetSubjectsForNewUser();
+          setIsNewUser(true);
+        } else {
+          setIsNewUser(false);
+          onSubjectsChange(result.data.map(subject => ({
+            id: subject.subject_id,
+            name: subject.subject_name,
+            grade: subject.subject_grade,
+            isEditing: false
+          })));
         }
-        // Fetch subjects again to get the updated list (including presets if added)
-        await fetchSubjects();
       } else {
         console.error('Failed to check for existing subjects:', result);
       }
@@ -163,42 +139,55 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
       console.error('Error checking for existing subjects:', error);
     } finally {
       setHasCheckedForPreset(true);
+      setIsInitialLoad(false);
     }
   };
 
-  const presetSubjectsForNewUser = async () => {
-    try {
-      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      const presetSubjects = [
-        { subjectID: 1, grade: 17 },
-        { subjectID: 2, grade: 17 },
-        { subjectID: 3, grade: 17 },
-        { subjectID: 4, grade: 17 },
-        { subjectID: 5, grade: 17 }
-      ];
+  const presetSubjectsForNewUser = () => {
+    const presetSubjects = [
+      { id: 1, name: "Bahasa Melayu", grade: "", isEditing: true },
+      { id: 2, name: "English", grade: "", isEditing: true },
+      { id: 3, name: "Mathematics", grade: "", isEditing: true },
+      { id: 4, name: "Science", grade: "", isEditing: true },
+      { id: 5, name: "History", grade: "", isEditing: true }
+    ];
+    onSubjectsChange(presetSubjects);
+    setHasUnsavedChanges(true);
+  };
 
-      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/addEditTranscript`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          category: 32, // Assuming 32 is the category ID for SPM
-          data: presetSubjects
-        }),
-      });
-
-      const data = await response.json();
-      if (data.success) {
-        console.log('Preset subjects added successfully for new user');
-      } else {
-        console.error('Error adding preset subjects:', data.message);
+  const fetchAvailableSubjects = useCallback(async () => {
+    if (!isNewUser) {
+      try {
+        const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+        const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/subjectList`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            category: 32,
+            selectedSubject: subjects.map(s => s.id)
+          }),
+        });
+        const data = await response.json();
+        if (data.success) {
+          const filteredSubjects = data.data.filter(subject =>
+            !subjects.some(s => s.id === subject.id)
+          );
+          setAvailableSubjects(filteredSubjects);
+        }
+      } catch (error) {
+        console.error('Error fetching available subjects:', error);
       }
-    } catch (error) {
-      console.error('Error in presetSubjectsForNewUser:', error);
     }
-  };
+  }, [subjects, isNewUser]);
+
+  useEffect(() => {
+    if (examType === 'SPM' && !isInitialLoad) {
+      fetchAvailableSubjects();
+    }
+  }, [examType, fetchAvailableSubjects, isInitialLoad]);
 
   const fetchSubjects = async () => {
     try {
@@ -234,6 +223,7 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
       onSubjectsChange(updatedSubjects);
       setEditingIndex(updatedSubjects.length - 1);
       setAvailableSubjects(availableSubjects.filter(s => s.id !== newSubject.id));
+      setHasUnsavedChanges(true);
     }
   };
 
@@ -242,10 +232,12 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
       i === index ? { ...subject, grade: grade.toUpperCase() } : subject
     );
     onSubjectsChange(updatedSubjects);
+    setHasUnsavedChanges(true);
   };
 
   const handleEdit = (index) => {
     setEditingIndex(index);
+    setHasUnsavedChanges(true);
   };
 
   const handleSave = (index) => {
@@ -259,6 +251,7 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
     );
     onSubjectsChange(updatedSubjects);
     setEditingIndex(null);
+
   };
 
   const handleDelete = (index) => {
@@ -266,6 +259,7 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
     const updatedSubjects = subjects.filter((_, i) => i !== index);
     onSubjectsChange(updatedSubjects);
     setAvailableSubjects([...availableSubjects, deletedSubject]);
+    setHasUnsavedChanges(true);
   };
 
   const getGradeColor = (grade) => {
@@ -353,20 +347,18 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
         </div>
       )}
       <div className="d-flex justify-content-end mt-4">
-        <button
-          className="button-table px-5 py-1 text-center"
-          onClick={() => {
-            onSaveAll();
-            fetchAvailableSubjects();
+        <SaveButton
+          onSave={async () => {
+            const result = await onSaveAll();
+            await fetchAvailableSubjects();
+            return result;
           }}
-        >
-          SAVE
-        </button>
+        />
       </div>
     </div>
   );
 };
-const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveAll, categoryId }) => {
+const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveAll, categoryId, setHasUnsavedChanges }) => {
   const [newSubject, setNewSubject] = useState('');
   const [editingIndex, setEditingIndex] = useState(null);
   const [programName, setProgramName] = useState('');
@@ -414,6 +406,17 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
     }
   };
 
+  // When setting programName
+  const handleProgramNameChange = (e) => {
+    setProgramName(e.target.value);
+    setHasUnsavedChanges(true);
+  };
+
+  // When setting cgpa
+  const handleCgpaChange = (e) => {
+    setCgpa(e.target.value);
+    setHasUnsavedChanges(true);
+  };
 
   const handleAddSubject = (e) => {
     e.preventDefault();
@@ -423,6 +426,7 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
       onSubjectsChange(updatedSubjects);
       setNewSubject('');
       setEditingIndex(updatedSubjects.length - 1);
+      setHasUnsavedChanges(true);
     }
   };
 
@@ -431,6 +435,7 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
       i === index ? { ...subject, grade } : subject
     );
     onSubjectsChange(updatedSubjects);
+    setHasUnsavedChanges(true);
   };
 
   const handleNameChange = (index, name) => {
@@ -438,10 +443,12 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
       i === index ? { ...subject, name } : subject
     );
     onSubjectsChange(updatedSubjects);
+    setHasUnsavedChanges(true);
   };
 
   const handleEdit = (index) => {
     setEditingIndex(index);
+    setHasUnsavedChanges(true);
   };
 
   const handleSave = (index) => {
@@ -455,11 +462,13 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
     );
     onSubjectsChange(updatedSubjects);
     setEditingIndex(null);
+
   };
 
   const handleDelete = (index) => {
     const updatedSubjects = subjects.filter((_, i) => i !== index);
     onSubjectsChange(updatedSubjects);
+    setHasUnsavedChanges(true);
   };
 
   const getGradeColor = (grade) => {
@@ -535,16 +544,17 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
 
       console.log('CGPA saved successfully, now saving subjects');
       // After successfully saving CGPA, call the parent's onSaveAll function
-      await onSaveAll(subjects, examType);
+      const subjectsResult = await onSaveAll(subjects, examType);
       console.log('Subjects saved successfully');
 
       // Fetch updated data after saving
       await fetchProgramCgpa();
-
+      return subjectsResult;
     } catch (error) {
       console.error('Error in ProgramBasedExam handleSaveAll:', error);
       console.error('Error details:', error.message);
       alert('Failed to save program data. Please try again. Error: ' + error.message);
+      return { success: false, message: error.message };
     }
   };
   return (
@@ -557,7 +567,7 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
               type="text"
               className="inputat"
               value={programName}
-              onChange={(e) => setProgramName(e.target.value)}
+              onChange={handleProgramNameChange}
             />
           </div>
           <div className="w-1/2">
@@ -566,7 +576,7 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
               type="text"
               className="inputat"
               value={cgpa}
-              onChange={(e) => setCgpa(e.target.value)}
+              onChange={handleCgpaChange}
             />
           </div>
         </div>
@@ -635,12 +645,9 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
         </div>
       </form>
       <div className="d-flex justify-content-end mt-4">
-        <button
-          className="button-table px-5 py-1 text-center"
-          onClick={handleSaveAll}
-        >
-          SAVE
-        </button>
+        <SaveButton
+          onSave={handleSaveAll}
+        />
       </div>
       <WidgetPopUpAcademicRemind
         isOpen={isRemindPopupOpen}
@@ -668,7 +675,10 @@ const AcademicTranscript = () => {
   const [isViewMode, setIsViewMode] = useState(false);
   const [subjects, setSubjects] = useState([]);
   const [isRemindPopupOpen, setIsRemindPopupOpen] = useState(false);
-
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [isUnsavedChangesPopupOpen, setIsUnsavedChangesPopupOpen] = useState(false);
+  const [pendingCategory, setPendingCategory] = useState(null);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [examData, setExamData] = useState({
     'SPM': [],
     'UEC': [],
@@ -1071,13 +1081,17 @@ const AcademicTranscript = () => {
         console.log('SPM Subjects saved successfully');
         // Refresh the subjects
         fetchSubjects(category.id.toString());
+        setHasUnsavedChanges(false);
+        return { success: true }; // Return success
       } else {
         console.error('Error saving SPM subjects:', data.message);
         alert(`Error saving SPM subjects: ${data.message}`);
+        return { success: false, message: data.message || 'Failed to save SPM subjects.' };
       }
     } catch (error) {
       console.error('Error in addEditSPMTranscript:', error);
       alert('An unexpected error occurred while saving SPM subjects.');
+      return { success: false, message: 'An unexpected error occurred while saving SPM subjects.' };
     }
   };
 
@@ -1086,10 +1100,12 @@ const AcademicTranscript = () => {
       const category = categories.find(cat => cat.transcript_category === selectedExam);
       if (category) {
         fetchMediaByCategory(category.id);
-        fetchSubjects(category.id.toString());
+        if (selectedExam !== 'SPM' || !isInitialLoad) {
+          fetchSubjects(category.id.toString());
+        }
       }
     }
-  }, [selectedExam, categories, fetchSubjects]);
+  }, [selectedExam, categories, fetchSubjects, isInitialLoad]);
 
   const updateSubjects = useCallback((updatedSubjects) => {
     console.log('updateSubjects called with:', updatedSubjects);
@@ -1107,13 +1123,14 @@ const AcademicTranscript = () => {
 
       if (!category) {
         console.error('Selected exam category not found');
-        return;
+
+        return { success: false, message: 'Selected exam category not found.' };
       }
 
 
       if (subjectsToSave.length === 0 || subjectsToSave.some(subject => !subject.name.trim() || !subject.grade.trim())) {
         setIsRemindPopupOpen(true);
-        return;
+        return { success: false, message: 'Some subjects are incomplete.' };
       }
 
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
@@ -1123,7 +1140,8 @@ const AcademicTranscript = () => {
 
       if (category.id === 32) {
         console.log('Saving SPM subjects...');
-        await addEditSPMTranscript(subjectsToSave);
+        const spmResult = await addEditSPMTranscript(subjectsToSave);
+        return spmResult;
       } else {
         console.log('Saving non-SPM subjects...');
         const payload = {
@@ -1152,18 +1170,54 @@ const AcademicTranscript = () => {
         if (data.success) {
           console.log('Non-SPM Subjects saved successfully');
           await fetchSubjects(category.id.toString());
+          setHasUnsavedChanges(false);
+          return { success: true };
+
         } else {
           console.error('Error saving non-SPM subjects:', data.message);
           alert(`Error saving subjects: ${data.message}`);
+          return { success: false, message: data.message || 'Failed to save non-SPM subjects.' };
         }
       }
     } catch (error) {
       console.error('Error in AcademicTranscript handleSaveAll:', error);
       alert('An unexpected error occurred while saving subjects. Error: ' + error.message);
+      return { success: false, message: error.message };
     }
   };
 
+  const handleCategoryChange = (newCategory) => {
+    if (hasUnsavedChanges) {
+      setPendingCategory(newCategory);
+      setIsUnsavedChangesPopupOpen(true);
+    } else {
+      setSelectedExam(newCategory);
+      const category = categories.find(cat => cat.transcript_category === newCategory);
+      if (category) {
+        fetchMediaByCategory(category.id);
+        fetchSubjects(category.id.toString());
+      }
+    }
+  };
 
+  // Confirm navigation after user acknowledges unsaved changes
+  const handleConfirmNavigation = () => {
+    setSelectedExam(pendingCategory);
+    const category = categories.find(cat => cat.transcript_category === pendingCategory);
+    if (category) {
+      fetchMediaByCategory(category.id);
+      fetchSubjects(category.id.toString());
+    }
+    setIsUnsavedChangesPopupOpen(false);
+    setHasUnsavedChanges(false);
+    setPendingCategory(null);
+  };
+
+  // Cancel navigation
+  const handleCancelNavigation = () => {
+    setIsUnsavedChangesPopupOpen(false);
+    setPendingCategory(null);
+  };
 
   const renderExamComponent = () => {
     const category = categories.find(cat => cat.transcript_category === selectedExam);
@@ -1178,6 +1232,7 @@ const AcademicTranscript = () => {
         files={files}
         onSaveAll={() => handleSaveAll(subjects, selectedExam)}
         categoryId={categoryId}
+        setHasUnsavedChanges={setHasUnsavedChanges} // Pass the setter
       />;
     } else if (programBasedCategories.some(cat => cat.transcript_category === selectedExam)) {
       return <ProgramBasedExam
@@ -1187,25 +1242,24 @@ const AcademicTranscript = () => {
         files={files}
         onSaveAll={handleSaveAll}
         categoryId={categoryId}
+        setHasUnsavedChanges={setHasUnsavedChanges} // Pass the setter
       />;
     }
     return <div>No data available for {selectedExam}</div>;
   };
+
   return (
     <div className='p-0'>
       <ExamSelector
         exams={categories}
         selectedExam={selectedExam}
-        setSelectedExam={(exam) => {
-          setSelectedExam(exam);
-          const categoryId = categories.find(cat => cat.transcript_category === exam)?.id;
-          if (categoryId) fetchMediaByCategory(categoryId);
-        }}
+        setSelectedExam={handleCategoryChange} // Use the custom handler
       />
+
       <div className="p-5 pt-0">
         {renderExamComponent()}
 
-        <div className="mb-4">
+        <div className="mb-4 border-top pt-4">
           <div className="flex items-center justify-between">
             <p className="fw-bold small formlabel">Upload {selectedExam} Result Slips
               <Tooltip title="Please upload trial results if full results not yet released" arrow>
@@ -1331,6 +1385,11 @@ const AcademicTranscript = () => {
       <WidgetPopUpAcademicRemind
         isOpen={isRemindPopupOpen}
         onClose={() => setIsRemindPopupOpen(false)}
+      />
+      <WidgetPopUpUnsavedChanges
+        isOpen={isUnsavedChangesPopupOpen}
+        onConfirm={handleConfirmNavigation}
+        onCancel={handleCancelNavigation}
       />
     </div>
   );

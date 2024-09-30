@@ -170,6 +170,7 @@ const StudentApplyCourses = () => {
         setShowSubmissionPopup(false);
         setIsSubmitted(true);
         sessionStorage.setItem('lastAppliedCourseId', courseId);
+        
       } else if (data.error && data.error.courses) {
         setErrorMessage(data.error.courses[0]);
         setShowErrorPopup(true);
@@ -244,25 +245,31 @@ const StudentApplyCourses = () => {
       </CustomStepIcon>
     );
   };
-
   if (isSubmitted) {
     return (
       <div className="app-container-applycourse">
         <NavButtonsSP />
         <div className="main-content-applycourse">
-
           <div className="backgroundimage">
             <div className="widget-applying-course-success">
               <h1 className="text-danger fw-bold mb-4">Congratulations!</h1>
-              <h3 className="text-black fw-normal">Your application has been successfully submitted.</h3>
+              <h3 className="text-black fw-normal">
+                You have successfully applied for
+                <span className="fw-bold"> {courseName || "the course"}</span> at
+                <span className="fw-bold"> {schoolName || "the school"}</span>.
+              </h3>
+              
             </div>
           </div>
           <div className="post-submission-buttons">
             <Button
               className="sac-submit-button"
-              onClick={() => navigate(`/studentApplicationSummary/${sessionStorage.getItem('lastAppliedCourseId')}`)}
+              onClick={() =>
+                navigate(
+                  `/studentApplicationSummary/${sessionStorage.getItem('lastAppliedCourseId')}`
+                )
+              }
             >
-
               View Summary
             </Button>
             <Button className="sac-submit-button" onClick={() => navigate('/courses')}>
@@ -274,7 +281,6 @@ const StudentApplyCourses = () => {
       </div>
     );
   }
-
   return (
     <div className="app-container-applycourse mt-4">
       <NavButtonsSP />

@@ -111,7 +111,7 @@ const WidgetClub = ({ isOpen, onClose, onSave, item, isViewMode }) => {
               {club_name || 'Enter Club Name'}
               {!isViewMode && (
                 <button className="buttoneditam">
-                  <Edit2 size={20} color="white" onClick={handleTitleEdit} />
+                  <Edit2 size={20} color="white"  onClick={handleTitleEdit} />
                 </button>
               )}
             </>

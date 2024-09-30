@@ -905,6 +905,7 @@ p {
   width: 3rem;
   margin: 0;
   transition: 0.3s ease-out;
+  background:transparent;
 }
 
 .buttoneditam:hover, .buttonsaveam:hover

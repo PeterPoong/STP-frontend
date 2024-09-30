@@ -15,7 +15,7 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
     email: '',
     firstName: '',
     lastName: '',
-    country: '',
+    country: 'Malaysia',
     city: '',
     state: '',
     postcode: '',
@@ -47,9 +47,15 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
     if (studentData.contact && studentData.country_code) {
       setPhone(`${studentData.country_code}${studentData.contact}`);
     }
-    if (studentData.country) {
+    if (countries.length > 0 && studentData.country) {
       const countryId = countries.find(c => c.country_name === studentData.country)?.id;
       if (countryId) fetchStates(countryId);
+    } 
+    // New logic for gender preselection
+    if (studentData.country_code === '+60' && studentData.ic && !studentData.gender) {
+      const lastDigit = parseInt(studentData.ic.slice(-1));
+      const presetGender = lastDigit % 2 === 0 ? 'Female' : 'Male';
+      setStudentData(prevData => ({ ...prevData, gender: presetGender }));
     }
   }, [studentData, countries]);
 
@@ -126,6 +132,7 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
           gender: genderName, // This is already the core_metaName, not the ID
           // contact: responseData.data.contact_number || '',
           // country_code: responseData.data.country_code || ''
+          country : responseData.data.country || "Malaysia"
         };
 
         console.log('Updated student data:', updatedStudentData);
@@ -159,12 +166,19 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
       }
       const data = await response.json();
       setCountries(data.data || []);
-    } catch (error) {
-      console.error('Error fetching countries:', error);
-      setError('Failed to load countries. Please try again later.');
-      setCountries([]);
+      if (!studentData.country) {
+      const malaysia = data.data.find(c => c.country_name === 'Malaysia');
+      if (malaysia) {
+        setStudentData(prevData => ({ ...prevData, country: 'Malaysia' }));
+        fetchStates(malaysia.id);
+      }
     }
-  };
+  } catch (error) {
+    console.error('Error fetching countries:', error);
+    setError('Failed to load countries. Please try again later.');
+    setCountries([]);
+  }
+};
 
   const fetchStates = async (countryId) => {
     try {
@@ -226,9 +240,19 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    let sanitizedValue = value;
+
+    if (name === 'username' || name === 'ic') {
+      sanitizedValue = value.replace(/[^a-zA-Z0-9]/g, '');
+    } else if (name === 'firstName' || name === 'lastName') {
+      sanitizedValue = value.replace(/[^a-zA-Z\s]/g, '');
+    } else if (name === 'postcode') {
+      sanitizedValue = value.replace(/[^0-9]/g, '');
+    }
+
     setStudentData(prevData => ({
       ...prevData,
-      [name]: value
+      [name]: sanitizedValue
     }));
 
     if (name === 'gender') {
@@ -238,6 +262,15 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
           ...prevData,
           gender: selectedGender.core_metaName
         }));
+      }
+    }
+
+     // If IC number changes and country code is Malaysia, preset gender
+     if (name === 'ic' && studentData.country_code === '+60') {
+      const lastDigit = parseInt(sanitizedValue.slice(-1));
+      if (!isNaN(lastDigit)) {
+        const presetGender = lastDigit % 2 === 0 ? 'Female' : 'Male';
+        setStudentData(prevData => ({ ...prevData, gender: presetGender }));
       }
     }
   };
@@ -250,6 +283,15 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
       contact: value.slice(country.dialCode.length),
       country_code: `+${country.dialCode}`
     }));
+
+    // If country code changes to Malaysia and IC exists, preset gender
+    if (country.dialCode === '60' && studentData.ic) {
+      const lastDigit = parseInt(studentData.ic.slice(-1));
+      if (!isNaN(lastDigit)) {
+        const presetGender = lastDigit % 2 === 0 ? 'Female' : 'Male';
+        setStudentData(prevData => ({ ...prevData, gender: presetGender }));
+      }
+    }
   };
 
   const handleCountryChange = (e) => {
@@ -373,7 +415,9 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
                     name="username"
                     value={studentData.username || ''}
                     onChange={handleInputChange}
-                    placeholder="Enter username"
+                    placeholder="Enter username (letters and numbers only)"
+                    pattern="[a-zA-Z0-9]+"
+                    title="Username can only contain letters and numbers"
                   />
                 </Form.Group>
               </Col>
@@ -389,7 +433,9 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
                     name="firstName"
                     value={studentData.firstName || ''}
                     onChange={handleInputChange}
-                    placeholder="Enter first name"
+                    placeholder="Enter first name (letters and spaces only)"
+                    pattern="[a-zA-Z\s]+"
+                    title="First name can only contain letters and spaces"
                   />
                 </Form.Group>
               </Col>
@@ -403,7 +449,9 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
                     name="lastName"
                     value={studentData.lastName || ''}
                     onChange={handleInputChange}
-                    placeholder="Enter last name"
+                    placeholder="Enter last name (letters and spaces only)"
+                    pattern="[a-zA-Z\s]+"
+                    title="Last name can only contain letters and spaces"
                   />
                 </Form.Group>
               </Col>
@@ -419,7 +467,9 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
                     name="ic"
                     value={studentData.ic || ''}
                     onChange={handleInputChange}
-                    placeholder="Enter IC number"
+                    placeholder="Enter IC number (letters and numbers only)"
+                    pattern="[a-zA-Z0-9]+"
+                    title="IC can only contain letters and numbers"
                   />
                 </Form.Group>
               </Col>
@@ -462,6 +512,7 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
                     dropdownClass="country-dropdown custom-dropdown"
                     countryCodeEditable={false}
                     className="w-75"
+                    inputStyle={{ fontSize: "16px" }}
                   />
                 </Form.Group>
               </Col>
@@ -493,96 +544,98 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
                     placeholder="Enter address"
                   />
                 </Form.Group>
-                </Col>
+              </Col>
             </Row>
-          
 
 
-          <Row className="mb-3 px-0">
-            <Col md={6}>
-              <Form.Group controlId="country">
-                <Form.Label className="fw-bold small formlabel">Country <span className="text-danger">*</span></Form.Label>
-                <Form.Select
-                  required
-                  className="w-75"
-                  name="country"
-                  value={countries.find(c => c.country_name === studentData.country)?.id || ''}
-                  onChange={handleCountryChange}
-                >
-                  <option value="">Select country</option>
-                  {countries.map((country) => (
-                    <option key={country.id} value={country.id}>
-                      {country.country_name}
-                    </option>
-                  ))}
-                </Form.Select>
-              </Form.Group>
-            </Col>
-            <Col md={6}>
-              <Form.Group controlId="state">
-                <Form.Label className="fw-bold small formlabel">State <span className="text-danger">*</span></Form.Label>
-                <Form.Select
-                  required
-                  className="w-75"
-                  name="state"
-                  value={states.find(s => s.state_name === studentData.state)?.id || ''}
-                  onChange={handleStateChange}
-                >
-                  <option value="">Select state</option>
-                  {states.map((state) => (
-                    <option key={state.id} value={state.id}>
-                      {state.state_name}
-                    </option>
-                  ))}
-                </Form.Select>
-              </Form.Group>
-            </Col>
-          </Row>
-          <Row className="mb-4 ">
-            <Col md={6}>
-              <Form.Group controlId="city">
-                <Form.Label className="fw-bold small formlabel">City <span className="text-danger">*</span></Form.Label>
-                <Form.Select
-                  required
-                  className="w-75"
-                  name="city"
-                  value={cities.find(c => c.city_name === studentData.city)?.id || ''}
-                  onChange={handleCityChange}
-                >
-                  <option value="">Select city</option>
-                  {cities.map((city) => (
-                    <option key={city.id} value={city.id}>
-                      {city.city_name}
-                    </option>
-                  ))}
-                </Form.Select>
-              </Form.Group>
-            </Col>
-            <Col md={6}>
-              <Form.Group controlId="postcode">
-                <Form.Label className="fw-bold small formlabel">Postcode <span className="text-danger">*</span></Form.Label>
-                <Form.Control
-                  type="text"
-                  required
-                  className="w-75"
-                  name="postcode"
-                  value={studentData.postcode || ''}
-                  onChange={handleInputChange}
-                  placeholder="Enter postcode"
-                />
-              </Form.Group>
-            </Col>
-          </Row>
-          <div className="d-flex justify-content-end mt-3">
-            <div className="my-2">
-              <Button variant="danger" type="submit" className="mpbtndiv m-0 fw-bold rounded-pill">
-                Save
-              </Button>
+
+            <Row className="mb-3 px-0">
+              <Col md={6}>
+                <Form.Group controlId="country">
+                  <Form.Label className="fw-bold small formlabel">Country <span className="text-danger">*</span></Form.Label>
+                  <Form.Select
+                    required
+                    className="w-75"
+                    name="country"
+                    value={countries.find(c => c.country_name === studentData.country)?.id || ''}
+                    onChange={handleCountryChange}
+                  >
+                    <option value="">Select country</option>
+                    {countries.map((country) => (
+                      <option key={country.id} value={country.id}>
+                        {country.country_name}
+                      </option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group controlId="state">
+                  <Form.Label className="fw-bold small formlabel">State <span className="text-danger">*</span></Form.Label>
+                  <Form.Select
+                    required
+                    className="w-75"
+                    name="state"
+                    value={states.find(s => s.state_name === studentData.state)?.id || ''}
+                    onChange={handleStateChange}
+                  >
+                    <option value="">Select state</option>
+                    {states.map((state) => (
+                      <option key={state.id} value={state.id}>
+                        {state.state_name}
+                      </option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+            </Row>
+            <Row className="mb-4 ">
+              <Col md={6}>
+                <Form.Group controlId="city">
+                  <Form.Label className="fw-bold small formlabel">City <span className="text-danger">*</span></Form.Label>
+                  <Form.Select
+                    required
+                    className="w-75"
+                    name="city"
+                    value={cities.find(c => c.city_name === studentData.city)?.id || ''}
+                    onChange={handleCityChange}
+                  >
+                    <option value="">Select city</option>
+                    {cities.map((city) => (
+                      <option key={city.id} value={city.id}>
+                        {city.city_name}
+                      </option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group controlId="postcode">
+                  <Form.Label className="fw-bold small formlabel">Postcode <span className="text-danger">*</span></Form.Label>
+                  <Form.Control
+                    type="text"
+                    required
+                    className="w-75"
+                    name="postcode"
+                    value={studentData.postcode || ''}
+                    onChange={handleInputChange}
+                    placeholder="Enter postcode (numbers only)"
+                    pattern="[0-9]+"
+                    title="Postcode can only contain numbers"
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+            <div className="d-flex justify-content-end mt-3">
+              <div className="my-2">
+                <Button variant="danger" type="submit" className="mpbtndiv m-0 fw-bold rounded-pill">
+                  Save
+                </Button>
+              </div>
             </div>
-          </div>
-        </Form>
-      </Card.Body>
-    </Card>
+          </Form>
+        </Card.Body>
+      </Card>
     </div >
   );
 };

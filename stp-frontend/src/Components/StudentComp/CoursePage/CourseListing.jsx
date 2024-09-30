@@ -634,7 +634,14 @@ const CourseListing = ({
   };
 
   const handleApplyNow = (program) => {
-    navigate(`/studentApplyCourses/${program.id}`, { state: { program } });
+       navigate(`/studentApplyCourses/${program.id}`, {
+      state: {
+        programId: program.id,
+        schoolLogoUrl: `${import.meta.env.VITE_BASE_URL}storage/${program.logo}`,
+        schoolName: program.school_name,
+        courseName: program.name
+      }
+    });
   };
 
   const handleInstituteChange = (institute) => {
