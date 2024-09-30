@@ -1113,6 +1113,22 @@ const InstituteListing = ({
                 ))}
               </Form.Group>
             </div>
+
+            {/* Study Mode Filter */}
+            <div className="filter-group">
+              <h5 style={{ marginTop: "25px" }}>Study Mode</h5>
+              <Form.Group>
+                {studyModes.map((mode, index) => (
+                  <Form.Check
+                    key={index}
+                    type="checkbox"
+                    label={mode.studyMode_name}
+                    checked={modeFilters.includes(mode.studyMode_name)}
+                    onChange={() => handleModeChange(mode)}
+                  />
+                ))}
+              </Form.Group>
+            </div>
             {/* Intakes Filter */}
             <div className="filter-group">
               <h5 style={{ marginTop: "25px" }}>Intakes</h5>
@@ -1130,21 +1146,6 @@ const InstituteListing = ({
                 ) : (
                   <p>No intakes available</p> // Display a message if no data is available
                 )}
-              </Form.Group>
-            </div>
-            {/* Study Mode Filter */}
-            <div className="filter-group">
-              <h5 style={{ marginTop: "25px" }}>Study Mode</h5>
-              <Form.Group>
-                {studyModes.map((mode, index) => (
-                  <Form.Check
-                    key={index}
-                    type="checkbox"
-                    label={mode.studyMode_name}
-                    checked={modeFilters.some((m) => m.id === mode.id)}
-                    onChange={() => handleModeChange(mode)} // Update filters when changed
-                  />
-                ))}
               </Form.Group>
             </div>
             {/* Tuition Fee Filter */}
@@ -1182,7 +1183,7 @@ const InstituteListing = ({
                             key={index}
                             type="checkbox"
                             label={location.state_name}
-                            checked={locationFilters.includes(
+                            checked={selectedLocationFilters.includes(
                               location.state_name
                             )}
                             onChange={() => handleLocationChange(location)}
@@ -1195,25 +1196,8 @@ const InstituteListing = ({
                 </Form.Group>
               </Accordion.Body>
             </Accordion.Item>
+
             <Accordion.Item eventKey="1">
-              <Accordion.Header className="custom-accordion-header">
-                Study Level
-              </Accordion.Header>
-              <Accordion.Body className="custom-accordion-body">
-                <Form.Group>
-                  {studyLevels.map((level, index) => (
-                    <Form.Check
-                      key={index}
-                      type="checkbox"
-                      label={level.qualification_name}
-                      checked={studyLevelFilters.includes(level.id)}
-                      onChange={() => handleStudyLevelChange(level)}
-                    />
-                  ))}
-                </Form.Group>
-              </Accordion.Body>
-            </Accordion.Item>
-            <Accordion.Item eventKey="2">
               <Accordion.Header className="custom-accordion-header">
                 Category
               </Accordion.Header>
@@ -1224,8 +1208,28 @@ const InstituteListing = ({
                       key={index}
                       type="checkbox"
                       label={category.category_name}
-                      checked={categoryFilters.includes(category.category_name)}
+                      checked={categoryFilters.some(
+                        (c) => c.id === category.id
+                      )}
                       onChange={() => handleCategoryChange(category)}
+                    />
+                  ))}
+                </Form.Group>
+              </Accordion.Body>
+            </Accordion.Item>
+            <Accordion.Item eventKey="2">
+              <Accordion.Header className="custom-accordion-header">
+                Study Level
+              </Accordion.Header>
+              <Accordion.Body className="custom-accordion-body">
+                <Form.Group>
+                  {studyLevels.map((level, index) => (
+                    <Form.Check
+                      key={index}
+                      type="checkbox"
+                      label={level.qualification_name}
+                      checked={studyLevelFilters.some((l) => l.id === level.id)}
+                      onChange={() => handleStudyLevelChange(level)}
                     />
                   ))}
                 </Form.Group>

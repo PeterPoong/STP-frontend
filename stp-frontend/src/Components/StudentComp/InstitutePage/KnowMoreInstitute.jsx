@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams, Link } from "react-router-dom";
 import NavButtons from "../NavButtons";
 import NavButtonsSP from "../../../Components/StudentPortalComp/NavButtonsSP";
 // import NavButtons from "../../StudentComp/NavButtons";
@@ -742,7 +742,11 @@ const KnowMoreInstitute = () => {
                         </Col>
                         <Col md={12}>
                           <div style={{ zIndex: 1 }}>
-                            <p>{institute.long_description}</p>
+                            <div
+                              dangerouslySetInnerHTML={{
+                                __html: institute.long_description,
+                              }}
+                            />
                           </div>
                         </Col>
                         <Col md={12}>
@@ -983,16 +987,23 @@ const KnowMoreInstitute = () => {
                               className="featured-institute-card"
                               style={{ width: "230px", height: "245px" }}
                             >
-                              <img
-                                src={`${baseURL}storage/${institute.school_logo}`}
-                                alt={institute.school_name}
-                                className="section-image"
-                                style={{
-                                  height: "80px",
-                                  width: "150px",
-                                  objectFit: "contain",
-                                }}
-                              />
+                              {/* Wrap the image inside a Link for navigation */}
+                              <Link
+                                to={`/knowMoreInstitute/${institute.school_id}`}
+                                target="_parent"
+                                rel="noopener noreferrer"
+                              >
+                                <img
+                                  src={`${baseURL}storage/${institute.school_logo}`}
+                                  alt={institute.school_name}
+                                  className="section-image"
+                                  style={{
+                                    height: "80px",
+                                    width: "150px",
+                                    objectFit: "contain",
+                                  }}
+                                />
+                              </Link>
                             </div>
                           </SwiperSlide>
                         ))}

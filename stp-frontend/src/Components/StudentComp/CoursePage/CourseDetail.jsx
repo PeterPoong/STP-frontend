@@ -64,6 +64,21 @@ const CourseDetail = () => {
   const [featuredCourses, setFeaturedCourses] = useState([]);
   const navigate = useNavigate();
 
+  const handleKnowMoreClick = (courseID) => {
+    if (courseID) {
+      navigate(`/courseDetails/${courseID}`);
+    } else {
+      console.error("Course ID is undefined");
+    }
+  };
+  const handleApplyNow = (courseID) => {
+    if (courseID) {
+      navigate(`/studentApplyCourses/${courseID}`);
+    } else {
+      console.error("Course ID is undefined");
+    }
+  };
+
   useEffect(() => {
     console.log("Program ID:", id);
 
@@ -186,25 +201,19 @@ const CourseDetail = () => {
                   md={3}
                   className="d-flex align-items-center justify-content-center"
                 >
-                  <Link
-                    to={{
-                      pathname: "/applycourse",
-                      state: { program },
+                  <Button
+                    style={{
+                      backgroundColor: "#B71A18",
+                      border: "none",
+                      width: "180px",
+                      height: "50px",
+                      marginBottom: "20px",
+                      marginLeft: "130px",
                     }}
+                    onClick={() => handleApplyNow(program.id)} // Ensure you pass the correct course or program ID
                   >
-                    <Button
-                      style={{
-                        backgroundColor: "#B71A18",
-                        border: "none",
-                        width: "180px",
-                        height: "50px",
-                        marginBottom: "20px",
-                        marginLeft: "130px",
-                      }}
-                    >
-                      Apply Now
-                    </Button>
-                  </Link>
+                    Apply Now
+                  </Button>
                 </Col>
               </Row>
 
@@ -762,6 +771,7 @@ const CourseDetail = () => {
                     height: "50px",
                     marginTop: "20px",
                   }}
+                  onClick={() => handleApplyNow(program.id)} // Ensure you pass the correct course or program ID
                 >
                   Apply Now
                 </Button>
@@ -773,6 +783,7 @@ const CourseDetail = () => {
                     height: "50px",
                     marginTop: "20px",
                   }}
+                  onClick={() => handleKnowMoreClick(program.id)} // Pass the correct course ID
                 >
                   Know More
                 </Button>
@@ -815,9 +826,14 @@ const CourseDetail = () => {
                             {course.course_qualification && (
                               <span
                                 className="badge"
-                                style={{ fontSize: "16px" }}
+                                style={{
+                                  fontSize: "16px",
+                                  fontWeight: "normal",
+                                  backgroundColor:
+                                    course.course_qualification_color, // Dynamically set background color from API
+                                }}
                               >
-                                {course.course_qualification.toUpperCase()}
+                                {course.course_qualification}
                               </span>
                             )}
                             <img
@@ -871,16 +887,18 @@ const CourseDetail = () => {
                             <button
                               className="button-know-more"
                               onClick={() =>
-                                navigate(`/courseDetails/${course.course_id}`)
-                              }
+                                handleKnowMoreClick(
+                                  course.id || course.course_id
+                                )
+                              } // Ensure correct ID is used
                             >
                               {course.knowMoreText || "Know More"}
                             </button>
                             <button
                               className="button-apply-now"
                               onClick={() =>
-                                navigate(`/courseDetails/${course.course_id}`)
-                              }
+                                handleApplyNow(course.id || course.course_id)
+                              } // Ensure correct ID is used
                             >
                               {course.applyNowText || "Apply Now"}
                             </button>
