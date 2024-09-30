@@ -31,7 +31,9 @@ const StudentApplicationSummary = ({}) => {
   const [showFullRequirements, setShowFullRequirements] = useState(false);
   const [selectedExam, setSelectedExam] = useState("SPM");
   const [cgpaInfo, setCgpaInfo] = useState(null);
-  // New state for basic information
+  const [schoolId, setSchoolId] = useState(null);
+  const [isFetchingSchoolId, setIsFetchingSchoolId] = useState(false);
+  const [schoolIdError, setSchoolIdError] = useState(null);
   const [basicInfo, setBasicInfo] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -43,8 +45,7 @@ const StudentApplicationSummary = ({}) => {
   const { courseId } = useParams();
   const [academicTranscripts, setAcademicTranscripts] = useState([]);
   const [otherDocuments, setOtherDocuments] = useState([]);
-  const [isViewAcademicTranscriptOpen, setIsViewAcademicTranscriptOpen] =
-    useState(false);
+  const [isViewAcademicTranscriptOpen, setIsViewAcademicTranscriptOpen] =useState(false);
   const [isViewAchievementOpen, setIsViewAchievementOpen] = useState(false);
   const [isViewOtherDocOpen, setIsViewOtherDocOpen] = useState(false);
   const [currentViewDocument, setCurrentViewDocument] = useState(null);
@@ -883,6 +884,39 @@ const StudentApplicationSummary = ({}) => {
     }
   };
 
+  const fetchSchoolId = async (schoolName) => {
+    setIsFetchingSchoolId(true);
+    setSchoolIdError(null);
+    try {
+      const token =
+        sessionStorage.getItem("token") || localStorage.getItem("token");
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL}api/student/schoolList`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ search: schoolName }),
+        }
+      );
+      const result = await response.json();
+      if (result.success && result.data.length > 0) {
+        // Assuming the first result is the desired school
+        setSchoolId(result.data[0].id);
+      } else {
+        setSchoolIdError("School not found.");
+        console.error("No school found with the given name.");
+      }
+    } catch (error) {
+      setSchoolIdError("Failed to fetch school ID.");
+      console.error("Error fetching school list:", error);
+    } finally {
+      setIsFetchingSchoolId(false);
+    }
+  };
+
   const fetchCourseInfo = async () => {
     setIsLoading(true);
     try {
@@ -913,6 +947,9 @@ const StudentApplicationSummary = ({}) => {
 
       if (result.success) {
         setCourseInfo(result.data);
+        if (result.data.school) {
+          await fetchSchoolId(result.data.school);
+        }
       } else {
         throw new Error(result.message || "Failed to fetch course information");
       }
@@ -1453,8 +1490,22 @@ const StudentApplicationSummary = ({}) => {
           <Button
             className="mx-auto mt-5 w-25 as-knowmore-button"
             style={{ padding: "0.5rem 1.5rem", fontSize: "1rem" }}
+            onClick={() => {
+              if (isFetchingSchoolId) {
+                alert("Fetching school details, please wait...");
+                return;
+              }
+              if (schoolId) {
+                navigate(`/knowMoreInstitute/${schoolId}`);
+              } else {
+                alert(
+                  schoolIdError || "School ID not available. Please try again."
+                );
+              }
+            }}
+            disabled={isFetchingSchoolId || !schoolId}
           >
-            Know More
+            {isFetchingSchoolId ? "Loading..." : "Know More"}
           </Button>
         </div>
 
