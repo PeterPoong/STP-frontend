@@ -80,9 +80,9 @@ const FeaturedCoursesContainer = () => {
       {!loading && !error && courses.length > 0 && (
         <Container className="course-container">
           <Swiper
-            modules={[Navigation, Pagination]} // Add required modules here
+            modules={[Navigation, Pagination]}
             spaceBetween={5}
-            slidesPerView={4}
+            slidesPerView={5}
             loop={true}
             navigation
             // style={{ padding: "0 100px" }}
@@ -96,7 +96,7 @@ const FeaturedCoursesContainer = () => {
                 spaceBetween: 15,
               },
               1024: {
-                slidesPerView: 4,
+                slidesPerView: 5,
                 spaceBetween: 10,
               },
             }}
