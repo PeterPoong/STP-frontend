@@ -383,12 +383,12 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
         body: JSON.stringify({ transcriptCategory: categoryId }),
       });
       const data = await response.json();
-      console.log('Fetched Program CGPA data:', data);
+      // console.log('Fetched Program CGPA data:', data);
       if (data.success && data.data) {
         // Log the specific fields we're interested in
-        console.log('Fetched program_name:', data.data.program_name);
-        console.log('Fetched cgpa:', data.data.cgpa);
-        console.log('Fetched id:', data.data.id);
+        //console.log('Fetched program_name:', data.data.program_name);
+        //console.log('Fetched cgpa:', data.data.cgpa);
+        // console.log('Fetched id:', data.data.id);
 
         // Update state, using null coalescing operator to handle null values
         setProgramName(data.data.program_name ?? '');
@@ -485,8 +485,8 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
   };
   const handleSaveAll = async () => {
     try {
-      console.log('ProgramBasedExam handleSaveAll initiated');
-      console.log('Current state before save:', { programName, cgpa, cgpaId, examType, categoryId, subjects });
+      // console.log('ProgramBasedExam handleSaveAll initiated');
+      //console.log('Current state before save:', { programName, cgpa, cgpaId, examType, categoryId, subjects });
 
 
       // Validation
@@ -501,13 +501,13 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
       }
 
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      console.log('Token retrieved:', token ? 'Yes' : 'No');
+      //.log('Token retrieved:', token ? 'Yes' : 'No');
 
       let cgpaResponse;
       let cgpaPayload;
 
       if (cgpaId) {
-        console.log('Updating existing CGPA');
+        //console.log('Updating existing CGPA');
         cgpaPayload = { cgpaId, cgpa };
         if (programName.trim()) cgpaPayload.programName = programName;
         cgpaResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/editProgramCgpa`, {
@@ -519,7 +519,7 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
           body: JSON.stringify(cgpaPayload),
         });
       } else {
-        console.log('Adding new CGPA');
+        // console.log('Adding new CGPA');
         cgpaPayload = { transcriptCategory: categoryId, cgpa };
         if (programName.trim()) cgpaPayload.programName = programName;
         cgpaResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/addProgramCgpa`, {
@@ -532,20 +532,20 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
         });
       }
 
-      console.log('CGPA API request payload:', cgpaPayload);
-      console.log('CGPA API response status:', cgpaResponse.status);
+      //console.log('CGPA API request payload:', cgpaPayload);
+      // console.log('CGPA API response status:', cgpaResponse.status);
 
       const cgpaData = await cgpaResponse.json();
-      console.log('CGPA API response data:', cgpaData);
+      //console.log('CGPA API response data:', cgpaData);
 
       if (!cgpaData.success) {
         throw new Error(cgpaData.message || 'Failed to save program CGPA');
       }
 
-      console.log('CGPA saved successfully, now saving subjects');
+      // console.log('CGPA saved successfully, now saving subjects');
       // After successfully saving CGPA, call the parent's onSaveAll function
       const subjectsResult = await onSaveAll(subjects, examType);
-      console.log('Subjects saved successfully');
+      // console.log('Subjects saved successfully');
 
       // Fetch updated data after saving
       await fetchProgramCgpa();
@@ -694,7 +694,7 @@ const AcademicTranscript = () => {
   });
 
 
-  console.log('AcademicTranscript rendered with subjects:', subjects);
+  // console.log('AcademicTranscript rendered with subjects:', subjects);
 
   const filteredFiles = files.filter(file =>
     file.studentMedia_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -780,26 +780,26 @@ const AcademicTranscript = () => {
       if (updatedFile.file instanceof File) {
         // If a new file is selected, append it to formData
         formData.append('studentMedia_location', updatedFile.file);
-        console.log('New file being uploaded:', updatedFile.file.name);
+        // console.log('New file being uploaded:', updatedFile.file.name);
       } else if (updatedFile.file && typeof updatedFile.file === 'string') {
         // If editing and the file hasn't changed, don't send the studentMedia_location field
-        console.log('Existing file, not changing:', updatedFile.file);
+        //console.log('Existing file, not changing:', updatedFile.file);
       } else {
-        console.log('No file provided');
+        //  console.log('No file provided');
       }
 
 
       // Console log to see what's being sent
-      console.log('Editing file with data:', {
-        id: updatedFile.id,
-        studentMedia_type: category.id,
-        studentMedia_name: updatedFile.title,
-        studentMedia_location: updatedFile.isNewFile ? 'New File' : (updatedFile.file || 'Unchanged')
-      });
+      // console.log('Editing file with data:', {
+      //  id: updatedFile.id,
+      //  studentMedia_type: category.id,
+      //studentMedia_name: updatedFile.title,
+      ////: updatedFile.isNewFile ? 'New File' : (updatedFile.file || 'Unchanged')
+      //});
 
       // Log the FormData contents
       for (let [key, value] of formData.entries()) {
-        console.log(`${key}:`, value);
+        //console.log(`${key}:`, value);
       }
 
       const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/editTranscriptFile`, {
@@ -812,10 +812,10 @@ const AcademicTranscript = () => {
 
       const data = await response.json();
 
-      console.log('Full API response:', data); // Log the full API response
+      //console.log('Full API response:', data); // Log the full API response
 
       if (response.ok && data.success) {
-        console.log('File edited successfully:', data);
+        // console.log('File edited successfully:', data);
         fetchMediaByCategory(category.id);
         return { success: true, message: 'File updated successfully' };
       } else {
@@ -873,7 +873,7 @@ const AcademicTranscript = () => {
 
       const data = await response.json();
       if (data.success) {
-        console.log('File deleted successfully');
+        //console.log('File deleted successfully');
         fetchMediaByCategory(categories.find(cat => cat.transcript_category === selectedExam).id);
       } else {
         console.error('Error deleting file:', data.message);
@@ -919,7 +919,7 @@ const AcademicTranscript = () => {
       }
 
       const result = await response.json();
-      console.log('API RESPONSE', result);
+      //console.log('API RESPONSE', result);
 
       if (result.success && Array.isArray(result.data.data)) {
         setCategories(result.data.data);
@@ -962,7 +962,7 @@ const AcademicTranscript = () => {
         body: JSON.stringify({ category_id: categoryId }),
       });
       const data = await response.json();
-      console.log('API response for media:', data);
+      //console.log('API response for media:', data);
       if (data.success && data.data && data.data.data) {
         setFiles(data.data.data);
       } else {
@@ -976,7 +976,7 @@ const AcademicTranscript = () => {
 
   const fetchSubjects = useCallback(async (categoryId) => {
     try {
-      console.log('Fetching subjects for category:', categoryId);
+      //console.log('Fetching subjects for category:', categoryId);
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       let url, method, body;
 
@@ -1003,7 +1003,7 @@ const AcademicTranscript = () => {
       }
 
       const result = await response.json();
-      console.log('Fetched subjects:', result);
+      //console.log('Fetched subjects:', result);
 
       if (result.success) {
         const formattedSubjects = categoryId === "32"
@@ -1032,7 +1032,7 @@ const AcademicTranscript = () => {
   //subject list for spm api//
   const addEditSPMTranscript = async (subjects) => {
     try {
-      console.log('addEditSPMTranscript called with subjects:', subjects);
+      //console.log('addEditSPMTranscript called with subjects:', subjects);
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       const category = categories.find(cat => cat.transcript_category === selectedExam);
 
@@ -1041,7 +1041,7 @@ const AcademicTranscript = () => {
         return;
       }
 
-      console.log('Category for SPM:', category);
+      //console.log('Category for SPM:', category);
 
       // Function to convert letter grade to integer
       const gradeToInt = (grade) => {
@@ -1063,7 +1063,7 @@ const AcademicTranscript = () => {
         }))
       };
 
-      console.log('Payload prepared for SPM API:', payload);
+      //console.log('Payload prepared for SPM API:', payload);
 
       const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/addEditTranscript`, {
         method: 'POST',
@@ -1075,10 +1075,10 @@ const AcademicTranscript = () => {
       });
 
       const data = await response.json();
-      console.log('API response for SPM:', data);
+      //console.log('API response for SPM:', data);
 
       if (data.success) {
-        console.log('SPM Subjects saved successfully');
+        //console.log('SPM Subjects saved successfully');
         // Refresh the subjects
         fetchSubjects(category.id.toString());
         setHasUnsavedChanges(false);
@@ -1108,18 +1108,18 @@ const AcademicTranscript = () => {
   }, [selectedExam, categories, fetchSubjects, isInitialLoad]);
 
   const updateSubjects = useCallback((updatedSubjects) => {
-    console.log('updateSubjects called with:', updatedSubjects);
+    //console.log('updateSubjects called with:', updatedSubjects);
     setSubjects(updatedSubjects);
   }, []);
 
   const handleSaveAll = async (subjectsToSave, examType) => {
     setIsSubmissionPopupOpen(false);
     try {
-      console.log('AcademicTranscript handleSaveAll initiated');
-      console.log('Parameters:', { subjectsToSave, examType });
+      //console.log('AcademicTranscript handleSaveAll initiated');
+      //    console.log('Parameters:', { subjectsToSave, examType });
 
       const category = categories.find(cat => cat.transcript_category === examType);
-      console.log('Found category:', category);
+      //console.log('Found category:', category);
 
       if (!category) {
         console.error('Selected exam category not found');
@@ -1134,16 +1134,16 @@ const AcademicTranscript = () => {
       }
 
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      console.log('Token retrieved:', token ? 'Yes' : 'No');
+      // console.log('Token retrieved:', token ? 'Yes' : 'No');
 
       let response;
 
       if (category.id === 32) {
-        console.log('Saving SPM subjects...');
+        //console.log('Saving SPM subjects...');
         const spmResult = await addEditSPMTranscript(subjectsToSave);
         return spmResult;
       } else {
-        console.log('Saving non-SPM subjects...');
+        //  console.log('Saving non-SPM subjects...');
         const payload = {
           category: category.id,
           data: subjectsToSave.map(subject => ({
@@ -1152,7 +1152,7 @@ const AcademicTranscript = () => {
           }))
         };
 
-        console.log('Payload prepared for non-SPM API:', payload);
+        //console.log('Payload prepared for non-SPM API:', payload);
 
         response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/addEditHigherTranscript`, {
           method: 'POST',
@@ -1163,12 +1163,12 @@ const AcademicTranscript = () => {
           body: JSON.stringify(payload),
         });
 
-        console.log('API response status:', response.status);
+        // console.log('API response status:', response.status);
         const data = await response.json();
-        console.log('API response for non-SPM:', data);
+        //  console.log('API response for non-SPM:', data);
 
         if (data.success) {
-          console.log('Non-SPM Subjects saved successfully');
+          //console.log('Non-SPM Subjects saved successfully');
           await fetchSubjects(category.id.toString());
           setHasUnsavedChanges(false);
           return { success: true };
@@ -1360,7 +1360,7 @@ const AcademicTranscript = () => {
           setIsViewMode(false);
         }}
         onSave={(file) => {
-          console.log('File to be saved/edited:', file);
+          //        console.log('File to be saved/edited:', file);
           return currentFile ? editFile({ ...file, studentMedia_type: currentFile.studentMedia_type }) : addFile(file);
         }}
         item={currentFile}

@@ -34,7 +34,7 @@ const CoCurriculum = ({ onNext, onBack }) => {
       }
 
       const result = await response.json();
-      console.log(result);
+      //console.log(result);
       if (result.success) {
         // Normalize the fetched data to match the expected structure
         const normalizedData = result.data.map(item => ({
@@ -130,13 +130,13 @@ const CoCurriculum = ({ onNext, onBack }) => {
   };
 
   const handleActivityChange = (index, field, value) => {
-    console.log('Before update:', activities[index]); // Log before update
+    //console.log('Before update:', activities[index]); // Log before update
     const updatedActivities = activities.map((activity, i) =>
       i === index ? { ...activity, [field]: value } : activity
     );
     setActivities(updatedActivities);
     setHasUnsavedChanges(true); // Set unsaved changes flag
-    console.log('After update:', updatedActivities[index]); // Log after update
+    //console.log('After update:', updatedActivities[index]); // Log after update
   };
 
   const handleDeleteActivity = async (index) => {
@@ -155,7 +155,7 @@ const CoCurriculum = ({ onNext, onBack }) => {
       const activityId = activities[index].id; // Ensure this ID is valid
 
       // Log the ID being sent to the server for deletion
-      console.log('Deleting activity with ID:', activityId);
+      //console.log('Deleting activity with ID:', activityId);
 
       const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/disableCocurriculum`, {
         method: 'POST',
@@ -171,7 +171,7 @@ const CoCurriculum = ({ onNext, onBack }) => {
       }
 
       const result = await response.json();
-      console.log('Response from deleting activity:', result); // Log the response
+      //console.log('Response from deleting activity:', result); // Log the response
 
       if (result.success) {
         const updatedActivities = activities.filter((_, i) => i !== index);
@@ -194,8 +194,8 @@ const CoCurriculum = ({ onNext, onBack }) => {
       onNext();
     }
   };
- 
-  
+
+
   const handleNavigation = (direction) => {
     if (hasUnsavedChanges) {
       setNavigationDirection(direction);
@@ -306,7 +306,7 @@ const CoCurriculum = ({ onNext, onBack }) => {
                       <span className="border-end border-2 border-dark pe-2 me-2">Institute</span>
                       <a className='mx-2 text-dark fw-normal'>{activity.location}</a>
                     </div>
-                   
+
                   </div>
                   <div>
                     <Button variant="link" onClick={() => {
@@ -340,7 +340,7 @@ const CoCurriculum = ({ onNext, onBack }) => {
           Next
         </Button>
       </div>
-      <WidgetPopUpUnsavedChanges 
+      <WidgetPopUpUnsavedChanges
         isOpen={isUnsavedChangesPopupOpen}
         onConfirm={handleUnsavedChangesConfirm}
         onCancel={handleUnsavedChangesCancel}

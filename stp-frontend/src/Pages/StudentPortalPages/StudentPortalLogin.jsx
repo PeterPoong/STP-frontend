@@ -85,7 +85,7 @@ const StudentPortalLogin = () => {
       contact_number: phone.slice(countryCode.length),
     };
 
-    console.log("Sending login data:", formData);
+    //console.log("Sending login data:", formData);
     fetch(`${import.meta.env.VITE_BASE_URL}api/student/login`, {
       method: "POST",
       headers: {
@@ -105,9 +105,9 @@ const StudentPortalLogin = () => {
         return response.json();
       })
       .then((data) => {
-        console.log("Full API response:", data);
+        //console.log("Full API response:", data);
         if (data.true === true && data.data && data.data.user) {
-          console.log("Login successful:", data);
+          //console.log("Login successful:", data);
           setLoginStatus("success");
 
           const studentStatus = data.data.user.student_status;

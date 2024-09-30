@@ -43,7 +43,7 @@ const Achievements = ({ onBack, onNext }) => {
       }
 
       const result = await response.json();
-      console.log('Achievement Types Fetch Result:', result); // Debugging
+      //console.log('Achievement Types Fetch Result:', result); // Debugging
 
       if (result.success) {
         setAchievementTypes(result.data || []);
@@ -74,7 +74,7 @@ const Achievements = ({ onBack, onNext }) => {
       }
 
       const result = await response.json();
-      console.log('Achievements Fetch Result:', result); // Debugging
+      //console.log('Achievements Fetch Result:', result); // Debugging
 
       if (result.success) {
         const achievementsData = result.data.data.map((achievement) => {
@@ -195,7 +195,7 @@ const Achievements = ({ onBack, onNext }) => {
       });
 
       const result = await response.json();
-      console.log('Save Achievement Result:', result); // Debugging line
+      //console.log('Save Achievement Result:', result); // Debugging line
 
       if (result.success) {
         // Clear any existing errors
@@ -269,7 +269,7 @@ const Achievements = ({ onBack, onNext }) => {
       }
 
       const result = await response.json();
-      console.log('Delete Achievement Result:', result); // Debugging line
+      //console.log('Delete Achievement Result:', result); // Debugging line
 
       if (result.success) {
         setAchievements((prev) => prev.filter((_, i) => i !== index));

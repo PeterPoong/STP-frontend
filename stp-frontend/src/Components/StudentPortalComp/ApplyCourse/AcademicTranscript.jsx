@@ -493,7 +493,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
       }
 
       const result = await response.json();
-      console.log('Fetched documents:', result);
+      //console.log('Fetched documents:', result);
 
       if (result.success && result.data && result.data.data) {
         const updatedDocuments = result.data.data.map(doc => ({
@@ -517,7 +517,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
 
   const handleSaveDocument = async (transcriptIndex, documentIndex) => {
     try {
-      console.log('Starting handleSaveDocument');
+      //console.log('Starting handleSaveDocument');
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       const transcript = academicTranscripts[transcriptIndex];
       const document = transcript.documents[documentIndex];
@@ -564,10 +564,10 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
       });
 
       const result = await response.json();
-      console.log('Response data:', result);
+      //console.log('Response data:', result);
 
       if (result.success) {
-        console.log('Document saved successfully');
+        //console.log('Document saved successfully');
         await fetchDocumentsForTranscript(transcriptIndex);
         // Clear errors for this document
         setDocumentErrors(prevErrors => {
@@ -622,7 +622,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
 
       const result = await response.json();
       if (result.success) {
-        console.log('Document removed successfully');
+        //console.log('Document removed successfully');
         // Fetch updated documents instead of updating state directly
         await fetchDocumentsForTranscript(transcriptIndex);
       } else {
@@ -636,10 +636,10 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
 
 
   const handleDocumentFileUpload = (transcriptIndex, docIndex, file) => {
-    console.log('handleDocumentFileUpload called');
-    console.log('transcriptIndex:', transcriptIndex);
-    console.log('docIndex:', docIndex);
-    console.log('file:', file);
+    //console.log('handleDocumentFileUpload called');
+    //console.log('transcriptIndex:', transcriptIndex);
+    //console.log('docIndex:', docIndex);
+    //console.log('file:', file);
 
     const updatedTranscripts = academicTranscripts.map((transcript, i) =>
       i === transcriptIndex ? {
@@ -650,7 +650,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
       } : transcript
     );
 
-    console.log('Updated transcript:', updatedTranscripts[transcriptIndex]);
+    //console.log('Updated transcript:', updatedTranscripts[transcriptIndex]);
     setAcademicTranscripts(updatedTranscripts);
   };
 
@@ -763,7 +763,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
           }
         }
       }
-      console.log('Saving transcript with payload:', payload);
+      //console.log('Saving transcript with payload:', payload);
 
       const response = await fetch(url, {
         method: 'POST',
@@ -775,7 +775,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
       });
       const data = await response.json();
       if (data.success) {
-        console.log('Transcript saved successfully');
+        //console.log('Transcript saved successfully');
         setHasUnsavedChanges(false);
         fetchSubjects(category.id, transcriptIndex);
        

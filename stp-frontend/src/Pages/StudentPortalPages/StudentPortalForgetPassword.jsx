@@ -26,9 +26,9 @@ const StudentPortalForgetPassword = () => {
     e.preventDefault();
     setError("");
     setSuccess("");
-    console.log("Initiating password reset request for email:", email);
+   // console.log("Initiating password reset request for email:", email);
     try {
-      console.log("Sending request to:", `${import.meta.env.VITE_BASE_URL}api/sendOtp`);
+      //console.log("Sending request to:", `${import.meta.env.VITE_BASE_URL}api/sendOtp`);
       const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/sendOtp`, {
         method: 'POST',
         headers: {
@@ -39,11 +39,11 @@ const StudentPortalForgetPassword = () => {
           type: "student"
         }),
       });
-      console.log("Response status:", response.status);
+     // console.log("Response status:", response.status);
       const responseText = await response.text();
-      console.log("Raw response:", responseText);
+     // console.log("Raw response:", responseText);
       if (response.ok) {
-        console.log("Reset request sent successfully");
+       // console.log("Reset request sent successfully");
         setSuccess("OTP sent successfully. Please check your email for the OTP.");
         setStep(2); // Move to OTP input step
       } else {
@@ -64,7 +64,7 @@ const StudentPortalForgetPassword = () => {
     e.preventDefault();
     setError("");
     setSuccess("");
-    console.log("Verifying OTP for email:", email);
+   // console.log("Verifying OTP for email:", email);
     try {
       const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/validateOtp`, {
         method: 'POST',
@@ -77,11 +77,11 @@ const StudentPortalForgetPassword = () => {
           type: "student"
         }),
       });
-      console.log("Response status:", response.status);
+    //  console.log("Response status:", response.status);
       const responseText = await response.text();
-      console.log("Raw response:", responseText);
+    //  console.log("Raw response:", responseText);
       if (response.ok) {
-        console.log("OTP verified successfully");
+      //  console.log("OTP verified successfully");
         setSuccess("OTP verified successfully. Please set your new password.");
         setStep(3); // Move to password reset step
       } else if (response.status === 500) {
@@ -107,9 +107,9 @@ const StudentPortalForgetPassword = () => {
       setError("Passwords do not match.");
       return;
     }
-    console.log("Initiating password reset for email:", email);
+  //  console.log("Initiating password reset for email:", email);
     try {
-      console.log("Sending request to:", `${import.meta.env.VITE_BASE_URL}api/resetPassword`);
+    //  console.log("Sending request to:", `${import.meta.env.VITE_BASE_URL}api/resetPassword`);
       const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/resetPassword`, {
         method: 'POST',
         headers: {
@@ -122,11 +122,11 @@ const StudentPortalForgetPassword = () => {
           type: "student"
         }),
       });
-      console.log("Response status:", response.status);
+    //  console.log("Response status:", response.status);
       const responseText = await response.text();
-      console.log("Raw response:", responseText);
+     // console.log("Raw response:", responseText);
       if (response.ok) {
-        console.log("Password reset successful");
+      //  console.log("Password reset successful");
         setSuccess("Password reset successfully. You can now login with your new password.");
         setTimeout(() => navigate('/studentPortalLogin'), 500);
       } else {
