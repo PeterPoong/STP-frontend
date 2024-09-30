@@ -6,14 +6,15 @@ import SideNavBar from '../../Components/AdminComp/sideNavBar';
 import AdminDashContent from '../../Components/AdminComp/AdminDashContent';
 
 //Other Page Content(Testing)
-
+import AdminAddSubjectContent from '../../Components/AdminComp/AdminAddSubjectContent';
+import AdminSchoolContent from '../../Components/AdminComp/AdminSchoolContent';
 import AdminCategoryContent from '../../Components/AdminComp/AdminCategoryContent';
 import AdminCoursesContent from '../../Components/AdminComp/AdminCoursesContent';
 import AdminSubjectContent from '../../Components/AdminComp/AdminSubjectContent';
 import AdminStudentContent from '../../Components/AdminComp/AdminStudentContent';
 import '../../css/AdminStyles/PageAdminDash.css';
 
-const AdminDashboard= () => {
+const AdminAddSubject = () => {
   return (
     <div className='PageContainer'>
       <div className='SideNavContainer'>
@@ -23,11 +24,11 @@ const AdminDashboard= () => {
       <div className='HeadNavBarContainer'>
         <HeadNavBar />
         <div>
-          <AdminDashContent />
+          <AdminAddSubjectContent />
         </div>
       </div>
     </div>
   );
 };
 
-export default AdminDashboard;
+export default AdminAddSubject;

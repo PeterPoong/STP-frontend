@@ -28,13 +28,19 @@ import AdminSchool from "./Pages/AdminPages/AdminSchool";
 import AdminAddSchool from "./Pages/AdminPages/AdminAddSchool";
 import AdminEditSchool from "./Pages/AdminPages/AdminEditSchool";
 import AdminApplicant from "./Pages/AdminPages/AdminApplicant";
+import AdminEditApplicant from "./Pages/AdminPages/AdminEditApplicant";
 import AdminStudent from "./Pages/AdminPages/AdminStudent";
 import AdminAddStudent from "./Pages/AdminPages/AdminAddStudent";
+import AdminEditStudent from "./Pages/AdminPages/AdminEditStudent";
 import AdminCourses from "./Pages/AdminPages/AdminCourses";
 import AdminAddCourse from "./Pages/AdminPages/AdminAddCourse";
+import AdminEditCourse from "./Pages/AdminPages/AdminEditCourse";
 import AdminCategory from "./Pages/AdminPages/AdminCategory";
 import AdminAddCategory from "./Pages/AdminPages/AdminAddCategory";
+import AdminEditCategory from "./Pages/AdminPages/AdminEditCategory";
 import AdminSubject from "./Pages/AdminPages/AdminSubject";
+import AdminEditSubject from "./Pages/AdminPages/AdminEditSubject";
+import AdminAddSubject from "./Pages/AdminPages/AdminAddSubject";
 import AdminList from "./Pages/AdminPages/AdminList";
 import AdminPackage from "./Pages/AdminPages/AdminPackage";
 import AdminAddPackage from "./Pages/AdminPages/AdminAddPackage";
@@ -167,7 +173,10 @@ const router = createBrowserRouter([
     path: "/adminAddStudent",
     element: <AdminAddStudent />,
   },
-
+  {
+    path: "/adminEditStudent",
+    element: <AdminEditStudent />,
+  },
   {
     path: "/adminCourses",
     element: <AdminCourses />,
@@ -175,6 +184,10 @@ const router = createBrowserRouter([
   {
     path: "/adminAddCourse",
     element: <AdminAddCourse />,
+  },
+  {
+    path: "/adminEditCourse",
+    element: <AdminEditCourse />,
   },
 
   {
@@ -187,10 +200,22 @@ const router = createBrowserRouter([
   },
 
   {
+    path: "/adminEditCategory",
+    element: <AdminEditCategory />,
+  },
+
+  {
     path: "/adminSubject",
     element: <AdminSubject />,
   },
-
+  {
+    path: "/adminAddSubject",
+    element: <AdminAddSubject />,
+  },
+  {
+    path: "/adminEditSubject",
+    element: <AdminEditSubject />,
+  },
   {
     path: "/adminList",
     element: <AdminList />,
@@ -200,7 +225,10 @@ const router = createBrowserRouter([
     path: "/adminApplicant",
     element: <AdminApplicant />,
   },
-
+  {
+    path: "/adminEditApplicant",
+    element: <AdminEditApplicant />,
+  },
   {
     path: "/adminBanner",
     element: <AdminBanner />,

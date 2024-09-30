@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Form, Row, Col, Button, Image, Modal } from "react-bootstrap";
+import { Form, Row, Col, Button, Image, Modal, Card} from "react-bootstrap";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { Editor } from '@tinymce/tinymce-react';
@@ -9,12 +9,16 @@ import TimePicker from 'react-time-picker';
 import 'react-time-picker/dist/TimePicker.css';
 import { useDropzone } from "react-dropzone";
 import { FaTrashAlt, FaUpload, FaFileImage, FaEye, FaEyeSlash} from 'react-icons/fa';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { format, parseISO } from 'date-fns';
 
 const AdminFormComponent = ({
   formTitle,
   formFields,
   formTextarea,
   formPassword,
+  shouldRenderPasswordCard,
   formCheckboxes,
   formPersonInCharge,
   formCategory,
@@ -36,6 +40,9 @@ const AdminFormComponent = ({
   formMode,
   formGender,
   formCourse,
+  formDates,
+  formCourses,
+  formStatus,
   onSubmit,
   error,
   buttons,
@@ -46,9 +53,13 @@ const AdminFormComponent = ({
   onChange,
   value,
   banner_file,
+  newBannerFile,
   logo,
   newLogo,
   handleLogoChange,
+  icon,
+  newIcon,
+  handleIconChange,
   handleBannerFileChange,
   startDate,
   endDate,
@@ -72,9 +83,9 @@ const AdminFormComponent = ({
   };
   
    // Add useState hooks for managing selected dates
-   const [selectedStartDate, setSelectedStartDate] = useState(null);
-   const [selectedEndDate, setSelectedEndDate] = useState(null);
- 
+   const [selectedStartDate, setSelectedStartDate] = useState('');
+   const [selectedEndDate, setSelectedEndDate] = useState('');
+   
   //  const handleDateChange = (date, type) => {
   //    if (!date) return;
  
@@ -243,6 +254,7 @@ const handleRadioChange = (radioId, value) => {
                 />
               </Form.Group>
             ))}
+         
        {formDrop && formDrop.map((drop, index) => (
               <Form.Group key={index} controlId={drop.id} className="mb-5">
                 <Form.Label>{drop.label}</Form.Label>
@@ -254,6 +266,24 @@ const handleRadioChange = (radioId, value) => {
                 >
                   <option value="">Select School</option>
                   {drop.options.map((option, optIndex) => (
+                    <option key={optIndex} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </Form.Control>
+              </Form.Group>
+            ))}
+               {formCourses && formCourses.map((courses, index) => (
+              <Form.Group key={index} controlId={courses.id} className="mb-5">
+                <Form.Label>{courses.label}</Form.Label>
+                <Form.Control 
+                  as="select" 
+                  value={courses.value} 
+                  onChange={courses.onChange} 
+                  required={courses.required || false}
+                >
+                  <option value="">Select Course</option>
+                  {courses.options.map((option, optIndex) => (
                     <option key={optIndex} value={option.value}>
                       {option.label}
                     </option>
@@ -295,18 +325,22 @@ const handleRadioChange = (radioId, value) => {
               </Col>
             ))}
             {/* Banner File Upload */}
+            {error && <div className="alert alert-danger">{error}</div>}
             {handleBannerFileChange && (
-              <Col md={12}>
-                <Form.Group controlId="banner_file" className="mb-3" >
-                  <Form.Label>Banner File (2MB)</Form.Label>
-                  <Form.Control type="file" accept="image/*" onChange={handleBannerFileChange} />
-                </Form.Group>
-                {banner_file && (
-                  <div className="mb-3">
-                    <Image src={banner_file} alt="bannerFile" fluid />
-                  </div>
-                )}
-              </Col>
+               <Form.Group controlId="banner_file" className="mb-5">
+               <Form.Label>Banner File (2MB)</Form.Label>
+               <Form.Control type="file" accept="image/*" onChange={handleBannerFileChange} />
+           </Form.Group>
+            )}
+              {banner_file && !newBannerFile && (
+                <div className="mb-3">
+                    <Image src={banner_file} alt="Existing banner" className="img-banner-admin" />
+                </div>
+            )}
+                 {newBannerFile && (
+                <div className="mb-3">
+                    <Image src={newBannerFile} alt="New banner file" className="img-banner-admin" />
+                </div>
             )}
 
             {/* Contact Number Phone Input */}
@@ -325,26 +359,37 @@ const handleRadioChange = (radioId, value) => {
                 />
               </Form.Group>
             )}
-           {formPassword && formPassword.map((password, index) => (
-             <Form.Group key={index} controlId={password.id} className="mb-5 position-relative">
-                <Form.Label>{password.label}</Form.Label>
-                <Form.Control
-                    type={password.type}
-                    placeholder={password.placeholder}
-                    value={password.value}
-                    onChange={password.onChange}
-                    required={password.required}
-                    autoComplete={password.autoComplete}
-                />
-                <span
-                    className="password-toggle"
-                    onClick={password.toggleVisibility}
-                    role="button"
-                >
-                    {password.showVisibility ? <FaEyeSlash /> : <FaEye />}
-                </span>
-            </Form.Group>
-            ))}
+            {shouldRenderPasswordCard && (
+                <Card className="mt-5 mb-2">
+                    <Card.Body>
+                        {formPassword.map((password, index) => (
+                            <Form.Group key={index} controlId={password.id} className="mb-4 position-relative">
+                                <Form.Label>{password.label}</Form.Label>
+                                {password.helperText && (
+                                    <Form.Text className="text-danger mb-2" style={{ display: 'block' }}>
+                                        {password.helperText}
+                                    </Form.Text>
+                                )}
+                                <Form.Control
+                                    type={password.type}
+                                    placeholder={password.placeholder}
+                                    value={password.value}
+                                    onChange={password.onChange}
+                                    autoComplete={password.autoComplete}
+                                />
+                                <span
+                                    className="password-toggle mt-1"
+                                    onClick={password.toggleVisibility}
+                                    role="button"
+                                >
+                                    {password.showVisibility ? <FaEyeSlash /> : <FaEye />}
+                                </span>
+                            </Form.Group>
+                        ))}
+                    </Card.Body>
+                </Card>
+            )}
+
             {formAccount && formAccount.map((account, index) => (
               <Form.Group key={index} controlId={account.id} className="mb-5">
                 <Form.Label>{account.label}</Form.Label>
@@ -385,6 +430,27 @@ const handleRadioChange = (radioId, value) => {
 
           </Col>
           <Col md={6}>
+          {formDates && formDates.map((date, index) => (
+           
+            <Form.Group key={index} controlId={date.id} className="mb-5">
+               
+                <Form.Label>{date.label}</Form.Label>
+                
+                <DatePicker
+                  selected={date.value ? new Date(date.value) : null}  // Convert value to Date object
+                  onChange={date.onChange}  // Call the provided onChange function
+                  placeholderText={date.placeholder || ""}
+                  required={date.required || false}
+                  dateFormat="yyyy-MM-dd"  // Format date as Y-m-d
+                  className="form-control mb-2 mt-4 ms-2"  // Use Bootstrap styling
+                  showYearDropdown
+                  showMonthDropdown
+                  dropdownMode="select"  // Enable dropdown for selecting year/month
+                />
+            </Form.Group>
+            
+        ))}
+
           {formGender && formGender.map((gender, index) => (
               <Form.Group key={index} controlId={gender.id} className="mb-5">
                 <Form.Label>{gender.label}</Form.Label>
@@ -421,7 +487,22 @@ const handleRadioChange = (radioId, value) => {
                     <Image src={newLogo} alt="New logo" className="img-fluid-admin" />
                 </div>
             )}
-
+ {handleIconChange && (
+               <Form.Group controlId="icon" className="mb-5">
+               <Form.Label>Category Icon (2MB)</Form.Label>
+               <Form.Control type="file" accept="image/*" onChange={handleIconChange} />
+           </Form.Group>
+            )}
+              {icon && !newIcon && (
+                <div className="mb-3">
+                    <Image src={icon} alt="Existing icon" className="img-fluid-admin" />
+                </div>
+            )}
+                 {newIcon && (
+                <div className="mb-3">
+                    <Image src={newIcon} alt="New icon" className="img-fluid-admin" />
+                </div>
+            )}
             {formPrice && formPrice.map((Price, index) => (
                 <Form.Group key={index} controlId={Price.id} className="mb-5">
                   <Form.Label>{Price.label}</Form.Label>
@@ -454,51 +535,69 @@ const handleRadioChange = (radioId, value) => {
                 </Form.Control>
               </Form.Group>
             ))}
+            
+            {formStatus && formStatus.map((status, index) => (
+              <Form.Group key={index} controlId={status.id} className="mb-5">
+                <Form.Label>{status.label}</Form.Label>
+                <Form.Control 
+                  as="select" 
+                  value={status.value} 
+                  onChange={status.onChange} 
+                  required={status.required || false}
+                >
+                  <option value="">Select Status</option>
+                  {status.options.map((option, optIndex) => (
+                    <option key={optIndex} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </Form.Control>
+              </Form.Group>
+            ))}
+            
 
 {formPeriod && (
         <Col md={12}>
           <Row>
             <Col md={12}>
-              <Form.Group controlId="banner_start" className="mb-3">
-                <Form.Label>Banner Start</Form.Label>
-                <Form.Control
-                  type="datetime-local"
-                  value={selectedStartDate ? formatDateTimeLocal(selectedStartDate).replace(' ', 'T') : ''}
-                  onChange={(e) => {
-                    const newDate = new Date(e.target.value);
-                    handleDateChange(newDate, 'start');
-                  }}
-                  required
-                />
-              </Form.Group>
+            <Form.Group controlId="banner_start" className="mb-3">
+              <Form.Label>Banner Start</Form.Label>
+              <Form.Control
+                type="datetime-local"
+                value={selectedStartDate || ''} // Use selectedStartDate from state
+                onChange={(e) => {
+                  setSelectedStartDate(e.target.value); // Update state on change
+                }}
+                required
+              />
+            </Form.Group>
+
             </Col>
             <Col md={12}>
-              <Form.Group controlId="banner_end" className="mb-3">
-                <Form.Label>Banner End</Form.Label>
-                <Form.Control
-                  type="datetime-local"
-                  value={selectedEndDate ? formatDateTimeLocal(selectedEndDate).replace(' ', 'T') : ''}
-                  onChange={(e) => {
-                    const newDate = new Date(e.target.value);
-                    handleDateChange(newDate, 'end');
-                  }}
-                  required
-                />
-              </Form.Group>
+           
+            <Form.Group controlId="banner_end" className="mb-3">
+              <Form.Label>Banner End</Form.Label>
+              <Form.Control
+                type="datetime-local"
+                value={selectedEndDate || ''} // Use selectedEndDate from state
+                onChange={(e) => {
+                  setSelectedEndDate(e.target.value); // Update state on change
+                }}
+                required
+              />
+            </Form.Group>
             </Col>
             <Col md={12}>
               <div className="date-picker-container">
-                <Calendar
-                  selectRange={false}
-                  onClickDay={handleDateClick}
-                  value={
-                    selectedStartDate
-                      ? selectedEndDate
-                        ? [selectedStartDate, selectedEndDate]
-                        : selectedStartDate
-                      : null
-                  }
-                />
+              <Calendar
+                selectRange={true}
+                onChange={(range) => {
+                  handleDateChange(range.startDate, "start");
+                  handleDateChange(range.endDate, "end");
+                }}
+              />
+
+
               </div>
             </Col>
           </Row>

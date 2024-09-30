@@ -10,7 +10,7 @@ import 'react-phone-input-2/lib/style.css';
 
 import { FaTrashAlt } from 'react-icons/fa';
 
-const AdminAddCategoryContent = () => {
+const AdminEditCategoryContent = () => {
     const [categoryList, setCategoryList] = useState([]); 
     const [icon, setIcon] = useState(null); 
     const [newIcon, setNewIcon] = useState(null);
@@ -24,14 +24,18 @@ const AdminAddCategoryContent = () => {
     const navigate = useNavigate();
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`
+    const categoryId = sessionStorage.getItem('categoryId'); 
     const handleSubmit = async (event) => {
         event.preventDefault();
     
         const { name, description, icon } = formData; // Now, icon is the actual file
     
         const formPayload = new FormData();
+        formPayload.append("id", categoryId);
         formPayload.append("name", name);
         formPayload.append("description", description);
+
+
     
         // Append the icon if it exists
         if (icon) {
@@ -45,7 +49,7 @@ const AdminAddCategoryContent = () => {
         }
     
         try {
-            const addCategoryResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/addCategory`, {
+            const addCategoryResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/editCategory`, {
                 method: 'POST',
                 headers: {
                     'Authorization': Authenticate,
@@ -67,6 +71,48 @@ const AdminAddCategoryContent = () => {
             console.error('Error during category registration:', error);
         }
     };
+
+    useEffect(() => {
+        if (!categoryId) {
+            console.error("Category ID is not available in sessionStorage");
+            return;
+        }
+
+        const fetchCategoryDetails = async () => {
+            try {
+                const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/categoryDetail`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': Authenticate,
+                    },
+                    body: JSON.stringify({ id: categoryId })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const categoryDetails = data.data; // Use the packageId
+
+                if (categoryDetails) {
+                    setFormData({
+                        name: categoryDetails.name,
+                        description: categoryDetails.description,
+
+                    });
+                    setIcon(categoryDetails.icon ? `${import.meta.env.VITE_BASE_URL}storage/${categoryDetails.icon}` : null);
+                } else {
+                    console.error("Category not found with ID:", categoryId);
+                }
+            } catch (error) {
+                console.error('Error fetching package details:', error.message);
+                setError(error.message);
+            }
+        };
+        fetchCategoryDetails();
+    }, [categoryId, Authenticate]);
     
     const handleIconChange = (e) => {
         const file = e.target.files[0]; // Get the selected file
@@ -160,4 +206,4 @@ const AdminAddCategoryContent = () => {
     );
 };
 
-export default AdminAddCategoryContent;
+export default AdminEditCategoryContent;

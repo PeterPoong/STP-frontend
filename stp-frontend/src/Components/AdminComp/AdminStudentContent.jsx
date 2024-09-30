@@ -19,6 +19,7 @@ const AdminStudentContent = () => {
     const [targetstudent, setTargetstudent] = useState(null);
     const [isSearchResults, setIsSearchResults] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
+    const [showAddButton, setShowAddButton] = useState(true); // Set true if you want the button to always show
     const navigate = useNavigate();
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`;
@@ -103,9 +104,10 @@ const AdminStudentContent = () => {
     };
 
     const handleEdit = (id) => {
-        // Handle edit action
+        console.log(`Edit student with ID: ${id}`); // Log the ID being passed
+        sessionStorage.setItem('studentId', id); // Store package ID in session storage
+        navigate(`/adminEditStudent`); // Navigate to the edit page
     };
-
     const handleToggleSwitch = (id, currentStatus) => {
         const action = (currentStatus === 'Active' || currentStatus === 'Temporary') ? 'disable' : 'enable';
         setTargetstudent({ id, action });
@@ -244,6 +246,7 @@ const AdminStudentContent = () => {
             totalPages={totalPages}
             onPageChange={handlePageChange}
             onRowsPerPageChange={handleRowsPerPageChange}
+            showAddButton={showAddButton}
             // onSearch={(query) => console.log(query)} // Implement search functionality
             onAddButtonClick={handleAddStudent} // Implement add new student functionality
         />

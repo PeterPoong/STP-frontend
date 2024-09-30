@@ -19,6 +19,8 @@ const AdminBannerContent = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [searchQuery, setSearchQuery] = useState("");
+    const [showAddButton, setShowAddButton] = useState(true); // Set true if you want the button to always show
+
      // To track if there are search results
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`;
@@ -193,18 +195,7 @@ const AdminBannerContent = () => {
         <tr key={banner.id}>
             <td>{banner.name}</td>
             <td>{banner.file}</td>
-            <td>
-            {Array.isArray(banner.featured)
-                ? banner.featured.map((feature) => (
-                    <span key={feature.featured_id}>
-                    {feature.core_metaName} {/* Display only core_metaName */}
-                    </span>
-                ))
-                : typeof banner.featured === 'object' 
-                ? banner.featured.core_metaName // Directly access core_metaName
-                : banner.featured // Render non-array, non-object values directly
-            }
-                </td>
+            <td>{banner.featured ? banner.featured.core_metaName : 'No Featured'}</td>
             <td>{banner.banner_duration}</td>
             <td className={getStatusClass(banner.status)}>
                 {banner.status}
@@ -263,6 +254,7 @@ const AdminBannerContent = () => {
                 currentPage={currentPage}
                 onPageChange={handlePageChange}
                 onRowsPerPageChange={handleRowsPerPageChange}
+                showAddButton={showAddButton}
             />
             <Modal show={showModal} onHide={() => setShowModal(false)}>
                 <Modal.Header closeButton>

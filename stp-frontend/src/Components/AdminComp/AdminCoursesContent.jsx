@@ -20,6 +20,8 @@ const AdminCoursesContent = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [searchQuery, setSearchQuery] = useState("");
+    const [showAddButton, setShowAddButton] = useState(true); // Set true if you want the button to always show
+
      // To track if there are search results
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`;
@@ -110,10 +112,11 @@ const AdminCoursesContent = () => {
     };
 
     const handleEdit = (id) => {
-        console.log(`Edit course with ID: ${id}`);
-        sessionStorage.setItem('token', Authenticate);
-        navigate(`/adminEditCourse/${id}`);
+        console.log(`Edit Course with ID: ${id}`); // Log the ID being passed
+        sessionStorage.setItem('courseId', id); // Store course ID in session storage
+        navigate(`/adminEditCourse`); // Navigate to the edit page
     };
+    
 
     const handleToggleSwitch = (id, currentStatus) => {
         console.log("Toggle switch for course with ID:", id);  // Check the id here
@@ -249,6 +252,7 @@ const AdminCoursesContent = () => {
                 currentPage={currentPage}
                 onPageChange={handlePageChange}
                 onRowsPerPageChange={handleRowsPerPageChange}
+                showAddButton={showAddButton}
             />
             <Modal show={showModal} onHide={() => setShowModal(false)}>
                 <Modal.Header closeButton>

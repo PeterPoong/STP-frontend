@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, Modal } from "react-bootstrap";
+import { Table, Button, Modal, Form } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
@@ -14,12 +14,13 @@ const AdminApplicantContent = () => {
     const [sortColumn, setSortColumn] = useState(null);
     const [sortDirection, setSortDirection] = useState(null);
     const [showModal, setShowModal] = useState(false);
+    const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+    const [feedback, setFeedback] = useState("");  // State for feedback input
     const [targetApplicant, setTargetApplicant] = useState(null);
-    const [totalPages, setTotalPages] = useState(1); // Start with 1 page
+    const [totalPages, setTotalPages] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [searchQuery, setSearchQuery] = useState("");
-     // To track if there are search results
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`;
     const navigate = useNavigate();
@@ -43,7 +44,6 @@ const AdminApplicantContent = () => {
                 setApplicants(result.data);
                 setTotalPages(result.last_page);
                 setCurrentPage(result.current_page);
-                setIsSearchResults(result.total > rowsPerPage);
             } else {
                 setApplicants([]);
             }
@@ -56,26 +56,26 @@ const AdminApplicantContent = () => {
     };
 
     useEffect(() => {
-        fetchApplicants(currentPage, rowsPerPage, searchQuery);
-    }, [Authenticate, currentPage, rowsPerPage, searchQuery]);
+        fetchApplicants(currentPage, rowsPerPage, searchQuery, sortColumn, sortDirection);
+    }, [currentPage, rowsPerPage, searchQuery, sortColumn, sortDirection]);
 
     const handleRowsPerPageChange = (newRowsPerPage) => {
         setRowsPerPage(newRowsPerPage);
-        setCurrentPage(1); // Reset to the first page whenever rows per page changes
-        fetchApplicants(1, newRowsPerPage, searchQuery); // Fetch data with updated rowsPerPage
+        setCurrentPage(1); 
+        fetchApplicants(1, newRowsPerPage, searchQuery);
     };
 
     const handleSearch = (query) => {
         setSearchQuery(query);
-        setCurrentPage(1); // Reset to the first page whenever search query changes
-        fetchApplicants(1, rowsPerPage, query); // Fetch data with updated search query
+        setCurrentPage(1);
+        fetchApplicants(1, rowsPerPage, query);
     };
 
     const handleSort = (column) => {
         const newDirection = sortColumn === column && sortDirection === "asc" ? "desc" : "asc";
         setSortColumn(column);
         setSortDirection(newDirection);
-        fetchApplicants(currentPage, rowsPerPage, searchQuery); // Fetch sorted data
+        fetchApplicants(currentPage, rowsPerPage, searchQuery);
     };
 
     const sortedApplicants = (() => {
@@ -90,38 +90,39 @@ const AdminApplicantContent = () => {
             return 0;
         });
     })();
-    
 
     const handlePageChange = (page) => {
         if (page <= totalPages && page > 0) {
             setCurrentPage(page);
         }
     };
+
     const handlePendingAction = (id, action) => {
         setTargetApplicant({ id, action });
         setShowModal(true);
     };
-    
-    const handleAddApplicant = () => {
-        sessionStorage.setItem('token', Authenticate);
-        navigate('/adminAddApplicant');
-    };
-    const handleEdit = (id) => {
-        console.log(`Edit Applicant with ID: ${id}`);
-        sessionStorage.setItem('token', Authenticate);
-        navigate(`/adminEditApplicant/${id}`);
-    };
-    
-
+ 
     const handleToggleSwitch = (id, currentStatus) => {
         const action = (currentStatus === 'Active' || currentStatus === 'Temporary'|| currentStatus === 'Accepted') ? 'disable' : 'enable';
         setTargetApplicant({ id, action });
         setShowModal(true);
     };
-
+    const handleEdit = (id) => {
+        console.log(`Edit applicant with ID: ${id}`); // Log the ID being passed
+        sessionStorage.setItem('applicantId', id); // Store package ID in session storage
+        navigate(`/adminEditApplicant`); // Navigate to the edit page
+    };
     const confirmAction = async () => {
         if (!targetApplicant) return;
-    
+
+        // Show feedback modal after confirming the action
+        setShowModal(false);
+        setShowFeedbackModal(true);
+    };
+
+    const submitFeedback = async () => {
+        if (!targetApplicant) return;
+
         try {
             const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/editApplicantStatus`, {
                 method: "POST",
@@ -131,42 +132,42 @@ const AdminApplicantContent = () => {
                 },
                 body: JSON.stringify({
                     id: targetApplicant.id,
-                    type: targetApplicant.action
+                    type: targetApplicant.action,
+                    feedback: feedback // Send feedback to the backend
                 }),
             });
-    
+
             if (!response.ok) {
                 throw new Error(`HTTP error! form_status: ${response.form_status}`);
             }
-    
+
             const result = await response.json();
-    
+
             if (result.success) {
-                // Fetch the updated data from the database
-                await fetchApplicants(currentPage, rowsPerPage, searchQuery);
+                await fetchApplicants(currentPage, rowsPerPage, searchQuery); // Fetch updated data
             } else {
                 console.error(result.message);
             }
         } catch (error) {
             console.error("Error processing the action:", error);
         } finally {
-            setShowModal(false);
+            setShowFeedbackModal(false);
             setTargetApplicant(null);
         }
     };
-    
+
     const getStatusClass = (form_status) => {
         switch (form_status) {
             case 'Disable':
                 return 'status-disable';
             case 'Rejected':
-                return 'status-disable';
+                return 'status-rejected';
             case 'Temporary-Disable':
                 return 'status-disable';
             case 'Active':
                 return 'status-active';
             case 'Accepted':
-             return 'status-active';
+             return 'status-accepted';
             case 'Pending':
                 return 'status-pending';
             case 'Temporary':
@@ -185,7 +186,7 @@ const AdminApplicantContent = () => {
                 Institution {sortColumn === "institute" && (sortDirection === "asc" ? "↑" : "↓")}
             </th>
             <th onClick={() => handleSort("student")}>
-                Student {sortColumn === "student" && (sortDirection === "asc" ? "↑" : "↓")}
+                Student Name{sortColumn === "student" && (sortDirection === "asc" ? "↑" : "↓")}
             </th>
             <th onClick={() => handleSort("contact")}>
                 Contact No. {sortColumn === "contact" && (sortDirection === "asc" ? "↑" : "↓")}
@@ -207,43 +208,42 @@ const AdminApplicantContent = () => {
                 {Applicant.form_status}
             </td>
             <td>
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                {Applicant.form_status === 'Pending' ? (
-                    <>
-                        <Button className="accept"
-                            variant="success"
-                            onClick={() => handlePendingAction(Applicant.id, 'Accept')}
-                        >
-                            Accept
-                        </Button>
-                        <Button className="rejected"
-                            variant="danger"
-                            onClick={() => handlePendingAction(Applicant.id, 'Reject')}
-                        >
-                            Reject
-                        </Button>
-                    </>
-                ) : (
-                    <>
-                    <FontAwesomeIcon
-                        className="icon-color-edit"
-                        title="Edit"
-                        icon={faEdit}
-                        style={{ marginRight: '8px', color: '#691ED2', cursor: 'pointer' }}
-                        onClick={() => handleEdit(Applicant.id)}
-                    />
-                    <MDBSwitch
-                        id={`switch-${Applicant.id}`}
-                        checked={Applicant.form_status === 'Active' || Applicant.form_status === 'Temporary'||Applicant.form_status === 'Accepted' }
-                        onChange={() => handleToggleSwitch(Applicant.id, Applicant.form_status)}
-                        style={{
-                            color: (Applicant.form_status === 'Active' || Applicant.form_status === 'Temporary'||Applicant.form_status === 'Accepted') ? 'green' : ''
-                        }}
-                    />
-                </>
-                 )}
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    {Applicant.form_status === 'Pending' ? (
+                        <>
+                            <Button className="accept"
+                                variant="success"
+                                onClick={() => handlePendingAction(Applicant.id, 'Accept')}
+                            >
+                                Accept
+                            </Button>
+                            <Button className="rejected"
+                                variant="danger"
+                                onClick={() => handlePendingAction(Applicant.id, 'Reject')}
+                            >
+                                Reject
+                            </Button>
+                        </>
+                    ) : (
+                        <>
+                            <FontAwesomeIcon
+                                className="icon-color-edit"
+                                title="Edit"
+                                icon={faEdit}
+                                style={{ marginRight: '8px', color: '#691ED2', cursor: 'pointer' }}
+                                onClick={() => handleEdit(Applicant.id)}
+                            />
+                            <MDBSwitch
+                                id={`switch-${Applicant.id}`}
+                                checked={Applicant.form_status === 'Active' || Applicant.form_status === 'Temporary'||Applicant.form_status === 'Accepted' }
+                                onChange={() => handleToggleSwitch(Applicant.id, Applicant.form_status)}
+                                style={{
+                                    color: (Applicant.form_status === 'Active' || Applicant.form_status === 'Temporary'||Applicant.form_status === 'Accepted') ? 'green' : ''
+                                }}
+                            />
+                        </>
+                    )}
                 </div>
-                
             </td>
         </tr>
     ));
@@ -251,29 +251,57 @@ const AdminApplicantContent = () => {
     return (
         <>
             <TableWithControls
-                theadContent={theadContent}
-                tbodyContent={tbodyContent}
-                onSearch={handleSearch}
-                onSort={handleSort}
-                onAddButtonClick={handleAddApplicant}
-                totalPages={totalPages}
-                currentPage={currentPage}
-                onPageChange={handlePageChange}
-                onRowsPerPageChange={handleRowsPerPageChange}
+                 theadContent={theadContent}
+                 tbodyContent={tbodyContent}
+                 onSearch={handleSearch}
+                 onSort={handleSort}
+                 totalPages={totalPages}
+                 currentPage={currentPage}
+                 onPageChange={handlePageChange}
+                 onRowsPerPageChange={handleRowsPerPageChange}
             />
-            <Modal show={showModal} onHide={() => setShowModal(false)}>
+
+            <Modal show={showModal} onHide={() => setShowModal(false)} centered>
                 <Modal.Header closeButton>
                     <Modal.Title>Confirm Action</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    Are you sure you want to {targetApplicant?.action === 'enable' ? 'Accept' : 'Reject'} this Applicant?
+                    Are you sure you want to {targetApplicant?.action} this applicant?
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={() => setShowModal(false)}>
                         Cancel
                     </Button>
-                    <Button className="confirm" variant="primary" onClick={confirmAction}>
+                    <Button variant="primary" onClick={confirmAction}>
                         Confirm
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
+            <Modal show={showFeedbackModal} onHide={() => setShowFeedbackModal(false)} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Provide Feedback</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form>
+                        <Form.Group>
+                            <Form.Label>Feedback</Form.Label>
+                            <Form.Control
+                                as="textarea"
+                                rows={3}
+                                value={feedback}
+                                onChange={(e) => setFeedback(e.target.value)}
+                                placeholder="Enter your feedback here..."
+                            />
+                        </Form.Group>
+                    </Form>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowFeedbackModal(false)}>
+                        Cancel
+                    </Button>
+                    <Button variant="primary" onClick={submitFeedback}>
+                        Submit
                     </Button>
                 </Modal.Footer>
             </Modal>

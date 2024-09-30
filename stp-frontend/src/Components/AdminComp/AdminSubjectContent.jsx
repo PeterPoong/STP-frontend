@@ -19,6 +19,7 @@ const AdminSubjectContent = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [searchQuery, setSearchQuery] = useState("");
+    const [showAddButton, setShowAddButton] = useState(true); // Set true if you want the button to always show
     const token = sessionStorage.getItem('token'); // Retrieve the token from sessionStorage
     const Authenticate = `Bearer ${token}`;
     const navigate = useNavigate();
@@ -105,9 +106,9 @@ const AdminSubjectContent = () => {
         navigate('/adminAddSubject');
     };
     const handleEdit = (id) => {
-        console.log(`Edit Subject with ID: ${id}`);
-        sessionStorage.setItem('token', Authenticate);
-        navigate(`/adminEditSubject/${id}`);
+        console.log(`Edit subject with ID: ${id}`); // Log the ID being passed
+        sessionStorage.setItem('subjectId', id); // Store package ID in session storage
+        navigate(`/adminEditSubject`); // Navigate to the edit page
     };
 
     const handleToggleSwitch = (id, currentStatus) => {
@@ -224,6 +225,7 @@ const AdminSubjectContent = () => {
                 currentPage={currentPage}
                 onPageChange={handlePageChange}
                 onRowsPerPageChange={handleRowsPerPageChange}
+                showAddButton={showAddButton}
             />
             <Modal show={showModal} onHide={() => setShowModal(false)}>
                 <Modal.Header closeButton>

@@ -480,6 +480,7 @@ const AdminAddSchoolContent = () => {
             showVisibility: showConfirmPassword
         }
     ];
+    const shouldRenderPasswordCard = formPassword && formPassword.length > 0;
 
     const formTextarea = [
         {
@@ -598,6 +599,7 @@ const AdminAddSchoolContent = () => {
            formTextarea={formTextarea}
            formHTML={formHTML}
            formCountry={formCountry}
+           shouldRenderPasswordCard={shouldRenderPasswordCard}
            formCategory={formCategory}
            formAccount={formAccount}
            formWebsite={formWebsite}

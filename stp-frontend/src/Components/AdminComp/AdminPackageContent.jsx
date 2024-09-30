@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { MDBSwitch } from 'mdb-react-ui-kit';
 import '../../css/AdminStyles/AdminTableStyles.css';
 import TableWithControls from './TableWithControls';
-import he from 'he';
+
 const AdminPackageContent = () => {
     const [Packages, setPackages] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -19,6 +19,8 @@ const AdminPackageContent = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [searchQuery, setSearchQuery] = useState("");
+    const [showAddButton, setShowAddButton] = useState(true); // Set true if you want the button to always show
+
     const [isSearchResults, setIsSearchResults] = useState(false);
 
      // To track if there are search results
@@ -253,6 +255,7 @@ const AdminPackageContent = () => {
                 currentPage={currentPage}
                 onPageChange={handlePageChange}
                 onRowsPerPageChange={handleRowsPerPageChange}
+                showAddButton={showAddButton}
             />
             <Modal show={showModal} onHide={() => setShowModal(false)}>
                 <Modal.Header closeButton>

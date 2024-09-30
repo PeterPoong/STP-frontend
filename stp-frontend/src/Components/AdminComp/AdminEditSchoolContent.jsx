@@ -580,7 +580,8 @@ useEffect(() => {
             required: true,
             autoComplete: "new-password",
             toggleVisibility: togglePasswordVisibility,
-            showVisibility: showPassword
+            showVisibility: showPassword,
+            helperText: "If you wish to keep the current password, leave this field empty." // Add this line
         },
         {
             id: "confirm_password",
@@ -595,6 +596,8 @@ useEffect(() => {
         }
     ];
 
+  const shouldRenderPasswordCard = formPassword && formPassword.length > 0;
+    
     const formTextarea = [
         {
             id: "school_shortDesc",
@@ -718,6 +721,7 @@ useEffect(() => {
                    formAccount={formAccount}
                    formWebsite={formWebsite}
                    formAddress={formAddress}
+                   shouldRenderPasswordCard={shouldRenderPasswordCard}
                    onSubmit={handleSubmit}
                    formCheckboxes={formCheckboxes}
                    formPersonInCharge={formPersonInCharge}

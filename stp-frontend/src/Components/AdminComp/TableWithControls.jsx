@@ -15,6 +15,7 @@ const TableWithControls = ({
      totalPages, 
      currentPage, 
      onPageChange, 
+     showAddButton,
      showSearch = true,          // New prop to toggle search visibility
     showRowsPerPage = true,     // New prop to toggle rows-per-page visibility
      onRowsPerPageChange }) => {
@@ -50,10 +51,12 @@ const TableWithControls = ({
                         )}
                 </div>
                     <div className="col-auto">
-                    {/* Add Button */}
-                    <Button className="addNew" variant="primary" onClick={onAddButtonClick}>
-                        + Add New
-                    </Button>
+                   {/* Conditionally render the Add New button */}
+                        {showAddButton && (
+                            <Button className="addNew" variant="primary" onClick={onAddButtonClick}>
+                                + Add New
+                            </Button>
+                        )}
                     </div>
             </div>
             <div className="TableContainer">

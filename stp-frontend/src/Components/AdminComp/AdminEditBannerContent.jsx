@@ -9,20 +9,19 @@ const AdminEditBannerContent = () => {
   const [formData, setFormData] = useState({
     banner_name: "",
     banner_url: "",
-    banner_file: "", // Changed to store file path
+    banner_file: null, // Ensure initial state is null for file
     featured_id: []
   });
   const [selectedFeatures, setSelectedFeatures] = useState([]);
   const [selectedStartDate, setSelectedStartDate] = useState(null);
   const [selectedEndDate, setSelectedEndDate] = useState(null);
+  const [banner_file, setBanner_file]= useState(null)
+  const [newBannerFile, setNewBannerFile] = useState (null)
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const token = sessionStorage.getItem('token');
   const Authenticate = `Bearer ${token}`;
   const bannerId = sessionStorage.getItem('bannerId'); 
-
-  // Use the file path directly
-  const bannerFileURL = formData.banner_file ? `${import.meta.env.VITE_BASE_URL}${formData.banner_file}` : null;
 
   const formatDateForSubmission = (date) => {
     if (!date) return '';
@@ -37,49 +36,37 @@ const AdminEditBannerContent = () => {
 
   const handleDateChange = (date, type) => {
     if (type === "start") {
-      setSelectedStartDate(date);
-      console.log("Start date set to:", date);
+      // Set the start date, formatting it for datetime-local
+      setSelectedStartDate(date.toISOString().slice(0, 16)); // Exclude seconds and milliseconds
     } else if (type === "end") {
-      setSelectedEndDate(date);
-      console.log("End date set to:", date);
+      // Set the end date, formatting it for datetime-local
+      setSelectedEndDate(date.toISOString().slice(0, 16)); // Exclude seconds and milliseconds
     }
   };
+  
 
   const handleSubmit = async (event) => {
     event.preventDefault();
   
-    // Formatting dates for submission
-    const formattedStartDate = selectedStartDate
-      ? formatDateForSubmission(selectedStartDate)
-      : null;
-    const formattedEndDate = selectedEndDate
-      ? formatDateForSubmission(selectedEndDate)
-      : null;
+    const formattedStartDate = selectedStartDate ? formatDateForSubmission(selectedStartDate) : null;
+    const formattedEndDate = selectedEndDate ? formatDateForSubmission(selectedEndDate) : null;
   
-    // Check if all required fields are filled
     if (!formData.banner_name || !formData.banner_url || !formattedStartDate || !formattedEndDate || !formData.banner_file) {
       setError("Please fill out all required fields.");
       return;
     }
   
-    // Create FormData object
     const submissionData = new FormData();
+    submissionData.append("id", bannerId);
     submissionData.append("banner_name", formData.banner_name);
     submissionData.append("banner_url", formData.banner_url);
     submissionData.append("banner_start", formattedStartDate);
     submissionData.append("banner_end", formattedEndDate);
-    submissionData.append("banner_file", formData.banner_file); // Assuming the file path is acceptable for submission
+    submissionData.append("banner_file", formData.banner_file);
   
-    // Add selected features
     selectedFeatures.forEach((featureId) => {
       submissionData.append("featured_id[]", featureId);
     });
-  
-    // Log the data being submitted
-    console.log("FormData being submitted:");
-    for (const pair of submissionData.entries()) {
-      console.log(`${pair[0]}: ${pair[1]}`);
-    }
   
     try {
       const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/editBanner`, {
@@ -92,7 +79,6 @@ const AdminEditBannerContent = () => {
   
       const result = await response.json();
       if (response.ok) {
-        console.log("Banner updated successfully!", result);
         navigate("/adminBanner");
       } else {
         setError(result.message || "Failed to update banner.");
@@ -102,12 +88,14 @@ const AdminEditBannerContent = () => {
     }
   };
 
+
+    
   useEffect(() => {
     if (!bannerId) {
       console.error("Banner ID is not available in sessionStorage");
       return;
     }
-
+  
     const fetchBannerDetails = async () => {
       try {
         const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/bannerListAdmin`, {
@@ -116,24 +104,32 @@ const AdminEditBannerContent = () => {
             'Content-Type': 'application/json',
             'Authorization': Authenticate,
           },
+          body: JSON.stringify({ id: bannerId }),
         });
-
+  
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-
+  
         const data = await response.json();
-        const bannerDetails = data.data.find(bnr => bnr.id === parseInt(bannerId)); // Use the bannerId
-
+         // Console log the entire response data
+      console.log('Response Data:', data);
+        const bannerDetails = data.data[0]; // Access the first item in the data array
+        console.log('Banner Details:', bannerDetails);
         if (bannerDetails) {
           setFormData({
             banner_name: bannerDetails.name,
             banner_url: bannerDetails.url,
-            banner_file: bannerDetails.filePath, // Use the file path returned from the API
-            featured_id: bannerDetails.featured.map(feature => feature.id),
+            banner_start: bannerDetails.banner_start ? bannerDetails.banner_start : "", // Date in `Y-m-dTH:i` format
+            banner_end: bannerDetails.banner_end ? bannerDetails.banner_end : "",       // Date in `Y-m-dTH:i` format
+            banner_file: bannerDetails.file ? `${import.meta.env.VITE_BASE_URL}${bannerDetails.file}` : null,
+            featured_id: bannerDetails.feature ? [bannerDetails.featured_id] : [],
           });
-          setSelectedStartDate(new Date(bannerDetails.banner_start));
-          setSelectedEndDate(new Date(bannerDetails.banner_end));
+  
+          setSelectedStartDate(bannerDetails.banner_start);  // Already in datetime-local format
+          setSelectedEndDate(bannerDetails.banner_end);      // Already in datetime-local format
+          setBanner_file(bannerDetails.file ? `${import.meta.env.VITE_BASE_URL}storage/${bannerDetails.file}` : null);
+          setSelectedFeatures(bannerDetails.featured ? [bannerDetails.featured.featured_id] : []);
         } else {
           console.error("Banner not found with ID:", bannerId);
         }
@@ -142,13 +138,38 @@ const AdminEditBannerContent = () => {
         setError(error.message);
       }
     };
-
+  
     fetchBannerDetails();
   }, [bannerId, Authenticate]);
+  
+
+  useEffect(() => {
+    const fetchFeatured = async () => {
+      try {
+        const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/bannerFeaturedList`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': Authenticate,
+          },
+        });
+        const data = await response.json();
+        setBannerFeaturedList(data.data || []);
+      } catch (error) {
+        setError(error.message);
+      }
+    };
+    fetchFeatured();
+  }, [Authenticate]);
 
   const handleFieldChange = (e) => {
     const { id, value } = e.target;
     setFormData(prev => ({ ...prev, [id]: value }));
+  };
+
+  const handleBannerFileChange = (e) => {
+    const file = e.target.files[0];
+    setFormData(prev => ({ ...prev, banner_file: file }));
   };
 
   const handleFeatureChange = (event) => {
@@ -201,23 +222,23 @@ const AdminEditBannerContent = () => {
 
   return (
     <Container fluid className="admin-edit-banner-content">
-      {console.log("Rendered with selectedStartDate:", selectedStartDate)}
-      {console.log("Rendered with selectedEndDate:", selectedEndDate)}
       <AdminFormComponent
-        formTitle="Edit Banner"
-        checkboxDetail="Featured Type(s)"
-        formFields={formFields}
-        formUrl={formUrl}
-        formCheckboxes={formCheckboxes}
-        formPeriod={true}
-        onSubmit={handleSubmit}
-        error={error}
-        buttons={buttons}
-        selectedStartDate={selectedStartDate}
-        selectedEndDate={selectedEndDate}
-        handleDateChange={handleDateChange} // Pass the function down
-        banner_file={bannerFileURL} // Use the file path here
-      />
+  formTitle="Edit Banner"
+  checkboxDetail="Featured Type(s)"
+  formFields={formFields}
+  formUrl={formUrl}
+  formCheckboxes={formCheckboxes}
+  formPeriod={true}
+  onSubmit={handleSubmit}
+  error={error}
+  buttons={buttons}
+  selectedStartDate={selectedStartDate}  // Pass the start date
+  selectedEndDate={selectedEndDate}      // Pass the end date
+  handleDateChange={handleDateChange}
+  banner_file={banner_file}
+  newBannerFile={newBannerFile}
+  handleBannerFileChange={handleBannerFileChange}
+/>
     </Container>
   );
 };
