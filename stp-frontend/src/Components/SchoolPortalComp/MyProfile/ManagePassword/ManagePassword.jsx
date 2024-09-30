@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import "../../../../css/SchoolPortalStyle/ManagePassword.css";
+// import styles from "../../../../css/SchoolPortalStyle/ManagePassword.module.css";
+import styles from "../../../../css/SchoolPortalStyle/ManagePassword.module.css";
 import {
   Form,
   Container,
@@ -80,23 +81,23 @@ const ManagePassword = () => {
   }, [updateStatus]);
 
   return (
-    <Container fluid className="profile-container">
-      <h5 className="my-profile-header">My Profile</h5>
-      <h3 className="sub-heading">Manage Password</h3>
-      <hr className="divider-line" />
+    <Container fluid className={styles.profileContainer}>
+      <h5 className={` ${styles.myProfileHeader}`}>My Profile</h5>
+      <h3 className={styles.subHeading}>Manage Password</h3>
+      <hr className={styles.dividerLine} />
 
       <Form onSubmit={handleSubmit}>
         {showAlert && (
           <Alert
             variant="success"
-            className={`fade-alert alert-position ${
-              showAlert ? "show" : "hide"
+            className={`${styles.fadeAlert} ${styles.alertPosition} ${
+              showAlert ? styles.show : styles.hide
             }`}
           >
             Update Successfully
           </Alert>
         )}
-        {/* Current Password */}
+
         {/* Current Password */}
         <Row className="mb-4 justify-content-center">
           <Col md={6} className="mx-auto pt-3">
@@ -105,7 +106,7 @@ const ManagePassword = () => {
               className="position-relative"
             >
               <Form.Label>
-                Current Password <span className="span-style">*</span>
+                Current Password <span className={styles.spanStyle}>*</span>
               </Form.Label>
               <InputGroup hasValidation className="position-relative">
                 <Form.Control
@@ -119,7 +120,7 @@ const ManagePassword = () => {
                   className="pe-5"
                 />
                 <span
-                  className="password-toggle position-absolute top-50 end-0 translate-middle-y pe-3"
+                  className={`position-absolute top-50 end-0 translate-middle-y pe-3 ${styles.passwordToggle}`}
                   onClick={() => setShowCurrentPassword(!showCurrentPassword)}
                   style={{ cursor: "pointer", zIndex: 10 }}
                 >
@@ -134,7 +135,7 @@ const ManagePassword = () => {
                 </Form.Control.Feedback>
               </InputGroup>
               {currentPasswordError && (
-                <p className="error-message">{currentPasswordError}</p>
+                <p className={styles.errorMessage}>{currentPasswordError}</p>
               )}
             </Form.Group>
           </Col>
@@ -145,7 +146,7 @@ const ManagePassword = () => {
           <Col md={6} className="mx-auto pt-3">
             <Form.Group controlId="newPassword" className="position-relative">
               <Form.Label>
-                New Password <span className="span-style">*</span>
+                New Password <span className={styles.spanStyle}>*</span>
               </Form.Label>
               <InputGroup hasValidation className="position-relative">
                 <Form.Control
@@ -157,7 +158,7 @@ const ManagePassword = () => {
                   className="pe-5"
                 />
                 <span
-                  className="password-toggle position-absolute top-50 end-0 translate-middle-y pe-3"
+                  className={`position-absolute top-50 end-0 translate-middle-y pe-3 ${styles.passwordToggle}`}
                   onClick={() => setShowPassword(!showPassword)}
                   style={{ cursor: "pointer", zIndex: 10 }}
                 >
@@ -179,7 +180,7 @@ const ManagePassword = () => {
               className="position-relative"
             >
               <Form.Label>
-                Confirm New Password <span className="span-style">*</span>
+                Confirm New Password <span className={styles.spanStyle}>*</span>
               </Form.Label>
               <InputGroup hasValidation className="position-relative">
                 <Form.Control
@@ -195,7 +196,7 @@ const ManagePassword = () => {
                   className="pe-5"
                 />
                 <span
-                  className="password-toggle position-absolute top-50 end-0 translate-middle-y pe-3"
+                  className={`position-absolute top-50 end-0 translate-middle-y pe-3 ${styles.passwordToggle}`}
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   style={{ cursor: "pointer", zIndex: 10 }}
                 >
@@ -217,7 +218,11 @@ const ManagePassword = () => {
 
         <Row className="mb-3">
           <Col md={9}>
-            <Button variant="danger" type="submit" className="save-button">
+            <Button
+              variant="danger"
+              type="submit"
+              className={styles.saveButton}
+            >
               Save
             </Button>
           </Col>

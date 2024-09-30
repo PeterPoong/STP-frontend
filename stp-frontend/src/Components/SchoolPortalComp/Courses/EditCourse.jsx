@@ -178,8 +178,11 @@ const EditCourse = ({ courseId, handleGoBack }) => {
         }
       });
 
+      console.log("data", formData);
+
       const updateCourseDetail = async () => {
         try {
+          console.log("formdata", formData);
           const response = await fetch(
             `${import.meta.env.VITE_BASE_URL}api/school/editCourses`,
             {

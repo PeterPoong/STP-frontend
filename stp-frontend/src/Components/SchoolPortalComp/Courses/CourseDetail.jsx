@@ -2,10 +2,9 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Row, Col, Form, Container, Button, Modal } from "react-bootstrap";
 import { Arrow90degLeft } from "react-bootstrap-icons";
-import styles from "../../../css/SchoolPortalStyle/Courses/AddCourseBasicInfo.module.css"; // Import the CSS module
-import CustomTextArea from "../../SchoolPortalComp/CustomTextArea";
+import styles from "../../../css/SchoolPortalStyle/Courses/CourseDetail.module.css"; // Import the CSS module
 
-const CourseDetail = ({ courseId, handleGoBack }) => {
+const CourseDetail = ({ courseId, handleGoBack, editCourse }) => {
   const token = sessionStorage.getItem("token");
   const [courseName, setCourseName] = useState("");
 
@@ -25,6 +24,10 @@ const CourseDetail = ({ courseId, handleGoBack }) => {
   const [courseDescription, setCourseDescription] = useState(null);
 
   const [courseRequirement, setCourseRequirement] = useState(null);
+
+  const editCourseDetail = (id) => {
+    editCourse(id);
+  };
 
   useEffect(() => {
     const formData = {
@@ -88,6 +91,7 @@ const CourseDetail = ({ courseId, handleGoBack }) => {
           </Col>
           <Col md={2}>
             <button
+              onClick={() => editCourseDetail(courseId)}
               className={`btn btn-outline-danger px-5  mb-3 rounded-pill`}
             >
               Edit
@@ -108,6 +112,10 @@ const CourseDetail = ({ courseId, handleGoBack }) => {
                   type="text"
                   value={courseName}
                   readOnly
+                  style={{
+                    border: "none" /* Remove the border */,
+                    boxShadow: "none" /* Remove any box shadow */,
+                  }}
                   className={`${styles.placeholderStyle}`} // Apply Bootstrap and custom styles
                 />
               </Form.Group>
@@ -202,7 +210,7 @@ const CourseDetail = ({ courseId, handleGoBack }) => {
                   Intake <span className="span-style">*</span>
                 </Form.Label>
               </Form.Group>
-              <Container className="p-3 border rounded">
+              <Container className="p-3  rounded">
                 <Row>
                   {selectedIntakes.map((intake, index) => (
                     <Col md={4} key={index} className="mb-2">
@@ -235,7 +243,7 @@ const CourseDetail = ({ courseId, handleGoBack }) => {
           <Row className="ms-3">
             <Col
               md={3}
-              className="border mb-2 p-3"
+              className=" mb-2 p-3"
               style={{ height: "200px", width: "auto" }}
             >
               <img

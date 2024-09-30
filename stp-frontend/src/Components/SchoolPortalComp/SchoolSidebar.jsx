@@ -53,7 +53,7 @@ const Sidebar = ({ onDropdownItemSelect, selectTabPage }) => {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        console.log("testing", data);
+
         setDetail(data.data);
       } catch (error) {
         console.error("Failed to fetch school details:", error);
@@ -67,13 +67,21 @@ const Sidebar = ({ onDropdownItemSelect, selectTabPage }) => {
   }
 
   //getDetail
+  const handleTabClick = (tabName) => {
+    setSelectedTab(tabName);
+    setIsProfileDropdownOpen(false);
+    setSelectedDropdownItem("");
+    selectTabPage(tabName);
+    onDropdownItemSelect("");
+  };
 
   useEffect(() => {
     // This will run once when the component mounts or when `detail` changes
     const checkForNullValues = (data, excludeKeys = []) => {
+      console.log("detail", data.account_type);
       for (const key in data) {
         if (!excludeKeys.includes(key) && data[key] === null) {
-          console.log("empty", data);
+          console.log("not gull", key);
           setIsProfileDropdownOpen(true);
           setSelectedTab("myProfile");
           setSelectedDropdownItem("basicInfo");
@@ -81,16 +89,26 @@ const Sidebar = ({ onDropdownItemSelect, selectTabPage }) => {
           return;
         }
       }
-      // console.log("detail", detail.id);
-      setAccountType(detail.account_type);
-      setSchoolLogo(
-        `${import.meta.env.VITE_BASE_URL}storage/${detail.school_logo}`
-      );
+      // setSchoolLogo(
+      //   `${import.meta.env.VITE_BASE_URL}storage/${detail.school_logo}`
+      // );
       console.log("All keys have values.");
+      handleTabClick("dashboard");
+      setSchoolLogo(
+        `${import.meta.env.VITE_BASE_URL}storage/${data.school_logo}`
+      );
     };
 
-    const excludeKeys = ["created_by", "school_lg", "school_lat"];
-    checkForNullValues(detail?.data || {}, excludeKeys);
+    setAccountType(detail.account_type);
+
+    const excludeKeys = [
+      "created_by",
+      "school_lg",
+      "school_lat",
+      "school_officalWebsite",
+      "school_logo",
+    ];
+    checkForNullValues(detail || {}, excludeKeys);
   }, [detail]); // Dependency array includes `detail`
 
   const toggleProfileDropdown = () => {
@@ -100,15 +118,8 @@ const Sidebar = ({ onDropdownItemSelect, selectTabPage }) => {
 
   const handleSignOut = () => {
     sessionStorage.removeItem("token");
+    localStorage.removeItem("token");
     navigate("/schoolPortalLogin");
-  };
-
-  const handleTabClick = (tabName) => {
-    setSelectedTab(tabName);
-    setIsProfileDropdownOpen(false);
-    setSelectedDropdownItem("");
-    selectTabPage(tabName);
-    onDropdownItemSelect("");
   };
 
   const handleDropdownItemClick = (itemName) => {

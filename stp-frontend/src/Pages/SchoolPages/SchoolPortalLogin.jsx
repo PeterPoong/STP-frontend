@@ -64,6 +64,7 @@ const SchoolPortalLogin = () => {
           setLoginStatus("success");
           sessionStorage.setItem("name", data.data.user.school_name);
           sessionStorage.setItem("token", data.data.token);
+          localStorage.setItem("token", data.data.token);
           sessionStorage.setItem("loginTimestamp", moment().toISOString());
 
           if (rememberMe) {

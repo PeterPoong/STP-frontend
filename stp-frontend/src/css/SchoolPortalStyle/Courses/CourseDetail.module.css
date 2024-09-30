@@ -1,0 +1,52 @@
+/* AddCourseBasicInformation.module.css */
+
+/* Style for input fields to change placeholder opacity */
+.placeholderStyle {
+  background-color: transparent; /* Transparent background */
+  border: none; /* No border */
+  box-shadow: none; /* Remove any box shadow */
+}
+
+.placeholderStyle::placeholder {
+  opacity: 0.3; /* Adjust the opacity as desired */
+  color: #000; /* Optional: Change color if needed */
+}
+
+.customDangerButton {
+  background-color: #B71A18; /* Change to your desired red color */
+  border: none; /* Remove default border */
+  color: white; /* Ensure text color is readable */
+  padding: 0.3rem 4rem; /* Adjust padding if necessary */
+  border-radius: 2rem; /* Optional: Adjust border radius */
+  box-shadow: none; /* Remove default shadow */
+}
+
+.customDangerButton:hover {
+  background-color: red; /* Darker red on hover */
+  border-color: transparent; /* Remove border on hover */
+}
+
+.iconContainer {
+  background-color: #F5F7FA; /* Adjust background color if needed */
+  display: flex;
+  justify-content: center; /* Centers horizontally */
+  align-items: center; /* Centers vertically */
+}
+
+.iconSize {
+  opacity: 0.2;
+  font-size: 6rem; /* Adjust size as needed */
+}
+
+.customUploadButton {
+  background-color: rgba(183, 26, 24, 0.2); /* Light red with transparency */
+  font-weight: 500;
+  border: none; /* Remove default border */
+  color: #B71A18; /* Text color */
+  border-radius: 2rem; /* Optional: Adjust border radius */
+  box-shadow: none; /* Remove default shadow */
+}
+
+.customUploadButton:hover {
+  background-color: rgba(183, 26, 24, 0.5); /* Darker on hover, with transparency */
+}

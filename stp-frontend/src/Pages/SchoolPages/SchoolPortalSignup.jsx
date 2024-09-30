@@ -23,7 +23,7 @@ const SchoolPortalSignup = () => {
   const [schoolName, setSchoolName] = useState("");
   const [schoolContact, setSchoolContact] = useState("");
   const [schoolCountryCode, setSchoolCountryCode] = useState("");
-  const [schoolWebsite, setSchoolWebsite] = useState("");
+  // const [schoolWebsite, setSchoolWebsite] = useState("");
   const [schoolEmail, setSchoolEmail] = useState("");
   const [schoolAddress, setSchoolAddress] = useState("");
 
@@ -83,7 +83,7 @@ const SchoolPortalSignup = () => {
       password: password,
       confirm_password: confirmPassword,
       school_address: schoolAddress,
-      school_website: schoolWebsite,
+      // school_website: schoolWebsite,
       person_in_charge_name: personInChargeName,
       person_in_charge_contact: personInChargeContact,
       person_in_charge_email: personInChargeEmail,
@@ -193,7 +193,7 @@ const SchoolPortalSignup = () => {
                   </Form.Group>
                 </Col>
 
-                <Col xs={12} md={6}>
+                {/* <Col xs={12} md={6}>
                   <Form.Group className="mb-3">
                     <Form.Label className="custom-label">
                       Institute Website
@@ -206,7 +206,7 @@ const SchoolPortalSignup = () => {
                       required
                     />
                   </Form.Group>
-                </Col>
+                </Col> */}
               </Row>
 
               <Form.Group className="mb-3">

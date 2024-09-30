@@ -31,6 +31,7 @@ export const barOptions = {
     position: "bottom",
     alignment: "center",
   },
+  isStacked: true,
   // animation: {
   //   startup: true,
   //   duration: 1000,
@@ -127,7 +128,7 @@ const CountryChart = ({ typeOfFilter }) => {
         const statisticData = fetchedData.data;
 
         if (Array.isArray(statisticData) && statisticData.length > 0) {
-          console.log("bar", statisticData);
+          // console.log("bar", statisticData);
           setBarChartData(statisticData);
           setBarChartKey((prevKey) => prevKey + 1); // Update chartKey to trigger re-render
         } else {

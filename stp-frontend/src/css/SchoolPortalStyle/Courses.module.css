@@ -4,6 +4,20 @@
   padding: 10px; /* Optional: to add padding inside the border */
 }
 
+
+.resetFilter {
+  margin-top: 2.2rem;
+  cursor: pointer; /* Makes it look clickable */
+  text-decoration: none; /* Remove underline by default */
+  color: #07779a; /* Set the default text color */
+  font-size: 1rem; /* Adjust font size if needed */
+}
+
+.resetFilter:hover {
+  text-decoration: underline; /* Add underline on hover */
+   /* Optional: Change text color on hover */
+}
+
 .customRadius {
   margin-top: 1.8rem;
   border-radius: 12px; /* Adjust the radius as needed */

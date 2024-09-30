@@ -1,4 +1,4 @@
-import { Navigate } from "react-router-dom";
+import { useParams, Navigate } from "react-router-dom";
 import Sidebar from "../../Components/SchoolPortalComp/SchoolSidebar";
 import { useEffect, useState } from "react";
 import { ArrowClockwise } from "react-bootstrap-icons";
@@ -15,13 +15,16 @@ const SchoolDashboard = () => {
   const [schoolDetail, setSchoolDetail] = useState();
   const [selectedDropdownItem, setSelectedDropdownItem] = useState("");
   const [selectedTab, setSelectedTab] = useState("");
-  const token = sessionStorage.getItem("token");
+  // const token = sessionStorage.getItem("token");
+  const token = localStorage.getItem("token");
 
   if (!token) {
     return <Navigate to="/schoolPortalLogin" />;
   }
 
   useEffect(() => {
+    sessionStorage.setItem("token", token);
+
     const fetchSchoolDetail = async () => {
       try {
         const response = await fetch(

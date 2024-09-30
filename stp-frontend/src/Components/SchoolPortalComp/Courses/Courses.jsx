@@ -58,6 +58,7 @@ const Courses = () => {
           <CourseDetail
             courseId={courseID}
             handleGoBack={() => handlePage("courseList")}
+            editCourse={(id) => handleEditCourse(id)}
           />
         );
         break;

@@ -1,0 +1,114 @@
+.acceptRejectSection
+{
+    background-color: white;
+    height: 3.25rem;
+    margin:0 2.5rem;
+    width:35rem;
+    border-radius: 1rem;
+    color:black;
+    font-weight: 400;
+    align-content: center;
+}
+
+
+
+.acceptBtn,
+.rejectBtn {
+  padding-left: 5rem;
+  padding-right: 5rem;
+}
+
+.acceptRejectContentContainer {
+    padding: 1rem 0rem;
+    background-color: white;
+    border-bottom: 0.5px solid rgba(0, 0, 0, 0.2); /* Adjust opacity here */
+}
+
+.submitButton {
+    padding: 0.5rem 2.5rem; /* Adjust padding for button size */
+    border: 1px solid #B71A18; /* Red border */
+    background-color: white; /* White background */
+    color: #B71A18; /* Red text */
+    cursor: pointer; /* Pointer cursor on hover */
+    border-radius: 2rem;
+    transition: background-color 0.3s, color 0.3s; /* Smooth transition */
+    font-weight: normal; /* Remove bold */
+}
+
+.submitButton:hover {
+    background-color: #B71A18; /* Red background on hover */
+    color: white; /* White text on hover */
+}
+
+
+.RejectBtn {
+    padding: 0.5rem 0.3rem; /* Adjust padding for button size */
+    border: 1px solid #B71A18; /* Red border */
+    background-color: white; /* White background */
+    color: #B71A18; /* Red text */
+    cursor: pointer; /* Pointer cursor on hover */
+
+    transition: background-color 0.3s, color 0.3s; /* Smooth transition */
+    font-weight: normal; /* Remove bold */
+}
+
+.rejectBtn:hover {
+    background-color: #B71A18; /* Red background on hover */
+    color: white; /* White text on hover */
+}
+
+
+
+
+/* model button  */
+
+.confirmAcceptBtn {
+    padding: 0.5rem 0.3rem; /* Adjust padding for button size */
+    border: 1px solid green; /* Red border */
+    background-color: white; /* White background */
+    color: green; /* Red text */
+    cursor: pointer; /* Pointer cursor on hover */
+
+    transition: background-color 0.3s, color 0.3s; /* Smooth transition */
+    font-weight: normal; /* Remove bold */
+}
+
+.confirmAcceptBtn:hover {
+    background-color: green; /* Red background on hover */
+    color: white; /* White text on hover */
+}
+
+.confirmRejectBtn {
+    padding: 0.5rem 0.3rem; /* Adjust padding for button size */
+    border: 1px solid #B71A18; /* Red border */
+    background-color: white; /* White background */
+    color: #B71A18; /* Red text */
+    cursor: pointer; /* Pointer cursor on hover */
+
+    transition: background-color 0.3s, color 0.3s; /* Smooth transition */
+    font-weight: normal; /* Remove bold */
+}
+
+.confirmRejectBtn:hover {
+    background-color: #B71A18; /* Red background on hover */
+    color: white; /* White text on hover */
+}
+
+.cancelBtn {
+    padding: 0.5rem 0.3rem; /* Adjust padding for button size */
+    border: 1px solid grey; /* Red border */
+    background-color: white; /* White background */
+    color: grey; /* Red text */
+    cursor: pointer; /* Pointer cursor on hover */
+
+    transition: background-color 0.3s, color 0.3s; /* Smooth transition */
+    font-weight: normal; /* Remove bold */
+}
+
+.cancelBtn:hover {
+    background-color: grey; /* Red background on hover */
+    color: white; /* White text on hover */
+}
+
+
+
