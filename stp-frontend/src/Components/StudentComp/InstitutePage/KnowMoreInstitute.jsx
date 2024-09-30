@@ -176,7 +176,7 @@ const KnowMoreInstitute = () => {
 
   return (
     <div style={{ backgroundColor: "#F5F4F4" }}>
-      <NavButtons />
+      <NavButtonsSP />
       {Array.isArray(institutes) &&
         institutes.map((institute) => (
           <div key={institute.id}>
@@ -570,19 +570,18 @@ const KnowMoreInstitute = () => {
                     <Col md={12}>
                       <div
                         className="map-responsive"
-                        style={{ height: "100%" }}
+                        style={{ height: "100%", width: "100%" }}
                       >
-                        <iframe
-                          src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d15909.76315163879!2d114.0178298!3d4.5143003!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x321f4826b4a6b637%3A0xe688be6fc8cd1d35!2sCurtin%20University%20Malaysia!5e0!3m2!1sen!2smy!4v1723620924688!5m2!1sen!2smy"
-                          allowFullScreen=""
-                          loading="lazy"
-                          referrerPolicy="no-referrer-when-downgrade"
+                        <div
+                          dangerouslySetInnerHTML={{
+                            __html: institute.location,
+                          }}
                           style={{
                             border: 0,
                             width: "100%",
                             height: "100%",
                           }}
-                        ></iframe>
+                        ></div>
                       </div>
                     </Col>
                   </Row>
@@ -907,11 +906,17 @@ const KnowMoreInstitute = () => {
                                   className="fee-info text-right"
                                   style={{ marginTop: "25px" }}
                                 >
-                                  <p>Estimate fee</p>
-                                  <span>
-                                    <strong>RM </strong>
-                                    {course.course_cost}
-                                  </span>
+                                  <p
+                                    style={{
+                                      fontSize: "14px",
+                                      marginRight: "10px",
+                                    }}
+                                  >
+                                    estimate fee<br></br>
+                                    <p style={{ fontSize: "16px" }}>
+                                      <strong>RM </strong> {course.course_cost}
+                                    </p>
+                                  </p>
                                 </div>
                                 <div className="apply-button mt-3">
                                   <button

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
-import NavDropdown from "react-bootstrap/NavDropdown";
 import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
 import Dropdown from "react-bootstrap/Dropdown";
@@ -11,16 +10,15 @@ import logo from "../../assets/StudentAssets/nav logo/logo.png";
 import "../../css/StudentPortalStyles/StudentNavBar.css";
 
 const NavigationBar = () => {
-  const [hasToken, setHasToken] = useState(false);
+  const [hasToken, setHasToken] = useState(null); // Set initial state to null
   const [userName, setUserName] = useState("");
   const navigate = useNavigate();
+
   useEffect(() => {
     const token =
       sessionStorage.getItem("token") || localStorage.getItem("token");
     if (token) {
       setHasToken(true);
-  
-      // Retrieve the username
       const storedUserName =
         sessionStorage.getItem("userName") || localStorage.getItem("userName");
       if (storedUserName) {
@@ -30,7 +28,6 @@ const NavigationBar = () => {
       setHasToken(false);
     }
   }, []);
-  
 
   const handleLogout = () => {
     sessionStorage.removeItem("token");
@@ -38,7 +35,7 @@ const NavigationBar = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("userName");
     sessionStorage.removeItem("userName");
-    sessionStorage.removeItem("lastAppliedCourseId")
+    sessionStorage.removeItem("lastAppliedCourseId");
     setHasToken(false);
     navigate("/");
   };
@@ -47,22 +44,14 @@ const NavigationBar = () => {
     navigate("/studentPortalBasicInformations");
   };
 
-  const handleLoginAsSchool = () => {
-    // Add logic for logging in as school
-    navigate("/schoolPortalLogin");
-  };
-
-  const handleLoginAsStudent = () => {
-    // Add logic for logging in as student
-    navigate("/studentPortalLogin");
-  };
+  if (hasToken === null) return null; // Prevent rendering until check is complete
 
   return (
     <Navbar
       expand="lg"
       fixed="top"
       className="bg-white"
-      style={{ paddingLeft: "80px" }}
+      style={{ paddingLeft: "20px", paddingRight: "20px" }}
     >
       <Container>
         <Navbar.Brand as={Link} to="/">
@@ -75,8 +64,13 @@ const NavigationBar = () => {
               variant="link"
               as={Link}
               to="/courses"
-              className="nav-link-custom"
-              style={{ marginLeft: "20px" }}
+              className={`nav-link-custom ${
+                location.pathname === "/courses" ||
+                location.pathname.startsWith("/courses")
+                  ? "active"
+                  : ""
+              }`}
+              style={{ marginLeft: "10px" }}
             >
               Courses
             </Button>
@@ -84,27 +78,16 @@ const NavigationBar = () => {
               variant="link"
               as={Link}
               to="/institute"
-              className="nav-link-custom"
+              className={`nav-link-custom ${
+                location.pathname === "/institute" ||
+                location.pathname.startsWith("/institute")
+                  ? "active"
+                  : ""
+              }`}
               style={{ marginLeft: "10px" }}
             >
               Schools
             </Button>
-            <NavDropdown
-              title="Scholarships"
-              id="scholarship-nav-dropdown"
-              className="nav-dropdown-custom"
-              style={{ marginLeft: "10px" }}
-            >
-              {/* Scholarship dropdown items */}
-            </NavDropdown>
-            <NavDropdown
-              title="Study Guides"
-              id="study-guide-nav-dropdown"
-              className="nav-dropdown-custom"
-              style={{ marginLeft: "10px" }}
-            >
-              {/* Study Guides dropdown items */}
-            </NavDropdown>
           </Nav>
           <div className="m-10 navbutton-section">
             {hasToken ? (
@@ -119,17 +102,46 @@ const NavigationBar = () => {
               </>
             ) : (
               <>
-                <Button className="m-0 btnfirst">Hi !</Button>
-                <Button
-                  className="m-0 btnsecond"
-                  onClick={handleLoginAsStudent}
-                >
-                  Login as student
-                </Button>
-                <Button className="m-0 btnsecond" onClick={handleLoginAsSchool}>
-                  Login as school
-                </Button>
-                <Button className="m-0 btnfirst">Welcome</Button>
+                <ButtonGroup className="mb-2 mb-lg-0">
+                  <Dropdown as={ButtonGroup}>
+                    <Dropdown.Toggle
+                      className="nav-button"
+                      id="dropdown-custom-1"
+                    >
+                      Login
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                      <Dropdown.Item
+                        className="dropdown"
+                        as={Link}
+                        to="/studentPortalLogin"
+                      >
+                        Login as Student
+                      </Dropdown.Item>
+                      <Dropdown.Item as={Link} to="/schoolPortalLogin">
+                        Login as School
+                      </Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </ButtonGroup>
+                <ButtonGroup>
+                  <Dropdown as={ButtonGroup}>
+                    <Dropdown.Toggle
+                      className="nav-button"
+                      id="dropdown-custom-2"
+                    >
+                      Register
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                      <Dropdown.Item as={Link} to="/studentPortalSignUp">
+                        Register as Student
+                      </Dropdown.Item>
+                      <Dropdown.Item as={Link} to="/register-school">
+                        Register as School
+                      </Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </ButtonGroup>
               </>
             )}
           </div>

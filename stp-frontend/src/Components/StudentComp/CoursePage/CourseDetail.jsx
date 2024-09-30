@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useLocation, Link, useNavigate } from "react-router-dom";
 import NavButtons from "../NavButtons";
+import NavButtonsSP from "../../../Components/StudentPortalComp/NavButtonsSP";
 import headerImage from "../../../assets/StudentAssets/coursepage image/StudyPal10.png";
 import "../../../css/StudentCss/course page css/ApplyPage.css";
 import { Container, Row, Col, Collapse, Button, Modal } from "react-bootstrap";
@@ -142,7 +143,7 @@ const CourseDetail = () => {
 
   return (
     <div style={{ backgroundColor: "#F5F4F4" }}>
-      <NavButtons />
+      <NavButtonsSP />
       {programs &&
         programs.map((program) => (
           <div key={program.id}>
