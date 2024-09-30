@@ -48,8 +48,18 @@
   border: none;
   border-radius: 5px;
   font-weight: 400;
-
 }
+
+
+.featured-institute-button {
+  background-color: #FF6B00;
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
 
 .fee-apply .featured-institute-button:hover {
   color: #ffffff;
@@ -62,7 +72,7 @@
 .featured-badge {
   position: absolute;
   top: 0;
-  right: 10px;
+  right: 20px;
   background-color: #B71A18;
   color: white;
   padding: 5px 10px;
@@ -74,16 +84,6 @@
   z-index: 1;
   width: 100px;
   height: 40px;
-}
-
-.featured-institute-button {
-  background-color: #FF6B00;
-  color: #ffffff;
-  border: none;
-  padding: 10px 20px;
-  cursor: pointer;
-  border-radius: 5px;
-  font-size: 14px; /* Consistent font size */
 }
 
 .filters-container {

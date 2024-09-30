@@ -217,7 +217,16 @@
   }
   
   
-
+  /* Button styling */
+  .button {
+    margin-top: 10px;
+    background-color: #e74c3c;
+    color: white;
+    border-radius: 5px;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+  }
 
 
 .contactButton{
