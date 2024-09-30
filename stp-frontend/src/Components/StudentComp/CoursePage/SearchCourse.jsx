@@ -522,7 +522,7 @@ const SearchCourse = ({ currentCourses }) => {
         {/*End of Reset Filter */}
 
         {/* Pagination  */}
-        <Col className="d-flex justify-content-end">
+        {/* <Col className="d-flex justify-content-end">
           <Pagination className="pagination-course ml-auto mb-2 mb-md-0">
             <Pagination.Prev
               aria-label="Previous"
@@ -550,7 +550,7 @@ const SearchCourse = ({ currentCourses }) => {
               <span aria-hidden="true">&raquo;</span>
             </Pagination.Next>
           </Pagination>
-        </Col>
+        </Col> */}
         {/* End of  Pagination  */}
       </Row>
       <Form

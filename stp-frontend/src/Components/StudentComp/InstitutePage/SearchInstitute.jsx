@@ -392,7 +392,7 @@ const SearchInstitute = () => {
           </button>
         </Col>
 
-        <Col className="d-flex justify-content-end">
+        {/* <Col className="d-flex justify-content-end">
           <Pagination className="ml-auto mb-2 mb-md-0">
             <Pagination.Prev
               aria-label="Previous"
@@ -418,7 +418,7 @@ const SearchInstitute = () => {
               <span aria-hidden="true">&raquo;</span>
             </Pagination.Next>
           </Pagination>
-        </Col>
+        </Col> */}
       </Row>
 
       <Form>
