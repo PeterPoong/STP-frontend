@@ -81,7 +81,7 @@ const StudentPortalSignUp = () => {
       contact_number: phone.slice(countryCode.length),
     };
 
-    console.log("Sending signup data:", formData);
+    //console.log("Sending signup data:", formData);
 
     fetch(`${import.meta.env.VITE_BASE_URL}api/student/register`, {
       method: "POST",
@@ -99,9 +99,9 @@ const StudentPortalSignUp = () => {
         return response.json();
       })
       .then((data) => {
-        console.log("Full API response:", data);
+        //console.log("Full API response:", data);
         if (data.success === true) {
-          console.log("Signup successful:", data);
+          //console.log("Signup successful:", data);
           setSignupStatus("success");
           if (data.data && data.data.token) {
             sessionStorage.setItem("token", data.data.token);

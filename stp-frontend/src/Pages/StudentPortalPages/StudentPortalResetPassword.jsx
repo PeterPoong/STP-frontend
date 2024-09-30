@@ -26,9 +26,9 @@ const StudentPortalResetPassword = () => {
       setTimeout(() => navigate('/studentPortalLogin'), 3000);
     }
   }, [location.state, navigate]);
-/*end */
+  /*end */
 
-/*api for reset Dummy Account Password */
+  /*api for reset Dummy Account Password */
   const handleResetPassword = async (e) => {
     e.preventDefault();
     setError("");
@@ -51,17 +51,17 @@ const StudentPortalResetPassword = () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           id: userId,
           newPassword: newPassword,
           confirmPassword: confirmPassword,
         }),
-      });     
-      console.log("Response status:", response.status);
+      });
+      //console.log("Response status:", response.status);
       const responseData = await response.json();
-      console.log("Response data:", responseData); 
+      //console.log("Response data:", responseData); 
       if (response.ok) {
-        console.log("Password reset successful");
+        //console.log("Password reset successful");
         setSuccess("Password reset successfully. You can now login with your new password.");
         setTimeout(() => navigate('/studentPortalLogin'), 2000);
       } else {

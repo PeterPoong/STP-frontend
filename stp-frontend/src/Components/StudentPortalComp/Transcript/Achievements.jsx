@@ -41,7 +41,7 @@ const Achievements = () => {
             }
 
             const apiUrl = `${import.meta.env.VITE_BASE_URL}api/student/achievementsList`;
-            console.log('Fetching from URL:', apiUrl);
+            //console.log('Fetching from URL:', apiUrl);
 
             const response = await fetch(apiUrl, {
                 method: 'POST',
@@ -56,7 +56,7 @@ const Achievements = () => {
                 })
             });
 
-            console.log('Response status:', response.status);
+            //console.log('Response status:', response.status);
 
             if (!response.ok) {
                 if (response.status === 401) {
@@ -68,7 +68,7 @@ const Achievements = () => {
             }
 
             const result = await response.json();
-            console.log('API response:', result);
+            //console.log('API response:', result);
 
             // Directly set the data from the API response
             setData(result.data.data || []);
@@ -152,14 +152,14 @@ const Achievements = () => {
             if (entry.achievement_media instanceof File) {
                 // If a new file is selected, append it to formData
                 formData.append('achievement_media', entry.achievement_media);
-                console.log('New file being uploaded:', entry.achievement_media.name);
+                //console.log('New file being uploaded:', entry.achievement_media.name);
             } else if (entry.id && entry.achievement_media && typeof entry.achievement_media === 'string') {
                 // If editing and the file hasn't changed, don't send the achievement_media field
                 console.log('Existing file, not changing:', entry.achievement_media);
             } else if (!entry.id) {
                 // If adding a new entry and no file is selected, send an empty string
                 formData.append('achievement_media', '');
-                console.log('No file selected for new entry');
+               // console.log('No file selected for new entry');
             }
             // Log the formData contents
             for (let [key, value] of formData.entries()) {

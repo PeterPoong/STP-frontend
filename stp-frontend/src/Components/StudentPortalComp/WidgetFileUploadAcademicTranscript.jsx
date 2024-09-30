@@ -14,7 +14,7 @@ const WidgetFileUploadAcademicTranscript = ({ isOpen, onClose, onSave, item, isV
     useEffect(() => {
         if (isOpen) {
             if (item) {
-                console.log('Editing item:', item);
+                //console.log('Editing item:', item);
                 setTitle(item.studentMedia_name || '');
                 setExistingFileUrl(item.studentMedia_location || null);
                 setFile(null);
@@ -88,13 +88,13 @@ const WidgetFileUploadAcademicTranscript = ({ isOpen, onClose, onSave, item, isV
     const handleFileChange = (event) => {
         const uploadedFile = event.target.files[0];
         if (uploadedFile) {
-            console.log('New file selected:', uploadedFile.name);
+            //console.log('New file selected:', uploadedFile.name);
             setFile(uploadedFile);
         }
     };
     /*end */
 
-  /*click to view button function */
+    /*click to view button function */
     const handleFileDelete = () => {
         setFile(null);
         setExistingFileUrl(null); // Add this line to clear the existing file URL
@@ -138,7 +138,7 @@ const WidgetFileUploadAcademicTranscript = ({ isOpen, onClose, onSave, item, isV
                     />
                     {errors.title && <div className="error-message">{errors.title}</div>}
                 </div>
-               
+
                 {errors.file && <div className="error-message">{errors.file}</div>}
 
                 {!file && !existingFileUrl ? (
@@ -175,7 +175,7 @@ const WidgetFileUploadAcademicTranscript = ({ isOpen, onClose, onSave, item, isV
                         )}
                     </div>
                 )}
-                
+
 
                 {!isViewMode && (
                     <div className="save-button-container">

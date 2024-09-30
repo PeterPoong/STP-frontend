@@ -43,7 +43,7 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
   }, []);
 
   useEffect(() => {
-    console.log('Student data updated:', studentData);
+    //console.log('Student data updated:', studentData);
     if (studentData.contact && studentData.country_code) {
       setPhone(`${studentData.country_code}${studentData.contact}`);
     }
@@ -116,7 +116,7 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
       }
 
       const responseData = await response.json();
-      console.log('Fetched student data:', responseData);
+      //console.log('Fetched student data:', responseData);
 
       if (!responseData.data || Object.keys(responseData.data).length === 0) {
         throw new Error('No data received from the server. Your profile might be incomplete.');
@@ -135,7 +135,7 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
           country : responseData.data.country || "Malaysia"
         };
 
-        console.log('Updated student data:', updatedStudentData);
+        //console.log('Updated student data:', updatedStudentData);
 
         setStudentData(updatedStudentData);
 
@@ -345,7 +345,7 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
       gender: genderList.find(g => g.core_metaName === studentData.gender)?.id.toString() || '',
     };
 
-    console.log('Data to be sent to the API:', JSON.stringify(submissionData, null, 2));
+    //console.log('Data to be sent to the API:', JSON.stringify(submissionData, null, 2));
 
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
@@ -359,7 +359,7 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
       });
 
       const responseData = await response.json();
-      console.log('API Response:', responseData);
+      //console.log('API Response:', responseData);
 
       if (!response.ok) {
         if (response.status === 422) {

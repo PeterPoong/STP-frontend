@@ -51,7 +51,7 @@ const OtherCertDoc = () => {
             }
 
             const apiUrl = `${import.meta.env.VITE_BASE_URL}api/student/otherFileCertList`;
-            console.log('Fetching from URL:', apiUrl);
+            //console.log('Fetching from URL:', apiUrl);
 
             const response = await fetch(apiUrl, {
                 method: 'POST',
@@ -65,7 +65,7 @@ const OtherCertDoc = () => {
                 })
             });
 
-            console.log('Response status:', response.status);
+            //console.log('Response status:', response.status);
 
             if (!response.ok) {
                 if (response.status === 401) {
@@ -77,7 +77,7 @@ const OtherCertDoc = () => {
             }
 
             const result = await response.json();
-            console.log('API response:', result);
+            //console.log('API response:', result);
 
             // Correctly access the nested data array
             const otherDocsArray = (result.data.data || []).map(normalizeItem);
@@ -139,7 +139,7 @@ const OtherCertDoc = () => {
 
             // Log form data for debugging
             for (let pair of formData.entries()) {
-                console.log(pair[0] + ': ' + pair[1]);
+                //console.log(pair[0] + ': ' + pair[1]);
             }
 
             const response = await fetch(url, {
@@ -156,7 +156,7 @@ const OtherCertDoc = () => {
             }
 
             const result = await response.json();
-            console.log('Save/Edit response:', result);
+            //console.log('Save/Edit response:', result);
 
             if (!result.success) {
                 return result; // Return the error result to be handled in WidgetFileUpload
@@ -199,14 +199,15 @@ const OtherCertDoc = () => {
                 type: 'delete'
             };
 
-            console.log('Delete Achievement Request:');
-            console.log('URL:', url);
-            console.log('Method: POST');
-            console.log('Headers:', {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            });
-            console.log('Request Body:', JSON.stringify(requestBody, null, 2));
+            //console.log('Delete Achievement Request:');
+            //console.log('URL:', url);
+            //console.log('Method: POST');
+            //console.log('Headers:'
+             //{
+             //   'Authorization': `Bearer ${token}`,
+             //   'Content-Type': 'application/json',
+            //});
+            //console.log('Request Body:', JSON.stringify(requestBody, null, 2));
 
             const response = await fetch(url, {
                 method: 'POST',
@@ -217,8 +218,8 @@ const OtherCertDoc = () => {
                 body: JSON.stringify(requestBody)
             });
 
-            console.log('Response status:', response.status);
-            console.log('Response headers:', response.headers);
+            //console.log('Response status:', response.status);
+           // console.log('Response headers:', response.headers);
 
             const contentType = response.headers.get("content-type");
             if (contentType && contentType.indexOf("application/json") !== -1) {
@@ -226,7 +227,7 @@ const OtherCertDoc = () => {
                 if (!response.ok) {
                     throw new Error(result.message || `HTTP error! status: ${response.status}`);
                 }
-                console.log('Delete response:', result);
+                //console.log('Delete response:', result);
             } else {
                 const text = await response.text();
                 console.error('Received non-JSON response:', text);

@@ -96,7 +96,7 @@ const MyProfileWidget = ({ onSelectContent, profilePic }) => {
                 }
     
                 const data = await response.json();
-                console.log("File uploaded successfully:", data);
+                //console.log("File uploaded successfully:", data);
                 setShowModal(false);
                 setLocalProfilePic(`${import.meta.env.VITE_BASE_URL}storage/${data.data.porfilePic}`);
             } catch (error) {

@@ -182,8 +182,27 @@ const StudentApplicationSummary = ({}) => {
       }
 
       // Adjust yOffset to add margin below the logo
-      yOffset = 10 + logoHeight + 10; // 10 is logo y position, plus logo height, plus 10 units margin
+      yOffset = 5 + logoHeight + 5; // 10 is logo y position, plus logo height, plus 10 units margin
 
+
+       // Add School Name and Course Name
+       yOffset += 6;
+       doc.setFontSize(14);
+       doc.setFont("helvetica", "bold");
+       doc.setTextColor(255, 18, 52); // Color #FF1234
+       doc.text(courseInfo?.school || "School Name", pageWidth / 2, yOffset, {
+         align: "center",
+       });
+ 
+       yOffset += 6;
+       doc.setFontSize(12);
+       doc.setFont("helvetica", "normal");
+       doc.setTextColor(0, 0, 0); // Reset text color to black
+       doc.text(courseInfo?.course || "Course Name", pageWidth / 2, yOffset, {
+         align: "center",
+       });
+ 
+       yOffset += 10; // Add more space after header
       // Add Application Summary title centered
       doc.setFontSize(18);
       doc.setFont("helvetica", "bold");
@@ -196,24 +215,7 @@ const StudentApplicationSummary = ({}) => {
       doc.setLineWidth(0.5);
       doc.line(20, yOffset, pageWidth - 20, yOffset);
 
-      // Add School Name and Course Name
-      yOffset += 6;
-      doc.setFontSize(14);
-      doc.setFont("helvetica", "bold");
-      doc.setTextColor(255, 18, 52); // Color #FF1234
-      doc.text(courseInfo?.school || "School Name", pageWidth / 2, yOffset, {
-        align: "center",
-      });
-
-      yOffset += 6;
-      doc.setFontSize(12);
-      doc.setFont("helvetica", "normal");
-      doc.setTextColor(0, 0, 0); // Reset text color to black
-      doc.text(courseInfo?.course || "Course Name", pageWidth / 2, yOffset, {
-        align: "center",
-      });
-
-      yOffset += 10; // Add more space after header
+     
     };
 
     const addFooter = () => {
@@ -861,7 +863,7 @@ const StudentApplicationSummary = ({}) => {
         );
       }
       const responseData = await response.json();
-      console.log("Fetched student data:", responseData);
+      //console.log("Fetched student data:", responseData);
       if (!responseData.data || Object.keys(responseData.data).length === 0) {
         throw new Error(
           "No data received from the server. Your profile might be incomplete."
@@ -886,8 +888,8 @@ const StudentApplicationSummary = ({}) => {
     try {
       const token =
         sessionStorage.getItem("token") || localStorage.getItem("token");
-      console.log("Fetching course info for courseId:", courseId);
-      console.log("Using token:", token);
+      //console.log("Fetching course info for courseId:", courseId);
+      //console.log("Using token:", token);
       const response = await fetch(
         `${import.meta.env.VITE_BASE_URL}api/student/courseDetail`,
         {
@@ -901,7 +903,7 @@ const StudentApplicationSummary = ({}) => {
       );
       const result = await response.json();
 
-      console.log("API response:", result);
+      //console.log("API response:", result);
 
       if (!response.ok) {
         throw new Error(
@@ -1176,7 +1178,7 @@ const StudentApplicationSummary = ({}) => {
       navigator.clipboard
         .writeText(text)
         .then(() => {
-          console.log("Copied to clipboard");
+          //console.log("Copied to clipboard");
         })
         .catch((err) => {
           console.error("Failed to copy: ", err);

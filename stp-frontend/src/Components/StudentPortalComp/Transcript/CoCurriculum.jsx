@@ -41,7 +41,7 @@ const CoCurriculum = () => {
     }, [searchTerm]);
 
     const fetchCocurriculum = async () => {
-        console.log('Fetching co-curriculum data...');
+        //console.log('Fetching co-curriculum data...');
         setIsLoading(true);
         setError(null);
         try {
@@ -52,7 +52,7 @@ const CoCurriculum = () => {
             }
 
             const apiUrl = `${import.meta.env.VITE_BASE_URL}api/student/co-curriculumList`;
-            console.log('Fetching from URL:', apiUrl);
+            //console.log('Fetching from URL:', apiUrl);
 
             const response = await fetch(apiUrl, {
                 method: 'GET',
@@ -62,7 +62,7 @@ const CoCurriculum = () => {
                 },
             });
 
-            console.log('Response status:', response.status);
+            //console.log('Response status:', response.status);
 
             if (!response.ok) {
                 if (response.status === 401) {
@@ -74,7 +74,7 @@ const CoCurriculum = () => {
             }
 
             const result = await response.json();
-            console.log('Fetched data:', result);
+            //console.log('Fetched data:', result);
 
             let coCurriculumArray = [];
             if (result.data && Array.isArray(result.data)) {
@@ -85,7 +85,7 @@ const CoCurriculum = () => {
                 console.warn('Unexpected data structure:', result);
             }
 
-            console.log('Normalized data:', coCurriculumArray);
+            //console.log('Normalized data:', coCurriculumArray);
 
             setData(coCurriculumArray);
         } catch (error) {
@@ -150,7 +150,7 @@ const CoCurriculum = () => {
             }
 
             const result = await response.json();
-            console.log('Save/Edit response:', result);
+            //console.log('Save/Edit response:', result);
 
             setIsPopupOpen(false);
             setCurrentItem(null);
@@ -193,8 +193,8 @@ const CoCurriculum = () => {
                 body: JSON.stringify(requestBody)
             });
 
-            console.log('Response status:', response.status);
-            console.log('Response headers:', response.headers);
+            //console.log('Response status:', response.status);
+            //console.log('Response headers:', response.headers);
 
             const contentType = response.headers.get("content-type");
             if (contentType && contentType.indexOf("application/json") !== -1) {
@@ -202,7 +202,7 @@ const CoCurriculum = () => {
                 if (!response.ok) {
                     throw new Error(result.message || `HTTP error! status: ${response.status}`);
                 }
-                console.log('Delete response:', result);
+                //console.log('Delete response:', result);
             } else {
                 const text = await response.text();
                 console.error('Received non-JSON response:', text);

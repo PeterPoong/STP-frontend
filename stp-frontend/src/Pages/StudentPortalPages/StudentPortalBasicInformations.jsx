@@ -23,20 +23,20 @@ const StudentPortalBasicInformations = () => {
   useEffect(() => {
     const token =
       sessionStorage.getItem("token") || localStorage.getItem("token");
-    console.log("Token found:", token ? "Yes" : "No");
+    //console.log("Token found:", token ? "Yes" : "No");
     if (!token) {
-      console.log("No token found, redirecting to login");
+      //console.log("No token found, redirecting to login");
       navigate("/studentPortalLogin");
     } else {
       verifyToken(token);
     }
   }, [navigate]);
-/*end */
+  /*end */
 
-/*validate Token api t check if have token or not if dont have will navigate back to studentPortalLoginPage and will remove the token */
+  /*validate Token api t check if have token or not if dont have will navigate back to studentPortalLoginPage and will remove the token */
   const verifyToken = async (token) => {
     try {
-      console.log("Verifying token:", token);
+      //console.log("Verifying token:", token);
       const response = await fetch(
         `${import.meta.env.VITE_BASE_URL}api/validateToken`,
         {
@@ -53,13 +53,13 @@ const StudentPortalBasicInformations = () => {
       }
 
       const data = await response.json();
-      console.log("Token validation response:", data);
+      //console.log("Token validation response:", data);
 
       if (data && data.success === true) {
         console.log("Token is valid");
         setIsAuthenticated(true);
       } else {
-        console.log("Token is invalid based on response structure");
+        //console.log("Token is invalid based on response structure");
         throw new Error("Token validation failed");
       }
     } catch (error) {
@@ -108,7 +108,7 @@ const StudentPortalBasicInformations = () => {
   if (!isAuthenticated) {
     return null; // Or you could render a "Not Authorized" message
   }
-  
+
   return (
     <div className="app-container">
       <NavButtonsSP />
