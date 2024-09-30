@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Sidebar from "../../Components/SchoolPortalComp/SchoolSidebar";
 import { Container, Button, Row, Col } from "react-bootstrap";
-import { Whatsapp } from "react-bootstrap-icons";
+import { Whatsapp, Arrow90degLeft } from "react-bootstrap-icons";
 import {
   FileText,
   Search,
@@ -16,7 +16,7 @@ import {
 import styles from "../../css/SchoolPortalStyle/StudentApplicantDetail.module.css";
 import { ClassNames } from "@emotion/react";
 import { withTheme } from "styled-components";
-import DocumentContent from "../../Components/SchoolPortalComp/EmailStudentApplicantComp/DocumentContent/DocumentContent";
+import AcceptReject from "../../Components/SchoolPortalComp/EmailStudentApplicantComp/DocumentContent/AcceptReject";
 
 import WidgetFileUploadAcademicTranscript from "../../Components/StudentPortalComp/WidgetFileUploadAcademicTranscript";
 import WidgetFileUpload from "../../Components/StudentPortalComp/WidgetFileUpload";
@@ -44,7 +44,13 @@ const SchoolViewApplicantDetail = () => {
   const [achievements, setAchievements] = useState(null);
   const [yourInfoAchievement, setYourInfoAchievement] = useState(null);
 
-  const [activeTab, setActiveTab] = useState("acceptReject");
+  const [activeTab, setActiveTab] = useState("accept-reject");
+
+  //academic
+  const [selectedCategory, setSelectedCategory] = useState();
+  const [transcriptCategories, setTranscriptCategories] = useState([]);
+  const [cgpaInfo, setCgpaInfo] = useState(null);
+  const [transcriptSubjects, setTranscriptSubjects] = useState([]);
 
   //document
   const [academicTranscripts, setAcademicTranscripts] = useState(null);
@@ -75,6 +81,10 @@ const SchoolViewApplicantDetail = () => {
   const [isViewAchievementOpen, setIsViewAchievementOpen] = useState(false);
   const [isViewOtherDocOpen, setIsViewOtherDocOpen] = useState(false);
   const [currentViewDocument, setCurrentViewDocument] = useState(null);
+
+  const handleBack = () => {
+    navigate("/schoolPortalDashboard"); // This will go back to the previous page
+  };
 
   const fetchCoCurriculum = async () => {
     if (!studentId) {
@@ -349,6 +359,184 @@ const SchoolViewApplicantDetail = () => {
     );
   };
 
+  const handleCategoryChange = (e) => {
+    setSelectedCategory(parseInt(e.target.value));
+  };
+
+  //academic
+  const fetchTranscriptCategories = async () => {
+    if (!studentId) {
+      console.log("studentId is missing, skipping API call.");
+      return;
+    }
+    try {
+      const token =
+        sessionStorage.getItem("token") || localStorage.getItem("token");
+      console.log("Fetching transcript categories...");
+      console.log("Token:", token); // Log the token (be careful with this in production)
+
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_BASE_URL
+        }api/school/schoolTranscriptCategoryList`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      console.log("Response status:", response.status);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Error response:", errorText);
+        throw new Error(
+          `Failed to fetch transcript categories. Status: ${response.status}`
+        );
+      }
+
+      const result = await response.json();
+      console.log("Transcript categories result:", result);
+
+      if (result.success) {
+        setTranscriptCategories(result.data.data);
+        if (result.data.data.length > 0) {
+          setSelectedCategory(result.data.data[0].id);
+        }
+      } else {
+        throw new Error(
+          result.message || "Failed to fetch transcript categories"
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching transcript categories:", error);
+      setError(`Error fetching transcript categories: ${error.message}`);
+      // You might want to set some default state here
+      setTranscriptCategories([]);
+      setSelectedCategory(null);
+    }
+  };
+  const fetchCgpaInfo = async () => {
+    if (!studentId) {
+      console.log("studentId is missing, skipping API call.");
+      return;
+    }
+    try {
+      const token =
+        sessionStorage.getItem("token") || localStorage.getItem("token");
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL}api/school/schoolTranscriptCgpa`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            studentId,
+            transcriptCategory: selectedCategory,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch CGPA information");
+      }
+
+      const result = await response.json();
+      if (result.success) {
+        setCgpaInfo(result.data);
+      } else {
+        throw new Error(result.message || "Failed to fetch CGPA information");
+      }
+    } catch (error) {
+      console.error("Error fetching CGPA information:", error);
+      setError(error.message);
+    }
+  };
+  const fetchTranscriptSubjects = async () => {
+    if (!studentId) {
+      console.log("studentId is missing, skipping API call.");
+      return;
+    }
+    try {
+      const token =
+        sessionStorage.getItem("token") || localStorage.getItem("token");
+      const isSPM = selectedCategory === 32; // Assuming 32 is the ID for SPM
+      const endpoint = isSPM
+        ? "schoolStudentTranscriptSubjectList"
+        : "schoolHigherTranscriptSubjectList";
+      const body = isSPM
+        ? { studentId }
+        : { studentId, categoryId: selectedCategory };
+
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL}api/school/${endpoint}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(body),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch transcript subjects");
+      }
+
+      const result = await response.json();
+      if (result.success) {
+        setTranscriptSubjects(result.data);
+      } else {
+        throw new Error(
+          result.message || "Failed to fetch transcript subjects"
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching transcript subjects:", error);
+      setError(error.message);
+    }
+  };
+  const calculateOverallGrade = (subjects) => {
+    if (!subjects || subjects.length === 0) {
+      return "N/A";
+    }
+    const gradeCounts = subjects.reduce((counts, subject) => {
+      const grade = subject.subject_grade || subject.higherTranscript_grade;
+      counts[grade] = (counts[grade] || 0) + 1;
+      return counts;
+    }, {});
+    const gradeOrder = [
+      "A+",
+      "A",
+      "A-",
+      "B+",
+      "B",
+      "B-",
+      "C+",
+      "C",
+      "D",
+      "E",
+      "G",
+      "F",
+      "A1",
+      "A2",
+      "B3",
+    ];
+    let overallGrade = "";
+    for (const grade of gradeOrder) {
+      if (gradeCounts[grade]) {
+        overallGrade += `${gradeCounts[grade]}${grade} `;
+      }
+    }
+    return overallGrade.trim() || "N/A";
+  };
+
   useEffect(() => {
     // Redirect to login if token is not present
     if (!token) {
@@ -385,6 +573,9 @@ const SchoolViewApplicantDetail = () => {
     };
 
     getApplicantDetail();
+    fetchTranscriptCategories();
+    fetchCgpaInfo();
+    fetchTranscriptSubjects();
   }, [token, navigate]); // Ensure navigate is included as a dependency
 
   //get studentDetail
@@ -508,10 +699,94 @@ const SchoolViewApplicantDetail = () => {
 
     getDocumentCount();
     getAcademicTranscript();
+    fetchTranscriptCategories();
 
     getOtherFileCert();
   }, [activeTab]);
+  useEffect(() => {
+    if (selectedCategory) {
+      fetchTranscriptSubjects();
+      fetchCgpaInfo();
+    }
+  }, [selectedCategory]);
 
+  //renderng academic
+  const renderAcademicResults = () => {
+    return (
+      <div className="academic-results m-3 shadow-lg rounded-5 pt-4 d-flex flex-column">
+        <div className="px-4">
+          <select
+            className="sac-form-select mb-3 px-0"
+            value={selectedCategory}
+            onChange={handleCategoryChange}
+          >
+            {transcriptCategories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.transcript_category}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {selectedCategory !== 32 && cgpaInfo && (
+          <div className="px-4 mb-3">
+            <div className="d-flex justify-content-between align-items-center">
+              <p className="mb-0">
+                <strong>Program Name:</strong> {cgpaInfo.program_name || "N/A"}
+              </p>
+              <p className="mb-0">
+                <strong>CGPA:</strong> {cgpaInfo.cgpa || "N/A"}
+              </p>
+            </div>
+          </div>
+        )}
+
+        <div
+          className="results-grid flex-grow-1 px-4"
+          style={{ maxHeight: "15rem", overflowY: "auto" }}
+        >
+          {transcriptSubjects && transcriptSubjects.length > 0 ? (
+            transcriptSubjects.map((subject, index) => (
+              <div key={index} className="d-flex justify-content-between py-3">
+                <p className="mb-0">
+                  <strong>
+                    {subject.subject_name || subject.highTranscript_name}
+                  </strong>
+                </p>
+                <p className="mb-0">
+                  <strong>
+                    {subject.subject_grade || subject.higherTranscript_grade}
+                  </strong>
+                </p>
+              </div>
+            ))
+          ) : (
+            <div className="d-flex justify-content-between py-3">
+              <p>No results available for this transcript.</p>
+            </div>
+          )}
+        </div>
+        <div className="grade-summary d-flex justify-content-between align-items-stretch border-top">
+          <div className="overall-grade text-white w-75 d-flex justify-content-start py-3">
+            <h3 className="align-self-center px-5">
+              Grade: {calculateOverallGrade(transcriptSubjects)}
+            </h3>
+          </div>
+          <Button
+            variant="link"
+            className="text-danger w-25"
+            onClick={() => {
+              setActiveTab("documents");
+              setActiveDocumentTab("academic");
+            }}
+            disabled={!transcriptSubjects || transcriptSubjects.length === 0}
+          >
+            View Result Slip »
+          </Button>
+        </div>
+      </div>
+    );
+  };
   //rendering page fnction
   const renderDocumentsContent = () => {
     let documents = [];
@@ -739,7 +1014,21 @@ const SchoolViewApplicantDetail = () => {
   //render the page
   return (
     <>
-      <Row style={{ backgroundColor: "#f6a192" }}>
+      <Row style={{ backgroundColor: "#f6a192", position: "relative" }}>
+        <span
+          onClick={handleBack}
+          style={{
+            cursor: "pointer",
+            position: "absolute", // Set position to absolute
+            top: "10px", // Adjust the top distance from the top
+            left: "10px", // Adjust the left distance from the left
+            display: "inline-flex",
+            alignItems: "center",
+          }}
+        >
+          <Arrow90degLeft style={{ color: "#B71A18" }} className="mx-3" />
+          Back
+        </span>
         <Row className={`${styles.infoBannerRow}`}>
           <Col md={6} className={`d-flex  ps-5 ${styles.informationBanner}`}>
             {studentPic ? (
@@ -822,8 +1111,8 @@ const SchoolViewApplicantDetail = () => {
             </Button>
             <Button
               variant="link"
-              className={activeTab === "acceptReject" ? "active" : ""}
-              onClick={() => setActiveTab("acceptReject")}
+              className={activeTab === "accept-reject" ? "active" : ""}
+              onClick={() => setActiveTab("accept-reject")}
             >
               Accept/Reject Application
             </Button>
@@ -922,87 +1211,7 @@ const SchoolViewApplicantDetail = () => {
                   </div>
                 </div>
 
-                {/* <div className="academic-results m-3 shadow-lg rounded-5 pt-4 d-flex flex-column">
-                  <div className="px-4">
-                    <select
-                      className="sac-form-select mb-3 px-0"
-                      value={selectedExam}
-                      onChange={handleExamChange}
-                    >
-                      {transcriptCategories.map((category) => (
-                        <option key={category.id} value={category.id}>
-                          {category.transcript_category}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  {cgpaInfo && selectedExam !== "32" && (
-                    <div className="px-4 mb-3">
-                      <div className="d-flex justify-content-between align-items-center">
-                        <p className="mb-0">
-                          <strong>Program Name:</strong>{" "}
-                          {cgpaInfo.program_name || "N/A"}
-                        </p>
-                        <p className="mb-0">
-                          <strong>CGPA:</strong> {cgpaInfo.cgpa || "N/A"}
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                  <div
-                    className="results-grid flex-grow-1 px-4 "
-                    style={{ maxHeight: "15rem", overflowY: "auto" }}
-                  >
-                    {transcriptSubjects && transcriptSubjects.length > 0 ? (
-                      transcriptSubjects.map((subject, index) => (
-                        <div
-                          key={index}
-                          className="d-flex justify-content-between py-3"
-                        >
-                          <p className="mb-0">
-                            <strong>
-                              {subject.name ||
-                                subject.subject_name ||
-                                subject.highTranscript_name}
-                            </strong>
-                          </p>
-                          <p className="mb-0 ">
-                            <strong>
-                              {subject.grade ||
-                                subject.subject_grade ||
-                                subject.higherTranscript_grade}
-                            </strong>
-                          </p>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="d-flex justify-content-between py-3">
-                        <p>No results available for this transcript.</p>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="grade-summary d-flex justify-content-between align-items-stretch border-top">
-                    <div className="overall-grade text-white w-75 d-flex justify-content-start">
-                      <h3 className="align-self-center px-5">
-                        Grade: {calculateOverallGrade(transcriptSubjects)}
-                      </h3>
-                    </div>
-                    <Button
-                      variant="link"
-                      className="text-danger w-25 "
-                      onClick={() => {
-                        setActiveTab("documents"); // Navigate to Your Documents tab
-                        setActiveDocumentTab("academic"); // Navigate to Academic Transcript tab
-                      }}
-                      disabled={
-                        !transcriptSubjects || transcriptSubjects.length === 0
-                      }
-                    >
-                      View Result Slip »
-                    </Button>
-                  </div>
-                </div> */}
+                {renderAcademicResults()}
 
                 {/* cocuriculum  */}
                 <div className="co-curriculum m-3 shadow-lg p-4 rounded-5">
@@ -1080,8 +1289,9 @@ const SchoolViewApplicantDetail = () => {
               </div>
             </>
           ) : activeTab === "documents" ? (
-            // <DocumentContent studentId={studentId} />
             renderDocumentsContent()
+          ) : activeTab === "accept-reject" ? (
+            <AcceptReject applicantId={applicantID} />
           ) : null}
         </Row>
       </Row>
