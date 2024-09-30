@@ -302,7 +302,7 @@ const CoursesListing = ({ onAddCourseClick, courseID, editCourse }) => {
           </Form.Group>
         </Col>
 
-        <Col md={7}>
+        <Col md={6}>
           <div className="d-flex gap-5">
             {/* Sort By Dropdown */}
             <Form.Group controlId="sortBy">
@@ -359,14 +359,21 @@ const CoursesListing = ({ onAddCourseClick, courseID, editCourse }) => {
           </div>
         </Col>
 
-        <Col md={2}>
-          <Button
-            variant="danger"
+        <Col md={3}>
+          {/* <Button
             className={`${styles.customRadius}`}
             onClick={onAddCourseClick} // Add this line to handle the button click
           >
             Add New Course
-          </Button>
+          </Button> */}
+          <div className="d-flex mt-4 ms-4">
+            <button
+              className={`${styles.submitButton}`}
+              onClick={onAddCourseClick}
+            >
+              Add New Course
+            </button>
+          </div>
         </Col>
       </Row>
 
