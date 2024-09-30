@@ -33,7 +33,6 @@
   z-index: 1;
 }
 
-
 .video-carousel-caption {
   position: absolute;
   top: 50%;
@@ -44,36 +43,54 @@
   padding: 10px;
   border-radius: 10px;
   z-index: 10;
-  font-size: 50px;
+  font-size: 3rem; /* Default font size */
 }
 
-/* .carousel-control-prev,
-.carousel-control-next {
-  height: 100%;
+/* Responsive font sizes */
+@media (max-width: 1200px) {
+  .video-carousel-caption {
+    font-size: 2.5rem; /* Adjust for large screens */
+  }
 }
 
-.carousel .carousel-control-prev-icon,
-.carousel .carousel-control-next-icon {
-  visibility: visible;
-  background-color: #d4c7c7;
+@media (max-width: 992px) {
+  .video-carousel-caption {
+    font-size: 2rem; /* Adjust for medium screens */
+  }
 }
 
-.carousel:hover .carousel-control-prev-icon,
-.carousel:hover .carousel-control-next-icon {
-  visibility: visible;
-} */
+@media (max-width: 768px) {
+  .video-carousel-caption {
+    font-size: 1.5rem; /* Adjust for small screens */
+  }
+}
+
+@media (max-width: 576px) {
+  .video-carousel-caption {
+    font-size: 1.2rem; /* Adjust for extra small screens */
+  }
+}
 
 .video-carousel-button {
   margin-top: 170px; /* Adjusted to fit better */
   border-color: #B71A18;
   color: #ffffff;
   border: 5px solid #B71A18;
-  font-size: 18px;
-  width: 165px;
-  background-color: transparent;
+  font-size: 1.2rem; /* Default button font size */
   width: 240px;
   font-weight: lighter;
+  background-color: transparent;
+ 
 }
+
+/* Responsive button font sizes */
+@media (max-width: 576px) {
+  .video-carousel-button {
+    font-size: 1rem; /* Adjust for extra small screens */
+    width: 200px; /* Adjust button width */
+  }
+}
+
 
 .video-carousel-button:hover {
   background-color: #B71A18;

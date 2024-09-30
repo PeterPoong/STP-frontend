@@ -14,7 +14,7 @@ const Home = () => {
   return (
     <div>
       <div className="app-container">
-        <NavButtons />
+        <NavButtonsSP />
       </div>
       <div className="home-container">
         <div className="featured-uni-section">

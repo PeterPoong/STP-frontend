@@ -59,14 +59,13 @@ const UniversityRow = () => {
       <div>
         {error && <div>Error: {error}</div>}
         {loading && <div>Loading...</div>}
-        {!loading && schools.length > 0 && (
-          <Container className="university-row-carousel" fluid>
+        {!loading && !error && schools.length > 0 && (
+          <Container className="university-row-carousel">
             <Swiper
               modules={[Navigation, Pagination]} // Add required modules here
-              spaceBetween={10}
-              slidesPerView={7}
+              spaceBetween={5}
+              slidesPerView={9}
               loop={true}
-              // pagination={{ clickable: true }}
               navigation
               // style={{ padding: "0 5px" }}
               breakpoints={{
@@ -79,7 +78,7 @@ const UniversityRow = () => {
                   spaceBetween: 15,
                 },
                 1024: {
-                  slidesPerView: 3,
+                  slidesPerView: 9,
                   spaceBetween: 10,
                 },
               }}

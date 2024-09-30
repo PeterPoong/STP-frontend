@@ -95,7 +95,7 @@ const NavigationBar = () => {
               </NavDropdown.Item>
             </NavDropdown> */}
           </Nav>
-          <div className="ml-auto navbutton-section">
+          <div className="m-10  navbutton-section">
             <NavButtons />
           </div>
         </Navbar.Collapse>

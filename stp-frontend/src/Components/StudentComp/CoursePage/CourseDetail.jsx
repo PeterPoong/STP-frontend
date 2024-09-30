@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useLocation, Link, useNavigate } from "react-router-dom";
 import NavButtons from "../NavButtons";
+import NavButtonsSP from "../../../Components/StudentPortalComp/NavButtonsSP";
 import headerImage from "../../../assets/StudentAssets/coursepage image/StudyPal10.png";
 import "../../../css/StudentCss/course page css/ApplyPage.css";
 import { Container, Row, Col, Collapse, Button, Modal } from "react-bootstrap";
 import studypal11 from "../../../assets/StudentAssets/coursepage image/StudyPal11.png";
 import studypal12 from "../../../assets/StudentAssets/coursepage image/StudyPal12.jpg";
 import Footer from "../Footer";
+import SpcFooter from "../../../Components/StudentPortalComp/SpcFooter";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
@@ -141,7 +143,7 @@ const CourseDetail = () => {
 
   return (
     <div style={{ backgroundColor: "#F5F4F4" }}>
-      <NavButtons />
+      <NavButtonsSP />
       {programs &&
         programs.map((program) => (
           <div key={program.id}>
@@ -915,7 +917,7 @@ const CourseDetail = () => {
         ))}
       <img src={studypal11} alt="Header" className="adverstise-image" />
       <div>
-        <Footer />
+        <SpcFooter />
       </div>
     </div>
   );
