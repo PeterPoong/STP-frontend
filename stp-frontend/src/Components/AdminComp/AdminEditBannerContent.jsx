@@ -36,11 +36,14 @@ const AdminEditBannerContent = () => {
 
   const handleDateChange = (date, type) => {
     if (type === "start") {
-      setSelectedStartDate(date);
+      // Set the start date, formatting it for datetime-local
+      setSelectedStartDate(date.toISOString().slice(0, 16)); // Exclude seconds and milliseconds
     } else if (type === "end") {
-      setSelectedEndDate(date);
+      // Set the end date, formatting it for datetime-local
+      setSelectedEndDate(date.toISOString().slice(0, 16)); // Exclude seconds and milliseconds
     }
   };
+  
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -117,14 +120,14 @@ const AdminEditBannerContent = () => {
           setFormData({
             banner_name: bannerDetails.name,
             banner_url: bannerDetails.url,
-            banner_start: bannerDetails.startDate ? [bannerDetails.bannerStart] :[],
-            banner_end: bannerDetails.endDate ? [bannerDetails.bannerEnd]:[],
+            banner_start: bannerDetails.banner_start ? bannerDetails.banner_start : "", // Date in `Y-m-dTH:i` format
+            banner_end: bannerDetails.banner_end ? bannerDetails.banner_end : "",       // Date in `Y-m-dTH:i` format
             banner_file: bannerDetails.file ? `${import.meta.env.VITE_BASE_URL}${bannerDetails.file}` : null,
             featured_id: bannerDetails.feature ? [bannerDetails.featured_id] : [],
           });
   
-          setSelectedStartDate(bannerDetails.startDate);
-          setSelectedEndDate(bannerDetails.endDate);
+          setSelectedStartDate(bannerDetails.banner_start);  // Already in datetime-local format
+          setSelectedEndDate(bannerDetails.banner_end);      // Already in datetime-local format
           setBanner_file(bannerDetails.file ? `${import.meta.env.VITE_BASE_URL}storage/${bannerDetails.file}` : null);
           setSelectedFeatures(bannerDetails.featured ? [bannerDetails.featured.featured_id] : []);
         } else {
