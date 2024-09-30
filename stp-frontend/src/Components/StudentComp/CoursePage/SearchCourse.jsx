@@ -45,19 +45,20 @@ const SearchCourse = ({ currentCourses }) => {
   const [selectedQualification, setSelectedQualification] = useState(null);
   const [countryFilter, setCountryFilter] = useState("");
   const [defaultCountry, setDefaultCountry] = useState(null); // Track the default country
+  const [filteredPrograms, setFilteredPrograms] = useState([]);
 
   // Function for Pagination
   const itemsPerPage = 20;
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  currentCourses = searchResults.slice(indexOfFirstItem, indexOfLastItem);
+  currentCourses = filteredPrograms.slice(indexOfFirstItem, indexOfLastItem);
 
   useEffect(() => {
-    if (searchResults.length > 0) {
-      setTotalPages(Math.ceil(searchResults.length / itemsPerPage));
+    if (filteredPrograms.length > 0) {
+      setTotalPages(Math.ceil(filteredPrograms.length / itemsPerPage));
     }
-  }, [searchResults]);
+  }, [filteredPrograms]);
 
   const handlePageChange = (current_page) => {
     fetchData(searchQuery); // Fetch the new data based on the updated page
@@ -119,7 +120,7 @@ const SearchCourse = ({ currentCourses }) => {
 
       if (country) {
         const selectedCountry = countries.find(
-          (c) => c.country_name === country.country_name
+          (c) => c.country_name === country
         );
         setSelectedCountry(selectedCountry);
       }
