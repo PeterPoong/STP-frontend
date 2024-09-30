@@ -561,41 +561,41 @@ const handleRadioChange = (radioId, value) => {
           <Row>
             <Col md={12}>
             <Form.Group controlId="banner_start" className="mb-3">
-  <Form.Label>Banner Start</Form.Label>
-  <Form.Control
-    type="datetime-local"
-    value={selectedStartDate || ''} // Use selectedStartDate from state
-    onChange={(e) => {
-      setSelectedStartDate(e.target.value); // Update state on change
-    }}
-    required
-  />
-</Form.Group>
+              <Form.Label>Banner Start</Form.Label>
+              <Form.Control
+                type="datetime-local"
+                value={selectedStartDate || ''} // Use selectedStartDate from state
+                onChange={(e) => {
+                  setSelectedStartDate(e.target.value); // Update state on change
+                }}
+                required
+              />
+            </Form.Group>
 
             </Col>
             <Col md={12}>
            
             <Form.Group controlId="banner_end" className="mb-3">
-  <Form.Label>Banner End</Form.Label>
-  <Form.Control
-    type="datetime-local"
-    value={selectedEndDate || ''} // Use selectedEndDate from state
-    onChange={(e) => {
-      setSelectedEndDate(e.target.value); // Update state on change
-    }}
-    required
-  />
-</Form.Group>
+              <Form.Label>Banner End</Form.Label>
+              <Form.Control
+                type="datetime-local"
+                value={selectedEndDate || ''} // Use selectedEndDate from state
+                onChange={(e) => {
+                  setSelectedEndDate(e.target.value); // Update state on change
+                }}
+                required
+              />
+            </Form.Group>
             </Col>
             <Col md={12}>
               <div className="date-picker-container">
               <Calendar
-  selectRange={true}
-  onChange={(range) => {
-    handleDateChange(range.startDate, "start");
-    handleDateChange(range.endDate, "end");
-  }}
-/>
+                selectRange={true}
+                onChange={(range) => {
+                  handleDateChange(range.startDate, "start");
+                  handleDateChange(range.endDate, "end");
+                }}
+              />
 
 
               </div>
