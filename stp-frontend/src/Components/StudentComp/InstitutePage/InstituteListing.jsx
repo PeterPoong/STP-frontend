@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import debounce from "lodash.debounce";
 import { useLocation } from "react-router-dom";
 import {
   Container,
@@ -16,6 +17,7 @@ import StudyPal from "../../../assets/StudentAssets/institute image/StudyPal.png
 
 import { useNavigate } from "react-router-dom";
 import emptyStateImage from "../../../assets/StudentAssets/emptyStateImage/emptystate.png";
+//import { set } from "react-datepicker/dist/date_utils";
 
 const baseURL = import.meta.env.VITE_BASE_URL;
 const apiURL = `${baseURL}api/student/schoolList`;
@@ -187,6 +189,7 @@ const InstituteListing = ({
 
   /* --------------------End of University Dropdown------------------------ */
 
+  // Location filter
   useEffect(() => {
     console.log("Country ID changed:", countryID);
     const fetchLocationFilters = async () => {
@@ -234,44 +237,7 @@ const InstituteListing = ({
     }, 100);
   }, [countryID]);
 
-  useEffect(() => {
-    const fetchStudyLevels = async () => {
-      try {
-        const response = await fetch(studylevelAPIURL, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        const studyLevelsData = await response.json();
-        setStudyLevels(studyLevelsData.data);
-      } catch (error) {
-        console.error("Error fetching study levels:", error);
-      }
-    };
-
-    fetchStudyLevels();
-  }, []);
-
-  useEffect(() => {
-    const fetchStudyModes = async () => {
-      try {
-        const response = await fetch(studyModeAPIURL, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        const studyModesData = await response.json();
-        setStudyModes(studyModesData.data);
-      } catch (error) {
-        console.error("Error fetching study modes:", error);
-      }
-    };
-
-    fetchStudyModes();
-  }, []);
-
+  // Category filter
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -338,6 +304,26 @@ const InstituteListing = ({
     }
   }, [categoryFilters]);
 
+  // Study level filter
+  useEffect(() => {
+    const fetchStudyLevels = async () => {
+      try {
+        const response = await fetch(studylevelAPIURL, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const studyLevelsData = await response.json();
+        setStudyLevels(studyLevelsData.data);
+      } catch (error) {
+        console.error("Error fetching study levels:", error);
+      }
+    };
+
+    fetchStudyLevels();
+  }, []);
+
   const fetchInstitutesByStudyLevel = async (selectedStudyLevel) => {
     setLoading(true);
     setError(null);
@@ -397,6 +383,7 @@ const InstituteListing = ({
     }
   }, [studyLevelFilters]);
 
+  // Calling all filter
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -466,6 +453,104 @@ const InstituteListing = ({
     selectedCountry,
   ]);
 
+  // Intakes filter
+  useEffect(() => {
+    const fetchIntakes = async () => {
+      try {
+        const response = await fetch(intakeAPIURL, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const intakeData = await response.json();
+        setIntakeData(intakeData.data);
+        console.log("Intakes: ", intakeData.data);
+      } catch (error) {
+        console.error("Error fetching intakes:", error);
+      }
+    };
+
+    fetchIntakes();
+  }, []);
+
+  // Study Mode Filter
+  useEffect(() => {
+    const fetchStudyModes = async () => {
+      try {
+        const response = await fetch(studyModeAPIURL, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const studyModesData = await response.json();
+        setStudyModes(studyModesData.data);
+      } catch (error) {
+        console.error("Error fetching study modes:", error);
+      }
+    };
+
+    fetchStudyModes();
+  }, []);
+
+  const fetchInstitutesByStudyMode = async (selectedStudyMode) => {
+    setLoading(true);
+    setError(null);
+
+    if (!selectedStudyMode || selectedStudyMode.length === 0) {
+      console.error("no study mode selected");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const studyModeIDs = selectedStudyMode.map((mode) => mode.id);
+      console.log("Study mode IDS: ", studyModeIDs);
+
+      const response = await fetch(apiURL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ studyMode: studyModeIDs }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("Full API Response for Study Mode:", data);
+      const institutes = Array.isArray(data.data) ? data.data : [];
+      console.log("Institutes received by Study Mode:", institutes);
+
+      const filteredInstitutes = institutes.filter((institute) => {
+        if (
+          !institute.courses ||
+          (Array.isArray(institute.courses) && institute.courses.length === 0)
+        ) {
+          console.log("No courses available for this institute. ");
+          return false;
+        }
+        return true;
+      });
+
+      console.log("Filtered Institutes by Study Mode:", filteredInstitutes);
+      setFilteredPrograms(filteredInstitutes);
+    } catch (error) {
+      console.error("Error fetching institutes by study level:", error);
+      setError(error.message || "An unexpected error occurred.");
+    }
+  };
+
+  useEffect(() => {
+    if (modeFilters.length > 0) {
+      fetchInstitutesByStudyMode(modeFilters); // Fetch institutes based on selected study modes
+    }
+  }, [modeFilters]); // Trigger re-fetch when modeFilters state changes
+
+  // Tuition fee filter
   useEffect(() => {
     const fetchTuitionFeeRange = async () => {
       try {
@@ -490,35 +575,11 @@ const InstituteListing = ({
     fetchTuitionFeeRange();
   }, []);
 
-  useEffect(() => {
-    const fetchIntakes = async () => {
-      try {
-        const response = await fetch(intakeAPIURL, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        const intakeData = await response.json();
-        setIntakeData(intakeData.data);
-        console.log("Intakes: ", intakeData.data);
-      } catch (error) {
-        console.error("Error fetching intakes:", error);
-      }
-    };
-
-    fetchIntakes();
-  }, []);
-
   const handleTuitionFeeChange = (e) => {
     const { value } = e.target;
     setTuitionFee(value);
   };
-
-  // const handlePageChange = (page) => {
-  //   setCurrentPage(page);
-  // };
-
+  // Location Filter
   const handleLocationChange = (location) => {
     const locationName = location.state_name.trim();
     let updatedFilters;
@@ -556,7 +617,7 @@ const InstituteListing = ({
       );
     }
 
-    // Apply category filter
+    // Apply Category Filter
     if (categoryFilters.length > 0) {
       results = results.filter((institute) => {
         if (Array.isArray(institute.courses)) {
@@ -568,11 +629,11 @@ const InstituteListing = ({
               )
           );
         }
-        return false; // If courses is not an array, exclude this institute
+        return false;
       });
     }
 
-    // Filter by selected study levels
+    // Filter by selected Study Level
     if (studyLevelFilters.length > 0) {
       results = results.filter((institute) => {
         if (Array.isArray(institute.courses)) {
@@ -583,7 +644,19 @@ const InstituteListing = ({
             );
           });
         }
-        return false; // Exclude institutes with no courses
+        return false;
+      });
+    }
+
+    // Filter by selected Study Mode
+    if (modeFilters.length > 0) {
+      results = results.filter((institute) => {
+        if (Array.isArray(institute.courses)) {
+          return institute.courses.some((course) => {
+            return course.studyMode && modeFilters.includes(course.studyMode);
+          });
+        }
+        return false;
       });
     }
 
@@ -596,11 +669,6 @@ const InstituteListing = ({
     // Apply various filters
     const filtered = results.filter((institute) => {
       // Add this for study level filtering
-      const matchesStudyLevel =
-        studyLevelFilters.length === 0 ||
-        institute.courses.some((course) =>
-          studyLevelFilters.includes(course.studyLevel)
-        );
 
       const matchesSearchResults =
         searchResultIDs.length === 0 || searchResultIDs.includes(institute.id);
@@ -629,8 +697,17 @@ const InstituteListing = ({
         (Array.isArray(institute.intake) &&
           institute.intake.some((intake) => intakeFilters.includes(intake)));
 
+      const matchesStudyLevel =
+        studyLevelFilters.length === 0 ||
+        institute.courses.some((course) =>
+          studyLevelFilters.includes(course.studyLevel)
+        );
+
       const matchesMode =
-        modeFilters.length === 0 || modeFilters.includes(institute.mode);
+        modeFilters.length === 0 ||
+        institute.courses.some((course) =>
+          modeFilters.includes(course.studyMode)
+        );
 
       const matchesInstitute =
         !selectedInstitute || institute.category === selectedInstitute;
@@ -665,6 +742,7 @@ const InstituteListing = ({
     setFilteredPrograms(filtered, results);
     fetchInstitutesByCategory;
     fetchInstitutesByStudyLevel;
+    fetchInstitutesByStudyMode;
   };
 
   // useEffect(() => {
@@ -681,6 +759,7 @@ const InstituteListing = ({
     filterPrograms();
     fetchInstitutesByCategory;
     fetchInstitutesByStudyLevel;
+    fetchInstitutesByStudyMode;
   }, [
     institutes,
     selectedLocationFilters,
@@ -715,54 +794,77 @@ const InstituteListing = ({
     }
   };
 
-  const debounce = (func, delay) => {
+  const debounce = (func, delay, immediate) => {
     let timeoutId;
     return (...args) => {
+      const callNow = immediate && !timeoutId;
       clearTimeout(timeoutId);
       timeoutId = setTimeout(() => {
-        func(...args);
+        timeoutId = null;
+        if (!immediate) func(...args);
       }, delay);
+      if (callNow) func(...args);
     };
   };
 
-  const handleCategoryChange = debounce((selectedCategory) => {
-    const updatedFilters = categoryFilters.some(
-      (category) => category.id === selectedCategory.id
-    )
-      ? categoryFilters.filter(
-          (category) => category.id !== selectedCategory.id
-        )
-      : [...categoryFilters, selectedCategory];
+  // Category Filter
+  const handleCategoryChange = debounce(
+    (selectedCategory) => {
+      const updatedFilters = categoryFilters.some(
+        (category) => category.id === selectedCategory.id
+      )
+        ? categoryFilters.filter(
+            (category) => category.id !== selectedCategory.id
+          )
+        : [...categoryFilters, selectedCategory];
 
-    setCategoryFilters(updatedFilters);
-    fetchInstitutesByCategory(updatedFilters);
-  }, 300); // Adjust the delay as needed
+      setCategoryFilters(updatedFilters);
+      fetchInstitutesByCategory(updatedFilters);
+    },
+    300,
+    true
+  ); // immediate is set to true
 
-  const handleStudyLevelChange = debounce((selectedLevel) => {
-    const updatedFilters = studyLevelFilters.some(
-      (level) => level.id === selectedLevel.id
-    )
-      ? studyLevelFilters.filter((level) => level.id !== selectedLevel.id)
-      : [...studyLevelFilters, selectedLevel];
+  // Study Level Filter
+  const handleStudyLevelChange = debounce(
+    (selectedLevel) => {
+      const updatedFilters = studyLevelFilters.some(
+        (level) => level.id === selectedLevel.id
+      )
+        ? studyLevelFilters.filter((level) => level.id !== selectedLevel.id)
+        : [...studyLevelFilters, selectedLevel];
 
-    setStudyLevelFilters(updatedFilters);
-    fetchInstitutesByStudyLevel(updatedFilters);
-  }, 300); // Adjust the delay as needed
+      setStudyLevelFilters(updatedFilters);
+      fetchInstitutesByStudyLevel(updatedFilters);
+    },
+    300,
+    true
+  ); // immediate is set to true
 
+  // Study Mode Filter
+  const handleModeChange = debounce(
+    (selectedMode) => {
+      console.log("Selected Mode: ", selectedMode); // Log the selected mode
+      const updatedFilters = modeFilters.some(
+        (mode) => mode.id === selectedMode.id
+      )
+        ? modeFilters.filter((mode) => mode.id !== selectedMode.id)
+        : [...modeFilters, selectedMode];
+
+      setModeFilters(updatedFilters);
+      fetchInstitutesByStudyMode(updatedFilters); // Fetch institutes based on the updated study mode filters
+    },
+    300,
+    true
+  );
+
+  // Intakes Filter
   const handleIntakeChange = (intake) => {
     if (intakeFilters.includes(intake.month)) {
       0;
       setIntakeFilters(intakeFilters.filter((i) => i !== intake.month));
     } else {
       setIntakeFilters([...intakeFilters, intake.month]);
-    }
-  };
-
-  const handleModeChange = (mode) => {
-    if (modeFilters.includes(mode.studyMode_name)) {
-      setModeFilters(modeFilters.filter((m) => m !== mode.studyMode_name));
-    } else {
-      setModeFilters([...modeFilters, mode.studyMode_name]);
     }
   };
 
@@ -956,6 +1058,7 @@ const InstituteListing = ({
         >
           {/* Filters always visible on larger screens */}
           <div className="filters-container">
+            {/* Location Filter */}
             <div className="filter-group">
               <h5 style={{ marginTop: "10px" }}>Location</h5>
               <Form.Group>
@@ -980,6 +1083,7 @@ const InstituteListing = ({
                 )}
               </Form.Group>
             </div>
+            {/* Category Filter */}
             <div className="filter-group">
               <h5 style={{ marginTop: "25px" }}>Category</h5>
               <Form.Group>
@@ -994,7 +1098,7 @@ const InstituteListing = ({
                 ))}
               </Form.Group>
             </div>
-
+            {/* Study Level Filter */}
             <div className="filter-group">
               <h5 style={{ marginTop: "25px" }}>Study Level</h5>
               <Form.Group>
@@ -1009,6 +1113,7 @@ const InstituteListing = ({
                 ))}
               </Form.Group>
             </div>
+            {/* Intakes Filter */}
             <div className="filter-group">
               <h5 style={{ marginTop: "25px" }}>Intakes</h5>
               <Form.Group>
@@ -1027,6 +1132,7 @@ const InstituteListing = ({
                 )}
               </Form.Group>
             </div>
+            {/* Study Mode Filter */}
             <div className="filter-group">
               <h5 style={{ marginTop: "25px" }}>Study Mode</h5>
               <Form.Group>
@@ -1035,12 +1141,13 @@ const InstituteListing = ({
                     key={index}
                     type="checkbox"
                     label={mode.studyMode_name}
-                    checked={modeFilters.includes(mode.studyMode_name)}
-                    onChange={() => handleModeChange(mode)}
+                    checked={modeFilters.some((m) => m.id === mode.id)}
+                    onChange={() => handleModeChange(mode)} // Update filters when changed
                   />
                 ))}
               </Form.Group>
             </div>
+            {/* Tuition Fee Filter */}
             <div className="filter-group">
               <h5 style={{ marginTop: "25px" }}>Tuition Fee</h5>
               <Form.Group id="customRange1">
@@ -1242,6 +1349,7 @@ const InstituteListing = ({
           )}
         </Col>
 
+        {/* Pagination*/}
         <Col xs={12} className="d-flex justify-content-end">
           <Pagination className="pagination">
             <Pagination.Prev

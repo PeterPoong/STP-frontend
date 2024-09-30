@@ -44,6 +44,7 @@ const SearchCourse = ({ currentCourses }) => {
   const [qualifications, setQualifications] = useState([]);
   const [selectedQualification, setSelectedQualification] = useState(null);
   const [countryFilter, setCountryFilter] = useState("");
+  const [defaultCountry, setDefaultCountry] = useState(null); // Track the default country
 
   // Function for Pagination
   const itemsPerPage = 20;
@@ -103,24 +104,6 @@ const SearchCourse = ({ currentCourses }) => {
   const filteredCountries = countries.filter((country) =>
     country.country_name.toLowerCase().includes(countryFilter)
   );
-
-  // Load the selected country from sessionStorage when the component mounts
-  useEffect(() => {
-    const savedCountry = sessionStorage.getItem("selectedCountry");
-    if (savedCountry) {
-      setSelectedCountry(JSON.parse(savedCountry)); // Parse back to an object
-    }
-  }, []);
-
-  // Save the selected country to sessionStorage whenever it changes
-  useEffect(() => {
-    if (selectedCountry) {
-      sessionStorage.setItem(
-        "selectedCountry",
-        JSON.stringify(selectedCountry)
-      );
-    }
-  }, [selectedCountry]);
 
   // From HomePage Button
   useEffect(() => {
@@ -184,7 +167,15 @@ const SearchCourse = ({ currentCourses }) => {
           (country) => country.country_name === "Malaysia"
         );
         if (malaysia) {
-          setSelectedCountry(malaysia);
+          setDefaultCountry(malaysia);
+          // Check local storage for selected country
+          const storedCountry = localStorage.getItem("selectedCountry");
+          if (storedCountry) {
+            const parsedCountry = JSON.parse(storedCountry);
+            setSelectedCountry(parsedCountry);
+          } else {
+            setSelectedCountry(malaysia);
+          }
         }
       } catch (error) {
         console.error("Error fetching countries:", error);
@@ -326,8 +317,8 @@ const SearchCourse = ({ currentCourses }) => {
 
   const handleCountryChange = (country) => {
     setSelectedCountry(country);
-    setSelectedInstitute(null);
-    console.log("Selected Country ID:", country?.id);
+    localStorage.setItem("selectedCountry", JSON.stringify(country)); // Store the selected country
+    setCurrentPage(1); // Reset pagination
   };
 
   const handleInstituteChange = (institute) => {

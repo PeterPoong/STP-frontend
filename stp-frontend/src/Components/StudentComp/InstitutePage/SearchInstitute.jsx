@@ -44,6 +44,7 @@ const SearchInstitute = () => {
   const [selectedInstitute, setSelectedInstitute] = useState(null);
   const [countryFilter, setCountryFilter] = useState("");
   const [countries, setCountries] = useState([]);
+  const [defaultCountry, setDefaultCountry] = useState(null); // Track the default country
 
   const location = useLocation();
 
@@ -142,7 +143,15 @@ const SearchInstitute = () => {
           (country) => country.country_name === "Malaysia"
         );
         if (malaysia) {
-          setSelectedCountry(malaysia);
+          setDefaultCountry(malaysia);
+          // Check local storage for selected country
+          const storedCountry = localStorage.getItem("selectedCountry");
+          if (storedCountry) {
+            const parsedCountry = JSON.parse(storedCountry);
+            setSelectedCountry(parsedCountry);
+          } else {
+            setSelectedCountry(malaysia);
+          }
         }
       } catch (error) {
         console.error("Error fetching countries:", error);
@@ -173,8 +182,6 @@ const SearchInstitute = () => {
 
     fetchInstitutes();
   }, []);
-
-  // Effect to fetch data when searchQuery or currentPage changes
 
   const fetchData = async (query) => {
     setLoading(true);
@@ -232,7 +239,7 @@ const SearchInstitute = () => {
 
   const handleCountryChange = (country) => {
     setSelectedCountry(country);
-    // setSearchQuery(""); // Clear search query when a country is selected
+    localStorage.setItem("selectedCountry", JSON.stringify(country)); // Store the selected country
     setCurrentPage(1); // Reset pagination
   };
 
