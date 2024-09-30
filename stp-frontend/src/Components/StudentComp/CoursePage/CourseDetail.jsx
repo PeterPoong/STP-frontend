@@ -7,6 +7,7 @@ import { Container, Row, Col, Collapse, Button, Modal } from "react-bootstrap";
 import studypal11 from "../../../assets/StudentAssets/coursepage image/StudyPal11.png";
 import studypal12 from "../../../assets/StudentAssets/coursepage image/StudyPal12.jpg";
 import Footer from "../Footer";
+import SpcFooter from "../../../Components/StudentPortalComp/SpcFooter";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
@@ -915,7 +916,7 @@ const CourseDetail = () => {
         ))}
       <img src={studypal11} alt="Header" className="adverstise-image" />
       <div>
-        <Footer />
+        <SpcFooter />
       </div>
     </div>
   );

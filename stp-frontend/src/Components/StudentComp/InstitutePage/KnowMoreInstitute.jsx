@@ -5,6 +5,7 @@ import NavButtonsSP from "../../../Components/StudentPortalComp/NavButtonsSP";
 // import NavButtons from "../../StudentComp/NavButtons";
 import headerImage from "../../../assets/StudentAssets/institute image/StudyPal10.png";
 import studypal12 from "../../../assets/StudentAssets/coursepage image/StudyPal12.jpg";
+import SpcFooter from "../../../Components/StudentPortalComp/SpcFooter";
 
 import "../../../css/StudentCss/institutepage css/KnowMoreInstitute.css";
 import {
@@ -1018,7 +1019,7 @@ const KnowMoreInstitute = () => {
           </div>
         ))}
       <div>
-        <Footer />
+        <SpcFooter />
       </div>
     </div>
   );
