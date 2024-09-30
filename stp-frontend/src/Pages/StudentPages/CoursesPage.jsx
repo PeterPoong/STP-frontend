@@ -15,10 +15,8 @@ const CoursesPage = () => {
       <header className="masthead">
         <img src={headerImage} alt="Header" className="header-image" />
       </header>
-
-      <div>
-        <SearchCourse />
-      </div>
+      <SearchCourse />
+      <div></div>
       <div>
         {/* <Footer /> */}
         <SpcFooter />

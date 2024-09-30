@@ -347,8 +347,11 @@ const SearchCourse = ({ currentCourses }) => {
           ? `Courses in ${selectedQualification.qualification_name}`
           : "Courses in Degree"}
       </h3>
-      <Row className="align-items-center mb-2 mb-md-0">
-        {/* Country Dropdown */}
+      {/* Country Dropdown */}
+      <Row
+        className="align-items-center mb-2 mb-md-0"
+        style={{ marginTop: "30px" }}
+      >
         <Col xs={12} sm={4} md={3} lg={2} className="mb-2 mb-sm-0">
           <ButtonGroup className="w-100">
             <Dropdown as={ButtonGroup} className="w-100">
