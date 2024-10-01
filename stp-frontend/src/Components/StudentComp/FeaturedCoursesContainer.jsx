@@ -67,7 +67,16 @@ const FeaturedCoursesContainer = () => {
 
   const handleApplyNow = (course) => {
     if (course && course.id) {
-      navigate(`/studentApplyCourses/${course.id}`);
+      navigate(`/studentApplyCourses/${course.id}`,{
+      state:{
+        programId: course.id,
+        schoolLogoUrl: `${import.meta.env.VITE_BASE_URL}storage/${
+          course.course_logo
+        }`,
+        schoolName: course.course_school,
+        courseName: course.course_name,
+      }
+    })
     } else {
       console.error("Course ID is undefined");
     }

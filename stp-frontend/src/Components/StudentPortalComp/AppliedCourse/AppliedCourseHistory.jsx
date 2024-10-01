@@ -424,7 +424,7 @@ const AppliedCourseHistory = () => {
 
   return (
     <div className="acp-container pt-0">
-      <h1 className="acp-main-title">Application History</h1>
+      <h4 className="mb-3 title-widget" >Application History</h4>
       <Card className="acp-card mb-4">
         <Card.Body>
           <h2 className="acp-section-title mb-0">All Applications</h2>

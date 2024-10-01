@@ -461,7 +461,7 @@ const AppliedCoursePending = () => {
 
   return (
     <div className="acp-container pt-0">
-      <h1 className="acp-main-title">Applied Courses</h1>
+      <h4 className="mb-3 title-widget" >Applied Courses</h4>
       <Card className="acp-card mb-4">
         <Card.Body>
           <h2 className="acp-section-title mb-0">Pending Applications</h2>
