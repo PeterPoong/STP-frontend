@@ -81,7 +81,7 @@ const Sidebar = ({ onDropdownItemSelect, selectTabPage }) => {
     }
     // This will run once when the component mounts or when `detail` changes
     const checkForNullValues = (data, excludeKeys = []) => {
-      console.log("detail", data.account_type);
+      // console.log("detail", data);
       for (const key in data) {
         if (!excludeKeys.includes(key) && data[key] === null) {
           console.log("not gull", key);
@@ -93,7 +93,7 @@ const Sidebar = ({ onDropdownItemSelect, selectTabPage }) => {
         }
       }
 
-      console.log("logo", detail);
+      // console.log("logo", detail);
       setSchoolLogo(
         `${import.meta.env.VITE_BASE_URL}storage/${detail["school_logo"]}`
       );

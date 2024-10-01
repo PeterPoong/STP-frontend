@@ -8,6 +8,14 @@
     padding-left: 30px;
 }
 
+.personInCharge-main-container {
+  min-height: 100vh; /* Full page height */
+  background-color: white; /* Ensures white background */
+  display: flex;
+  flex-direction: column;
+}
+
+
 
 .profile-container { background-color: #fff;
     border: none; 

@@ -99,80 +99,82 @@ function PersonInCharge() {
 
   return (
     <>
-      <Form onSubmit={handleSubmit}>
-        {showAlert && (
-          <Alert
-            variant="success"
-            className={`fade-alert alert-position ${
-              showAlert ? "show" : "hide"
-            }`}
-          >
-            Update Successfully
-          </Alert>
-        )}
-        <h4 className="mb-2">Person-In-Charge</h4>
-        <hr className="divider-line" />
-        <Row className="mb-3">
-          <Col md={5}>
-            <Form.Group controlId="personInChargeName">
-              <Form.Label>
-                Person-In-Charge Name <span className="span-style">*</span>
-              </Form.Label>
-              <Form.Control
-                type="text"
-                value={personInChargeName}
-                required
-                onChange={(e) => setPersonInChargeName(e.target.value)}
-              />
-            </Form.Group>
-          </Col>
-          <Col md={5}>
-            <Form.Group controlId="personInChargeContact">
-              <Form.Label>
-                Contact Number <span className="span-style">*</span>
-              </Form.Label>
-              <PhoneInput
-                country={"my"}
-                value={personContact}
-                onChange={handlePhoneChange}
-                inputProps={{
-                  name: "phone",
-                  placeholder: "Enter phone number",
-                }}
-                inputClass="form-control"
-                containerClass="phone-input-container"
-                buttonClass="btn btn-outline-secondary"
-                dropdownClass="country-dropdown custom-dropdown"
-                countryCodeEditable={false}
-                disableCountryCode={false}
-                disableDropdown={false}
-                autoFormat={true}
-              />
-            </Form.Group>
-          </Col>
-        </Row>
-        <Row className="mb-3">
-          <Col md={5}>
-            <Form.Group controlId="personInChargeName">
-              <Form.Label>
-                Email Address <span className="span-style">*</span>
-              </Form.Label>
-              <Form.Control
-                type="email"
-                value={personEmail}
-                onChange={(e) => setPersonEmail(e.target.value)}
-              />
-            </Form.Group>
-          </Col>
-        </Row>
-        <Row className="mb-3">
-          <Col md={10}>
-            <Button variant="danger" type="submit" className="save-button">
-              Save
-            </Button>
-          </Col>
-        </Row>
-      </Form>
+      <div className="personInCharge-main-container">
+        <Form onSubmit={handleSubmit}>
+          {showAlert && (
+            <Alert
+              variant="success"
+              className={`fade-alert alert-position ${
+                showAlert ? "show" : "hide"
+              }`}
+            >
+              Update Successfully
+            </Alert>
+          )}
+          <h4 className="mb-2">Person-In-Charge</h4>
+          <hr className="divider-line" />
+          <Row className="mb-3">
+            <Col md={5}>
+              <Form.Group controlId="personInChargeName">
+                <Form.Label>
+                  Person-In-Charge Name <span className="span-style">*</span>
+                </Form.Label>
+                <Form.Control
+                  type="text"
+                  value={personInChargeName}
+                  required
+                  onChange={(e) => setPersonInChargeName(e.target.value)}
+                />
+              </Form.Group>
+            </Col>
+            <Col md={5}>
+              <Form.Group controlId="personInChargeContact">
+                <Form.Label>
+                  Contact Number <span className="span-style">*</span>
+                </Form.Label>
+                <PhoneInput
+                  country={"my"}
+                  value={personContact}
+                  onChange={handlePhoneChange}
+                  inputProps={{
+                    name: "phone",
+                    placeholder: "Enter phone number",
+                  }}
+                  inputClass="form-control"
+                  containerClass="phone-input-container"
+                  buttonClass="btn btn-outline-secondary"
+                  dropdownClass="country-dropdown custom-dropdown"
+                  countryCodeEditable={false}
+                  disableCountryCode={false}
+                  disableDropdown={false}
+                  autoFormat={true}
+                />
+              </Form.Group>
+            </Col>
+          </Row>
+          <Row className="mb-3">
+            <Col md={5}>
+              <Form.Group controlId="personInChargeName">
+                <Form.Label>
+                  Email Address <span className="span-style">*</span>
+                </Form.Label>
+                <Form.Control
+                  type="email"
+                  value={personEmail}
+                  onChange={(e) => setPersonEmail(e.target.value)}
+                />
+              </Form.Group>
+            </Col>
+          </Row>
+          <Row className="mb-3">
+            <Col md={10}>
+              <Button variant="danger" type="submit" className="save-button">
+                Save
+              </Button>
+            </Col>
+          </Row>
+        </Form>
+      </div>
     </>
   );
 }
