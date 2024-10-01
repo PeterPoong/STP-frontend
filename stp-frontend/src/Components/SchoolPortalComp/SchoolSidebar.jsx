@@ -76,6 +76,9 @@ const Sidebar = ({ onDropdownItemSelect, selectTabPage }) => {
   };
 
   useEffect(() => {
+    if (!detail) {
+      return;
+    }
     // This will run once when the component mounts or when `detail` changes
     const checkForNullValues = (data, excludeKeys = []) => {
       console.log("detail", data.account_type);
@@ -89,14 +92,13 @@ const Sidebar = ({ onDropdownItemSelect, selectTabPage }) => {
           return;
         }
       }
-      // setSchoolLogo(
-      //   `${import.meta.env.VITE_BASE_URL}storage/${detail.school_logo}`
-      // );
+
+      console.log("logo", detail);
+      setSchoolLogo(
+        `${import.meta.env.VITE_BASE_URL}storage/${detail["school_logo"]}`
+      );
       console.log("All keys have values.");
       handleTabClick("dashboard");
-      setSchoolLogo(
-        `${import.meta.env.VITE_BASE_URL}storage/${data.school_logo}`
-      );
     };
 
     setAccountType(detail.account_type);
@@ -106,8 +108,10 @@ const Sidebar = ({ onDropdownItemSelect, selectTabPage }) => {
       "school_lg",
       "school_lat",
       "school_officalWebsite",
+      "school_location",
       "school_logo",
     ];
+
     checkForNullValues(detail || {}, excludeKeys);
   }, [detail]); // Dependency array includes `detail`
 
