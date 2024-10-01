@@ -33,93 +33,93 @@ const Applicant = () => {
   const [warningStage, setWarningStage] = useState(1);
   const [applicantToProcess, setApplicantToProcess] = useState(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        // Fetch courses
-        const coursesResponse = await fetch(
-          `${import.meta.env.VITE_BASE_URL}api/school/dropDownCourseList`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
 
-        if (!coursesResponse.ok) {
-          const errorText = await coursesResponse.text();
-          console.error("Courses API Error Response:", errorText);
-          throw new Error(`HTTP error! status: ${coursesResponse.status}`);
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      // Fetch courses
+      const coursesResponse = await fetch(
+        `${import.meta.env.VITE_BASE_URL}api/school/dropDownCourseList`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         }
+      );
 
-        const coursesData = await coursesResponse.json();
-        setCourses(coursesData.data);
-
-        // Create course mapping
-        const courseMappingObj = {};
-        coursesData.data.forEach((course) => {
-          courseMappingObj[course.course_name.toLowerCase()] = {
-            id: course.id,
-            qualificationId: course.qualification_id,
-          };
-        });
-        setCourseMapping(courseMappingObj);
-
-        // Fetch applicants
-        const applicantsResponse = await fetch(
-          `${import.meta.env.VITE_BASE_URL}api/school/applicantDetailInfo`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({}),
-          }
-        );
-
-        if (!applicantsResponse.ok) {
-          const errorText = await applicantsResponse.text();
-          console.error("Applicants API Error Response:", errorText);
-          throw new Error(`HTTP error! status: ${applicantsResponse.status}`);
-        }
-
-        const applicantsData = await applicantsResponse.json();
-        setApplicants(applicantsData.data);
-
-        // Fetch course categories
-        const qualificationResponse = await fetch(
-          `${import.meta.env.VITE_BASE_URL}api/student/qualificationFilterList`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (!qualificationResponse.ok) {
-          const errorText = await qualificationResponse.text();
-          console.error("Categories API Error Response:", errorText);
-          throw new Error(
-            `HTTP error! status: ${qualificationResponse.status}`
-          );
-        }
-
-        const qualificationData = await qualificationResponse.json();
-        setCourseQualification(qualificationData.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setError(error.message);
-      } finally {
-        setIsLoading(false);
+      if (!coursesResponse.ok) {
+        const errorText = await coursesResponse.text();
+        console.error("Courses API Error Response:", errorText);
+        throw new Error(`HTTP error! status: ${coursesResponse.status}`);
       }
-    };
 
+      const coursesData = await coursesResponse.json();
+      setCourses(coursesData.data);
+
+      // Create course mapping
+      const courseMappingObj = {};
+      coursesData.data.forEach((course) => {
+        courseMappingObj[course.course_name.toLowerCase()] = {
+          id: course.id,
+          qualificationId: course.qualification_id,
+        };
+      });
+      setCourseMapping(courseMappingObj);
+
+      // Fetch applicants
+      const applicantsResponse = await fetch(
+        `${import.meta.env.VITE_BASE_URL}api/school/applicantDetailInfo`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({}),
+        }
+      );
+
+      if (!applicantsResponse.ok) {
+        const errorText = await applicantsResponse.text();
+        console.error("Applicants API Error Response:", errorText);
+        throw new Error(`HTTP error! status: ${applicantsResponse.status}`);
+      }
+
+      const applicantsData = await applicantsResponse.json();
+      setApplicants(applicantsData.data);
+
+      // Fetch course categories
+      const qualificationResponse = await fetch(
+        `${import.meta.env.VITE_BASE_URL}api/student/qualificationFilterList`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!qualificationResponse.ok) {
+        const errorText = await qualificationResponse.text();
+        console.error("Categories API Error Response:", errorText);
+        throw new Error(
+          `HTTP error! status: ${qualificationResponse.status}`
+        );
+      }
+
+      const qualificationData = await qualificationResponse.json();
+      setCourseQualification(qualificationData.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setError(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  useEffect(() => {
     fetchData();
   }, []);
 
@@ -195,24 +195,20 @@ const Applicant = () => {
     }
   };
 
-  const handleOptionClick = (applicant, action) => {
-    setSelectedStudent(applicant);
-    setSelectedAction(action);
-    setDropdownVisible({});
-  };
+
 
   const handleBackToList = () => {
     setSelectedStudent(null);
     setSelectedAction(null);
+    setWarningType(null);
   };
 
   const StatusMessage = ({ status }) => {
     const isAccepted = status === "Accepted";
     return (
       <div
-        className={`${styles["status-message"]} ${
-          isAccepted ? styles["accepted"] : styles["rejected"]
-        }`}
+        className={`${styles["status-message"]} ${isAccepted ? styles["accepted"] : styles["rejected"]
+          }`}
       >
         <FontAwesomeIcon
           icon={isAccepted ? faCheck : faTimes}
@@ -225,6 +221,12 @@ const Applicant = () => {
         </span>
       </div>
     );
+  };
+
+  const handleOptionClick = (applicant, action) => {
+    setSelectedStudent(applicant);
+    setSelectedAction(action);
+    setDropdownVisible({});
   };
 
   const handleActionClick = (applicant, type) => {
@@ -254,6 +256,14 @@ const Applicant = () => {
     setShowWarning(false);
     handleOptionClick(applicantToProcess, "feedback");
   };
+  // Callback to handle successful action
+  const handleActionSuccess = () => {
+    // Navigate back to the applicant list
+    fetchData(); // Refresh the applicaFnts list
+    handleBackToList();
+  };
+
+
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -261,10 +271,12 @@ const Applicant = () => {
   if (selectedStudent) {
     return (
       <StudentDetailView
-      student={selectedStudent}
-      viewAction="details"
-      acceptRejectAction={warningType} // 'accept' or 'reject'
-      onBack={handleBackToList}
+        key={selectedStudent.id} // 2. Add key prop
+        student={selectedStudent}
+        viewAction="details"
+        acceptRejectAction={warningType} // 'accept' or 'reject'
+        onBack={handleBackToList}
+        onActionSuccess={handleActionSuccess} // Pass the callback
       />
     );
   }
@@ -376,9 +388,8 @@ const Applicant = () => {
                   <img
                     src={
                       applicant.profile_pic
-                        ? `${import.meta.env.VITE_BASE_URL}storage/${
-                            applicant.profile_pic
-                          }`
+                        ? `${import.meta.env.VITE_BASE_URL}storage/${applicant.profile_pic
+                        }`
                         : defaultProfilePic
                     }
                     alt={`${applicant.student_name}'s profile`}
@@ -423,9 +434,8 @@ const Applicant = () => {
                         {`${applicant.student_name}`}
                       </h2>
                       <div
-                        className={`${
-                          styles["application-status"]
-                        } ${getStatusClassName(applicant.form_status)}`}
+                        className={`${styles["application-status"]
+                          } ${getStatusClassName(applicant.form_status)}`}
                       >
                         <p>{applicant.form_status}</p>
                       </div>
