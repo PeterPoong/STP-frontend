@@ -105,7 +105,7 @@ const FeaturedCoursesContainer = () => {
               <SwiperSlide key={idx} className="swiper-slide-course">
                 <div
                   className="featured-course-card"
-                  style={{ width: "230px", height: "245px" }}
+                  style={{ width: "230px", height: "auto", marginTop: "25px" }}
                 >
                   <div style={{ position: "relative" }}>
                     {course.course_qualification && (
@@ -146,12 +146,12 @@ const FeaturedCoursesContainer = () => {
                     </p>
                     <p
                       className="course-title"
-                      style={{
-                        color: "#B71A18",
-                        fontSize: "18px",
-                        fontWeight: "500",
-                        marginBottom: "15px",
-                      }}
+                      // style={{
+                      //   color: "#B71A18",
+                      //   fontSize: "18px",
+                      //   fontWeight: "500",
+                      //   marginBottom: "15px",
+                      // }}
                     >
                       {course.course_name}
                     </p>

@@ -314,7 +314,7 @@ const CourseDetail = () => {
                         {/* Use dangerouslySetInnerHTML to render HTML safely */}
                         <div
                           dangerouslySetInnerHTML={{
-                            __html: program.description,
+                            __html: program.schoolShortDescription,
                           }}
                         />
                       </div>
@@ -323,7 +323,7 @@ const CourseDetail = () => {
                           {/* Use dangerouslySetInnerHTML to render HTML safely */}
                           <div
                             dangerouslySetInnerHTML={{
-                              __html: program.description,
+                              __html: program.schoolShortDescription,
                             }}
                           />
                         </div>
@@ -354,7 +354,7 @@ const CourseDetail = () => {
                     <Col md={12}>
                       <div
                         dangerouslySetInnerHTML={{
-                          __html: program.description,
+                          __html: program.requirement,
                         }}
                       />
 
@@ -362,7 +362,7 @@ const CourseDetail = () => {
                         <div id="collapse-requirement">
                           <div
                             dangerouslySetInnerHTML={{
-                              __html: program.description,
+                              __html: program.requirement,
                             }}
                           />
                         </div>
@@ -453,7 +453,7 @@ const CourseDetail = () => {
                           <div style={{ zIndex: 1 }}>
                             <div
                               dangerouslySetInnerHTML={{
-                                __html: program.description,
+                                __html: program.schoolLongDescription,
                               }}
                             />
                           </div>
