@@ -542,9 +542,14 @@ const KnowMoreInstitute = () => {
                     </Col>
                     <Col md={12}>
                       <Collapse in={open}>
-                        <div>
+                        {/* <div>
                           <p>{institute.short_description}</p>
-                        </div>
+                        </div> */}
+                        <div
+                          dangerouslySetInnerHTML={{
+                            __html: institute.short_description,
+                          }}
+                        />
                       </Collapse>
                     </Col>
                     <Col className="d-flex justify-content-center">
@@ -637,7 +642,15 @@ const KnowMoreInstitute = () => {
                           md={10}
                           className="d-flex flex-column align-items-center"
                         >
-                          <div>
+                          <div
+                            style={{
+                              display: "flex",
+                              flexDirection: "column",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              height: "100%", // Adjust as per your container height
+                            }}
+                          >
                             <h6
                               style={{
                                 color: "#514E4E",
@@ -657,10 +670,10 @@ const KnowMoreInstitute = () => {
                         <div>
                           <h5
                             style={{
-                              display: "flex",
                               paddingTop: "10px",
                               fontStyle: "italic",
                               color: "#514E4E",
+                              textAlign: "center", // Center text
                               whiteSpace: "normal", // Allow wrapping
                               wordWrap: "break-word", // Break long words and wrap
                             }}
@@ -751,16 +764,7 @@ const KnowMoreInstitute = () => {
                         </Col>
                         <Col md={12}>
                           <Collapse in={openAbout}>
-                            <div style={{ zIndex: 1 }}>
-                              <p>
-                                The purpose of this programme is to produce
-                                graduates with in-depth knowledge of Arabic
-                                linguistics. From the aspects of national
-                                aspiration and global importance, this programme
-                                aims to produce graduates who demonstrate those
-                                aspects.
-                              </p>
-                            </div>
+                            <div style={{ zIndex: 1 }}></div>
                           </Collapse>
                         </Col>
                         <Col className="d-flex justify-content-center">
@@ -803,7 +807,11 @@ const KnowMoreInstitute = () => {
                 <Container className="my-4">
                   <h4>Courses Offered</h4>
                   {courses.slice(0, visibleCourses).map((course) => (
-                    <div className="card mt-3" key={course.id}>
+                    <div
+                      className="card mt-3"
+                      key={course.id}
+                      style={{ position: "relative", height: "auto" }}
+                    >
                       <div className="card-body d-flex flex-column flex-md-row align-items-start">
                         <Row className="w-100">
                           <Col md={6} lg={6}>
@@ -811,8 +819,10 @@ const KnowMoreInstitute = () => {
                               <h5
                                 className="card-title"
                                 style={{
-                                  paddingLeft: "20px",
-                                  backgroundColor: "#efefef",
+                                  paddingLeft: "30px",
+                                  backgroundColor: "#F2F2F2",
+                                  marginLeft: "-15px",
+                                  height: "31px",
                                 }}
                               >
                                 <a
@@ -867,7 +877,7 @@ const KnowMoreInstitute = () => {
                                             {course.qualification}
                                           </span>
                                         </div>
-                                        <div>
+                                        <div style={{ marginTop: "10px" }}>
                                           <i
                                             className="bi bi-calendar-check"
                                             style={{ marginRight: "10px" }}
@@ -876,16 +886,21 @@ const KnowMoreInstitute = () => {
                                             {course.study_mode}
                                           </span>
                                         </div>
-                                        <div>
+                                        <div style={{ marginTop: "10px" }}>
                                           <i
                                             className="bi bi-clock"
                                             style={{ marginRight: "10px" }}
                                           ></i>{" "}
-                                          <span style={{ paddingLeft: "20px" }}>
+                                          <span style={{ paddingLeft: "10px" }}>
                                             {course.course_period}
                                           </span>
                                         </div>
-                                        <div>
+                                        <div
+                                          style={{
+                                            marginTop: "10px",
+                                            display: "flex",
+                                          }}
+                                        >
                                           <i
                                             className="bi bi-calendar2-week"
                                             style={{ marginRight: "10px" }}
@@ -904,7 +919,11 @@ const KnowMoreInstitute = () => {
                               <div className="fee-apply">
                                 <div
                                   className="fee-info text-right"
-                                  style={{ marginTop: "25px" }}
+                                  style={{
+                                    marginTop: "25px",
+                                    alignItems: "flex-end",
+                                    textAlign: "right",
+                                  }}
                                 >
                                   <p
                                     style={{

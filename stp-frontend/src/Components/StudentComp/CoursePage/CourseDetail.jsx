@@ -310,17 +310,22 @@ const CourseDetail = () => {
                       </div>
                     </Col>
                     <Col md={12}>
-                      <p>{program.description}</p>
+                      <div id="collapse-description">
+                        {/* Use dangerouslySetInnerHTML to render HTML safely */}
+                        <div
+                          dangerouslySetInnerHTML={{
+                            __html: program.description,
+                          }}
+                        />
+                      </div>
                       <Collapse in={openDescription}>
                         <div id="collapse-description">
-                          {program.description}
-                          <p>
-                            The purpose of this programme is to produce
-                            graduates with in-depth knowledge of Arabic
-                            linguistics. From the aspects of national aspiration
-                            and global importance, this programme aims to
-                            produce graduates who demonstrate those aspects.
-                          </p>
+                          {/* Use dangerouslySetInnerHTML to render HTML safely */}
+                          <div
+                            dangerouslySetInnerHTML={{
+                              __html: program.description,
+                            }}
+                          />
                         </div>
                       </Collapse>
                     </Col>
@@ -347,18 +352,19 @@ const CourseDetail = () => {
                       </div>
                     </Col>
                     <Col md={12}>
-                      <p>{program.requirement}</p>
+                      <div
+                        dangerouslySetInnerHTML={{
+                          __html: program.description,
+                        }}
+                      />
 
                       <Collapse in={openRequirement}>
                         <div id="collapse-requirement">
-                          {program.requirement}
-                          <p>
-                            The purpose of this programme is to produce
-                            graduates with in-depth knowledge of Arabic
-                            linguistics. From the aspects of national aspiration
-                            and global importance, this programme aims to
-                            produce graduates who demonstrate those aspects.
-                          </p>
+                          <div
+                            dangerouslySetInnerHTML={{
+                              __html: program.description,
+                            }}
+                          />
                         </div>
                       </Collapse>
                       <Col className="d-flex justify-content-center">
@@ -445,7 +451,11 @@ const CourseDetail = () => {
                         </Col>
                         <Col md={12}>
                           <div style={{ zIndex: 1 }}>
-                            <p>{program.description}</p>
+                            <div
+                              dangerouslySetInnerHTML={{
+                                __html: program.description,
+                              }}
+                            />
                           </div>
                         </Col>
                         <Col md={12}>
@@ -453,16 +463,7 @@ const CourseDetail = () => {
                             <div
                               id="collapse-about-institute"
                               style={{ zIndex: 1 }}
-                            >
-                              <p>
-                                Having the ability to apply their knowledge and
-                                skills as well as communicate well in Arabic
-                                would further enable them to contribute at the
-                                international stage and realise the features of
-                                a Malaysian society as envisioned in Vision
-                                2020.
-                              </p>
-                            </div>
+                            ></div>
                           </Collapse>
                         </Col>
                         <Col className="d-flex justify-content-center">
