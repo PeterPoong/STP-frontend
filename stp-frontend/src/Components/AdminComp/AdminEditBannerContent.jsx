@@ -34,61 +34,15 @@ const AdminEditBannerContent = () => {
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
   };
 
+  // Handle date change for start and end
   const handleDateChange = (date, type) => {
     if (type === "start") {
-      // Set the start date, formatting it for datetime-local
-      setSelectedStartDate(date.toISOString().slice(0, 16)); // Exclude seconds and milliseconds
+      setSelectedStartDate(date);
     } else if (type === "end") {
-      // Set the end date, formatting it for datetime-local
-      setSelectedEndDate(date.toISOString().slice(0, 16)); // Exclude seconds and milliseconds
+      setSelectedEndDate(date);
     }
   };
   
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-  
-    const formattedStartDate = selectedStartDate ? formatDateForSubmission(selectedStartDate) : null;
-    const formattedEndDate = selectedEndDate ? formatDateForSubmission(selectedEndDate) : null;
-  
-    if (!formData.banner_name || !formData.banner_url || !formattedStartDate || !formattedEndDate || !formData.banner_file) {
-      setError("Please fill out all required fields.");
-      return;
-    }
-  
-    const submissionData = new FormData();
-    submissionData.append("id", bannerId);
-    submissionData.append("banner_name", formData.banner_name);
-    submissionData.append("banner_url", formData.banner_url);
-    submissionData.append("banner_start", formattedStartDate);
-    submissionData.append("banner_end", formattedEndDate);
-    submissionData.append("banner_file", formData.banner_file);
-  
-    selectedFeatures.forEach((featureId) => {
-      submissionData.append("featured_id[]", featureId);
-    });
-  
-    try {
-      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/editBanner`, {
-        method: "POST",
-        headers: {
-          Authorization: Authenticate,
-        },
-        body: submissionData,
-      });
-  
-      const result = await response.json();
-      if (response.ok) {
-        navigate("/adminBanner");
-      } else {
-        setError(result.message || "Failed to update banner.");
-      }
-    } catch (error) {
-      setError(error.message);
-    }
-  };
-
-
     
   useEffect(() => {
     if (!bannerId) {
@@ -126,8 +80,8 @@ const AdminEditBannerContent = () => {
             featured_id: bannerDetails.feature ? [bannerDetails.featured_id] : [],
           });
   
-          setSelectedStartDate(bannerDetails.banner_start);  // Already in datetime-local format
-          setSelectedEndDate(bannerDetails.banner_end);      // Already in datetime-local format
+          setSelectedStartDate(new Date(bannerDetails.banner_start));  // Set start date
+          setSelectedEndDate(new Date(bannerDetails.banner_end));      // Set end date
           setBanner_file(bannerDetails.file ? `${import.meta.env.VITE_BASE_URL}storage/${bannerDetails.file}` : null);
           setSelectedFeatures(bannerDetails.featured ? [bannerDetails.featured.featured_id] : []);
         } else {
@@ -141,6 +95,62 @@ const AdminEditBannerContent = () => {
   
     fetchBannerDetails();
   }, [bannerId, Authenticate]);
+  
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+  
+    const formattedStartDate = selectedStartDate ? formatDateForSubmission(selectedStartDate) : null;
+    const formattedEndDate = selectedEndDate ? formatDateForSubmission(selectedEndDate) : null;
+  
+    // Check for required fields
+    if (!formData.banner_name || !formData.banner_url || !formattedStartDate || !formattedEndDate) {
+      setError("Please fill out all required fields.");
+      return;
+    }
+    if (formData.banner_file) {
+      console.log(`banner_file: ${formData.banner_file.name}, size: ${formData.banner_file.size}`);
+  }
+  
+    const submissionData = new FormData();
+    submissionData.append("id", bannerId);
+    submissionData.append("banner_name", formData.banner_name);
+    submissionData.append("banner_url", formData.banner_url);
+    submissionData.append("banner_start", formattedStartDate);
+    submissionData.append("banner_end", formattedEndDate);
+    submissionData.append("old_featured_id", currentFeaturedId); // current featured ID
+    submissionData.append("new_featured_id", selectedNewFeaturedId); // new featured ID
+    // Only append the file if a new one is uploaded
+    if (formData.banner_file) {
+      submissionData.append("banner_file", formData.banner_file);
+    }
+  
+    // Handle selected features
+    selectedFeatures.forEach((featureId) => {
+      submissionData.append("featured_id[]", featureId);
+    });
+     // Debug: log FormData before submission
+     for (let [key, value] of submissionData.entries()) {
+      console.log(`${key}: ${value}`);
+    }
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/editBanner`, {
+        method: "POST",
+        headers: {
+          Authorization: Authenticate,
+        },
+        body: submissionData,
+      });
+  
+      const result = await response.json();
+      if (response.ok) {
+        navigate("/adminBanner");
+      } else {
+        setError(result.message || "Failed to update banner.");
+      }
+    } catch (error) {
+      setError(error.message);
+    }
+  };
   
 
   useEffect(() => {

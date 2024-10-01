@@ -27,6 +27,7 @@ const AdminEditSchoolContent = () => {
         confirm_password: "",
         school_shortDesc: "",
         school_fullDesc: "",
+        location:"",
         logo: null
     });
     const [selectedFeatures, setSelectedFeatures] = useState([]);
@@ -110,6 +111,7 @@ const AdminEditSchoolContent = () => {
                         account: schoolDetails.account || '',
                         password: '', 
                         confirm_password: '',
+                        location: schoolDetails.location || '',
                         school_shortDesc: schoolDetails.shortDescription || '',
                         school_fullDesc: schoolDetails.fullDescripton || '',
                         country: schoolDetails.country_id || '',
@@ -121,9 +123,8 @@ const AdminEditSchoolContent = () => {
                     setLogo(schoolDetails.logo ? `${import.meta.env.VITE_BASE_URL}storage/${schoolDetails.logo}` : null);
                     setSelectedFeatures(schoolDetails.schoolFeatured.map(feature => feature.featured_type));
         
-                    // Set the cover file and album files
-                    setCoverFile(coverFile);
-                    setAlbumFiles(albumFiles);
+                    setCoverFile(schoolDetails.coverFile || null);
+                    setAlbumFiles(schoolDetails.albumFiles || []);
         
                     // Fetch states and cities after setting the country and state
                     if (schoolDetails.country_id) {
@@ -209,7 +210,7 @@ const AdminEditSchoolContent = () => {
             return;
         }
     
-        const { name, email, category, state, city, account, country, school_address, school_website, contact_number, person_in_charge_email, person_in_charge_name, person_in_charge_contact, country_code, confirm_password, school_shortDesc, school_fullDesc, password } = formData;
+        const { name, email, category, location, state, city, account, country, school_address, school_website, contact_number, person_in_charge_email, person_in_charge_name, person_in_charge_contact, country_code, confirm_password, school_shortDesc, school_fullDesc, password } = formData;
         
         const formPayload = new FormData();
         formPayload.append("id", schoolId); // Include the school ID
@@ -228,6 +229,7 @@ const AdminEditSchoolContent = () => {
         formPayload.append("state", state);
         formPayload.append("city", city);
         formPayload.append("password", password);
+        formPayload.append("location", location);
         formPayload.append("confirm_password", confirm_password);
         formPayload.append("school_shortDesc", school_shortDesc);
         formPayload.append("school_fullDesc", school_fullDesc);
@@ -239,14 +241,17 @@ const AdminEditSchoolContent = () => {
         
         // Append cover photo if available
         if (coverFile) {
-            formPayload.append('cover_photo', coverFile);
+            formPayload.append('cover', coverFile);
         }
         
         // Append album files if available
         albumFiles.forEach((file, index) => {
-            formPayload.append(`album_photos[${index}]`, file);
+            formPayload.append(`album[${index}]`, file);
         });
-        
+          // **Log FormData entries here to debug what is being sent**
+            for (let pair of formPayload.entries()) {
+                console.log(`${pair[0]}: ${pair[1]}`);
+            }
         try {
             console.log("FormData before submission:", formPayload);
             
@@ -557,6 +562,15 @@ useEffect(() => {
 
     const formAddress = [
         {
+            id: "location",
+            label: "School Location (Google Map URL)",
+            type: "text",
+            placeholder: "Enter School Location",
+            value: formData.location,
+            onChange: handleFieldChange,
+            required: true
+        },
+        {
             id: "school_address",
             label: "School Full Address",
             type: "text",
@@ -708,7 +722,7 @@ useEffect(() => {
     return (
         <Container fluid className="admin-add-school-container">
             {error && <div className="alert alert-danger">{error}</div>}
-            <form onSubmit={handleSubmit}>
+ 
                 <AdminFormComponent
                    formTitle="School Information"
                    checkboxTitle="School Advertising Feature"
@@ -747,8 +761,10 @@ useEffect(() => {
                    handleClosePreview={handleClosePreview}
                    showPreview={showPreview}
                    previewFile={previewFile}
+                   setCoverFile={setCoverFile}
+                   setAlbumFiles={setAlbumFiles}
                 />
-            </form>
+
         </Container>
     );
 };
