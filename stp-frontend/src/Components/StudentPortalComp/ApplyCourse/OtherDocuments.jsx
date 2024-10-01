@@ -256,7 +256,7 @@ const OtherDocuments = ({ onBack, onSubmit }) => {
                   </div>
                   <div className="d-flex justify-content-end">
                     <Button variant="link" onClick={() => handleSaveDocument(index)} className="me-2">
-                      <Save size={18} color="black" />
+                      <Save size={18} color="green" />
                     </Button>
                     <Button variant="link" onClick={() => handleDeleteDocument(index)}>
                       <Trash2 size={18} color="red" />

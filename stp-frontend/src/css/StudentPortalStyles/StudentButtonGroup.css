@@ -77,7 +77,7 @@
 
 .sac-save-button
 {
-  background-color: #9da2a6;
+  background-color: #B71A18;
   border-color: transparent;
   margin:0 0;
 }
@@ -88,8 +88,9 @@
 .sac-save-button:active:hover
 {
   background-color: white;
-  border-color: #9da2a6;
-  color: #9da2a6;
+  border-color: #B71A18;
+  color:#B71A18
+  /*color: #9da2a6;*/
 
 }
 

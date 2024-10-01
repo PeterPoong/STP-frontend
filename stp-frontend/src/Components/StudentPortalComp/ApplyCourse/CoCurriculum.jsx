@@ -60,6 +60,7 @@ const CoCurriculum = ({ onNext, onBack }) => {
   const handleAddActivity = () => {
     // Initialize an empty activity for user input
     setActivities([...activities, { club_name: '', position: '', institute_name: '', year: new Date().getFullYear(), isEditing: true }]);
+    setHasUnsavedChanges(true);
   };
 
   const handleSaveActivity = async (index) => {
@@ -278,7 +279,7 @@ const CoCurriculum = ({ onNext, onBack }) => {
                   </div>
                   <div>
                     <Button variant="link" onClick={() => handleSaveActivity(index)} className="me-2">
-                      <Save size={18} color="black" />
+                      <Save size={18} color="green" />
                     </Button>
                     <Button variant="link" onClick={() => handleDeleteActivity(index)}>
                       <Trash2 size={18} color="red" />
