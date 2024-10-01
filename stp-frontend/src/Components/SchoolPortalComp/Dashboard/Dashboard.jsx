@@ -62,6 +62,7 @@ const Dashboard = () => {
         console.log("Error Data:", errorData["error"]);
         throw new Error(errorData["error"] || "Internal Server Error");
       }
+
       const data = await response.json();
       setNewApplication(data.data.total);
       setPendingApplication(data.data.pending);
