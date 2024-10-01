@@ -448,7 +448,7 @@ const Achievements = ({ onBack, onNext }) => {
                       onClick={() => handleSaveAchievement(index)}
                       className="me-2"
                     >
-                      <Save size={18} color="black" />
+                      <Save size={18} color="green" />
                     </Button>
                     <Button variant="link" onClick={() => handleDeleteAchievement(index)}>
                       <Trash2 size={18} color="red" />

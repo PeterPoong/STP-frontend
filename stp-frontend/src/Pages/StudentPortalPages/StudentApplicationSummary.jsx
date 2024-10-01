@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "react-bootstrap";
+import defaultProfilePic from "../../assets/StudentPortalAssets/sampleprofile.png";
+import defaultSchoolPic from "../../assets/StudentPortalAssets/defaulschool.png";
 import {
   FileText,
   Search,
@@ -24,7 +26,7 @@ import jsPDF from "jspdf";
 import "jspdf-autotable";
 import { PDFDocument } from "pdf-lib";
 
-const StudentApplicationSummary = ({}) => {
+const StudentApplicationSummary = ({ }) => {
   const [activeTab, setActiveTab] = useState("info");
   const [activeDocumentTab, setActiveDocumentTab] = useState("achievements");
   const [showFullOverview, setShowFullOverview] = useState(false);
@@ -45,7 +47,7 @@ const StudentApplicationSummary = ({}) => {
   const { courseId } = useParams();
   const [academicTranscripts, setAcademicTranscripts] = useState([]);
   const [otherDocuments, setOtherDocuments] = useState([]);
-  const [isViewAcademicTranscriptOpen, setIsViewAcademicTranscriptOpen] =useState(false);
+  const [isViewAcademicTranscriptOpen, setIsViewAcademicTranscriptOpen] = useState(false);
   const [isViewAchievementOpen, setIsViewAchievementOpen] = useState(false);
   const [isViewOtherDocOpen, setIsViewOtherDocOpen] = useState(false);
   const [currentViewDocument, setCurrentViewDocument] = useState(null);
@@ -150,12 +152,40 @@ const StudentApplicationSummary = ({}) => {
       try {
         const img = new Image();
         img.src = `${import.meta.env.VITE_BASE_URL}storage/${courseInfo.logo}`;
-        await new Promise((resolve) => {
+        await new Promise((resolve, reject) => {
           img.onload = resolve;
+          img.onerror = reject;
         });
         logoImage = img;
       } catch (error) {
         console.error("Error loading school logo:", error);
+        // Load the default profile picture instead
+        try {
+          const defaultImg = new Image();
+          defaultImg.src = defaultSchoolPic;
+          await new Promise((resolve, reject) => {
+            defaultImg.onload = resolve;
+            defaultImg.onerror = reject;
+          });
+          logoImage = defaultImg;
+        } catch (defaultError) {
+          console.error("Error loading default profile picture:", defaultError);
+          logoImage = null;
+        }
+      }
+    } else {
+      // If no logo is specified, load the default profile picture
+      try {
+        const defaultImg = new Image();
+        defaultImg.src = defaultSchoolPic;
+        await new Promise((resolve, reject) => {
+          defaultImg.onload = resolve;
+          defaultImg.onerror = reject;
+        });
+        logoImage = defaultImg;
+      } catch (defaultError) {
+        console.error("Error loading default profile picture:", defaultError);
+        logoImage = null;
       }
     }
 
@@ -186,24 +216,24 @@ const StudentApplicationSummary = ({}) => {
       yOffset = 5 + logoHeight + 5; // 10 is logo y position, plus logo height, plus 10 units margin
 
 
-       // Add School Name and Course Name
-       yOffset += 6;
-       doc.setFontSize(14);
-       doc.setFont("helvetica", "bold");
-       doc.setTextColor(255, 18, 52); // Color #FF1234
-       doc.text(courseInfo?.school || "School Name", pageWidth / 2, yOffset, {
-         align: "center",
-       });
- 
-       yOffset += 6;
-       doc.setFontSize(12);
-       doc.setFont("helvetica", "normal");
-       doc.setTextColor(0, 0, 0); // Reset text color to black
-       doc.text(courseInfo?.course || "Course Name", pageWidth / 2, yOffset, {
-         align: "center",
-       });
- 
-       yOffset += 10; // Add more space after header
+      // Add School Name and Course Name
+      yOffset += 6;
+      doc.setFontSize(14);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(255, 18, 52); // Color #FF1234
+      doc.text(courseInfo?.school || "School Name", pageWidth / 2, yOffset, {
+        align: "center",
+      });
+
+      yOffset += 6;
+      doc.setFontSize(12);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(0, 0, 0); // Reset text color to black
+      doc.text(courseInfo?.course || "Course Name", pageWidth / 2, yOffset, {
+        align: "center",
+      });
+
+      yOffset += 10; // Add more space after header
       // Add Application Summary title centered
       doc.setFontSize(18);
       doc.setFont("helvetica", "bold");
@@ -216,7 +246,7 @@ const StudentApplicationSummary = ({}) => {
       doc.setLineWidth(0.5);
       doc.line(20, yOffset, pageWidth - 20, yOffset);
 
-     
+
     };
 
     const addFooter = () => {
@@ -416,13 +446,13 @@ const StudentApplicationSummary = ({}) => {
               isSubject: true,
               data: [
                 subject.name ||
-                  subject.subject_name ||
-                  subject.highTranscript_name ||
-                  "N/A",
+                subject.subject_name ||
+                subject.highTranscript_name ||
+                "N/A",
                 subject.grade ||
-                  subject.subject_grade ||
-                  subject.higherTranscript_grade ||
-                  "N/A",
+                subject.subject_grade ||
+                subject.higherTranscript_grade ||
+                "N/A",
               ],
             });
           });
@@ -670,9 +700,8 @@ const StudentApplicationSummary = ({}) => {
       const url =
         categoryId === 32
           ? `${import.meta.env.VITE_BASE_URL}api/student/transcriptSubjectList`
-          : `${
-              import.meta.env.VITE_BASE_URL
-            }api/student/higherTranscriptSubjectList`;
+          : `${import.meta.env.VITE_BASE_URL
+          }api/student/higherTranscriptSubjectList`;
       const method = categoryId === 32 ? "GET" : "POST";
       const body =
         categoryId === 32 ? null : JSON.stringify({ id: categoryId });
@@ -744,9 +773,8 @@ const StudentApplicationSummary = ({}) => {
       const url =
         categoryId === 32
           ? `${import.meta.env.VITE_BASE_URL}api/student/transcriptSubjectList`
-          : `${
-              import.meta.env.VITE_BASE_URL
-            }api/student/higherTranscriptSubjectList`;
+          : `${import.meta.env.VITE_BASE_URL
+          }api/student/higherTranscriptSubjectList`;
       const method = categoryId === 32 ? "GET" : "POST";
       const body =
         categoryId === 32 ? null : JSON.stringify({ id: categoryId });
@@ -847,9 +875,8 @@ const StudentApplicationSummary = ({}) => {
         setIsLoading(false);
         return;
       }
-      const url = `${
-        import.meta.env.VITE_BASE_URL
-      }api/student/studentDetail?id=${id}`;
+      const url = `${import.meta.env.VITE_BASE_URL
+        }api/student/studentDetail?id=${id}`;
       const response = await fetch(url, {
         method: "POST",
         headers: {
@@ -877,7 +904,7 @@ const StudentApplicationSummary = ({}) => {
       console.error("Error in fetchBasicInfo:", err.message);
       setError(
         err.message ||
-          "Error fetching student details. Please try logging out and back in."
+        "Error fetching student details. Please try logging out and back in."
       );
     } finally {
       setIsLoading(false);
@@ -1024,10 +1051,10 @@ const StudentApplicationSummary = ({}) => {
       const result = await response.json();
       return result.success && result.data
         ? {
-            cgpa: result.data.cgpa,
-            programName: result.data.program_name,
-            cgpaId: result.data.id,
-          }
+          cgpa: result.data.cgpa,
+          programName: result.data.program_name,
+          cgpaId: result.data.id,
+        }
         : { cgpa: null, programName: "", cgpaId: null };
     } catch (error) {
       console.error("Error fetching CGPA:", error);
@@ -1482,6 +1509,10 @@ const StudentApplicationSummary = ({}) => {
           <div className="school-logo-name">
             <img
               src={`${import.meta.env.VITE_BASE_URL}storage/${courseInfo.logo}`}
+              onError={(e) => {
+                e.target.onerror = null; // prevents looping
+                e.target.src = defaultSchoolLogo;
+              }}
               className="sas-school-logo"
               alt="School Logo"
             />
@@ -1583,9 +1614,8 @@ const StudentApplicationSummary = ({}) => {
         <div className="entry-requirements bg-white p-4 mb-1 rounded-1 shadow-lg mt-3">
           <h5 className="fw-bold mb-3">Entry Requirement</h5>
           <div
-            className={`requirements-content ${
-              showFullRequirements ? "expanded" : ""
-            }`}
+            className={`requirements-content ${showFullRequirements ? "expanded" : ""
+              }`}
           >
             <p className="sas-summarytext">
               {" "}
@@ -1623,16 +1653,18 @@ const StudentApplicationSummary = ({}) => {
               <div className="summary-header py-4 px-4 border border-bottom">
                 <div className="applicant-info">
                   <img
-                    src={`${import.meta.env.VITE_BASE_URL}storage/${
-                      basicInfo?.profilePic
-                    }`}
-                    className="applicant-photo me-4 ms-2  bg-black"
+                    src={`${import.meta.env.VITE_BASE_URL}storage/${basicInfo?.profilePic}`}
+                    onError={(e) => {
+                      e.target.onerror = null; // prevents looping
+                      e.target.src = defaultProfilePic;
+                    }}
+                    className="applicant-photo me-4 ms-2 bg-black"
+                    alt="Applicant Photo"
                   />
                   <div>
                     <p className="my-0 fw-bold ">
-                      {`${basicInfo?.firstName || ""} ${
-                        basicInfo?.lastName || ""
-                      }`.trim()}
+                      {`${basicInfo?.firstName || ""} ${basicInfo?.lastName || ""
+                        }`.trim()}
                     </p>
                     <p className="my-0 text-secondary  mt-2">
                       Applied For:{" "}
@@ -1687,17 +1719,15 @@ const StudentApplicationSummary = ({}) => {
                               <strong>Student Name</strong>
                             </p>
                             <p>
-                              {`${basicInfo?.firstName || ""} ${
-                                basicInfo?.lastName || ""
-                              }`.trim()}{" "}
+                              {`${basicInfo?.firstName || ""} ${basicInfo?.lastName || ""
+                                }`.trim()}{" "}
                               <Copy
                                 size={16}
                                 className="cursor-pointer"
                                 onClick={() =>
                                   copyToClipboard(
-                                    `${basicInfo?.firstName || ""} ${
-                                      basicInfo?.lastName || ""
-                                    }`.trim() || ""
+                                    `${basicInfo?.firstName || ""} ${basicInfo?.lastName || ""
+                                      }`.trim() || ""
                                   )
                                 }
                               />
@@ -1723,16 +1753,14 @@ const StudentApplicationSummary = ({}) => {
                               <strong>Contact Number</strong>
                             </p>
                             <p>
-                              {`${basicInfo?.country_code || ""} ${
-                                basicInfo?.contact || ""
-                              }`}{" "}
+                              {`${basicInfo?.country_code || ""} ${basicInfo?.contact || ""
+                                }`}{" "}
                               <Copy
                                 size={16}
                                 className="cursor-pointer"
                                 onClick={() =>
                                   copyToClipboard(
-                                    `${basicInfo?.country_code || ""} ${
-                                      basicInfo?.contact || ""
+                                    `${basicInfo?.country_code || ""} ${basicInfo?.contact || ""
                                     }`
                                   )
                                 }
