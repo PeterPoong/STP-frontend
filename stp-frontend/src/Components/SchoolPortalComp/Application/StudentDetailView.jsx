@@ -10,9 +10,9 @@ import WidgetFileUpload from "../../../Components/StudentPortalComp/WidgetFileUp
 import WidgetAchievement from "../../../Components/StudentPortalComp/Widget/WidgetAchievement";
 import WidgetFileUploadAcademicTranscript from "../../../Components/StudentPortalComp/WidgetFileUploadAcademicTranscript";
 import { BsWhatsapp } from 'react-icons/bs';
-
+import Lock from "../../../assets/StudentPortalAssets/lock.svg";
 const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack }) => {
-
+  const [accountType, setAccountType] = useState(null);
   const [activeTab, setActiveTab] = useState('info');
   const [basicInfo, setBasicInfo] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -76,6 +76,15 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack }) 
       navigate("/schoolPortalLogin");
     }
   }, [navigate]);
+
+
+  // Retrieve account_type from sessionStorage or localStorage
+  useEffect(() => {
+    const storedAccountType = sessionStorage.getItem("account_type") || localStorage.getItem("account_type");
+    setAccountType(parseInt(storedAccountType, 10));
+  }, []);
+
+
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
@@ -84,8 +93,10 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack }) 
         if (applicantData) {
           await fetchBasicInfo();
           await fetchTranscriptCategories();
-          await fetchCoCurriculum();
-          await fetchAchievements();
+          if (accountType === 65) { // Only fetch for Premium Plan
+            await fetchCoCurriculum();
+            await fetchAchievements();
+          }
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -96,7 +107,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack }) 
     };
 
     fetchData();
-  }, [studentId, applicantId]);
+  }, [studentId, applicantId, accountType]);
 
   useEffect(() => {
     if (activeTab === 'documents') {
@@ -759,7 +770,8 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack }) 
               setActiveTab('documents');
               setActiveDocumentTab('academic');
             }}
-            disabled={!transcriptSubjects || transcriptSubjects.length === 0}
+            disabled={accountType !== 65 || (!transcriptSubjects || transcriptSubjects.length === 0)}
+            style={{ pointerEvents: accountType !== 65 ? 'none' : 'auto', opacity: accountType !== 65 ? 0.6 : 1 }}
           >
             View Result Slip »
           </Button>
@@ -964,10 +976,10 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack }) 
     if (!applicantDetails) {
       return <div>Loading application details...</div>;
     }
-  
+
     const formStatus = applicantDetails.form_status;
     const isPending = formStatus === 2; // Assuming 2 is the code for 'Pending'
-  
+
     const getStatusMessage = () => {
       if (isPending) {
         if (currentAction === 'accept') {
@@ -985,7 +997,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack }) 
         return 'Unknown application status.';
       }
     };
-  
+
     const getStatusColor = () => {
       if (isPending) {
         if (currentAction === 'accept') {
@@ -1003,7 +1015,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack }) 
         return '#6C757D'; // Gray
       }
     };
-  
+
     return (
       <div className="accept-reject-application">
         <div
@@ -1015,7 +1027,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack }) 
         >
           <p className="mb-0 px-4">{getStatusMessage()}</p>
         </div>
-  
+
         <div className="mb-4 px-5 mt-4">
           <p className="fw-normal">Feedback to Student:</p>
           {isPending ? (
@@ -1033,11 +1045,11 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack }) 
             </div>
           )}
         </div>
-  
+
         {isPending && !currentAction && (
           <div className="d-flex justify-content-end">
             <Button
-              
+
               className="me-2 border border-0"
               onClick={() => handleAcceptReject('Rejected')}
               disabled={submitLoading}
@@ -1053,7 +1065,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack }) 
             </Button>
           </div>
         )}
-  
+
         {isPending && currentAction && (
           <div className="d-flex justify-content-end">
             <Button
@@ -1065,7 +1077,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack }) 
             </Button>
           </div>
         )}
-  
+
         {submitError && (
           <div className="alert alert-danger mt-3" role="alert">
             {submitError}
@@ -1079,7 +1091,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack }) 
       </div>
     );
   };
-  
+
 
   // Confirmation Modal
   const renderConfirmModal = () => (
@@ -1127,7 +1139,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack }) 
                       'Pending'}
                 </span>
                 <Button className="applicant-chat-button d-flex align-items-center justify-content-center">
-                  <BsWhatsapp className="me-2 whatsapp-button" size={20}  />
+                  <BsWhatsapp className="me-2 whatsapp-button" size={20} />
                   Chat on WhatsApp
                 </Button>
               </div>
@@ -1143,6 +1155,9 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack }) 
                   variant="link"
                   className={activeTab === 'documents' ? 'active' : ''}
                   onClick={() => setActiveTab('documents')}
+                  disabled={accountType !== 65}
+                  style={{ pointerEvents: accountType !== 65 ? 'none' : 'auto', opacity: accountType !== 65 ? 0.6 : 1 }}
+
                 >
                   Related Documents
                 </Button>
@@ -1175,7 +1190,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack }) 
 
                         <div className="col-md-6 mb-3">
                           <p><strong>Email Address</strong></p>
-                          <p>{basicInfo?.student_email} <Copy size={16} className="cursor-pointer" onClick={() => copyToClipboard(basicInfo?.student_email)} /></p>
+                          <p >{basicInfo?.student_email} <Copy size={16} className="cursor-pointer" onClick={() => copyToClipboard(basicInfo?.student_email)} /></p>
                         </div>
                       </div>
                       <div className="row">
@@ -1189,62 +1204,85 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack }) 
 
                   {renderAcademicResults()}
 
+                  {accountType === 65 ? ( // Premium: Show Co-Curriculum and Achievements
+                    <>
+                      <div className="co-curriculum m-3 shadow-lg p-4 rounded-5">
+                        <p className="text-secondary fw-bold border-bottom border-2 pb-3">Co-curriculum</p>
+                        <div className="activities-grid" style={{ maxHeight: '15rem', overflowY: 'auto' }}>
+                          {coCurriculum.length > 0 ? (
+                            coCurriculum.map((activity, index) => (
+                              <div key={index} className="activity-item d-flex flex-wrap justify-content-between align-items-start py-2">
+                                <div className="col-12 col-sm-6">
+                                  <p className="mb-0"><strong>{activity.club_name}</strong></p>
+                                  <p className="mb-0 text-muted">{activity.location}</p>
+                                </div>
+                                <div className="col-6 col-sm-3 text-start text-sm-center">
+                                  <p className="mb-0">{activity.year}</p>
+                                </div>
+                                <div className="col-6 col-sm-3 text-end">
+                                  {/* Updated to use student_position instead of position */}
+                                  <span className={`position ${activity.student_position.toLowerCase()} py-1 px-2 rounded-pill`}>{activity.student_position}</span>
+                                </div>
+                              </div>
+                            ))
+                          ) : (
+                            <p className="text-center text-muted">No co-curricular activities added yet.</p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="achievements m-3 shadow-lg p-4 rounded-5">
+                        <p className="text-secondary fw-bold border-bottom border-2 pb-3">Achievements</p>
+                        <div className="achievements-grid" style={{ maxHeight: '15rem', overflowY: 'auto' }}>
+                          {achievements.length > 0 ? (
+                            achievements.map((achievement) => (
+                              <div key={achievement.id} className="achievement-item d-flex flex-wrap justify-content-between align-items-start py-2">
+                                <div className="col-12 col-sm-6">
+                                  <p className="mb-0"><strong>{achievement.achievement_name}</strong></p>
+                                  <p className="mb-0 text-muted">{achievement.awarded_by}</p>
+                                </div>
+                                <div className="col-6 col-sm-3 text-start text-sm-center">
+                                  <p className="mb-0">{achievement.date}</p>
+                                </div>
+                                <div className="col-6 col-sm-3 text-end">
+                                  <span className={`position ${achievement.title_obtained.toLowerCase().replace(/\s+/g, '-')} py-1 px-2 rounded-pill`}>
+                                    {achievement.title_obtained}
+                                  </span>
+                                </div>
+                              </div>
+                            ))
+                          ) : (
+                            <p className="text-center text-muted">No achievements added yet.</p>
+                          )}
+                        </div>
+                      </div>
+                    </>
 
-                  <div className="co-curriculum m-3 shadow-lg p-4 rounded-5">
-                    <p className="text-secondary fw-bold border-bottom border-2 pb-3">Co-curriculum</p>
-                    <div className="activities-grid" style={{ maxHeight: '15rem', overflowY: 'auto' }}>
-                      {coCurriculum.length > 0 ? (
-                        coCurriculum.map((activity, index) => (
-                          <div key={index} className="activity-item d-flex flex-wrap justify-content-between align-items-start py-2">
-                            <div className="col-12 col-sm-6">
-                              <p className="mb-0"><strong>{activity.club_name}</strong></p>
-                              <p className="mb-0 text-muted">{activity.location}</p>
-                            </div>
-                            <div className="col-6 col-sm-3 text-start text-sm-center">
-                              <p className="mb-0">{activity.year}</p>
-                            </div>
-                            <div className="col-6 col-sm-3 text-end">
-                              {/* Updated to use student_position instead of position */}
-                              <span className={`position ${activity.student_position.toLowerCase()} py-1 px-2 rounded-pill`}>{activity.student_position}</span>
-                            </div>
-                          </div>
-                        ))
-                      ) : (
-                        <p className="text-center text-muted">No co-curricular activities added yet.</p>
-                      )}
-                    </div>
-                  </div>
-                  <div className="achievements m-3 shadow-lg p-4 rounded-5">
-                    <p className="text-secondary fw-bold border-bottom border-2 pb-3">Achievements</p>
-                    <div className="achievements-grid" style={{ maxHeight: '15rem', overflowY: 'auto' }}>
-                      {achievements.length > 0 ? (
-                        achievements.map((achievement) => (
-                          <div key={achievement.id} className="achievement-item d-flex flex-wrap justify-content-between align-items-start py-2">
-                            <div className="col-12 col-sm-6">
-                              <p className="mb-0"><strong>{achievement.achievement_name}</strong></p>
-                              <p className="mb-0 text-muted">{achievement.awarded_by}</p>
-                            </div>
-                            <div className="col-6 col-sm-3 text-start text-sm-center">
-                              <p className="mb-0">{achievement.date}</p>
-                            </div>
-                            <div className="col-6 col-sm-3 text-end">
-                              <span className={`position ${achievement.title_obtained.toLowerCase().replace(/\s+/g, '-')} py-1 px-2 rounded-pill`}>
-                                {achievement.title_obtained}
-                              </span>
-                            </div>
-                          </div>
-                        ))
-                      ) : (
-                        <p className="text-center text-muted">No achievements added yet.</p>
-                      )}
-                    </div>
-                  </div>
+                  ) : ( // Basic: Show overlay
+                    <>
+                      <div className="sdv-cocurriculum m-3 shadow-lg p-4 rounded-5 d-flex align-items-center justify-content-center flex-column ">
+                        <img src={Lock} alt="My Image" />
+                        <p className="text-center text-white mt-3 px-5">This feature is locked and available
+                          only with a premium account.</p>
+                        <div className="sdv-div-plan-button rounded-pill mt-3">
+                          <button className="plan-button rounded-pill">Upgrade Now</button>
+                        </div>
+                      </div>
+                      <div className="sdv-achievements m-3 shadow-lg p-4 rounded-5  d-flex align-items-center justify-content-center flex-column ">
+                        <img src={Lock} alt="My Image" />
+                        <p className="text-center text-white mt-3 px-5">This feature is locked and available
+                          only with a premium account.</p>
+                        <div className="sdv-div-plan-button rounded-pill mt-3">
+                          <button className="plan-button rounded-pill">Upgrade Now</button>
+                        </div></div>
+                    </>
+                  )}
+
                 </div>
               )}
-              {activeTab === 'documents' && (            
-                  <div className="related-documents  ">
-                     {renderRelatedDocumentsContent()}
-                  </div>
+              {activeTab === 'documents' && (
+                <div className="related-documents  ">
+                  {renderRelatedDocumentsContent()}
+                </div>
               )}
 
               {activeTab === 'accept-reject' && (
@@ -1262,7 +1300,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack }) 
 
         </div>
       </div>
-    </div>
+    </div >
   );
 
 };
