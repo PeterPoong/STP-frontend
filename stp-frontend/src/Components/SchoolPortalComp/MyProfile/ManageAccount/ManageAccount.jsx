@@ -63,8 +63,8 @@ const ManageAccount = () => {
       }
 
       const fetchedData = await response.json();
-      // setAccountType(fetchedData.data.account_type);
-      setAccountType(65);
+      setAccountType(fetchedData.data.account_type);
+      // setAccountType(65);
     } catch (error) {
       console.error("Failed to get package data", error);
     }
@@ -168,7 +168,7 @@ const ManageAccount = () => {
                   color: accountType === 64 ? "white" : "black",
                 }}
               >
-                per year/pack
+                per month
               </p>
             </div>
 
@@ -278,7 +278,7 @@ const ManageAccount = () => {
                     color: accountType === 64 ? "black" : "white",
                   }}
                 >
-                  per year/pack
+                  per month
                 </p>
               </div>
             </Row>

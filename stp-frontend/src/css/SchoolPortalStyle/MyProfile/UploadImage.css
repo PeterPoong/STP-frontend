@@ -1,5 +1,12 @@
 /* Base styles for the upload box */
 /* Base styles for the upload box */
+.upload-main-container {
+  min-height: 100vh; /* Full page height */
+  background-color: white; /* Ensures white background */
+  display: flex;
+  flex-direction: column;
+}
+
 .upload-box {
     border: 2px dashed #ddd;
     border-radius: 8px;
@@ -91,7 +98,7 @@
   
   /* Box for each uploaded file */
   .uploaded-file-box {
-    border: 2px solid #ddd;
+    border: 2px solid #0d0d0d;
     border-radius: 8px;
     padding: 10px;
     margin-bottom: 10px;

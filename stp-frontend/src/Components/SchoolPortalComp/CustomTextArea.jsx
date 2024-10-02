@@ -5,7 +5,7 @@ import { Editor } from "@tinymce/tinymce-react";
 const CustomTextArea = ({ value, onChange }) => {
   return (
     <Editor
-      apiKey="y5c72cgxrai71v1jmggt9a2gx878yajnqxrxxkhtylowcqbb" // Your API key
+      apiKey="2k66p00ufe31mut5ctxu5s6cegpthu6kzc3pd0ap5fsswfst" // Your API key
       value={value}
       init={{
         height: 400,

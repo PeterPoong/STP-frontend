@@ -11,7 +11,9 @@ import WidgetAchievement from "../../../Components/StudentPortalComp/Widget/Widg
 import WidgetFileUploadAcademicTranscript from "../../../Components/StudentPortalComp/WidgetFileUploadAcademicTranscript";
 import { BsWhatsapp } from 'react-icons/bs';
 import Lock from "../../../assets/StudentPortalAssets/lock.svg";
-const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack }) => {
+import { Arrow90degLeft } from "react-bootstrap-icons"
+import defaultProfilePic from "../../../assets/StudentPortalAssets/sampleprofile.png";
+const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, onActionSuccess }) => {
   const [accountType, setAccountType] = useState(null);
   const [activeTab, setActiveTab] = useState('info');
   const [basicInfo, setBasicInfo] = useState(null);
@@ -68,6 +70,9 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack }) 
   const studentId = student?.student_id;
   const applicantId = student?.id;
   const [currentAction, setCurrentAction] = useState(acceptRejectAction || null);
+  const [warningType, setWarningType] = useState(null);
+
+
   console.log('Current studentId:', studentId);
 
   useEffect(() => {
@@ -494,6 +499,10 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack }) 
           form_feedback: feedback
         }));
         setCurrentAction(actionType === 'Accepted' ? 'accept' : 'reject');
+        // Invoke the callback to navigate back and refresh the list
+        if (onActionSuccess) {
+          onActionSuccess();
+        }
       } else {
         throw new Error(result.message || 'Failed to update application status');
       }
@@ -507,7 +516,10 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack }) 
   };
 
 
-
+  const handleBackPage = () => 
+  {
+    onActionSuccess();
+  };
 
   // Fetch Achievement Documents
   const fetchAchievementDocs = async (page = 1) => {
@@ -1115,14 +1127,26 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack }) 
 
   return (
     <div className="applicant-app-container-applycourse">
+
       <div className="applicant-backgroundimage">
-        <div className="applicant-main-content-applycourse-clone">
+        <div className='ms-5 mt-5 d-flex mb-0 ' onClick={handleBackPage}>
+          <Arrow90degLeft style={{ color: "#B71A18" }} className=" " size={30} />
+          <h5 className="ms-2 mt-1" style={{ color: "#B71A18" }}>Back</h5>
+        </div>
+
+        <div className="applicant-main-content-applycourse-clone pt-5">
 
           <div className="application-summary-container-inside">
             <div className="application-summary-container-inside rounded">
               <div className="applicant-summary-header  border border-bottom">
                 <div className="applicant-info">
-                  <img src={`${import.meta.env.VITE_BASE_URL}storage/${basicInfo?.student_profilePic}`} className="applicant-photo me-4 ms-2" alt="Student" />
+                  <img src={`${import.meta.env.VITE_BASE_URL}storage/${basicInfo?.student_profilePic}`}
+                    onError={(e) => {
+                      e.target.onerror = null; // prevents looping
+                      e.target.src = defaultProfilePic;
+                    }}
+                    className="applicant-photo me-4 ms-2 "
+                    alt="Student" />
                   <div>
                     <p className="my-0 fw-bold">{`${basicInfo?.first_name} ${basicInfo?.last_name}`}</p>
                     <p className="my-0 text-secondary mt-2">Applied For: <span className="text-black ms-2">{applicantDetails.course_name}</span></p>

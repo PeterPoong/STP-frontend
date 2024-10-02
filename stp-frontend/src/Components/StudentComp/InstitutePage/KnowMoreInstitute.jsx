@@ -170,8 +170,19 @@ const KnowMoreInstitute = () => {
     navigate(`/knowMoreInstitute/${id}`); // Navigate to CourseDetail with the courseID
   };
 
-  const handleApplyNow = (program) => {
-    navigate(`/studentApplyCourses/${program.id}`, { state: { program } });
+  const handleApplyNow = (program,institute) => {
+    console.log('Program object:', program);
+    navigate(`/studentApplyCourses/${program.id}`,
+      {  
+        state: {
+          programId: program.id,
+          schoolLogoUrl: `${import.meta.env.VITE_BASE_URL}storage/${program.course_logo || program.logo
+            }`,
+          schoolName: institute.name,
+          courseName: program.course_name
+        }
+        
+      });
   };
 
   return (
@@ -184,7 +195,7 @@ const KnowMoreInstitute = () => {
               <img
                 src={
                   institute.school_cover &&
-                  institute.school_cover.schoolMedia_location
+                    institute.school_cover.schoolMedia_location
                     ? `${baseURL}storage/${institute.school_cover.schoolMedia_location}`
                     : headerImage // Use headerImage as the default if school_cover is not available
                 }
@@ -720,7 +731,7 @@ const KnowMoreInstitute = () => {
                   <img
                     src={
                       institute.school_cover &&
-                      institute.school_cover.schoolMedia_location
+                        institute.school_cover.schoolMedia_location
                         ? `${baseURL}storage/${institute.school_cover.schoolMedia_location}`
                         : headerImage // Use default headerImage if school_cover is not available
                     }
@@ -835,9 +846,8 @@ const KnowMoreInstitute = () => {
                               <div className="d-flex align-items-center">
                                 <div style={{ paddingLeft: "20px" }}>
                                   <img
-                                    src={`${baseURL}storage/${
-                                      course.course_logo || institute.logo
-                                    }`}
+                                    src={`${baseURL}storage/${course.course_logo || institute.logo
+                                      }`}
                                     alt={institute.name}
                                     width="100"
                                   />
@@ -940,7 +950,7 @@ const KnowMoreInstitute = () => {
                                 <div className="apply-button mt-3">
                                   <button
                                     className="featured"
-                                    onClick={() => handleApplyNow(course)}
+                                    onClick={() => handleApplyNow(course,institute)}
                                   >
                                     Apply Now
                                   </button>

@@ -178,7 +178,7 @@ const EditCourse = ({ courseId, handleGoBack }) => {
         }
       });
 
-      console.log("data", formData);
+      // console.log("data", formData);
 
       const updateCourseDetail = async () => {
         try {

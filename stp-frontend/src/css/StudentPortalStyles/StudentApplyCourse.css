@@ -422,7 +422,6 @@ select__menu-list::-webkit-scrollbar-thumb:hover {
   background-color: #B71A18;
   color: white;
   border-bottom-left-radius: 2rem;
-
 }
 
 /* Remove these styles if they exist */

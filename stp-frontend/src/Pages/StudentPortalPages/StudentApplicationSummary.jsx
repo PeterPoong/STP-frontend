@@ -1658,7 +1658,7 @@ const StudentApplicationSummary = ({ }) => {
                       e.target.onerror = null; // prevents looping
                       e.target.src = defaultProfilePic;
                     }}
-                    className="applicant-photo me-4 ms-2 bg-black"
+                    className="applicant-photo me-4 ms-2 "
                     alt="Applicant Photo"
                   />
                   <div>

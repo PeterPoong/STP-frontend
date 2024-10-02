@@ -3,6 +3,7 @@ import { FaRegImage, FaTrash } from "react-icons/fa";
 import { Form } from "react-bootstrap";
 import "../../../../css/SchoolPortalStyle/MyProfile/UploadImage.css";
 import { Image, Trash3 } from "react-bootstrap-icons";
+import styles from "../../../../css/SchoolPortalStyle/UploadImage.module.css";
 
 function UploadBox() {
   const schoolName = sessionStorage.getItem("name");
@@ -212,103 +213,49 @@ function UploadBox() {
   }, [uploadPhoto]);
 
   return (
-    <Form onSubmit={handleSubmit}>
-      <h4 className="mb-2">Upload Image</h4>
-      <hr className="divider-line" />
-      <p style={{ fontSize: "20px", paddingLeft: "20px" }}>Cover Photo</p>
-      <div
-        className={`upload-box ${highlight ? "highlight" : ""}`}
-        onDrop={handleDrop}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-      >
-        <input
-          type="file"
-          id="coverFileUpload" /* Unique ID for cover photo */
-          multiple
-          onChange={handleFileChange}
-          accept=".jpg, .jpeg, .png"
-          style={{ display: "none" }}
-        />
-        <label htmlFor="coverFileUpload" className="upload-box-label">
-          <FaRegImage className="upload-icon" />
-          <p>
-            <span className="upload-text">Click to upload cover photo</span> or
-            drag and drop
-          </p>
-          <p className="upload-instructions">JPG, JPEG, PNG less than 1MB</p>
-        </label>
-      </div>
-
-      {/* Display uploaded files */}
-      {coverPhoto && (
-        <div className="uploaded-files-container">
-          <div className="uploaded-files">
-            <div className="uploaded-file-box">
-              <div className="text-with-link">
-                <div className="text-container">
-                  <p className="image-with-text">
-                    <Image />
-                    {coverPhoto.schoolMedia_name}
-                  </p>
-                  <a
-                    href={`${import.meta.env.VITE_BASE_URL}storage/${
-                      coverPhoto.schoolMedia_location
-                    }`}
-                    className="click-here-text"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Click to view
-                  </a>
-                </div>
-                <Trash3 className="delete-icon" onClick={handleRemoveCover} />
-              </div>
-            </div>
-          </div>
+    <div className="upload-main-container">
+      <Form onSubmit={handleSubmit}>
+        <h4 className="mb-2">Upload Image</h4>
+        <hr className="divider-line" />
+        <p style={{ fontSize: "20px", paddingLeft: "20px" }}>Cover Photo</p>
+        <div
+          className={`upload-box ${highlight ? "highlight" : ""}`}
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+        >
+          <input
+            type="file"
+            id="coverFileUpload" /* Unique ID for cover photo */
+            multiple
+            onChange={handleFileChange}
+            accept=".jpg, .jpeg, .png"
+            style={{ display: "none" }}
+          />
+          <label htmlFor="coverFileUpload" className="upload-box-label">
+            <FaRegImage className="upload-icon" />
+            <p>
+              <span className="upload-text">Click to upload cover photo</span>{" "}
+              or drag and drop
+            </p>
+            <p className="upload-instructions">JPG, JPEG, PNG less than 1MB</p>
+          </label>
         </div>
-      )}
 
-      <hr className="divider-line" />
-      <h4 className="mb-2">Photo Album</h4>
-      <div
-        className={`upload-box ${highlight ? "highlight" : ""}`}
-        onDrop={handleDrop}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-      >
-        <input
-          type="file"
-          id="photoAlbumUpload" /* Unique ID for photo album */
-          multiple
-          onChange={handleUploadPhoto}
-          accept=".jpg, .jpeg, .png"
-          style={{ display: "none" }}
-        />
-        <label htmlFor="photoAlbumUpload" className="upload-box-label">
-          <FaRegImage className="upload-icon" />
-          <p>
-            <span className="upload-text">Click to upload photo</span> or drag
-            and drop
-          </p>
-          <p className="upload-instructions">JPG, JPEG, PNG less than 1MB</p>
-        </label>
-      </div>
-
-      {photo && Array.isArray(photo) && photo.length > 0 && (
-        <div className="uploaded-files-container">
-          <div className="uploaded-files">
-            {photo.map((item, index) => (
-              <div className="uploaded-file-box" key={index}>
+        {/* Display uploaded files */}
+        {coverPhoto && (
+          <div className="uploaded-files-container">
+            <div className="uploaded-files">
+              <div className="uploaded-file-box">
                 <div className="text-with-link">
                   <div className="text-container">
                     <p className="image-with-text">
                       <Image />
-                      {item.schoolMedia_name}
+                      {coverPhoto.schoolMedia_name}
                     </p>
                     <a
                       href={`${import.meta.env.VITE_BASE_URL}storage/${
-                        item.schoolMedia_location
+                        coverPhoto.schoolMedia_location
                       }`}
                       className="click-here-text"
                       target="_blank"
@@ -317,17 +264,73 @@ function UploadBox() {
                       Click to view
                     </a>
                   </div>
-                  <Trash3
-                    className="delete-icon"
-                    onClick={() => handleRemovePhoto(item)}
-                  />
+                  <Trash3 className="delete-icon" onClick={handleRemoveCover} />
                 </div>
               </div>
-            ))}
+            </div>
           </div>
+        )}
+
+        <hr className="divider-line" />
+        <p style={{ fontSize: "20px", paddingLeft: "20px" }}>Photo Album</p>
+        <div
+          className={`upload-box ${highlight ? "highlight" : ""}`}
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+        >
+          <input
+            type="file"
+            id="photoAlbumUpload" /* Unique ID for photo album */
+            multiple
+            onChange={handleUploadPhoto}
+            accept=".jpg, .jpeg, .png"
+            style={{ display: "none" }}
+          />
+          <label htmlFor="photoAlbumUpload" className="upload-box-label">
+            <FaRegImage className="upload-icon" />
+            <p>
+              <span className="upload-text">Click to upload photo</span> or drag
+              and drop
+            </p>
+            <p className="upload-instructions">JPG, JPEG, PNG less than 1MB</p>
+          </label>
         </div>
-      )}
-    </Form>
+
+        {photo && Array.isArray(photo) && photo.length > 0 && (
+          <div className="uploaded-files-container">
+            <div className="uploaded-files">
+              {photo.map((item, index) => (
+                <div className="uploaded-file-box" key={index}>
+                  <div className="text-with-link">
+                    <div className="text-container">
+                      <p className="image-with-text">
+                        <Image />
+                        {item.schoolMedia_name}
+                      </p>
+                      <a
+                        href={`${import.meta.env.VITE_BASE_URL}storage/${
+                          item.schoolMedia_location
+                        }`}
+                        className="click-here-text"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Click to view
+                      </a>
+                    </div>
+                    <Trash3
+                      className="delete-icon"
+                      onClick={() => handleRemovePhoto(item)}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </Form>
+    </div>
   );
 }
 
