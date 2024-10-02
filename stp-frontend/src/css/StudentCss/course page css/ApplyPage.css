@@ -1,107 +1,283 @@
 .apply-now-header-image {
-    width: 100%;
-    height: 450px;
-    display: block;
-    object-fit: cover;
-  }
-  
-  .apply-now-masthead {
-    position: relative;
-    overflow: hidden;
-  }
-  
-  .apply-now-container {
-    position: relative;
-    top: -5px; /* Adjust this value to control the overlap */
-    
-  }
-  
-  .apply-now-row {
-    position: relative;
-  }
-  
-  .apply-now-image-col {
-    top: -75px; /* Adjust this value to control the overlap */
-    z-index: 1;
-  }
-  
-  .apply-now-program-image {
-    max-height: 150px;
-    border-radius: 50%;
-    border: 3px solid white;
-  }
-  
-  .apply-now-card {
-    margin-top: 5rem;
-    max-height: fit-content;
-  }
+  width: 100%;
+  height: 450px;
+  display: block;
+  object-fit: cover;
+}
 
-  .about-institute-image {
-    width: 100%;
-    height: 300px;
-    display: block;
-    object-fit: cover;
-  }
-  .adverstise-image{
-    width: 100%;
-    height: 200px;
-    display: block;
-    object-fit: cover;
-    margin-top: 50px;
+.apply-now-masthead {
+  position: relative;
+  overflow: hidden;
+}
+
+.apply-now-container {
+  position: relative;
+  top: -5px; /* Adjust this value to control the overlap */
+  
+}
+
+.apply-now-row {
+  position: relative;
+}
+
+.apply-now-image-col {
+  top: -75px; /* Adjust this value to control the overlap */
+  z-index: 1;
+}
+
+.apply-now-program-image {
+  max-height: 150px;
+  border-radius: 50%;
+  border: 3px solid white;
+}
+
+.apply-now-card {
+  margin-top: 5rem;
+  max-height: fit-content;
+}
+
+.about-institute-image {
+  width: 100%;
+  height: 300px;
+  display: block;
+  object-fit: cover;
+}
+.adverstise-image{
+  width: 100%;
+  height: 200px;
+  display: block;
+  object-fit: cover;
+  margin-top: 50px;
+}
+
+.about-institute-container {
+  position: relative;
+  top: -100px; /* Adjust this value to control the overlap */
+}
+
+.random-images-carousel{
+  max-height: 300px;
+  object-fit: contain;
+  margin-top: 15px;
+}
+
+.image-gallery-course {
+  display:inline-block;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 50px;
+}
+
+.gallery-image-courses{
+  max-width: 290px;
+  height: 140px;
+  object-fit: fill;
+}
+
+.gallery-image-courses:last-child{
+  margin-right: 0;
+}
+/* .carousel-item .text-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+} */
+
+.item img {
+  width: 100%;
+  height: auto;
+}
+
+.see-more {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  background-color: #000;
+  color: #fff;
+}
+
+.see-more a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.cover-photo {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.cover-image {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ensures the image covers the div */
+  transform: translate(-50%, -50%); /* Centers the image */
+}
+
+/* Responsive adjustments if needed */
+@media (max-width: 992px) {
+  .cover-image {
+    height: auto; /* Adjust the height for smaller screens */
+    min-height: 300px; /* Set a minimum height */
+    /* margin-top: 100px; */
   }
 
   .about-institute-container {
     position: relative;
-    top: -100px; /* Adjust this value to control the overlap */
+    top: -50px; /* Adjust this value to control the overlap */
   }
-  
-  .random-images-carousel{
-    max-height: 300px;
-    object-fit: contain;
-    margin-top: 15px;
-  }
+}
 
-  .image-gallery-course {
-    display:inline-block;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 50px;
-  }
-
-  .gallery-image-courses{
-    max-width: 290px;
-    height: 140px;
-    object-fit: fill;
-  }
-
-  .gallery-image-courses:last-child{
-    margin-right: 0;
-  }
-  /* .carousel-item .text-center {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-  } */
-  
-  .item img {
+/* Responsive adjustments for tablet-sized screens (up to 768px) */
+@media (max-width: 768px) {
+  .cover-image {
     width: 100%;
     height: auto;
+    min-height: 250px; /* Adjust the minimum height for better appearance on tablets */
   }
-  
-  .see-more {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    background-color: #000;
-    color: #fff;
+}
+
+
+@media (max-width: 576px) {
+  .cover-image {
+    height: auto; /* Adjust the height for smaller screens */
+    min-height: 200px; 
   }
-  
-  .see-more a {
-    color: #fff;
-    text-decoration: none;
-    font-size: 20px;
-    font-weight: bold;
+
+  .about-institute-container {
+    position: relative;
+    top: -200px; /* Adjust this value to control the overlap */
   }
+}
+
+
+/* Responsive styles */
+@media (max-width: 992px) {
+  .apply-now-image-col {
+    top: 0;
+  }
+
+  .apply-now-program-image {
+    margin: auto;
+    display: block;
+    max-width: 120px;
+    max-height: 120px;
+  }
+
+  .apply-now-row {
+    display: block;
+    text-align: center;
+  }
+
+  .apply-now-container {
+    padding: 20px;
+  }
+
+  .about-institute-image,
+  .adverstise-image {
+    height: 200px;
+  }
+
+  .apply-now-header-image {
+    height: 350px;
+  }
+
+  .gallery-image-courses {
+    width: 100%;
+    height: auto;
+    margin-top: 15px;
+  }
+}
+
+@media (max-width: 768px) {
   
+  .apply-now-header-image {
+    height: 250px;
+  }
+
+  .about-institute-image,
+  .adverstise-image {
+    height: 150px;
+  }
+
+  .apply-now-program-image {
+    max-width: 100px;
+    max-height: 100px;
+  }
+
+  .gallery-image-courses {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .random-images-carousel {
+    max-height: 200px;
+  }
+
+  .apply-now-container {
+    top: 0;
+    margin-top: 20px;
+  }
+
+  .apply-now-row {
+    display: block;
+    padding: 15px;
+  }
+}
+
+@media (max-width: 576px) {
+  .apply-now-container {
+    position: relative;
+    top: -150px; /* Adjust this value to control the overlap */
+  }
+
+  .apply-now-header-image {
+    height: 250px;
+  }
+
+  .apply-now-program-image {
+    max-width: 100px;
+    max-height: 100px;
+  }
+
+  .gallery-image-courses {
+    max-width: 100%;
+    height: auto;
+  }
+
+  
+}
+
+
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Adjust based on the page height */
+}
+
+.custom-spinner {
+  border: 8px solid rgba(0, 0, 0, 0.1);
+  border-left-color: #3498db;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

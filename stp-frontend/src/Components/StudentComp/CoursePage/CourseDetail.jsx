@@ -138,7 +138,11 @@ const CourseDetail = () => {
   }, [id]);
 
   if (!programs || programs.length === 0) {
-    return <p>No program selected. Please go back and choose a program.</p>;
+    return (
+      <div className="spinner-container">
+        <div className="custom-spinner"></div>
+      </div>
+    );
   }
 
   return (
@@ -176,15 +180,19 @@ const CourseDetail = () => {
                   />
                 </Col>
 
-                <Col md={6} className="d-flex align-items-center">
-                  <div style={{ paddingBottom: "25px", marginLeft: "30px" }}>
+                <Col
+                  md={6}
+                  className="d-flex flex-column flex-md-row align-items-center"
+                  style={{ paddingBottom: "25px" }}
+                >
+                  <div style={{ marginLeft: "30px" }}>
                     <h4>{program.school}</h4>
                     <p>{import.meta.env.VITE_random_Var}</p>
                     <p>
                       <i
                         className="bi bi-geo-alt"
                         style={{ marginRight: "10px", color: "#AAAAAA" }}
-                      ></i>{" "}
+                      ></i>
                       <span style={{ paddingLeft: "10px" }}>
                         {program.location}
                       </span>
@@ -199,9 +207,10 @@ const CourseDetail = () => {
                     </p>
                   </div>
                 </Col>
+
                 <Col
                   md={3}
-                  className="d-flex align-items-center justify-content-center"
+                  className="d-flex justify-content-center justify-content-md-end"
                 >
                   <Button
                     style={{
@@ -210,9 +219,8 @@ const CourseDetail = () => {
                       width: "180px",
                       height: "50px",
                       marginBottom: "20px",
-                      marginLeft: "130px",
                     }}
-                    onClick={() => handleApplyNow(program.id)} // Ensure you pass the correct course or program ID
+                    onClick={() => handleApplyNow(program.id)} // Pass the correct ID
                   >
                     Apply Now
                   </Button>
@@ -383,11 +391,7 @@ const CourseDetail = () => {
                 </div>
               </div>
             </Container>
-            {/* <img
-            src={headerImage}
-            alt="Header"
-            className="about-institute-image"
-          /> */}
+
             <Container className="my-4 about-institute-container">
               <div
                 style={{
@@ -409,35 +413,27 @@ const CourseDetail = () => {
                     transition: "height 0.5s ease",
                   }}
                 >
-                  <img
-                    src={
-                      program.coverPhoto
-                        ? `${baseURL}storage/${program.coverPhoto}`
-                        : headerImage
-                    }
-                    alt="Header"
-                    width={1457}
-                    style={{
-                      position: "absolute",
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                      zIndex: 0,
-                    }}
-                  />
+                  <div className="cover-photo">
+                    <img
+                      src={
+                        program.coverPhoto
+                          ? `${baseURL}storage/${program.coverPhoto}`
+                          : headerImage
+                      }
+                      alt="Header"
+                      className="cover-image"
+                    />
+                  </div>
 
                   {/* Card */}
                   <div
-                    className="card  apply-now-card"
+                    className="card apply-now-card"
                     style={{
                       bottom: -10,
                       width: "100%",
                       margin: "0 auto",
                       zIndex: 1,
                       position: "absolute",
-
-                      // bottom: openAboutInstitute ? "-310px" : "-10px", // Adjust based on height
-                      // transition: "bottom 0.5s ease",
                     }}
                   >
                     <div className="card-body" style={{ padding: "50px" }}>

@@ -222,23 +222,47 @@
   margin-bottom: 40px;
 }
 
+.blankslate-institutes {
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  text-align: center;
+  padding: 2rem;
+  /* margin-left: 250px; */
+}
+
+.blankslate-institutes-actions .btn {
+  margin: 0.5rem;
+}
+
+.blankslate-institutes-body {
+  margin-bottom: 1rem;
+}
+
+.blankslate-institutes-top-img {
+  max-width: 100px;
+  margin-bottom: 1rem;
+}
+
 @media (max-width: 768px) {
   .header-image {
     height: 200px;
   }
 
   .institute-card {
-    display: flex; /* Ensure the card uses flexbox */
-    flex-direction: column; /* Stack elements vertically */
-    height: 100%; /* Allow the card to stretch */
-    position: relative; /* Establish a positioning context */
+    display: flex;
+    flex-direction: row; /* Change to row layout */
+    height: auto;
+    width: 100%;
+    align-items: flex-start;
   }
 
   .institute-card .card-body {
+    display: flex;
+    flex-direction: row; /* Row layout for card body */
+    align-items: center;
     width: 100%;
-    flex-direction: column;
-    align-items: flex-start;
-    flex: 1; /* Allow the card body to grow */
+    justify-content: space-between;
   }
 
   .institute-card .details-div-institute {
@@ -246,19 +270,26 @@
   }
 
   .institute-card .fee-apply {
-    width: 100%; /* Full width for fee-apply */
-    text-align: center; /* Center align text */
-    margin-top: auto; /* Push the fee-apply to the bottom */
-    margin-bottom: 15px; /* Add some space at the bottom */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    margin-left: auto;
+    margin-top: 0;
   }
 
   .featured-institute-button {
-    width: 100%; /* Full width button */
-    margin-top: 10px; /* Add space above the button */
+    width: 100%;
+    margin-top: 10px;
   }
   
   .institute-card .card-image {
-    margin-bottom: 15px;
+    flex-shrink: 0;
+    margin-right: 15px;
+  }
+
+  .institute-card .card-content {
+    flex-grow: 1;
+    margin-right: 15px;
   }
 
   .studypal-image {
@@ -389,32 +420,61 @@
   .university-dropdown-institute {
     width: 100%;
   }
+
   .location-container {
     width: 100%;
+    padding: 10px;
   }
-  .institute-card  {
-    flex-direction: column;
+
+  .institute-card {
+    display: flex;
+    flex-direction: column; /* Stack elements vertically */
     width: 100%;
     height: auto;
+    margin-bottom: 20px;
   }
-  .institute-card  .card-body {
-    flex-direction: row;
-  }
-  
-  .institute-card  .details-div, .institute-card  .fee-apply {
+
+  .institute-card .card-body {
     display: flex;
-    flex-direction: column;
+    flex-direction: column; /* Column layout for card body */
+    align-items: flex-start;
+    width: 100%;
   }
 
-  .institute-card  .fee-apply {
-    text-align: right;
+  .institute-card .card-image {
+    width: 100%;
+    margin-bottom: 15px;
   }
 
-  .card-body {
-    flex-direction: column;
+  .institute-card .card-content {
+    width: 100%;
+    margin-bottom: 10px;
   }
+
+  .institute-card .details-div-institute {
+    width: 100%;
+    max-width: 400px;
+    margin-bottom: 10px;
+    
+  }
+
+  .institute-card .fee-apply {
+    text-align: center;
+    margin-bottom: 15px;
+    width: 100%;
+    max-width: 100px;
+    margin-top: 10px;
+    
+  }
+
+  .fee-apply .featured-institute-button {
+    max-width: 100px;
+    margin-top: 10px;
+  }
+
   .studypal-image {
     width: 100%;
+    margin-bottom: 20px;
   }
 }
 
