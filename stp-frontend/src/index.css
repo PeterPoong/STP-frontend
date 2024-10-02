@@ -465,6 +465,23 @@ button:focus-visible {
   font-weight: 500;
 }
 
+/* Add this to your CSS file */
+
+.why-study-pal-item {
+  margin-left: 100px;
+  margin-right: 10px
+  /* Default for larger screens */
+}
+
+@media (max-width: 768px) {
+  .why-study-pal-item {
+    margin-left: 0px; /* Apply 0px margin on small screens */
+    margin-right: 0px;
+
+  }
+}
+
+
 .img-fluid {
   max-width: 700px;
   height: 100%;

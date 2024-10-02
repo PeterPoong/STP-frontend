@@ -81,6 +81,7 @@
   flex-direction: row;
   align-items: flex-start;
   position: relative;
+  
 }
 
 .degree-card .card-image {
@@ -451,5 +452,86 @@
   .pagination-item, .pagination-arrow {
     padding: 0.5rem;
     font-size: 0.9rem;
+  }
+}
+
+
+/* Responsive styles for smaller screens */
+@media (max-width: 991px) {
+  .degree-card {
+    flex-direction: column;
+    max-width: 100%;
+  }
+
+  .degree-card .card-title {
+    background-color: #F2F2F2;
+    /* padding-left: 30px; */
+    height: 100%;
+    width: 100%;
+    /* margin-left: -15px; */
+  }
+  
+  .degree-card .card-body {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .degree-card .card-image {
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .degree-card .fee-apply {
+    margin-left: 0;
+    margin-top: 10px;
+    align-items: center;
+  }
+
+   /* Adjust featured badge for smaller screens */
+   .featured-badge {
+    right: 10px; /* Adjust right position */
+    font-size: 10px; /* Smaller font size */
+    padding: 4px 8px; /* Smaller padding */
+    width: 80px; /* Adjust width */
+    height: 30px; /* Adjust height */
+  }
+}
+
+@media (max-width: 767px) {
+  /* .degree-card {
+    padding: 10px;
+  } */
+  
+  .degree-card .card-title {
+    background-color: #F2F2F2;
+    height: 100%;
+    width: 100%;
+    max-width: 767px;
+    text-align: left;    
+    /* padding-left: 30px; */
+    /* margin-left: -15px; */
+  }
+
+  .degree-card .fee-apply {
+    align-items: right;
+    text-align: right;
+    
+  }
+
+  .degree-card .card-image img {
+    max-width: 80px;
+  }
+
+  .degree-card .details-div {
+    padding-right: 0;
+  }
+
+  /* Further adjust featured badge for very small screens */
+  .featured-badge {
+    right: 5px; /* Further adjust right position */
+    font-size: 8px; /* Even smaller font size */
+    padding: 3px 6px; /* Even smaller padding */
+    width: 70px; /* Adjust width */
+    height: 25px; /* Adjust height */
   }
 }

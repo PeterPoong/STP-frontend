@@ -37,12 +37,13 @@ const WhyStudyPal = () => {
                   <img
                     src={cc}
                     alt="Circle Check"
+                    className="why-study-pal-item" // Add the class here
                     style={{
                       // marginRight: "10px",
                       // width: "40px",
                       // height: "40px",
-                      marginRight: "10px",
-                      marginLeft: "100px",
+                      // marginRight: "10px",
+                      // marginLeft: "100px",
                       width: "90px", // Adjust width to fit well with text
                       height: "50px", // Adjust height to fit well with text
                     }}

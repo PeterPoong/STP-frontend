@@ -78,7 +78,7 @@ const CoursesContainer = () => {
   };
 
   // Split buttons into chunks of 12 (6 for each row)
-  const slides = chunkArray(buttons, 12);
+  const slides = chunkArray(buttons, 14);
 
   return (
     <div style={{ backgroundColor: "white" }}>
@@ -115,7 +115,7 @@ const CoursesContainer = () => {
                   }}
                 >
                   {/* First row */}
-                  {slide.slice(0, 6).map((button) => (
+                  {slide.slice(0, 7).map((button) => (
                     <CoursesButton
                       key={button.id}
                       src={button.src}
@@ -135,7 +135,7 @@ const CoursesContainer = () => {
                   }}
                 >
                   {/* Second row */}
-                  {slide.slice(6).map((button) => (
+                  {slide.slice(7).map((button) => (
                     <CoursesButton
                       key={button.id}
                       src={button.src}

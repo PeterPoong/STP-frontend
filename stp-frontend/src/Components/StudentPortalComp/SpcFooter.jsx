@@ -7,8 +7,20 @@ import { Link } from "react-router-dom";
 const SpcFooter = () => {
   return (
     <footer
-      style={{backgroundColor: "#202220",color: "white",textAlign: "center",padding: "10px 0",}}>
-      <div style={{display: "flex",flexDirection: "column",alignItems: "center",}}>
+      style={{
+        backgroundColor: "#202220",
+        color: "white",
+        textAlign: "center",
+        padding: "10px 0",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
         <div style={{ marginBottom: "5px", marginTop: "5px" }}>
           <Row>
             <button

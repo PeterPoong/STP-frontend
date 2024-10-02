@@ -87,13 +87,21 @@ const FeaturedCoursesContainer = () => {
             navigation
             // style={{ padding: "0 100px" }}
             breakpoints={{
+              320: {
+                slidesPerView: 1,
+                spaceBetween: 10,
+              },
+              430: {
+                slidesPerView: 1,
+                spaceBetween: 10,
+              },
               640: {
                 slidesPerView: 1,
                 spaceBetween: 10,
               },
               768: {
-                slidesPerView: 2,
-                spaceBetween: 15,
+                slidesPerView: 4,
+                spaceBetween: 10,
               },
               1024: {
                 slidesPerView: 5,
