@@ -1,0 +1,17 @@
+.uploadPageContainer {
+  background-color: #fff; /* White background */
+  min-height: 100vh; /* Ensure it takes up the full viewport height */
+  display: flex;
+  justify-content: center; /* Center the content horizontally */
+  align-items: flex-start; /* Start content from the top */
+  padding: 20px; /* Add some padding */
+}
+
+.uploadBoxContainer {
+  width: 100%;
+  max-width: 1200px; /* Limit the width for better readability */
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: Add shadow for better visual effect */
+  padding: 20px;
+  border-radius: 8px; /* Optional: Add rounded corners */
+}
