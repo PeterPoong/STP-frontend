@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Sidebar from "../../Components/SchoolPortalComp/SchoolSidebar";
 import { Container, Button, Row, Col } from "react-bootstrap";
+import Lock from "../../assets/StudentPortalAssets/lock.svg";
 import { Whatsapp, Arrow90degLeft } from "react-bootstrap-icons";
 import {
   FileText,
@@ -82,6 +83,9 @@ const SchoolViewApplicantDetail = () => {
   const [isViewOtherDocOpen, setIsViewOtherDocOpen] = useState(false);
   const [currentViewDocument, setCurrentViewDocument] = useState(null);
 
+  //acount type
+  const [accountType, setAccountType] = useState(null);
+
   const handleBack = () => {
     navigate("/schoolPortalDashboard"); // This will go back to the previous page
   };
@@ -95,8 +99,7 @@ const SchoolViewApplicantDetail = () => {
       const formData = { studentId: studentId };
 
       const response = await fetch(
-        `${
-          import.meta.env.VITE_BASE_URL
+        `${import.meta.env.VITE_BASE_URL
         }api/school/schoolApplicantCocurriculum`,
         {
           method: "POST",
@@ -219,8 +222,7 @@ const SchoolViewApplicantDetail = () => {
         per_page: itemsPerPage,
       };
       const response = await fetch(
-        `${
-          import.meta.env.VITE_BASE_URL
+        `${import.meta.env.VITE_BASE_URL
         }api/school/schoolTranscriptDocumentList`,
         {
           method: "POST",
@@ -376,8 +378,7 @@ const SchoolViewApplicantDetail = () => {
       console.log("Token:", token); // Log the token (be careful with this in production)
 
       const response = await fetch(
-        `${
-          import.meta.env.VITE_BASE_URL
+        `${import.meta.env.VITE_BASE_URL
         }api/school/schoolTranscriptCategoryList`,
         {
           method: "POST",
@@ -538,6 +539,12 @@ const SchoolViewApplicantDetail = () => {
   };
 
   useEffect(() => {
+    const storedAccountType = sessionStorage.getItem("account_type") || localStorage.getItem("account_type");
+    setAccountType(parseInt(storedAccountType, 10));
+  }, []);
+
+
+  useEffect(() => {
     // Redirect to login if token is not present
     if (!token) {
       navigate("/schoolPortalLogin");
@@ -617,10 +624,12 @@ const SchoolViewApplicantDetail = () => {
       }
     };
     getStudentDetail();
-    fetchCoCurriculum();
-    fetchAchievements();
     getAchievements();
-  }, [studentId]);
+    if (accountType == 65) {
+      fetchCoCurriculum();
+      fetchAchievements();
+    }
+  }, [studentId], accountType);
 
   //get courseDetail
   useEffect(() => {
@@ -774,12 +783,16 @@ const SchoolViewApplicantDetail = () => {
           </div>
           <Button
             variant="link"
-            className="text-danger w-25"
+            className=" w-25"
             onClick={() => {
               setActiveTab("documents");
               setActiveDocumentTab("academic");
             }}
-            disabled={!transcriptSubjects || transcriptSubjects.length === 0}
+            disabled={accountType !== 65 || (!transcriptSubjects || transcriptSubjects.length === 0)}
+            style={{
+              color: accountType !== 65 ? 'black' : '#B71A18'
+            }}
+
           >
             View Result Slip »
           </Button>
@@ -1106,6 +1119,8 @@ const SchoolViewApplicantDetail = () => {
               variant="link"
               className={activeTab === "documents" ? "active" : ""}
               onClick={() => setActiveTab("documents")}
+              disabled={accountType !== 65}
+              style={{ pointerEvents: accountType !== 65 ? 'none' : 'auto', opacity: accountType !== 65 ? 0.6 : 1 }}
             >
               Your Documents
             </Button>
@@ -1143,7 +1158,7 @@ const SchoolViewApplicantDetail = () => {
                             onClick={() =>
                               copyToClipboard(
                                 `${firstName || ""} ${lastName || ""}`.trim() ||
-                                  ""
+                                ""
                               )
                             }
                           />
@@ -1213,79 +1228,102 @@ const SchoolViewApplicantDetail = () => {
 
                 {renderAcademicResults()}
 
-                {/* cocuriculum  */}
-                <div className="co-curriculum m-3 shadow-lg p-4 rounded-5">
-                  <p className="text-secondary fw-bold border-bottom border-2 pb-3">
-                    Co-curriculum
-                  </p>
-                  <div
-                    className="activities-grid"
-                    style={{ maxHeight: "20rem", overflowY: "auto" }}
-                  >
-                    {coCurriculum.map((activity, index) => (
+                {accountType === 65 ? ( // Premium: Show Co-Curriculum and Achievements
+                  <>
+                    {/* cocuriculum  */}
+                    <div className="co-curriculum m-3 shadow-lg p-4 rounded-5">
+                      <p className="text-secondary fw-bold border-bottom border-2 pb-3">
+                        Co-curriculum
+                      </p>
                       <div
-                        key={index}
-                        className="activity-item d-flex flex-wrap justify-content-between align-items-start py-2"
+                        className="activities-grid"
+                        style={{ maxHeight: "20rem", overflowY: "auto" }}
                       >
-                        <div className="col-12 col-sm-6">
-                          <p className="mb-0">
-                            <strong>{activity.club_name}</strong>
-                          </p>
-                          <p className="mb-0 text-muted">{activity.location}</p>
-                        </div>
-                        <div className="col-6 col-sm-3 text-start text-sm-center">
-                          <p className="mb-0">{activity.year}</p>
-                        </div>
-                        <div className="col-6 col-sm-3 text-end">
-                          <span
-                            className={`position ${activity.student_position.toLowerCase()} py-1 px-2 rounded-pill`}
+                        {coCurriculum.map((activity, index) => (
+                          <div
+                            key={index}
+                            className="activity-item d-flex flex-wrap justify-content-between align-items-start py-2"
                           >
-                            {activity.student_position}
-                          </span>
-                        </div>
+                            <div className="col-12 col-sm-6">
+                              <p className="mb-0">
+                                <strong>{activity.club_name}</strong>
+                              </p>
+                              <p className="mb-0 text-muted">{activity.location}</p>
+                            </div>
+                            <div className="col-6 col-sm-3 text-start text-sm-center">
+                              <p className="mb-0">{activity.year}</p>
+                            </div>
+                            <div className="col-6 col-sm-3 text-end">
+                              <span
+                                className={`position ${activity.student_position.toLowerCase()} py-1 px-2 rounded-pill`}
+                              >
+                                {activity.student_position}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                </div>
+                    </div>
 
-                {/* achievement  */}
-                <div className="achievements m-3 shadow-lg p-4 rounded-5">
-                  <p className="text-secondary fw-bold border-bottom border-2 pb-3">
-                    Achievements
-                  </p>
-                  <div
-                    className="achievements-grid"
-                    style={{ maxHeight: "15rem", overflowY: "auto" }}
-                  >
-                    {yourInfoAchievement.map((achievement, index) => (
+                    {/* achievement  */}
+                    <div className="achievements m-3 shadow-lg p-4 rounded-5">
+                      <p className="text-secondary fw-bold border-bottom border-2 pb-3">
+                        Achievements
+                      </p>
                       <div
-                        key={index}
-                        className="achievement-item d-flex flex-wrap justify-content-between align-items-start py-2"
+                        className="achievements-grid"
+                        style={{ maxHeight: "15rem", overflowY: "auto" }}
                       >
-                        <div className="col-12 col-sm-6">
-                          <p className="mb-0">
-                            <strong>{achievement.achievement_name}</strong>
-                          </p>
-                          <p className="mb-0 text-muted">
-                            {achievement.awarded_by}
-                          </p>
-                        </div>
-                        <div className="col-6 col-sm-3 text-start text-sm-center">
-                          <p className="mb-0">{achievement.date}</p>
-                        </div>
-                        <div className="col-6 col-sm-3 text-end">
-                          <span
-                            className={`position ${achievement.title_obtained
-                              .toLowerCase()
-                              .replace(/\s+/g, "-")} py-1 px-2 rounded-pill`}
+                        {yourInfoAchievement.map((achievement, index) => (
+                          <div
+                            key={index}
+                            className="achievement-item d-flex flex-wrap justify-content-between align-items-start py-2"
                           >
-                            {achievement.title_obtained}
-                          </span>
-                        </div>
+                            <div className="col-12 col-sm-6">
+                              <p className="mb-0">
+                                <strong>{achievement.achievement_name}</strong>
+                              </p>
+                              <p className="mb-0 text-muted">
+                                {achievement.awarded_by}
+                              </p>
+                            </div>
+                            <div className="col-6 col-sm-3 text-start text-sm-center">
+                              <p className="mb-0">{achievement.date}</p>
+                            </div>
+                            <div className="col-6 col-sm-3 text-end">
+                              <span
+                                className={`position ${achievement.achievement_name
+                                  .toLowerCase()
+                                  .replace(/\s+/g, "-")} py-1 px-2 rounded-pill`}
+                              >
+                                {achievement.achievement_name}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                </div>
+                    </div>
+                  </>
+                ) : ( // Basic: Show overlay
+                  <>
+                    <div className="sdv-cocurriculum m-3 shadow-lg p-4 rounded-5 d-flex align-items-center justify-content-center flex-column ">
+                      <img src={Lock} alt="My Image" />
+                      <p className="text-center text-white mt-3 px-5">This feature is locked and available
+                        only with a premium account.</p>
+                      <div className="sdv-div-plan-button rounded-pill mt-3">
+                        <button className="plan-button rounded-pill">Upgrade Now</button>
+                      </div>
+                    </div>
+                    <div className="sdv-achievements m-3 shadow-lg p-4 rounded-5  d-flex align-items-center justify-content-center flex-column ">
+                      <img src={Lock} alt="My Image" />
+                      <p className="text-center text-white mt-3 px-5">This feature is locked and available
+                        only with a premium account.</p>
+                      <div className="sdv-div-plan-button rounded-pill mt-3">
+                        <button className="plan-button rounded-pill">Upgrade Now</button>
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             </>
           ) : activeTab === "documents" ? (

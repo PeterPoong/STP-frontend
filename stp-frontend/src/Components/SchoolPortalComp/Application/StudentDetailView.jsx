@@ -72,9 +72,6 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
   const [currentAction, setCurrentAction] = useState(acceptRejectAction || null);
   const [warningType, setWarningType] = useState(null);
 
-
-  console.log('Current studentId:', studentId);
-
   useEffect(() => {
     const token = sessionStorage.getItem("token") || localStorage.getItem("token");
     if (!token) {
@@ -776,14 +773,15 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
           </div>
           <Button
             variant="link"
-            className="text-danger w-25"
+            className=" w-25"
             onClick={() => {
               setActiveTab('documents');
               setActiveDocumentTab('academic');
             }}
             disabled={accountType !== 65 || (!transcriptSubjects || transcriptSubjects.length === 0)}
-            style={{ pointerEvents: accountType !== 65 ? 'none' : 'auto', opacity: accountType !== 65 ? 0.6 : 1 }}
-          >
+            style={{
+              color: accountType !== 65 ? 'black' : '#B71A18'
+            }}  >
             View Result Slip »
           </Button>
         </div>
@@ -1270,7 +1268,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
                                 <div className="col-6 col-sm-3 text-end">
                                   <span className={`position ${(achievement.achievement_name?.toLowerCase() ?? '').replace(/\s+/g, '-')} py-1 px-2 rounded-pill`}>
                                     {achievement.achievement_name || 'No Title'}
-                                    </span>
+                                  </span>
                                 </div>
                               </div>
                             ))
