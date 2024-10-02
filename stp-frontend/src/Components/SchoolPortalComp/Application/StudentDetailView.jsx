@@ -1059,7 +1059,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
         </div>
 
         {isPending && !currentAction && (
-          <div className="d-flex justify-content-end">
+          <div className="d-flex justify-content-end px-5 ">
             <Button
 
               className="me-2 border border-0"
@@ -1072,6 +1072,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
               variant="success"
               onClick={() => handleAcceptReject('Accepted')}
               disabled={submitLoading}
+              
             >
               Accept Application
             </Button>
@@ -1079,7 +1080,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
         )}
 
         {isPending && currentAction && (
-          <div className="d-flex justify-content-end">
+          <div className="d-flex justify-content-end px-5">
             <Button
               variant={currentAction === 'accept' ? 'success' : 'danger'}
               onClick={() => handleAcceptReject(currentAction === 'accept' ? 'Accepted' : 'Rejected')}

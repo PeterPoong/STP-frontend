@@ -527,7 +527,7 @@ const AppliedCoursePending = () => {
                     </div>
                     <div className="acp-detail-item">
                       <BookOpenText size={16} className="acp-icon" />
-                      <span>{app.course_intake}</span>
+                      {Array.isArray(app.intake) ? app.intake.join(', ') : app.intake}
                     </div>
                   </div>
                   <div className="acp-right-section">
