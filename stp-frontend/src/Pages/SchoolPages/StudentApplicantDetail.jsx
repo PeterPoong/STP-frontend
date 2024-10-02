@@ -541,7 +541,7 @@ const SchoolViewApplicantDetail = () => {
 
   useEffect(() => {
     const storedAccountType =
-      sessionStorage.getItem("account_type") ||
+      
       localStorage.getItem("account_type");
     setAccountType(parseInt(storedAccountType, 10));
   }, []);
