@@ -329,7 +329,7 @@ const CoCurriculum = ({ onNext, onBack }) => {
       <Button
         variant="outline-primary"
         onClick={handleAddActivity}
-        className="w-100 mt-3 sac-add-new-button"
+        className="w-100 mt-3 sac-add-new-button mx-0"
       >
         Add New +
       </Button>

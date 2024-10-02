@@ -73,7 +73,7 @@ const CustomStepLabel = styled(StepLabel)(({ theme }) => ({
     },
     '&.Mui-completed': {
       color: '#000',
-      fontSize: '0.8rem',
+      fontSize: '0.9rem',
       fontWeight: "bold"
     },
   },

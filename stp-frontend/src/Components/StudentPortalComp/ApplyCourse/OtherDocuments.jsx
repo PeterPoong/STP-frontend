@@ -293,7 +293,7 @@ const OtherDocuments = ({ onBack, onSubmit }) => {
       <Button
         variant="outline-primary"
         onClick={handleAddDocument}
-        className="w-100 mt-3 sac-add-new-button"
+        className="w-100 mt-3 sac-add-new-button mx-0"
       >
         Add New Document +
       </Button>
