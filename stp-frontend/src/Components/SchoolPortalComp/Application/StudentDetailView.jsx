@@ -516,8 +516,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
   };
 
 
-  const handleBackPage = () => 
-  {
+  const handleBackPage = () => {
     onActionSuccess();
   };
 
@@ -1072,7 +1071,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
               variant="success"
               onClick={() => handleAcceptReject('Accepted')}
               disabled={submitLoading}
-              
+
             >
               Accept Application
             </Button>
@@ -1269,9 +1268,9 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
                                   <p className="mb-0">{achievement.date}</p>
                                 </div>
                                 <div className="col-6 col-sm-3 text-end">
-                                  <span className={`position ${achievement.title_obtained.toLowerCase().replace(/\s+/g, '-')} py-1 px-2 rounded-pill`}>
-                                    {achievement.title_obtained}
-                                  </span>
+                                  <span className={`position ${(achievement.achievement_name?.toLowerCase() ?? '').replace(/\s+/g, '-')} py-1 px-2 rounded-pill`}>
+                                    {achievement.achievement_name || 'No Title'}
+                                    </span>
                                 </div>
                               </div>
                             ))
