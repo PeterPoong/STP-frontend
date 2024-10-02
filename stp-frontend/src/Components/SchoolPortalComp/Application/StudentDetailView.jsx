@@ -72,9 +72,6 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
   const [currentAction, setCurrentAction] = useState(acceptRejectAction || null);
   const [warningType, setWarningType] = useState(null);
 
-
-  console.log('Current studentId:', studentId);
-
   useEffect(() => {
     const token = sessionStorage.getItem("token") || localStorage.getItem("token");
     if (!token) {
@@ -516,8 +513,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
   };
 
 
-  const handleBackPage = () => 
-  {
+  const handleBackPage = () => {
     onActionSuccess();
   };
 
@@ -777,14 +773,15 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
           </div>
           <Button
             variant="link"
-            className="text-danger w-25"
+            className=" w-25"
             onClick={() => {
               setActiveTab('documents');
               setActiveDocumentTab('academic');
             }}
             disabled={accountType !== 65 || (!transcriptSubjects || transcriptSubjects.length === 0)}
-            style={{ pointerEvents: accountType !== 65 ? 'none' : 'auto', opacity: accountType !== 65 ? 0.6 : 1 }}
-          >
+            style={{
+              color: accountType !== 65 ? 'black' : '#B71A18'
+            }}  >
             View Result Slip »
           </Button>
         </div>
@@ -1059,7 +1056,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
         </div>
 
         {isPending && !currentAction && (
-          <div className="d-flex justify-content-end">
+          <div className="d-flex justify-content-end px-5 ">
             <Button
 
               className="me-2 border border-0"
@@ -1072,6 +1069,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
               variant="success"
               onClick={() => handleAcceptReject('Accepted')}
               disabled={submitLoading}
+
             >
               Accept Application
             </Button>
@@ -1079,7 +1077,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
         )}
 
         {isPending && currentAction && (
-          <div className="d-flex justify-content-end">
+          <div className="d-flex justify-content-end px-5">
             <Button
               variant={currentAction === 'accept' ? 'success' : 'danger'}
               onClick={() => handleAcceptReject(currentAction === 'accept' ? 'Accepted' : 'Rejected')}
@@ -1268,8 +1266,8 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
                                   <p className="mb-0">{achievement.date}</p>
                                 </div>
                                 <div className="col-6 col-sm-3 text-end">
-                                  <span className={`position ${achievement.title_obtained.toLowerCase().replace(/\s+/g, '-')} py-1 px-2 rounded-pill`}>
-                                    {achievement.title_obtained}
+                                  <span className={`position ${(achievement.achievement_name?.toLowerCase() ?? '').replace(/\s+/g, '-')} py-1 px-2 rounded-pill`}>
+                                    {achievement.achievement_name || 'No Title'}
                                   </span>
                                 </div>
                               </div>
