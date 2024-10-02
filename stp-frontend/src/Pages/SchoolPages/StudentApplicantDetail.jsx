@@ -93,7 +93,7 @@ const SchoolViewApplicantDetail = () => {
     }
     try {
       const formData = { studentId: studentId };
-
+      console.log("formdata", formData);
       const response = await fetch(
         `${
           import.meta.env.VITE_BASE_URL
@@ -120,7 +120,7 @@ const SchoolViewApplicantDetail = () => {
         );
       }
     } catch (error) {
-      console.error("Error fetching co-curriculum activities:", error);
+      console.error("Error fetching co-curriculum activities:", error.message);
       setError(error.message);
     }
   };
@@ -155,12 +155,10 @@ const SchoolViewApplicantDetail = () => {
       if (result.success) {
         setYourInfoAchievement(result.data);
       } else {
-        throw new Error(
-          result.message || "Failed to fetch co-curriculum activities"
-        );
+        throw new Error(result.message || "Failed to fetch achievement");
       }
     } catch (error) {
-      console.error("Error fetching co-curriculum activities:", error);
+      console.error("Error fetching achievement:", error);
       setError(error.message);
     }
   };
@@ -1275,7 +1273,7 @@ const SchoolViewApplicantDetail = () => {
                         </div>
                         <div className="col-6 col-sm-3 text-end">
                           <span
-                            className={`position ${achievement.title_obtained
+                            className={`position ${achievement.achievement_name
                               .toLowerCase()
                               .replace(/\s+/g, "-")} py-1 px-2 rounded-pill`}
                           >

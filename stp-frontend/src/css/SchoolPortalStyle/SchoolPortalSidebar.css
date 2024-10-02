@@ -16,21 +16,39 @@
 }
 
 /* Adding the gradient border effect */
+.custom-border-gradient-button {
+  background-color: #fff; /* White background */
+  border-radius: 12px; /* Border radius for the button */
+  padding: 6px 12px; /* Button padding */
+  color: #000; /* Text color */
+  text-align: center; /* Center text */
+  display: inline-flex; /* Flex for aligning content */
+  align-items: center; /* Align items to center */
+  position: relative; /* Required for the pseudo-element */
+  z-index: 1; /* Ensure content is on top of pseudo-element */
+  font-size: 14px; /* Adjust font size */
+}
+
 .custom-border-gradient-button::before {
-  content: '';
+  content: "";
   position: absolute;
-  top: -2px; /* Offset to ensure the border is visible */
-  left: -2px; /* Offset to ensure the border is visible */
-  right: -2px; /* Offset to ensure the border is visible */
-  bottom: -2px; /* Offset to ensure the border is visible */
-  border-radius: 12px; /* Border radius to match the button */
-  background: linear-gradient(to right, #5E5CE6 0%, #FF375F 53%, #FF9F0A 100%);
-  z-index: -1; /* Place it behind the button content */
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(
+    to right,
+    #5E5CE6 0%,
+    #FF375F 53%,
+    #FF9F0A 100%
+  ); /* Gradient border */
+  z-index: -1; /* Send gradient behind the button */
+
 }
 
 /* Hover effect */
 .custom-border-gradient-button:hover {
-  background-color: rgba(183, 26, 24, 0.20);
+  background-color:#DF9B9A;
 }
 
 
@@ -132,3 +150,20 @@
 }
 
 
+.UploadSchoolLogo {
+
+
+  border: 1px solid #B71A18; /* Red border */
+  background-color: white; /* White background */
+  color: #B71A18; /* Red text */
+  cursor: pointer; /* Pointer cursor on hover */
+
+
+  font-weight: normal; /* Remove bold */
+  font-size: 14px;
+}
+
+.UploadSchoolLogo:hover {
+  background-color: #B71A18; /* Red background on hover */
+  color: white; /* White text on hover */
+}

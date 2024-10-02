@@ -244,7 +244,7 @@ const Sidebar = ({ onDropdownItemSelect, selectTabPage }) => {
           <Button
             variant="danger"
             size="sm"
-            className="rounded-circle position-absolute d-flex justify-content-center align-items-center"
+            className="rounded-circle position-absolute d-flex justify-content-center align-items-center UploadSchoolLogo"
             style={{
               bottom: "5px",
               right: "10px",

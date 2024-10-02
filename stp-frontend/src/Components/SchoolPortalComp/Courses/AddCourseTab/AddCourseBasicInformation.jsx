@@ -700,7 +700,7 @@ const AddCourseBasicInformation = ({ list }) => {
                 type="submit"
                 className={`btn btn-danger ${styles.customDangerButton}`}
               >
-                Next
+                Add
               </button>
             </Col>
           </Row>
