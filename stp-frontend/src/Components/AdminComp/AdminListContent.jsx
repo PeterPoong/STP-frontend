@@ -258,7 +258,7 @@ const AdminListContent = () => {
                 totalPages={totalPages}
                 currentPage={currentPage}
                 onPageChange={handlePageChange}
-                showAddButton={showAddButton}
+                // showAddButton={showAddButton}
                 onRowsPerPageChange={handleRowsPerPageChange}
             />
             <Modal show={showModal} onHide={() => setShowModal(false)}>

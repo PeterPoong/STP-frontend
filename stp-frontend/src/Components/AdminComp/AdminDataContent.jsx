@@ -275,7 +275,7 @@ const AdminDataContent = () => {
                 totalPages={totalPages}
                 currentPage={currentPage}
                 onRowsPerPageChange={setRowsPerPage}
-                showAddButton={showAddButton}
+                // showAddButton={showAddButton}
                 onSearch={handleSearch}
                 showSearch={false}  // Set to false if you don't want to show search
                 showRowsPerPage={false}  // Set to false if you don't want to show rows-per-page dropdown
