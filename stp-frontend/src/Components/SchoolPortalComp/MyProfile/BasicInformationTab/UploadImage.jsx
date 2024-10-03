@@ -4,11 +4,13 @@ import { Form } from "react-bootstrap";
 import "../../../../css/SchoolPortalStyle/MyProfile/UploadImage.css";
 import { Image, Trash3 } from "react-bootstrap-icons";
 import styles from "../../../../css/SchoolPortalStyle/UploadImage.module.css";
+import Lock from "../../../../assets/StudentPortalAssets/lock.svg";
 
 function UploadBox() {
   const schoolName = sessionStorage.getItem("name");
   const token = sessionStorage.getItem("token");
 
+  const [accountType, setAccountType] = useState("");
   const [highlight, setHighlight] = useState(false);
   const [uploadFiles, setUploadFiles] = useState("");
   const [uploadPhoto, setUploadPhoto] = useState("");
@@ -101,6 +103,10 @@ function UploadBox() {
   useEffect(() => {
     getCoverPhoto();
     getPhoto();
+    const storedAccountType =
+      sessionStorage.getItem("account_type") ||
+      localStorage.getItem("account_type");
+    setAccountType(parseInt(storedAccountType, 10));
   }, []);
 
   // Handle cover photo upload
@@ -224,22 +230,45 @@ function UploadBox() {
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
         >
-          <input
-            type="file"
-            id="coverFileUpload" /* Unique ID for cover photo */
-            multiple
-            onChange={handleFileChange}
-            accept=".jpg, .jpeg, .png"
-            style={{ display: "none" }}
-          />
-          <label htmlFor="coverFileUpload" className="upload-box-label">
-            <FaRegImage className="upload-icon" />
-            <p>
-              <span className="upload-text">Click to upload cover photo</span>{" "}
-              or drag and drop
-            </p>
-            <p className="upload-instructions">JPG, JPEG, PNG less than 1MB</p>
-          </label>
+          {accountType === 66 ? (
+            <>
+              <input
+                type="file"
+                id="coverFileUpload" /* Unique ID for cover photo */
+                multiple
+                onChange={handleFileChange}
+                accept=".jpg, .jpeg, .png"
+                style={{ display: "none" }}
+              />
+              <label htmlFor="coverFileUpload" className="upload-box-label">
+                <FaRegImage className="upload-icon" />
+                <p>
+                  <span className="upload-text">
+                    Click to upload cover photo
+                  </span>{" "}
+                  or drag and drop
+                </p>
+                <p className="upload-instructions">
+                  JPG, JPEG, PNG less than 1MB
+                </p>
+              </label>
+            </>
+          ) : (
+            <>
+              <div className="sdv-cocurriculum m-3 shadow-lg p-4 rounded-5 d-flex align-items-center justify-content-center flex-column ">
+                <img src={Lock} alt="My Image" />
+                <p className="text-center text-white mt-3 px-5">
+                  This feature is locked and available only with a premium
+                  account.
+                </p>
+                <div className="sdv-div-plan-button rounded-pill mt-3">
+                  <button className="plan-button rounded-pill">
+                    Upgrade Now
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
         </div>
 
         {/* Display uploaded files */}
