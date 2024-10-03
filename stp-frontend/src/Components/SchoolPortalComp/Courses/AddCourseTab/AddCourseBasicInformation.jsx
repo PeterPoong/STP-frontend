@@ -112,7 +112,8 @@ const AddCourseBasicInformation = ({ list }) => {
 
     if (selectedIntakes.length === 0) {
       SetIntakeError("Please select at least one intake month.");
-      errors.push(intakeError);
+      // console.log("intake error", intakeError);
+      errors.push("Please select at least one intake month.");
     } else {
       SetIntakeError("");
     }
@@ -138,7 +139,7 @@ const AddCourseBasicInformation = ({ list }) => {
       console.log("errorMessage", errors);
       return;
     } else {
-      console.log("intake", selectedIntakes);
+      // console.log("intake", selectedIntakes);
       const formData = new FormData();
       formData.append("name", courseName);
       formData.append("schoolID", detail.id);
@@ -210,7 +211,7 @@ const AddCourseBasicInformation = ({ list }) => {
       };
 
       createNewCourse();
-      console.log("fee", fee);
+      // console.log("fee", fee);
     }
   };
 
@@ -234,7 +235,7 @@ const AddCourseBasicInformation = ({ list }) => {
           }
           const data = await response.json();
           setCategoryList(data.data);
-          console.log("category", data);
+          // console.log("category", data);
         } catch (error) {
           console.error("There was a problem with the fetch operation:", error);
         } finally {
@@ -287,7 +288,7 @@ const AddCourseBasicInformation = ({ list }) => {
           }
           const data = await response.json();
           setQualificationList(data.data);
-          console.log("qualification", data);
+          // console.log("qualification", data);
         } catch (error) {
           console.error("There was a problem with the fetch operation:", error);
         } finally {
@@ -310,7 +311,7 @@ const AddCourseBasicInformation = ({ list }) => {
           }
           const data = await response.json();
           setIntakeList(data.data);
-          console.log("inatake", data);
+          // console.log("inatake", data);
         } catch (error) {
           console.error("Failed to get intake month", error);
         }
@@ -334,7 +335,7 @@ const AddCourseBasicInformation = ({ list }) => {
           }
           const data = await response.json();
           setDetail(data.data);
-          console.log("detail", data);
+          // console.log("detail", data);
         } catch (error) {
           console.error("Faild to get detail", error);
         }
