@@ -242,15 +242,15 @@ const AdminEditSchoolContent = () => {
        if (formData.logo instanceof File) {
         formPayload.append("logo", formData.logo); // New logo file
     }
-        // Append cover photo if available
-        if (coverFile) {
-            formPayload.append('cover', coverFile);
-        }
+        // // Append cover photo if available
+        // if (coverFile) {
+        //     formPayload.append('cover', coverFile);
+        // }
         
-        // Append album files if available
-        albumFiles.forEach((file, index) => {
-            formPayload.append(`album[${index}]`, file);
-        });
+        // // Append album files if available
+        // albumFiles.forEach((file, index) => {
+        //     formPayload.append(`album[${index}]`, file);
+        // });
         
         try {
             console.log("FormData before submission:", formPayload);
@@ -342,16 +342,17 @@ useEffect(() => {
       })
       .catch(error => console.error('Error fetching countries:', error));
   }, []);
-
-// Fetch states when country changes
-useEffect(() => {
+    
+  // Fetch states when country changes
+  useEffect(() => {
     if (formData.country) {
       fetchStates(formData.country);
     }
-}, [formData.country]);
-
-// Fetch states (POST request)
-const fetchStates = (countryId) => {
+  }, [formData.country]);
+  
+  
+  // Fetch states (POST request)
+  const fetchStates = (countryId) => {
     fetch(`${import.meta.env.VITE_BASE_URL}api/getState`, {
       method: 'POST',
       headers: {
@@ -363,25 +364,14 @@ const fetchStates = (countryId) => {
       .then(data => {
         if (data.success) {
           setStateList(data.data);
-          
-          // If the first state is fetched, automatically fetch cities for it
-          if (data.data.length > 0) {
-            const firstStateId = data.data[0].id; // Assuming the state object has an 'id' property
-            setFormData(prevFormData => ({
-              ...prevFormData,
-              state: firstStateId,
-              city: '' // Reset city
-            }));
-            fetchCities(firstStateId); // Fetch cities for the first state
-          }
         } else {
           setStateList([]);
         }
       })
       .catch(error => console.error('Error fetching states:', error));
-};
-
-// Fetch cities (POST request)
+  };
+  
+  // Fetch cities (POST request)
 const fetchCities = (stateId) => {
     fetch(`${import.meta.env.VITE_BASE_URL}api/getCities`, {
       method: 'POST',
@@ -394,21 +384,14 @@ const fetchCities = (stateId) => {
       .then(data => {
         if (data.success) {
           setCityList(data.data);
-          
-          // Set the first city as the default if cities are fetched
-          if (data.data.length > 0) {
-            setFormData(prevFormData => ({
-              ...prevFormData,
-              city: data.data[0].id // Assuming the city object has an 'id' property
-            }));
-          }
         } else {
           setCityList([]);
         }
       })
       .catch(error => console.error('Error fetching cities:', error));
-};
-
+  };
+  
+  
 
     const handlePhoneChange = (value, country, field) => {
         setFormData(prevFormData => {
@@ -468,7 +451,7 @@ const fetchCities = (stateId) => {
     const togglePasswordVisibility = () => setShowPassword(prev => !prev);
     const toggleConfirmPasswordVisibility = () => setShowConfirmPassword(prev => !prev);
 
-    const handleCountryChange = (e) => { 
+    const handleCountryChange = (e) => {
         const countryId = e.target.value;
         setFormData({
           ...formData,
@@ -479,37 +462,37 @@ const fetchCities = (stateId) => {
         if (countryId) {
           fetchStates(countryId);  // Fetch states based on the selected country
         }
-    };
-    
-    // Handle state change
-    const handleStateChange = (e) => {
-        const stateId = e.target.value;
-        setFormData({
-          ...formData,
-          state: stateId,
-          city: ''  // Reset city when a new state is selected
-        });
-    
-        if (stateId) {
-          fetchCities(stateId);  // Fetch cities based on the selected state
-        }
-    };
-    
-    // Handle city change
-    const handleCityChange = (e) => {
-        const cityId = e.target.value;
-        setFormData({
-          ...formData,
-          city: cityId  // Just update the city when changed
-        });
-    };
-    
-    // Auto-fetch cities when the state is set (either manually or programmatically)
-    useEffect(() => {
-        if (formData.state) {
-          fetchCities(formData.state);  // Automatically fetch cities based on the existing state value
-        }
-    }, [formData.state]);  // This will trigger when the state changes (either via user selection or programmatically)  
+      };
+      
+      
+     // Handle state change
+const handleStateChange = (e) => {
+    const stateId = e.target.value;
+    setFormData({
+      ...formData,
+      state: stateId,
+      city: ''  // Reset city when a new state is selected
+    });
+  
+    if (stateId) {
+      fetchCities(stateId);  // Fetch cities based on the selected state
+    }
+  };
+      
+     // Handle city change
+const handleCityChange = (e) => {
+    const cityId = e.target.value;
+    setFormData({
+      ...formData,
+      city: cityId  // Just update the city when changed
+    });
+  };
+// Auto-fetch cities when the state is set (either manually or programmatically)
+useEffect(() => {
+    if (formData.state) {
+      fetchCities(formData.state);  // Automatically fetch cities based on the existing state value
+    }
+  }, [formData.state]);  // This will trigger when the state changes (either via user selection or programmatically)  
       
   const { getRootProps: getCoverRootProps, getInputProps: getCoverInputProps } = useDropzone({
     accept: 'image/*',

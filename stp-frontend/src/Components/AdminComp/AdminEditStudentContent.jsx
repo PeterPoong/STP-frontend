@@ -184,7 +184,9 @@ const AdminEditStudentContent = () => {
       fetchGenders();
   }, []);
 
-   // Fetch country list on mount
+    // console.log(`${import.meta.env.VITE_BASE_URL}api/student/countryList`);
+    // Fetch country list (GET request)
+     // Fetch country list on mount
 useEffect(() => {
   fetch(`${import.meta.env.VITE_BASE_URL}api/student/countryList`, {
     method: 'GET',
@@ -197,14 +199,6 @@ useEffect(() => {
       if (data.success) {
         setCountryList(data.data);
         console.log("Countries fetched: ", data.data);
-
-        // Set default country to Malaysia (ID = 132) if no country is selected
-        if (!formData.country) {
-          setFormData(prevFormData => ({
-            ...prevFormData,
-            country: '132' // Set Malaysia as the default country
-          }));
-        }
       }
     })
     .catch(error => console.error('Error fetching countries:', error));
@@ -216,6 +210,13 @@ useEffect(() => {
     fetchStates(formData.country);
   }
 }, [formData.country]);
+
+// Fetch cities when state changes
+useEffect(() => {
+  if (formData.state) {
+    fetchCities(formData.state);
+  }
+}, [formData.state]);
 
 // Fetch states (POST request)
 const fetchStates = (countryId) => {
@@ -230,17 +231,6 @@ const fetchStates = (countryId) => {
     .then(data => {
       if (data.success) {
         setStateList(data.data);
-        
-        // If the first state is fetched, automatically fetch cities for it
-        if (data.data.length > 0) {
-          const firstStateId = data.data[0].id; // Assuming the state object has an 'id' property
-          setFormData(prevFormData => ({
-            ...prevFormData,
-            state: firstStateId,
-            city: '' // Reset city
-          }));
-          fetchCities(firstStateId); // Fetch cities for the first state
-        }
       } else {
         setStateList([]);
       }
@@ -261,21 +251,12 @@ const fetchCities = (stateId) => {
     .then(data => {
       if (data.success) {
         setCityList(data.data);
-        
-        // Set the first city as the default if cities are fetched
-        if (data.data.length > 0) {
-          setFormData(prevFormData => ({
-            ...prevFormData,
-            city: data.data[0].id // Assuming the city object has an 'id' property
-          }));
-        }
       } else {
         setCityList([]);
       }
     })
     .catch(error => console.error('Error fetching cities:', error));
 };
-
   useEffect(() => {
     setPasswordsMatch(formData.password === formData.confirm_password);
 }, [formData.password, formData.confirm_password]);
