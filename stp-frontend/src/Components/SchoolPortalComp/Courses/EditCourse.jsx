@@ -101,7 +101,7 @@ const EditCourse = ({ courseId, handleGoBack }) => {
     const fileURL = URL.createObjectURL(file);
     setPreviewPhoto(fileURL);
     setSelectedFile(file);
-    console.log("Selected file:", file);
+    // console.log("Selected file:", file);
   };
 
   const handleUploadClick = () => {
@@ -112,7 +112,7 @@ const EditCourse = ({ courseId, handleGoBack }) => {
   //handle submit
 
   const handleSubmit = (event) => {
-    console.log(token);
+    // console.log(token);
     event.preventDefault(); // Prevent default form submission behavior
 
     //validate input field
@@ -143,10 +143,10 @@ const EditCourse = ({ courseId, handleGoBack }) => {
     if (errors.length > 0) {
       setModalErrorMessage(errors);
       setShowModal(true);
-      console.log("errorMessage", errors);
+      // console.log("errorMessage", errors);
       return;
     } else {
-      console.log("intake", selectedIntakes);
+      // console.log("intake", selectedIntakes);
       const formData = new FormData();
       formData.append("name", courseName);
       formData.append("schoolID", detail.id);
@@ -166,23 +166,23 @@ const EditCourse = ({ courseId, handleGoBack }) => {
         formData.append(`intake[${index}]`, intake.id);
       });
 
-      formData.forEach((value, key) => {
-        console.log(`${key}: ${value}`);
-      });
+      // formData.forEach((value, key) => {
+      //   console.log(`${key}: ${value}`);
+      // });
 
-      formData.forEach((value, key) => {
-        if (value instanceof Blob) {
-          console.log(`${key}: ${value.name}`); // If the value is a file, log its name
-        } else {
-          console.log(`${key}: ${value}`);
-        }
-      });
+      // formData.forEach((value, key) => {
+      //   if (value instanceof Blob) {
+      //     console.log(`${key}: ${value.name}`);
+      //   } else {
+      //     console.log(`${key}: ${value}`);
+      //   }
+      // });
 
       // console.log("data", formData);
 
       const updateCourseDetail = async () => {
         try {
-          console.log("formdata", formData);
+          // console.log("formdata", formData);
           const response = await fetch(
             `${import.meta.env.VITE_BASE_URL}api/school/editCourses`,
             {
@@ -201,7 +201,7 @@ const EditCourse = ({ courseId, handleGoBack }) => {
           const data = await response.json();
           if (data.success === false) {
             let error = [];
-            console.log("error test", data);
+            // console.log("error test", data);
             const courseArrayError = data.error.courses ?? [];
             if (courseArrayError.length > 0) {
               setCourseNameError(courseArrayError[0]);
@@ -253,7 +253,7 @@ const EditCourse = ({ courseId, handleGoBack }) => {
           }
           const data = await response.json();
           setCategoryList(data.data);
-          console.log("category", data);
+          // console.log("category", data);
         } catch (error) {
           console.error("There was a problem with the fetch operation:", error);
         } finally {
@@ -306,7 +306,7 @@ const EditCourse = ({ courseId, handleGoBack }) => {
           }
           const data = await response.json();
           setQualificationList(data.data);
-          console.log("qualification", data);
+          // console.log("qualification", data);
         } catch (error) {
           console.error("There was a problem with the fetch operation:", error);
         } finally {
@@ -329,7 +329,7 @@ const EditCourse = ({ courseId, handleGoBack }) => {
           }
           const data = await response.json();
           setIntakeList(data.data);
-          console.log("inatake", data);
+          // console.log("inatake", data);
         } catch (error) {
           console.error("Failed to get intake month", error);
         }
@@ -353,7 +353,7 @@ const EditCourse = ({ courseId, handleGoBack }) => {
           }
           const data = await response.json();
           setDetail(data.data);
-          console.log("detail", data);
+          // console.log("detail", data);
         } catch (error) {
           console.error("Faild to get detail", error);
         }
@@ -619,7 +619,7 @@ const EditCourse = ({ courseId, handleGoBack }) => {
                           >
                             <Row>
                               <Col md={9}>
-                                <h10>{intake.core_metaName}</h10>
+                                <h6>{intake.core_metaName}</h6>
                               </Col>
                               <Col md={3}>
                                 <XLg

@@ -93,7 +93,7 @@ const AddCourseBasicInformation = ({ list }) => {
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     setSelectedFile(file);
-    console.log("Selected file:", file);
+    // console.log("Selected file:", file);
   };
 
   const handleUploadClick = () => {
@@ -104,7 +104,7 @@ const AddCourseBasicInformation = ({ list }) => {
   //handle submit
 
   const handleSubmit = (event) => {
-    console.log(token);
+    // console.log(token);
     event.preventDefault(); // Prevent default form submission behavior
 
     //validate input field
@@ -182,7 +182,7 @@ const AddCourseBasicInformation = ({ list }) => {
           const data = await response.json();
           if (data.success === false) {
             let error = [];
-            console.log("error test", data);
+            // console.log("error test", data);
             const courseArrayError = data.error.courses ?? [];
             if (courseArrayError.length > 0) {
               setCourseNameError(courseArrayError[0]);

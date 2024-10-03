@@ -51,7 +51,7 @@ const CoursesListing = ({ onAddCourseClick, courseID, editCourse }) => {
   };
 
   const handleViewDetail = (id) => {
-    console.log("View Detail clicked with ID:", id);
+    // console.log("View Detail clicked with ID:", id);
     setSelectedCourseId(id);
   };
 
@@ -75,7 +75,7 @@ const CoursesListing = ({ onAddCourseClick, courseID, editCourse }) => {
       }
       const data = await response.json();
       setCoursesList(data.data);
-      console.log("courses", data.data);
+      // console.log("courses", data.data);
 
       // console.log("set", courses);
     } catch (error) {
@@ -86,7 +86,7 @@ const CoursesListing = ({ onAddCourseClick, courseID, editCourse }) => {
   };
 
   const confirmationDelete = (courseId) => {
-    console.log("confirm", courseID);
+    // console.log("confirm", courseID);
     setCourseToDelete(courseId); // Set the course to be deleted
     setShowDeleteModal(true); // Show modal
   };
@@ -158,7 +158,7 @@ const CoursesListing = ({ onAddCourseClick, courseID, editCourse }) => {
         }
         const data = await response.json();
         setQualificationList(data.data);
-        console.log("qualification", data);
+        // console.log("qualification", data);
       } catch (error) {
         console.error("There was a problem with the fetch operation:", error);
       } finally {
@@ -184,7 +184,7 @@ const CoursesListing = ({ onAddCourseClick, courseID, editCourse }) => {
         }
         const data = await response.json();
         setCategoryList(data.data);
-        console.log("category", data);
+        // console.log("category", data);
       } catch (error) {
         console.error("There was a problem with the fetch operation:", error);
       } finally {
@@ -214,7 +214,7 @@ const CoursesListing = ({ onAddCourseClick, courseID, editCourse }) => {
   }, []);
 
   useEffect(() => {
-    console.log("Choose", qualification);
+    // console.log("Choose", qualification);
   }, [qualification]);
 
   useEffect(() => {
@@ -252,7 +252,7 @@ const CoursesListing = ({ onAddCourseClick, courseID, editCourse }) => {
   };
 
   const detailPage = (id) => {
-    console.log("courseid", id);
+    // console.log("courseid", id);
     courseID(id);
     // viewDetail(id);
   };
