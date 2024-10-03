@@ -554,6 +554,15 @@ const KnowMoreInstitute = () => {
                       </div>
                     </Col>
                     <Col md={12}>
+                      <div style={{ zIndex: 1 }}>
+                        <div
+                          dangerouslySetInnerHTML={{
+                            __html: institute.short_description,
+                          }}
+                        />
+                      </div>
+                    </Col>
+                    <Col md={12}>
                       <Collapse in={open}>
                         {/* <div>
                           <p>{institute.short_description}</p>
@@ -590,16 +599,33 @@ const KnowMoreInstitute = () => {
                         className="map-responsive"
                         style={{ height: "100%", width: "100%" }}
                       >
-                        <div
-                          dangerouslySetInnerHTML={{
-                            __html: institute.location,
-                          }}
-                          style={{
-                            border: 0,
-                            width: "100%",
-                            height: "100%",
-                          }}
-                        ></div>
+                        {institute.location ? (
+                          <div
+                            dangerouslySetInnerHTML={{
+                              __html: institute.location,
+                            }}
+                            style={{
+                              border: 0,
+                              width: "100%",
+                              height: "100%",
+                            }}
+                          ></div>
+                        ) : (
+                          <div
+                            style={{
+                              display: "flex",
+                              padding: "75px 50px 75px 100px",
+                              justifyContent: "center",
+                              alignItems: "center",
+                              height: "100%",
+                              width: "100%",
+                              fontSize: "20px",
+                              backgroundColor: "transparent",
+                            }}
+                          >
+                            <p>Map is currently unavailable</p>
+                          </div>
+                        )}
                       </div>
                     </Col>
                   </Row>
