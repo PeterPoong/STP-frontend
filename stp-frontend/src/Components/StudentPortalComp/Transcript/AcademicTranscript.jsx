@@ -414,9 +414,16 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
 
   // When setting cgpa
   const handleCgpaChange = (e) => {
-    setCgpa(e.target.value);
-    setHasUnsavedChanges(true);
+    const value = e.target.value;
+    // Regex to allow numbers between 0 and 4 with up to two decimal places
+    const regex = /^(?:[0-3](?:\.\d{0,2})?|4(?:\.0{0,2})?)$/;
+  
+    if (regex.test(value) || value === '') {
+      setCgpa(value);
+      setHasUnsavedChanges(true);
+    }
   };
+  
 
   const handleAddSubject = (e) => {
     e.preventDefault();

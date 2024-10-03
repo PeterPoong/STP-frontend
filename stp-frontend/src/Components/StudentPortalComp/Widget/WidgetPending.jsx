@@ -50,7 +50,7 @@ const WidgetPending = ({ isOpen, onClose, date, feedbacks, formID }) => {
   return (
     <div className="popup-overlay">
       <div className="popup-content-pending">
-      <div className="trophy-image-pending"></div>
+        <div className="trophy-image-pending"></div>
         <button className="close-button" onClick={onClose}>×</button>
         <div className='position-absolute  text-center'><h1 className='display-6 fw-bolder'>Your application is pending.</h1></div>
 
@@ -61,9 +61,13 @@ const WidgetPending = ({ isOpen, onClose, date, feedbacks, formID }) => {
         </div>
         <div className="feedback-container">
           <div className="feedback-scroll">
-            {feedbacks.map((feedback, index) => (
-              <p key={index}>{feedback}</p>
-            ))}
+            {Array.isArray(feedbacks) && feedbacks.length > 0 ? (
+              feedbacks.map((feedback, index) => (
+                <p key={index}>{feedback}</p>
+              ))
+            ) : (
+              <p>Your application is currently on hold pending further review. To proceed, we kindly request that you submit the necessary documentation, such as proof of qualifications or additional references. </p>
+            )}
             <button
               className="buttonpending"
               onClick={sendReminder}
