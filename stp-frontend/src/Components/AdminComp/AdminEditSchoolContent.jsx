@@ -111,7 +111,7 @@ const AdminEditSchoolContent = () => {
                         password: '', 
                         confirm_password: '',
                         school_shortDesc: schoolDetails.shortDescription || '',
-                        school_fullDesc: schoolDetails.fullDescripton || '',
+                        school_fullDesc: schoolDetails.fullDescription || '',
                         country: schoolDetails.country_id || '',
                         state: schoolDetails.state_id || '',
                         city: schoolDetails.city_id || '',
@@ -236,7 +236,11 @@ const AdminEditSchoolContent = () => {
         selectedFeatures.forEach(feature => {
             formPayload.append("featured[]", feature);
         });
-        
+          // Append the icon if it exists
+       // Only append the new logo if one is selected
+       if (formData.logo instanceof File) {
+        formPayload.append("logo", formData.logo); // New logo file
+    }
         // Append cover photo if available
         if (coverFile) {
             formPayload.append('cover_photo', coverFile);
@@ -405,12 +409,21 @@ useEffect(() => {
 
     const handleLogoChange = (e) => {
         const file = e.target.files[0];
+        if (file) {
+        // Set the new logo file in form data
         setFormData(prev => ({
             ...prev,
             logo: file
         }));
+        
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setNewLogo(reader.result); // This is just for preview purposes
+        };
+        reader.readAsDataURL(file); // Read the file as a data URL for the preview
+    }
     };
-
+    
     const handleFieldChange = (e) => {
         const { id, value, type, files } = e.target;
         if (type === "file") {
@@ -708,7 +721,7 @@ useEffect(() => {
     return (
         <Container fluid className="admin-add-school-container">
             {error && <div className="alert alert-danger">{error}</div>}
-            <form onSubmit={handleSubmit}>
+     
                 <AdminFormComponent
                    formTitle="School Information"
                    checkboxTitle="School Advertising Feature"
@@ -748,7 +761,7 @@ useEffect(() => {
                    showPreview={showPreview}
                    previewFile={previewFile}
                 />
-            </form>
+  
         </Container>
     );
 };

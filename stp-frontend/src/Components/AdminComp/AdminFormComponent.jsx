@@ -69,7 +69,9 @@ const AdminFormComponent = ({
   coverUploadProps,
   coverInputProps,
   albumUploadProps,
-  albumInputProps
+  albumInputProps,
+  selectedStartDate,
+  selectedEndDate
 
 }) => {
   const [formData, setFormData] = useState({});
@@ -83,9 +85,8 @@ const AdminFormComponent = ({
   };
   
    // Add useState hooks for managing selected dates
-   const [selectedStartDate, setSelectedStartDate] = useState('');
-   const [selectedEndDate, setSelectedEndDate] = useState('');
-   
+
+ 
   //  const handleDateChange = (date, type) => {
   //    if (!date) return;
  
@@ -100,34 +101,28 @@ const AdminFormComponent = ({
   //    }
   //  };
  
-   const handleDateClick = (date) => {
-     const adjustedDate = new Date(date);
-     adjustedDate.setHours(0, 0, 0, 0); // Set time to midnight
+  const handleDateClick = (date) => {
+    const adjustedDate = new Date(date);
+    adjustedDate.setHours(0, 0, 0, 0); // Set time to midnight
+
+    if (!selectedStartDate) {
+      handleDateChange(adjustedDate, 'start');
+    } else if (selectedStartDate && !selectedEndDate) {
+      handleDateChange(adjustedDate, 'end');
+    } else {
+      handleDateChange(adjustedDate, 'start');
+    }
+  };
  
-     if (!selectedStartDate) {
-       // Set start date if no start date is selected
-       setSelectedStartDate(adjustedDate);
-       handleDateChange(adjustedDate, 'start');
-     } else if (selectedStartDate && !selectedEndDate) {
-       // Set end date if start date is selected and end date is not
-       setSelectedEndDate(adjustedDate);
-       handleDateChange(adjustedDate, 'end');
-     } else {
-       // Reset both dates if a new start date is selected after end date
-       setSelectedStartDate(adjustedDate);
-       setSelectedEndDate(null);
-       handleDateChange(adjustedDate, 'start');
-     }
-   };
- 
-   const formatDateTimeLocal = (date) => {
-     const year = date.getFullYear();
-     const month = String(date.getMonth() + 1).padStart(2, '0');
-     const day = String(date.getDate()).padStart(2, '0');
-     const hours = String(date.getHours()).padStart(2, '0');
-     const minutes = String(date.getMinutes()).padStart(2, '0');
-     return `${year}-${month}-${day}T${hours}:${minutes}`;
-   };
+  const formatDateTimeLocal = (date) => {
+    if (!date) return '';
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  };
  
 const [coverFile, setCoverFile] = useState(null);
 const [albumFiles, setAlbumFiles] = useState([]);
@@ -226,6 +221,7 @@ const { getRootProps: getAlbumRootProps, getInputProps: getAlbumInputProps } = u
     setAlbumFiles(prevFiles => [...prevFiles, ...acceptedFiles]);
   },
 });
+
 const handleRadioChange = (radioId, value) => {
   setFormData((prevData) => ({
     ...prevData,
@@ -556,48 +552,50 @@ const handleRadioChange = (radioId, value) => {
             ))}
             
 
-{formPeriod && (
+            {formPeriod && (
         <Col md={12}>
           <Row>
             <Col md={12}>
-            <Form.Group controlId="banner_start" className="mb-3">
-              <Form.Label>Banner Start</Form.Label>
-              <Form.Control
-                type="datetime-local"
-                value={selectedStartDate || ''} // Use selectedStartDate from state
-                onChange={(e) => {
-                  setSelectedStartDate(e.target.value); // Update state on change
-                }}
-                required
-              />
-            </Form.Group>
-
+              <Form.Group controlId="banner_start" className="mb-3">
+                <Form.Label>Banner Start</Form.Label>
+                <Form.Control
+                  type="datetime-local"
+                  value={selectedStartDate ? formatDateTimeLocal(selectedStartDate) : ''}
+                  onChange={(e) => {
+                    const newDate = new Date(e.target.value);
+                    handleDateChange(newDate, 'start');
+                  }}
+                  required
+                />
+              </Form.Group>
             </Col>
             <Col md={12}>
-           
-            <Form.Group controlId="banner_end" className="mb-3">
-              <Form.Label>Banner End</Form.Label>
-              <Form.Control
-                type="datetime-local"
-                value={selectedEndDate || ''} // Use selectedEndDate from state
-                onChange={(e) => {
-                  setSelectedEndDate(e.target.value); // Update state on change
-                }}
-                required
-              />
-            </Form.Group>
+              <Form.Group controlId="banner_end" className="mb-3">
+                <Form.Label>Banner End</Form.Label>
+                <Form.Control
+                  type="datetime-local"
+                  value={selectedEndDate ? formatDateTimeLocal(selectedEndDate) : ''}
+                  onChange={(e) => {
+                    const newDate = new Date(e.target.value);
+                    handleDateChange(newDate, 'end');
+                  }}
+                  required
+                />
+              </Form.Group>
             </Col>
             <Col md={12}>
               <div className="date-picker-container">
-              <Calendar
-                selectRange={true}
-                onChange={(range) => {
-                  handleDateChange(range.startDate, "start");
-                  handleDateChange(range.endDate, "end");
-                }}
-              />
-
-
+                <Calendar
+                  selectRange={false}
+                  onClickDay={handleDateClick}
+                  value={
+                    selectedStartDate
+                      ? selectedEndDate
+                        ? [selectedStartDate, selectedEndDate]
+                        : selectedStartDate
+                      : null
+                  }
+                />
               </div>
             </Col>
           </Row>
@@ -826,7 +824,7 @@ const handleRadioChange = (radioId, value) => {
           <Form.Group key={field.id} controlId={field.id} className="ms-2">
             <Form.Label>{field.label}</Form.Label>
             <Editor
-              apiKey="y5c72cgxrai71v1jmggt9a2gx878yajnqxrxxkhtylowcqbb"
+              apiKey="2k66p00ufe31mut5ctxu5s6cegpthu6kzc3pd0ap5fsswfst"
               value={field.value} // Bind TinyMCE's value to the field's value
               onEditorChange={field.onChange} // Handle changes using field's onChange function
               init={{

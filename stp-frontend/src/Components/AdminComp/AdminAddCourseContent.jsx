@@ -52,7 +52,9 @@ const AdminAddCourseContent = () => {
         formPayload.append("qualification", qualification);
         formPayload.append("mode", mode);
 
-    
+        if (logoFile) {
+            formData.append('logo', logoFile);
+        }
         // Append each selected intake value as "intake[]"
         selectedIntakes.forEach(intake => {
             formPayload.append("intake[]", intake);

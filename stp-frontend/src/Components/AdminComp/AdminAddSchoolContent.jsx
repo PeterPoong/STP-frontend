@@ -36,6 +36,7 @@ const AdminAddSchoolContent = () => {
         confirm_password: "",
         school_shortDesc: "",
         school_fullDesc: "",
+        location:"",
         logo: null
     });
     const [selectedFeatures, setSelectedFeatures] = useState([]);
@@ -55,8 +56,13 @@ const AdminAddSchoolContent = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         console.log("Submitting form data:", formData); // Debugging line
-        const { name, email, category, state, city, account, country, school_address, school_website, contact_number, person_in_charge_email, person_in_charge_name, person_in_charge_contact, country_code, confirm_password, school_shortDesc, school_fullDesc, password } = formData;
+        const { name, email, logo, location, category, state, city, account, country, school_address, school_website, contact_number, person_in_charge_email, person_in_charge_name, person_in_charge_contact, country_code, confirm_password, school_shortDesc, school_fullDesc, password } = formData;
         
+        console.log("Form Data being sent:", formData);
+        Object.keys(formData).forEach(key => {
+            console.log(`${key}: ${formData[key]}`);
+        });
+       
         const formPayload = new FormData();
         formPayload.append("school_address", formData.school_address);
         formPayload.append("name", name);
@@ -74,25 +80,33 @@ const AdminAddSchoolContent = () => {
         formPayload.append("state", state);
         formPayload.append("city", city);
         formPayload.append("password", password);
+        formPayload.append("location", location);
         formPayload.append("confirm_password", confirm_password);
         formPayload.append("school_shortDesc", school_shortDesc);
         formPayload.append("school_fullDesc", school_fullDesc);
+        console.log("Selected Features:", selectedFeatures);
     
         // Append each feature id individually to formPayload as featured[]
         selectedFeatures.forEach(feature => {
             formPayload.append("featured[]", feature);
         });
+       
+        if (logo) {
+            formPayload.append('logo', logo);
+        }
     
         // Append cover photo if available
         if (coverFile) {
-            formPayload.append('cover_photo', coverFile);
+            formPayload.append('cover', coverFile);
         }
     
         // Append album files if available
         albumFiles.forEach((file, index) => {
-            formPayload.append(`album_photos[${index}]`, file);
+            formPayload.append(`album[${index}]`, file);
         });
-    
+      for (let pair of formPayload.entries()) {
+            console.log(`${pair[0]}: ${pair[1]}`);
+        }
         try {
             console.log("FormData before submission:", formPayload);
             
@@ -114,7 +128,10 @@ const AdminAddSchoolContent = () => {
                 throw new Error(`School Registration failed: ${addSchoolData.message}`);
             }
         } catch (error) {
+            
             setError('An error occurred during school registration. Please try again later.');
+            console.error('Error Details:', addSchoolData);
+            console.error('Validation Errors:', addSchoolData.errors); // Backend validation errors
             console.error('Error during school registration:', error);
         }
     };
@@ -442,6 +459,15 @@ const AdminAddSchoolContent = () => {
     ];
 
     const formAddress = [
+        {
+            id: "location",
+            label: "School Location (Google Map URL)",
+            type: "text",
+            placeholder: "Enter School Location",
+            value: formData.location,
+            onChange: handleFieldChange,
+            required: true
+        },
         {
             id: "school_address",
             label: "School Full Address",

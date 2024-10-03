@@ -62,6 +62,9 @@ const AdminEditCourseContent = () => {
         selectedIntakes.forEach(intake => {
             formPayload.append("intake[]", intake);
         });
+
+          // Log the selectedCourses array to check courseFeatured[]
+    console.log('Selected Courses (courseFeatured[]):', selectedCourses);
         selectedCourses.forEach(course => {
             formPayload.append("courseFeatured[]", course);
         });
