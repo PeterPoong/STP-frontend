@@ -699,9 +699,10 @@ const CourseListing = ({
                     <span style={{ paddingLeft: "10px" }}>
                       {program.state || "N/A"}, {program.country || "N/A"}
                     </span>
-                    <a
-                      href="#"
+                    {/* <a
+                      href={program.school_location}
                       className="map-link"
+                      target="_blank"
                       style={{
                         paddingLeft: "35px",
                         fontWeight: "lighter",
@@ -709,7 +710,7 @@ const CourseListing = ({
                       }}
                     >
                       click and view on map
-                    </a>
+                    </a> */}
                   </div>
                 </div>
               </div>

@@ -350,7 +350,7 @@ const SearchCourse = ({ currentCourses }) => {
       {/* Country Dropdown */}
       <Row
         className="align-items-center mb-2 mb-md-0"
-        style={{ marginTop: "30px" }}
+        style={{ marginTop: "10px" }}
       >
         <Col xs={12} sm={4} md={3} lg={2} className="mb-2 mb-sm-0">
           <ButtonGroup className="w-100">

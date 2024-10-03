@@ -336,7 +336,7 @@
   }
 
   .country-dropdown-institute,
-  .university-button {
+  .university-dropdown-institute{
     width: 100%; /* Full width */
     min-width: 0; /* Remove fixed min-width for better responsiveness */
   }

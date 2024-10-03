@@ -379,7 +379,7 @@ const SearchInstitute = () => {
               fontWeight: "lighter",
               textDecoration: "none",
               cursor: "pointer",
-              marginTop: "30px",
+              marginTop: "10px",
             }}
           >
             <i
