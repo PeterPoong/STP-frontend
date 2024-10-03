@@ -1,43 +1,52 @@
 // src/components/CustomTextArea.jsx
 import React from "react";
-import { Editor } from "@tinymce/tinymce-react";
+import ReactQuill, { Quill } from "react-quill";
+import "react-quill/dist/quill.snow.css"; // Import the Quill theme
+
+// Add custom size styles to Quill's registry
+const Size = Quill.import("formats/size");
+Size.whitelist = ["10px", "12px", "14px", "16px", "18px", "24px", "32px"]; // Add pixel sizes to the whitelist
+Quill.register(Size, true);
 
 const CustomTextArea = ({ value, onChange }) => {
   return (
-    <Editor
-      apiKey="2k66p00ufe31mut5ctxu5s6cegpthu6kzc3pd0ap5fsswfst" // Your API key
+    <ReactQuill
       value={value}
-      init={{
-        height: 400,
-        menubar: false,
-        plugins: [
-          "advlist",
-          "autolink",
-          "link",
-          "image",
-          "lists",
-          "charmap",
-          "preview",
-          "anchor",
-          "pagebreak",
-          "searchreplace",
-          "wordcount",
-          "visualblocks",
-          "code",
-          "fullscreen",
-          "insertdatetime",
-          "media",
-          "table",
-          "emoticons",
-        ],
-        toolbar:
-          "undo redo | styles | bold italic | alignleft aligncenter alignright alignjustify | " +
-          "bullist numlist outdent indent | link image | print preview media fullscreen | " +
-          "forecolor backcolor emoticons | help",
-
-        menubar: false,
+      onChange={onChange}
+      modules={{
+        toolbar: {
+          container: [
+            [{ header: "1" }, { header: "2" }, { font: [] }],
+            // [
+            //   {
+            //     size: ["10px", "12px", "14px", "16px", "18px", "24px", "32px"],
+            //   },
+            // ],
+            [{ list: "ordered" }, { list: "bullet" }],
+            ["bold", "italic", "underline", "strike"], // toggled buttons
+            [{ align: [] }],
+            ["link", "image"],
+            ["clean"], // remove formatting button
+            ["code-block"],
+          ],
+        },
       }}
-      onEditorChange={onChange}
+      formats={[
+        "header",
+        "font",
+        "size", // Include 'size' for font size based on px
+        "bold",
+        "italic",
+        "underline",
+        "strike",
+        "list",
+        "bullet",
+        "align",
+        "link",
+        "image",
+        "code-block",
+      ]}
+      theme="snow" // Sets the Quill theme to "snow"
     />
   );
 };
