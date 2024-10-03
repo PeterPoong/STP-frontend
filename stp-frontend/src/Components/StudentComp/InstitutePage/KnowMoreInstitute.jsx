@@ -162,7 +162,9 @@ const KnowMoreInstitute = () => {
 
   if (!institutes || institutes.length === 0) {
     return (
-      <p>No institute selected. Please go back and choose an institute.</p>
+      <div className="spinner-container">
+        <div className="custom-spinner"></div>
+      </div>
     );
   }
 
@@ -170,19 +172,18 @@ const KnowMoreInstitute = () => {
     navigate(`/knowMoreInstitute/${id}`); // Navigate to CourseDetail with the courseID
   };
 
-  const handleApplyNow = (program,institute) => {
-    console.log('Program object:', program);
-    navigate(`/studentApplyCourses/${program.id}`,
-      {  
-        state: {
-          programId: program.id,
-          schoolLogoUrl: `${import.meta.env.VITE_BASE_URL}storage/${program.course_logo || program.logo
-            }`,
-          schoolName: institute.name,
-          courseName: program.course_name
-        }
-        
-      });
+  const handleApplyNow = (program, institute) => {
+    console.log("Program object:", program);
+    navigate(`/studentApplyCourses/${program.id}`, {
+      state: {
+        programId: program.id,
+        schoolLogoUrl: `${import.meta.env.VITE_BASE_URL}storage/${
+          program.course_logo || program.logo
+        }`,
+        schoolName: institute.name,
+        courseName: program.course_name,
+      },
+    });
   };
 
   return (
@@ -195,7 +196,7 @@ const KnowMoreInstitute = () => {
               <img
                 src={
                   institute.school_cover &&
-                    institute.school_cover.schoolMedia_location
+                  institute.school_cover.schoolMedia_location
                     ? `${baseURL}storage/${institute.school_cover.schoolMedia_location}`
                     : headerImage // Use headerImage as the default if school_cover is not available
                 }
@@ -219,40 +220,41 @@ const KnowMoreInstitute = () => {
                     }}
                   />
                 </Col>
-                <Col xs={12} md={6} className="d-flex align-items-center">
-                  <div style={{ marginLeft: "30px" }}>
+                <Col
+                  xs={12}
+                  md={6}
+                  className="d-flex flex-column align-items-start"
+                >
+                  <div style={{ marginLeft: "15px", marginTop: "15px" }}>
                     <h4>{institute.name}</h4>
-                    <Row>
-                      <p>
-                        <i className="bi bi-geo-alt"></i>
-                        <span style={{ paddingLeft: "10px" }}>
-                          {institute.city}, {institute.state},{" "}
-                          {institute.country}
-                        </span>
-                        <i
-                          className="bi bi-mortarboard"
-                          style={{ marginLeft: "30px" }}
-                        ></i>
-                        <span style={{ paddingLeft: "10px" }}>
-                          {institute.category}
-                        </span>
-                      </p>
-                    </Row>
+                    <p>
+                      <i className="bi bi-geo-alt"></i>
+                      <span style={{ paddingLeft: "10px" }}>
+                        {institute.city}, {institute.state}, {institute.country}
+                      </span>
+                      <i
+                        className="bi bi-mortarboard"
+                        style={{ marginLeft: "30px" }}
+                      ></i>
+                      <span style={{ paddingLeft: "10px" }}>
+                        {institute.category}
+                      </span>
+                    </p>
                   </div>
                 </Col>
                 <Col
                   xs={12}
                   md={3}
-                  className="d-flex align-items-center justify-content-center"
+                  className="d-flex align-items-center justify-content-center justify-content-md-end"
                 >
                   <Button
                     style={{
                       backgroundColor: "#FF6B00",
                       border: "none",
-                      width: "180px",
+                      width: "100%",
+                      maxWidth: "180px",
                       height: "50px",
                       marginTop: "20px",
-                      marginLeft: "130px",
                     }}
                   >
                     Contact School
@@ -603,8 +605,8 @@ const KnowMoreInstitute = () => {
                   </Row>
                 </div>
               </div>
-              <Row className="d-flex flex-wrap">
-                <Col xs={6} sm={6} md={6} className="d-flex">
+              <Row className="d-flex flex-wrap ">
+                <Col xs={6} sm={6} md={6} className="d-flex mb-3">
                   <div className="card mt-4 total-course-card w-100">
                     <div className="card-body">
                       <Row className="justify-content-center">
@@ -645,7 +647,7 @@ const KnowMoreInstitute = () => {
                   </div>
                 </Col>
 
-                <Col xs={6} sm={6} md={6} className="d-flex">
+                <Col xs={6} sm={6} md={6} className="d-flex mb-3">
                   <div className="card mt-4 intake-period-card w-100">
                     <div className="card-body">
                       <Row className="justify-content-center">
@@ -731,7 +733,7 @@ const KnowMoreInstitute = () => {
                   <img
                     src={
                       institute.school_cover &&
-                        institute.school_cover.schoolMedia_location
+                      institute.school_cover.schoolMedia_location
                         ? `${baseURL}storage/${institute.school_cover.schoolMedia_location}`
                         : headerImage // Use default headerImage if school_cover is not available
                     }
@@ -846,8 +848,9 @@ const KnowMoreInstitute = () => {
                               <div className="d-flex align-items-center">
                                 <div style={{ paddingLeft: "20px" }}>
                                   <img
-                                    src={`${baseURL}storage/${course.course_logo || institute.logo
-                                      }`}
+                                    src={`${baseURL}storage/${
+                                      course.course_logo || institute.logo
+                                    }`}
                                     alt={institute.name}
                                     width="100"
                                   />
@@ -950,7 +953,9 @@ const KnowMoreInstitute = () => {
                                 <div className="apply-button mt-3">
                                   <button
                                     className="featured"
-                                    onClick={() => handleApplyNow(course,institute)}
+                                    onClick={() =>
+                                      handleApplyNow(course, institute)
+                                    }
                                   >
                                     Apply Now
                                   </button>
