@@ -17,6 +17,7 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import moment from "moment";
 import { Eye, EyeOff } from "react-feather";
+import styles from "../../css/SchoolPortalStyle/SchoolPortalLogin.module.css";
 
 const SchoolPortalLogin = () => {
   const [password, setPassword] = useState("");
@@ -197,7 +198,7 @@ const SchoolPortalLogin = () => {
                   <Button
                     variant="danger"
                     type="submit"
-                    className="my-3 m-0"
+                    className={`my-3 m-0 ${styles.loginButton}`}
                     style={{ width: "100%", height: "40px" }}
                   >
                     Login

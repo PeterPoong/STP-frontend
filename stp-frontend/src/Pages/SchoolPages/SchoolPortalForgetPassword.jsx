@@ -92,22 +92,31 @@ const SchoolPortalForgetPassword = () => {
         }
       );
 
-      console.log("Response status:", response.status);
-      const responseText = await response.text();
-      console.log("Raw response:", responseText);
+      // console.log("Response status:", response.status);
+      const responseText = await response.json();
+      // console.log("Raw responses:", responseText);
 
       if (response.ok) {
-        console.log("OTP verified successfully");
+        // console.log("OTP verified successfully");
         setSuccess("OTP verified successfully. Please set your new password.");
         setStep(3); // Move to password reset step
       } else if (response.status === 404) {
-        console.error("Verify OTP endpoint not found");
+        // console.error("Verify OTP endpoint not found");
         setError(
           "The OTP verification service is currently unavailable. Please try again later or contact support."
         );
       } else {
-        console.error("Failed to verify OTP:", responseText);
-        setError(responseText || "Failed to verify OTP. Please try again.");
+        if (responseText.message === "Validation Error") {
+          setError(responseText.error.otp);
+          // console.log("error message", responseText.error.otp);
+        } else {
+          setError(responseText.message);
+
+          // console.log("wrong");
+        }
+        // setError(
+        //   responseText["success"] || "Failed to verify OTP. Please try again."
+        // );
       }
     } catch (error) {
       console.error("Error in verifying OTP:", error);
