@@ -187,9 +187,9 @@ const Sidebar = ({ onDropdownItemSelect, selectTabPage }) => {
         );
 
         if (!response.ok) {
-          setErrorUploadMessage(response.statusText);
           const errorData = await response.json();
-          console.log("errorTest:", errorData.error);
+          setErrorUploadMessage("Image must be either: jpeg,png or jpg");
+          console.log("errorTest:", errorData);
           throw new Error("error:".response);
         }
         const data = await response.json();
