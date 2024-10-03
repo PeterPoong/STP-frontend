@@ -874,6 +874,14 @@ const InstituteListing = ({
     }); // Navigate with state_name
   };
 
+  if (!filteredPrograms || filteredPrograms.length === 0) {
+    return (
+      <div className="spinner-container">
+        <div className="custom-spinner"></div>
+      </div>
+    );
+  }
+
   const mappedInstitutes = currentInstitutes.map((institute, index) => (
     <>
       <div
@@ -1306,6 +1314,7 @@ const InstituteListing = ({
               style={{ height: "175px" }}
             />
           </div>
+
           {loading ? (
             <div className="text-center">
               <Spinner animation="border" role="status">

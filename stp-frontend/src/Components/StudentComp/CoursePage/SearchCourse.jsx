@@ -81,6 +81,16 @@ const SearchCourse = ({ currentCourses }) => {
     setSearchQuery("");
     setCurrentPage(1);
 
+    // Set the default country (Malaysia) as the selected country
+    if (countries.length > 0) {
+      const malaysia = countries.find(
+        (country) => country.country_name === "Malaysia"
+      );
+      if (malaysia) {
+        setSelectedCountry(malaysia); // Set Malaysia as default
+      }
+    }
+
     // Toggle reset trigger to notify CourseListing of the reset
     setResetTrigger((prev) => !prev);
 
@@ -161,6 +171,7 @@ const SearchCourse = ({ currentCourses }) => {
         }
 
         const result = await response.json();
+        // Ensure the response is an array
         setCountries(result.data || []);
 
         // Set Malaysia as the default country if it exists
@@ -168,15 +179,7 @@ const SearchCourse = ({ currentCourses }) => {
           (country) => country.country_name === "Malaysia"
         );
         if (malaysia) {
-          setDefaultCountry(malaysia);
-          // Check local storage for selected country
-          const storedCountry = localStorage.getItem("selectedCountry");
-          if (storedCountry) {
-            const parsedCountry = JSON.parse(storedCountry);
-            setSelectedCountry(parsedCountry);
-          } else {
-            setSelectedCountry(malaysia);
-          }
+          setSelectedCountry(malaysia);
         }
       } catch (error) {
         console.error("Error fetching countries:", error);
@@ -574,11 +577,11 @@ const SearchCourse = ({ currentCourses }) => {
           />
         </InputGroup>
       </Form>
-      {loading && (
+      {/* {loading && (
         <div className="d-flex justify-content-center">
           <Spinner animation="border" />
         </div>
-      )}
+      )} */}
       {error && <Alert variant="danger">{error}</Alert>}
 
       {shouldDisplayBlankSlate ? (

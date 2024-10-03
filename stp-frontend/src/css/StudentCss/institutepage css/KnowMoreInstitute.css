@@ -55,7 +55,7 @@
   margin-top: 50px;
 }
 
-.about-institute-container {
+.about-institute-school-container {
   position: relative;
   top: -100px; /* Adjust this value to control the overlap */
 }
@@ -113,29 +113,22 @@
   font-size: 20px;
   font-weight: bold;
 }
-
-.total-course-card {
-  text-align: center; /* Center-align text */
-}
-
-.total-course-card .card-body {
+.total-course-card, .intake-period-card {
+  text-align: center;
   display: flex;
   flex-direction: column;
-  align-items: center; /* Center-align content vertically */
-  justify-content: center; /* Center-align content horizontally */
+  justify-content: center;
+  align-items: center;
+}
+
+.total-course-card .card-body, .intake-period-card .card-body {
   padding: 20px;
 }
 
-.intake-period-card {
-  text-align: center; /* Center-align text */
-}
-
-.intake-period-card .card-body {
-  display: flex;
-  flex-direction: column;
-  align-items: center; /* Center-align content vertically */
-  justify-content: center; /* Center-align content horizontally */
-  padding: 20px;
+.total-course-card .card-title, .intake-period-card .card-title,
+.total-course-card h5, .intake-period-card h5 {
+  font-size: 1rem;
+  color: #514E4E;
 }
 
 .map-responsive {
@@ -155,12 +148,10 @@
 
 
 .image-gallery {
-  place-items: center; /* Center both horizontally and vertically */
-
-  display:inline-block;
-  justify-content: space-between;
-  align-items: center;
-  justify-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 20px;
 }
 
 .image-gallery-institute-modal {
@@ -193,18 +184,73 @@
 }
  
 .icon-lg {
-  font-size: 5rem;
+  font-size: 2rem;
+  padding-left: 20px;
 }
+
+@media (max-width: 1200px) {
+  .gallery-image {
+    max-width: 120px;
+    height: 90px;
+  }
+}
+
+@media (max-width: 992px) {
+  .gallery-image {
+    max-width: 100px;
+    height: 80px;
+  }
+}
+
 /* CSS for smaller screens */
 @media (max-width: 768px) {
   .icon-lg {
     font-size: 3rem; /* Smaller size for larger screens */
+  }
+
+  .total-course-card, .intake-period-card {
+    flex-direction: row;
+    align-items: center;
+  }
+  
+  .total-course-card .card-title, .intake-period-card .card-title
+  .total-course-card h5, .intake-period-card h5 {
+    font-size: 0.875rem; /* Smaller font size */
+    text-align: center;
+  }
+
+  .about-institute-school-container {
+    position: relative;
+    top: 0px; /* Adjust this value to control the overlap */
   }
 }
 
 @media (max-width: 576px) {
   .icon-lg {
     font-size: 2rem; /* Even smaller size for smaller screens */
+  }
+
+  .gallery-image {
+    max-width: 80px;
+    height: 60px;
+  }
+
+  .total-course-card, .intake-period-card {
+    flex-direction: row;
+    align-items: center;
+    
+  }
+
+  .total-course-card .card-title, .intake-period-card .card-title,
+  .total-course-card h6, .intake-period-card h6 {
+    font-size: 0.75rem; /* Even smaller font size */
+    text-align: center;
+
+  }
+
+  .about-institute-school-container {
+    position: relative;
+    top: 10px; /* Adjust this value to control the overlap */
   }
 }
 
@@ -217,12 +263,12 @@
 }
 
 .custom-spinner {
-  border: 8px solid rgba(0, 0, 0, 0.1);
-  border-left-color: #3498db;
-  border-radius: 50%;
   width: 50px;
   height: 50px;
-  animation: spin 1s linear infinite;
+  border: 5px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 5px solid #3498db;
+  animation: spin 2s linear infinite;
 }
 
 @keyframes spin {
@@ -234,3 +280,10 @@
   }
 }
 
+@media (max-width: 576px) {
+  .custom-spinner {
+    width: 30px;
+    height: 30px;
+    border-width: 3px;
+  }
+}

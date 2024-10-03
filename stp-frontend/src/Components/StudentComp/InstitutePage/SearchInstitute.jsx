@@ -58,6 +58,16 @@ const SearchInstitute = () => {
     setSearchQuery("");
     setCurrentPage(1);
 
+    // Set the default country (Malaysia) as the selected country
+    if (countries.length > 0) {
+      const malaysia = countries.find(
+        (country) => country.country_name === "Malaysia"
+      );
+      if (malaysia) {
+        setSelectedCountry(malaysia); // Set Malaysia as default
+      }
+    }
+
     setResetTrigger((prev) => !prev);
 
     fetchData("");
@@ -127,7 +137,42 @@ const SearchInstitute = () => {
     }
   }, [selectedCountry]);
 
-  // Fetch countries from API
+  // // Fetch countries from API
+  // useEffect(() => {
+  //   const fetchCountries = async () => {
+  //     try {
+  //       const response = await fetch(countriesURL);
+  //       if (!response.ok) {
+  //         throw new Error(`HTTP error! Status: ${response.status}`);
+  //       }
+  //       const result = await response.json();
+  //       setCountries(result.data || []);
+
+  //       // Set Malaysia as the default country if it exists
+  //       const malaysia = result.data.find(
+  //         (country) => country.country_name === "Malaysia"
+  //       );
+  //       if (malaysia) {
+  //         setDefaultCountry(malaysia);
+  //         // Check local storage for selected country
+  //         const storedCountry = localStorage.getItem("selectedCountry");
+  //         if (storedCountry) {
+  //           const parsedCountry = JSON.parse(storedCountry);
+  //           setSelectedCountry(parsedCountry);
+  //         } else {
+  //           setSelectedCountry(malaysia);
+  //         }
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching countries:", error);
+  //       setCountries([]);
+  //     }
+  //   };
+
+  //   fetchCountries();
+  // }, []);
+
+  // Fetch institutes from API
   useEffect(() => {
     const fetchCountries = async () => {
       try {
@@ -136,6 +181,8 @@ const SearchInstitute = () => {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
         const result = await response.json();
+
+        // Ensure the response is an array
         setCountries(result.data || []);
 
         // Set Malaysia as the default country if it exists
@@ -143,15 +190,7 @@ const SearchInstitute = () => {
           (country) => country.country_name === "Malaysia"
         );
         if (malaysia) {
-          setDefaultCountry(malaysia);
-          // Check local storage for selected country
-          const storedCountry = localStorage.getItem("selectedCountry");
-          if (storedCountry) {
-            const parsedCountry = JSON.parse(storedCountry);
-            setSelectedCountry(parsedCountry);
-          } else {
-            setSelectedCountry(malaysia);
-          }
+          setSelectedCountry(malaysia);
         }
       } catch (error) {
         console.error("Error fetching countries:", error);
@@ -162,7 +201,6 @@ const SearchInstitute = () => {
     fetchCountries();
   }, []);
 
-  // Fetch institutes from API
   useEffect(() => {
     const fetchInstitutes = async () => {
       try {
@@ -435,11 +473,11 @@ const SearchInstitute = () => {
         </InputGroup>
       </Form>
 
-      {loading && (
+      {/* {loading && (
         <div className="d-flex justify-content-center">
           <Spinner animation="border" />
         </div>
-      )}
+      )} */}
 
       {error && <Alert variant="danger">{error}</Alert>}
 
