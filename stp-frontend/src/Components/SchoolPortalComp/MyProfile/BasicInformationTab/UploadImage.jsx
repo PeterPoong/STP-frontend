@@ -224,17 +224,92 @@ function UploadBox() {
         <h4 className="mb-2">Upload Image</h4>
         <hr className="divider-line" />
         <p style={{ fontSize: "20px", paddingLeft: "20px" }}>Cover Photo</p>
-        <div
+
+        {accountType === 65 ? (
+          <>
+            <div
+              className={`upload-box ${highlight ? "highlight" : ""}`}
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+            >
+              <input
+                type="file"
+                id="coverFileUpload"
+                multiple
+                onChange={handleFileChange}
+                accept=".jpg, .jpeg, .png"
+                style={{ display: "none" }}
+              />
+              <label htmlFor="coverFileUpload" className="upload-box-label">
+                <FaRegImage className="upload-icon" />
+                <p>
+                  <span className="upload-text">
+                    Click to upload cover photo
+                  </span>{" "}
+                  or drag and drop
+                </p>
+                <p className="upload-instructions">
+                  JPG, JPEG, PNG less than 1MB
+                </p>
+              </label>
+            </div>
+
+            {/* Display uploaded files */}
+            {coverPhoto && (
+              <div className="uploaded-files-container">
+                <div className="uploaded-files">
+                  <div className="uploaded-file-box">
+                    <div className="text-with-link">
+                      <div className="text-container">
+                        <p className="image-with-text">
+                          <Image />
+                          {coverPhoto.schoolMedia_name}
+                        </p>
+                        <a
+                          href={`${import.meta.env.VITE_BASE_URL}storage/${
+                            coverPhoto.schoolMedia_location
+                          }`}
+                          className="click-here-text"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Click to view
+                        </a>
+                      </div>
+                      <Trash3
+                        className="delete-icon"
+                        onClick={handleRemoveCover}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </>
+        ) : (
+          <div className={`lockUploadCover ${highlight ? "highlight" : ""}`}>
+            <img src={Lock} alt="My Image" />
+            <p className="text-center text-white  px-5">
+              This feature is locked and available only with a premium account.
+            </p>
+            {/* <div className="sdv-div-plan-button rounded-pill ">
+      <button className="plan-button rounded-pill">Upgrade Now</button>
+    </div> */}
+          </div>
+        )}
+
+        {/* <div
           className={`upload-box ${highlight ? "highlight" : ""}`}
           onDrop={handleDrop}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
         >
-          {accountType === 66 ? (
+          {accountType === 65 ? (
             <>
               <input
                 type="file"
-                id="coverFileUpload" /* Unique ID for cover photo */
+                id="coverFileUpload"
                 multiple
                 onChange={handleFileChange}
                 accept=".jpg, .jpeg, .png"
@@ -269,10 +344,10 @@ function UploadBox() {
               </div>
             </>
           )}
-        </div>
+        </div> */}
 
         {/* Display uploaded files */}
-        {coverPhoto && (
+        {/* {coverPhoto && (
           <div className="uploaded-files-container">
             <div className="uploaded-files">
               <div className="uploaded-file-box">
@@ -298,7 +373,7 @@ function UploadBox() {
               </div>
             </div>
           </div>
-        )}
+        )} */}
 
         <hr className="divider-line" />
         <p style={{ fontSize: "20px", paddingLeft: "20px" }}>Photo Album</p>
