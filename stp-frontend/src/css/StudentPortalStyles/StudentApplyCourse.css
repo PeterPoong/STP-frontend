@@ -368,6 +368,12 @@ select__menu-list::-webkit-scrollbar-thumb:hover {
   color: white;
 }
 
+.second-runner-up
+{
+  background-color: #ff5900;
+  color: white;
+}
+
 .participation
 {
   background-color: #F07B00;
