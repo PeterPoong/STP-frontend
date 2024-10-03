@@ -38,9 +38,11 @@ function GeneralInformationForm() {
   const [updateStatus, setUpdateStatus] = useState("");
 
   const [showAlert, setShowAlert] = useState(false);
+  const [showError, setShowError] = useState(false);
+
+  const [contactError, setContactError] = useState("");
 
   const handleSubmit = async (e) => {
-    setUpdateStatus("false");
     e.preventDefault();
     const formData = {
       name: schoolName,
@@ -76,20 +78,27 @@ function GeneralInformationForm() {
         );
 
         if (!response.ok) {
+          setUpdateStatus("fail");
           const errorData = await response.json();
           console.log("Error Data:", errorData["errors"]);
+          const error = errorData["errors"];
+          if (error["contact"] !== null) {
+            setContactError(error["contact"]);
+          } else {
+            setContactError("");
+          }
+
           throw new Error(errorData["errors"] || "Internal Server Error");
         }
-
+        setUpdateStatus("success");
         console.log(response);
       } catch (error) {
-        console.error("There was a problem with the fetch operation:", error);
+        console.error("There was a problem submit:", error);
       }
     };
 
     await update();
     console.log("status", updateStatus);
-    setUpdateStatus("success");
   };
 
   useEffect(() => {
@@ -257,7 +266,12 @@ function GeneralInformationForm() {
   }, [state]);
 
   useEffect(() => {
+    if (!updateStatus) {
+      console.log("skip");
+      return;
+    }
     if (updateStatus === "success") {
+      console.log("success");
       setShowAlert(true);
       // Set a timer to hide the alert after 3 seconds
       const timer = setTimeout(() => {
@@ -266,6 +280,12 @@ function GeneralInformationForm() {
 
       // Clean up the timer when the component unmounts or updateStatus changes
       return () => clearTimeout(timer);
+    } else {
+      console.log("fail");
+      setShowError(true);
+      const timer = setTimeout(() => {
+        setShowError(false);
+      }, 1000);
     }
   }, [updateStatus]);
 
@@ -540,6 +560,15 @@ function GeneralInformationForm() {
           Update Successfully
         </Alert>
       )}
+
+      {showError && (
+        <Alert
+          variant="danger"
+          className={`fade-alert alert-position ${showError ? "show" : "hide"}`}
+        >
+          Something wrong !!
+        </Alert>
+      )}
       <h4 className="mb-2">General Information</h4>
       <hr className="divider-line" />
       <Row className="mb-3">
@@ -563,6 +592,9 @@ function GeneralInformationForm() {
           <Form.Group controlId="contactNumber">
             <Form.Label>
               Contact Number <span className="span-style">*</span>
+              {contactError && (
+                <span className="span-style">{contactError}</span>
+              )}
             </Form.Label>
             <PhoneInput
               country={"my"}
@@ -616,6 +648,7 @@ function GeneralInformationForm() {
             <Form.Control
               type="email"
               value={schoolEmail}
+              required
               onChange={(e) => setSchoolEmail(e.target.value)}
             />
           </Form.Group>
@@ -626,6 +659,7 @@ function GeneralInformationForm() {
             <Form.Control
               type="text"
               value={schoolWebsite}
+              required
               onChange={(e) => setSchoolWebsite(e.target.value)}
             />
           </Form.Group>
@@ -641,6 +675,7 @@ function GeneralInformationForm() {
             <Form.Control
               type="text"
               value={schoolAddress}
+              required
               onChange={(e) => setSchoolAddress(e.target.value)}
             />
           </Form.Group>
@@ -726,6 +761,7 @@ function GeneralInformationForm() {
               type="text"
               value={shortDescription}
               onChange={(e) => setShortDescription(e.target.value)}
+              required
             />
           </Form.Group>
         </Col>
