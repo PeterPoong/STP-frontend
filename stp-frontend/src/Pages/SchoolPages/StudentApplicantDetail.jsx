@@ -99,8 +99,7 @@ const SchoolViewApplicantDetail = () => {
       const formData = { studentId: studentId };
       console.log("formdata", formData);
       const response = await fetch(
-        `${
-          import.meta.env.VITE_BASE_URL
+        `${import.meta.env.VITE_BASE_URL
         }api/school/schoolApplicantCocurriculum`,
         {
           method: "POST",
@@ -221,8 +220,7 @@ const SchoolViewApplicantDetail = () => {
         per_page: itemsPerPage,
       };
       const response = await fetch(
-        `${
-          import.meta.env.VITE_BASE_URL
+        `${import.meta.env.VITE_BASE_URL
         }api/school/schoolTranscriptDocumentList`,
         {
           method: "POST",
@@ -378,8 +376,7 @@ const SchoolViewApplicantDetail = () => {
       console.log("Token:", token); // Log the token (be careful with this in production)
 
       const response = await fetch(
-        `${
-          import.meta.env.VITE_BASE_URL
+        `${import.meta.env.VITE_BASE_URL
         }api/school/schoolTranscriptCategoryList`,
         {
           method: "POST",
@@ -541,7 +538,7 @@ const SchoolViewApplicantDetail = () => {
 
   useEffect(() => {
     const storedAccountType =
-      
+
       localStorage.getItem("account_type");
     setAccountType(parseInt(storedAccountType, 10));
   }, []);
@@ -1056,7 +1053,7 @@ const SchoolViewApplicantDetail = () => {
             {studentPic ? (
               <img
                 src={`${import.meta.env.VITE_BASE_URL}storage/${studentPic}`}
-                className={`me-4 ms-2 bg-black ${styles.applicantPhoto}`}
+                className={` me-4 ms-2 bg-black ${styles.applicantPhoto}`}
               />
             ) : (
               <div className="text-center">
@@ -1170,7 +1167,7 @@ const SchoolViewApplicantDetail = () => {
                             onClick={() =>
                               copyToClipboard(
                                 `${firstName || ""} ${lastName || ""}`.trim() ||
-                                  ""
+                                ""
                               )
                             }
                           />
@@ -1210,7 +1207,11 @@ const SchoolViewApplicantDetail = () => {
                         <p>
                           <strong>Email Address</strong>
                         </p>
-                        <p>
+                        <p style={{
+                          wordWrap: 'break-word',
+                          overflowWrap: 'break-word',
+                          wordBreak: 'break-all'
+                        }}>
                           {email}{" "}
                           <Copy
                             size={16}
@@ -1305,15 +1306,8 @@ const SchoolViewApplicantDetail = () => {
                               <p className="mb-0">{achievement.date}</p>
                             </div>
                             <div className="col-6 col-sm-3 text-end">
-                              <span
-                                className={`position ${achievement.achievement_name
-                                  .toLowerCase()
-                                  .replace(
-                                    /\s+/g,
-                                    "-"
-                                  )} py-1 px-2 rounded-pill`}
-                              >
-                                {achievement.achievement_name}
+                              <span className={`position ${(achievement.title?.core_metaName?.toLowerCase() ?? '').replace(/\s+/g, '-')} py-1 px-2 rounded-pill`}>
+                                {achievement.title?.core_metaName || 'No Title'}
                               </span>
                             </div>
                           </div>

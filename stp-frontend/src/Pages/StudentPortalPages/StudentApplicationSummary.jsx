@@ -1771,7 +1771,11 @@ const StudentApplicationSummary = ({ }) => {
                             <p>
                               <strong>Email Address</strong>
                             </p>
-                            <p>
+                             <p style={{
+                            wordWrap: 'break-word',
+                            overflowWrap: 'break-word',
+                            wordBreak: 'break-all'
+                          }}>
                               {basicInfo?.email}{" "}
                               <Copy
                                 size={16}

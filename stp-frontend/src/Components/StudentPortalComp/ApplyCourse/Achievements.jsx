@@ -350,7 +350,7 @@ const Achievements = ({ onBack, onNext }) => {
       <h3 className="border-bottom pb-2 fw-normal">Achievements</h3>
       <div className="achievement-list">
         {achievements.map((achievement, index) => (
-          <div key={achievement.id || index} className="achievement-item row mb-4 border rounded p-4">
+          <div key={achievement.id || index} className="achievement-item row mb-4 border rounded p-4 mx-0">
             {achievement.isEditing ? (
               <>
                 <Form.Control
@@ -529,7 +529,7 @@ const Achievements = ({ onBack, onNext }) => {
       <Button
         variant="outline-primary"
         onClick={handleAddAchievement}
-        className="w-100 mt-3 sac-add-new-button"
+        className="w-100 mt-3 sac-add-new-button mx-0"
       >
         Add New Achievement +
       </Button>

@@ -978,7 +978,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                       </div>
                       <div className="d-flex">
                         <Button variant="link" className="p-0 me-2" onClick={() => handleSaveSubject(index, subIndex)}>
-                          <Save size={15} color="grey" />
+                          <Save size={15} color="green" />
                         </Button>
                         <Button variant="link" className="p-0" onClick={() => handleRemoveSubject(index, subIndex)}>
                           <Trash2 size={15} color="grey" />
@@ -1157,7 +1157,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
       <Button
         variant="outline-primary"
         onClick={handleAddTranscript}
-        className="w-100 mt-3 sac-add-new-button"
+        className="w-100 mt-3 sac-add-new-button mx-0"
       >
         Add New Transcript +
       </Button>

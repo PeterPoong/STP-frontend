@@ -1212,7 +1212,11 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
 
                         <div className="col-md-6 mb-3">
                           <p><strong>Email Address</strong></p>
-                          <p >{basicInfo?.student_email} <Copy size={16} className="cursor-pointer" onClick={() => copyToClipboard(basicInfo?.student_email)} /></p>
+                          <p style={{
+                            wordWrap: 'break-word',
+                            overflowWrap: 'break-word',
+                            wordBreak: 'break-all'
+                          }}>{basicInfo?.student_email} <Copy size={16} className="cursor-pointer" onClick={() => copyToClipboard(basicInfo?.student_email)} /></p>
                         </div>
                       </div>
                       <div className="row">
@@ -1266,9 +1270,10 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
                                   <p className="mb-0">{achievement.date}</p>
                                 </div>
                                 <div className="col-6 col-sm-3 text-end">
-                                  <span className={`position ${(achievement.achievement_name?.toLowerCase() ?? '').replace(/\s+/g, '-')} py-1 px-2 rounded-pill`}>
-                                    {achievement.achievement_name || 'No Title'}
+                                  <span className={`position ${(achievement.title?.core_metaName?.toLowerCase() ?? '').replace(/\s+/g, '-')} py-1 px-2 rounded-pill`}>
+                                    {achievement.title?.core_metaName || 'No Title'}
                                   </span>
+
                                 </div>
                               </div>
                             ))
