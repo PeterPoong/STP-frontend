@@ -9,7 +9,7 @@ const MyProfileWidget = ({ onSelectContent, profilePic }) => {
     const [isProfileExpanded, setIsProfileExpanded] = useState(false);
     const [isCoursesExpanded, setIsCoursesExpanded] = useState(false);
     const [selectedContent, setSelectedContent] = useState('');
-    const [showModal, setShowModal] = useState(false);
+    const [showModal,   setShowModal] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
     const [localProfilePic, setLocalProfilePic] = useState(defaultProfilePic);
     const [errorUploadMessage, setErrorUploadMessage] = useState('');
@@ -98,7 +98,7 @@ const MyProfileWidget = ({ onSelectContent, profilePic }) => {
                 const data = await response.json();
                 //console.log("File uploaded successfully:", data);
                 setShowModal(false);
-                setLocalProfilePic(`${import.meta.env.VITE_BASE_URL}storage/${data.data.porfilePic}`);
+                fetchStudentDetails();
             } catch (error) {
                 console.error("Error uploading file:", error);
                 setErrorUploadMessage(error.message || 'An unexpected error occurred.');
@@ -106,6 +106,43 @@ const MyProfileWidget = ({ onSelectContent, profilePic }) => {
         }
     };
     /*end */
+
+
+    const fetchStudentDetails = async () => {
+        try {
+          const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+          const id = sessionStorage.getItem('id') || localStorage.getItem('id');
+    
+          if (!id) {
+            return;
+          }
+    
+          const url = `${import.meta.env.VITE_BASE_URL}api/student/studentDetail?id=${id}`;
+    
+          const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ id: id })
+          });
+    
+          if (!response.ok) {
+            throw new Error(`Failed to fetch student details. Status: ${response.status}`);
+          } 
+          const responseData = await response.json();
+          if (!responseData.data || Object.keys(responseData.data).length === 0) {
+            throw new Error('No data received from the server. Your profile might be incomplete.');
+          }
+            // Add this line to update the profile picture
+            setLocalProfilePic(`${import.meta.env.VITE_BASE_URL}storage/${responseData.data.profilePic }`|| '');
+        } catch (error) {
+          console.error('Error in fetchStudentDetails:', error.message);
+        }
+      };
+    
+
 
     return (
         <Card className="boxshadow">
