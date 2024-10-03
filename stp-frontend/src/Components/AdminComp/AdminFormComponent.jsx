@@ -824,7 +824,7 @@ const handleRadioChange = (radioId, value) => {
           <Form.Group key={field.id} controlId={field.id} className="ms-2">
             <Form.Label>{field.label}</Form.Label>
             <Editor
-              apiKey="y5c72cgxrai71v1jmggt9a2gx878yajnqxrxxkhtylowcqbb"
+              apiKey="2k66p00ufe31mut5ctxu5s6cegpthu6kzc3pd0ap5fsswfst"
               value={field.value} // Bind TinyMCE's value to the field's value
               onEditorChange={field.onChange} // Handle changes using field's onChange function
               init={{
