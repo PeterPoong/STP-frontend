@@ -15,6 +15,13 @@ import { Arrow90degLeft } from "react-bootstrap-icons"
 import defaultProfilePic from "../../../assets/StudentPortalAssets/sampleprofile.png";
 const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, onActionSuccess }) => {
   const [accountType, setAccountType] = useState(null);
+  const [copiedFields, setCopiedFields] = useState({
+    name: false,
+    icNumber: false,
+    contactNumber: false,
+    email: false,
+    address: false
+  });
   const [activeTab, setActiveTab] = useState('info');
   const [basicInfo, setBasicInfo] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -413,11 +420,13 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
     setSelectedExam(newExamId);
     // Implement if needed or remove if not applicable
   };
-
-  const copyToClipboard = (text) => {
+  const copyToClipboard = (text, field) => {
     if (text) {
       navigator.clipboard.writeText(text).then(() => {
-        console.log('Copied to clipboard');
+        setCopiedFields(prev => ({ ...prev, [field]: true }));
+        setTimeout(() => {
+          setCopiedFields(prev => ({ ...prev, [field]: false }));
+        }, 2000);
       }).catch(err => {
         console.error('Failed to copy: ', err);
       });
@@ -425,7 +434,6 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
       console.error('No text to copy');
     }
   };
-
 
 
   const handleFeedbackChange = (e) => {
@@ -739,7 +747,11 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
                 {category.transcript_category}
               </option>
             ))}
+            <span>
+              <ChevronDown size={12} />
+            </span>
           </select>
+
         </div>
 
         {selectedCategory !== 32 && cgpaInfo && (
@@ -773,7 +785,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
           </div>
           <Button
             variant="link"
-            className=" w-25"
+            className="view-result-slip-button w-25"
             onClick={() => {
               setActiveTab('documents');
               setActiveDocumentTab('academic');
@@ -844,7 +856,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
       <div className="summary-content-yourdocument">
         <div className="documents-content pt-2 w-100">
           <div>
-            <p className='lead'>You have uploaded <span className="fw-bold">{totalDocumentCount}</span> documents.</p>
+            <p className='lead'>This student has uploaded <span className="fw-bold">{totalDocumentCount}</span> documents.</p>
             <div className="document-tabs d-flex column mb-3 w-100">
               <Button
                 variant="link"
@@ -1199,30 +1211,94 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
                       <div className="row">
                         <div className="col-md-6 mb-3">
                           <p><strong>Student Name</strong></p>
-                          <p>{`${basicInfo?.first_name || ''} ${basicInfo?.last_name || ''}`.trim()} <Copy size={16} className="cursor-pointer" onClick={() => copyToClipboard(`${basicInfo?.first_name || ''} ${basicInfo?.last_name || ''}`.trim() || '')} /></p>
+                          <p className="d-flex align-items-center">
+                            <span className="me-2">
+                              {`${basicInfo?.first_name || ''} ${basicInfo?.last_name || ''}`.trim()}
+                            </span>
+                            <span
+                              className="copy-icon-wrapper"
+                              onClick={() => copyToClipboard(`${basicInfo?.first_name || ''} ${basicInfo?.last_name || ''}`.trim(), 'name')}
+                              title={copiedFields.name ? "Copied!" : "Copy to clipboard"}
+                            >
+                              {copiedFields.name
+                                ? <Check size={16} className="copied-icon" />
+                                : <Copy size={16} className="copy-icon" />
+                              }
+                            </span>
+                          </p>
                         </div>
                         <div className="col-md-6 mb-3">
                           <p><strong>Identity Card Number</strong></p>
-                          <p>{basicInfo?.student_icNumber} <Copy size={16} className="cursor-pointer" onClick={() => copyToClipboard(basicInfo?.student_icNumber || '')} /></p>
+                          <p className="d-flex align-items-center">
+                            <span className="me-2">{basicInfo?.student_icNumber}</span>
+                            <span
+                              className="copy-icon-wrapper"
+                              onClick={() => copyToClipboard(basicInfo?.student_icNumber, 'icNumber')}
+                              title={copiedFields.icNumber ? "Copied!" : "Copy to clipboard"}
+                            >
+                              {copiedFields.icNumber
+                                ? <Check size={16} className="copied-icon" />
+                                : <Copy size={16} className="copy-icon" />
+                              }
+                            </span>
+                          </p>
                         </div>
                         <div className="col-md-6 mb-3">
                           <p><strong>Contact Number</strong></p>
-                          <p>{`${basicInfo?.student_countryCode || ''} ${basicInfo?.student_contactNo || ''}`} <Copy size={16} className="cursor-pointer" onClick={() => copyToClipboard(`${basicInfo?.student_countryCode || ''} ${basicInfo?.student_contactNo || ''}`)} /></p>
+                          <p className="d-flex align-items-center">
+                            <span className="me-2">
+                              {`${basicInfo?.student_countryCode || ''} ${basicInfo?.student_contactNo || ''}`}
+                            </span>
+                            <span
+                              className="copy-icon-wrapper"
+                              onClick={() => copyToClipboard(`${basicInfo?.student_countryCode || ''} ${basicInfo?.student_contactNo || ''}`, 'contactNumber')}
+                              title={copiedFields.contactNumber ? "Copied!" : "Copy to clipboard"}
+                            >
+                              {copiedFields.contactNumber
+                                ? <Check size={16} className="copied-icon" />
+                                : <Copy size={16} className="copy-icon" />
+                              }
+                            </span>
+                          </p>
                         </div>
 
                         <div className="col-md-6 mb-3">
                           <p><strong>Email Address</strong></p>
-                          <p style={{
+                          <p className="d-flex align-items-center" style={{
                             wordWrap: 'break-word',
                             overflowWrap: 'break-word',
                             wordBreak: 'break-all'
-                          }}>{basicInfo?.student_email} <Copy size={16} className="cursor-pointer" onClick={() => copyToClipboard(basicInfo?.student_email)} /></p>
+                          }}>
+                            <span className="me-2">{basicInfo?.student_email}</span>
+                            <span
+                              className="copy-icon-wrapper"
+                              onClick={() => copyToClipboard(basicInfo?.student_email, 'email')}
+                              title={copiedFields.email ? "Copied!" : "Copy to clipboard"}
+                            >
+                              {copiedFields.email
+                                ? <Check size={16} className="copied-icon" />
+                                : <Copy size={16} className="copy-icon" />
+                              }
+                            </span>
+                          </p>
                         </div>
                       </div>
                       <div className="row">
                         <div className="col-12">
                           <p><strong>Address</strong></p>
-                          <p>{basicInfo?.address} <Copy size={16} className="cursor-pointer" onClick={() => copyToClipboard(basicInfo?.address || '')} /></p>
+                          <p className="d-flex align-items-center">
+                            <span className="me-2">{basicInfo?.address}</span>
+                            <span
+                              className="copy-icon-wrapper"
+                              onClick={() => copyToClipboard(basicInfo?.address || '', 'address')}
+                              title={copiedFields.address ? "Copied!" : "Copy to clipboard"}
+                            >
+                              {copiedFields.address
+                                ? <Check size={16} className="copied-icon" />
+                                : <Copy size={16} className="copy-icon" />
+                              }
+                            </span>
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -1238,14 +1314,14 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
                           {coCurriculum.length > 0 ? (
                             coCurriculum.map((activity, index) => (
                               <div key={index} className="activity-item d-flex flex-wrap justify-content-between align-items-start py-2">
-                                <div className="col-12 col-sm-6">
-                                  <p className="mb-0"><strong>{activity.club_name}</strong></p>
-                                  <p className="mb-0 text-muted">{activity.location}</p>
+                                <div className="col-12 col-sm-3">
+                                  <p className="mb-0 name-restrict"> <strong>{activity.club_name}</strong></p>
+                                  <p className="mb-0 text-muted name-restrict">{activity.location}</p>
                                 </div>
                                 <div className="col-6 col-sm-3 text-start text-sm-center">
                                   <p className="mb-0">{activity.year}</p>
                                 </div>
-                                <div className="col-6 col-sm-3 text-end">
+                                <div className="col-6 col-sm-3 text-end name-restrict">
                                   {/* Updated to use student_position instead of position */}
                                   <span className={`position ${activity.student_position.toLowerCase()} py-1 px-2 rounded-pill`}>{activity.student_position}</span>
                                 </div>
@@ -1260,17 +1336,17 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
                         <p className="text-secondary fw-bold border-bottom border-2 pb-3">Achievements</p>
                         <div className="achievements-grid" style={{ maxHeight: '15rem', overflowY: 'auto' }}>
                           {achievements.length > 0 ? (
-                            achievements.map((achievement) => (
-                              <div key={achievement.id} className="achievement-item d-flex flex-wrap justify-content-between align-items-start py-2">
-                                <div className="col-12 col-sm-6">
-                                  <p className="mb-0"><strong>{achievement.achievement_name}</strong></p>
-                                  <p className="mb-0 text-muted">{achievement.awarded_by}</p>
+                            achievements.map((achievement, index) => (
+                              <div key={index} className="achievement-item d-flex flex-wrap justify-content-between align-items-start py-2">
+                                <div className="col-12 col-sm-4">
+                                  <p className="mb-0 name-restrict"><strong>{achievement.achievement_name}</strong></p>
+                                  <p className="mb-0 name-restrict text-muted">{achievement.awarded_by}</p>
                                 </div>
                                 <div className="col-6 col-sm-3 text-start text-sm-center">
                                   <p className="mb-0">{achievement.date}</p>
                                 </div>
-                                <div className="col-6 col-sm-3 text-end">
-                                  <span className={`position ${(achievement.title?.core_metaName?.toLowerCase() ?? '').replace(/\s+/g, '-')} py-1 px-2 rounded-pill`}>
+                                <div className="col-6 col-sm-5 mx-auto text-end">
+                                  <span className={`position ${(achievement.title?.core_metaName?.toLowerCase() ?? '').replace(/\s+/g, '-')} py-1 px-2 rounded-pill`} >
                                     {achievement.title?.core_metaName || 'No Title'}
                                   </span>
 

@@ -1318,7 +1318,7 @@ const AcademicTranscript = () => {
                         <div className="d-flex align-items-center">
                           <FileText className="file-icon me-2" />
                           <div>
-                            <div className="file-title mb-1">{file.studentMedia_name}</div>
+                            <div className="file-title mb-1 sac-name-restrict">{file.studentMedia_name}</div>
                             <div className="file-date">{file.created_at}</div>
                           </div>
                         </div>

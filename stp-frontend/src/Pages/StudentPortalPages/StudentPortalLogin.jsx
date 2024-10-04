@@ -71,9 +71,9 @@ const StudentPortalLogin = () => {
     setPhone(value);
     setCountryCode(country.dialCode);
   };
- /*end*/
+  /*end*/
 
- /*Longin api*/
+  /*Longin api*/
   const handleSubmit = (e) => {
     e.preventDefault();
     setLoginStatus(null);
@@ -124,7 +124,7 @@ const StudentPortalLogin = () => {
             if (data.data.token) {
               sessionStorage.setItem("token", data.data.token);
               localStorage.setItem("rememberMe", JSON.stringify(rememberMe));
-              sessionStorage.setItem("userName",userName)
+              sessionStorage.setItem("userName", userName)
               if (rememberMe) {
                 localStorage.setItem("token", data.data.token);
                 localStorage.setItem("rememberedContactNumber", phone.slice(countryCode.length));
@@ -176,7 +176,7 @@ const StudentPortalLogin = () => {
       });
   };
   /*end*/
-  
+
   return (
     <Container fluid className="h-100">
       <Row className="h-50">
@@ -187,15 +187,19 @@ const StudentPortalLogin = () => {
             className="w-100 h-100 object-fit-cover"
           />
         </Col>
-        <Col md={6} className="d-flex align-items-center">
+        <Col md={6} className="d-flex align-items-center bg-white">
           <Container>
             <Row className="justify-content-center">
               <Col md={8} lg={6} className="px-0">
-                <img
-                  src={studentPortalLoginLogo}
-                  className="mb-4"
-                  alt="StudyPal Logo"
-                />
+                <div className="studypal-logo-div">
+
+                  {/*<img
+   src={studentPortalLoginLogo}
+   className="img-fluid mb-4"
+   alt="StudyPal Logo"
+ />*/}
+
+                </div>
                 <h2 className="text-start mb-2 custom-color-title">
                   Login as Student
                 </h2>
@@ -219,9 +223,9 @@ const StudentPortalLogin = () => {
                 )}
                 <Form onSubmit={handleSubmit}>
                   <Form.Group controlId="formBasicPhone" className="mb-3">
-                    <Form.Label className="custom-label">
+                    <p className="text-start p-0 mb-0 custom-color-title-label small ">
                       Contact Number
-                    </Form.Label>
+                    </p>
                     <PhoneInput
                       country={"my"}
                       value={phone}
@@ -236,12 +240,14 @@ const StudentPortalLogin = () => {
                       buttonClass="btn btn-outline-secondary"
                       dropdownClass="country-dropdown custom-dropdown"
                       countryCodeEditable={false}
-                      style={{zIndex:11}}
+                      style={{ zIndex: 11 }}
                       required
+                      inputStyle={{ fontSize: "16px" }}
                     />
                   </Form.Group>
                   <Form.Group controlId="formBasicPassword" className="mb-3">
-                    <Form.Label className="custom-label">Password</Form.Label>
+                    <p className="text-start p-0 mb-0 custom-color-title-label small ">
+                      Password</p>
                     <InputGroup>
                       <Form.Control
                         type={showPassword ? "text" : "password"}
@@ -352,7 +358,7 @@ const StudentPortalLogin = () => {
                       </button>
                     </Col>
                   </Row>*/}
-                 
+
                   <div className="text-center text-lg-center m-5 pt-2">
                     <p className="small pt-1 mb-0 text-secondary">
                       Not Registered Yet?{" "}

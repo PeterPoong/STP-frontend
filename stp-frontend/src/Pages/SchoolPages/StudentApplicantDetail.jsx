@@ -12,6 +12,7 @@ import {
   ChevronUp,
   Clock,
   Copy,
+  Check
 } from "react-feather";
 
 import styles from "../../css/SchoolPortalStyle/StudentApplicantDetail.module.css";
@@ -86,8 +87,31 @@ const SchoolViewApplicantDetail = () => {
   //acount type
   const [accountType, setAccountType] = useState(null);
 
+  //copytoclipboard
+  const [copiedFields, setCopiedFields] = useState({
+    name: false,
+    icNumber: false,
+    contactNumber: false,
+    email: false,
+    address: false
+  });
   const handleBack = () => {
     navigate("/schoolPortalDashboard"); // This will go back to the previous page
+  };
+
+  const copyToClipboard = (text, field) => {
+    if (text) {
+      navigator.clipboard.writeText(text).then(() => {
+        setCopiedFields(prev => ({ ...prev, [field]: true }));
+        setTimeout(() => {
+          setCopiedFields(prev => ({ ...prev, [field]: false }));
+        }, 2000);
+      }).catch(err => {
+        console.error('Failed to copy: ', err);
+      });
+    } else {
+      console.error('No text to copy');
+    }
   };
 
   const fetchCoCurriculum = async () => {
@@ -786,7 +810,7 @@ const SchoolViewApplicantDetail = () => {
           </div>
           <Button
             variant="link"
-            className=" w-25"
+            className="view-result-slip-button w-25"
             onClick={() => {
               setActiveTab("documents");
               setActiveDocumentTab("academic");
@@ -868,7 +892,7 @@ const SchoolViewApplicantDetail = () => {
         <div className="documents-content pt-2 w-100">
           <div>
             <p className="lead">
-              You have uploaded{" "}
+              This student has uploaded{" "}
               <span className="fw-bold">{totalDocumentCount}</span> documents.
             </p>
             <div className="document-tabs d-flex column mb-3 w-100">
@@ -1159,65 +1183,80 @@ const SchoolViewApplicantDetail = () => {
                         <p>
                           <strong>Student Name</strong>
                         </p>
-                        <p>
-                          {`${firstName || ""} ${lastName || ""}`.trim()}{" "}
-                          <Copy
-                            size={16}
-                            className="cursor-pointer"
-                            onClick={() =>
-                              copyToClipboard(
-                                `${firstName || ""} ${lastName || ""}`.trim() ||
-                                ""
-                              )
+                        <p className="d-flex align-items-center">
+                          <span className="me-2">
+                            {`${firstName || ''} ${lastName || ''}`.trim()}
+                          </span>
+                          <span
+                            className="copy-icon-wrapper"
+                            onClick={() => copyToClipboard(`${firstName || ''} ${lastName || ''}`.trim(), 'name')}
+                            title={copiedFields.name ? "Copied!" : "Copy to clipboard"}
+                          >
+                            {copiedFields.name
+                              ? <Check size={16} className="copied-icon" />
+                              : <Copy size={16} className="copy-icon" />
                             }
-                          />
+                          </span>
                         </p>
                       </div>
                       <div className="col-md-6 mb-3">
                         <p>
                           <strong>Identity Card Number</strong>
                         </p>
-                        <p>
-                          {ic}{" "}
-                          <Copy
-                            size={16}
-                            className="cursor-pointer"
-                            onClick={() => copyToClipboard(ic || "")}
-                          />
+                        <p className="d-flex align-items-center">
+                          <span className="me-2">{ic}</span>
+                          <span
+                            className="copy-icon-wrapper"
+                            onClick={() => copyToClipboard(ic, 'icNumber')}
+                            title={copiedFields.icNumber ? "Copied!" : "Copy to clipboard"}
+                          >
+                            {copiedFields.icNumber
+                              ? <Check size={16} className="copied-icon" />
+                              : <Copy size={16} className="copy-icon" />
+                            }
+                          </span>
                         </p>
                       </div>
                       <div className="col-md-6 mb-3">
                         <p>
                           <strong>Contact Number</strong>
                         </p>
-                        <p>
-                          {`${countryCode || ""} ${contact || ""}`}{" "}
-                          <Copy
-                            size={16}
-                            className="cursor-pointer"
-                            onClick={() =>
-                              copyToClipboard(
-                                `${countryCode || ""} ${contact || ""}`
-                              )
+                        <p className="d-flex align-items-center">
+                          <span className="me-2">
+                            {`${countryCode || ''} ${contact || ''}`}
+                          </span>
+                          <span
+                            className="copy-icon-wrapper"
+                            onClick={() => copyToClipboard(`${countryCode || ''} ${contact || ''}`, 'contactNumber')}
+                            title={copiedFields.contactNumber ? "Copied!" : "Copy to clipboard"}
+                          >
+                            {copiedFields.contactNumber
+                              ? <Check size={16} className="copied-icon" />
+                              : <Copy size={16} className="copy-icon" />
                             }
-                          />
+                          </span>
                         </p>
                       </div>
                       <div className="col-md-6 mb-3">
                         <p>
                           <strong>Email Address</strong>
                         </p>
-                        <p style={{
+                        <p className="d-flex align-items-center" style={{
                           wordWrap: 'break-word',
                           overflowWrap: 'break-word',
                           wordBreak: 'break-all'
                         }}>
-                          {email}{" "}
-                          <Copy
-                            size={16}
-                            className="cursor-pointer"
-                            onClick={() => copyToClipboard(email || "")}
-                          />
+                          <span className="me-2">{email}</span>
+                          <span
+                            className="copy-icon-wrapper"
+                            onClick={() => copyToClipboard(email, 'email')}
+                            title={copiedFields.email ? "Copied!" : "Copy to clipboard"}
+                          >
+                            {copiedFields.email
+                              ? <Check size={16} className="copied-icon" />
+                              : <Copy size={16} className="copy-icon" />
+                            }
+                          </span>
                         </p>
                       </div>
                     </div>
@@ -1226,13 +1265,18 @@ const SchoolViewApplicantDetail = () => {
                         <p>
                           <strong>Address</strong>
                         </p>
-                        <p>
-                          {address}{" "}
-                          <Copy
-                            size={16}
-                            className="cursor-pointer"
-                            onClick={() => copyToClipboard(address || "")}
-                          />
+                        <p className="d-flex align-items-center">
+                          <span className="me-2">{address}</span>
+                          <span
+                            className="copy-icon-wrapper"
+                            onClick={() => copyToClipboard(address || '', 'address')}
+                            title={copiedFields.address ? "Copied!" : "Copy to clipboard"}
+                          >
+                            {copiedFields.address
+                              ? <Check size={16} className="copied-icon" />
+                              : <Copy size={16} className="copy-icon" />
+                            }
+                          </span>
                         </p>
                       </div>
                     </div>
@@ -1258,17 +1302,17 @@ const SchoolViewApplicantDetail = () => {
                             className="activity-item d-flex flex-wrap justify-content-between align-items-start py-2"
                           >
                             <div className="col-12 col-sm-6">
-                              <p className="mb-0">
+                              <p className="mb-0 name-restrict">
                                 <strong>{activity.club_name}</strong>
                               </p>
-                              <p className="mb-0 text-muted">
+                              <p className="mb-0 text-muted name-restrict">
                                 {activity.location}
                               </p>
                             </div>
                             <div className="col-6 col-sm-3 text-start text-sm-center">
                               <p className="mb-0">{activity.year}</p>
                             </div>
-                            <div className="col-6 col-sm-3 text-end">
+                            <div className="col-6 col-sm-3 text-end sac-name-restrict">
                               <span
                                 className={`position ${activity.student_position.toLowerCase()} py-1 px-2 rounded-pill`}
                               >
@@ -1294,18 +1338,18 @@ const SchoolViewApplicantDetail = () => {
                             key={index}
                             className="achievement-item d-flex flex-wrap justify-content-between align-items-start py-2"
                           >
-                            <div className="col-12 col-sm-6">
-                              <p className="mb-0">
-                                <strong>{achievement.achievement_name}</strong>
+                            <div className="col-12 col-sm-4">
+                              <p className="mb-0 name-restrict">
+                                <strong>{achievement.achievement_name||""}</strong>
                               </p>
-                              <p className="mb-0 text-muted">
-                                {achievement.awarded_by}
+                              <p className="mb-0 text-muted name-restrict">
+                                {achievement.awarded_by||""}
                               </p>
                             </div>
                             <div className="col-6 col-sm-3 text-start text-sm-center">
-                              <p className="mb-0">{achievement.date}</p>
+                              <p className="mb-0">{achievement.date ||""}</p>
                             </div>
-                            <div className="col-6 col-sm-3 text-end">
+                            <div className="col-6 col-sm-5 text-end">
                               <span className={`position ${(achievement.title?.core_metaName?.toLowerCase() ?? '').replace(/\s+/g, '-')} py-1 px-2 rounded-pill`}>
                                 {achievement.title?.core_metaName || 'No Title'}
                               </span>

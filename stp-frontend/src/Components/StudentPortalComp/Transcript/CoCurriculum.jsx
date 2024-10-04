@@ -282,12 +282,12 @@ const CoCurriculum = () => {
                                             <td className="border-bottom py-2 px-2">
                                                 <div className="d-flex align-items-center">
                                                     <div>
-                                                        <div className="file-title mb-1">{item.club_name}</div>
+                                                        <div className="file-title mb-1 sac-name-restrict">{item.club_name}</div>
                                                         <div className="file-date">{item.location}</div>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="border-bottom p-2">{item.student_position}</td>
+                                            <td className="border-bottom p-2 sac-name-restrict">{item.student_position}</td>
                                             <td className="border-bottom p-2">{item.year}</td>
                                             <td className="border-bottom p-2">
                                                 <div className="d-flex justify-content-end align-items-center">

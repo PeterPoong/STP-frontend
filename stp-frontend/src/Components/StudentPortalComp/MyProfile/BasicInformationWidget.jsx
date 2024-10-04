@@ -483,7 +483,7 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
                     value={studentData.gender || ''}
                     onChange={handleInputChange}
                   >
-                    <option value="">Select gender</option>
+                    
                     {genderList.map((gender) => (
                       <option key={gender.id} value={gender.core_metaName} style={{ color: "#000000" }}>
                         {gender.core_metaName}

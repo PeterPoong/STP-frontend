@@ -11,9 +11,21 @@
 
   .custom-color-title
   {
-    color:#525252
+    color:#525252;
+  }
+
+  .custom-color-title-label
+  {
+    color:#828282;
   }
   
+.std-fix-align
+{
+  align-items: flex-end;
+  background: #ffffff;
+
+}
+
   .phone-input-container {
     display: flex;
     width:100%;
@@ -26,8 +38,8 @@
   .react-tel-input .form-control {
     width: 100% !important;
     max-width: none !important;
+    border:1px solid #dee2e6;
   }
-
 
  
   @media (min-width: 576px) and (max-width: 767.98px) {
@@ -121,10 +133,11 @@
     box-shadow: none;
   }
 
-  .custom-label 
+  .std-custom-label 
   {
     color: #828282;
     font-size:clamp(12px, 0.75rem + 0.1vw, 16px) ;
+    font-weight: 100;
   }
 
   .custom-checkbox 
@@ -243,6 +256,25 @@ body, html {
   font-size: 16px;
 }
 
+.std-input-placeholder::placeholder {
+  opacity: 0.4; /* Adjust the opacity level */
+  color: #888;  /* Optional: you can also change the placeholder color */
+}
+
+
+.studypal-logo-div
+{
+  background-image:url("../../assets/StudentPortalAssets/StudyPalLogo.svg");
+  background-size: 24vh 12vh;
+  background-repeat: no-repeat;
+  padding: 0;
+  margin: 0;
+  top: 0;
+  left:23rem;
+  width: 100rem;
+  height: 5.5rem;
+}
+
 @media (max-width: 767px) {
   .h-50 {
     min-height: auto;
@@ -266,3 +298,4 @@ body, html {
     max-height: 100vh;
   }
 }
+

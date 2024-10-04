@@ -22,6 +22,7 @@ const StudentPortalSignUp = () => {
   const [signupStatus, setSignupStatus] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [isFormValid, setIsFormValid] = useState(false);
+  const [phoneError, setPhoneError] = useState("");
   const navigate = useNavigate();
 
   /*Checking if have token or not if dont have navigate back to studentportalbasicinformations page */
@@ -52,6 +53,11 @@ const StudentPortalSignUp = () => {
   const handlePhoneChange = (value, country) => {
     setPhone(value);
     setCountryCode(country.dialCode);
+    if (value.length <= country.dialCode.length) {
+      setPhoneError("Phone number is required");
+    } else {
+      setPhoneError("");
+    }
   };
   /*end */
 
@@ -60,6 +66,10 @@ const StudentPortalSignUp = () => {
     e.preventDefault();
     setSignupStatus(null);
 
+    if (phone.length <= countryCode.length) {
+      setPhoneError("Phone number is required");
+      return;
+    }
     if (password !== confirmPassword) {
       setSignupStatus("password_mismatch");
       return;
@@ -156,14 +166,19 @@ const StudentPortalSignUp = () => {
         </Col>
         <Col
           md={6}
-          className="d-flex align-items-center justify-content-center"
+          className="d-flex align-items-center justify-content-center bg-white"
         >
-          <div className="w-100" style={{ maxWidth: "400px" }}>
-            <img
+          <div className="w-100" style={{ maxWidth: "600px" }}>
+
+            <div className="studypal-logo-div">
+
+              {/*<img
               src={studentPortalLoginLogo}
               className="img-fluid mb-4"
               alt="StudyPal Logo"
-            />
+            />*/}
+
+            </div>
             <h2 className="text-start mb-2 custom-color-title ">
               Start your journey here.
             </h2>
@@ -197,7 +212,7 @@ const StudentPortalSignUp = () => {
                 or try logging in.
               </Alert>
             )}
-           
+
             {signupStatus === "ic_exists" && (
               <Alert variant="warning">
                 This ic is already registered. Please use a different email
@@ -210,9 +225,9 @@ const StudentPortalSignUp = () => {
                 different number or try logging in.
               </Alert>
             )}
-            <Form onSubmit={handleSubmit}>
-              <Form.Group className="mb-3">
-                <Form.Label className="custom-label">Username</Form.Label>
+            <Form onSubmit={handleSubmit} className="pt-4">
+              <Form.Group className="mb-3 ">
+                <p className="text-start p-0 mb-0 custom-color-title-label small ">Username</p>
                 <Form.Control
                   type="text"
                   placeholder="Your Name "
@@ -221,17 +236,18 @@ const StudentPortalSignUp = () => {
                   required
                   pattern="[a-zA-Z0-9]+"
                   title="Username can only contain letters and numbers"
+                  className="std-input-placeholder"
                 />
               </Form.Group>
-              <Row>
+              <Row classname="std-fix-align " >
                 <Col xs={12} md={6}>
                   <Form.Group controlId="formBasicPhone" className="mb-3">
-                    <Form.Label className="custom-label">
+                    <p className="text-start p-0 mb-0 custom-color-title-label small ">
                       Contact Number
-                    </Form.Label>
+                    </p>
                     <PhoneInput
                       country={"my"}
-
+                      rules={{ required: true }}
                       value={phone}
                       onChange={handlePhoneChange}
                       inputProps={{
@@ -239,7 +255,7 @@ const StudentPortalSignUp = () => {
                         required: true,
                         placeholder: "Enter phone number",
                       }}
-                      inputClass="form-control"
+                      inputClass={`form-control ${phoneError ? 'is-invalid' : ''}`}
                       containerClass="phone-input-container"
                       buttonClass="btn btn-outline-secondary"
                       dropdownClass="country-dropdown custom-dropdown"
@@ -250,13 +266,18 @@ const StudentPortalSignUp = () => {
                       style={{ zIndex: 13 }}
                       inputStyle={{ fontSize: "16px" }}
                     />
+                    {phoneError && (
+                      <Form.Control.Feedback type="invalid" style={{ display: 'block' }}>
+                        {phoneError}
+                      </Form.Control.Feedback>
+                    )}
                   </Form.Group>
                 </Col>
                 <Col xs={12} md={6}>
                   <Form.Group className="mb-3">
-                    <Form.Label className="custom-label">
+                    <p className="text-start p-0 mb-0 custom-color-title-label small">
                       Identity Card Number
-                    </Form.Label>
+                    </p>
                     <Form.Control
                       type="text"
                       placeholder="XXXXXXXX "
@@ -265,24 +286,28 @@ const StudentPortalSignUp = () => {
                       required
                       pattern="[a-zA-Z0-9]+"
                       title="IC can only contain letters and numbers"
+                      className="std-input-placeholder"
                     />
                   </Form.Group>
                 </Col>
               </Row>
               <Form.Group className="mb-3">
-                <Form.Label className="custom-label">Email Address</Form.Label>
+                <p className="text-start p-0 mb-0 custom-color-title-label small ">
+                  Email Address</p>
                 <Form.Control
                   type="email"
                   placeholder="mail123@gmail.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
+                  className="std-input-placeholder"
                 />
               </Form.Group>
               <Row>
                 <Col>
                   <Form.Group className="mb-3">
-                    <Form.Label className="custom-label">Password</Form.Label>
+                    <p className="text-start p-0 mb-0 custom-color-title-label small ">
+                      Password</p>
                     <InputGroup hasValidation>
                       <Form.Control
                         type={showPassword ? "text" : "password"}
@@ -318,9 +343,9 @@ const StudentPortalSignUp = () => {
                 </Col>
                 <Col>
                   <Form.Group className="mb-3">
-                    <Form.Label className="custom-label">
+                    <p className="text-start p-0 mb-0 custom-color-title-label small ">
                       Confirm Password
-                    </Form.Label>
+                    </p>
                     <InputGroup hasValidation>
                       <Form.Control
                         type={showConfirmPassword ? "text" : "password"}
@@ -362,13 +387,15 @@ const StudentPortalSignUp = () => {
                   </Form.Group>
                 </Col>
               </Row>
-              <Button
-                variant="danger"
-                type="submit"
-                className="btn-login-signup-forgetpassword mt-3 mb-3 m-0"
-              >
-                Sign Up
-              </Button>
+              <div className="d-flex justify-content-center">
+                <Button
+                  variant="danger"
+                  type="submit"
+                  className="btn-signup-forgetpassword mt-3 mb-3  "
+                >
+                  Sign Up
+                </Button>
+              </div>
               <p className="text-center text-muted small">
                 or Login/Sign Up using
               </p>

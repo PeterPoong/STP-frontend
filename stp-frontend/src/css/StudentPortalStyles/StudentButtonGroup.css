@@ -137,7 +137,8 @@
 
 }
 
-.mpbtndiv:hover,.btn-login-signup-forgetpassword:hover
+.mpbtndiv:hover,.btn-login-signup-forgetpassword:hover,
+.btn-signup-forgetpassword:hover
 {
     background-color:#ffffff;
     border-color: #B71A18;
@@ -153,6 +154,14 @@ width:100%;
 
 }
 
+.btn-signup-forgetpassword
+{
+background-color: #B71A18;
+width:25rem;
+
+}
+
+
 .mpw-profilepic-btn
 {
   background-color: #E21B1B;
@@ -167,6 +176,16 @@ width:100%;
   color: #E21B1B;
   border-color: #BF3634;
 }
+
+
+
+.view-result-slip-button
+{
+  text-decoration: none;
+  background: transparent;
+  border: none;
+}
+
 
 /*responsive button*/
 @media (max-width: 768px) {

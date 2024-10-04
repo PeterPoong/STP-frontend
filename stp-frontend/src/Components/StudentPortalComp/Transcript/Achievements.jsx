@@ -331,7 +331,7 @@ const Achievements = () => {
                                         <td className="border-bottom py-2 px-2">
                                             <div className="d-flex align-items-center">
                                                 <div>
-                                                    <div className="file-title mb-1">{item.achievement_name}</div>
+                                                    <div className="file-title mb-1 sac-name-restrict">{item.achievement_name}</div>
                                                     <div className="file-date">{item.awarded_by}</div>
                                                 </div>
                                             </div>
