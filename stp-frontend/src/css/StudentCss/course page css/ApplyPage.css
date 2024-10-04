@@ -184,16 +184,14 @@
   }
 
   .apply-now-program-image {
-    margin: auto;
-    display: block;
     max-width: 120px;
     max-height: 120px;
   }
 
-  .apply-now-row {
+  /* .apply-now-row {
     display: block;
     text-align: center;
-  }
+  } */
 
   .apply-now-container {
     padding: 20px;
@@ -224,7 +222,8 @@
   }
 
   .apply-now-header-image {
-    height: 250px;
+    height: 350px;
+    
   }
 
   .about-institute-image,
@@ -241,10 +240,15 @@
     max-height: 200px;
   }
 
-  .apply-now-container {
+  .apply-now-image-col {
+    top: -10;
+  }
+
+
+  /* .apply-now-container {
     top: 0;
     margin-top: 20px;
-  }
+  } */
 
   .apply-now-row {
     display: block;
@@ -279,5 +283,6 @@
   .apply-now-program-image {
     max-width: 100px;
     max-height: 100px;
+
   }
 }

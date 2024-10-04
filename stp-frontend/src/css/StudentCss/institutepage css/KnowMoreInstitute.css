@@ -223,9 +223,22 @@
     position: relative;
     top: 0px; /* Adjust this value to control the overlap */
   }
+
+  .know-more-container {
+    position: relative;
+    top: -50px; /* Adjust this value to control the overlap */
+  }
+  
 }
 
 @media (max-width: 576px) {
+
+  
+
+  .know-more-header-image {    
+    height: 250px;
+  }
+
   .icon-lg {
     font-size: 2rem; /* Even smaller size for smaller screens */
   }

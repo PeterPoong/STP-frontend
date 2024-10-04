@@ -874,13 +874,13 @@ const InstituteListing = ({
     }); // Navigate with state_name
   };
 
-  if (!filteredPrograms || filteredPrograms.length === 0) {
-    return (
-      <div className="spinner-container">
-        <div className="custom-spinner"></div>
-      </div>
-    );
-  }
+  // if (!institutes || institutes.length === 0) {
+  //   return (
+  //     <div className="spinner-container">
+  //       <div className="custom-spinner"></div>
+  //     </div>
+  //   );
+  // }
 
   const mappedInstitutes = currentInstitutes.map((institute, index) => (
     <>
@@ -933,6 +933,7 @@ const InstituteListing = ({
                         paddingLeft: "10px",
                         fontWeight: "lighter",
                         color: "#1745BA",
+                        visibility: "hidden", // Hides the element but keeps the space occupied
                       }}
                     >
                       click and view on map
@@ -1340,7 +1341,7 @@ const InstituteListing = ({
                   )}
                   <div
                     className="blankslate-institutes"
-                    style={{ marginLeft: "250px" }}
+                    style={{ marginLeft: "100px" }}
                   >
                     <img
                       className="blankslate-institutes-top-img"

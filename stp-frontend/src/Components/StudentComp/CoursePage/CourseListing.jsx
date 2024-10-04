@@ -659,13 +659,13 @@ const CourseListing = ({
     setSelectedInstitute(institute);
   };
 
-  if (!filteredPrograms || filteredPrograms.length === 0) {
-    return (
-      <div className="spinner-container">
-        <div className="custom-spinner"></div>
-      </div>
-    );
-  }
+  // if (!filteredPrograms || filteredPrograms.length === 0) {
+  //   return (
+  //     <div className="spinner-container">
+  //       <div className="custom-spinner"></div>
+  //     </div>
+  //   );
+  // }
 
   const mappedPrograms = currentCourses.map((program, index) => (
     <>
@@ -1029,7 +1029,13 @@ const CourseListing = ({
               style={{ height: "175px" }}
             />
           </div>
-          {error ? (
+          {loading ? (
+            <div className="text-center">
+              <Spinner animation="border" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </Spinner>
+            </div>
+          ) : error ? (
             <div className="text-center text-danger">
               <p>Error: {error}</p>
             </div>
