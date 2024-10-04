@@ -253,7 +253,8 @@ const SearchCourse = ({ currentCourses }) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          search: selectedCountry ? "" : query.trim(),
+          //search: selectedCountry ? "" : query.trim(),
+          search: query.trim() || "", // Ensure we send something
           current_page: currentPage,
           countryID: selectedCountry?.id,
           institute: selectedInstitute?.id,
