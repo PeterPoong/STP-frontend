@@ -120,7 +120,7 @@ const EditCourse = ({ courseId, handleGoBack }) => {
 
     if (selectedIntakes.length === 0) {
       SetIntakeError("Please select at least one intake month.");
-      errors.push(intakeError);
+      errors.push("Please select at least one intake month.");
     } else {
       SetIntakeError("");
     }

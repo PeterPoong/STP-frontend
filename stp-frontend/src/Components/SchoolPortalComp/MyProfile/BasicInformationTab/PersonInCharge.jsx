@@ -14,46 +14,65 @@ function PersonInCharge() {
   const [updateStatus, setUpdateStatus] = useState("");
 
   const [showAlert, setShowAlert] = useState(false);
+  const [showError, setShowError] = useState(false);
+
+  const [contactError, setContactError] = useState(false);
 
   const handleSubmit = async (e) => {
     setUpdateStatus("false");
     e.preventDefault();
-    const formData = {
-      person_name: personInChargeName,
-      person_contact: personContact,
-      person_email: personEmail,
-    };
-    const update = async () => {
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_BASE_URL}api/school/editPersonInCharge`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(formData),
-          }
-        );
+    if (validatePhoneNumber()) {
+      const formData = {
+        person_name: personInChargeName,
+        person_contact: personContact,
+        person_email: personEmail,
+      };
+      console.log("formData", formData);
+      const update = async () => {
+        try {
+          const response = await fetch(
+            `${import.meta.env.VITE_BASE_URL}api/school/editPersonInCharge`,
+            {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(formData),
+            }
+          );
 
-        if (!response.ok) {
-          const errorData = await response.json();
-          console.log("Error Data:", errorData["errors"]);
-          throw new Error(errorData["errors"] || "Internal Server Error");
+          if (!response.ok) {
+            const errorData = await response.json();
+            console.log("Error Data:", errorData["errors"]);
+            setShowError(true);
+            throw new Error(errorData["errors"] || "Internal Server Error");
+          }
+        } catch (error) {
+          console.error("Failed to update person in charge:", error);
         }
-      } catch (error) {
-        console.error("Failed to update person in charge:", error);
-      }
-    };
-    await update();
-    console.log("status", updateStatus);
-    setUpdateStatus("success");
-    console.log("update person in charge");
+      };
+      await update();
+      console.log("status", updateStatus);
+      setUpdateStatus("success");
+      console.log("update person in charge");
+    }
   };
 
   const handlePhoneChange = (value, country) => {
     setPersonContact(value); // Set the contact number without the dial code
+    setContactError(false);
+  };
+
+  const validatePhoneNumber = () => {
+    // Validate that phone number has more than just the dial code
+    const phoneWithoutCountryCode = personContact.replace(/^\+?[\d]{1,4}/, "");
+    if (!phoneWithoutCountryCode || phoneWithoutCountryCode.length < 5) {
+      setContactError(true);
+      setUpdateStatus("fail");
+      return false;
+    }
+    return true;
   };
 
   useEffect(() => {
@@ -86,14 +105,29 @@ function PersonInCharge() {
 
   useEffect(() => {
     if (updateStatus === "success") {
+      console.log("open success");
       setShowAlert(true);
-      // Set a timer to hide the alert after 3 seconds
-      const timer = setTimeout(() => {
+      // Set a timer to hide the alert after 1 second
+      const successTimer = setTimeout(() => {
         setShowAlert(false);
-      }, 1000); // Change the time in milliseconds as needed
+        setUpdateStatus("");
+      }, 1000); // Adjust time as needed
 
-      // Clean up the timer when the component unmounts or updateStatus changes
-      return () => clearTimeout(timer);
+      // Clear the success timer when component unmounts
+      return () => clearTimeout(successTimer);
+    }
+
+    if (updateStatus === "fail") {
+      console.log("open error");
+      setShowError(true);
+      // Set a timer to hide the error after 1 second
+      const errorTimer = setTimeout(() => {
+        setShowError(false);
+        setUpdateStatus("");
+      }, 1000); // Adjust time as needed
+
+      // Clear the error timer when component unmounts
+      return () => clearTimeout(errorTimer);
     }
   }, [updateStatus]);
 
@@ -109,6 +143,16 @@ function PersonInCharge() {
               }`}
             >
               Update Successfully
+            </Alert>
+          )}
+          {showError && (
+            <Alert
+              variant="danger"
+              className={`fade-alert alert-position ${
+                showError ? "show" : "hide"
+              }`}
+            >
+              Something wrong !!
             </Alert>
           )}
           <h4 className="mb-2">Person-In-Charge</h4>
@@ -139,6 +183,7 @@ function PersonInCharge() {
                   inputProps={{
                     name: "phone",
                     placeholder: "Enter phone number",
+                    required: true, // Make the field required
                   }}
                   inputClass="form-control"
                   containerClass="phone-input-container"
@@ -149,6 +194,11 @@ function PersonInCharge() {
                   disableDropdown={false}
                   autoFormat={true}
                 />
+                {contactError && (
+                  <div className="text-danger">
+                    Please enter a valid phone number.
+                  </div>
+                )}
               </Form.Group>
             </Col>
           </Row>
@@ -162,6 +212,7 @@ function PersonInCharge() {
                   type="email"
                   value={personEmail}
                   onChange={(e) => setPersonEmail(e.target.value)}
+                  required
                 />
               </Form.Group>
             </Col>
