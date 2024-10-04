@@ -27,7 +27,7 @@ const AdminApplicantContent = () => {
 
     const fetchApplicants = async (page = 1, perPage = rowsPerPage, search = searchQuery) => {
         try {
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/applicantDetailInfo?page=${page}&per_page=${perPage}&search=${search}`, {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/applicantDetailInfo?page=${page}&per_page=${perPage === "All" ? subjects.length : perPage}&search=${search}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -62,7 +62,7 @@ const AdminApplicantContent = () => {
     const handleRowsPerPageChange = (newRowsPerPage) => {
         setRowsPerPage(newRowsPerPage);
         setCurrentPage(1); 
-        fetchApplicants(1, newRowsPerPage, searchQuery);
+        fetchApplicants(1, newRowsPerPage === "All" ? subjects.length : newRowsPerPage, searchQuery);
     };
 
     const handleSearch = (query) => {
@@ -179,14 +179,14 @@ const AdminApplicantContent = () => {
 
     const theadContent = (
         <tr>
+            <th onClick={() => handleSort("student")}>
+                Student Name{sortColumn === "student" && (sortDirection === "asc" ? "↑" : "↓")}
+            </th>
             <th onClick={() => handleSort("name")}>
                 Course(s) {sortColumn === "name" && (sortDirection === "asc" ? "↑" : "↓")}
             </th>
             <th onClick={() => handleSort("institute")}>
                 Institution {sortColumn === "institute" && (sortDirection === "asc" ? "↑" : "↓")}
-            </th>
-            <th onClick={() => handleSort("student")}>
-                Student Name{sortColumn === "student" && (sortDirection === "asc" ? "↑" : "↓")}
             </th>
             <th onClick={() => handleSort("contact")}>
                 Contact No. {sortColumn === "contact" && (sortDirection === "asc" ? "↑" : "↓")}
@@ -200,9 +200,9 @@ const AdminApplicantContent = () => {
 
     const tbodyContent = sortedApplicants.map((Applicant) => (
         <tr key={Applicant.id}>
+            <td>{Applicant.student_name}</td>
             <td>{Applicant.course_name}</td>
             <td>{Applicant.institution}</td>
-            <td>{Applicant.student_name}</td>
             <td>{Applicant.country_code}{Applicant.contact_number}</td>
             <td className={getStatusClass(Applicant.form_status)}>
                 {Applicant.form_status}

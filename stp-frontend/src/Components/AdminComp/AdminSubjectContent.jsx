@@ -26,7 +26,7 @@ const AdminSubjectContent = () => {
 
      const fetchSubjects = async (page = 1, perPage = rowsPerPage, search = searchQuery) => {
         try {
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/subjectListAdmin?page=${page}&per_page=${perPage}&search=${search}`, {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/subjectListAdmin?page=${page}&per_page=${perPage === "All" ? subjects.length : perPage}&search=${search}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -62,8 +62,9 @@ const AdminSubjectContent = () => {
     const handleRowsPerPageChange = (newRowsPerPage) => {
         setRowsPerPage(newRowsPerPage);
         setCurrentPage(1); // Reset to the first page whenever rows per page changes
-        fetchSubjects(1, newRowsPerPage, searchQuery); // Fetch data with updated rowsPerPage
+        fetchSubjects(1, newRowsPerPage === "All" ? subjects.length : newRowsPerPage, searchQuery); // Fetch data
     };
+    
 
     const handleSearch = (query) => {
         setSearchQuery(query);
