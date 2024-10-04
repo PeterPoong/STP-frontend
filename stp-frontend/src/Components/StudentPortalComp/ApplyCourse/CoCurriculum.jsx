@@ -299,7 +299,7 @@ const CoCurriculum = ({ onNext, onBack }) => {
                     </div>
                     <div className="me-3" style={{ width: '200px' }}>
                       <User size={18} className="me-2" />
-                      <span className="border-end  border-2 border-dark pe-2 me-2">Poition</span>
+                      <span className="border-end  border-2 border-dark pe-2 me-2">Position</span>
                       <a className='mx-2 text-dark fw-normal'>{activity.student_position}</a>
                     </div>
                     <div className="me-3" >
