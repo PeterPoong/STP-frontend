@@ -1132,8 +1132,8 @@ const InstituteListing = ({
                     key={index}
                     type="checkbox"
                     label={mode.studyMode_name}
-                    checked={modeFilters.includes(mode.studyMode_name)}
-                    onChange={() => handleModeChange(mode)}
+                    checked={modeFilters.some((m) => m.id === mode.id)}
+                    onChange={() => handleModeChange(mode)} // Update filters when changed
                   />
                 ))}
               </Form.Group>
