@@ -224,13 +224,13 @@ const AdminListContent = () => {
                     </>
                 ) : (
                     <>
-                    <FontAwesomeIcon
+                    {/* <FontAwesomeIcon
                         className="icon-color-edit"
                         title="Edit"
                         icon={faEdit}
                         style={{ marginRight: '8px', color: '#691ED2', cursor: 'pointer' }}
                         onClick={() => handleEdit(Admin.id)}
-                    />
+                    /> */}
                     <MDBSwitch
                         id={`switch-${Admin.id}`}
                         checked={Admin.status === 'Active' || Admin.status === 'Temporary'}

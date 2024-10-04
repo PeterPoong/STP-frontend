@@ -226,13 +226,13 @@ const AdminDataContent = () => {
                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                    
                         <>
-                        <FontAwesomeIcon
+                        {/* <FontAwesomeIcon
                             className="icon-color-edit"
                             title="Edit"
                             icon={faEdit}
                             style={{ marginRight: '8px', color: '#691ED2', cursor: 'pointer' }}
                             onClick={() => handleEdit(Data.id)}
-                        />
+                        /> */}
                         <MDBSwitch
                             id={`switch-${Data.id}`}
                             checked={Data.status === 1}
