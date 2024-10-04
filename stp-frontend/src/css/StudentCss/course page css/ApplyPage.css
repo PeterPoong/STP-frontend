@@ -1,88 +1,26 @@
-.apply-now-header-image {
-  width: 100%;
-  height: 450px;
-  display: block;
-  object-fit: cover;
-}
-
-.apply-now-masthead {
-  position: relative;
-  overflow: hidden;
-}
-
-.apply-now-container {
-  position: relative;
-  top: -5px; /* Adjust this value to control the overlap */
-  
-}
-
-.apply-now-row {
-  position: relative;
-}
-
-.apply-now-image-col {
-  top: -75px; /* Adjust this value to control the overlap */
-  z-index: 1;
-}
-
-.apply-now-program-image {
-  max-height: 150px;
-  border-radius: 50%;
-  border: 3px solid white;
-}
-
-.apply-now-card {
-  margin-top: 5rem;
-  max-height: fit-content;
-}
-
-.about-institute-image {
-  width: 100%;
-  height: 300px;
-  display: block;
-  object-fit: cover;
-}
-.adverstise-image{
-  width: 100%;
-  height: 200px;
-  display: block;
-  object-fit: cover;
-  margin-top: 50px;
-}
-
-.about-institute-container {
-  position: relative;
-  top: -100px; /* Adjust this value to control the overlap */
-}
-
-.random-images-carousel{
-  max-height: 300px;
-  object-fit: contain;
-  margin-top: 15px;
-}
-
+/* General Styles */
 .image-gallery-course {
-  display:inline-block;
-  justify-content: space-between;
-  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   margin-top: 50px;
 }
 
-.gallery-image-courses{
+.gallery-image-courses {
   max-width: 290px;
   height: 140px;
-  object-fit: fill;
+  object-fit: cover;
+  cursor: pointer;
+  transition: transform 0.3s ease;
 }
 
-.gallery-image-courses:last-child{
+.gallery-image-courses:hover {
+  transform: scale(1.05);
+}
+
+.gallery-image-courses:last-child {
   margin-right: 0;
 }
-/* .carousel-item .text-center {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-} */
 
 .item img {
   width: 100%;
@@ -118,150 +56,81 @@
   left: 50%;
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Ensures the image covers the div */
-  transform: translate(-50%, -50%); /* Centers the image */
+  object-fit: cover;
+  transform: translate(-50%, -50%);
 }
 
-/* Responsive adjustments if needed */
-@media (max-width: 992px) {
-  .cover-image {
-    height: auto; /* Adjust the height for smaller screens */
-    min-height: 300px; /* Set a minimum height */
-    /* margin-top: 100px; */
-  }
-
-  .about-institute-container {
-    position: relative;
-    top: -50px; /* Adjust this value to control the overlap */
-  }
+/* Apply Now Styles */
+.apply-now-header-image {
+  width: 100%;
+  height: 450px;
+  display: block;
+  object-fit: cover;
 }
 
-/* Responsive adjustments for tablet-sized screens (up to 768px) */
-@media (max-width: 768px) {
-  .cover-image {
-    width: 100%;
-    height: auto;
-    min-height: 250px; /* Adjust the minimum height for better appearance on tablets */
-  }
+.apply-now-masthead {
+  position: relative;
+  overflow: hidden;
 }
 
-
-@media (max-width: 576px) {
-  .cover-image {
-    height: auto; /* Adjust the height for smaller screens */
-    min-height: 200px; 
-  }
-
-  .about-institute-container {
-    position: relative;
-    top: -200px; /* Adjust this value to control the overlap */
-  }
+.apply-now-container {
+  position: relative;
+  top: -5px;
 }
 
-
-/* Responsive styles */
-@media (max-width: 992px) {
-  .apply-now-image-col {
-    top: 0;
-  }
-
-  .apply-now-program-image {
-    margin: auto;
-    display: block;
-    max-width: 120px;
-    max-height: 120px;
-  }
-
-  .apply-now-row {
-    display: block;
-    text-align: center;
-  }
-
-  .apply-now-container {
-    padding: 20px;
-  }
-
-  .about-institute-image,
-  .adverstise-image {
-    height: 200px;
-  }
-
-  .apply-now-header-image {
-    height: 350px;
-  }
-
-  .gallery-image-courses {
-    width: 100%;
-    height: auto;
-    margin-top: 15px;
-  }
+.apply-now-row {
+  position: relative;
 }
 
-@media (max-width: 768px) {
-  
-  .apply-now-header-image {
-    height: 250px;
-  }
-
-  .about-institute-image,
-  .adverstise-image {
-    height: 150px;
-  }
-
-  .apply-now-program-image {
-    max-width: 100px;
-    max-height: 100px;
-  }
-
-  .gallery-image-courses {
-    max-width: 100%;
-    height: auto;
-  }
-
-  .random-images-carousel {
-    max-height: 200px;
-  }
-
-  .apply-now-container {
-    top: 0;
-    margin-top: 20px;
-  }
-
-  .apply-now-row {
-    display: block;
-    padding: 15px;
-  }
+.apply-now-image-col {
+  top: -75px;
+  z-index: 1;
 }
 
-@media (max-width: 576px) {
-  .apply-now-container {
-    position: relative;
-    top: -150px; /* Adjust this value to control the overlap */
-  }
-
-  .apply-now-header-image {
-    height: 250px;
-  }
-
-  .apply-now-program-image {
-    max-width: 100px;
-    max-height: 100px;
-  }
-
-  .gallery-image-courses {
-    max-width: 100%;
-    height: auto;
-  }
-
-  
+.apply-now-program-image {
+  max-height: 150px;
+  border-radius: 50%;
+  border: 3px solid white;
 }
 
+.apply-now-card {
+  margin-top: 5rem;
+  max-height: fit-content;
+}
 
+/* About Institute Styles */
+.about-institute-image {
+  width: 100%;
+  height: 300px;
+  display: block;
+  object-fit: cover;
+}
+
+.adverstise-image {
+  width: 100%;
+  height: 200px;
+  display: block;
+  object-fit: cover;
+  margin-top: 50px;
+}
+
+.about-institute-container {
+  position: relative;
+  top: -100px;
+}
+
+.random-images-carousel {
+  max-height: 300px;
+  object-fit: contain;
+  margin-top: 15px;
+}
+
+/* Spinner Styles */
 .spinner-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh; /* Adjust based on the page height */
+  height: 100vh;
 }
 
 .custom-spinner {
@@ -279,5 +148,141 @@
   }
   100% {
     transform: rotate(360deg);
+  }
+}
+
+/* Responsive Styles */
+@media (max-width: 1200px) {
+  .gallery-image-courses {
+    max-width: 250px;
+    height: 120px;
+    object-fit: cover;
+
+  }
+
+}
+
+@media (max-width: 992px) {
+  .cover-image {
+    height: auto;
+    min-height: 300px;
+  }
+
+  .gallery-image-courses {
+    max-width: 200px;
+    height: 100px;
+    object-fit: cover;
+
+  }
+
+  .about-institute-container {
+    top: -50px;
+  }
+
+  .apply-now-image-col {
+    top: 0;
+  }
+
+  .apply-now-program-image {
+    max-width: 120px;
+    max-height: 120px;
+  }
+
+  /* .apply-now-row {
+    display: block;
+    text-align: center;
+  } */
+
+  .apply-now-container {
+    padding: 20px;
+  }
+
+  .about-institute-image,
+  .adverstise-image {
+    height: 200px;
+  }
+
+  .apply-now-header-image {
+    height: 350px;
+  }
+}
+
+@media (max-width: 768px) {
+  .cover-image {
+    width: 100%;
+    height: auto;
+    min-height: 250px;
+  }
+
+  .gallery-image-courses {
+    max-width: 150px;
+    height: 80px;
+    object-fit: cover;
+
+  }
+
+  .apply-now-header-image {
+    height: 350px;
+    
+  }
+
+  .about-institute-image,
+  .adverstise-image {
+    height: 150px;
+  }
+
+  .apply-now-program-image {
+    max-width: 100px;
+    max-height: 100px;
+  }
+
+  .random-images-carousel {
+    max-height: 200px;
+  }
+
+  .apply-now-image-col {
+    top: -10;
+  }
+
+
+  /* .apply-now-container {
+    top: 0;
+    margin-top: 20px;
+  } */
+
+  .apply-now-row {
+    display: block;
+    padding: 15px;
+  }
+}
+
+@media (max-width: 576px) {
+  .cover-image {
+    height: auto;
+    min-height: 200px;
+  }
+
+  .about-institute-container {
+    top: -200px;
+  }
+
+  .gallery-image-courses {
+    max-width: 120px;
+    height: 60px;
+    object-fit: cover;
+  }
+
+  .apply-now-container {
+    top: -150px;
+  }
+
+  .apply-now-header-image {
+    height: 250px;
+  }
+
+  .apply-now-program-image {
+    max-width: 100px;
+    max-height: 100px;
+
   }
 }

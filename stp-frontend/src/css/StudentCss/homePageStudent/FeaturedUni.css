@@ -53,7 +53,7 @@
 }
 
 .button-container button {
-  max-width: 179px;; /* Set a consistent width for buttons */
+  max-width: 179px; /* Set a consistent width for buttons */
   height: 50px; /* Set a consistent height for buttons */
   margin: 5px; /* Add some margin between buttons */
   font-size: 14px; /* Adjust the font size */
@@ -82,7 +82,8 @@
   color: white;
 }
 
-.featured-uni-carousel .carousel-control-prev, .featured-uni-carousel .carousel-control-next {
+.featured-uni-carousel .carousel-control-prev, 
+.featured-uni-carousel .carousel-control-next {
   z-index: 1050; /* Ensure arrows are above other elements */
   margin: 0 10px; /* Add margin to ensure they're not too close to other elements */
   width: 5%; /* Adjust width if needed */
@@ -110,6 +111,84 @@
 }
 
 /* Media Queries for Responsive Design */
+
+/* Mobile Screens (max-width: 480px) */
+@media (max-width: 480px) {
+  .button-container {
+    display: flex; /* Use flexbox for alignment */
+    flex-direction: row; /* Arrange buttons in a row */
+    justify-content: space-around; /* Space the buttons evenly */
+    width: 100%; /* Ensure the container is full width */
+    padding: 10px; /* Add padding for spacing */
+    margin-top: 15px; /* Space above the buttons */
+  }
+
+  .featured-uni-carousel .button-container .diploma-button button, 
+  .featured-uni-carousel .button-container .degree1-button button, 
+  .featured-uni-carousel .button-container .master-button button, 
+  .featured-uni-carousel .button-container .studyInMalaysia-button button {
+    padding: 12px 15px; /* Better padding for touch targets */
+    font-size: 14px; /* Font size adjustment */
+    border-radius: 25px; /* Rounded buttons */
+    background-color: #B71A18; /* Button color */
+    color: white; /* White text */
+    border: none; /* Remove default border */
+    flex: 1; /* Allow buttons to grow equally */
+    margin: 0 5px; /* Add horizontal margin between buttons */
+    min-width: 70px; /* Minimum width for buttons */
+  }
+
+  .search-bar {
+    width: 100%; /* Full width */
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping of input and button */
+    gap: 5px; /* Space between elements */
+    margin: 10px 0; /* Vertical margin for spacing */
+    padding: 0 10px; /* Add padding for inner spacing */
+  }
+
+  .search-bar input {
+    width: calc(100% - 120px); /* Adjust width for button */
+    min-width: 80px; /* Minimum width for input */
+    height: 45px; /* Height adjustment for better appearance */
+    border: 1px solid #B71A18; /* Border color */
+    border-radius: 20px; /* Rounded corners */
+    padding: 0 10px; /* Padding for text */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Shadow for depth */
+    transition: border-color 0.3s; /* Transition for border color */
+  }
+
+  .search-bar input:focus {
+    border-color: #922010; /* Change border color on focus */
+    outline: none; /* Remove default outline */
+  }
+
+  .search-bar button {
+    width: 110px; /* Fixed width for the button */
+    height: 45px; /* Match height with input */
+    border-radius: 20px; /* Rounded corners */
+    background-color: #B71A18; /* Button color */
+    color: white; /* Text color */
+    border: none; /* No border */
+    cursor: pointer; /* Pointer on hover */
+    transition: background-color 0.3s, transform 0.2s; /* Smooth transitions */
+  }
+
+  .search-bar button:hover {
+    background-color: #922010; /* Darker shade on hover */
+    transform: scale(1.05); /* Slightly enlarge on hover */
+  }
+
+  .dream-school-heading {
+    font-size: 24px; /* Larger font size for emphasis */
+    margin-top: 10px; /* Space above the heading */
+    text-align: center; /* Center text alignment */
+    padding: 0 15px; /* Padding for side spacing */
+    color: #B71A18; /* Change heading color */
+  }
+}
+
+/* Tablet Screens (max-width: 768px) */
 @media (max-width: 768px) {
   .button-container {
     display: flex;
@@ -120,7 +199,6 @@
   .button-container button {
     width: calc(25% - 10px); /* Each button takes up about 25% width minus gap */
     height: 40px; /* Smaller consistent button height */
-    
   }
 
   .search-bar {
@@ -139,38 +217,22 @@
     height: 40px; /* Match the button height with the input field */
     margin-left: 10px; /* Add spacing between the input and button */
   }
+
+  .dream-school-heading {
+    font-size: 24px; /* Smaller font size for tablets */
+    margin-top: 30px; /* Adjust margin for smaller screens */
+  }
 }
 
-/* Further adjustments for very small screens */
-@media (max-width: 480px) {
-  .featured-uni-carousel .button-container .diploma-button, 
-  .featured-uni-carousel .button-container .degree1-button, 
-  .featured-uni-carousel .button-container .master-button, 
-  .featured-uni-carousel .button-container .studyInMalaysia-button {
-    padding: 10px 0; /* Slightly reduce padding */
-    font-size: 12px; /* Further reduce font size */
-  }
-
+/* Laptop Screens (min-width: 769px) */
+@media (min-width: 769px) {
   .button-container {
-    width: 100%; /* Ensure the container is full width */
-    justify-content: space-between; /* Space the buttons evenly */
+    /* Add any specific styles for larger screens if necessary */
   }
 
-  .search-bar {
-    width: 100%; /* Ensure the search bar takes up the full width */
-    display: flex;
-    flex-wrap: wrap; /* Allow wrapping of input and button */
-    gap: 5px; /* Add a small gap between input and button */
-  }
-
-  .search-bar input {
-    width: calc(100% - 110px); /* Adjust input width considering the button */
-    min-width: 100px; /* Reduce minimum width further */
-    height: 36px; /* Adjust the height for very small screens */
-  }
-
-  .search-bar button {
-    width: 100px; /* Set a fixed width for the button */
-    height: 36px; /* Match the button height with the input field */
+  .dream-school-heading {
+    font-size: 28px; /* Default font size for larger screens */
+    margin-top: 50px; /* Maintain larger top margin */
   }
 }
+

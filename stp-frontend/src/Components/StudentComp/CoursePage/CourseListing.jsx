@@ -659,6 +659,14 @@ const CourseListing = ({
     setSelectedInstitute(institute);
   };
 
+  // if (!filteredPrograms || filteredPrograms.length === 0) {
+  //   return (
+  //     <div className="spinner-container">
+  //       <div className="custom-spinner"></div>
+  //     </div>
+  //   );
+  // }
+
   const mappedPrograms = currentCourses.map((program, index) => (
     <>
       <div
@@ -699,7 +707,7 @@ const CourseListing = ({
                     <span style={{ paddingLeft: "10px" }}>
                       {program.state || "N/A"}, {program.country || "N/A"}
                     </span>
-                    {/* <a
+                    <a
                       href={program.school_location}
                       className="map-link"
                       target="_blank"
@@ -707,10 +715,11 @@ const CourseListing = ({
                         paddingLeft: "35px",
                         fontWeight: "lighter",
                         color: "#1745BA",
+                        visibility: "hidden", // Hides the element but keeps the space occupied
                       }}
                     >
                       click and view on map
-                    </a> */}
+                    </a>
                   </div>
                 </div>
               </div>

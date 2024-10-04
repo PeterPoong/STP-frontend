@@ -56,7 +56,7 @@ const FeaturedUni = () => {
         </Carousel.Item>
       </Carousel>
       <div className="carousel-caption-wrapper text-center">
-        <h3 style={{ marginTop: "50px" }}>Study in your dream school</h3>
+        <h3 className="dream-school-heading">Study in your dream school</h3>
         <Form
           className="d-flex mt-3 align-items-center justify-content-center"
           onSubmit={(e) => {
@@ -84,7 +84,7 @@ const FeaturedUni = () => {
               className="bi bi-search"
               style={{
                 position: "absolute",
-                left: "30%",
+                left: "10%",
                 top: "50%",
                 transform: "translate(-50%, -50%)",
                 fontSize: "18px",
@@ -93,7 +93,7 @@ const FeaturedUni = () => {
             ></i>
           </InputGroup>
         </Form>
-        <div className="button-container mt-3 d-flex justify-content-center">
+        <div className="button-container mt-3 d-flex justify-content-center flex-wrap">
           <button
             className="diploma-button mb-2 mx-2"
             onClick={() => handleNavigationClick("Diploma", null)}

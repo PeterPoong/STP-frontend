@@ -632,7 +632,7 @@ const KnowMoreInstitute = () => {
                 </div>
               </div>
               <Row className="d-flex flex-wrap ">
-                <Col xs={6} sm={6} md={6} className="d-flex mb-3">
+                <Col xs={12} sm={6} md={6} className="d-flex mb-3">
                   <div className="card mt-4 total-course-card w-100">
                     <div className="card-body">
                       <Row className="justify-content-center">
@@ -654,7 +654,7 @@ const KnowMoreInstitute = () => {
                         <div>
                           <i
                             className="bi bi-mortarboard"
-                            style={{ paddingLeft: "20px", fontSize: "2rem" }}
+                            style={{ paddingLeft: "10px", fontSize: "2rem" }}
                           ></i>
                         </div>
                         <div>
@@ -673,7 +673,7 @@ const KnowMoreInstitute = () => {
                   </div>
                 </Col>
 
-                <Col xs={6} sm={6} md={6} className="d-flex mb-3">
+                <Col xs={12} sm={6} md={6} className="d-flex mb-3">
                   <div className="card mt-4 intake-period-card w-100">
                     <div className="card-body">
                       <Row className="justify-content-center">
@@ -703,7 +703,7 @@ const KnowMoreInstitute = () => {
                         <div>
                           <i
                             className="bi bi-book"
-                            style={{ paddingLeft: "20px", fontSize: "2rem" }}
+                            style={{ paddingLeft: "10px", fontSize: "2rem" }}
                           ></i>
                         </div>
                         <div>
@@ -730,7 +730,7 @@ const KnowMoreInstitute = () => {
             </Container>
 
             {/* --------- About School --------- */}
-            <Container className="my-4 about-institute-container">
+            <Container className="my-4 about-institute-school-container">
               <div
                 style={{
                   position: "relative",

@@ -166,6 +166,7 @@ const CourseDetail = () => {
             <Container className="my-4 apply-now-container">
               <Row className="apply-now-row no-gutters">
                 <Col
+                  xs={12}
                   md={3}
                   className="d-flex align-items-center justify-content-center position-relative apply-now-image-col"
                 >
@@ -181,6 +182,7 @@ const CourseDetail = () => {
                 </Col>
 
                 <Col
+                  xs={12}
                   md={6}
                   className="d-flex flex-column flex-md-row align-items-center"
                   style={{ paddingBottom: "25px" }}
@@ -209,6 +211,7 @@ const CourseDetail = () => {
                 </Col>
 
                 <Col
+                  xs={12}
                   md={3}
                   className="d-flex justify-content-center justify-content-md-end"
                 >
