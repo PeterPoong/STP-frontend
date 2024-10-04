@@ -215,7 +215,7 @@ const OtherDocuments = ({ onBack, onSubmit }) => {
                   placeholder="Name of certificate/document..."
                   value={doc.name}
                   onChange={(e) => handleDocumentChange(index, 'name', e.target.value)}
-                  className={`mb-2 border p-0 fw-bold w-25 ps-2 ${!doc.name && 'border-danger'}`} // {{ edit_1 }}
+                  className={`ac-input-placeholder mb-2 border border-secondary p-0 fw-bold w-25 ps-2 ${!doc.name && 'border-danger'}`} // {{ edit_1 }}
                   style={{ fontSize: '1.1rem' }}
                 />
 

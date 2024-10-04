@@ -358,7 +358,7 @@ const Achievements = ({ onBack, onNext }) => {
                   placeholder="Name of Achievement..."
                   value={achievement.achievement_name}
                   onChange={(e) => handleAchievementChange(index, 'achievement_name', e.target.value)}
-                  className="mb-2 ps-2 border p-0 fw-bold w-25"
+                  className="mb-2 ps-2 border p-0 fw-bold w-25 ac-input-placeholder"
                   style={{ fontSize: '1.1rem' }}
                 />
                 <div className="d-flex justify-content-between ps-0">
@@ -371,7 +371,7 @@ const Achievements = ({ onBack, onNext }) => {
                         }
                         onChange={(date) => handleAchievementChange(index, 'date', date)}
                         dateFormat="dd/MM/yyyy"
-                        className="form-control py-0 px-2 date-picker-short"
+                        className="form-control py-0 px-2 date-picker-short ac-input-placeholder"
                         placeholderText="Select date"
                       />
                     </div>
@@ -381,7 +381,7 @@ const Achievements = ({ onBack, onNext }) => {
                         as="select"
                         value={achievement.title}
                         onChange={(e) => handleAchievementChange(index, 'title', e.target.value)}
-                        className="py-0 px-2 input-short"
+                        className="py-0 px-2 input-short ac-input-placeholder"
                       >
                         <option value="">Select Title</option>
                         {achievementTypes.map((type) => (
@@ -398,7 +398,7 @@ const Achievements = ({ onBack, onNext }) => {
                         placeholder="Awarded By"
                         value={achievement.awarded_by}
                         onChange={(e) => handleAchievementChange(index, 'awarded_by', e.target.value)}
-                        className="py-0 px-2 input-short"
+                        className="py-0 px-2 input-short ac-input-placeholder"
                       />
                     </div>
                     <div className="d-flex justify-content-center align-items-center">

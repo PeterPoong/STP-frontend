@@ -1,4 +1,10 @@
 
+.ac-input-placeholder::placeholder {
+  opacity: 0.4; /* Adjust the opacity level */
+  color: #888;  /* Optional: you can also change the placeholder color */
+}
+
+
 .sac-name-restrict
 {
     word-wrap: break-word; /* For wrapping long words */
@@ -10,16 +16,6 @@
   max-width: 100px; 
 }
 
-.acl-name-restrict
-{
-    word-wrap: break-word; /* For wrapping long words */
-  overflow-wrap: break-word; /* Breaks words at the right points */
-  word-break: break-all; /* Forces the break for long words */
-  white-space: nowrap; /* Prevents the text from wrapping to the next line */
-  overflow: hidden; /* Ensures overflowed content is hidden */
-  text-overflow: ellipsis; /* Adds '...' at the point of overflow */
-  max-width: 175px; 
-}
 
 .app-container-applycourse {
   display: flex;
