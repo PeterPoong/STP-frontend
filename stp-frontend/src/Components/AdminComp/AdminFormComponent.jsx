@@ -361,10 +361,15 @@ const handleRadioChange = (radioId, value) => {
                     <Card.Body>
                         {formPassword.map((password, index) => (
                             <Form.Group key={index} controlId={password.id} className="mb-4 position-relative">
-                                <Form.Label>{password.label}</Form.Label> <span class="text-danger">*</span>
+                                <Form.Label>{password.label}</Form.Label>
                                 {password.helperText && (
                                     <Form.Text className="text-danger mb-2" style={{ display: 'block' }}>
                                         {password.helperText}
+                                    </Form.Text>
+                                )}
+                                 {password.helperStar && (
+                                    <Form.Text className="text-danger mb-2 ms-1" >
+                                        {password.helperStar}
                                     </Form.Text>
                                 )}
                                 <Form.Control

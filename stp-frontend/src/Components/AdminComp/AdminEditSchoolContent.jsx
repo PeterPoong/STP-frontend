@@ -242,16 +242,18 @@ const AdminEditSchoolContent = () => {
        if (formData.logo instanceof File) {
         formPayload.append("logo", formData.logo); // New logo file
     }
-        // // Append cover photo if available
-        // if (coverFile) {
-        //     formPayload.append('cover', coverFile);
-        // }
+        // Append cover photo if available
+        if (coverFile) {
+            formPayload.append('cover', coverFile);
+        }
         
-        // // Append album files if available
-        // albumFiles.forEach((file, index) => {
-        //     formPayload.append(`album[${index}]`, file);
-        // });
-        
+        // Check if albumFiles exist and is not empty
+        if (albumFiles && albumFiles.length > 0) {
+            albumFiles.forEach((file, index) => {
+                formPayload.append(`album[${index}]`, file);
+            });
+        }
+
         try {
             console.log("FormData before submission:", formPayload);
             

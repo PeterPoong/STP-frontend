@@ -526,7 +526,10 @@ const fetchCities = (stateId) => {
             required: true,
             autoComplete: "new-password",
             toggleVisibility: togglePasswordVisibility,
-            showVisibility: showPassword
+            showVisibility: showPassword,
+            helperStar:"*"
+            
+
         },
         {
             id: "confirm_password",
@@ -537,7 +540,8 @@ const fetchCities = (stateId) => {
             onChange: handleFieldChange,
             required: true,
             toggleVisibility: toggleConfirmPasswordVisibility,
-            showVisibility: showConfirmPassword
+            showVisibility: showConfirmPassword,
+              helperStar:"*"
         }
     ];
     const shouldRenderPasswordCard = formPassword && formPassword.length > 0;
