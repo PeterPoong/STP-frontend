@@ -235,12 +235,12 @@ form .form-check-label::first-letter {
     object-fit: cover; /* Ensures the image scales properly within the circle */
 }
 .img-banner-admin {
-  margin-left: 96px;
-  margin-top: -41px;
-  max-width: 150px;
-  height: 150px; /* Ensure the height is the same as the width */
+  margin-left: 6px;
+  margin-top: 19px;
+  max-width: 500px; /* Set maximum width */
+  max-height: 500px; /* Set maximum height */
   border: 1px solid #D6D5D5;
-  object-fit: cover; /* Ensures the image scales properly within the circle */
+  object-fit: cover; /* Ensures the image scales properly within the specified dimensions */
 }
 
 
@@ -438,4 +438,7 @@ img.roundedCircle {
   transform: translateY(-50%);
   cursor: pointer;
   color: #007bff; /* Customize as needed */
+}
+.text-danger {
+  color: red; /* or any custom color */
 }

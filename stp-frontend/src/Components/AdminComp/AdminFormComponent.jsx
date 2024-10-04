@@ -28,6 +28,7 @@ const AdminFormComponent = ({
   formAddress,
   checkboxTitle,
   checkboxDetail,
+  star,
   courseTitle,
   formPeriod,
   formUrl,
@@ -239,7 +240,7 @@ const handleRadioChange = (radioId, value) => {
           <Col md={6}>
             {formFields && formFields.map((field, index) => (
               <Form.Group key={index} controlId={field.id} className="mb-5">
-                <Form.Label>{field.label}</Form.Label>
+                <Form.Label>{field.label}</Form.Label> <span class="text-danger">*</span>
                 <Form.Control
                   as={field.as || "input"}
                   type={field.type || "text"}
@@ -253,7 +254,7 @@ const handleRadioChange = (radioId, value) => {
          
        {formDrop && formDrop.map((drop, index) => (
               <Form.Group key={index} controlId={drop.id} className="mb-5">
-                <Form.Label>{drop.label}</Form.Label>
+                <Form.Label>{drop.label}</Form.Label> <span class="text-danger">*</span>
                 <Form.Control 
                   as="select" 
                   value={drop.value} 
@@ -271,7 +272,7 @@ const handleRadioChange = (radioId, value) => {
             ))}
                {formCourses && formCourses.map((courses, index) => (
               <Form.Group key={index} controlId={courses.id} className="mb-5">
-                <Form.Label>{courses.label}</Form.Label>
+                <Form.Label>{courses.label}</Form.Label> <span class="text-danger">*</span>
                 <Form.Control 
                   as="select" 
                   value={courses.value} 
@@ -289,7 +290,7 @@ const handleRadioChange = (radioId, value) => {
             ))}
 {formPackage && formPackage.map((packages, index) => (
               <Form.Group key={index} controlId={packages.id} className="mb-5">
-                <Form.Label>{packages.label}</Form.Label>
+                <Form.Label>{packages.label}</Form.Label> <span class="text-danger">*</span>
                 <Form.Control 
                   as="select" 
                   value={packages.value} 
@@ -309,7 +310,7 @@ const handleRadioChange = (radioId, value) => {
             {formUrl && formUrl.map((urlField, index) => (
               <Col md={12} key={index}>
                 <Form.Group controlId={urlField.id}  className="banner">
-                  <Form.Label>{urlField.label}</Form.Label>
+                  <Form.Label>{urlField.label}</Form.Label> <span class="text-danger">*</span>
                   <Form.Control
                     type={urlField.type || "text"}
                     placeholder={urlField.placeholder || ""}
@@ -324,7 +325,7 @@ const handleRadioChange = (radioId, value) => {
             {error && <div className="alert alert-danger">{error}</div>}
             {handleBannerFileChange && (
                <Form.Group controlId="banner_file" className="mb-5">
-               <Form.Label>Banner File (2MB)</Form.Label>
+               <Form.Label>Banner File (2MB)</Form.Label> <span class="text-danger">*</span>
                <Form.Control type="file" accept="image/*" onChange={handleBannerFileChange} />
            </Form.Group>
             )}
@@ -342,7 +343,7 @@ const handleRadioChange = (radioId, value) => {
             {/* Contact Number Phone Input */}
             {handlePhoneChange && phone !== undefined && (
               <Form.Group controlId="contact_number" className="mb-5">
-                <Form.Label>Contact Number</Form.Label>
+                <Form.Label>Contact Number</Form.Label> <span class="text-danger">*</span>
                 <PhoneInput
                   country="my"
                   value={`${country_code}${phone}`} 
@@ -360,7 +361,7 @@ const handleRadioChange = (radioId, value) => {
                     <Card.Body>
                         {formPassword.map((password, index) => (
                             <Form.Group key={index} controlId={password.id} className="mb-4 position-relative">
-                                <Form.Label>{password.label}</Form.Label>
+                                <Form.Label>{password.label}</Form.Label> <span class="text-danger">*</span>
                                 {password.helperText && (
                                     <Form.Text className="text-danger mb-2" style={{ display: 'block' }}>
                                         {password.helperText}
@@ -388,7 +389,7 @@ const handleRadioChange = (radioId, value) => {
 
             {formAccount && formAccount.map((account, index) => (
               <Form.Group key={index} controlId={account.id} className="mb-5">
-                <Form.Label>{account.label}</Form.Label>
+                <Form.Label>{account.label}</Form.Label> <span class="text-danger">*</span>
                 <Form.Control 
                   as="select" 
                   value={account.value} 
@@ -406,7 +407,7 @@ const handleRadioChange = (radioId, value) => {
             ))}
               {formMode && formMode.map((mode, index) => (
               <Form.Group key={index} controlId={mode.id} className="mb-5">
-                <Form.Label>{mode.label}</Form.Label>
+                <Form.Label>{mode.label}</Form.Label> <span class="text-danger">*</span>
                 <Form.Control 
                   as="select" 
                   value={mode.value} 
@@ -430,7 +431,7 @@ const handleRadioChange = (radioId, value) => {
            
             <Form.Group key={index} controlId={date.id} className="mb-5">
                
-                <Form.Label>{date.label}</Form.Label>
+                <Form.Label>{date.label}</Form.Label> <span class="text-danger">*</span>
                 
                 <DatePicker
                   selected={date.value ? new Date(date.value) : null}  // Convert value to Date object
@@ -449,7 +450,7 @@ const handleRadioChange = (radioId, value) => {
 
           {formGender && formGender.map((gender, index) => (
               <Form.Group key={index} controlId={gender.id} className="mb-5">
-                <Form.Label>{gender.label}</Form.Label>
+                <Form.Label>{gender.label}</Form.Label> <span class="text-danger">*</span>
                 <Form.Control 
                   as="select" 
                   value={gender.value} 
@@ -469,7 +470,7 @@ const handleRadioChange = (radioId, value) => {
             {error && <div className="alert alert-danger">{error}</div>}
             {handleLogoChange && (
                <Form.Group controlId="logo" className="mb-5">
-               <Form.Label>Logo (2MB)</Form.Label>
+               <Form.Label>Logo (2MB)</Form.Label> <span class="text-danger">*</span>
                <Form.Control type="file" accept="image/*" onChange={handleLogoChange} />
            </Form.Group>
             )}
@@ -485,7 +486,7 @@ const handleRadioChange = (radioId, value) => {
             )}
  {handleIconChange && (
                <Form.Group controlId="icon" className="mb-5">
-               <Form.Label>Category Icon (2MB)</Form.Label>
+               <Form.Label>Category Icon (2MB)</Form.Label> <span class="text-danger">*</span>
                <Form.Control type="file" accept="image/*" onChange={handleIconChange} />
            </Form.Group>
             )}
@@ -501,7 +502,7 @@ const handleRadioChange = (radioId, value) => {
             )}
             {formPrice && formPrice.map((Price, index) => (
                 <Form.Group key={index} controlId={Price.id} className="mb-5">
-                  <Form.Label>{Price.label}</Form.Label>
+                  <Form.Label>{Price.label}</Form.Label> <span class="text-danger">*</span>
                   <Form.Control
                     as={Price.as || "input"}
                     type={Price.type || "text"}
@@ -515,7 +516,7 @@ const handleRadioChange = (radioId, value) => {
    
             {formCategory && formCategory.map((category, index) => (
               <Form.Group key={index} controlId={category.id} className="mb-5">
-                <Form.Label>{category.label}</Form.Label>
+                <Form.Label>{category.label}</Form.Label> <span class="text-danger">*</span>
                 <Form.Control 
                   as="select" 
                   value={category.value} 
@@ -534,7 +535,7 @@ const handleRadioChange = (radioId, value) => {
             
             {formStatus && formStatus.map((status, index) => (
               <Form.Group key={index} controlId={status.id} className="mb-5">
-                <Form.Label>{status.label}</Form.Label>
+                <Form.Label>{status.label}</Form.Label> <span class="text-danger">*</span>
                 <Form.Control 
                   as="select" 
                   value={status.value} 
@@ -557,7 +558,7 @@ const handleRadioChange = (radioId, value) => {
           <Row>
             <Col md={12}>
               <Form.Group controlId="banner_start" className="mb-3">
-                <Form.Label>Banner Start</Form.Label>
+                <Form.Label>Banner Start</Form.Label> <span class="text-danger">*</span>
                 <Form.Control
                   type="datetime-local"
                   value={selectedStartDate ? formatDateTimeLocal(selectedStartDate) : ''}
@@ -571,7 +572,7 @@ const handleRadioChange = (radioId, value) => {
             </Col>
             <Col md={12}>
               <Form.Group controlId="banner_end" className="mb-3">
-                <Form.Label>Banner End</Form.Label>
+                <Form.Label>Banner End</Form.Label> <span class="text-danger">*</span>
                 <Form.Control
                   type="datetime-local"
                   value={selectedEndDate ? formatDateTimeLocal(selectedEndDate) : ''}
@@ -604,7 +605,7 @@ const handleRadioChange = (radioId, value) => {
             {/* Person In Charge Contact Phone Input */}
             {handlePhoneChange && personPhone !== undefined && (
               <Form.Group controlId="person_in_charge_contact" className="mb-5">
-                <Form.Label>Person in Charge's Contact</Form.Label>
+                <Form.Label>Person in Charge's Contact</Form.Label> <span class="text-danger">*</span>
                 <PhoneInput
                   country="my"
                   value={personPhone} 
@@ -619,7 +620,7 @@ const handleRadioChange = (radioId, value) => {
             )}
             {formPersonInCharge && formPersonInCharge.map((PersonInCharge, index) => (
               <Form.Group key={index} controlId={PersonInCharge.id} className="mb-5">
-                <Form.Label>{PersonInCharge.label}</Form.Label>
+                <Form.Label>{PersonInCharge.label}</Form.Label> <span class="text-danger">*</span>
                 <Form.Control
                   as={PersonInCharge.as || "input"}
                   type={PersonInCharge.type || "text"}
@@ -635,7 +636,7 @@ const handleRadioChange = (radioId, value) => {
 
             {formName && formName.map((Name, index) => (
               <Form.Group key={index} controlId={Name.id} className="mb-5">
-                <Form.Label>{Name.label}</Form.Label>
+                <Form.Label>{Name.label}</Form.Label> <span class="text-danger">*</span>
                 <Form.Control
                   as={Name.as || "input"}
                   type={Name.type || "text"}
@@ -649,7 +650,7 @@ const handleRadioChange = (radioId, value) => {
             
             {formWebsite && formWebsite.map((Website, index) => (
               <Form.Group key={index} controlId={Website.id} className="mb-5">
-                <Form.Label>{Website.label}</Form.Label>
+                <Form.Label>{Website.label}</Form.Label> <span class="text-danger">*</span>
                 <Form.Control
                   as={Website.as || "input"}
                   type={Website.type || "text"}
@@ -665,7 +666,7 @@ const handleRadioChange = (radioId, value) => {
       </div>
       {formAddress && formAddress.map((Address, index) => (
         <Form.Group key={index} controlId={Address.id} className="mb-5 ms-2">
-          <Form.Label>{Address.label}</Form.Label>
+          <Form.Label>{Address.label}</Form.Label> <span class="text-danger">*</span>
             <Form.Control
               as={Address.as || "input"}
               type={Address.type || "text"}
@@ -681,7 +682,7 @@ const handleRadioChange = (radioId, value) => {
                  {formCountry && formCountry.map((field, index) => (
     <Col md={4} key={index}>
       <Form.Group controlId={field.id} className="mb-5 ms-2">
-        <Form.Label>{field.label}</Form.Label>
+        <Form.Label>{field.label}</Form.Label> <span class="text-danger">*</span>
         <Form.Control
           as="select"
           value={field.value}
@@ -702,7 +703,7 @@ const handleRadioChange = (radioId, value) => {
               </Col>
       {formTextarea && formTextarea.map((Textarea) => (
         <Form.Group key={Textarea.id} controlId={Textarea.id} className="mb-5 ms-2">
-          <Form.Label>{Textarea.label}</Form.Label>
+          <Form.Label>{Textarea.label}</Form.Label> <span class="text-danger">*</span>
           <Form.Control
             as={Textarea.as}
             rows={Textarea.rows}
@@ -822,7 +823,7 @@ const handleRadioChange = (radioId, value) => {
       {formHTML &&
         formHTML.map((field) => (
           <Form.Group key={field.id} controlId={field.id} className="ms-2">
-            <Form.Label>{field.label}</Form.Label>
+            <Form.Label>{field.label}</Form.Label> <span class="text-danger">*</span>
             <Editor
               apiKey="2k66p00ufe31mut5ctxu5s6cegpthu6kzc3pd0ap5fsswfst"
               value={field.value} // Bind TinyMCE's value to the field's value
@@ -863,7 +864,8 @@ const handleRadioChange = (radioId, value) => {
       {formCheckboxes && formCheckboxes.length > 0 && (
   <div className="check">
     <h4 className="detail text-left">{checkboxDetail}</h4>
-    <h4 className="fw-light text-left mt-2 mb-2">{checkboxTitle}</h4>
+    <h4 className="fw-light text-left mt-2">{checkboxTitle}</h4> 
+    <span class="text-danger">*</span>
     <Form.Group controlId="formBasicCheckboxes">
       <div className="row">
         {formCheckboxes.map((checkbox, index) => (
@@ -886,7 +888,8 @@ const handleRadioChange = (radioId, value) => {
       {formCourse && formCourse.length > 0 && (
   <div className="check">
     <h4 className="detail text-left">{checkboxDetail}</h4>
-    <h4 className="fw-light text-left mt-2 mb-2">{courseTitle}</h4>
+    <h4 className="fw-light text-left mt-2">{courseTitle}</h4>
+    <span class="text-danger">*</span>
     <Form.Group controlId="formBasicCheckboxes">
       <div className="row">
         {formCourse.map((course, index) => (

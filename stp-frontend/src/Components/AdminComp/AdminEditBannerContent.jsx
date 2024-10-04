@@ -16,6 +16,8 @@ const AdminEditBannerContent = () => {
   const [selectedStartDate, setSelectedStartDate] = useState(null);
   const [selectedEndDate, setSelectedEndDate] = useState(null);
   const [banner_file, setBanner_file]= useState(null)
+  const [oldFeaturedId, setOldFeaturedId] = useState(null); // Assuming this is the old featured ID
+  const [newFeaturedIds, setNewFeaturedIds] = useState([]); // For newly selected features
   const [newBannerFile, setNewBannerFile] = useState (null)
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -74,17 +76,19 @@ const AdminEditBannerContent = () => {
           setFormData({
             banner_name: bannerDetails.name,
             banner_url: bannerDetails.url,
-            banner_start: bannerDetails.banner_start ? bannerDetails.banner_start : "", // Date in `Y-m-dTH:i` format
-            banner_end: bannerDetails.banner_end ? bannerDetails.banner_end : "",       // Date in `Y-m-dTH:i` format
+            banner_start: bannerDetails.banner_start ? bannerDetails.banner_start : "",
+            banner_end: bannerDetails.banner_end ? bannerDetails.banner_end : "",
             banner_file: bannerDetails.file ? `${import.meta.env.VITE_BASE_URL}${bannerDetails.file}` : null,
             featured_id: bannerDetails.feature ? [bannerDetails.featured_id] : [],
           });
-  
+        
           setSelectedStartDate(new Date(bannerDetails.banner_start));  // Set start date
           setSelectedEndDate(new Date(bannerDetails.banner_end));      // Set end date
           setBanner_file(bannerDetails.file ? `${import.meta.env.VITE_BASE_URL}storage/${bannerDetails.file}` : null);
+          setOldFeaturedId(bannerDetails.featured_id); // Set old featured ID
           setSelectedFeatures(bannerDetails.featured ? [bannerDetails.featured.featured_id] : []);
-        } else {
+        }
+        else {
           console.error("Banner not found with ID:", bannerId);
         }
       } catch (error) {
@@ -102,14 +106,10 @@ const AdminEditBannerContent = () => {
     const formattedStartDate = selectedStartDate ? formatDateForSubmission(selectedStartDate) : null;
     const formattedEndDate = selectedEndDate ? formatDateForSubmission(selectedEndDate) : null;
   
-    // Check for required fields
     if (!formData.banner_name || !formData.banner_url || !formattedStartDate || !formattedEndDate) {
       setError("Please fill out all required fields.");
       return;
     }
-    if (formData.banner_file) {
-      console.log(`banner_file: ${formData.banner_file.name}, size: ${formData.banner_file.size}`);
-  }
   
     const submissionData = new FormData();
     submissionData.append("id", bannerId);
@@ -117,27 +117,27 @@ const AdminEditBannerContent = () => {
     submissionData.append("banner_url", formData.banner_url);
     submissionData.append("banner_start", formattedStartDate);
     submissionData.append("banner_end", formattedEndDate);
-    submissionData.append("old_featured_id", currentFeaturedId); // current featured ID
-    submissionData.append("new_featured_id", selectedNewFeaturedId); // new featured ID
-    // Only append the file if a new one is uploaded
+   
+  
     if (formData.banner_file) {
       submissionData.append("banner_file", formData.banner_file);
     }
   
-    // Handle selected features
-    selectedFeatures.forEach((featureId) => {
-      submissionData.append("featured_id[]", featureId);
-    });
-     // Debug: log FormData before submission
-     for (let [key, value] of submissionData.entries()) {
-      console.log(`${key}: ${value}`);
-    }
+    // Attach the new featured IDs
+  newFeaturedIds.forEach((featureId) => submissionData.append("new_featured_id[]", featureId));
+
+  // Attach the old featured ID if it's still selected
+  if (oldFeaturedId) {
+    submissionData.append("old_featured_id", oldFeaturedId);
+  }
+   // Log the submission data
+   for (let [key, value] of submissionData.entries()) {
+    console.log(`${key}:`, value);
+  }
     try {
       const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/editBanner`, {
         method: "POST",
-        headers: {
-          Authorization: Authenticate,
-        },
+        headers: { Authorization: Authenticate },
         body: submissionData,
       });
   
@@ -152,7 +152,6 @@ const AdminEditBannerContent = () => {
     }
   };
   
-
   useEffect(() => {
     const fetchFeatured = async () => {
       try {
@@ -182,15 +181,26 @@ const AdminEditBannerContent = () => {
     setFormData(prev => ({ ...prev, banner_file: file }));
   };
 
-  const handleFeatureChange = (event) => {
-    const featureId = parseInt(event.target.value);
-    setSelectedFeatures(prevFeatures =>
-      prevFeatures.includes(featureId)
-        ? prevFeatures.filter(id => id !== featureId)
-        : [...prevFeatures, featureId]
-    );
-  };
+ // Handle changes in feature selection
+const handleFeatureChange = (event) => {
+  const featureId = parseInt(event.target.value);
 
+  setSelectedFeatures((prevFeatures) => {
+    if (prevFeatures.includes(featureId)) {
+      // If it's being deselected
+      if (oldFeaturedId === featureId) {
+        // Only update oldFeaturedId if it matches
+        setOldFeaturedId(null); // Reset old featured ID since it's deselected
+      }
+      return prevFeatures.filter((id) => id !== featureId); // Remove from selected features
+    } else {
+      // If it's being selected
+      setNewFeaturedIds((newIds) => [...newIds, featureId]); // Add to new featured IDs
+      return [...prevFeatures, featureId]; // Add to selected features
+    }
+  });
+};
+  
   const formFields = [
     {
       id: "banner_name",
@@ -231,10 +241,11 @@ const AdminEditBannerContent = () => {
   ];
 
   return (
-    <Container fluid className="admin-edit-banner-content">
+    <Container fluid className="admin-add-banner-content">
       <AdminFormComponent
   formTitle="Edit Banner"
   checkboxDetail="Featured Type(s)"
+  star="*"
   formFields={formFields}
   formUrl={formUrl}
   formCheckboxes={formCheckboxes}
