@@ -347,9 +347,50 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
   };
 
 
-  const handleRemoveTranscript = (index) => {
-    setAcademicTranscripts(academicTranscripts.filter((_, i) => i !== index));
-
+  const handleRemoveTranscript = async (index) => {
+    const transcript = academicTranscripts[index];
+    
+    if (!transcript.id) {
+      // If the transcript doesn't have an ID, it's not saved in the backend yet
+      setAcademicTranscripts(academicTranscripts.filter((_, i) => i !== index));
+      return;
+    }
+  
+    // Confirmation dialog
+    const isConfirmed = window.confirm(
+      "Are you sure you want to remove this transcript? This will delete all associated data including subjects, documents, and CGPA information."
+    );
+  
+    if (!isConfirmed) {
+      return;
+    }
+  
+    try {
+      const result = await resetTranscript(transcript.id);
+      if (result.success) {
+        // Remove the transcript from the state
+        setAcademicTranscripts(academicTranscripts.filter((_, i) => i !== index));
+        
+        // Clear any errors associated with this transcript
+        setDocumentErrors(prevErrors => {
+          const newErrors = { ...prevErrors };
+          Object.keys(newErrors).forEach(key => {
+            if (key.startsWith(`${index}-`)) {
+              delete newErrors[key];
+            }
+          });
+          return newErrors;
+        });
+  
+        // Optionally, show a success message
+        alert("Transcript successfully removed and all associated data has been deleted.");
+      } else {
+        throw new Error(result.message || 'Failed to reset transcript');
+      }
+    } catch (error) {
+      console.error('Error removing transcript:', error);
+      alert(`Failed to remove transcript: ${error.message}`);
+    }
   };
 
   const handleAddSubject = (transcriptIndex) => {
@@ -818,6 +859,29 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
     }
   };
 
+  const resetTranscript = async (transcriptType) => {
+    try {
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/resetTranscript`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ transcriptType }),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to reset transcript');
+      }
+  
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      console.error('Error resetting transcript:', error);
+      throw error;
+    }
+  };
 
   const getGradeColor = (grade) => {
     if (grade.includes('A')) return 'success';
@@ -904,7 +968,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
               <Button variant="link" className="p-0 me-2" onClick={() => handleAddDocument(index)}>
                 <Upload size={18} color="grey" />
               </Button>
-              <Button variant="link" className="p-0" onClick={() => handleRemoveTranscript(index)}>
+              <Button variant="link" className="p-0" title="Remove Transcript" onClick={() => handleRemoveTranscript(index)}>
                 <Trash2 size={18} color="grey" />
               </Button>
             </div>
