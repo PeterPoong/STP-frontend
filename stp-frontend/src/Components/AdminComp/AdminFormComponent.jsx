@@ -72,7 +72,17 @@ const AdminFormComponent = ({
   albumUploadProps,
   albumInputProps,
   selectedStartDate,
-  selectedEndDate
+  selectedEndDate,
+  coverFile,
+  setCoverFile,
+  albumFiles,
+  setAlbumFiles,
+  handleRemoveCover,
+  handleRemoveAlbum,
+  handleShowPreview,
+  handleClosePreview,
+  showPreview,
+  previewFile,
 
 }) => {
   const [formData, setFormData] = useState({});
@@ -125,16 +135,11 @@ const AdminFormComponent = ({
     return `${year}-${month}-${day}T${hours}:${minutes}`;
   };
  
-const [coverFile, setCoverFile] = useState(null);
-const [albumFiles, setAlbumFiles] = useState([]);
-const [showPreview, setShowPreview] = useState(false);
+
 const [showCoverPreview, setShowCoverPreview] = useState(false);
-const [previewFile, setPreviewFile] = useState(null);
+
 const [file, setFile] = useState(null);
 const [errorMessage, setErrorMessage] = useState('');
-const handleRemoveCover = () => {
-  setCoverFile(null);
-};
 
 // Define the acceptable file types and size limit
 const acceptedFormats = ['image/jpeg', 'image/png'];
@@ -184,13 +189,8 @@ const handleAlbumDrop = (acceptedFiles) => {
   setAlbumFiles([...albumFiles, file]);
 };
 
-const handleRemoveAlbum = (fileToRemove) => {
-  setAlbumFiles(prevFiles => prevFiles.filter(file => file !== fileToRemove));
-};
-const handleShowPreview = (file) => {
-  setPreviewFile(file);
-  setShowPreview(true);
-};
+
+
 const handleShowCoverPreview = () => {
   if (coverFile) {
     setPreviewFile(coverFile);
@@ -200,9 +200,7 @@ const handleShowCoverPreview = () => {
 const handleCloseCoverPreview = () => {
   setShowCoverPreview(false);
 };
-const handleClosePreview = () => {
-  setShowPreview(false);
-};
+
 const { getRootProps, getInputProps } = useDropzone({
   accept: 'image/*',
   onDrop: (acceptedFiles) => {
@@ -719,7 +717,7 @@ const handleRadioChange = (radioId, value) => {
           />
         </Form.Group>
       ))}
-             {/* Conditionally show the drag-and-drop upload for cover photo */}
+  ;{/* Conditionally show the drag-and-drop upload for cover photo */}
              {showUploadFeature && (
           <div className="upload-section">
             <div className="mb-4">
@@ -767,62 +765,88 @@ const handleRadioChange = (radioId, value) => {
                 </div>
               ))}
             </div>
-           {/* Modal for Cover Preview */}
-            {showCoverPreview && previewFile && (
-              <Modal
-                show={showCoverPreview}
-                onHide={handleCloseCoverPreview}
-                centered // To center the modal
-                size="lg" // To give it a larger size initially
-                dialogClassName="modal-preview" // Custom class for modal dialog
-              >
-                <Modal.Header closeButton>
-                  <Modal.Title>Cover Photo Preview</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                  <div className="text-center"> {/* Center the image */}
-                    <Image 
-                      src={URL.createObjectURL(previewFile)} 
-                      alt="Cover Preview" 
-                      className="img-fluid preview-img" // Custom class for styling
-                    />
-                  </div>
-                </Modal.Body>
-                <Modal.Footer>
-                  <Button variant="secondary" onClick={handleCloseCoverPreview}>
-                    Close
-                  </Button>
-                </Modal.Footer>
-              </Modal>
-            )}
-            {/* Modal for Album Preview */}
-            {showPreview && previewFile && (
-              <Modal
-                show={showPreview}
-                onHide={handleClosePreview}
-                centered // Center the modal
-                size="lg" // Start with larger modal size
-                dialogClassName="modal-preview" // Custom class for modal dialog
-              >
-                <Modal.Header closeButton>
-                  <Modal.Title>Album Photo Preview</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                  <div className="text-center"> {/* Center the image */}
-                    <Image 
-                      src={URL.createObjectURL(previewFile)} 
-                      alt="Album Preview" 
-                      className="img-fluid preview-img" // Custom class for styling
-                    />
-                  </div>
-                </Modal.Body>
-                <Modal.Footer>
-                  <Button variant="secondary" onClick={handleClosePreview}>
-                    Close
-                  </Button>
-                </Modal.Footer>
-              </Modal>
-            )}
+          {/* Modal for Cover Preview */}
+{showCoverPreview && (
+  <Modal
+    show={showCoverPreview}
+    onHide={handleCloseCoverPreview}
+    centered
+    size="lg"
+    dialogClassName="modal-preview"
+  >
+    <Modal.Header closeButton>
+      <Modal.Title>Cover Photo Preview</Modal.Title>
+    </Modal.Header>
+    <Modal.Body>
+      <div className="text-center">
+        {previewFile ? (
+          // Preview new image from dropzone
+          <Image
+            src={URL.createObjectURL(previewFile)}
+            alt="New Cover Preview"
+            className="img-fluid preview-img"
+          />
+        ) : (
+          // Preview existing image from schoolDetails.media (cover)
+          coverFile?.location && (
+            <Image
+              src={coverFile.location}
+              alt={coverFile.name}
+              className="img-fluid preview-img"
+            />
+          )
+        )}
+      </div>
+    </Modal.Body>
+    <Modal.Footer>
+      <Button variant="secondary" onClick={handleCloseCoverPreview}>
+        Close
+      </Button>
+    </Modal.Footer>
+  </Modal>
+)}
+
+           {/* Modal for Album Preview */}
+{showPreview && (
+  <Modal
+    show={showPreview}
+    onHide={handleClosePreview}
+    centered
+    size="lg"
+    dialogClassName="modal-preview"
+  >
+    <Modal.Header closeButton>
+      <Modal.Title>Album Photo Preview</Modal.Title>
+    </Modal.Header>
+    <Modal.Body>
+      <div className="text-center">
+        {previewFile ? (
+          // Preview new image from dropzone
+          <Image
+            src={URL.createObjectURL(previewFile)}
+            alt="New Album Preview"
+            className="img-fluid preview-img"
+          />
+        ) : (
+          // Preview existing album images from schoolDetails.media
+          albumFiles.map((album, index) => (
+            <Image
+              key={index}
+              src={album.location}
+              alt={album.name}
+              className="img-fluid preview-img mb-2"
+            />
+          ))
+        )}
+      </div>
+    </Modal.Body>
+    <Modal.Footer>
+      <Button variant="secondary" onClick={handleClosePreview}>
+        Close
+      </Button>
+    </Modal.Footer>
+  </Modal>
+)}
           </div>
         )}
       {formHTML &&
