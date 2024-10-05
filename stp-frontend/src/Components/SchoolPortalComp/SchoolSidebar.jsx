@@ -75,6 +75,13 @@ const Sidebar = ({ onDropdownItemSelect, selectTabPage }) => {
     onDropdownItemSelect("");
   };
 
+  const handleManageAccount = () => {
+    setIsProfileDropdownOpen(true);
+    setSelectedTab("myProfile");
+    setSelectedDropdownItem("manageAccount");
+    onDropdownItemSelect("manageAccount");
+  };
+
   useEffect(() => {
     if (!detail) {
       return;
@@ -293,6 +300,7 @@ const Sidebar = ({ onDropdownItemSelect, selectTabPage }) => {
             variant="outline-warning"
             size="sm"
             className="custom-blue-button"
+            onClick={() => handleManageAccount()}
           >
             <Person className="pe-1" />
             Basic
@@ -302,6 +310,7 @@ const Sidebar = ({ onDropdownItemSelect, selectTabPage }) => {
             variant="outline-warning"
             size="sm"
             className="custom-border-gradient-button"
+            onClick={() => handleManageAccount()}
           >
             <Gem className="pe-1" />
             Premium

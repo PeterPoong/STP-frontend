@@ -32,7 +32,37 @@ const Applicant = () => {
   const [warningType, setWarningType] = useState(null);
   const [warningStage, setWarningStage] = useState(1);
   const [applicantToProcess, setApplicantToProcess] = useState(null);
+  const [loading, setLoading] = useState("");
 
+  const getApplicantList = async (FormData) => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL}api/school/applicantDetailInfo`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(FormData),
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Applicants API Error Response:", errorText);
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      console.log("data", data.data);
+
+      setApplicants(data.data);
+    } catch (error) {
+      console.error("There was a problem with the fetch operation:", error);
+    } finally {
+      setLoading(false); // Stop loading
+    }
+  };
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -69,26 +99,27 @@ const Applicant = () => {
       setCourseMapping(courseMappingObj);
 
       // Fetch applicants
-      const applicantsResponse = await fetch(
-        `${import.meta.env.VITE_BASE_URL}api/school/applicantDetailInfo`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({}),
-        }
-      );
+      // const applicantsResponse = await fetch(
+      //   `${import.meta.env.VITE_BASE_URL}api/school/applicantDetailInfo`,
+      //   {
+      //     method: "POST",
+      //     headers: {
+      //       Authorization: `Bearer ${token}`,
+      //       "Content-Type": "application/json",
+      //     },
+      //     body: JSON.stringify({}),
+      //   }
+      // );
 
-      if (!applicantsResponse.ok) {
-        const errorText = await applicantsResponse.text();
-        console.error("Applicants API Error Response:", errorText);
-        throw new Error(`HTTP error! status: ${applicantsResponse.status}`);
-      }
+      // if (!applicantsResponse.ok) {
+      //   const errorText = await applicantsResponse.text();
+      //   console.error("Applicants API Error Response:", errorText);
+      //   throw new Error(`HTTP error! status: ${applicantsResponse.status}`);
+      // }
 
-      const applicantsData = await applicantsResponse.json();
-      setApplicants(applicantsData.data);
+      // const applicantsData = await applicantsResponse.json();
+      // setApplicants(applicantsData.data);
+      getApplicantList();
 
       // Fetch course categories
       const qualificationResponse = await fetch(
@@ -105,9 +136,7 @@ const Applicant = () => {
       if (!qualificationResponse.ok) {
         const errorText = await qualificationResponse.text();
         console.error("Categories API Error Response:", errorText);
-        throw new Error(
-          `HTTP error! status: ${qualificationResponse.status}`
-        );
+        throw new Error(`HTTP error! status: ${qualificationResponse.status}`);
       }
 
       const qualificationData = await qualificationResponse.json();
@@ -124,33 +153,34 @@ const Applicant = () => {
   }, []);
 
   useEffect(() => {
-    const filteredResults = applicants.filter((applicant) => {
-      const nameMatch = applicant.student_name
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
-      const statusMatch =
-        statusFilter === "" || applicant.form_status === statusFilter;
+    const formData = {
+      search: searchTerm,
+      courses_id: courseFilter,
+      form_status: statusFilter,
+      qualification_id: qualificationFilter,
+    };
+    console.log("formdata", formData);
+    getApplicantList(formData);
+    // const filteredResults = applicants.filter((applicant) => {
+    //   const nameMatch = applicant.student_name
+    //     .toLowerCase()
+    //     .includes(searchTerm.toLowerCase());
+    //   const statusMatch =
+    //     statusFilter === "" || applicant.form_status === statusFilter;
 
-      const courseInfo = courseMapping[applicant.course_name.toLowerCase()];
-      const categoryMatch =
-        qualificationFilter === "" ||
-        (courseInfo &&
-          courseInfo.qualificationId === parseInt(qualificationFilter));
-      const courseMatch =
-        courseFilter === "" ||
-        (courseInfo && courseInfo.id === parseInt(courseFilter));
+    //   const courseInfo = courseMapping[applicant.course_name.toLowerCase()];
+    //   const categoryMatch =
+    //     qualificationFilter === "" ||
+    //     (courseInfo &&
+    //       courseInfo.qualificationId === parseInt(qualificationFilter));
+    //   const courseMatch =
+    //     courseFilter === "" ||
+    //     (courseInfo && courseInfo.id === parseInt(courseFilter));
 
-      return nameMatch && statusMatch && categoryMatch && courseMatch;
-    });
-    setFilteredApplicants(filteredResults);
-  }, [
-    searchTerm,
-    statusFilter,
-    qualificationFilter,
-    courseFilter,
-    applicants,
-    courseMapping,
-  ]);
+    //   return nameMatch && statusMatch && categoryMatch && courseMatch;
+    // });
+    // setFilteredApplicants(filteredResults);
+  }, [searchTerm, statusFilter, qualificationFilter, courseFilter]);
 
   const toggleDropdown = (applicantId) => {
     setDropdownVisible((prev) => ({
@@ -195,8 +225,6 @@ const Applicant = () => {
     }
   };
 
-
-
   const handleBackToList = () => {
     setSelectedStudent(null);
     setSelectedAction(null);
@@ -207,8 +235,9 @@ const Applicant = () => {
     const isAccepted = status === "Accepted";
     return (
       <div
-        className={`${styles["status-message"]} ${isAccepted ? styles["accepted"] : styles["rejected"]
-          }`}
+        className={`${styles["status-message"]} ${
+          isAccepted ? styles["accepted"] : styles["rejected"]
+        }`}
       >
         <FontAwesomeIcon
           icon={isAccepted ? faCheck : faTimes}
@@ -263,8 +292,6 @@ const Applicant = () => {
     handleBackToList();
   };
 
-
-
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
@@ -316,9 +343,9 @@ const Applicant = () => {
                     onChange={handleStatusFilter}
                   >
                     <option value="">All Application Status</option>
-                    <option value="Pending">Pending</option>
-                    <option value="Accepted">Accepted</option>
-                    <option value="Rejected">Rejected</option>
+                    <option value="2">Pending</option>
+                    <option value="4">Accepted</option>
+                    <option value="3">Rejected</option>
                   </select>
                 </div>
                 <div className={`${styles["dropdown"]} mb-2 mb-md-0 me-md-2`}>
@@ -375,8 +402,8 @@ const Applicant = () => {
         </div>
       </div>
 
-      {filteredApplicants.length > 0 ? (
-        filteredApplicants.map((applicant) => (
+      {applicants.length > 0 ? (
+        applicants.map((applicant) => (
           <div key={applicant.id} className="row">
             <div className="col-12">
               <div
@@ -388,8 +415,9 @@ const Applicant = () => {
                   <img
                     src={
                       applicant.profile_pic
-                        ? `${import.meta.env.VITE_BASE_URL}storage/${applicant.profile_pic
-                        }`
+                        ? `${import.meta.env.VITE_BASE_URL}storage/${
+                            applicant.profile_pic
+                          }`
                         : defaultProfilePic
                     }
                     alt={`${applicant.student_name}'s profile`}
@@ -434,8 +462,9 @@ const Applicant = () => {
                         {`${applicant.student_name}`}
                       </h2>
                       <div
-                        className={`${styles["application-status"]
-                          } ${getStatusClassName(applicant.form_status)}`}
+                        className={`${
+                          styles["application-status"]
+                        } ${getStatusClassName(applicant.form_status)}`}
                       >
                         <p>{applicant.form_status}</p>
                       </div>
