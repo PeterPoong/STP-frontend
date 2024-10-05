@@ -176,13 +176,6 @@ const StudentPortalForgetPassword = () => {
             <Row className="justify-content-center">
               <Col md={8} lg={6} className="px-0">
                 <div className="studypal-logo-div">
-
-                  {/*<img
-src={studentPortalLoginLogo}
-className="img-fluid mb-4"
-alt="StudyPal Logo"
-/>*/}
-
                 </div>
                 <h2 className="text-start mb-3 custom-color-title">Forget your password?</h2>
                 <p className="text-start mb-4 small custom-color-title">Don't worry! It happens. Please follow the steps to reset your password.</p>
@@ -193,8 +186,8 @@ alt="StudyPal Logo"
                 {step === 1 && (
                   <Form onSubmit={handleSendResetRequest}>
                     <Form.Group controlId="formBasicEmail">
-                    <p className="text-start p-0 mb-0 custom-color-title-label small ">
-                      Email address</p>
+                      <p className="text-start p-0 mb-0 custom-color-title-label small ">
+                        Email address</p>
                       <Form.Control
                         type="email"
                         value={email}
@@ -208,7 +201,7 @@ alt="StudyPal Logo"
                       className="my-3 m-0 btn-login-signup-forgetpassword"
                       style={{ width: '100%', height: '40px' }}
                     >
-                      Send OTP
+                      Send Email
                     </Button>
                   </Form>
                 )}
@@ -217,8 +210,8 @@ alt="StudyPal Logo"
                 {step === 2 && (
                   <Form onSubmit={handleVerifyOTP}>
                     <Form.Group controlId="formOTP">
-                    <p className="text-start p-0 mb-0 custom-color-title-label small ">
-                      Enter OTP</p>
+                      <p className="text-start p-0 mb-0 custom-color-title-label small ">
+                        Enter OTP</p>
                       <Form.Control
                         type="text"
                         value={otp}
@@ -248,8 +241,8 @@ alt="StudyPal Logo"
                 {step === 3 && (
                   <Form onSubmit={handleResetPassword}>
                     <Form.Group controlId="formNewPassword">
-                    <p className="text-start p-0 mb-0 custom-color-title-label small ">
-                      New Password</p>
+                      <p className="text-start p-0 mb-0 custom-color-title-label small ">
+                        New Password</p>
                       <InputGroup>
                         <Form.Control
                           type={showNewPassword ? "text" : "password"}
