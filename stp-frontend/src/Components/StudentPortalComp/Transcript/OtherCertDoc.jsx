@@ -334,7 +334,7 @@ const OtherCertDoc = () => {
                     <div>No other certificate or documentation found</div>
                 )}
             </div>
-            {paginationInfo.lastPage  && (
+            {paginationInfo.lastPage > 1 && (
                 <div className="pagination">
                     <button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1}>
                         &lt;

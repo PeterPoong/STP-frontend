@@ -16,26 +16,45 @@ const OtherDocuments = ({ onBack, onSubmit }) => {
 
   const fetchDocuments = async () => {
     try {
+      setIsLoading(true);
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/otherFileCertList`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch documents');
+      
+      let allDocuments = [];
+      let currentPage = 1;
+      let hasMoreData = true;
+  
+      while (hasMoreData) {
+        const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/otherFileCertList`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ page: currentPage }),
+        });
+  
+        if (!response.ok) {
+          throw new Error('Failed to fetch documents');
+        }
+  
+        const result = await response.json();
+        console.log('API response for page', currentPage, ':', result); // For debugging
+  
+        if (result.success && result.data && Array.isArray(result.data.data)) {
+          allDocuments = [...allDocuments, ...result.data.data];
+  
+          if (result.data.next_page_url) {
+            currentPage++;
+          } else {
+            hasMoreData = false;
+          }
+        } else {
+          hasMoreData = false;
+        }
       }
-
-      const result = await response.json();
-      if (result.success) {
-        setDocuments(result.data.data);
-
-      } else {
-        throw new Error(result.message || 'Failed to fetch documents');
-      }
+  
+      console.log('Total documents fetched:', allDocuments.length); // For debugging
+      setDocuments(allDocuments);
     } catch (error) {
       console.error('Error fetching documents:', error);
       setError(error.message);
@@ -268,7 +287,15 @@ const OtherDocuments = ({ onBack, onSubmit }) => {
               <>
                 <div className="d-flex justify-content-between">
                   <div>
-                    <div className="fw-bold mb-2" style={{ fontSize: '1.1rem' }}>{doc.name}</div>
+                    <div className="fw-bold mb-2" style={{ fontSize: '1.1rem',
+                       wordWrap: 'break-word',
+                       overflowWrap: 'break-word',
+                       wordBreak: 'break-all',
+                       whiteSpace: 'nowrap',
+                       overflow: 'hidden',
+                       textOverflow: 'ellipsis',
+                       maxWidth: '500px'
+                     }}>{doc.name}</div>
                     {doc.media && (
                       <div className="mt-2 d-flex align-items-center text-decoration-underline">
                         <FileText size={18} className="me-2" />

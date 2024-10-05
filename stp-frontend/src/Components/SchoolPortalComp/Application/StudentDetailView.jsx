@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useCallback } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { FileText, Search, Eye, ChevronDown, ChevronUp, Clock, Copy, Check, X, Download } from 'react-feather';
 import { GraduationCap, CalendarCheck, BookOpenText } from 'lucide-react';
@@ -11,7 +11,7 @@ import WidgetAchievement from "../../../Components/StudentPortalComp/Widget/Widg
 import WidgetFileUploadAcademicTranscript from "../../../Components/StudentPortalComp/WidgetFileUploadAcademicTranscript";
 import { BsWhatsapp } from 'react-icons/bs';
 import Lock from "../../../assets/StudentPortalAssets/lock.svg";
-import { Arrow90degLeft } from "react-bootstrap-icons"
+import { Arrow90degLeft,ChevronLeft } from "react-bootstrap-icons"
 import defaultProfilePic from "../../../assets/StudentPortalAssets/sampleprofile.png";
 const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, onActionSuccess }) => {
   const [accountType, setAccountType] = useState(null);
@@ -154,6 +154,24 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
       }
     }
   }, [applicantDetails, acceptRejectAction]);
+
+  const handleWhatsAppClick = useCallback(() => {
+    if (basicInfo?.student_contactNo && basicInfo?.student_countryCode) {
+      // Remove any non-digit characters from the phone number and country code
+      const cleanCountryCode = basicInfo.student_countryCode.replace(/\D/g, '');
+      const cleanPhoneNumber = basicInfo.student_contactNo.replace(/\D/g, '');
+      
+      // Construct the WhatsApp URL
+      const whatsappUrl = `https://wa.me/${cleanCountryCode}${cleanPhoneNumber}`;
+      
+      // Open the URL in a new tab
+      window.open(whatsappUrl, '_blank');
+    } else {
+      // Alert the user if the phone number is not available
+      alert("WhatsApp contact information is not available for this student.");
+    }
+  }, [basicInfo]);
+
 
   const fetchTranscriptCategories = async () => {
     try {
@@ -757,7 +775,22 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
         {selectedCategory !== 32 && cgpaInfo && (
           <div className="px-4 mb-3">
             <div className="d-flex justify-content-between align-items-center">
-              <p className="mb-0"><strong>Program Name:</strong> {cgpaInfo.program_name || 'N/A'}</p>
+              <p className="mb-0 d-flex align-items-center">
+                <strong>Program Name:</strong>
+                <p className=" mb-0"
+                  style={{
+                    wordWrap: 'break-word',
+                    overflowWrap: 'break-word',
+                    wordBreak: 'break-all',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    maxWidth: '175px',
+                    marginLeft:'20px'
+                  }} >
+                         {cgpaInfo.program_name || 'N/A'}
+                </p>
+              </p>
               <p className="mb-0"><strong>CGPA:</strong> {cgpaInfo.cgpa || 'N/A'}</p>
             </div>
           </div>
@@ -767,7 +800,18 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
           {transcriptSubjects && transcriptSubjects.length > 0 ? (
             transcriptSubjects.map((subject, index) => (
               <div key={index} className="d-flex justify-content-between py-3">
-                <p className="mb-0"><strong>{subject.subject_name || subject.highTranscript_name}</strong></p>
+                <p className="mb-0"
+                 style={{
+                  wordWrap: 'break-word',
+                  overflowWrap: 'break-word',
+                  wordBreak: 'break-all',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  maxWidth: '350px'
+                }}>
+                  <strong>{subject.subject_name || subject.highTranscript_name}</strong>
+                  </p>
                 <p className="mb-0"><strong>{subject.subject_grade || subject.higherTranscript_grade}</strong></p>
               </div>
             ))
@@ -853,7 +897,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
     });
 
     return (
-      <div className="summary-content-yourdocument">
+      <div className="summary-content-yourdocument ">
         <div className="documents-content pt-2 w-100">
           <div>
             <p className='lead'>This student has uploaded <span className="fw-bold">{totalDocumentCount}</span> documents.</p>
@@ -913,7 +957,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
                           <div className="d-flex align-items-center">
                             <FileText className="file-icon me-2" />
                             <div>
-                              <div className="file-title">{doc.studentMedia_name}</div>
+                              <div className="file-title name-restrict">{doc.studentMedia_name}</div>
                               <div className="file-date">{doc.created_at}</div>
                             </div>
                           </div>
@@ -927,7 +971,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
                           <div className="d-flex align-items-center">
                             <FileText className="file-icon me-2" />
                             <div>
-                              <div className="file-title">{doc.achievement_name}</div>
+                              <div className="file-title name-restrict">{doc.achievement_name}</div>
                               <div className="file-date">{doc.date}</div>
                             </div>
                           </div>
@@ -941,7 +985,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
                           <div className="d-flex align-items-center">
                             <FileText className="file-icon me-2" />
                             <div>
-                              <div className="file-title">{doc.name}</div>
+                              <div className="file-title name-restrict">{doc.name}</div>
                               <div className="file-date">{doc.created_at}</div>
                             </div>
                           </div>
@@ -1139,9 +1183,9 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
     <div className="applicant-app-container-applycourse">
 
       <div className="applicant-backgroundimage">
-        <div className='ms-5 mt-5 d-flex mb-0 ' onClick={handleBackPage}>
-          <Arrow90degLeft style={{ color: "#B71A18" }} className=" " size={30} />
-          <h5 className="ms-2 mt-1" style={{ color: "#B71A18" }}>Back</h5>
+        <div className='ms-4 mt-3 d-flex mb-0 ' onClick={handleBackPage}>
+          <ChevronLeft style={{ color: "#ad736c" }} className=" " size={30} />
+          <h5 className="ms-2 mt-1" style={{ color: "#ad736c" }}>Back</h5>
         </div>
 
         <div className="applicant-main-content-applycourse-clone pt-5">
@@ -1172,8 +1216,9 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
                     applicantDetails?.form_status === 3 ? 'Rejected' :
                       'Pending'}
                 </span>
-                <Button className="applicant-chat-button d-flex align-items-center justify-content-center">
-                  <BsWhatsapp className="me-2 whatsapp-button" size={20} />
+                <Button className="applicant-chat-button d-flex align-items-center justify-content-center text-nowrap"
+                onClick={handleWhatsAppClick}>
+                  <BsWhatsapp className="me-2 whatsapp-button text-nonwrap" size={20} />
                   Chat on WhatsApp
                 </Button>
               </div>

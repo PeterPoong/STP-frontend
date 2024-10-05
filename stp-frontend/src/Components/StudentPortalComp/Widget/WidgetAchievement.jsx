@@ -251,7 +251,7 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
                     color: 'white'
                   }}
                 >
-                  <option value="" style={{ color: 'black' }}>Select title</option>
+                 
                   {achievementTypes.map((type) => (
                     <option key={type.id} value={type.id.toString()} style={{ color: 'black' }}>
                       {type.core_metaName}

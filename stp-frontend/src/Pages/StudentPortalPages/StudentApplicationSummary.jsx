@@ -1727,80 +1727,80 @@ const StudentApplicationSummary = ({ }) => {
                               <strong>Student Name</strong>
                             </p>
                             <p className="d-flex align-items-center">
-                            <span className="me-2">
-                              {`${basicInfo?.firstName || ''} ${basicInfo?.lastName || ''}`.trim()}
-                            </span>
-                            <span
-                              className="copy-icon-wrapper"
-                              onClick={() => copyToClipboard(`${basicInfo?.firstName || ''} ${basicInfo?.lastName || ''}`.trim(), 'name')}
-                              title={copiedFields.name ? "Copied!" : "Copy to clipboard"}
-                            >
-                              {copiedFields.name
-                                ? <Check size={16} className="copied-icon" />
-                                : <Copy size={16} className="copy-icon" />
-                              }
-                            </span>
-                          </p>
+                              <span className="me-2">
+                                {`${basicInfo?.firstName || ''} ${basicInfo?.lastName || ''}`.trim()}
+                              </span>
+                              <span
+                                className="copy-icon-wrapper"
+                                onClick={() => copyToClipboard(`${basicInfo?.firstName || ''} ${basicInfo?.lastName || ''}`.trim(), 'name')}
+                                title={copiedFields.name ? "Copied!" : "Copy to clipboard"}
+                              >
+                                {copiedFields.name
+                                  ? <Check size={16} className="copied-icon" />
+                                  : <Copy size={16} className="copy-icon" />
+                                }
+                              </span>
+                            </p>
                           </div>
                           <div className="col-md-6 mb-3">
                             <p>
                               <strong>Identity Card Number</strong>
                             </p>
                             <p className="d-flex align-items-center">
-                            <span className="me-2">{basicInfo?.ic}</span>
-                            <span
-                              className="copy-icon-wrapper"
-                              onClick={() => copyToClipboard(basicInfo?.ic, 'icNumber')}
-                              title={copiedFields.icNumber ? "Copied!" : "Copy to clipboard"}
-                            >
-                              {copiedFields.icNumber
-                                ? <Check size={16} className="copied-icon" />
-                                : <Copy size={16} className="copy-icon" />
-                              }
-                            </span>
-                          </p>
+                              <span className="me-2">{basicInfo?.ic}</span>
+                              <span
+                                className="copy-icon-wrapper"
+                                onClick={() => copyToClipboard(basicInfo?.ic, 'icNumber')}
+                                title={copiedFields.icNumber ? "Copied!" : "Copy to clipboard"}
+                              >
+                                {copiedFields.icNumber
+                                  ? <Check size={16} className="copied-icon" />
+                                  : <Copy size={16} className="copy-icon" />
+                                }
+                              </span>
+                            </p>
                           </div>
                           <div className="col-md-6 mb-3">
                             <p>
                               <strong>Contact Number</strong>
                             </p>
                             <p className="d-flex align-items-center">
-                            <span className="me-2">
-                              {`${basicInfo?.country_code || ''} ${basicInfo?.contact|| ''}`}
-                            </span>
-                            <span
-                              className="copy-icon-wrapper"
-                              onClick={() => copyToClipboard(`${basicInfo?.country_code || ''} ${basicInfo?.contact || ''}`, 'contactNumber')}
-                              title={copiedFields.contactNumber ? "Copied!" : "Copy to clipboard"}
-                            >
-                              {copiedFields.contactNumber
-                                ? <Check size={16} className="copied-icon" />
-                                : <Copy size={16} className="copy-icon" />
-                              }
-                            </span>
-                          </p>
+                              <span className="me-2">
+                                {`${basicInfo?.country_code || ''} ${basicInfo?.contact || ''}`}
+                              </span>
+                              <span
+                                className="copy-icon-wrapper"
+                                onClick={() => copyToClipboard(`${basicInfo?.country_code || ''} ${basicInfo?.contact || ''}`, 'contactNumber')}
+                                title={copiedFields.contactNumber ? "Copied!" : "Copy to clipboard"}
+                              >
+                                {copiedFields.contactNumber
+                                  ? <Check size={16} className="copied-icon" />
+                                  : <Copy size={16} className="copy-icon" />
+                                }
+                              </span>
+                            </p>
                           </div>
                           <div className="col-md-6 mb-3">
                             <p>
                               <strong>Email Address</strong>
                             </p>
                             <p className="d-flex align-items-center" style={{
-                            wordWrap: 'break-word',
-                            overflowWrap: 'break-word',
-                            wordBreak: 'break-all'
-                          }}>
-                            <span className="me-2">{basicInfo?.email}</span>
-                            <span
-                              className="copy-icon-wrapper"
-                              onClick={() => copyToClipboard(basicInfo?.email, 'email')}
-                              title={copiedFields.email ? "Copied!" : "Copy to clipboard"}
-                            >
-                              {copiedFields.email
-                                ? <Check size={16} className="copied-icon" />
-                                : <Copy size={16} className="copy-icon" />
-                              }
-                            </span>
-                          </p>
+                              wordWrap: 'break-word',
+                              overflowWrap: 'break-word',
+                              wordBreak: 'break-all'
+                            }}>
+                              <span className="me-2">{basicInfo?.email}</span>
+                              <span
+                                className="copy-icon-wrapper"
+                                onClick={() => copyToClipboard(basicInfo?.email, 'email')}
+                                title={copiedFields.email ? "Copied!" : "Copy to clipboard"}
+                              >
+                                {copiedFields.email
+                                  ? <Check size={16} className="copied-icon" />
+                                  : <Copy size={16} className="copy-icon" />
+                                }
+                              </span>
+                            </p>
                           </div>
                         </div>
                         <div className="row">
@@ -1809,18 +1809,18 @@ const StudentApplicationSummary = ({ }) => {
                               <strong>Address</strong>
                             </p>
                             <p className="d-flex align-items-center">
-                            <span className="me-2">{basicInfo?.address}</span>
-                            <span
-                              className="copy-icon-wrapper"
-                              onClick={() => copyToClipboard(basicInfo?.address || '', 'address')}
-                              title={copiedFields.address ? "Copied!" : "Copy to clipboard"}
-                            >
-                              {copiedFields.address
-                                ? <Check size={16} className="copied-icon" />
-                                : <Copy size={16} className="copy-icon" />
-                              }
-                            </span>
-                          </p>
+                              <span className="me-2">{basicInfo?.address}</span>
+                              <span
+                                className="copy-icon-wrapper"
+                                onClick={() => copyToClipboard(basicInfo?.address || '', 'address')}
+                                title={copiedFields.address ? "Copied!" : "Copy to clipboard"}
+                              >
+                                {copiedFields.address
+                                  ? <Check size={16} className="copied-icon" />
+                                  : <Copy size={16} className="copy-icon" />
+                                }
+                              </span>
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -1842,9 +1842,21 @@ const StudentApplicationSummary = ({ }) => {
                       {cgpaInfo && selectedExam !== "32" && (
                         <div className="px-4 mb-3">
                           <div className="d-flex justify-content-between align-items-center">
-                            <p className="mb-0">
-                              <strong>Program Name:</strong>{" "}
-                              {cgpaInfo.program_name || "N/A"}
+                            <p className="mb-0 d-flex align-items-center">
+                              <strong>Program Name:</strong>
+                              <p className=" mb-0"
+                                style={{
+                                  wordWrap: 'break-word',
+                                  overflowWrap: 'break-word',
+                                  wordBreak: 'break-all',
+                                  whiteSpace: 'nowrap',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  maxWidth: '175px',
+                                  marginLeft: '20px'
+                                }} >
+                                {cgpaInfo.program_name || "N/A"}
+                              </p>
                             </p>
                             <p className="mb-0">
                               <strong>CGPA:</strong> {cgpaInfo.cgpa || "N/A"}
@@ -1862,7 +1874,16 @@ const StudentApplicationSummary = ({ }) => {
                               key={index}
                               className="d-flex justify-content-between py-3"
                             >
-                              <p className="mb-0">
+                              <p className="mb-0"
+                                style={{
+                                  wordWrap: 'break-word',
+                                  overflowWrap: 'break-word',
+                                  wordBreak: 'break-all',
+                                  whiteSpace: 'nowrap',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  maxWidth: '350px'
+                                }}>
                                 <strong>
                                   {subject.name ||
                                     subject.subject_name ||
@@ -1904,8 +1925,8 @@ const StudentApplicationSummary = ({ }) => {
                           }
                           style={{
                             color: !transcriptSubjects ||
-                            transcriptSubjects.length === 0? 'black' : '#B71A18'
-                          }}  
+                              transcriptSubjects.length === 0 ? 'black' : '#B71A18'
+                          }}
                         >
                           View Result Slip »
                         </Button>

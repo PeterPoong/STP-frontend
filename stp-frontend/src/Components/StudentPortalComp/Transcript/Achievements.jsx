@@ -356,7 +356,7 @@ const Achievements = () => {
                 <div>No achievements found</div>
             )}
             </div>
-
+            {paginationInfo.lastPage > 1 && (
             <div className="pagination">
                 <button onClick={() => paginate(paginationInfo.currentPage - 1)} disabled={paginationInfo.currentPage === 1}>
                     &lt;
@@ -375,7 +375,7 @@ const Achievements = () => {
                     &gt;
                 </button>
             </div>
-
+            )}
             <WidgetAchievement
                 isOpen={isPopupOpen}
                 onClose={() => {

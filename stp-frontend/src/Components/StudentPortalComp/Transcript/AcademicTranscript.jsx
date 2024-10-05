@@ -615,7 +615,20 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
                   </>
                 ) : (
                   <>
-                    <span className="fw-medium h6 mb-0 me-3" style={{ width: "150px" }}>{subject.name}</span>
+                    <span className="fw-medium h6 mb-0 me-3" 
+                      style={{
+                        fontSize: '0.9rem',
+                        fontWeight: "500",
+                        width: "275px",
+                        wordWrap: 'break-word',
+                        overflowWrap: 'break-word',
+                        wordBreak: 'break-all',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        
+                      }}
+                    >{subject.name}</span>
                     {subject.grade && (
                       <span className={`rounded-pill px-4 text-white ms-2 ${getGradeColor(subject.grade)}`}>
                         GRADE: {subject.grade}

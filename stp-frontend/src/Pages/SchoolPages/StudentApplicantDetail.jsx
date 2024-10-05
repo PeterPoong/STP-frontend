@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState,useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Sidebar from "../../Components/SchoolPortalComp/SchoolSidebar";
 import { Container, Button, Row, Col } from "react-bootstrap";
@@ -14,6 +14,7 @@ import {
   Copy,
   Check
 } from "react-feather";
+import { ChevronLeft } from "react-bootstrap-icons"
 
 import styles from "../../css/SchoolPortalStyle/StudentApplicantDetail.module.css";
 import { ClassNames } from "@emotion/react";
@@ -99,6 +100,23 @@ const SchoolViewApplicantDetail = () => {
     navigate("/schoolPortalDashboard"); // This will go back to the previous page
   };
 
+  const handleWhatsAppClick = useCallback(() => {
+    if (contact && countryCode) {
+      // Remove any non-digit characters from the phone number and country code
+      const cleanCountryCode = countryCode.replace(/\D/g, '');
+      const cleanPhoneNumber = contact.replace(/\D/g, '');
+      
+      // Construct the WhatsApp URL
+      const whatsappUrl = `https://wa.me/${cleanCountryCode}${cleanPhoneNumber}`;
+      
+      // Open the URL in a new tab
+      window.open(whatsappUrl, '_blank');
+    } else {
+      // Alert the user if the phone number is not available
+      alert("WhatsApp contact information is not available for this student.");
+    }
+  }, [contact, countryCode]);
+  
   const copyToClipboard = (text, field) => {
     if (text) {
       navigator.clipboard.writeText(text).then(() => {
@@ -767,8 +785,21 @@ const SchoolViewApplicantDetail = () => {
         {selectedCategory !== 32 && cgpaInfo && (
           <div className="px-4 mb-3">
             <div className="d-flex justify-content-between align-items-center">
-              <p className="mb-0">
-                <strong>Program Name:</strong> {cgpaInfo.program_name || "N/A"}
+              <p className="mb-0 d-flex align-items-center">
+                <strong>Program Name:</strong>
+                <p className=" mb-0"
+                  style={{
+                    wordWrap: 'break-word',
+                    overflowWrap: 'break-word',
+                    wordBreak: 'break-all',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    maxWidth: '175px',
+                    marginLeft: '20px'
+                  }} >
+                  {cgpaInfo.program_name || 'N/A'}
+                </p>
               </p>
               <p className="mb-0">
                 <strong>CGPA:</strong> {cgpaInfo.cgpa || "N/A"}
@@ -784,7 +815,16 @@ const SchoolViewApplicantDetail = () => {
           {transcriptSubjects && transcriptSubjects.length > 0 ? (
             transcriptSubjects.map((subject, index) => (
               <div key={index} className="d-flex justify-content-between py-3">
-                <p className="mb-0">
+                <p className="mb-0"
+                 style={{
+                  wordWrap: 'break-word',
+                  overflowWrap: 'break-word',
+                  wordBreak: 'break-all',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  maxWidth: '350px'
+                }}>
                   <strong>
                     {subject.subject_name || subject.highTranscript_name}
                   </strong>
@@ -888,7 +928,7 @@ const SchoolViewApplicantDetail = () => {
     });
 
     return (
-      <div className="summary-content-yourdocument">
+      <div className="summary-content-yourdocument bg-white shadow-lg">
         <div className="documents-content pt-2 w-100">
           <div>
             <p className="lead">
@@ -952,7 +992,7 @@ const SchoolViewApplicantDetail = () => {
                           <div className="d-flex align-items-center">
                             <FileText className="file-icon me-2" />
                             <div>
-                              <div className="file-title">
+                              <div className="file-title name-restrict">
                                 {doc.studentMedia_name}
                               </div>
                               <div className="file-date">{doc.created_at}</div>
@@ -973,7 +1013,7 @@ const SchoolViewApplicantDetail = () => {
                           <div className="d-flex align-items-center">
                             <FileText className="file-icon me-2" />
                             <div>
-                              <div className="file-title">
+                              <div className="file-title name-restrict">
                                 {doc.achievement_name}
                               </div>
                               <div className="file-date">{doc.year}</div>
@@ -994,7 +1034,7 @@ const SchoolViewApplicantDetail = () => {
                           <div className="d-flex align-items-center">
                             <FileText className="file-icon me-2" />
                             <div>
-                              <div className="file-title">{doc.name}</div>
+                              <div className="file-title name-restrict">{doc.name}</div>
                               <div className="file-date">{doc.created_at}</div>
                             </div>
                           </div>
@@ -1069,8 +1109,10 @@ const SchoolViewApplicantDetail = () => {
             alignItems: "center",
           }}
         >
-          <Arrow90degLeft style={{ color: "#B71A18" }} className="mx-3" />
-          Back
+           <div className='ms-4 mt-3 d-flex mb-0 '>
+          <ChevronLeft style={{ color: "#ad736c" }} className=" " size={30} />
+          <h5 className="ms-2 mt-1" style={{ color: "#ad736c" }}>Back</h5>
+        </div>
         </span>
         <Row className={`${styles.infoBannerRow}`}>
           <Col md={6} className={`d-flex  ps-5 ${styles.informationBanner}`}>
@@ -1122,6 +1164,7 @@ const SchoolViewApplicantDetail = () => {
 
             <Button
               className={`justify-content-center px-4 mt-5 float-right ${styles.chatOnWhatsappButton}`}
+              onClick={handleWhatsAppClick}
             >
               <Whatsapp className="me-2" />{" "}
               {/* Add margin-end to space icon and text */}
@@ -1340,14 +1383,14 @@ const SchoolViewApplicantDetail = () => {
                           >
                             <div className="col-12 col-sm-4">
                               <p className="mb-0 name-restrict">
-                                <strong>{achievement.achievement_name||""}</strong>
+                                <strong>{achievement.achievement_name || ""}</strong>
                               </p>
                               <p className="mb-0 text-muted name-restrict">
-                                {achievement.awarded_by||""}
+                                {achievement.awarded_by || ""}
                               </p>
                             </div>
                             <div className="col-6 col-sm-3 text-start text-sm-center">
-                              <p className="mb-0">{achievement.date ||""}</p>
+                              <p className="mb-0">{achievement.date || ""}</p>
                             </div>
                             <div className="col-6 col-sm-5 text-end">
                               <span className={`position ${(achievement.title?.core_metaName?.toLowerCase() ?? '').replace(/\s+/g, '-')} py-1 px-2 rounded-pill`}>

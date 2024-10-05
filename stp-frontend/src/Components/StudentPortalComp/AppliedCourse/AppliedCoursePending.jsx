@@ -465,11 +465,11 @@ const AppliedCoursePending = () => {
       <Card className="acp-card mb-4">
         <Card.Body>
           <h2 className="acp-section-title mb-0">Pending Applications</h2>
-          
+
           {/* Filter Component */}
           <CustomFilterComponent filterOptions={filterOptions} onFilterChange={handleFilterChange} />
           {/* End of Filter Component */}
-          
+
           {/* Loading Indicator */}
           {loading ? (
             <div className="d-flex justify-content-center align-items-center mt-4">
@@ -507,7 +507,8 @@ const AppliedCoursePending = () => {
                         <p className="acp-university-name">{app.school_name}</p>
                         <p className="acp-location">
                           <MapPin size={16} className="acp-icon" />
-                          {`${app.city_name ? app.city_name : ''}${app.state_name ? `, ${app.state_name}` : ''}${app.country_name ? `, ${app.country_name}` : ''}`} <span className="acp-link">click and view on map</span>
+                          {`${app.city_name ? app.city_name : ''}${app.state_name ? `, ${app.state_name}` : ''}${app.country_name ? `, ${app.country_name}` : ''}`}
+                          {/*<span className="acp-link">click and view on map</span>*/}
                         </p>
                       </div>
                     </div>

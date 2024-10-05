@@ -8,12 +8,26 @@
 }
 
 .btnfirst:hover{
-    border-radius: 0px !important;
-    background-color:white !important ;
-    color:#B71A18 !important;
-    border-color:#B71A18 !important;
+  border-radius: 0px !important;
+  background-color:#B71A18 !important;
+  color:white !important;
+  border-color:transparent !important;
 }
 
+.btnfirstlogout
+{   border-radius: 0px !important;
+  background-color:#B71A18 !important;
+  color:white !important;
+  border-color:transparent !important;
+
+}
+
+.btnfirstlogout:hover{
+  border-radius: 0px !important;
+  background-color:white !important ;
+  color:#B71A18 !important;
+  border-color:#B71A18 !important;
+}
 
 .btnsecond{
     border-radius: 0px !important;

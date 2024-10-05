@@ -283,7 +283,7 @@ const CoCurriculum = () => {
                                                 <div className="d-flex align-items-center">
                                                     <div>
                                                         <div className="file-title mb-1 sac-name-restrict">{item.club_name}</div>
-                                                        <div className="file-date">{item.location}</div>
+                                                        <div className="file-date sac-name-restrict">{item.location}</div>
                                                     </div>
                                                 </div>
                                             </td>
@@ -306,6 +306,7 @@ const CoCurriculum = () => {
                     <div>No other certificate or documentation found</div>
                 )}
             </div>
+            {pageNumbers.length > 1 && (
             <div className="pagination">
                 <button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1}>
                     &lt;
@@ -323,6 +324,7 @@ const CoCurriculum = () => {
                     &gt;
                 </button>
             </div>
+            )}
             <WidgetClub
                 isOpen={isPopupOpen}
                 onClose={() => {
