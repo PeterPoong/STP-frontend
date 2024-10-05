@@ -171,14 +171,19 @@ const StudentPortalForgetPassword = () => {
             alt="Login background"
           />
         </Col>
-        <Col md={6} className="d-flex align-items-center">
+        <Col md={6} className="d-flex align-items-center bg-white">
           <Container>
             <Row className="justify-content-center">
               <Col md={8} lg={6} className="px-0">
-                <img
-                  src={studentPortalLoginLogo}
-                  alt="StudyPal logo"
-                />
+                <div className="studypal-logo-div">
+
+                  {/*<img
+src={studentPortalLoginLogo}
+className="img-fluid mb-4"
+alt="StudyPal Logo"
+/>*/}
+
+                </div>
                 <h2 className="text-start mb-3 custom-color-title">Forget your password?</h2>
                 <p className="text-start mb-4 small custom-color-title">Don't worry! It happens. Please follow the steps to reset your password.</p>
                 {error && <Alert variant="danger">{error}</Alert>}
@@ -188,7 +193,8 @@ const StudentPortalForgetPassword = () => {
                 {step === 1 && (
                   <Form onSubmit={handleSendResetRequest}>
                     <Form.Group controlId="formBasicEmail">
-                      <Form.Label className="custom-label">Email address</Form.Label>
+                    <p className="text-start p-0 mb-0 custom-color-title-label small ">
+                      Email address</p>
                       <Form.Control
                         type="email"
                         value={email}
@@ -211,7 +217,8 @@ const StudentPortalForgetPassword = () => {
                 {step === 2 && (
                   <Form onSubmit={handleVerifyOTP}>
                     <Form.Group controlId="formOTP">
-                      <Form.Label className="custom-label">Enter OTP</Form.Label>
+                    <p className="text-start p-0 mb-0 custom-color-title-label small ">
+                      Enter OTP</p>
                       <Form.Control
                         type="text"
                         value={otp}
@@ -220,6 +227,7 @@ const StudentPortalForgetPassword = () => {
                         maxLength={6} // Limit OTP to 6 digits
                         isInvalid={!!otpError} // Highlight input field if there's an error
                         placeholder="Enter 6-digit OTP"
+                        className="std-input-placeholder"
                       />
                       <Form.Control.Feedback type="invalid">
                         {otpError}
@@ -240,7 +248,8 @@ const StudentPortalForgetPassword = () => {
                 {step === 3 && (
                   <Form onSubmit={handleResetPassword}>
                     <Form.Group controlId="formNewPassword">
-                      <Form.Label className="custom-label">New Password</Form.Label>
+                    <p className="text-start p-0 mb-0 custom-color-title-label small ">
+                      New Password</p>
                       <InputGroup>
                         <Form.Control
                           type={showNewPassword ? "text" : "password"}
@@ -248,7 +257,7 @@ const StudentPortalForgetPassword = () => {
                           value={newPassword}
                           onChange={(e) => setNewPassword(e.target.value)}
                           required
-                          className="pe-5"
+                          className="pe-5 std-input-placeholder"
                         />
                         <div className="position-absolute top-50 end-0 translate-middle-y pe-3" style={{ zIndex: 10 }}>
                           <span
@@ -270,7 +279,7 @@ const StudentPortalForgetPassword = () => {
                           value={confirmPassword}
                           onChange={(e) => setConfirmPassword(e.target.value)}
                           required
-                          className="pe-5"
+                          className="pe-5 std-input-placeholder"
                         />
                         <div className="position-absolute top-50 end-0 translate-middle-y pe-3" style={{ zIndex: 10 }}>
                           <span
