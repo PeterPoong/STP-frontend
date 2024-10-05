@@ -524,6 +524,7 @@ const formCourse = courseFeaturedList.map((course) => ({
            formTitle="Course Details"
            checkboxTitle="Intake"
            courseTitle="Course Featured"
+            helperStar="*"
            formFields={formFields}
            formPersonInCharge={formPersonInCharge}
            formTextarea={formTextarea}

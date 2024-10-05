@@ -459,6 +459,7 @@ const AdminAddCourseContent = () => {
                     <AdminFormComponent
            formTitle="Course Details"
            checkboxTitle="Intake"
+           helperStar="*"
            courseTitle="Course Featured"
            formFields={formFields}
            formPersonInCharge={formPersonInCharge}

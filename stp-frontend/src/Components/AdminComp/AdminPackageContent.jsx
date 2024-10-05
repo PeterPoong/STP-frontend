@@ -194,7 +194,7 @@ const AdminPackageContent = () => {
     const theadContent = (
         <tr>
             <th onClick={() => handleSort("name")}>
-                Package Name {sortColumn === "name" && (sortDirection === "asc" ? "↑" : "↓")}
+                Name {sortColumn === "name" && (sortDirection === "asc" ? "↑" : "↓")}
             </th>
             <th onClick={() => handleSort("type")}>
                 Type {sortColumn === "type" && (sortDirection === "asc" ? "↑" : "↓")}

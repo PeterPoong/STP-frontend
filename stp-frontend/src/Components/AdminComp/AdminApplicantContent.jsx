@@ -180,7 +180,7 @@ const AdminApplicantContent = () => {
     const theadContent = (
         <tr>
             <th onClick={() => handleSort("student")}>
-                Student Name{sortColumn === "student" && (sortDirection === "asc" ? "↑" : "↓")}
+                Name{sortColumn === "student" && (sortDirection === "asc" ? "↑" : "↓")}
             </th>
             <th onClick={() => handleSort("name")}>
                 Course(s) {sortColumn === "name" && (sortDirection === "asc" ? "↑" : "↓")}

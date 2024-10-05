@@ -250,6 +250,7 @@ const handleFeatureChange = (event) => {
   formUrl={formUrl}
   formCheckboxes={formCheckboxes}
   formPeriod={true}
+    helperStar="*"
   onSubmit={handleSubmit}
   error={error}
   buttons={buttons}

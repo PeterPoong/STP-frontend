@@ -71,7 +71,6 @@ const AdminEditSchoolContent = () => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-        
                 const data = await response.json();
         
                 if (data.success) {
@@ -83,19 +82,21 @@ const AdminEditSchoolContent = () => {
         
                     schoolDetails.media.forEach(media => {
                         if (media.schoolMedia_type === 66) {
-                            // It's a cover photo
                             coverFile = {
                                 name: media.schoolMedia_name,
                                 location: `${import.meta.env.VITE_BASE_URL}storage/${media.schoolMedia_location}`
                             };
                         } else if (media.schoolMedia_type === 67) {
-                            // It's part of the photo album
                             albumFiles.push({
                                 name: media.schoolMedia_name,
                                 location: `${import.meta.env.VITE_BASE_URL}storage/${media.schoolMedia_location}`
                             });
                         }
                     });
+
+                // Log the separated cover file and album files
+                console.log('Cover file:', coverFile);
+                console.log('Album files:', albumFiles);
         
                     setFormData({
                         name: schoolDetails.name || '',
@@ -111,6 +112,7 @@ const AdminEditSchoolContent = () => {
                         account: schoolDetails.account || '',
                         password: '', 
                         confirm_password: '',
+                        location: schoolDetails.location || '',
                         school_shortDesc: schoolDetails.shortDescription || '',
                         school_fullDesc: schoolDetails.fullDescription || '',
                         country: schoolDetails.country_id || '',
@@ -122,10 +124,10 @@ const AdminEditSchoolContent = () => {
                     setLogo(schoolDetails.logo ? `${import.meta.env.VITE_BASE_URL}storage/${schoolDetails.logo}` : null);
                     setSelectedFeatures(schoolDetails.schoolFeatured.map(feature => feature.featured_type));
         
-                    // Set the cover file and album files
+                    // setCoverFile(schoolDetails.coverFile || null);
+                    // setAlbumFiles(schoolDetails.albumFiles || []);
                     setCoverFile(coverFile);
                     setAlbumFiles(albumFiles);
-        
                     // Fetch states and cities after setting the country and state
                     if (schoolDetails.country_id) {
                         await fetchStates(schoolDetails.country_id); // Fetch states based on country
@@ -242,17 +244,18 @@ const AdminEditSchoolContent = () => {
        if (formData.logo instanceof File) {
         formPayload.append("logo", formData.logo); // New logo file
     }
-        // Append cover photo if available
-        if (coverFile) {
-            formPayload.append('cover', coverFile);
-        }
-        
-        // Check if albumFiles exist and is not empty
-        if (albumFiles && albumFiles.length > 0) {
-            albumFiles.forEach((file, index) => {
+    if (coverFile && coverFile.type && coverFile.type.startsWith('image/')) {
+        formPayload.append('cover', coverFile);
+    }
+    
+    if (albumFiles && albumFiles.length > 0) {
+        albumFiles.forEach((file, index) => {
+            if (file && file.type && file.type.startsWith('image/')) {  // Check if file exists and is an image
                 formPayload.append(`album[${index}]`, file);
-            });
-        }
+            }
+        });
+    }
+    
 
         try {
             console.log("FormData before submission:", formPayload);
@@ -500,7 +503,6 @@ useEffect(() => {
     accept: 'image/*',
     onDrop: acceptedFiles => setCoverFile(acceptedFiles[0])
     });
-
 
     const { getRootProps: getAlbumRootProps, getInputProps: getAlbumInputProps } = useDropzone({
         accept: 'image/*',
@@ -759,6 +761,7 @@ useEffect(() => {
                    phone={formData.contact_number} 
                    personPhone={formData.person_in_charge_contact}  
                    country_code={formData.country_code}
+
                    showUploadFeature={true}
                    coverUploadProps={getCoverRootProps()}
                    coverInputProps={getCoverInputProps()}
@@ -772,6 +775,8 @@ useEffect(() => {
                    handleClosePreview={handleClosePreview}
                    showPreview={showPreview}
                    previewFile={previewFile}
+                   setCoverFile={setCoverFile}
+                   setAlbumFiles={setAlbumFiles}
                 />
   
         </Container>

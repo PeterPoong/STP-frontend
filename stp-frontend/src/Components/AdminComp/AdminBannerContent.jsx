@@ -173,7 +173,7 @@ const AdminBannerContent = () => {
     const theadContent = (
         <tr>
             <th onClick={() => handleSort("name")}>
-                Banner Name {sortColumn === "name" && (sortDirection === "asc" ? "↑" : "↓")}
+                 Name {sortColumn === "name" && (sortDirection === "asc" ? "↑" : "↓")}
             </th>
             <th onClick={() => handleSort("file")}>
                 Banner File {sortColumn === "file" && (sortDirection === "asc" ? "↑" : "↓")}

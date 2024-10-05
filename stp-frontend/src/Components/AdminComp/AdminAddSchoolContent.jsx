@@ -57,12 +57,12 @@ const AdminAddSchoolContent = () => {
         event.preventDefault();
         console.log("Submitting form data:", formData); // Debugging line
         const { name, email, logo, location, category, state, city, account, country, school_address, school_website, contact_number, person_in_charge_email, person_in_charge_name, person_in_charge_contact, country_code, confirm_password, school_shortDesc, school_fullDesc, password } = formData;
-        
+    
         console.log("Form Data being sent:", formData);
         Object.keys(formData).forEach(key => {
             console.log(`${key}: ${formData[key]}`);
         });
-       
+    
         const formPayload = new FormData();
         formPayload.append("school_address", formData.school_address);
         formPayload.append("name", name);
@@ -90,7 +90,7 @@ const AdminAddSchoolContent = () => {
         selectedFeatures.forEach(feature => {
             formPayload.append("featured[]", feature);
         });
-       
+    
         if (logo) {
             formPayload.append('logo', logo);
         }
@@ -104,12 +104,14 @@ const AdminAddSchoolContent = () => {
         albumFiles.forEach((file, index) => {
             formPayload.append(`album[${index}]`, file);
         });
-      for (let pair of formPayload.entries()) {
+    
+        for (let pair of formPayload.entries()) {
             console.log(`${pair[0]}: ${pair[1]}`);
         }
+    
         try {
             console.log("FormData before submission:", formPayload);
-            
+    
             const addSchoolResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/addSchool`, {
                 method: 'POST',
                 headers: {
@@ -128,13 +130,12 @@ const AdminAddSchoolContent = () => {
                 throw new Error(`School Registration failed: ${addSchoolData.message}`);
             }
         } catch (error) {
-            
+            // Remove the reference to `addSchoolData` here
             setError('An error occurred during school registration. Please try again later.');
-            console.error('Error Details:', addSchoolData);
-            console.error('Validation Errors:', addSchoolData.errors); // Backend validation errors
             console.error('Error during school registration:', error);
         }
     };
+    
     
     useEffect(() => {
         const fetchFeatured = async () => {

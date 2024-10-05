@@ -185,6 +185,7 @@ const AdminAddBannerContent = () => {
         formCheckboxes={formCheckboxes}
         formPeriod={true}
         onSubmit={handleSubmit}
+          helperStar="*"
         error={error}
         buttons={buttons}
         selectedStartDate={selectedStartDate}

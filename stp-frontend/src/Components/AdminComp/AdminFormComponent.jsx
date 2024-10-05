@@ -28,7 +28,7 @@ const AdminFormComponent = ({
   formAddress,
   checkboxTitle,
   checkboxDetail,
-  star,
+  helperStar,
   courseTitle,
   formPeriod,
   formUrl,
@@ -870,7 +870,7 @@ const handleRadioChange = (radioId, value) => {
   <div className="check">
     <h4 className="detail text-left">{checkboxDetail}</h4>
     <h4 className="fw-light text-left mt-2">{checkboxTitle}</h4> 
-    <span class="text-danger">*</span>
+    <h5 className="text-danger mb-2" style={{ display: 'block' }}>{helperStar}</h5>
     <Form.Group controlId="formBasicCheckboxes">
       <div className="row">
         {formCheckboxes.map((checkbox, index) => (
@@ -894,7 +894,7 @@ const handleRadioChange = (radioId, value) => {
   <div className="check">
     <h4 className="detail text-left">{checkboxDetail}</h4>
     <h4 className="fw-light text-left mt-2">{courseTitle}</h4>
-    <span class="text-danger">*</span>
+   
     <Form.Group controlId="formBasicCheckboxes">
       <div className="row">
         {formCourse.map((course, index) => (
