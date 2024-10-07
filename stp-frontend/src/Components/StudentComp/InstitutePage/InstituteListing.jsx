@@ -258,6 +258,10 @@ const InstituteListing = ({
   }, []);
 
   const fetchInstitutesByCategory = async (selectedCategories) => {
+    if (selectedCategories.length === 0) {
+      setFilteredPrograms(institutes); // Show all institutes if no categories
+      return;
+    }
     setLoading(true);
     setError(null);
 
@@ -324,6 +328,7 @@ const InstituteListing = ({
     fetchStudyLevels();
   }, []);
 
+  // fetch school using study level
   const fetchInstitutesByStudyLevel = async (selectedStudyLevel) => {
     setLoading(true);
     setError(null);
@@ -494,6 +499,7 @@ const InstituteListing = ({
     fetchStudyModes();
   }, []);
 
+  // fetch school using study mode filter
   const fetchInstitutesByStudyMode = async (selectedStudyMode) => {
     setLoading(true);
     setError(null);
@@ -808,38 +814,39 @@ const InstituteListing = ({
   };
 
   // Category Filter
-  const handleCategoryChange = debounce(
-    (selectedCategory) => {
-      const updatedFilters = categoryFilters.some(
-        (category) => category.id === selectedCategory.id
-      )
-        ? categoryFilters.filter(
-            (category) => category.id !== selectedCategory.id
-          )
-        : [...categoryFilters, selectedCategory];
+  const handleCategoryChange = debounce((selectedCategory) => {
+    const updatedFilters = categoryFilters.some(
+      (category) => category.id === selectedCategory.id
+    )
+      ? categoryFilters.filter(
+          (category) => category.id !== selectedCategory.id
+        )
+      : [...categoryFilters, selectedCategory];
 
-      setCategoryFilters(updatedFilters);
+    setCategoryFilters(updatedFilters);
+
+    // Delay fetching institutes until after filters are updated
+    setTimeout(() => {
       fetchInstitutesByCategory(updatedFilters);
-    },
-    300,
-    true
-  ); // immediate is set to true
+    }, 300); // Delay ensures state is updated before the fetch
+  }, 300);
 
   // Study Level Filter
-  const handleStudyLevelChange = debounce(
-    (selectedLevel) => {
-      const updatedFilters = studyLevelFilters.some(
-        (level) => level.id === selectedLevel.id
-      )
-        ? studyLevelFilters.filter((level) => level.id !== selectedLevel.id)
-        : [...studyLevelFilters, selectedLevel];
+  const handleStudyLevelChange = debounce((selectedLevel) => {
+    // First update the filters
+    const updatedFilters = studyLevelFilters.some(
+      (level) => level.id === selectedLevel.id
+    )
+      ? studyLevelFilters.filter((level) => level.id !== selectedLevel.id)
+      : [...studyLevelFilters, selectedLevel];
 
-      setStudyLevelFilters(updatedFilters);
+    setStudyLevelFilters(updatedFilters);
+
+    // Then fetch institutes after the filters are updated
+    setTimeout(() => {
       fetchInstitutesByStudyLevel(updatedFilters);
-    },
-    300,
-    true
-  ); // immediate is set to true
+    }, 300); // Delay the fetch slightly to ensure the state is updated
+  }, 300);
 
   // Study Mode Filter
   const handleModeChange = debounce(
@@ -857,6 +864,25 @@ const InstituteListing = ({
     300,
     true
   );
+
+  // const handleModeChange = debounce(
+  //   (selectedMode) => {
+  //     console.log("Selected Mode: ", selectedMode); // Log the selected mode
+  //     const updatedFilters = modeFilters.some(
+  //       (mode) => mode.id === selectedMode.id
+  //     )
+  //       ? modeFilters.filter((mode) => mode.id !== selectedMode.id)
+  //       : [...modeFilters, selectedMode];
+
+  //     setModeFilters(updatedFilters);
+
+  //     // Delay fetching institutes until after filters are updated
+  //     setTimeout(() => {
+  //       fetchInstitutesByStudyMode(updatedFilters);
+  //     }, 300);  // Delay ensures state is updated before the fetch
+  //   },
+  //   300
+  // );
 
   // Intakes Filter
   const handleIntakeChange = (intake) => {
