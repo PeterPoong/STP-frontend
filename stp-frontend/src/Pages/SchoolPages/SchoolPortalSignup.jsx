@@ -18,6 +18,7 @@ import schoolPortalLoginLogo from "../../assets/SchoolPortalAssets/SchoolPortalL
 import { Eye, EyeOff } from "react-feather";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
+import styles from "../../css/SchoolPortalStyle/SchoolSignUp.module.css";
 
 const SchoolPortalSignup = () => {
   const [schoolName, setSchoolName] = useState("");
@@ -384,14 +385,17 @@ const SchoolPortalSignup = () => {
               <Button
                 variant="danger"
                 type="submit"
-                className="w-100 mt-3 mb-3 m-0"
+                // className="w-100 mt-3 mb-3 m-0"
+                className={`w-100 mt-3 mb-3 m-0 ${styles.signUpButton}`}
               >
                 Sign Up
               </Button>
               <p className="text-center text-muted small">
                 or Login/Sign Up using
               </p>
-              <Row className="justify-content-center">
+
+              {/* social media login  */}
+              {/* <Row className="justify-content-center">
                 <Col xs="auto">
                   <button
                     type="button"
@@ -438,7 +442,7 @@ const SchoolPortalSignup = () => {
                     </svg>
                   </button>
                 </Col>
-              </Row>
+              </Row> */}
               <p className="text-center small mb-0">
                 Already have an account?{" "}
                 <Link to="/schoolPortalLogin" className="text-danger">

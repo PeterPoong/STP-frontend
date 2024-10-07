@@ -6,6 +6,7 @@ import "../../css/SchoolPortalStyle/SchoolPortalLoginForm.css";
 import schoolPortalLoginBanner from "../../assets/SchoolPortalAssets/SchoolPortalLogin.png";
 import schoolPortalLoginLogo from "../../assets/SchoolPortalAssets/SchoolPortalLoginLogo.png";
 import "react-phone-input-2/lib/style.css";
+import styles from "../../css/SchoolPortalStyle/ForgotPassword.module.css";
 
 const SchoolPortalForgetPassword = () => {
   const [email, setEmail] = useState("");
@@ -216,8 +217,9 @@ const SchoolPortalForgetPassword = () => {
                     <Button
                       variant="danger"
                       type="submit"
-                      className="my-3 m-0"
-                      style={{ width: "100%", height: "40px" }}
+                      // className="my-3 m-0"
+                      className={`my-3 m-0 ${styles.sendOtpButton}`}
+                      // style={{ width: "100%", height: "40px" }}
                     >
                       Send OTP
                     </Button>

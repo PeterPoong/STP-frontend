@@ -199,7 +199,6 @@ const SchoolPortalLogin = () => {
                     variant="danger"
                     type="submit"
                     className={`my-3 m-0 ${styles.loginButton}`}
-                    style={{ width: "100%", height: "40px" }}
                   >
                     Login
                   </Button>

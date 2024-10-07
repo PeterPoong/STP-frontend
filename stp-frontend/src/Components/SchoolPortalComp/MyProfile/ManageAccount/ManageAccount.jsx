@@ -160,7 +160,7 @@ const ManageAccount = () => {
                   color: accountType === 64 ? "white" : "black",
                 }}
               >
-                ${basicPackage.package_price || "350"}
+                RM{basicPackage.package_price || "350"}
               </p>
               <p
                 className={styles.BasicPriceLabel}
@@ -270,7 +270,7 @@ const ManageAccount = () => {
                     color: accountType === 64 ? "black" : "white",
                   }}
                 >
-                  ${premiumPackage.package_price || "0"}
+                  RM{premiumPackage.package_price || "0"}
                 </p>
                 <p
                   className={styles.PremiumPriceLabel}
