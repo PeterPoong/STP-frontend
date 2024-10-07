@@ -100,7 +100,7 @@ const WidgetClub = ({ isOpen, onClose, onSave, item, isViewMode }) => {
                 type="text"
                 value={club_name}
                 onChange={(e) => setClubTitle(e.target.value)}
-                className="achievement-title-input"
+                className="achievement-title-input "
                 autoFocus
                 required
               />
@@ -108,12 +108,14 @@ const WidgetClub = ({ isOpen, onClose, onSave, item, isViewMode }) => {
             </>
           ) : (
             <>
-              {club_name || 'Enter Club Name'}
+              <div className="d-flex ">
+             <p className="acl-name-restrict mb-0">{club_name || 'Enter Club Name'}</p> 
               {!isViewMode && (
                 <button className="buttoneditam">
-                  <Edit2 size={20} color="white"  onClick={handleTitleEdit} />
+                  <Edit2 size={20} color="white" onClick={handleTitleEdit} />
                 </button>
               )}
+              </div>
             </>
           )}
         </h2>

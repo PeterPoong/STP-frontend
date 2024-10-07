@@ -347,9 +347,50 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
   };
 
 
-  const handleRemoveTranscript = (index) => {
-    setAcademicTranscripts(academicTranscripts.filter((_, i) => i !== index));
+  const handleRemoveTranscript = async (index) => {
+    const transcript = academicTranscripts[index];
     
+    if (!transcript.id) {
+      // If the transcript doesn't have an ID, it's not saved in the backend yet
+      setAcademicTranscripts(academicTranscripts.filter((_, i) => i !== index));
+      return;
+    }
+  
+    // Confirmation dialog
+    const isConfirmed = window.confirm(
+      "Are you sure you want to remove this transcript? This will delete all associated data including subjects, documents, and CGPA information."
+    );
+  
+    if (!isConfirmed) {
+      return;
+    }
+  
+    try {
+      const result = await resetTranscript(transcript.id);
+      if (result.success) {
+        // Remove the transcript from the state
+        setAcademicTranscripts(academicTranscripts.filter((_, i) => i !== index));
+        
+        // Clear any errors associated with this transcript
+        setDocumentErrors(prevErrors => {
+          const newErrors = { ...prevErrors };
+          Object.keys(newErrors).forEach(key => {
+            if (key.startsWith(`${index}-`)) {
+              delete newErrors[key];
+            }
+          });
+          return newErrors;
+        });
+  
+        // Optionally, show a success message
+        alert("Transcript successfully removed and all associated data has been deleted.");
+      } else {
+        throw new Error(result.message || 'Failed to reset transcript');
+      }
+    } catch (error) {
+      console.error('Error removing transcript:', error);
+      alert(`Failed to remove transcript: ${error.message}`);
+    }
   };
 
   const handleAddSubject = (transcriptIndex) => {
@@ -778,7 +819,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
         //console.log('Transcript saved successfully');
         setHasUnsavedChanges(false);
         fetchSubjects(category.id, transcriptIndex);
-       
+
         if (category.id !== 32) {
           const updatedCGPAData = await fetchCGPAForCategory(category, token);
           const updatedTranscripts = [...academicTranscripts];
@@ -818,6 +859,29 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
     }
   };
 
+  const resetTranscript = async (transcriptType) => {
+    try {
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/resetTranscript`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ transcriptType }),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to reset transcript');
+      }
+  
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      console.error('Error resetting transcript:', error);
+      throw error;
+    }
+  };
 
   const getGradeColor = (grade) => {
     if (grade.includes('A')) return 'success';
@@ -904,7 +968,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
               <Button variant="link" className="p-0 me-2" onClick={() => handleAddDocument(index)}>
                 <Upload size={18} color="grey" />
               </Button>
-              <Button variant="link" className="p-0" onClick={() => handleRemoveTranscript(index)}>
+              <Button variant="link" className="p-0" title="Remove Transcript" onClick={() => handleRemoveTranscript(index)}>
                 <Trash2 size={18} color="grey" />
               </Button>
             </div>
@@ -988,8 +1052,20 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                   ) : (
                     <>
                       <div className="d-flex align-items-center flex-grow-1">
-                        <AlignJustify  size={15}  className="me-2 ms-2" style={{ alignSelf: 'center' }} />
-                        <span className="me-2" style={{ fontSize: '0.9rem', fontWeight: "500", width: "150px" }}>{subject.name}</span>
+                        <AlignJustify size={15} className="me-2 ms-2" style={{ alignSelf: 'center' }} />
+                        <span className="me-2"
+                          style={{
+                            fontSize: '0.9rem',
+                            fontWeight: "500",
+                            width: "275px",
+                            wordWrap: 'break-word',
+                            overflowWrap: 'break-word',
+                            wordBreak: 'break-all',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            
+                          }}>{subject.name}</span>
                         <span style={{ fontSize: '0.9rem', fontWeight: "500" }}
                           className={`ms-3 me-2 px-2 py-1 px-3 rounded-5 text-white bg-${getGradeColor(subject.grade)}`}>
                           Grade: {subject.grade}
@@ -1034,7 +1110,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                     value={transcript.cgpa || ''}
                     onChange={(e) => handleCGPAChange(index, e.target.value)}
                     placeholder="Enter CGPA"
-                     className="w-50"
+                    className="w-50"
                   />
                 </Col>
               </Form.Group>
@@ -1060,7 +1136,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                             <>
                               <div className="sac-file-info">
                                 <FileText size={15} className="sac-file-icon" />
-                                <span className="sac-file-name">{doc.mediaName || doc.file}</span>
+                                <span className="sac-file-name" >{doc.mediaName || doc.file}</span>
                                 <Button
                                   variant="link"
                                   className="sac-remove-file-btn"
@@ -1094,7 +1170,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                             type="text"
                             value={doc.name}
                             onChange={(e) => handleDocumentChange(index, docIndex, 'name', e.target.value)}
-                            className="me-2 w-100 border-0"
+                            className="me-2 w-100 border-0 ac-input-placeholder"
                             placeholder="Enter document title..."
                             style={{ fontSize: '0.825rem' }}
                           />
@@ -1114,7 +1190,20 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                       <div className="d-flex flex-grow-1">
                         <div className="border-end me-4 px-1 align-items-center">
                           <FileText size={15} className="me-2 ms-2" style={{ alignSelf: 'center' }} />
-                          <span className="me-2" style={{ fontSize: '0.825rem', textAlign: 'left', flex: 1, width: "112.5px" }}>{doc.name}</span>
+                          <span className="me-2"
+                            style={{
+                              fontSize: '0.825rem',
+                              textAlign: 'left',
+                              flex: 1,
+                              width: "112.5px",
+                              wordWrap: 'break-word',
+                              overflowWrap: 'break-word',
+                              wordBreak: 'break-all',
+                              whiteSpace: 'nowrap',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              maxWidth: '112.5px'
+                            }}>{doc.name}</span>
                         </div>
                         <div className="align-items-center">
                           <span style={{ fontSize: '0.825rem' }}>{doc.mediaName || doc.file || 'No file uploaded'}</span>
@@ -1163,7 +1252,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
       </Button>
 
       <div className="d-flex justify-content-between mt-4">
-        <Button onClick={() => handleNavigation('back')}  className="me-2 rounded-pill px-5 sac-previous-button">
+        <Button onClick={() => handleNavigation('back')} className="me-2 rounded-pill px-5 sac-previous-button">
           Previous
         </Button>
         <Button onClick={() => handleNavigation('next')} className="sac-next-button rounded-pill px-5">
@@ -1176,7 +1265,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
         isOpen={isAcademicRemindPopupOpen}
         onClose={() => setIsAcademicRemindPopupOpen(false)}
       />
-        <WidgetPopUpUnsavedChanges
+      <WidgetPopUpUnsavedChanges
         isOpen={isUnsavedChangesPopupOpen}
         onConfirm={handleUnsavedChangesConfirm}
         onCancel={handleUnsavedChangesCancel}

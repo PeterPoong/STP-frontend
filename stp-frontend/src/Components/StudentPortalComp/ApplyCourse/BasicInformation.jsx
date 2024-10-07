@@ -436,7 +436,6 @@ const BasicInformation = ({ onSubmit, nextStep }) => { // Added nextStep as a pr
                                         onChange={handleInputChange}
                                         required
                                     >
-                                        <option value="">Select gender</option>
                                         {genderList.map((gender) => (
                                             <option key={gender.id} value={gender.core_metaName}>
                                                 {gender.core_metaName}

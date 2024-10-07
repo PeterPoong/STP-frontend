@@ -239,7 +239,7 @@ const CoCurriculum = ({ onNext, onBack }) => {
                   placeholder="Name of Co-curriculum..."
                   value={activity.club_name || ''} // Ensure it's always a string
                   onChange={(e) => handleActivityChange(index, 'club_name', e.target.value)}
-                  className="mb-2 border p-0 fw-bold w-25 ps-2"
+                  className="mb-2 border p-0 fw-bold w-25 ps-2 ac-input-placeholder"
                   style={{ fontSize: '1.1rem' }}
                 />
                 <div className="d-flex justify-content-between ps-0">
@@ -263,7 +263,7 @@ const CoCurriculum = ({ onNext, onBack }) => {
                         placeholder="Position"
                         value={activity.student_position} // Updated to match naming
                         onChange={(e) => handleActivityChange(index, 'student_position', e.target.value)} // Updated to match naming
-                        className="py-0 px-2 input-short"
+                        className="py-0 px-2 input-short ac-input-placeholder"
                       />
                     </div>
                     <div className="d-flex align-items-center flex-shrink-0">
@@ -273,7 +273,7 @@ const CoCurriculum = ({ onNext, onBack }) => {
                         placeholder="Institution"
                         value={activity.location} // Updated to match naming
                         onChange={(e) => handleActivityChange(index, 'location', e.target.value)} // Updated to match naming
-                        className="py-0 px-2 input-short"
+                        className="py-0 px-2 input-short ac-input-placeholder"
                       />
                     </div>
                   </div>
@@ -289,7 +289,17 @@ const CoCurriculum = ({ onNext, onBack }) => {
               </>
             ) : (
               <>
-                <div className="fw-bold mb-2" style={{ fontSize: '1.1rem' }}>{activity.club_name}</div>
+                <div className="fw-bold mb-2 "
+                  style={{
+                    fontSize: '1.1rem',
+                    wordWrap: 'break-word',
+                    overflowWrap: 'break-word',
+                    wordBreak: 'break-all',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    maxWidth: '500px'
+                  }}>{activity.club_name}</div>
                 <div className="d-flex justify-content-between align-items-center">
                   <div className="d-flex flex-grow-1">
                     <div className="me-3 "  >
@@ -297,12 +307,29 @@ const CoCurriculum = ({ onNext, onBack }) => {
                       <span className="border-end border-2 border-dark pe-2 me-2">Year</span>
                       <a className='mx-2 text-dark fw-normal'>{activity.year}</a>
                     </div>
-                    <div className="me-3" style={{ width: '200px' }}>
+                    <div className="me-3" style={{
+                      wordWrap: 'break-word',
+                      overflowWrap: 'break-word',
+                      wordBreak: 'break-all',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      maxWidth: '250px', // You can adjust this width as needed
+                      width: '250px'
+                    }}>
                       <User size={18} className="me-2" />
-                      <span className="border-end  border-2 border-dark pe-2 me-2">Poition</span>
-                      <a className='mx-2 text-dark fw-normal'>{activity.student_position}</a>
+                      <span className="border-end  border-2 border-dark pe-2 me-2">Position</span>
+                      <a className='mx-2 text-dark fw-normal name-restrict'>{activity.student_position}</a>
                     </div>
-                    <div className="me-3" >
+                    <div className="me-3" style={{
+                      wordWrap: 'break-word',
+                      overflowWrap: 'break-word',
+                      wordBreak: 'break-all',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      maxWidth: '250px' // You can adjust this width as needed
+                    }}>
                       <Building size={18} className="me-2" />
                       <span className="border-end border-2 border-dark pe-2 me-2">Institute</span>
                       <a className='mx-2 text-dark fw-normal'>{activity.location}</a>

@@ -190,7 +190,7 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
         <button className="achievement-close-btn" onClick={handleClose}>
           <X size={24} color="white" />
         </button>
-        <h2 className="achievement-title mt-3">
+        <h2 className="achievement-title mt-3 ">
           {isEditingTitle && !isViewMode ? (
             <>
               <input
@@ -251,7 +251,7 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
                     color: 'white'
                   }}
                 >
-                  <option value="" style={{ color: 'black' }}>Select title</option>
+                 
                   {achievementTypes.map((type) => (
                     <option key={type.id} value={type.id.toString()} style={{ color: 'black' }}>
                       {type.core_metaName}

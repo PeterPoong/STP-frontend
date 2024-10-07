@@ -212,3 +212,14 @@
     width: fit-content;
 }
 
+
+.name-restrict
+{
+    word-wrap: break-word; /* For wrapping long words */
+  overflow-wrap: break-word; /* Breaks words at the right points */
+  word-break: break-all; /* Forces the break for long words */
+  white-space: nowrap; /* Prevents the text from wrapping to the next line */
+  overflow: hidden; /* Ensures overflowed content is hidden */
+  text-overflow: ellipsis; /* Adds '...' at the point of overflow */
+  max-width: 100px; 
+}

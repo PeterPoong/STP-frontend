@@ -85,21 +85,20 @@ const StudentPortalResetPassword = () => {
             alt="Login background"
           />
         </Col>
-        <Col md={6} className="d-flex align-items-center">
+        <Col md={6} className="d-flex align-items-center bg-white">
           <Container>
             <Row className="justify-content-center">
               <Col md={8} lg={6} className="px-0">
-                <img
-                  src={studentPortalLoginLogo}
-                  alt="StudyPal logo"
-                />
+              <div className="studypal-logo-div">
+              </div>
                 <h2 className="text-start mb-3 custom-color-title">Reset Your Password</h2>
                 <p className="text-start mb-4 small custom-color-title">Please create a new password for your account.</p>
                 {error && <Alert variant="danger">{error}</Alert>}
                 {success && <Alert variant="success">{success}</Alert>}
                 <Form onSubmit={handleResetPassword}>
                   <Form.Group className="mb-3" controlId="formNewPassword">
-                    <Form.Label className="custom-label">New Password</Form.Label>
+                  <p className="text-start p-0 mb-0 custom-color-title-label small ">
+                    New Password</p>
                     <InputGroup className="password-input-group">
                       <Form.Control
                         type={showNewPassword ? "text" : "password"}
@@ -116,7 +115,8 @@ const StudentPortalResetPassword = () => {
                     </InputGroup>
                   </Form.Group>
                   <Form.Group className="mb-3" controlId="formConfirmPassword">
-                    <Form.Label className="custom-label">Confirm New Password</Form.Label>
+                  <p className="text-start p-0 mb-0 custom-color-title-label small ">
+                    Confirm New Password</p>
                     <InputGroup className="password-input-group">
                       <Form.Control
                         type={showConfirmPassword ? "text" : "password"}

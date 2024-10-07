@@ -464,7 +464,8 @@ const AppliedCourseHistory = () => {
                         <p className="acp-university-name">{app.school_name}</p>
                         <p className="acp-location">
                           <MapPin size={16} className="acp-icon" />
-                          {`${app.city_name ? app.city_name : ''}${app.state_name ? `, ${app.state_name}` : ''}${app.country_name ? `, ${app.country_name}` : ''}`} <span className="acp-link">click and view on map</span>
+                          {`${app.city_name ? app.city_name : ''}${app.state_name ? `, ${app.state_name}` : ''}${app.country_name ? `, ${app.country_name}` : ''}`} 
+                          {/*<span className="acp-link">click and view on map</span>*/}
                         </p>
                       </div>
                     </div>

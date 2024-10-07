@@ -60,38 +60,55 @@ const Achievements = ({ onBack, onNext }) => {
   // Fetch Achievements
   const fetchAchievements = async () => {
     try {
+      setIsLoading(true);
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/achievementsList`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch achievements');
-      }
-
-      const result = await response.json();
-      //console.log('Achievements Fetch Result:', result); // Debugging
-
-      if (result.success) {
-        const achievementsData = result.data.data.map((achievement) => {
-          // Find the corresponding title ID based on title_obtained
-          const matchedTitle = achievementTypes.find(
-            (type) => type.core_metaName === achievement.title_obtained
-          );
-          return {
-            ...achievement,
-            title: matchedTitle ? matchedTitle.id.toString() : '', // Set the title ID as string
-            isEditing: false, // Ensure isEditing is false by default
-          };
+      
+      let allAchievements = [];
+      let currentPage = 1;
+      let hasMoreData = true;
+  
+      while (hasMoreData) {
+        const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/achievementsList?page=${currentPage}`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
         });
-        setAchievements(achievementsData);
-      } else {
-        throw new Error(result.message || 'Failed to fetch achievements');
+  
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+  
+        const result = await response.json();
+        console.log('API response for page', currentPage, ':', result); // For debugging
+  
+        if (result.success && result.data && Array.isArray(result.data.data)) {
+          const pageAchievements = result.data.data.map((achievement) => {
+            const matchedTitle = achievementTypes.find(
+              (type) => type.core_metaName === achievement.title_obtained
+            );
+            return {
+              ...achievement,
+              title: matchedTitle ? matchedTitle.id.toString() : '',
+              isEditing: false,
+            };
+          });
+  
+          allAchievements = [...allAchievements, ...pageAchievements];
+  
+          if (result.data.next_page_url) {
+            currentPage++;
+          } else {
+            hasMoreData = false;
+          }
+        } else {
+          hasMoreData = false;
+        }
       }
+  
+      console.log('Total achievements fetched:', allAchievements.length); // For debugging
+      setAchievements(allAchievements);
     } catch (error) {
       console.error('Error fetching achievements:', error);
       setError(error.message);
@@ -358,7 +375,7 @@ const Achievements = ({ onBack, onNext }) => {
                   placeholder="Name of Achievement..."
                   value={achievement.achievement_name}
                   onChange={(e) => handleAchievementChange(index, 'achievement_name', e.target.value)}
-                  className="mb-2 ps-2 border p-0 fw-bold w-25"
+                  className="mb-2 ps-2 border p-0 fw-bold w-25 ac-input-placeholder"
                   style={{ fontSize: '1.1rem' }}
                 />
                 <div className="d-flex justify-content-between ps-0">
@@ -371,7 +388,7 @@ const Achievements = ({ onBack, onNext }) => {
                         }
                         onChange={(date) => handleAchievementChange(index, 'date', date)}
                         dateFormat="dd/MM/yyyy"
-                        className="form-control py-0 px-2 date-picker-short"
+                        className="form-control py-0 px-2 date-picker-short ac-input-placeholder"
                         placeholderText="Select date"
                       />
                     </div>
@@ -381,9 +398,9 @@ const Achievements = ({ onBack, onNext }) => {
                         as="select"
                         value={achievement.title}
                         onChange={(e) => handleAchievementChange(index, 'title', e.target.value)}
-                        className="py-0 px-2 input-short"
+                        className="py-0 px-2 input-short ac-input-placeholder"
                       >
-                        <option value="">Select Title</option>
+                      
                         {achievementTypes.map((type) => (
                           <option key={type.id} value={type.id.toString()}>
                             {type.core_metaName}
@@ -398,7 +415,7 @@ const Achievements = ({ onBack, onNext }) => {
                         placeholder="Awarded By"
                         value={achievement.awarded_by}
                         onChange={(e) => handleAchievementChange(index, 'awarded_by', e.target.value)}
-                        className="py-0 px-2 input-short"
+                        className="py-0 px-2 input-short ac-input-placeholder"
                       />
                     </div>
                     <div className="d-flex justify-content-center align-items-center">
@@ -458,7 +475,15 @@ const Achievements = ({ onBack, onNext }) => {
               </>
             ) : (
               <>
-                <div className="fw-bold mb-2" style={{ fontSize: '1.1rem' }}>
+                <div className="fw-bold mb-2" style={{ fontSize: '1.1rem',  
+                      wordWrap: 'break-word',
+                      overflowWrap: 'break-word',
+                      wordBreak: 'break-all',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      maxWidth: '500px' // You can adjust this width as needed
+                    }}>
                   {achievement.achievement_name}
                 </div>
                 <div className="d-flex justify-content-between">
@@ -468,21 +493,37 @@ const Achievements = ({ onBack, onNext }) => {
                       <span className="border-end border-2 border-dark pe-2 me-2">Date</span>
                       <a className="mx-2 text-dark fw-normal">{formatDate(achievement.date)}</a>
                     </div>
-                    <div className="me-3" style={{ width: '205px' }}>
+                    <div className="me-3" style={{ width: '230px' }}>
                       <Trophy size={18} className="me-2" />
                       <span className="border-end border-2 border-dark pe-2 me-2">Title</span>
                       <a className="mx-2 text-dark fw-normal">{achievement.title_obtained}</a>
                     </div>
-                    <div className="me-3" style={{ width: '215px' }}>
+                    <div className="me-3" style={{ width: '300px',
+                       wordWrap: 'break-word',
+                       overflowWrap: 'break-word',
+                       wordBreak: 'break-all',
+                       whiteSpace: 'nowrap',
+                       overflow: 'hidden',
+                       textOverflow: 'ellipsis',
+                       maxWidth: '300px'
+                     }}>
                       <Building size={18} className="me-2" />
                       <span className="border-end border-2 border-dark pe-2 me-2">Awarded by</span>
                       <a className="mx-2 text-dark fw-normal">{achievement.awarded_by}</a>
                     </div>
 
                     {achievement.achievement_media && (
-                      <div className="d-flex align-items-center text-decoration-underline">
+                      <div className="d-flex align-items-center text-decoration-underline ">
                         <FileText size={18} className="me-2" />
-                        <span>
+                        <span style={{ width: '225px',
+                       wordWrap: 'break-word',
+                       overflowWrap: 'break-word',
+                       wordBreak: 'break-all',
+                       whiteSpace: 'nowrap',
+                       overflow: 'hidden',
+                       textOverflow: 'ellipsis',
+                       maxWidth: '225px'
+                     }}>
                           {achievement.achievement_media instanceof File
                             ? achievement.achievement_media.name
                             : typeof achievement.achievement_media === 'string'

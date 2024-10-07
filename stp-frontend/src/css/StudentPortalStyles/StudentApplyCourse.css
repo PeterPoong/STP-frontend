@@ -1,3 +1,22 @@
+
+.ac-input-placeholder::placeholder {
+  opacity: 0.4; /* Adjust the opacity level */
+  color: #888;  /* Optional: you can also change the placeholder color */
+}
+
+
+.sac-name-restrict
+{
+    word-wrap: break-word; /* For wrapping long words */
+  overflow-wrap: break-word; /* Breaks words at the right points */
+  word-break: break-all; /* Forces the break for long words */
+  white-space: nowrap; /* Prevents the text from wrapping to the next line */
+  overflow: hidden; /* Ensures overflowed content is hidden */
+  text-overflow: ellipsis; /* Adds '...' at the point of overflow */
+  max-width: 100px; 
+}
+
+
 .app-container-applycourse {
   display: flex;
   flex-direction: column;
@@ -101,6 +120,7 @@
 {
   color:#B71A18;
   font-size: 2.25rem;
+  text-align:-webkit-center;
 }
 
 .schooltext-applycourse
@@ -737,7 +757,28 @@ ul {
   align-items: center;
 }
 
+.copy-icon-wrapper {
+  cursor: pointer;
+  margin-left: 5px;
+  padding: 2px;
+  border-radius: 50%;
+  transition: background-color 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
 
+.copy-icon-wrapper:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.copy-icon, .copied-icon {
+  vertical-align: middle;
+}
+
+.copied-icon {
+  color: #28a745;
+}
 
 /*responsive*/
 

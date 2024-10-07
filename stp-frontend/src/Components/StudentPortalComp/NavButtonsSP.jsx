@@ -92,11 +92,11 @@ const NavigationBar = () => {
           <div className="m-10 navbutton-section">
             {hasToken ? (
               <>
-                <Button className="m-0 btnfirst">Hi !</Button>
+                <Button className="m-0 btnfirst" >Hi !</Button>
                 <Button className="m-0 btnsecond" onClick={handleRoute}>
                   {userName}
                 </Button>
-                <Button className="m-0 btnfirst" onClick={handleLogout}>
+                <Button className="m-0 btnfirstlogout" onClick={handleLogout}>
                   Logout
                 </Button>
               </>

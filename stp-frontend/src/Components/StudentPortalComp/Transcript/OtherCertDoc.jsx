@@ -311,7 +311,7 @@ const OtherCertDoc = () => {
                                                 <div className="d-flex align-items-center ">
                                                     <FileText className="file-icon me-2" />
                                                     <div>
-                                                        <div className="file-title mb-1">{item.name}</div>
+                                                        <div className="file-title mb-1 sac-name-restrict">{item.name}</div>
                                                         <div className="file-date">{item.created_at || 'No date'}</div>
                                                     </div>
                                                 </div>
@@ -334,7 +334,7 @@ const OtherCertDoc = () => {
                     <div>No other certificate or documentation found</div>
                 )}
             </div>
-            {paginationInfo.lastPage  && (
+            {paginationInfo.lastPage > 1 && (
                 <div className="pagination">
                     <button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1}>
                         &lt;

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState,useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Sidebar from "../../Components/SchoolPortalComp/SchoolSidebar";
 import { Container, Button, Row, Col } from "react-bootstrap";
@@ -12,7 +12,9 @@ import {
   ChevronUp,
   Clock,
   Copy,
+  Check
 } from "react-feather";
+import { ChevronLeft } from "react-bootstrap-icons"
 
 import styles from "../../css/SchoolPortalStyle/StudentApplicantDetail.module.css";
 import { ClassNames } from "@emotion/react";
@@ -86,8 +88,48 @@ const SchoolViewApplicantDetail = () => {
   //acount type
   const [accountType, setAccountType] = useState(null);
 
+  //copytoclipboard
+  const [copiedFields, setCopiedFields] = useState({
+    name: false,
+    icNumber: false,
+    contactNumber: false,
+    email: false,
+    address: false
+  });
   const handleBack = () => {
     navigate("/schoolPortalDashboard"); // This will go back to the previous page
+  };
+
+  const handleWhatsAppClick = useCallback(() => {
+    if (contact && countryCode) {
+      // Remove any non-digit characters from the phone number and country code
+      const cleanCountryCode = countryCode.replace(/\D/g, '');
+      const cleanPhoneNumber = contact.replace(/\D/g, '');
+      
+      // Construct the WhatsApp URL
+      const whatsappUrl = `https://wa.me/${cleanCountryCode}${cleanPhoneNumber}`;
+      
+      // Open the URL in a new tab
+      window.open(whatsappUrl, '_blank');
+    } else {
+      // Alert the user if the phone number is not available
+      alert("WhatsApp contact information is not available for this student.");
+    }
+  }, [contact, countryCode]);
+  
+  const copyToClipboard = (text, field) => {
+    if (text) {
+      navigator.clipboard.writeText(text).then(() => {
+        setCopiedFields(prev => ({ ...prev, [field]: true }));
+        setTimeout(() => {
+          setCopiedFields(prev => ({ ...prev, [field]: false }));
+        }, 2000);
+      }).catch(err => {
+        console.error('Failed to copy: ', err);
+      });
+    } else {
+      console.error('No text to copy');
+    }
   };
 
   const fetchCoCurriculum = async () => {
@@ -743,8 +785,21 @@ const SchoolViewApplicantDetail = () => {
         {selectedCategory !== 32 && cgpaInfo && (
           <div className="px-4 mb-3">
             <div className="d-flex justify-content-between align-items-center">
-              <p className="mb-0">
-                <strong>Program Name:</strong> {cgpaInfo.program_name || "N/A"}
+              <p className="mb-0 d-flex align-items-center">
+                <strong>Program Name:</strong>
+                <p className=" mb-0"
+                  style={{
+                    wordWrap: 'break-word',
+                    overflowWrap: 'break-word',
+                    wordBreak: 'break-all',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    maxWidth: '175px',
+                    marginLeft: '20px'
+                  }} >
+                  {cgpaInfo.program_name || 'N/A'}
+                </p>
               </p>
               <p className="mb-0">
                 <strong>CGPA:</strong> {cgpaInfo.cgpa || "N/A"}
@@ -760,7 +815,16 @@ const SchoolViewApplicantDetail = () => {
           {transcriptSubjects && transcriptSubjects.length > 0 ? (
             transcriptSubjects.map((subject, index) => (
               <div key={index} className="d-flex justify-content-between py-3">
-                <p className="mb-0">
+                <p className="mb-0"
+                 style={{
+                  wordWrap: 'break-word',
+                  overflowWrap: 'break-word',
+                  wordBreak: 'break-all',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  maxWidth: '350px'
+                }}>
                   <strong>
                     {subject.subject_name || subject.highTranscript_name}
                   </strong>
@@ -786,7 +850,7 @@ const SchoolViewApplicantDetail = () => {
           </div>
           <Button
             variant="link"
-            className=" w-25"
+            className="view-result-slip-button w-25"
             onClick={() => {
               setActiveTab("documents");
               setActiveDocumentTab("academic");
@@ -864,11 +928,11 @@ const SchoolViewApplicantDetail = () => {
     });
 
     return (
-      <div className="summary-content-yourdocument">
+      <div className="summary-content-yourdocument bg-white shadow-lg">
         <div className="documents-content pt-2 w-100">
           <div>
             <p className="lead">
-              You have uploaded{" "}
+              This student has uploaded{" "}
               <span className="fw-bold">{totalDocumentCount}</span> documents.
             </p>
             <div className="document-tabs d-flex column mb-3 w-100">
@@ -928,7 +992,7 @@ const SchoolViewApplicantDetail = () => {
                           <div className="d-flex align-items-center">
                             <FileText className="file-icon me-2" />
                             <div>
-                              <div className="file-title">
+                              <div className="file-title name-restrict">
                                 {doc.studentMedia_name}
                               </div>
                               <div className="file-date">{doc.created_at}</div>
@@ -949,7 +1013,7 @@ const SchoolViewApplicantDetail = () => {
                           <div className="d-flex align-items-center">
                             <FileText className="file-icon me-2" />
                             <div>
-                              <div className="file-title">
+                              <div className="file-title name-restrict">
                                 {doc.achievement_name}
                               </div>
                               <div className="file-date">{doc.year}</div>
@@ -970,7 +1034,7 @@ const SchoolViewApplicantDetail = () => {
                           <div className="d-flex align-items-center">
                             <FileText className="file-icon me-2" />
                             <div>
-                              <div className="file-title">{doc.name}</div>
+                              <div className="file-title name-restrict">{doc.name}</div>
                               <div className="file-date">{doc.created_at}</div>
                             </div>
                           </div>
@@ -1045,8 +1109,10 @@ const SchoolViewApplicantDetail = () => {
             alignItems: "center",
           }}
         >
-          <Arrow90degLeft style={{ color: "#B71A18" }} className="mx-3" />
-          Back
+           <div className='ms-4 mt-3 d-flex mb-0 '>
+          <ChevronLeft style={{ color: "#ad736c" }} className=" " size={30} />
+          <h5 className="ms-2 mt-1" style={{ color: "#ad736c" }}>Back</h5>
+        </div>
         </span>
         <Row className={`${styles.infoBannerRow}`}>
           <Col md={6} className={`d-flex  ps-5 ${styles.informationBanner}`}>
@@ -1098,6 +1164,7 @@ const SchoolViewApplicantDetail = () => {
 
             <Button
               className={`justify-content-center px-4 mt-5 float-right ${styles.chatOnWhatsappButton}`}
+              onClick={handleWhatsAppClick}
             >
               <Whatsapp className="me-2" />{" "}
               {/* Add margin-end to space icon and text */}
@@ -1159,65 +1226,80 @@ const SchoolViewApplicantDetail = () => {
                         <p>
                           <strong>Student Name</strong>
                         </p>
-                        <p>
-                          {`${firstName || ""} ${lastName || ""}`.trim()}{" "}
-                          <Copy
-                            size={16}
-                            className="cursor-pointer"
-                            onClick={() =>
-                              copyToClipboard(
-                                `${firstName || ""} ${lastName || ""}`.trim() ||
-                                ""
-                              )
+                        <p className="d-flex align-items-center">
+                          <span className="me-2">
+                            {`${firstName || ''} ${lastName || ''}`.trim()}
+                          </span>
+                          <span
+                            className="copy-icon-wrapper"
+                            onClick={() => copyToClipboard(`${firstName || ''} ${lastName || ''}`.trim(), 'name')}
+                            title={copiedFields.name ? "Copied!" : "Copy to clipboard"}
+                          >
+                            {copiedFields.name
+                              ? <Check size={16} className="copied-icon" />
+                              : <Copy size={16} className="copy-icon" />
                             }
-                          />
+                          </span>
                         </p>
                       </div>
                       <div className="col-md-6 mb-3">
                         <p>
                           <strong>Identity Card Number</strong>
                         </p>
-                        <p>
-                          {ic}{" "}
-                          <Copy
-                            size={16}
-                            className="cursor-pointer"
-                            onClick={() => copyToClipboard(ic || "")}
-                          />
+                        <p className="d-flex align-items-center">
+                          <span className="me-2">{ic}</span>
+                          <span
+                            className="copy-icon-wrapper"
+                            onClick={() => copyToClipboard(ic, 'icNumber')}
+                            title={copiedFields.icNumber ? "Copied!" : "Copy to clipboard"}
+                          >
+                            {copiedFields.icNumber
+                              ? <Check size={16} className="copied-icon" />
+                              : <Copy size={16} className="copy-icon" />
+                            }
+                          </span>
                         </p>
                       </div>
                       <div className="col-md-6 mb-3">
                         <p>
                           <strong>Contact Number</strong>
                         </p>
-                        <p>
-                          {`${countryCode || ""} ${contact || ""}`}{" "}
-                          <Copy
-                            size={16}
-                            className="cursor-pointer"
-                            onClick={() =>
-                              copyToClipboard(
-                                `${countryCode || ""} ${contact || ""}`
-                              )
+                        <p className="d-flex align-items-center">
+                          <span className="me-2">
+                            {`${countryCode || ''} ${contact || ''}`}
+                          </span>
+                          <span
+                            className="copy-icon-wrapper"
+                            onClick={() => copyToClipboard(`${countryCode || ''} ${contact || ''}`, 'contactNumber')}
+                            title={copiedFields.contactNumber ? "Copied!" : "Copy to clipboard"}
+                          >
+                            {copiedFields.contactNumber
+                              ? <Check size={16} className="copied-icon" />
+                              : <Copy size={16} className="copy-icon" />
                             }
-                          />
+                          </span>
                         </p>
                       </div>
                       <div className="col-md-6 mb-3">
                         <p>
                           <strong>Email Address</strong>
                         </p>
-                        <p style={{
+                        <p className="d-flex align-items-center" style={{
                           wordWrap: 'break-word',
                           overflowWrap: 'break-word',
                           wordBreak: 'break-all'
                         }}>
-                          {email}{" "}
-                          <Copy
-                            size={16}
-                            className="cursor-pointer"
-                            onClick={() => copyToClipboard(email || "")}
-                          />
+                          <span className="me-2">{email}</span>
+                          <span
+                            className="copy-icon-wrapper"
+                            onClick={() => copyToClipboard(email, 'email')}
+                            title={copiedFields.email ? "Copied!" : "Copy to clipboard"}
+                          >
+                            {copiedFields.email
+                              ? <Check size={16} className="copied-icon" />
+                              : <Copy size={16} className="copy-icon" />
+                            }
+                          </span>
                         </p>
                       </div>
                     </div>
@@ -1226,13 +1308,18 @@ const SchoolViewApplicantDetail = () => {
                         <p>
                           <strong>Address</strong>
                         </p>
-                        <p>
-                          {address}{" "}
-                          <Copy
-                            size={16}
-                            className="cursor-pointer"
-                            onClick={() => copyToClipboard(address || "")}
-                          />
+                        <p className="d-flex align-items-center">
+                          <span className="me-2">{address}</span>
+                          <span
+                            className="copy-icon-wrapper"
+                            onClick={() => copyToClipboard(address || '', 'address')}
+                            title={copiedFields.address ? "Copied!" : "Copy to clipboard"}
+                          >
+                            {copiedFields.address
+                              ? <Check size={16} className="copied-icon" />
+                              : <Copy size={16} className="copy-icon" />
+                            }
+                          </span>
                         </p>
                       </div>
                     </div>
@@ -1258,17 +1345,17 @@ const SchoolViewApplicantDetail = () => {
                             className="activity-item d-flex flex-wrap justify-content-between align-items-start py-2"
                           >
                             <div className="col-12 col-sm-6">
-                              <p className="mb-0">
+                              <p className="mb-0 name-restrict">
                                 <strong>{activity.club_name}</strong>
                               </p>
-                              <p className="mb-0 text-muted">
+                              <p className="mb-0 text-muted name-restrict">
                                 {activity.location}
                               </p>
                             </div>
                             <div className="col-6 col-sm-3 text-start text-sm-center">
                               <p className="mb-0">{activity.year}</p>
                             </div>
-                            <div className="col-6 col-sm-3 text-end">
+                            <div className="col-6 col-sm-3 text-end sac-name-restrict">
                               <span
                                 className={`position ${activity.student_position.toLowerCase()} py-1 px-2 rounded-pill`}
                               >
@@ -1294,18 +1381,18 @@ const SchoolViewApplicantDetail = () => {
                             key={index}
                             className="achievement-item d-flex flex-wrap justify-content-between align-items-start py-2"
                           >
-                            <div className="col-12 col-sm-6">
-                              <p className="mb-0">
-                                <strong>{achievement.achievement_name}</strong>
+                            <div className="col-12 col-sm-4">
+                              <p className="mb-0 name-restrict">
+                                <strong>{achievement.achievement_name || ""}</strong>
                               </p>
-                              <p className="mb-0 text-muted">
-                                {achievement.awarded_by}
+                              <p className="mb-0 text-muted name-restrict">
+                                {achievement.awarded_by || ""}
                               </p>
                             </div>
                             <div className="col-6 col-sm-3 text-start text-sm-center">
-                              <p className="mb-0">{achievement.date}</p>
+                              <p className="mb-0">{achievement.date || ""}</p>
                             </div>
-                            <div className="col-6 col-sm-3 text-end">
+                            <div className="col-6 col-sm-5 text-end">
                               <span className={`position ${(achievement.title?.core_metaName?.toLowerCase() ?? '').replace(/\s+/g, '-')} py-1 px-2 rounded-pill`}>
                                 {achievement.title?.core_metaName || 'No Title'}
                               </span>
