@@ -547,9 +547,10 @@ const InstituteListing = ({
     } catch (error) {
       console.error("Error fetching institutes by study level:", error);
       setError(error.message || "An unexpected error occurred.");
+    } finally {
+      setLoading(false);
     }
   };
-
   useEffect(() => {
     if (modeFilters.length > 0) {
       fetchInstitutesByStudyMode(modeFilters); // Fetch institutes based on selected study modes
@@ -849,40 +850,21 @@ const InstituteListing = ({
   }, 300);
 
   // Study Mode Filter
-  const handleModeChange = debounce(
-    (selectedMode) => {
-      console.log("Selected Mode: ", selectedMode); // Log the selected mode
-      const updatedFilters = modeFilters.some(
-        (mode) => mode.id === selectedMode.id
-      )
-        ? modeFilters.filter((mode) => mode.id !== selectedMode.id)
-        : [...modeFilters, selectedMode];
+  const handleModeChange = debounce((selectedMode) => {
+    console.log("Selected Mode: ", selectedMode); // Log the selected mode
+    const updatedFilters = modeFilters.some(
+      (mode) => mode.id === selectedMode.id
+    )
+      ? modeFilters.filter((mode) => mode.id !== selectedMode.id)
+      : [...modeFilters, selectedMode];
 
-      setModeFilters(updatedFilters);
-      fetchInstitutesByStudyMode(updatedFilters); // Fetch institutes based on the updated study mode filters
-    },
-    300,
-    true
-  );
+    setModeFilters(updatedFilters);
 
-  // const handleModeChange = debounce(
-  //   (selectedMode) => {
-  //     console.log("Selected Mode: ", selectedMode); // Log the selected mode
-  //     const updatedFilters = modeFilters.some(
-  //       (mode) => mode.id === selectedMode.id
-  //     )
-  //       ? modeFilters.filter((mode) => mode.id !== selectedMode.id)
-  //       : [...modeFilters, selectedMode];
-
-  //     setModeFilters(updatedFilters);
-
-  //     // Delay fetching institutes until after filters are updated
-  //     setTimeout(() => {
-  //       fetchInstitutesByStudyMode(updatedFilters);
-  //     }, 300);  // Delay ensures state is updated before the fetch
-  //   },
-  //   300
-  // );
+    // Delay fetching institutes until after filters are updated
+    setTimeout(() => {
+      fetchInstitutesByStudyMode(updatedFilters);
+    }, 300); // Delay ensures state is updated before the fetch
+  }, 300);
 
   // Intakes Filter
   const handleIntakeChange = (intake) => {
