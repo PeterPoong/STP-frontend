@@ -1670,7 +1670,7 @@ const StudentApplicationSummary = ({ }) => {
                     alt="Applicant Photo"
                   />
                   <div>
-                    <p className="my-0 fw-bold ">
+                    <p className="my-0 sas-fontsize-1">
                       {`${basicInfo?.firstName || ""} ${basicInfo?.lastName || ""
                         }`.trim()}
                     </p>
@@ -1834,7 +1834,7 @@ const StudentApplicationSummary = ({ }) => {
                         >
                           {transcriptCategories.map((category) => (
                             <option key={category.id} value={category.id}>
-                              {category.transcript_category}
+                              {category.transcript_category} Subjects and Results
                             </option>
                           ))}
                         </select>
@@ -1920,12 +1920,12 @@ const StudentApplicationSummary = ({ }) => {
                             setActiveDocumentTab("academic"); // Navigate to Academic Transcript tab
                           }}
                           disabled={
-                            !transcriptSubjects ||
-                            transcriptSubjects.length === 0
+                            transcriptSubjects.length  === 0 ||
+                            academicTranscripts.length === 0
                           }
                           style={{
-                            color: !transcriptSubjects ||
-                              transcriptSubjects.length === 0 ? 'black' : '#B71A18'
+                            color:  transcriptSubjects.length  === 0 ||
+                            academicTranscripts.length === 0 ? 'black' : '#B71A18'
                           }}
                         >
                           View Result Slip »

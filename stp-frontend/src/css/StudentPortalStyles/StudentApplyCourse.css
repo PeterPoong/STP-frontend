@@ -1,19 +1,31 @@
-
-.ac-input-placeholder::placeholder {
-  opacity: 0.4; /* Adjust the opacity level */
-  color: #888;  /* Optional: you can also change the placeholder color */
+.sas-fontsize-1 {
+  font-size: 1.25rem;
+  font-weight: 500;
 }
 
 
-.sac-name-restrict
-{
-    word-wrap: break-word; /* For wrapping long words */
-  overflow-wrap: break-word; /* Breaks words at the right points */
-  word-break: break-all; /* Forces the break for long words */
-  white-space: nowrap; /* Prevents the text from wrapping to the next line */
-  overflow: hidden; /* Ensures overflowed content is hidden */
-  text-overflow: ellipsis; /* Adds '...' at the point of overflow */
-  max-width: 100px; 
+.ac-input-placeholder::placeholder {
+  opacity: 0.4;
+  /* Adjust the opacity level */
+  color: #888;
+  /* Optional: you can also change the placeholder color */
+}
+
+
+.sac-name-restrict {
+  word-wrap: break-word;
+  /* For wrapping long words */
+  overflow-wrap: break-word;
+  /* Breaks words at the right points */
+  word-break: break-all;
+  /* Forces the break for long words */
+  white-space: nowrap;
+  /* Prevents the text from wrapping to the next line */
+  overflow: hidden;
+  /* Ensures overflowed content is hidden */
+  text-overflow: ellipsis;
+  /* Adds '...' at the point of overflow */
+  max-width: 100px;
 }
 
 
@@ -43,7 +55,7 @@
 .main-content-applycourse-clone {
   flex: 1;
   padding: 3rem 0 8.25rem 0;
- 
+
 
 }
 
@@ -110,23 +122,21 @@
 
 }
 
-.sac-image-applycourse
-{
-  width:auto;
-  height:6.5rem;
+.sac-image-applycourse {
+  width: auto;
+  height: 6.5rem;
 }
 
-.coursetext-applycourse
-{
-  color:#B71A18;
+.coursetext-applycourse {
+  color: #B71A18;
   font-size: 2.25rem;
-  text-align:-webkit-center;
+  text-align: -webkit-center;
 }
 
-.schooltext-applycourse
-{
-  font-size:2.5rem;
+.schooltext-applycourse {
+  font-size: 2.5rem;
 }
+
 .custom-select {
   border: red;
 }
@@ -274,7 +284,7 @@ select__menu-list::-webkit-scrollbar-thumb:hover {
 .summary-title {
   color: #B71A18;
   font-weight: bold;
-  font-size:2.25rem;
+  font-size: 2.25rem;
 }
 
 .summary-header {
@@ -374,7 +384,7 @@ select__menu-list::-webkit-scrollbar-thumb:hover {
 .ajk {
   background-color: #ffc107;
   color: white;
-  
+
 }
 
 .champion {
@@ -382,26 +392,22 @@ select__menu-list::-webkit-scrollbar-thumb:hover {
   color: white;
 }
 
-.runner-up
-{
+.runner-up {
   background-color: #C0C0C0;
   color: white;
 }
 
-.second-runner-up
-{
+.second-runner-up {
   background-color: #ff5900;
   color: white;
 }
 
-.participation
-{
+.participation {
   background-color: #F07B00;
   color: white;
 }
 
-.awarded
-{
+.awarded {
   background-color: #76fa39;
   color: white;
 }
@@ -505,22 +511,27 @@ select__menu-list::-webkit-scrollbar-thumb:hover {
 }
 
 .search-bar-sas {
-  position: relative;  
+  position: relative;
 }
 
 .search-bar-sas input {
   padding-left: 2.5rem;
-  border: 0.1rem solid #9E9E9E; /* Adjust the border color and width */
-  border-radius: 0.5rem; /* Optional: Add rounded corners */
-  outline: none; /* Remove default outline */
-  width:15rem;
-  color:#9E9E9E;
+  border: 0.1rem solid #9E9E9E;
+  /* Adjust the border color and width */
+  border-radius: 0.5rem;
+  /* Optional: Add rounded corners */
+  outline: none;
+  /* Remove default outline */
+  width: 15rem;
+  color: #9E9E9E;
 }
 
 /* If you want to adjust the border on focus */
 .search-bar-sas input:focus {
-  border-color: #B71A18; /* Change border color on focus */
-  box-shadow: 0 0.25rem 0.25rem rgba(0, 0, 0, 0.05); /* Optional: Add shadow on focus */
+  border-color: #B71A18;
+  /* Change border color on focus */
+  box-shadow: 0 0.25rem 0.25rem rgba(0, 0, 0, 0.05);
+  /* Optional: Add shadow on focus */
 }
 
 .search-bar-sas svg {
@@ -528,12 +539,11 @@ select__menu-list::-webkit-scrollbar-thumb:hover {
   left: 0.75rem;
   top: 50%;
   transform: translateY(-50%);
-  
+
 }
 
-.custom-input-size
-{
-width:50%;
+.custom-input-size {
+  width: 50%;
 }
 
 .table .btn-link {
@@ -593,12 +603,12 @@ width:50%;
   margin-right: 1rem;
 }
 
-.sas-coursename
-{
+.sas-coursename {
   font-weight: bold;
   font-size: 1.5rem;
   color: #B71A18;
 }
+
 .sac-school-name {
   font-size: 1.825rem;
   margin: 1rem 0;
@@ -606,8 +616,7 @@ width:50%;
   text-align: center;
 }
 
-.sas-summarytext
-{
+.sas-summarytext {
   color: #514E4E;
 }
 
@@ -772,7 +781,8 @@ ul {
   background-color: rgba(0, 0, 0, 0.1);
 }
 
-.copy-icon, .copied-icon {
+.copy-icon,
+.copied-icon {
   vertical-align: middle;
 }
 
@@ -843,11 +853,11 @@ ul {
   }
 
   .academic-transcript-item .d-flex {
-   padding:0;
+    padding: 0;
     align-items: flex-start;
   }
 
- 
+
 
   .subjects-list {
     padding: 0;
@@ -861,11 +871,11 @@ ul {
   }
 
   .subject-item>div {
-    
+
     margin-bottom: 0.5rem;
   }
 
-  
+
 
   .upload-documents {
     padding: 0.5rem;
@@ -874,20 +884,22 @@ ul {
   .document-item {
     flex-direction: row;
     align-items: flex-start;
-    
+
     padding: 0.5rem;
   }
 
   .document-item>div {
-   display: flex;
-   flex-direction: row;
+    display: flex;
+    flex-direction: row;
     margin-bottom: 0.5rem;
   }
 
   .sac-file-info {
     font-size: 0.75rem;
   }
-  .sac-file-icon, .sac-remove-file-btn svg {
+
+  .sac-file-icon,
+  .sac-remove-file-btn svg {
     width: 13px;
     height: 13px;
   }
@@ -954,22 +966,22 @@ ul {
     padding: 1rem;
   }
 
- 
+
 
   .other-doc-item .d-flex>div {
     width: 100%;
     margin-bottom: 0.5rem;
-   
+
   }
 
   .other-doc-item .d-flex .justify-content-end {
     width: 100%;
-    
+
     margin-top: 0.5rem;
   }
 
   .other-doc-item .d-flex .align-items-center {
-    padding:0;
+    padding: 0;
   }
 
   .file-name {
@@ -1013,7 +1025,7 @@ ul {
 
   .grade-summary {
     flex-direction: row;
-    
+
   }
 
   .overall-grade {
@@ -1063,21 +1075,21 @@ ul {
     flex-direction: column;
     align-items: flex-start;
   }
-  
+
   .document-tabs .btn-link {
     width: 100%;
     text-align: left;
     padding: 0.5rem 0;
   }
-  
+
   .documents-content table {
     font-size: 0.9rem;
   }
-  
+
   .documents-content .file-title {
     font-size: 0.9rem;
   }
-  
+
   .documents-content .file-date {
     font-size: 0.8rem;
   }
@@ -1124,22 +1136,24 @@ ul {
     padding: 0rem;
     flex-direction: row;
   }
+
   .sac-container-casetwo {
-    padding:0 1rem;
+    padding: 0 1rem;
     margin: 0;
-  
-   
+
+
 
   }
 
   .sac-container-casetwo .form-control {
     width: 100%;
-   
+
   }
 
   .sac-container-casetwo .d-flex:last-child {
     margin-top: 0rem;
   }
+
   .academic-transcript-item {
     padding: 0.5rem;
   }
@@ -1158,29 +1172,32 @@ ul {
   }
 
   .academic-transcript-item .d-flex {
-    
+
     align-items: flex-start;
   }
 
- 
+
   .subjects-list {
     padding: 0;
   }
 
   .subject-item {
-  
+
     align-items: flex-start;
     padding: 0.5rem 0;
   }
 
   .subject-item>div {
-    
+
     margin-bottom: 0.5rem;
   }
+
   .sac-file-info {
     font-size: 0.7rem;
   }
-  .sac-file-icon, .sac-remove-file-btn svg {
+
+  .sac-file-icon,
+  .sac-remove-file-btn svg {
     width: 12px;
     height: 12px;
   }
@@ -1263,11 +1280,11 @@ ul {
     font-size: 0.9rem;
   }
 
- 
+
   .other-doc-item .d-flex .align-items-center {
-      align-items: center !important;
+    align-items: center !important;
   }
-  
+
   .btn-link {
     padding: 0.25rem;
   }
@@ -1297,7 +1314,7 @@ ul {
     margin: 0;
   }
 
-  
+
 
   .basic-info,
   .co-curriculum,
@@ -1324,8 +1341,8 @@ ul {
     margin-top: 0.5rem;
   }
 
-  
- 
+
+
   /*submit success*/
   .widget-applying-course-success {
     margin: 0 1rem;
@@ -1340,8 +1357,8 @@ ul {
     font-size: 1rem;
   }
 
-   /*courseinformation tab*/
-   .sac-school-name {
+  /*courseinformation tab*/
+  .sac-school-name {
     font-size: 1.8rem;
   }
 
@@ -1349,27 +1366,27 @@ ul {
   .documents-content table thead {
     display: none;
   }
-  
-  .documents-content table, 
-  .documents-content table tbody, 
-  .documents-content table tr, 
+
+  .documents-content table,
+  .documents-content table tbody,
+  .documents-content table tr,
   .documents-content table td {
     display: block;
     width: 100%;
   }
-  
+
   .documents-content table tr {
     margin-bottom: 1rem;
     border: 1px solid #dee2e6;
     border-radius: 0.25rem;
   }
-  
+
   .documents-content table td {
     text-align: right;
     padding-left: 50%;
     position: relative;
   }
-  
+
   .documents-content table td::before {
     content: attr(data-label);
     position: absolute;
@@ -1380,7 +1397,7 @@ ul {
     text-align: left;
     font-weight: bold;
   }
-  
+
   .documents-content .file-icon {
     display: none;
   }
@@ -1440,10 +1457,13 @@ ul {
   .sac-file-info {
     font-size: 0.65rem;
   }
-  .sac-file-icon, .sac-remove-file-btn svg {
+
+  .sac-file-icon,
+  .sac-remove-file-btn svg {
     width: 10px;
     height: 10px;
   }
+
   .sac-file-name {
     max-width: 80px;
   }
@@ -1544,7 +1564,7 @@ ul {
     max-width: 120px;
   }
 
-  
+
   /*summary application for yourinfo tab*/
 
   .application-summary-container {
@@ -1667,8 +1687,8 @@ ul {
     font-size: 0.9rem;
   }
 
-   /*courseinformation tab*/
-   .sac-school-name {
+  /*courseinformation tab*/
+  .sac-school-name {
     font-size: 1.2rem;
   }
 
@@ -1676,19 +1696,19 @@ ul {
   .documents-content .lead {
     font-size: 1rem;
   }
-  
+
   .document-tabs .btn-link {
     font-size: 0.9rem;
   }
-  
+
   .documents-content table td {
     font-size: 0.8rem;
   }
-  
+
   .documents-content .file-title {
     font-size: 0.8rem;
   }
-  
+
   .documents-content .file-date {
     font-size: 0.7rem;
   }

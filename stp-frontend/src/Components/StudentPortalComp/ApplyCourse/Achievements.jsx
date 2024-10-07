@@ -187,7 +187,7 @@ const Achievements = ({ onBack, onNext }) => {
       }
 
       formData.append('achievement_name', achievement.achievement_name);
-      formData.append('date', dateToSave.toISOString().split('T')[0]); // Format as 'YYYY-MM-DD'
+      formData.append('date', formatDate(achievement.date));
       formData.append('title', achievement.title); // Send title ID
       formData.append('awarded_by', achievement.awarded_by);
 

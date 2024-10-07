@@ -189,9 +189,7 @@ const AcceptRejectTab = ({ applicantId }) => {
             placeholder="Enter your feedback here..."
           ></textarea>
         </div>
-      </div>
-
-      {/* Conditionally render the submit button only if an option is selected */}
+         {/* Conditionally render the submit button only if an option is selected */}
       {selectedOption && (
         <div className="d-flex justify-content-end mt-4">
           <button className={`${styles.submitButton}`} onClick={handleSubmit}>
@@ -200,6 +198,9 @@ const AcceptRejectTab = ({ applicantId }) => {
         </div>
       )}
 
+      </div>
+
+     
       {/* Confirmation Modal */}
       <Modal show={showConfirmModal} onHide={() => setShowConfirmModal(false)}>
         <Modal.Header closeButton>

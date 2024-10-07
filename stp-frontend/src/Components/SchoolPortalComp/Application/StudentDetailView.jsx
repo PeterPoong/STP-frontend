@@ -9,7 +9,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import WidgetFileUpload from "../../../Components/StudentPortalComp/WidgetFileUpload";
 import WidgetAchievement from "../../../Components/StudentPortalComp/Widget/WidgetAchievement";
 import WidgetFileUploadAcademicTranscript from "../../../Components/StudentPortalComp/WidgetFileUploadAcademicTranscript";
-import { BsWhatsapp } from 'react-icons/bs';
+import { BsWhatsapp,BsCaretDownFill  } from 'react-icons/bs';
 import Lock from "../../../assets/StudentPortalAssets/lock.svg";
 import { Arrow90degLeft,ChevronLeft } from "react-bootstrap-icons"
 import defaultProfilePic from "../../../assets/StudentPortalAssets/sampleprofile.png";
@@ -762,11 +762,12 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
           >
             {transcriptCategories.map((category) => (
               <option key={category.id} value={category.id}>
-                {category.transcript_category}
+                {category.transcript_category}  Subjects and Results
               </option>
             ))}
+          
             <span>
-              <ChevronDown size={12} />
+              <BsCaretDownFill  size={12} />
             </span>
           </select>
 
@@ -834,7 +835,8 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
               setActiveTab('documents');
               setActiveDocumentTab('academic');
             }}
-            disabled={accountType !== 65 || (!transcriptSubjects || transcriptSubjects.length === 0)}
+            disabled={accountType !== 65 || 
+              transcriptDocuments.length === 0}
             style={{
               color: accountType !== 65 ? 'black' : '#B71A18'
             }}  >
@@ -1202,8 +1204,8 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
                     className="applicant-photo me-4 ms-2 "
                     alt="Student" />
                   <div>
-                    <p className="my-0 fw-bold">{`${basicInfo?.first_name} ${basicInfo?.last_name}`}</p>
-                    <p className="my-0 text-secondary mt-2">Applied For: <span className="text-black ms-2">{applicantDetails.course_name}</span></p>
+                    <p className="my-0 school-fontsize-1 ">{`${basicInfo?.first_name} ${basicInfo?.last_name}`}</p>
+                    <p className="my-0 text-secondary mt-2"><small>Applied For:</small> <span className="text-black ms-2">{applicantDetails.course_name}</span></p>
                   </div>
                 </div>
                 <span
