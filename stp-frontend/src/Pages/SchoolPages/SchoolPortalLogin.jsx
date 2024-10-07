@@ -47,7 +47,6 @@ const SchoolPortalLogin = () => {
       password: password,
     };
 
-    console.log("Sending login data:", formData);
     fetch(`${import.meta.env.VITE_BASE_URL}api/school/login`, {
       method: "POST",
       headers: {
@@ -64,15 +63,17 @@ const SchoolPortalLogin = () => {
           console.log("Login successful:", data.data.user.school_status);
           setLoginStatus("success");
           sessionStorage.setItem("name", data.data.user.school_name);
-          sessionStorage.setItem("token", data.data.token);
-          localStorage.setItem("token", data.data.token);
+          // sessionStorage.setItem("token", data.data.token);
+          // localStorage.setItem("token", data.data.token);
           localStorage.setItem("account_type", data.data.user.account_type);
           sessionStorage.setItem("loginTimestamp", moment().toISOString());
 
           if (rememberMe) {
+            localStorage.setItem("token", data.data.token);
             localStorage.setItem("rememberedPhone", phone);
             localStorage.setItem("rememberedPassword", password);
           } else {
+            sessionStorage.setItem("token", data.data.token);
             localStorage.removeItem("rememberedPhone");
             localStorage.removeItem("rememberedPassword");
           }

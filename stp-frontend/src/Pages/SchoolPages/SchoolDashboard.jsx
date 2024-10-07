@@ -16,7 +16,9 @@ const SchoolDashboard = () => {
   const [selectedDropdownItem, setSelectedDropdownItem] = useState("");
   const [selectedTab, setSelectedTab] = useState("");
   // const token = sessionStorage.getItem("token");
-  const token = localStorage.getItem("token");
+  const token =
+    localStorage.getItem("token") || sessionStorage.getItem("token");
+  console.log("token", token);
 
   if (!token) {
     return <Navigate to="/schoolPortalLogin" />;
