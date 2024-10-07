@@ -20,7 +20,7 @@ const OtherCertDoc = () => {
     const [paginationInfo, setPaginationInfo] = useState({});
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [isViewMode, setIsViewMode] = useState(false);
-
+    const [isDeleting, setIsDeleting] = useState(false);
     /* Fetch other documents and certificates from the API */
     const nodeRef = useRef(null);
     useEffect(() => {
@@ -182,6 +182,7 @@ const OtherCertDoc = () => {
 
     // Function to delete entry
     const deleteEntry = async () => {
+        setIsDeleting(true);
         try {
             const token =
                 sessionStorage.getItem("token") || localStorage.getItem("token");
@@ -240,6 +241,8 @@ const OtherCertDoc = () => {
         } catch (error) {
             console.error('Error deleting achievement:', error);
             setError(error.message || 'Failed to delete achievement. Please try again.');
+        }finally {
+            setIsDeleting(false); // End loading
         }
     };
     //end
@@ -373,6 +376,7 @@ const OtherCertDoc = () => {
                     setItemToDelete(null);
                 }}
                 onConfirm={deleteEntry}
+                isDeleting={isDeleting}
             />
         </div>
     );

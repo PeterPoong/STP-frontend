@@ -704,6 +704,15 @@ ul {
   white-space: nowrap;
 }
 
+.sas-pointer{
+  margin-right: 17.5rem;
+}
+
+.sas-pointer-div
+{
+  border-bottom: 2px solid #dee2e6;
+  padding:0 0.75rem;
+}
 
 /*select*/
 .sac-form-select {
@@ -716,16 +725,17 @@ ul {
   background-color: transparent;
   background-clip: padding-box;
   border: none;
-  border-bottom: 2px solid #dee2e6;
+  /*border-bottom: 2px solid #dee2e6;*/
   border-radius: 0;
 
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cpath fill='%236c757d' d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' transform='rotate(90 4 4)'/%3E%3C/svg%3E");
+  /*background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cpath fill='%236c757d' d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' transform='rotate(90 4 4)'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 0.75rem center;
-  background-size: 8px 8px;
+  background-size: 18px 8px;
+  */
   padding-right: 1.5rem;
 }
 

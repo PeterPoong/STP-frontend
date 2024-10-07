@@ -56,7 +56,7 @@ const StudentPortalBasicInformations = () => {
       //console.log("Token validation response:", data);
 
       if (data && data.success === true) {
-        console.log("Token is valid");
+       // console.log("Token is valid");
         setIsAuthenticated(true);
       } else {
         //console.log("Token is invalid based on response structure");

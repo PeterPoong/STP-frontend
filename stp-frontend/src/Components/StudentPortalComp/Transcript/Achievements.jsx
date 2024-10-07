@@ -19,6 +19,7 @@ const Achievements = () => {
     const [error, setError] = useState(null);
     const [paginationInfo, setPaginationInfo] = useState({});
     const [isViewMode, setIsViewMode] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const nodeRef = useRef(null);
     useEffect(() => {
@@ -162,9 +163,9 @@ const Achievements = () => {
                // console.log('No file selected for new entry');
             }
             // Log the formData contents
-            for (let [key, value] of formData.entries()) {
+          /*  for (let [key, value] of formData.entries()) {
                 console.log(`${key}:`, value);
-            }
+            }*/
 
             const response = await fetch(url, {
                 method: 'POST',
@@ -175,7 +176,7 @@ const Achievements = () => {
             });
 
             const result = await response.json();
-            console.log('Save/Edit response:', result);
+           // console.log('Save/Edit response:', result);
 
             if (result.success) {
                 setIsPopupOpen(false);
@@ -198,6 +199,7 @@ const Achievements = () => {
 
     // Function to delete entry
     const deleteEntry = async () => {
+        setIsDeleting(true);
         try {
             const token =
                 sessionStorage.getItem("token") || localStorage.getItem("token");
@@ -215,14 +217,14 @@ const Achievements = () => {
                 type: 'delete'
             };
 
-            console.log('Delete Achievement Request:');
+         /*   console.log('Delete Achievement Request:');
             console.log('URL:', url);
             console.log('Method: POST');
             console.log('Headers:', {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
             });
-            console.log('Request Body:', JSON.stringify(requestBody, null, 2));
+            console.log('Request Body:', JSON.stringify(requestBody, null, 2));*/
 
             const response = await fetch(url, {
                 method: 'POST',
@@ -233,8 +235,8 @@ const Achievements = () => {
                 body: JSON.stringify(requestBody)
             });
 
-            console.log('Response status:', response.status);
-            console.log('Response headers:', response.headers);
+           // console.log('Response status:', response.status);
+           // console.log('Response headers:', response.headers);
 
             const contentType = response.headers.get("content-type");
             if (contentType && contentType.indexOf("application/json") !== -1) {
@@ -242,7 +244,7 @@ const Achievements = () => {
                 if (!response.ok) {
                     throw new Error(result.message || `HTTP error! status: ${response.status}`);
                 }
-                console.log('Delete response:', result);
+               // console.log('Delete response:', result);
             } else {
                 const text = await response.text();
                 console.error('Received non-JSON response:', text);
@@ -255,6 +257,8 @@ const Achievements = () => {
         } catch (error) {
             console.error('Error deleting achievement:', error);
             setError(error.message || 'Failed to delete achievement. Please try again.');
+        }finally {
+            setIsDeleting(false); // End loading
         }
     };
 
@@ -395,6 +399,7 @@ const Achievements = () => {
                     setItemToDelete(null);
                 }}
                 onConfirm={deleteEntry}
+                isDeleting={isDeleting}
             />
         </div>
     );

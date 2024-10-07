@@ -20,6 +20,7 @@ const CoCurriculum = () => {
     const [paginationInfo, setPaginationInfo] = useState({});
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [isViewMode, setIsViewMode] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const normalizeItem = (item) => {
         return {
@@ -39,7 +40,8 @@ const CoCurriculum = () => {
         // Reset to first page when search term changes
         setCurrentPage(1);
     }, [searchTerm]);
-
+ 
+ 
     const fetchCocurriculum = async () => {
         //console.log('Fetching co-curriculum data...');
         setIsLoading(true);
@@ -103,6 +105,14 @@ const CoCurriculum = () => {
         item?.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item?.year?.toString().includes(searchTerm))
     ) : [];
+
+    useEffect(() => {
+        const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+        if (currentPage > totalPages) {
+            setCurrentPage(totalPages === 0 ? 1 : totalPages);
+        }
+    }, [filteredData, itemsPerPage, currentPage]);
+    
 
     // Calculate pagination
     const indexOfLastItem = currentPage * itemsPerPage;
@@ -168,6 +178,7 @@ const CoCurriculum = () => {
 
     // Function to delete entry
     const deleteEntry = async () => {
+        setIsDeleting(true);
         try {
             const token =
                 sessionStorage.getItem("token") || localStorage.getItem("token");
@@ -215,6 +226,8 @@ const CoCurriculum = () => {
         } catch (error) {
             console.error('Error deleting achievement:', error);
             setError(error.message || 'Failed to delete achievement. Please try again.');
+        }finally {
+            setIsDeleting(false); // End loading
         }
     };
 
@@ -274,7 +287,7 @@ const CoCurriculum = () => {
                                 <th className="border-bottom p-2 text-end fw-normal">Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody> 
                             <TransitionGroup component={null}>
                                 {currentItems.map((item) => (
                                     <CSSTransition key={item.id || item.club_name} timeout={300} classNames="fade">
@@ -303,7 +316,7 @@ const CoCurriculum = () => {
                         </tbody>
                     </table>
                 ) : (
-                    <div>No other certificate or documentation found</div>
+                    <div>No cocurriculum found</div>
                 )}
             </div>
             {pageNumbers.length > 1 && (
@@ -344,6 +357,7 @@ const CoCurriculum = () => {
                     setItemToDelete(null);
                 }}
                 onConfirm={deleteEntry}
+                isDeleting={isDeleting}
             />
         </div>
     );

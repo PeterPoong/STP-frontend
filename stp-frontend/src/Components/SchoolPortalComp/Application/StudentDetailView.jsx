@@ -176,8 +176,8 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
   const fetchTranscriptCategories = async () => {
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      console.log('Fetching transcript categories...');
-      console.log('Token:', token); // Log the token (be careful with this in production)
+    //  console.log('Fetching transcript categories...');
+    //  console.log('Token:', token); // Log the token (be careful with this in production)
 
       const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/school/schoolTranscriptCategoryList`, {
         method: 'POST',
@@ -187,7 +187,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
         },
       });
 
-      console.log('Response status:', response.status);
+     // console.log('Response status:', response.status);
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -196,7 +196,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
       }
 
       const result = await response.json();
-      console.log('Transcript categories result:', result);
+     // console.log('Transcript categories result:', result);
 
       if (result.success) {
         setTranscriptCategories(result.data.data);
@@ -380,7 +380,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
       }
 
       const result = await response.json();
-      console.log('Co-curriculum API response:', result);
+      //('Co-curriculum API response:', result);
 
       // Adjusted response handling based on the new API response structure
       if (result.success && Array.isArray(result.data) && result.data.length > 0) {
@@ -415,7 +415,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
       }
 
       const result = await response.json();
-      console.log('Achievements API response:', result);
+     // console.log('Achievements API response:', result);
 
       // Adjusted response handling based on the new API response structure
       if (result.success && Array.isArray(result.data) && result.data.length > 0) {
@@ -483,7 +483,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
         feedback: feedback,
       };
 
-      console.log('Request body:', requestBody);
+      //console.log('Request body:', requestBody);
 
       const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/school/editApplicantStatus`, {
         method: 'POST',
@@ -495,7 +495,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
       });
 
       const result = await response.json(); // Parse JSON first
-      console.log('API Response:', result);
+   //  console.log('API Response:', result);
 
       if (!response.ok) {
         if (response.status === 422) {
@@ -566,7 +566,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
       }
 
       const result = await response.json();
-      console.log('Achievements API response:', result);
+     // console.log('Achievements API response:', result);
 
       if (result.success && Array.isArray(result.data.data)) {
         setAchievementDocs(result.data.data);
@@ -628,7 +628,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
       }
 
       const result = await response.json();
-      console.log('Other Documents API response:', result);
+     // console.log('Other Documents API response:', result);
 
       if (result.success && Array.isArray(result.data.data)) {
         setOtherDocuments(result.data.data);
@@ -754,7 +754,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
   const renderAcademicResults = () => {
     return (
       <div className="academic-results m-3 shadow-lg rounded-5 pt-4 d-flex flex-column">
-        <div className="px-4">
+        <div className="px-4 d-flex align-items-baseline">
           <select
             className="sac-form-select mb-3 px-0"
             value={selectedCategory}
@@ -766,11 +766,10 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
               </option>
             ))}
           
-            <span>
-              <BsCaretDownFill  size={12} />
-            </span>
+            
+           
           </select>
-
+          <BsCaretDownFill  size={12} />
         </div>
 
         {selectedCategory !== 32 && cgpaInfo && (

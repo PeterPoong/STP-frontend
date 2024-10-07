@@ -1,7 +1,7 @@
 import React from 'react';
 import "../../css/StudentPortalStyles/StudentPortalWidget.css";
 
-const WidgetPopUpDelete = ({ isOpen, onClose, onConfirm }) => {
+const WidgetPopUpDelete = ({ isOpen, onClose, onConfirm,isDeleting }) => {
     if (!isOpen) return null;
 
     return (
@@ -20,8 +20,27 @@ const WidgetPopUpDelete = ({ isOpen, onClose, onConfirm }) => {
                     </div>
                 </div>
                 <div className="delete-popup-buttons">
-                    <button className="delete-popup-confirm" onClick={onConfirm}>Confirm</button>
-                    <button className="delete-popup-cancel" onClick={onClose}>Cancel</button>
+                    <button
+                        className="delete-popup-confirm"
+                        onClick={onConfirm}
+                        disabled={isDeleting} // Disable Confirm button during deletion
+                    >
+                        {isDeleting ? (
+                            <>
+                                <div className="spinner"></div>
+                                <span>Deleting...</span>
+                            </>
+                        ) : (
+                            'Confirm'
+                        )}
+                    </button>
+                    <button
+                        className="delete-popup-cancel"
+                        onClick={onClose}
+                        disabled={isDeleting} // Optionally disable Cancel button during deletion
+                    >
+                        Cancel
+                    </button>
                 </div>
             </div>
         </div>

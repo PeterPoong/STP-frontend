@@ -26,6 +26,7 @@ import { grey } from "@mui/material/colors";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import { PDFDocument } from "pdf-lib";
+import { BsCaretDownFill } from "react-icons/bs"
 
 const StudentApplicationSummary = ({ }) => {
   const [activeTab, setActiveTab] = useState("info");
@@ -998,37 +999,37 @@ const StudentApplicationSummary = ({ }) => {
 
   const fetchAcademicTranscripts = async (page = 1) => {
     try {
-      const token =
-        sessionStorage.getItem("token") || localStorage.getItem("token");
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}api/student/mediaListByCategory`,
-        {
-          method: "POST",
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      let allTranscripts = [];
+      let currentPage = 1;
+      let hasMoreData = true;
+
+      while (hasMoreData) {
+        const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/mediaListByCategory`, {
+          method: 'POST',
           headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            page: page,
-            per_page: itemsPerPage,
-          }),
+          body: JSON.stringify({ page: currentPage }),
+        });
+
+        const data = await response.json();
+        if (data.success && data.data && Array.isArray(data.data.data)) {
+          allTranscripts = [...allTranscripts, ...data.data.data];
+          if (data.data.next_page_url) {
+            currentPage++;
+          } else {
+            hasMoreData = false;
+          }
+        } else {
+          hasMoreData = false;
         }
-      );
-      const data = await response.json();
-      if (data.success) {
-        setAcademicTranscripts(data.data.data);
-        setPaginationInfo((prevState) => ({
-          ...prevState,
-          academicTranscripts: {
-            currentPage: data.data.current_page,
-            lastPage: data.data.last_page,
-            total: data.data.total,
-            perPage: data.data.per_page,
-          },
-        }));
       }
+
+      setAcademicTranscripts(allTranscripts);
     } catch (error) {
-      console.error("Error fetching academic transcripts:", error);
+      console.error('Error fetching academic transcripts:', error);
     }
   };
 
@@ -1109,73 +1110,78 @@ const StudentApplicationSummary = ({ }) => {
 
   const fetchAchievements = async (page = 1) => {
     try {
-      const token =
-        sessionStorage.getItem("token") || localStorage.getItem("token");
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}api/student/achievementsList`,
-        {
-          method: "POST",
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      let allAchievements = [];
+      let currentPage = 1;
+      let hasMoreData = true;
+
+      while (hasMoreData) {
+        const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/achievementsList`, {
+          method: 'POST',
           headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            page: page,
-            per_page: itemsPerPage,
-          }),
+          body: JSON.stringify({ page: currentPage }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch achievements');
         }
-      );
-      const data = await response.json();
-      if (data.success) {
-        setAchievements(data.data.data);
-        setPaginationInfo((prevState) => ({
-          ...prevState,
-          achievements: {
-            currentPage: data.data.current_page,
-            lastPage: data.data.last_page,
-            total: data.data.total,
-            perPage: data.data.per_page,
-          },
-        }));
+
+        const result = await response.json();
+        if (result.success && result.data && Array.isArray(result.data.data)) {
+          allAchievements = [...allAchievements, ...result.data.data];
+          if (result.data.next_page_url) {
+            currentPage++;
+          } else {
+            hasMoreData = false;
+          }
+        } else {
+          hasMoreData = false;
+        }
       }
+
+      setAchievements(allAchievements);
     } catch (error) {
-      console.error("Error fetching achievements:", error);
+      console.error('Error fetching achievements:', error);
+      setError(error.message);
     }
   };
 
   const fetchOtherDocuments = async (page = 1) => {
     try {
-      const token =
-        sessionStorage.getItem("token") || localStorage.getItem("token");
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}api/student/otherFileCertList`,
-        {
-          method: "POST",
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      let allDocuments = [];
+      let currentPage = 1;
+      let hasMoreData = true;
+
+      while (hasMoreData) {
+        const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/otherFileCertList`, {
+          method: 'POST',
           headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            page: page,
-            per_page: itemsPerPage,
-          }),
+          body: JSON.stringify({ page: currentPage }),
+        });
+
+        const data = await response.json();
+        if (data.success && data.data && Array.isArray(data.data.data)) {
+          allDocuments = [...allDocuments, ...data.data.data];
+          if (data.data.next_page_url) {
+            currentPage++;
+          } else {
+            hasMoreData = false;
+          }
+        } else {
+          hasMoreData = false;
         }
-      );
-      const data = await response.json();
-      if (data.success) {
-        setOtherDocuments(data.data.data);
-        setPaginationInfo((prevState) => ({
-          ...prevState,
-          otherDocuments: {
-            currentPage: data.data.current_page,
-            lastPage: data.data.last_page,
-            total: data.data.total,
-            perPage: data.data.per_page,
-          },
-        }));
       }
+
+      setOtherDocuments(allDocuments);
     } catch (error) {
-      console.error("Error fetching other documents:", error);
+      console.error('Error fetching other documents:', error);
     }
   };
 
@@ -1187,56 +1193,53 @@ const StudentApplicationSummary = ({ }) => {
     }
   }, [activeTab, itemsPerPage]);
 
+  useEffect(() => {
+    setCurrentPage((prevState) => ({ ...prevState, [activeDocumentTab]: 1 }));
+  }, [searchTerm, activeDocumentTab]);
+
   const handlePageChange = (section, page) => {
-    setCurrentPage((prevState) => ({ ...prevState, [section]: page }));
-    switch (section) {
-      case "academicTranscripts":
-        fetchAcademicTranscripts(page);
-        break;
-      case "achievements":
-        fetchAchievements(page);
-        break;
-      case "otherDocuments":
-        fetchOtherDocuments(page);
-        break;
-    }
+    setCurrentPage((prevState) => ({
+      ...prevState,
+      [section]: Math.max(1, page), // Prevent going below page 1
+    }));
   };
 
-  const renderPagination = (section) => {
-    const info = paginationInfo[section];
-    if (!info || !info.lastPage) return null;
 
-    const pageNumbers = [];
-    for (let i = 1; i <= info.lastPage; i++) {
-      pageNumbers.push(i);
-    }
-
-    return (
-      <div className="pagination">
-        <button
-          onClick={() => handlePageChange(section, info.currentPage - 1)}
-          disabled={info.currentPage === 1}
-        >
-          &lt;
-        </button>
-        {pageNumbers.map((number) => (
-          <button
-            key={number}
-            onClick={() => handlePageChange(section, number)}
-            className={info.currentPage === number ? "active" : ""}
-          >
-            {number}
-          </button>
-        ))}
-        <button
-          onClick={() => handlePageChange(section, info.currentPage + 1)}
-          disabled={info.currentPage === info.lastPage}
-        >
-          &gt;
-        </button>
-      </div>
-    );
-  };
+  /* const renderPagination = (section) => {
+     const info = paginationInfo[section];
+     if (!info || !info.lastPage) return null;
+ 
+     const pageNumbers = [];
+     for (let i = 1; i <= info.lastPage; i++) {
+       pageNumbers.push(i);
+     }
+ 
+     return (
+       <div className="pagination">
+         <button
+           onClick={() => handlePageChange(section, info.currentPage - 1)}
+           disabled={info.currentPage === 1}
+         >
+           &lt;
+         </button>
+         {pageNumbers.map((number) => (
+           <button
+             key={number}
+             onClick={() => handlePageChange(section, number)}
+             className={info.currentPage === number ? "active" : ""}
+           >
+             {number}
+           </button>
+         ))}
+         <button
+           onClick={() => handlePageChange(section, info.currentPage + 1)}
+           disabled={info.currentPage === info.lastPage}
+         >
+           &gt;
+         </button>
+       </div>
+     );
+   };*/
 
   const handleExamChange = (e) => {
     const newExamId = e.target.value;
@@ -1290,17 +1293,17 @@ const StudentApplicationSummary = ({ }) => {
       case "academic":
         documents = academicTranscripts;
         columns = ["Name", "File Name", "Actions"];
-        paginationSection = "academicTranscripts";
+
         break;
       case "achievements":
         documents = achievements;
         columns = ["Name", "File Name", "Actions"];
-        paginationSection = "achievements";
+
         break;
       case "other":
         documents = otherDocuments;
         columns = ["Name", "File Name", "Actions"];
-        paginationSection = "otherDocuments";
+
         break;
       default:
         break;
@@ -1335,6 +1338,13 @@ const StudentApplicationSummary = ({ }) => {
       return false;
     });
 
+    // Client-side pagination
+    const indexOfLastItem = currentPage[activeDocumentTab] * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = filteredDocuments.slice(indexOfFirstItem, indexOfLastItem);
+
+    const totalPages = Math.ceil(filteredDocuments.length / itemsPerPage);
+
     return (
       <div className="summary-content-yourdocument">
         <div className="documents-content pt-2 w-100">
@@ -1342,6 +1352,7 @@ const StudentApplicationSummary = ({ }) => {
             <p className="lead">
               You have uploaded{" "}
               <span className="fw-bold">{totalDocumentCount}</span> documents.
+
             </p>
             <div className="document-tabs d-flex column mb-3 w-100">
               <Button
@@ -1391,8 +1402,8 @@ const StudentApplicationSummary = ({ }) => {
               </tr>
             </thead>
             <tbody>
-              {filteredDocuments.length > 0 ? (
-                filteredDocuments.map((doc, index) => (
+              {currentItems.length > 0 ? ( // Use currentItems here
+                currentItems.map((doc, index) => (
                   <tr key={index}>
                     {activeDocumentTab === "academic" && (
                       <>
@@ -1478,7 +1489,35 @@ const StudentApplicationSummary = ({ }) => {
             </tbody>
           </table>
         </div>
-        {renderPagination(paginationSection)}
+        {totalPages > 1 && (
+          <div className="pagination">
+            <button
+              onClick={() =>
+                handlePageChange(activeDocumentTab, currentPage[activeDocumentTab] - 1)
+              }
+              disabled={currentPage[activeDocumentTab] === 1}
+            >
+              &lt;
+            </button>
+            {[...Array(totalPages)].map((_, i) => (
+              <button
+                key={i}
+                onClick={() => handlePageChange(activeDocumentTab, i + 1)}
+                className={currentPage[activeDocumentTab] === i + 1 ? "active" : ""}
+              >
+                {i + 1}
+              </button>
+            ))}
+            <button
+              onClick={() =>
+                handlePageChange(activeDocumentTab, currentPage[activeDocumentTab] + 1)
+              }
+              disabled={currentPage[activeDocumentTab] === totalPages}
+            >
+              &gt;
+            </button>
+          </div>
+        )}
 
         <WidgetFileUploadAcademicTranscript
           isOpen={isViewAcademicTranscriptOpen}
@@ -1826,18 +1865,23 @@ const StudentApplicationSummary = ({ }) => {
                       </div>
                     </div>
                     <div className="academic-results m-3 shadow-lg rounded-5 pt-4 d-flex flex-column">
-                      <div className="px-4">
-                        <select
-                          className="sac-form-select mb-3 px-0"
-                          value={selectedExam}
-                          onChange={handleExamChange}
-                        >
-                          {transcriptCategories.map((category) => (
-                            <option key={category.id} value={category.id}>
-                              {category.transcript_category} Subjects and Results
-                            </option>
-                          ))}
-                        </select>
+                      <div className="px-4 ">
+                        <div className=" d-flex  sas-pointer-div px-0 ">
+                          <select
+                            className="sac-form-select mb-1 px-0"
+                            value={selectedExam}
+                            onChange={handleExamChange}
+                          >
+                            {transcriptCategories.map((category) => (
+                              <option key={category.id} value={category.id}>
+                                {category.transcript_category} 
+                              </option>
+                             
+                            ))}
+                             <span>Subjects and Results</span>
+                          </select>
+                          <BsCaretDownFill size={30} className="sas-pointer align-self-start" />
+                        </div>
                       </div>
                       {cgpaInfo && selectedExam !== "32" && (
                         <div className="px-4 mb-3">
@@ -1920,12 +1964,12 @@ const StudentApplicationSummary = ({ }) => {
                             setActiveDocumentTab("academic"); // Navigate to Academic Transcript tab
                           }}
                           disabled={
-                            transcriptSubjects.length  === 0 ||
+                            transcriptSubjects.length === 0 ||
                             academicTranscripts.length === 0
                           }
                           style={{
-                            color:  transcriptSubjects.length  === 0 ||
-                            academicTranscripts.length === 0 ? 'black' : '#B71A18'
+                            color: transcriptSubjects.length === 0 ||
+                              academicTranscripts.length === 0 ? 'black' : '#B71A18'
                           }}
                         >
                           View Result Slip »

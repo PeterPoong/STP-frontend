@@ -54,7 +54,7 @@ const Applicant = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      console.log("data", data.data);
+    // console.log("data", data.data);
 
       setApplicants(data.data);
     } catch (error) {
@@ -159,7 +159,7 @@ const Applicant = () => {
       form_status: statusFilter,
       qualification_id: qualificationFilter,
     };
-    console.log("formdata", formData);
+    //console.log("formdata", formData);
     getApplicantList(formData);
     // const filteredResults = applicants.filter((applicant) => {
     //   const nameMatch = applicant.student_name
