@@ -118,7 +118,7 @@ const AdminEditBannerContent = () => {
     submissionData.append("banner_start", formattedStartDate);
     submissionData.append("banner_end", formattedEndDate);
    
-  
+  // fdfgsdfgrs
     if (formData.banner_file) {
       submissionData.append("banner_file", formData.banner_file);
     }
