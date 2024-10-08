@@ -139,11 +139,15 @@ p {
 
 .feedback-scroll {
   height: 100%;
+  max-width:fit-content;
   overflow-y: auto;
   padding: 15px;
   padding-top: 0rem;
   margin-top: 0.5rem;
   margin-bottom: 1rem;
+  word-wrap: break-word;
+  /* For wrapping long words */
+
 }
 
 .feedback-scroll::-webkit-scrollbar {
