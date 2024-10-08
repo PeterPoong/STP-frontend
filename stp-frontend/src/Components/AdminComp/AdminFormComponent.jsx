@@ -44,6 +44,7 @@ const AdminFormComponent = ({
   formDates,
   formCourses,
   formStatus,
+  formRead,
   onSubmit,
   error,
   buttons,
@@ -120,14 +121,17 @@ const AdminFormComponent = ({
     adjustedDate.setHours(0, 0, 0, 0); // Set time to midnight
 
     if (!selectedStartDate) {
+      // First click: Set the start date
       handleDateChange(adjustedDate, 'start');
     } else if (selectedStartDate && !selectedEndDate) {
+      // Second click: Set the end date
       handleDateChange(adjustedDate, 'end');
     } else {
+      // Third click: Reset both start and end dates, and set the new start date
       handleDateChange(adjustedDate, 'start');
+      handleDateChange(null, 'end'); // Reset the end date
     }
   };
- 
   const formatDateTimeLocal = (date) => {
     if (!date) return '';
     const year = date.getFullYear();
@@ -236,7 +240,17 @@ const handleRadioChange = (radioId, value) => {
       <hr />
       <div className="fieldSide">
         <Row className="mb-3">
+        {formRead && formRead.map((read, index) => (
+              <Form.Group key={index} controlId={read.id} className="mb-4 mt-3">
+                <Form.Label>{read.label}</Form.Label> 
+                <div className="form-control-plaintext">
+                  {read.value || "-"} {/* Display the value or a placeholder if no value */}
+                </div>
+              </Form.Group>
+            ))}
           <Col md={6}>
+         
+
             {formFields && formFields.map((field, index) => (
               <Form.Group key={index} controlId={field.id} className="mb-5">
                 <Form.Label>{field.label}</Form.Label> <span class="text-danger">*</span>
