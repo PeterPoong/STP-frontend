@@ -35,6 +35,7 @@ const SchoolViewApplicantDetail = () => {
   const [studentId, setStudentId] = useState("");
   const [courseId, setCourseId] = useState("");
   const [courseDetail, setCourseDetail] = useState("");
+  const [courseName, setCourseName] = useState("");
 
   const [studentPic, setStudentPic] = useState(null);
   const [firstName, setFirstName] = useState(null);
@@ -620,6 +621,7 @@ const SchoolViewApplicantDetail = () => {
 
         setStudentId(data.student_id);
         setCourseId(data.courses_id);
+        setCourseName(data);
         // console.log("applicantDetail", data.student_id);
       } catch (error) {
         console.error("Failed To get Applicant Detail", error);
@@ -778,11 +780,11 @@ const SchoolViewApplicantDetail = () => {
           <div className=" d-flex  sas-pointer-div px-0 ">
             <select
               className="sac-form-select mb-1 px-0"
-              value={selectedCategory ||""}
+              value={selectedCategory || ""}
               onChange={handleCategoryChange}
             >
               {transcriptCategories.map((category) => (
-                <option key={category.id ||""} value={category.id ||""}>
+                <option key={category.id || ""} value={category.id || ""}>
                   {category.transcript_category || ""}
                 </option>
               ))}
@@ -857,7 +859,7 @@ const SchoolViewApplicantDetail = () => {
         <div className="grade-summary d-flex justify-content-between align-items-stretch border-top">
           <div className="overall-grade text-white w-75 d-flex justify-content-start py-3">
             <h3 className="align-self-center px-5">
-              Grade: {calculateOverallGrade(transcriptSubjects) ||""}
+              Grade: {calculateOverallGrade(transcriptSubjects) || ""}
             </h3>
           </div>
           <Button
@@ -1005,9 +1007,9 @@ const SchoolViewApplicantDetail = () => {
                             <FileText className="file-icon me-2" />
                             <div>
                               <div className="file-title name-restrict">
-                                {doc.studentMedia_name ||""}
+                                {doc.studentMedia_name || ""}
                               </div>
-                              <div className="file-date">{doc.created_at ||""}</div>
+                              <div className="file-date">{doc.created_at || ""}</div>
                             </div>
                           </div>
                         </td>
@@ -1015,7 +1017,7 @@ const SchoolViewApplicantDetail = () => {
                           className="border-bottom p-2"
                           data-label="File Name"
                         >
-                          {doc.studentMedia_location ||""}
+                          {doc.studentMedia_location || ""}
                         </td>
                       </>
                     )}
@@ -1026,9 +1028,9 @@ const SchoolViewApplicantDetail = () => {
                             <FileText className="file-icon me-2" />
                             <div>
                               <div className="file-title name-restrict">
-                                {doc.achievement_name ||""}
+                                {doc.achievement_name || ""}
                               </div>
-                              <div className="file-date">{doc.year ||""}</div>
+                              <div className="file-date">{doc.year || ""}</div>
                             </div>
                           </div>
                         </td>
@@ -1036,7 +1038,7 @@ const SchoolViewApplicantDetail = () => {
                           className="border-bottom p-2 "
                           data-label="File Name"
                         >
-                          {doc.achievement_media ||""}
+                          {doc.achievement_media || ""}
                         </td>
                       </>
                     )}
@@ -1046,8 +1048,8 @@ const SchoolViewApplicantDetail = () => {
                           <div className="d-flex align-items-center">
                             <FileText className="file-icon me-2" />
                             <div>
-                              <div className="file-title name-restrict">{doc.name ||""}</div>
-                              <div className="file-date">{doc.created_at ||""}</div>
+                              <div className="file-title name-restrict">{doc.name || ""}</div>
+                              <div className="file-date">{doc.created_at || ""}</div>
                             </div>
                           </div>
                         </td>
@@ -1055,7 +1057,7 @@ const SchoolViewApplicantDetail = () => {
                           className="border-bottom p-2"
                           data-label="File Name"
                         >
-                          {doc.media ||""}
+                          {doc.media || ""}
                         </td>
                       </>
                     )}
@@ -1119,7 +1121,7 @@ const SchoolViewApplicantDetail = () => {
             <div className="application-summary-container-inside rounded">
               <div className="applicant-summary-header  border border-bottom">
                 <div className="applicant-info">
-                  <img src={`${import.meta.env.VITE_BASE_URL}storage/${studentPic}` ||""}
+                  <img src={`${import.meta.env.VITE_BASE_URL}storage/${studentPic}` || ""}
                     onError={(e) => {
                       e.target.onerror = null; // prevents looping
                       e.target.src = defaultProfilePic;
@@ -1127,10 +1129,10 @@ const SchoolViewApplicantDetail = () => {
                     className="applicant-photo me-4 ms-2 "
                     alt="Student" />
                   <div>
-                    <p className="my-0 school-fontsize-1 ">{`${firstName ||""} ${lastName ||""}`}</p>
+                    <p className="my-0 school-fontsize-1 ">{`${firstName || ""} ${lastName || ""}`}</p>
                     <p className="my-0 text-secondary mt-2"><small>Applied For:</small>
-                      <span className="text-black ms-2">
-                        {courseDetail.course_name || ""}
+                      <span className="text-black ms-2" >
+                        {courseName.course_name || ""}
                       </span>
                     </p>
                   </div>
