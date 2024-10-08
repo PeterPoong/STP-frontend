@@ -335,6 +335,10 @@ const SchoolViewApplicantDetail = () => {
     }
   };
 
+  const handleUpgradeNow = useCallback(() => {
+    navigate("/schoolPortalDashboard", { state: { showManageAccount: true } });
+  }, [navigate]);
+
   const handleViewDocument = (document) => {
     setCurrentViewDocument(document);
     switch (activeDocumentTab) {
@@ -1376,7 +1380,7 @@ const SchoolViewApplicantDetail = () => {
                           account.
                         </p>
                         <div className="sdv-div-plan-button rounded-pill mt-3">
-                          <button className="plan-button rounded-pill">
+                          <button className="plan-button rounded-pill" onClick={handleUpgradeNow}>
                             Upgrade Now
                           </button>
                         </div>
@@ -1388,7 +1392,7 @@ const SchoolViewApplicantDetail = () => {
                           account.
                         </p>
                         <div className="sdv-div-plan-button rounded-pill mt-3">
-                          <button className="plan-button rounded-pill">
+                          <button className="plan-button rounded-pill" onClick={handleUpgradeNow}>
                             Upgrade Now
                           </button>
                         </div>
