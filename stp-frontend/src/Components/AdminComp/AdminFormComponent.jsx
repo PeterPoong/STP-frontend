@@ -718,7 +718,7 @@ const handleRadioChange = (radioId, value) => {
           />
         </Form.Group>
       ))}
-  ;{/* Conditionally show the drag-and-drop upload for cover photo */}
+  {/* Conditionally show the drag-and-drop upload for cover photo */}
              {showUploadFeature && (
           <div className="upload-section">
             <div className="mb-4">
@@ -770,7 +770,7 @@ const handleRadioChange = (radioId, value) => {
           {showCoverPreview && (
   <Modal
     show={showCoverPreview}
-    onHide={() => setShowCoverPreview(false)}
+    onHide={handleCloseCoverPreview} 
     centered
     size="lg"
     dialogClassName="modal-preview"
@@ -802,7 +802,7 @@ const handleRadioChange = (radioId, value) => {
 {showPreview && (
   <Modal
     show={showPreview}
-    onHide={() => setShowPreview(false)}
+    onHide={handleClosePreview} 
     centered
     size="lg"
     dialogClassName="modal-preview"
