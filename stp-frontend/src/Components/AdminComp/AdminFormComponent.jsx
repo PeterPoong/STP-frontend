@@ -717,7 +717,7 @@ const handleRadioChange = (radioId, value) => {
           />
         </Form.Group>
       ))}
-  ;{/* Conditionally show the drag-and-drop upload for cover photo */}
+  {/* Conditionally show the drag-and-drop upload for cover photo */}
              {showUploadFeature && (
           <div className="upload-section">
             <div className="mb-4">

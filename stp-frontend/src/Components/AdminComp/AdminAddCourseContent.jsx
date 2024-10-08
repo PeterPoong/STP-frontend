@@ -39,7 +39,7 @@ const AdminAddCourseContent = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         
-        const { name, schoolID, description, requirement, cost, period, category, qualification, mode } = formData;
+        const { name, schoolID, logo, description, requirement, cost, period, category, qualification, mode } = formData;
         
         const formPayload = new FormData();
         formPayload.append("name", name);
@@ -52,8 +52,9 @@ const AdminAddCourseContent = () => {
         formPayload.append("qualification", qualification);
         formPayload.append("mode", mode);
 
-        if (formData.logo) {
-            formPayload.append("logo", formData.logo); 
+     if (logo) {
+        console.log('Logo file being sent:', logo); // Log the logo file
+            formPayload.append('logo', logo);
         }
         // Append each selected intake value as "intake[]"
         selectedIntakes.forEach(intake => {
