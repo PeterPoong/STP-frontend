@@ -32,14 +32,14 @@ const SideNavBar = () => {
       </div>
       
       <Nav className='flex-column'>
-        <NavLink 
+        {/* <NavLink 
           to='/adminDashboard' 
           className='nav-link' 
           activeClassName="active"
         >
           <FontAwesomeIcon icon={faTachometerAlt} fixedWidth />
           <span className="link-text">Dashboard</span>
-        </NavLink>
+        </NavLink> */}
 
         <NavLink 
           to='/adminSchool' 
