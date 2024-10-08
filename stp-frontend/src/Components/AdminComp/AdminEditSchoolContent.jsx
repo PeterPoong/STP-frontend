@@ -88,6 +88,7 @@ const AdminEditSchoolContent = () => {
                             };
                         } else if (media.schoolMedia_type === 67) {
                             albumFiles.push({
+                                id: media.id, // store the photo ID
                                 name: media.schoolMedia_name,
                                 location: `${import.meta.env.VITE_BASE_URL}storage/${media.schoolMedia_location}`
                             });
@@ -511,21 +512,73 @@ useEffect(() => {
 
     const handleRemoveCover = () => setCoverFile(null);
 
-    const handleRemoveAlbum = (fileToRemove) => {
-        setAlbumFiles(prevFiles => prevFiles.filter(file => file !== fileToRemove));
+    const handleRemoveAlbum = async (fileToRemove) => {
+        if (fileToRemove.id) {
+            console.log('Removing photo with id:', fileToRemove.id);
+            const apiUrl = `${import.meta.env.VITE_BASE_URL}api/admin/removeSchoolPhoto`;
+            console.log('API URL:', apiUrl); // Log the full API URL
+            
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': Authenticate,
+                    },
+                    body: JSON.stringify({ id: fileToRemove.id })
+                });
+    
+                console.log('Response status:', response.status); // Log response status
+    
+                // Check if response is HTML
+                const contentType = response.headers.get('content-type');
+                console.log('Response content type:', contentType);
+                
+                if (!response.ok) {
+                    if (contentType && contentType.includes('text/html')) {
+                        const htmlText = await response.text();
+                        console.error('HTML error response:', htmlText);
+                    }
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log('API response:', data);
+    
+                if (data.success) {
+                    setAlbumFiles(prevFiles => prevFiles.filter(file => file.id !== fileToRemove.id));
+                    alert('Photo deleted successfully');
+                } else {
+                    alert('Failed to delete photo');
+                }
+            } catch (error) {
+                console.error('Error removing photo:', error);
+            }
+        } else {
+            // Newly uploaded file, just remove it locally
+            setAlbumFiles(prevFiles => prevFiles.filter(file => file !== fileToRemove));
+        }
     };
+    
+    
+  const handleShowPreview = (file) => {
+  setPreviewFile(file.location || URL.createObjectURL(file));
+  setShowPreview(true);
+};
 
-    const handleShowPreview = (file) => {
-        setPreviewFile(file);
-        setShowPreview(true);
-    };
-
-    const handleShowCoverPreview = (file) => {
-        setPreviewFile(file);
-        setShowCoverPreview(true);
-    };
+const handleShowCoverPreview = () => {
+    if (coverFile) {
+      setPreviewFile(coverFile.location || URL.createObjectURL(coverFile));
+      setShowCoverPreview(true);
+    }
+  };
+  
 
     const handleClosePreview = () => setShowPreview(false);
+    const handleCloseCoverPreview = () => {
+        setShowCoverPreview(false);
+      };
+      
     const formFields = [
         {
             id: "name",
@@ -761,7 +814,7 @@ useEffect(() => {
                    phone={formData.contact_number} 
                    personPhone={formData.person_in_charge_contact}  
                    country_code={formData.country_code}
-
+                    handleShowCoverPreview={handleShowCoverPreview}
                    showUploadFeature={true}
                    coverUploadProps={getCoverRootProps()}
                    coverInputProps={getCoverInputProps()}
@@ -773,7 +826,9 @@ useEffect(() => {
                    handleRemoveAlbum={handleRemoveAlbum}
                    handleShowPreview={handleShowPreview}
                    handleClosePreview={handleClosePreview}
+                   handleCloseCoverPreview={handleCloseCoverPreview}
                    showPreview={showPreview}
+                   showCoverPreview={showCoverPreview}
                    previewFile={previewFile}
                    setCoverFile={setCoverFile}
                    setAlbumFiles={setAlbumFiles}

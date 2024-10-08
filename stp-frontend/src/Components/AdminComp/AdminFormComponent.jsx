@@ -80,8 +80,11 @@ const AdminFormComponent = ({
   handleRemoveCover,
   handleRemoveAlbum,
   handleShowPreview,
+  handleShowCoverPreview,
   handleClosePreview,
+  handleCloseCoverPreview,
   showPreview,
+  showCoverPreview,
   previewFile,
 
 }) => {
@@ -136,7 +139,7 @@ const AdminFormComponent = ({
   };
  
 
-const [showCoverPreview, setShowCoverPreview] = useState(false);
+
 
 const [file, setFile] = useState(null);
 const [errorMessage, setErrorMessage] = useState('');
@@ -191,15 +194,13 @@ const handleAlbumDrop = (acceptedFiles) => {
 
 
 
-const handleShowCoverPreview = () => {
-  if (coverFile) {
-    setPreviewFile(coverFile);
-    setShowCoverPreview(true);
-  }
-};
-const handleCloseCoverPreview = () => {
-  setShowCoverPreview(false);
-};
+// const handleShowCoverPreview = () => {
+//   if (coverFile) {
+//     setPreviewFile(coverFile.location || URL.createObjectURL(coverFile));
+//     setShowCoverPreview(true);
+//   }
+// };
+
 
 const { getRootProps, getInputProps } = useDropzone({
   accept: 'image/*',
@@ -717,7 +718,7 @@ const handleRadioChange = (radioId, value) => {
           />
         </Form.Group>
       ))}
-  {/* Conditionally show the drag-and-drop upload for cover photo */}
+  ;{/* Conditionally show the drag-and-drop upload for cover photo */}
              {showUploadFeature && (
           <div className="upload-section">
             <div className="mb-4">
@@ -766,10 +767,10 @@ const handleRadioChange = (radioId, value) => {
               ))}
             </div>
           {/* Modal for Cover Preview */}
-{showCoverPreview && (
+          {showCoverPreview && (
   <Modal
     show={showCoverPreview}
-    onHide={handleCloseCoverPreview}
+    onHide={() => setShowCoverPreview(false)}
     centered
     size="lg"
     dialogClassName="modal-preview"
@@ -779,38 +780,29 @@ const handleRadioChange = (radioId, value) => {
     </Modal.Header>
     <Modal.Body>
       <div className="text-center">
-        {previewFile ? (
-          // Preview new image from dropzone
+        {previewFile && (
           <Image
-            src={URL.createObjectURL(previewFile)}
-            alt="New Cover Preview"
+            src={previewFile}
+            alt="Cover Preview"
             className="img-fluid preview-img"
           />
-        ) : (
-          // Preview existing image from schoolDetails.media (cover)
-          coverFile?.location && (
-            <Image
-              src={coverFile.location}
-              alt={coverFile.name}
-              className="img-fluid preview-img"
-            />
-          )
         )}
       </div>
     </Modal.Body>
     <Modal.Footer>
-      <Button variant="secondary" onClick={handleCloseCoverPreview}>
+    <Button variant="secondary" onClick={handleCloseCoverPreview}>
         Close
       </Button>
     </Modal.Footer>
   </Modal>
 )}
 
+
            {/* Modal for Album Preview */}
 {showPreview && (
   <Modal
     show={showPreview}
-    onHide={handleClosePreview}
+    onHide={() => setShowPreview(false)}
     centered
     size="lg"
     dialogClassName="modal-preview"
@@ -820,33 +812,23 @@ const handleRadioChange = (radioId, value) => {
     </Modal.Header>
     <Modal.Body>
       <div className="text-center">
-        {previewFile ? (
-          // Preview new image from dropzone
+        {previewFile && (
           <Image
-            src={URL.createObjectURL(previewFile)}
-            alt="New Album Preview"
+            src={previewFile}
+            alt="Album Preview"
             className="img-fluid preview-img"
           />
-        ) : (
-          // Preview existing album images from schoolDetails.media
-          albumFiles.map((album, index) => (
-            <Image
-              key={index}
-              src={album.location}
-              alt={album.name}
-              className="img-fluid preview-img mb-2"
-            />
-          ))
         )}
       </div>
     </Modal.Body>
     <Modal.Footer>
-      <Button variant="secondary" onClick={handleClosePreview}>
+    <Button variant="secondary" onClick={handleClosePreview}>
         Close
       </Button>
     </Modal.Footer>
   </Modal>
 )}
+
           </div>
         )}
       {formHTML &&
