@@ -515,17 +515,24 @@ useEffect(() => {
         setAlbumFiles(prevFiles => prevFiles.filter(file => file !== fileToRemove));
     };
 
-    const handleShowPreview = (file) => {
-        setPreviewFile(file);
-        setShowPreview(true);
-    };
+  const handleShowPreview = (file) => {
+  setPreviewFile(file.location || URL.createObjectURL(file));
+  setShowPreview(true);
+};
 
-    const handleShowCoverPreview = (file) => {
-        setPreviewFile(file);
-        setShowCoverPreview(true);
-    };
+const handleShowCoverPreview = () => {
+    if (coverFile) {
+      setPreviewFile(coverFile.location || URL.createObjectURL(coverFile));
+      setShowCoverPreview(true);
+    }
+  };
+  
 
     const handleClosePreview = () => setShowPreview(false);
+    const handleCloseCoverPreview = () => {
+        setShowCoverPreview(false);
+      };
+      
     const formFields = [
         {
             id: "name",
@@ -761,7 +768,7 @@ useEffect(() => {
                    phone={formData.contact_number} 
                    personPhone={formData.person_in_charge_contact}  
                    country_code={formData.country_code}
-
+                    handleShowCoverPreview={handleShowCoverPreview}
                    showUploadFeature={true}
                    coverUploadProps={getCoverRootProps()}
                    coverInputProps={getCoverInputProps()}
@@ -773,7 +780,9 @@ useEffect(() => {
                    handleRemoveAlbum={handleRemoveAlbum}
                    handleShowPreview={handleShowPreview}
                    handleClosePreview={handleClosePreview}
+                   handleCloseCoverPreview={handleCloseCoverPreview}
                    showPreview={showPreview}
+                   showCoverPreview={showCoverPreview}
                    previewFile={previewFile}
                    setCoverFile={setCoverFile}
                    setAlbumFiles={setAlbumFiles}
