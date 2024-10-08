@@ -12,7 +12,7 @@ import defaultProfilePic from "../../../assets/SchoolPortalAssets/student1.png";
 import WarningPopup from "./WarningPopUp";
 import StudentDetailView from "./StudentDetailView";
 
-const Applicant = () => {
+const Applicant = ( {onActionUpgrade}) => {
   const token = sessionStorage.getItem("token");
   const [courses, setCourses] = useState([]);
   const [courseQualification, setCourseQualification] = useState([]);
@@ -303,7 +303,9 @@ const Applicant = () => {
         viewAction="details"
         acceptRejectAction={warningType} // 'accept' or 'reject'
         onBack={handleBackToList}
-        onActionSuccess={handleActionSuccess} // Pass the callback
+        onActionSuccess={handleActionSuccess}
+        onActionUpgrade={onActionUpgrade} 
+         // Pass the callback
       />
     );
   }

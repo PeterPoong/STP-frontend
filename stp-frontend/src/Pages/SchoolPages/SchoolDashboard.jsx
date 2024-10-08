@@ -49,11 +49,21 @@ const SchoolDashboard = () => {
     fetchSchoolDetail();
   }, [token]);
 
+ 
+  const handleUpgradeNow = () => {
+    setSelectedDropdownItem("manageAccount");
+    setSelectedTab(""); // Clear the selected tab
+  };
+
   if (!schoolDetail) {
     return <ArrowClockwise />;
   }
 
   const renderContent = () => {
+    if (selectedDropdownItem === "manageAccount") {
+      return <ManageAccount />;
+    }
+    
     switch (selectedDropdownItem) {
       case "basicInfo":
         return <BasicInformation />;
@@ -64,7 +74,8 @@ const SchoolDashboard = () => {
       default:
         switch (selectedTab) {
           case "application":
-            return <Applicant />;
+            return <Applicant
+            onActionUpgrade={handleUpgradeNow}/>;
           case "dashboard":
             return <Dashboard />;
           case "courses":

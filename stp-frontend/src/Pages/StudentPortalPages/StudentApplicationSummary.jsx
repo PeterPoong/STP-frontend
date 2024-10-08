@@ -1886,7 +1886,7 @@ const StudentApplicationSummary = ({ }) => {
                       {cgpaInfo && selectedExam !== "32" && (
                         <div className="px-4 mb-3">
                           <div className="d-flex justify-content-between align-items-center">
-                            <p className="mb-0 d-flex align-items-center">
+                            <p className="mb-0 mt-2 d-flex align-items-center">
                               <strong>Program Name:</strong>
                               <p className=" mb-0"
                                 style={{
