@@ -236,19 +236,25 @@ const SchoolViewApplicantDetail = () => {
         }
       );
       if (!response.ok) {
-        throw new Error("Failed to fetch co-curriculum activities");
+        throw new Error("Failed to fetch achievements");
       }
       const result = await response.json();
-      //   console.log("achievement", result);
       if (result.success) {
         setAchievements(result.data);
+        setPaginationInfo(prevState => ({
+          ...prevState,
+          achievements: {
+            currentPage: result.data.current_page,
+            lastPage: result.data.last_page,
+            total: result.data.total,
+            perPage: result.data.per_page,
+          },
+        }));
       } else {
-        throw new Error(
-          result.message || "Failed to fetch co-curriculum activities"
-        );
+        throw new Error(result.message || "Failed to fetch achievements");
       }
     } catch (error) {
-      console.error("Error fetching co-curriculum activities:", error);
+      console.error("Error fetching achievements:", error);
       setError(error.message);
     }
   };
@@ -299,6 +305,8 @@ const SchoolViewApplicantDetail = () => {
       console.error("Failed To get Applicant Detail", error);
     }
   };
+
+
   const getOtherFileCert = async (page = 1) => {
     if (!studentId) {
       console.log("studentId is missing, skipping API call.");
@@ -322,17 +330,21 @@ const SchoolViewApplicantDetail = () => {
         }
       );
       if (!response.ok) {
-        const errorData = await response.json();
-        console.log("Error Data:", errorData["error"]);
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-
       setOtherDocuments(data.data);
-
-      // console.log("academic transcript", data);
+      setPaginationInfo(prevState => ({
+        ...prevState,
+        otherDocuments: {
+          currentPage: data.data.current_page,
+          lastPage: data.data.last_page,
+          total: data.data.total,
+          perPage: data.data.per_page,
+        },
+      }));
     } catch (error) {
-      console.error("Failed To get Applicant Detail", error);
+      console.error("Failed To get Other File Certificates", error);
     }
   };
 
@@ -371,6 +383,7 @@ const SchoolViewApplicantDetail = () => {
         break;
     }
   };
+
 
   const renderPagination = (section) => {
     const info = paginationInfo[section];
@@ -892,19 +905,17 @@ const SchoolViewApplicantDetail = () => {
 
     switch (activeDocumentTab) {
       case "academic":
-        // console.log("academic hello", academicTranscripts.data);
-        documents = academicTranscripts.data || [];
+        documents = academicTranscripts?.data || [];
         columns = ["Name", "File Name", "Actions"];
         paginationSection = "academicTranscripts";
         break;
       case "achievements":
-        documents = achievements.data;
+        documents = achievements?.data || [];
         columns = ["Name", "File Name", "Actions"];
         paginationSection = "achievements";
         break;
       case "other":
-        console.log("academic hello", otherDocuments.data);
-        documents = otherDocuments.data;
+        documents = otherDocuments?.data || [];
         columns = ["Name", "File Name", "Actions"];
         paginationSection = "otherDocuments";
         break;

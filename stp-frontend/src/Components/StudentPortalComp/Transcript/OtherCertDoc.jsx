@@ -21,14 +21,28 @@ const OtherCertDoc = () => {
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [isViewMode, setIsViewMode] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
-    /* Fetch other documents and certificates from the API */
+
     const nodeRef = useRef(null);
+
+    // Fetch data when currentPage or itemsPerPage changes
     useEffect(() => {
         fetchOtherDocsCerts();
     }, [currentPage, itemsPerPage]);
-    /*end */
 
-    /* Normalize item structure for consistent data handling */
+    // Adjust currentPage if it exceeds lastPage
+    useEffect(() => {
+        if (paginationInfo.lastPage) {
+            if (currentPage > paginationInfo.lastPage) {
+                setCurrentPage(paginationInfo.lastPage || 1);
+            }
+        }
+    }, [paginationInfo.lastPage]);
+
+    // Reset currentPage when searchTerm changes
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm]);
+
     const normalizeItem = (item) => {
         return {
             id: item.id,
@@ -37,21 +51,17 @@ const OtherCertDoc = () => {
             created_at: item.created_at || item.createdAt || 'No date'
         };
     };
-    /*end*/
 
-    /* Fetch other documents and certificates from the API */
     const fetchOtherDocsCerts = async () => {
         setIsLoading(true);
         setError(null);
         try {
-            const token =
-                sessionStorage.getItem("token") || localStorage.getItem("token");
+            const token = sessionStorage.getItem("token") || localStorage.getItem("token");
             if (!token) {
                 throw new Error('No authentication token found');
             }
 
             const apiUrl = `${import.meta.env.VITE_BASE_URL}api/student/otherFileCertList`;
-            //console.log('Fetching from URL:', apiUrl);
 
             const response = await fetch(apiUrl, {
                 method: 'POST',
@@ -65,8 +75,6 @@ const OtherCertDoc = () => {
                 })
             });
 
-            //console.log('Response status:', response.status);
-
             if (!response.ok) {
                 if (response.status === 401) {
                     throw new Error('Unauthorized access. Please log in again.');
@@ -77,9 +85,7 @@ const OtherCertDoc = () => {
             }
 
             const result = await response.json();
-            //console.log('API response:', result);
 
-            // Correctly access the nested data array
             const otherDocsArray = (result.data.data || []).map(normalizeItem);
 
             setData(otherDocsArray);
@@ -89,38 +95,41 @@ const OtherCertDoc = () => {
                 total: result.data.total,
                 perPage: result.data.per_page
             });
+
+            // Adjust currentPage if necessary
+            if (currentPage > result.data.last_page && result.data.last_page !== 0) {
+                setCurrentPage(result.data.last_page);
+            }
         } catch (error) {
-            console.error('Error fetching achievements:', error);
-            setError(error.message || 'Failed to load achievements. Please try again later.');
+            console.error('Error fetching documents:', error);
+            setError(error.message || 'Failed to load documents. Please try again later.');
             setData([]); // Set data to an empty array in case of error
         } finally {
             setIsLoading(false);
         }
     };
-    /*end*/
 
     // Filter data based on search term
-    const filteredData = Array.isArray(data) ? data.filter(item =>
-    (item?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item?.media?.toLowerCase().includes(searchTerm.toLowerCase()))
-    ) : [];
-    //end
+    const filteredData = data.filter(item =>
+        (item?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item?.media?.toLowerCase().includes(searchTerm.toLowerCase()))
+    );
 
-    // Change page
-    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+    // Function to change page
+    const paginate = (pageNumber) => {
+        setCurrentPage(pageNumber);
+    };
 
     // Generate page numbers
     const pageNumbers = [];
     for (let i = 1; i <= paginationInfo.lastPage; i++) {
         pageNumbers.push(i);
     }
-    //end
 
-    // Function to add new entry or update existing entry                                    
+    // Function to add new entry or update existing entry
     const saveEntry = async (entry) => {
         try {
-            const token =
-                sessionStorage.getItem("token") || localStorage.getItem("token");
+            const token = sessionStorage.getItem("token") || localStorage.getItem("token");
             if (!token) {
                 throw new Error('No authentication token found');
             }
@@ -137,11 +146,6 @@ const OtherCertDoc = () => {
                 formData.append('certificate_media', entry.certificate_media);
             }
 
-            // Log form data for debugging
-            for (let pair of formData.entries()) {
-                //console.log(pair[0] + ': ' + pair[1]);
-            }
-
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {
@@ -156,7 +160,6 @@ const OtherCertDoc = () => {
             }
 
             const result = await response.json();
-            //console.log('Save/Edit response:', result);
 
             if (!result.success) {
                 return result; // Return the error result to be handled in WidgetFileUpload
@@ -164,28 +167,28 @@ const OtherCertDoc = () => {
 
             setIsPopupOpen(false);
             setCurrentItem(null);
-            fetchOtherDocsCerts();  // Refresh the list after adding/updating
+
+            // Fetch updated data
+            fetchOtherDocsCerts();
+
             return result;
         } catch (error) {
-            console.error('Error saving certificate:', error);
-            return { success: false, message: error.message || 'Failed to save certificate. Please try again.' };
+            console.error('Error saving document:', error);
+            return { success: false, message: error.message || 'Failed to save document. Please try again.' };
         }
     };
-    //end
 
     // Function to open delete popup
     const openDeletePopup = (item) => {
         setItemToDelete(item);
         setIsDeletePopupOpen(true);
     };
-    //end
 
     // Function to delete entry
     const deleteEntry = async () => {
         setIsDeleting(true);
         try {
-            const token =
-                sessionStorage.getItem("token") || localStorage.getItem("token");
+            const token = sessionStorage.getItem("token") || localStorage.getItem("token");
             if (!token) {
                 throw new Error('No authentication token found');
             }
@@ -200,16 +203,6 @@ const OtherCertDoc = () => {
                 type: 'delete'
             };
 
-            //console.log('Delete Achievement Request:');
-            //console.log('URL:', url);
-            //console.log('Method: POST');
-            //console.log('Headers:'
-             //{
-             //   'Authorization': `Bearer ${token}`,
-             //   'Content-Type': 'application/json',
-            //});
-            //console.log('Request Body:', JSON.stringify(requestBody, null, 2));
-
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {
@@ -219,33 +212,23 @@ const OtherCertDoc = () => {
                 body: JSON.stringify(requestBody)
             });
 
-            //console.log('Response status:', response.status);
-           // console.log('Response headers:', response.headers);
-
-            const contentType = response.headers.get("content-type");
-            if (contentType && contentType.indexOf("application/json") !== -1) {
-                const result = await response.json();
-                if (!response.ok) {
-                    throw new Error(result.message || `HTTP error! status: ${response.status}`);
-                }
-                //console.log('Delete response:', result);
-            } else {
-                const text = await response.text();
-                console.error('Received non-JSON response:', text);
-                throw new Error(`Received non-JSON response. Status: ${response.status}`);
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
             }
 
             setIsDeletePopupOpen(false);
             setItemToDelete(null);
-            fetchOtherDocsCerts(); // Refresh the list after deleting
+
+            // Fetch updated data and pagination info
+            fetchOtherDocsCerts();
         } catch (error) {
-            console.error('Error deleting achievement:', error);
-            setError(error.message || 'Failed to delete achievement. Please try again.');
-        }finally {
-            setIsDeleting(false); // End loading
+            console.error('Error deleting document:', error);
+            setError(error.message || 'Failed to delete document. Please try again.');
+        } finally {
+            setIsDeleting(false);
         }
     };
-    //end
 
     // Function to open popup for editing
     const editEntry = (item) => {
@@ -253,7 +236,6 @@ const OtherCertDoc = () => {
         setIsViewMode(false);
         setIsPopupOpen(true);
     };
-    //end
 
     // Function to open popup for viewing
     const viewEntry = (item) => {
@@ -261,29 +243,38 @@ const OtherCertDoc = () => {
         setIsViewMode(true);
         setIsPopupOpen(true);
     };
-    //end
 
     if (isLoading) return <div>Loading...</div>;
-    if (error) return <div>Error: {error}</div>;
-
-
+    if (error) return (
+        <div>
+            <p>Error: {error}</p>
+            <button onClick={fetchOtherDocsCerts}>Retry</button>
+        </div>
+    );
 
     return (
         <div className="transcript-search-bar-padmar">
-            <div className="transcript-search-bar-container ">
+            <div className="transcript-search-bar-container">
                 <span className="me-3 align-self-center">Show</span>
-                <select className="show-option-table me-3"
+                <select
+                    className="show-option-table me-3"
                     value={itemsPerPage}
-                    onChange={(e) => setItemsPerPage(Number(e.target.value))}>
+                    onChange={(e) => {
+                        setItemsPerPage(Number(e.target.value));
+                        setCurrentPage(1); // Reset to first page when items per page change
+                    }}
+                >
                     <option value={10}>10</option>
                     <option value={20}>20</option>
                     <option value={50}>50</option>
                 </select>
                 <span className="me-2 align-self-center">entries</span>
-                <div className="search-bar-sas  ">
+                <div className="search-bar-sas">
                     <Search size={20} style={{ color: '#9E9E9E' }} />
                     <input
-                        type="text" placeholder="Search..." className="form-control custom-input-size"
+                        type="text"
+                        placeholder="Search..."
+                        className="form-control custom-input-size"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -296,13 +287,13 @@ const OtherCertDoc = () => {
                 </button>
             </div>
             <div style={{ overflowX: 'auto' }}>
-                {Array.isArray(filteredData) && filteredData.length > 0 ? (
-                    <table className="w-100  ">
+                {filteredData.length > 0 ? (
+                    <table className="w-100">
                         <thead>
                             <tr>
                                 <th className="border-bottom fw-normal ps-2">Files</th>
                                 <th className="border-bottom p-2 fw-normal text-end">Filename</th>
-                                <th className="border-bottom p-2  fw-normal text-end">Actions</th>
+                                <th className="border-bottom p-2 fw-normal text-end">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -311,7 +302,7 @@ const OtherCertDoc = () => {
                                     <CSSTransition key={item.id || item.certificate_name} timeout={300} classNames="fade">
                                         <tr>
                                             <td className="border-bottom py-2 px-2">
-                                                <div className="d-flex align-items-center ">
+                                                <div className="d-flex align-items-center">
                                                     <FileText className="file-icon me-2" />
                                                     <div>
                                                         <div className="file-title mb-1 sac-name-restrict">{item.name}</div>
