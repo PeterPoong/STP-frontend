@@ -27,6 +27,8 @@ const AdminEditSchoolContent = () => {
         confirm_password: "",
         school_shortDesc: "",
         school_fullDesc: "",
+        school_address:"",
+        location:"",
         country:"",
         logo:null
     });
@@ -213,7 +215,7 @@ const AdminEditSchoolContent = () => {
             return;
         }
     
-        const { name, email, category, state, city, account, country, school_address, school_website, contact_number, person_in_charge_email, person_in_charge_name, person_in_charge_contact, country_code, confirm_password, school_shortDesc, school_fullDesc, password } = formData;
+        const { name, email, category,  location, state, city, account, country, school_address, school_website, contact_number, person_in_charge_email, person_in_charge_name, person_in_charge_contact, country_code, confirm_password, school_shortDesc, school_fullDesc, password } = formData;
         
         const formPayload = new FormData();
         formPayload.append("id", schoolId); // Include the school ID
@@ -226,6 +228,7 @@ const AdminEditSchoolContent = () => {
         formPayload.append("person_in_charge_name", person_in_charge_name);
         formPayload.append("person_in_charge_email", person_in_charge_email);
         formPayload.append("school_website", school_website);
+        formPayload.append("location", location);
         formPayload.append("category", category);
         formPayload.append("account", account);
         formPayload.append("country", country);
@@ -636,6 +639,15 @@ const handleShowCoverPreview = () => {
     ];
 
     const formAddress = [
+        {
+            id: "location",
+            label: "School Location (Google Map URL)",
+            type: "text",
+            placeholder: "Enter School Location",
+            value: formData.location,
+            onChange: handleFieldChange,
+            required: true
+        },
         {
             id: "school_address",
             label: "School Full Address",
