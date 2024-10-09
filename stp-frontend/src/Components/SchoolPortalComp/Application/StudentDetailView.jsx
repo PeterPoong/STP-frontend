@@ -155,6 +155,29 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
     }
   }, [applicantDetails, acceptRejectAction]);
 
+
+
+  const getPositionStyle = (position) => {
+    const colors = {
+      president: '#50B5FE',
+      secretary: '#8979FF',
+      treasurer: '#537FF1',
+      ajk: '#ffc107'
+    };
+
+    const lowercasePosition = position.toLowerCase();
+
+    if (colors[lowercasePosition]) {
+      return { backgroundColor: colors[lowercasePosition], color: 'white' };
+    } else {
+      // Randomly select one of the four colors for other positions
+      const colorKeys = Object.keys(colors);
+      const randomColor = colors[colorKeys[Math.floor(Math.random() * colorKeys.length)]];
+      return { backgroundColor: randomColor, color: 'white' };
+    }
+  };
+
+
   const handleUpgradePage = () => {
     onActionUpgrade(); // Invoke the prop to trigger ManageAccount rendering
   };
@@ -1375,7 +1398,12 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
                                 </div>
                                 <div className="col-6 col-sm-3 text-end name-restrict">
                                   {/* Updated to use student_position instead of position */}
-                                  <span className={`position ${activity.student_position.toLowerCase()} py-1 px-2 rounded-pill`}>{activity.student_position ||""}</span>
+                                  <span
+                                  className={`position py-1 px-2 rounded-pill`}
+                                  style={getPositionStyle(activity.student_position)}
+                                >
+                                  {activity.student_position}
+                                </span>
                                 </div>
                               </div>
                             ))

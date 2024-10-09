@@ -103,6 +103,28 @@ const SchoolViewApplicantDetail = () => {
     navigate("/schoolPortalDashboard"); // This will go back to the previous page
   };
 
+
+  const getPositionStyle = (position) => {
+    const colors = {
+      president: '#50B5FE',
+      secretary: '#8979FF',
+      treasurer: '#537FF1',
+      ajk: '#ffc107'
+    };
+
+    const lowercasePosition = position.toLowerCase();
+
+    if (colors[lowercasePosition]) {
+      return { backgroundColor: colors[lowercasePosition], color: 'white' };
+    } else {
+      // Randomly select one of the four colors for other positions
+      const colorKeys = Object.keys(colors);
+      const randomColor = colors[colorKeys[Math.floor(Math.random() * colorKeys.length)]];
+      return { backgroundColor: randomColor, color: 'white' };
+    }
+  };
+
+
   const handleWhatsAppClick = useCallback(() => {
     if (contact && countryCode) {
       // Remove any non-digit characters from the phone number and country code
@@ -1337,10 +1359,11 @@ const SchoolViewApplicantDetail = () => {
                                 <p className="mb-0">{activity.year || ""}</p>
                               </div>
                               <div className="col-6 col-sm-3 text-end sac-name-restrict">
-                                <span
-                                  className={`position ${activity.student_position.toLowerCase()} py-1 px-2 rounded-pill`}
+                              <span
+                                  className={`position py-1 px-2 rounded-pill`}
+                                  style={getPositionStyle(activity.student_position)}
                                 >
-                                  {activity.student_position || ""}
+                                  {activity.student_position}
                                 </span>
                               </div>
                             </div>
