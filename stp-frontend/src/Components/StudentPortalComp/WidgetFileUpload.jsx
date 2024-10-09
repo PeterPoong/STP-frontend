@@ -99,6 +99,7 @@ const handleFileChange = (event) => {
 /*click to view button function */
 const handleFileDelete = () => {
   setMedia(null);
+  
 };
 /*end */
 
@@ -157,7 +158,7 @@ return (
           <div className="file-info-wfu">
             <FileText size={18} />
             <div className="file-details">
-              <span className="file-name text-wrap">
+              <span className="file-name-widget text-wrap">
                 {media instanceof File ? media.name : media}
               </span>
               <button className="view-button" onClick={handleViewClick}>Click to view</button>

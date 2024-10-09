@@ -489,13 +489,13 @@ p {
 }
 
 
-.file-name {
+.file-name-widget {
   font-size: 0.875rem;
   font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  max-width: 10rem;
+  max-width: 16rem;
 }
 
 .file-info {

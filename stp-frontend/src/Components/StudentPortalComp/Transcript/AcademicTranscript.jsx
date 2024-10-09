@@ -1,7 +1,7 @@
 //transcript
 import React, { useState, useEffect, useCallback } from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
-import { Edit2, Trash2, Eye, Plus, Search, GripVertical, ChevronDown, Info, FileText, X, Check } from 'lucide-react';
+import { Edit2, Trash2, Eye, Plus, Search, GripVertical, ChevronDown, Info, FileText, X, Check, RefreshCw } from 'lucide-react';
 import Carousel from 'react-material-ui-carousel';
 import { Paper, Button, Tooltip } from '@mui/material';
 import SelectSearch from 'react-select-search';
@@ -737,6 +737,43 @@ const AcademicTranscript = () => {
   };
 
 
+  const handleResetTranscript = async (transcriptId) => {
+    if (!confirm("Are you sure you want to reset this transcript? This action cannot be undone.")) {
+      return;
+    }
+
+    try {
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/resetTranscript`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ transcriptType: transcriptId }),
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        alert("Transcript has been successfully reset.");
+        // Refresh the transcript data
+        
+        const category = categories.find(cat => cat.id === transcriptId);
+        if (category) {
+          fetchMediaByCategory(category.id);
+          fetchSubjects(category.id.toString());
+          if (category.id !== 32) { // Not SPM
+            fetchCGPAInfo(category.id);
+          }
+        }
+      } else {
+        throw new Error(result.message || 'Failed to reset transcript');
+      }
+    } catch (error) {
+      console.error('Error resetting transcript:', error);
+      alert(`Failed to reset transcript: ${error.message}`);
+    }
+  };
   const addFile = async (newFile) => {
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
@@ -751,7 +788,7 @@ const AcademicTranscript = () => {
       formData.append('studentMedia_type', category.id.toString());
       formData.append('studentMedia_location', newFile.file);
       formData.append('studentMedia_name', newFile.title);
-      formData.append('studentMedia_format', 'Photo'); // Assuming it's always a photo, adjust if needed
+      //formData.append('studentMedia_format', 'Photo'); // Assuming it's always a photo, adjust if needed
 
       const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/addTranscriptFile`, {
         method: 'POST',
@@ -971,6 +1008,7 @@ const AcademicTranscript = () => {
 
   const fetchMediaByCategory = async (categoryId, page = 1, perPage = 10, searchTerm = '') => {
     try {
+      setFiles([]);
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       const body = { category_id: categoryId, page: page, per_page: perPage };
 
@@ -1012,6 +1050,7 @@ const AcademicTranscript = () => {
 
   const fetchSubjects = useCallback(async (categoryId) => {
     try {
+      setSubjects([]);
       //console.log('Fetching subjects for category:', categoryId);
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       let url, method, body;
@@ -1342,6 +1381,7 @@ const AcademicTranscript = () => {
             />
           </div>
           <button className="button-table px-5 py-1 ml-auto" onClick={() => setIsFileUploadOpen(true)}>ADD NEW</button>
+
         </div>
 
         <div style={{ overflowX: 'auto' }}>
@@ -1399,9 +1439,15 @@ const AcademicTranscript = () => {
             &gt;
           </button>
         </div>
-
-
-
+        <div className="w-100 d-flex flex-row-reverse">
+          <button
+            className="button-table px-2 py-1 ml-2  "
+            onClick={() => handleResetTranscript(categories.find(cat => cat.transcript_category === selectedExam)?.id)}
+            style={{width: "10.5rem"}}
+          >
+            RESET
+          </button>
+        </div>
       </div>
 
       <WidgetFileUploadAcademicTranscript
