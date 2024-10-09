@@ -242,12 +242,18 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
     const { name, value } = e.target;
     let sanitizedValue = value;
 
-    if (name === 'username' || name === 'ic') {
+    if (name === 'username' ) {
       sanitizedValue = value.replace(/[^a-zA-Z0-9]/g, '');
     } else if (name === 'firstName' || name === 'lastName') {
       sanitizedValue = value.replace(/[^a-zA-Z\s]/g, '');
     } else if (name === 'postcode') {
       sanitizedValue = value.replace(/[^0-9]/g, '');
+    } else if (name === 'ic') {
+      if (studentData.country_code === '+60') {
+        sanitizedValue = value.replace(/[^0-9]/g, '').slice(0, 12);
+      } else {
+        sanitizedValue = value.replace(/[^a-zA-Z0-9]/g, '');
+      }
     }
 
     setStudentData(prevData => ({
@@ -411,7 +417,7 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
                   <Form.Control
                     type="text"
                     required
-                    className="w-75"
+                    className="w-75 std-input-placeholder"
                     name="username"
                     value={studentData.username || ''}
                     onChange={handleInputChange}
@@ -427,7 +433,7 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
                 <Form.Group controlId="first_name">
                   <Form.Label className="fw-bold small formlabel">First Name <span className="text-danger">*</span></Form.Label>
                   <Form.Control
-                    className="w-75"
+                    className="w-75 std-input-placeholder"
                     type="text"
                     required
                     name="firstName"
@@ -445,7 +451,7 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
                   <Form.Control
                     type="text"
                     required
-                    className="w-75"
+                    className="w-75 std-input-placeholder"
                     name="lastName"
                     value={studentData.lastName || ''}
                     onChange={handleInputChange}
@@ -463,13 +469,14 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
                   <Form.Control
                     type="text"
                     required
-                    className="w-75"
+                    className="w-75 std-input-placeholder"
                     name="ic"
                     value={studentData.ic || ''}
                     onChange={handleInputChange}
-                    placeholder="Enter IC number (letters and numbers only)"
-                    pattern="[a-zA-Z0-9]+"
-                    title="IC can only contain letters and numbers"
+                    placeholder={studentData.country_code === '+60' ? "Enter 12-digit IC number" : "Enter IC number"}
+                    pattern={studentData.country_code === '+60' ? "[0-9]{12}" : "[a-zA-Z0-9]+"}
+                    title={studentData.country_code === '+60' ? "IC must be exactly 12 digits" : "IC can only contain letters and numbers"}
+                    maxLength={studentData.country_code === '+60' ? 12 : undefined}
                   />
                 </Form.Group>
               </Col>
@@ -478,7 +485,7 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
                   <Form.Label className="fw-bold small formlabel">Gender <span className="text-danger">*</span></Form.Label>
                   <Form.Select
                     required
-                    className="w-75 form-select"
+                    className="w-75 form-select "
                     name="gender"
                     value={studentData.gender || ''}
                     onChange={handleInputChange}
@@ -522,7 +529,7 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
                   <Form.Control
                     type="email"
                     required
-                    className="w-75"
+                    className="w-75 std-input-placeholder"
                     name="email"
                     value={studentData.email || ''}
                     onChange={handleInputChange}
@@ -537,7 +544,7 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
                   <Form.Label className="fw-bold small formlabel">Address <span className="text-danger">*</span></Form.Label>
                   <Form.Control
                     required
-                    className="w-100"
+                    className="w-100 std-input-placeholder"
                     name="address"
                     value={studentData.address || ''}
                     onChange={handleInputChange}
@@ -555,7 +562,7 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
                   <Form.Label className="fw-bold small formlabel">Country <span className="text-danger">*</span></Form.Label>
                   <Form.Select
                     required
-                    className="w-75"
+                    className="w-75 "
                     name="country"
                     value={countries.find(c => c.country_name === studentData.country)?.id || ''}
                     onChange={handleCountryChange}
@@ -615,7 +622,7 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
                   <Form.Control
                     type="text"
                     required
-                    className="w-75"
+                    className="w-75 std-input-placeholder"
                     name="postcode"
                     value={studentData.postcode || ''}
                     onChange={handleInputChange}

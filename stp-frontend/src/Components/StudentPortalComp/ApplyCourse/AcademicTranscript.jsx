@@ -468,6 +468,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
       } : transcript
     );
     setAcademicTranscripts(updatedTranscripts);
+    setHasUnsavedChanges(true);
   };
 
   const handleRemoveSubject = (transcriptIndex, subjectIndex) => {
@@ -980,7 +981,11 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
             </div>
           </div>
 
-
+          {transcript.subjects.length === 0 && (
+              <div className="px-4 py-2 text-muted">
+                No subjects added yet. Click the "+" icon to add a subject.
+              </div>
+            )}
           {transcript.subjects.length > 0 ? (
             <div className="px-4">
               {transcript.subjects.map((subject, subIndex) => (
@@ -1028,8 +1033,8 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                             as="select"
                             value={subject.grade}
                             onChange={(e) => handleSubjectChange(index, subIndex, 'grade', e.target.value)}
-                            className={`me-2 w-auto px-2 py-1 px-3 rounded-5 border-0 text-white bg-${getGradeColor(subject.grade)}`}
-                            style={{ fontSize: '0.9rem', fontWeight: "500" }}
+                            className={`me-2 w-auto px-4 py-1 px-3 rounded-5  text-black border-1  ms-2`}
+                            style={{ fontSize: '0.9rem', fontWeight: "500", borderColor: "#9E9E9E" }}
                             required
                           >
                             <option value="" disabled>Grade</option>
@@ -1247,7 +1252,11 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                 )}
               </div>
             ))}
-
+            {transcript.documents.length === 0 && (
+              <div className="px-4 py-2 text-muted">
+                No documents added yet. Click the "+" icon to add a document.
+              </div>
+            )}
           </div>
           <div className="d-flex justify-content-end mt-3 px-4">
             <Button
