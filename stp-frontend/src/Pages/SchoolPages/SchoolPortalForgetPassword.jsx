@@ -182,15 +182,11 @@ const SchoolPortalForgetPassword = () => {
   return (
     <Container fluid className="h-100">
       <Row className="h-50">
-        <Col md={6} className="d-flex align-items-center">
+        <Col md={6} className="d-flex align-items-center bg-white">
           <Container>
             <Row className="justify-content-center">
               <Col md={8} lg={6} className="px-0">
-                <img
-                  src={schoolPortalLoginLogo}
-                  className=" mb-4"
-                  alt="StudyPal Logo"
-                />
+                <div className="studypal-school-logo-div"></div>
 
                 <h2 className="text-start mb-3 custom-color-title">
                   Forget your password?
@@ -204,9 +200,9 @@ const SchoolPortalForgetPassword = () => {
                 {step === 1 && (
                   <Form onSubmit={handleSendResetRequest}>
                     <Form.Group controlId="formBasicEmail">
-                      <Form.Label className="custom-label">
+                      <p className="text-start p-0 mb-0 custom-color-title-label small ">
                         Email address
-                      </Form.Label>
+                      </p>
                       <Form.Control
                         type="email"
                         value={email}
@@ -219,7 +215,7 @@ const SchoolPortalForgetPassword = () => {
                       type="submit"
                       // className="my-3 m-0"
                       className={`my-3 m-0 ${styles.sendOtpButton}`}
-                      // style={{ width: "100%", height: "40px" }}
+                    // style={{ width: "100%", height: "40px" }}
                     >
                       Send OTP
                     </Button>
@@ -228,9 +224,9 @@ const SchoolPortalForgetPassword = () => {
                 {step === 2 && (
                   <Form onSubmit={handleVerifyOTP}>
                     <Form.Group controlId="formOTP">
-                      <Form.Label className="custom-label">
+                      <p className="text-start p-0 mb-0 custom-color-title-label small ">
                         Enter OTP
-                      </Form.Label>
+                      </p>
                       <Form.Control
                         type="text"
                         value={otp}
@@ -251,9 +247,9 @@ const SchoolPortalForgetPassword = () => {
                 {step === 3 && (
                   <Form onSubmit={handleResetPassword}>
                     <Form.Group controlId="formNewPassword">
-                      <Form.Label className="custom-label">
+                      <p className="text-start p-0 mb-0 custom-color-title-label small ">
                         New Password
-                      </Form.Label>
+                      </p>
                       <Form.Control
                         type="password"
                         value={newPassword}
@@ -262,9 +258,9 @@ const SchoolPortalForgetPassword = () => {
                       />
                     </Form.Group>
                     <Form.Group controlId="formConfirmPassword">
-                      <Form.Label className="custom-label">
+                      <p className="text-start p-0 mb-0 custom-color-title-label small ">
                         Confirm New Password
-                      </Form.Label>
+                      </p>
                       <Form.Control
                         type="password"
                         value={confirmPassword}
