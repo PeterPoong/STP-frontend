@@ -44,6 +44,7 @@ const AdminFormComponent = ({
   formDates,
   formCourses,
   formStatus,
+  formRead,
   onSubmit,
   error,
   buttons,
@@ -81,9 +82,12 @@ const AdminFormComponent = ({
   handleRemoveAlbum,
   handleShowPreview,
   handleShowCoverPreview,
+  handleShowCoverPreview,
   handleClosePreview,
   handleCloseCoverPreview,
+  handleCloseCoverPreview,
   showPreview,
+  showCoverPreview,
   showCoverPreview,
   previewFile,
 
@@ -120,14 +124,17 @@ const AdminFormComponent = ({
     adjustedDate.setHours(0, 0, 0, 0); // Set time to midnight
 
     if (!selectedStartDate) {
+      // First click: Set the start date
       handleDateChange(adjustedDate, 'start');
     } else if (selectedStartDate && !selectedEndDate) {
+      // Second click: Set the end date
       handleDateChange(adjustedDate, 'end');
     } else {
+      // Third click: Reset both start and end dates, and set the new start date
       handleDateChange(adjustedDate, 'start');
+      handleDateChange(null, 'end'); // Reset the end date
     }
   };
- 
   const formatDateTimeLocal = (date) => {
     if (!date) return '';
     const year = date.getFullYear();
@@ -138,6 +145,7 @@ const AdminFormComponent = ({
     return `${year}-${month}-${day}T${hours}:${minutes}`;
   };
  
+
 
 
 
@@ -201,6 +209,13 @@ const handleAlbumDrop = (acceptedFiles) => {
 //   }
 // };
 
+// const handleShowCoverPreview = () => {
+//   if (coverFile) {
+//     setPreviewFile(coverFile.location || URL.createObjectURL(coverFile));
+//     setShowCoverPreview(true);
+//   }
+// };
+
 
 const { getRootProps, getInputProps } = useDropzone({
   accept: 'image/*',
@@ -236,7 +251,17 @@ const handleRadioChange = (radioId, value) => {
       <hr />
       <div className="fieldSide">
         <Row className="mb-3">
+        {formRead && formRead.map((read, index) => (
+              <Form.Group key={index} controlId={read.id} className="mb-4 mt-3">
+                <Form.Label>{read.label}</Form.Label> 
+                <div className="form-control-plaintext">
+                  {read.value || "-"} {/* Display the value or a placeholder if no value */}
+                </div>
+              </Form.Group>
+            ))}
           <Col md={6}>
+         
+
             {formFields && formFields.map((field, index) => (
               <Form.Group key={index} controlId={field.id} className="mb-5">
                 <Form.Label>{field.label}</Form.Label> <span class="text-danger">*</span>
@@ -718,7 +743,7 @@ const handleRadioChange = (radioId, value) => {
           />
         </Form.Group>
       ))}
-  ;{/* Conditionally show the drag-and-drop upload for cover photo */}
+  {/* Conditionally show the drag-and-drop upload for cover photo */}
              {showUploadFeature && (
           <div className="upload-section">
             <div className="mb-4">
@@ -767,10 +792,10 @@ const handleRadioChange = (radioId, value) => {
               ))}
             </div>
           {/* Modal for Cover Preview */}
-          {showCoverPreview && (
+                    {showCoverPreview && (
   <Modal
     show={showCoverPreview}
-    onHide={() => setShowCoverPreview(false)}
+    onHide={() => setShowCoverPreview(false)} 
     centered
     size="lg"
     dialogClassName="modal-preview"
@@ -781,7 +806,10 @@ const handleRadioChange = (radioId, value) => {
     <Modal.Body>
       <div className="text-center">
         {previewFile && (
+        {previewFile && (
           <Image
+            src={previewFile}
+            alt="Cover Preview"
             src={previewFile}
             alt="Cover Preview"
             className="img-fluid preview-img"
@@ -791,6 +819,7 @@ const handleRadioChange = (radioId, value) => {
     </Modal.Body>
     <Modal.Footer>
     <Button variant="secondary" onClick={handleCloseCoverPreview}>
+    <Button variant="secondary" onClick={handleCloseCoverPreview}>
         Close
       </Button>
     </Modal.Footer>
@@ -798,11 +827,12 @@ const handleRadioChange = (radioId, value) => {
 )}
 
 
+
            {/* Modal for Album Preview */}
 {showPreview && (
   <Modal
     show={showPreview}
-    onHide={() => setShowPreview(false)}
+    onHide={() => setShowPreview(false)} 
     centered
     size="lg"
     dialogClassName="modal-preview"
@@ -813,7 +843,10 @@ const handleRadioChange = (radioId, value) => {
     <Modal.Body>
       <div className="text-center">
         {previewFile && (
+        {previewFile && (
           <Image
+            src={previewFile}
+            alt="Album Preview"
             src={previewFile}
             alt="Album Preview"
             className="img-fluid preview-img"
@@ -823,11 +856,13 @@ const handleRadioChange = (radioId, value) => {
     </Modal.Body>
     <Modal.Footer>
     <Button variant="secondary" onClick={handleClosePreview}>
+    <Button variant="secondary" onClick={handleClosePreview}>
         Close
       </Button>
     </Modal.Footer>
   </Modal>
 )}
+
 
           </div>
         )}

@@ -62,7 +62,10 @@ const AdminEditCourseContent = () => {
         selectedIntakes.forEach(intake => {
             formPayload.append("intake[]", intake);
         });
-
+        // Only append the new logo if one is selected
+        if (formData.logo instanceof File) {
+            formPayload.append("logo", formData.logo); // New logo file
+        }
           // Log the selectedCourses array to check courseFeatured[]
     console.log('Selected Courses (courseFeatured[]):', selectedCourses);
         selectedCourses.forEach(course => {
@@ -350,10 +353,19 @@ const AdminEditCourseContent = () => {
     
     const handleLogoChange = (e) => {
         const file = e.target.files[0];
+        if (file) {
+        // Set the new logo file in form data
         setFormData(prev => ({
             ...prev,
             logo: file
         }));
+        
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setNewLogo(reader.result); // This is just for preview purposes
+        };
+        reader.readAsDataURL(file); // Read the file as a data URL for the preview
+    }
     };
 
     const handleFieldChange = (e) => {
@@ -539,8 +551,8 @@ const formCourse = courseFeaturedList.map((course) => ({
            error={error}
            buttons={buttons}
            logo={logo}
-            handleLogoChange={handleLogoChange}
-            newLogo={newLogo}
+           handleLogoChange={handleLogoChange}
+           newLogo={newLogo}
             loading={loading}
                 />
                 </Container>

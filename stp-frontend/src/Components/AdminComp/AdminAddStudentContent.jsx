@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Container, Col, Button, Modal } from "react-bootstrap";
+import { Container, Col, Button, Modal, Alert } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useDropzone } from "react-dropzone";
 import AdminFormComponent from './AdminFormComponent';
@@ -268,6 +268,14 @@ const fetchCities = (stateId) => {
             }));
         }
     };
+
+    const handleICChange = (e) => {
+      const value = e.target.value;
+      // Check if the value contains only digits and doesn't exceed 12 characters
+      if (/^\d{0,12}$/.test(value)) {
+          handleFieldChange(e); // Update the form state only if valid
+      }
+  };
     
     const togglePasswordVisibility = () => setShowPassword(prev => !prev);
     const toggleConfirmPasswordVisibility = () => setShowConfirmPassword(prev => !prev);
@@ -352,11 +360,11 @@ const fetchCities = (stateId) => {
     },
         {
             id: "ic",
-            label: "Identity Card No.",
+            label: "New Identity Card No.",
             type: "text",
-            placeholder: "Enter IC number",
+            placeholder: "Enter New IC number",
             value: formData.ic,
-            onChange: handleFieldChange,
+            onChange: handleICChange,
             required: true
         },
         {

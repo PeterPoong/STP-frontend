@@ -80,7 +80,7 @@ const AdminLogin = () => {
             const { token, user } = data.data;
             sessionStorage.setItem('token', token);
             sessionStorage.setItem('user', JSON.stringify(user)); // Store user data
-            navigate('/adminDashboard');
+            navigate('/adminSchool');
           } else {
             setErrorMessage('Login failed. Please try again.');
             console.error('Login failed:', data);

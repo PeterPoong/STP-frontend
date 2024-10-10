@@ -84,7 +84,11 @@ const AdminEditApplicantContent = () => {
                     country_code: applicantDetails.country_code,
                     contact_number: applicantDetails.contact_number,
                     created_at: applicantDetails.applied ? format(parseISO(applicantDetails.applied), 'yyyy-MM-dd') : "", 
-                    status:applicantDetails.status
+                    status:applicantDetails.status,
+                    name:applicantDetails.name,
+                    email:applicantDetails.email,
+                    country_code:applicantDetails.country_code,
+                    contact_number:applicantDetails.contact_number
                 });
 
                 // Fetch courses for the existing schoolID
@@ -214,6 +218,25 @@ const AdminEditApplicantContent = () => {
         fetchApplicantDetails();
         fetchSchools();
     }, [applicantId, Authenticate]);
+    
+    const formRead = [
+        {
+            id: "name",
+            label: "Applicant's name",
+            value: formData.name,
+        },
+        {
+            id: "email",
+            label: "Applicant's email",
+            value: formData.email,
+        },
+        {
+            id: "phone_number",
+            label: "Phone Number",
+            value: `${formData.country_code} ${formData.contact_number}`, // Concatenate country code and contact number
+          },
+    ];
+
 
     const formDates = [
         {
@@ -297,6 +320,7 @@ const AdminEditApplicantContent = () => {
         <Container fluid className="admin-add-subject-container">
             <AdminFormComponent
                 formTitle="Applicant Information"
+                formRead={formRead}
                 formCourses={formCourses}
                 formDates={formDates}
                 formDrop={formDrop}
