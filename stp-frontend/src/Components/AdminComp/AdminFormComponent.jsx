@@ -82,12 +82,9 @@ const AdminFormComponent = ({
   handleRemoveAlbum,
   handleShowPreview,
   handleShowCoverPreview,
-  handleShowCoverPreview,
   handleClosePreview,
   handleCloseCoverPreview,
-  handleCloseCoverPreview,
   showPreview,
-  showCoverPreview,
   showCoverPreview,
   previewFile,
 
@@ -806,10 +803,7 @@ const handleRadioChange = (radioId, value) => {
     <Modal.Body>
       <div className="text-center">
         {previewFile && (
-        {previewFile && (
           <Image
-            src={previewFile}
-            alt="Cover Preview"
             src={previewFile}
             alt="Cover Preview"
             className="img-fluid preview-img"
@@ -819,14 +813,11 @@ const handleRadioChange = (radioId, value) => {
     </Modal.Body>
     <Modal.Footer>
     <Button variant="secondary" onClick={handleCloseCoverPreview}>
-    <Button variant="secondary" onClick={handleCloseCoverPreview}>
         Close
       </Button>
     </Modal.Footer>
   </Modal>
 )}
-
-
 
            {/* Modal for Album Preview */}
 {showPreview && (
@@ -843,10 +834,7 @@ const handleRadioChange = (radioId, value) => {
     <Modal.Body>
       <div className="text-center">
         {previewFile && (
-        {previewFile && (
           <Image
-            src={previewFile}
-            alt="Album Preview"
             src={previewFile}
             alt="Album Preview"
             className="img-fluid preview-img"
@@ -856,14 +844,11 @@ const handleRadioChange = (radioId, value) => {
     </Modal.Body>
     <Modal.Footer>
     <Button variant="secondary" onClick={handleClosePreview}>
-    <Button variant="secondary" onClick={handleClosePreview}>
         Close
       </Button>
     </Modal.Footer>
   </Modal>
 )}
-
-
           </div>
         )}
       {formHTML &&
