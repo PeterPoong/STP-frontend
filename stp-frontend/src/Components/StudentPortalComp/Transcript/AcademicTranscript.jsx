@@ -700,6 +700,7 @@ const AcademicTranscript = () => {
   const [pendingCategory, setPendingCategory] = useState(null);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [paginationInfo, setPaginationInfo] = useState({});
+  const [isDeleting, setIsDeleting] = useState(false);
   const [examData, setExamData] = useState({
     'SPM': [],
     'UEC': [],
@@ -757,7 +758,7 @@ const AcademicTranscript = () => {
       if (result.success) {
         alert("Transcript has been successfully reset.");
         // Refresh the transcript data
-        
+
         const category = categories.find(cat => cat.id === transcriptId);
         if (category) {
           fetchMediaByCategory(category.id);
@@ -909,6 +910,7 @@ const AcademicTranscript = () => {
   // Function to delete file
   const deleteFile = async () => {
     if (!fileToDelete) return;
+    setIsDeleting(true);
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/deleteTranscriptFile`, {
@@ -936,6 +938,9 @@ const AcademicTranscript = () => {
       }
     } catch (error) {
       console.error('Error deleting file:', error);
+    }
+    finally {
+      setIsDeleting(false); // End loading
     }
     setIsDeletePopupOpen(false);
     setFileToDelete(null);
@@ -1443,7 +1448,7 @@ const AcademicTranscript = () => {
           <button
             className="button-table px-2 py-1 ml-2  "
             onClick={() => handleResetTranscript(categories.find(cat => cat.transcript_category === selectedExam)?.id)}
-            style={{width: "10.5rem"}}
+            style={{ width: "10.5rem" }}
           >
             RESET
           </button>
@@ -1472,6 +1477,7 @@ const AcademicTranscript = () => {
           setFileToDelete(null);
         }}
         onConfirm={deleteFile}
+        isDeleting={isDeleting}
       />
 
       <WidgetPopUpSubmission
