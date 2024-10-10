@@ -143,7 +143,7 @@ return (
             <label htmlFor="file-upload" className="upload-label">
               <Upload size={24} color="#dc3545" />
               <span>Click to Upload</span>
-              <span className="file-size-limit">(Max. File size: 25 MB)</span>
+              <span className="file-size-limit">(Max. File size: 10 MB)</span>
               <input
                 id="file-upload"
                 type="file"
