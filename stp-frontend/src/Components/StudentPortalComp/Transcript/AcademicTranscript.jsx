@@ -1,7 +1,7 @@
 //transcript
 import React, { useState, useEffect, useCallback } from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
-import { Edit2, Trash2, Eye, Plus, Search, GripVertical, ChevronDown, Info, FileText, X, Check } from 'lucide-react';
+import { Edit2, Trash2, Eye, Plus, Search, GripVertical, ChevronDown, Info, FileText, X, Check, RefreshCw } from 'lucide-react';
 import Carousel from 'react-material-ui-carousel';
 import { Paper, Button, Tooltip } from '@mui/material';
 import SelectSearch from 'react-select-search';
@@ -417,13 +417,13 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
     const value = e.target.value;
     // Regex to allow numbers between 0 and 4 with up to two decimal places
     const regex = /^(?:[0-3](?:\.\d{0,2})?|4(?:\.0{0,2})?)$/;
-  
+
     if (regex.test(value) || value === '') {
       setCgpa(value);
       setHasUnsavedChanges(true);
     }
   };
-  
+
 
   const handleAddSubject = (e) => {
     e.preventDefault();
@@ -615,7 +615,7 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
                   </>
                 ) : (
                   <>
-                    <span className="fw-medium h6 mb-0 me-3" 
+                    <span className="fw-medium h6 mb-0 me-3"
                       style={{
                         fontSize: '0.9rem',
                         fontWeight: "500",
@@ -626,7 +626,7 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
                         whiteSpace: 'nowrap',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
-                        
+
                       }}
                     >{subject.name}</span>
                     {subject.grade && (
@@ -699,6 +699,8 @@ const AcademicTranscript = () => {
   const [isUnsavedChangesPopupOpen, setIsUnsavedChangesPopupOpen] = useState(false);
   const [pendingCategory, setPendingCategory] = useState(null);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [paginationInfo, setPaginationInfo] = useState({});
+  const [isDeleting, setIsDeleting] = useState(false);
   const [examData, setExamData] = useState({
     'SPM': [],
     'UEC': [],
@@ -729,11 +731,6 @@ const AcademicTranscript = () => {
   // Change page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-  // Generate page numbers
-  const pageNumbers = [];
-  for (let i = 1; i <= Math.ceil(filteredFiles.length / itemsPerPage); i++) {
-    pageNumbers.push(i);
-  }
 
 
   const handleSaveConfirmation = () => {
@@ -741,6 +738,43 @@ const AcademicTranscript = () => {
   };
 
 
+  const handleResetTranscript = async (transcriptId) => {
+    if (!confirm("Are you sure you want to reset this transcript? This action cannot be undone.")) {
+      return;
+    }
+
+    try {
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/resetTranscript`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ transcriptType: transcriptId }),
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        alert("Transcript has been successfully reset.");
+        // Refresh the transcript data
+
+        const category = categories.find(cat => cat.id === transcriptId);
+        if (category) {
+          fetchMediaByCategory(category.id);
+          fetchSubjects(category.id.toString());
+          if (category.id !== 32) { // Not SPM
+            fetchCGPAInfo(category.id);
+          }
+        }
+      } else {
+        throw new Error(result.message || 'Failed to reset transcript');
+      }
+    } catch (error) {
+      console.error('Error resetting transcript:', error);
+      alert(`Failed to reset transcript: ${error.message}`);
+    }
+  };
   const addFile = async (newFile) => {
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
@@ -755,7 +789,7 @@ const AcademicTranscript = () => {
       formData.append('studentMedia_type', category.id.toString());
       formData.append('studentMedia_location', newFile.file);
       formData.append('studentMedia_name', newFile.title);
-      formData.append('studentMedia_format', 'Photo'); // Assuming it's always a photo, adjust if needed
+      //formData.append('studentMedia_format', 'Photo'); // Assuming it's always a photo, adjust if needed
 
       const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/addTranscriptFile`, {
         method: 'POST',
@@ -766,7 +800,8 @@ const AcademicTranscript = () => {
       });
       const data = await response.json();
       if (data.success) {
-        fetchMediaByCategory(category.id);
+        const category = categories.find(cat => cat.transcript_category === selectedExam);
+        fetchMediaByCategory(category.id, currentPage, itemsPerPage, searchTerm);
         setIsFileUploadOpen(false);
         return { success: true };
       } else {
@@ -836,7 +871,8 @@ const AcademicTranscript = () => {
 
       if (response.ok && data.success) {
         // console.log('File edited successfully:', data);
-        fetchMediaByCategory(category.id);
+        const category = categories.find(cat => cat.transcript_category === selectedExam);
+        fetchMediaByCategory(category.id, currentPage, itemsPerPage, searchTerm);
         return { success: true, message: 'File updated successfully' };
       } else {
         console.error('Error editing file:', data);
@@ -874,6 +910,7 @@ const AcademicTranscript = () => {
   // Function to delete file
   const deleteFile = async () => {
     if (!fileToDelete) return;
+    setIsDeleting(true);
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/deleteTranscriptFile`, {
@@ -894,12 +931,16 @@ const AcademicTranscript = () => {
       const data = await response.json();
       if (data.success) {
         //console.log('File deleted successfully');
-        fetchMediaByCategory(categories.find(cat => cat.transcript_category === selectedExam).id);
+        const category = categories.find(cat => cat.transcript_category === selectedExam);
+        fetchMediaByCategory(category.id, currentPage, itemsPerPage, searchTerm);
       } else {
         console.error('Error deleting file:', data.message);
       }
     } catch (error) {
       console.error('Error deleting file:', error);
+    }
+    finally {
+      setIsDeleting(false); // End loading
     }
     setIsDeletePopupOpen(false);
     setFileToDelete(null);
@@ -970,32 +1011,51 @@ const AcademicTranscript = () => {
     }
   };
 
-  const fetchMediaByCategory = async (categoryId) => {
+  const fetchMediaByCategory = async (categoryId, page = 1, perPage = 10, searchTerm = '') => {
     try {
+      setFiles([]);
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      const body = { category_id: categoryId, page: page, per_page: perPage };
+
+      // If the API supports search, include searchTerm
+      if (searchTerm) {
+        body.search = searchTerm;
+      }
+
       const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/mediaListByCategory`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ category_id: categoryId }),
+        body: JSON.stringify(body),
       });
+
       const data = await response.json();
-      //console.log('API response for media:', data);
+
       if (data.success && data.data && data.data.data) {
         setFiles(data.data.data);
+        setPaginationInfo({
+          currentPage: data.data.current_page,
+          lastPage: data.data.last_page,
+          total: data.data.total,
+          perPage: data.data.per_page,
+        });
       } else {
         setFiles([]);
+        setPaginationInfo({});
       }
     } catch (error) {
       console.error('Error fetching media by category:', error);
       setFiles([]);
+      setPaginationInfo({});
     }
   };
 
+
   const fetchSubjects = useCallback(async (categoryId) => {
     try {
+      setSubjects([]);
       //console.log('Fetching subjects for category:', categoryId);
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       let url, method, body;
@@ -1119,13 +1179,25 @@ const AcademicTranscript = () => {
     if (selectedExam) {
       const category = categories.find(cat => cat.transcript_category === selectedExam);
       if (category) {
-        fetchMediaByCategory(category.id);
+        fetchMediaByCategory(category.id, currentPage, itemsPerPage, searchTerm);
         if (selectedExam !== 'SPM' || !isInitialLoad) {
           fetchSubjects(category.id.toString());
         }
       }
     }
-  }, [selectedExam, categories, fetchSubjects, isInitialLoad]);
+  }, [selectedExam, categories, fetchSubjects, isInitialLoad, currentPage, itemsPerPage, searchTerm]);
+
+  useEffect(() => {
+    if (paginationInfo.lastPage && currentPage > paginationInfo.lastPage) {
+      setCurrentPage(paginationInfo.lastPage === 0 ? 1 : paginationInfo.lastPage);
+    }
+  }, [paginationInfo.lastPage, currentPage]);
+
+  const pageNumbers = [];
+  for (let i = 1; i <= paginationInfo.lastPage; i++) {
+    pageNumbers.push(i);
+  }
+
 
   const updateSubjects = useCallback((updatedSubjects) => {
     //console.log('updateSubjects called with:', updatedSubjects);
@@ -1295,7 +1367,10 @@ const AcademicTranscript = () => {
           <select
             className="show-option-table me-3"
             value={itemsPerPage}
-            onChange={(e) => setItemsPerPage(Number(e.target.value))}
+            onChange={(e) => {
+              setItemsPerPage(Number(e.target.value));
+              setCurrentPage(1);
+            }}
           >
             <option value={10}>10</option>
             <option value={20}>20</option>
@@ -1311,6 +1386,7 @@ const AcademicTranscript = () => {
             />
           </div>
           <button className="button-table px-5 py-1 ml-auto" onClick={() => setIsFileUploadOpen(true)}>ADD NEW</button>
+
         </div>
 
         <div style={{ overflowX: 'auto' }}>
@@ -1324,7 +1400,7 @@ const AcademicTranscript = () => {
             </thead>
             <tbody>
               <TransitionGroup component={null}>
-                {currentFiles.map((file) => (
+                {files.map((file) => (
                   <CSSTransition key={file.id} timeout={500} classNames="fade">
                     <tr>
                       <td className="border-bottom p-2">
@@ -1364,12 +1440,19 @@ const AcademicTranscript = () => {
               {number}
             </button>
           ))}
-          <button onClick={() => paginate(currentPage + 1)} disabled={currentPage === pageNumbers.length}>
+          <button onClick={() => paginate(currentPage + 1)} disabled={currentPage === paginationInfo.lastPage}>
             &gt;
           </button>
         </div>
-
-
+        <div className="w-100 d-flex flex-row-reverse">
+          <button
+            className="button-table px-2 py-1 ml-2  "
+            onClick={() => handleResetTranscript(categories.find(cat => cat.transcript_category === selectedExam)?.id)}
+            style={{ width: "10.5rem" }}
+          >
+            RESET
+          </button>
+        </div>
       </div>
 
       <WidgetFileUploadAcademicTranscript
@@ -1394,6 +1477,7 @@ const AcademicTranscript = () => {
           setFileToDelete(null);
         }}
         onConfirm={deleteFile}
+        isDeleting={isDeleting}
       />
 
       <WidgetPopUpSubmission

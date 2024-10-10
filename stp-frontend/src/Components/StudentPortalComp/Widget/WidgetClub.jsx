@@ -12,6 +12,7 @@ const WidgetClub = ({ isOpen, onClose, onSave, item, isViewMode }) => {
   const [location, setInstitution] = useState('');
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [errors, setErrors] = useState({});
+  const [isSaving, setIsSaving] = useState(false);
 
   /*reset form function*/
   const resetForm = () => {
@@ -63,6 +64,7 @@ const WidgetClub = ({ isOpen, onClose, onSave, item, isViewMode }) => {
 
     // Clear any previous errors
     setErrors({});
+    setIsSaving(true);
 
     // Proceed with save
     onSave({
@@ -71,8 +73,19 @@ const WidgetClub = ({ isOpen, onClose, onSave, item, isViewMode }) => {
       location,
       year: year.getFullYear(),
       student_position
-    });
+    })
+      .then(() => {
+        handleClose();
+      })
+      .catch((error) => {
+        console.error('Error saving club:', error);
+        setErrors({ general: "An error occurred. Please try again." });
+      })
+      .finally(() => {
+        setIsSaving(false);
+      });
   };
+
   /*end */
 
   /*Club title edit handling function */
@@ -109,12 +122,12 @@ const WidgetClub = ({ isOpen, onClose, onSave, item, isViewMode }) => {
           ) : (
             <>
               <div className="d-flex ">
-             <p className="acl-name-restrict mb-0">{club_name || 'Enter Club Name'}</p> 
-              {!isViewMode && (
-                <button className="buttoneditam">
-                  <Edit2 size={20} color="white" onClick={handleTitleEdit} />
-                </button>
-              )}
+                <p className="acl-name-restrict mb-0">{club_name || 'Enter Club Name'}</p>
+                {!isViewMode && (
+                  <button className="buttoneditam">
+                    <Edit2 size={20} color="white" onClick={handleTitleEdit} />
+                  </button>
+                )}
               </div>
             </>
           )}
@@ -163,8 +176,19 @@ const WidgetClub = ({ isOpen, onClose, onSave, item, isViewMode }) => {
         </div>
 
         {!isViewMode && (
-          <button className="save-button-club" onClick={handleSave}>
-            {item ? 'UPDATE' : 'SAVE'}
+          <button
+            className={`save-button-club ${isSaving ? 'saving' : ''}`}
+            onClick={handleSave}
+            disabled={isSaving}
+          >
+            {isSaving ? (
+              <>
+                <div className="spinner"></div>
+                <span>Saving...</span>
+              </>
+            ) : (
+              item ? 'UPDATE' : 'SAVE'
+            )}
           </button>
         )}
       </div>

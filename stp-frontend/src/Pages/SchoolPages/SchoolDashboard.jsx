@@ -1,4 +1,4 @@
-import { useParams, Navigate } from "react-router-dom";
+import { useParams, Navigate, useNavigate, useLocation } from "react-router-dom";
 import Sidebar from "../../Components/SchoolPortalComp/SchoolSidebar";
 import { useEffect, useState } from "react";
 import { ArrowClockwise } from "react-bootstrap-icons";
@@ -17,6 +17,8 @@ const SchoolDashboard = () => {
   const [selectedTab, setSelectedTab] = useState("");
   // const token = sessionStorage.getItem("token");
   const token = localStorage.getItem("token");
+  const location = useLocation();
+  const navigate = useNavigate();
 
   if (!token) {
     return <Navigate to="/schoolPortalLogin" />;
@@ -49,11 +51,28 @@ const SchoolDashboard = () => {
     fetchSchoolDetail();
   }, [token]);
 
+  useEffect(() => {
+    if (location.state?.showManageAccount) {
+      setSelectedDropdownItem("manageAccount");
+      setSelectedTab("");
+      // Clear the navigation state
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location, navigate]);
+  const handleUpgradeNow = () => {
+    setSelectedDropdownItem("manageAccount");
+    setSelectedTab(""); // Clear the selected tab
+  };
+
   if (!schoolDetail) {
     return <ArrowClockwise />;
   }
 
   const renderContent = () => {
+    if (selectedDropdownItem === "manageAccount") {
+      return <ManageAccount />;
+    }
+
     switch (selectedDropdownItem) {
       case "basicInfo":
         return <BasicInformation />;
@@ -64,7 +83,8 @@ const SchoolDashboard = () => {
       default:
         switch (selectedTab) {
           case "application":
-            return <Applicant />;
+            return <Applicant
+              onActionUpgrade={handleUpgradeNow} />;
           case "dashboard":
             return <Dashboard />;
           case "courses":

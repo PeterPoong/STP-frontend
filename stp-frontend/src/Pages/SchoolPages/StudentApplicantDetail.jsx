@@ -1,4 +1,4 @@
-import { useEffect, useState,useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Sidebar from "../../Components/SchoolPortalComp/SchoolSidebar";
 import { Container, Button, Row, Col } from "react-bootstrap";
@@ -15,15 +15,17 @@ import {
   Check
 } from "react-feather";
 import { ChevronLeft } from "react-bootstrap-icons"
-
+import "../../css/StudentPortalStyles/StudentApplyCourse.css";
+import "../../css/SchoolPortalStyle/ApplicantViewSummary.css";
 import styles from "../../css/SchoolPortalStyle/StudentApplicantDetail.module.css";
 import { ClassNames } from "@emotion/react";
 import { withTheme } from "styled-components";
 import AcceptReject from "../../Components/SchoolPortalComp/EmailStudentApplicantComp/DocumentContent/AcceptReject";
-
+import { BsWhatsapp, BsCaretDownFill } from 'react-icons/bs';
 import WidgetFileUploadAcademicTranscript from "../../Components/StudentPortalComp/WidgetFileUploadAcademicTranscript";
 import WidgetFileUpload from "../../Components/StudentPortalComp/WidgetFileUpload";
 import WidgetAchievement from "../../Components/StudentPortalComp/Widget/WidgetAchievement";
+import defaultProfilePic from "../../assets/StudentPortalAssets/sampleprofile.png";
 
 const SchoolViewApplicantDetail = () => {
   // Get the studentId from the URL parameters
@@ -33,6 +35,7 @@ const SchoolViewApplicantDetail = () => {
   const [studentId, setStudentId] = useState("");
   const [courseId, setCourseId] = useState("");
   const [courseDetail, setCourseDetail] = useState("");
+  const [courseName, setCourseName] = useState("");
 
   const [studentPic, setStudentPic] = useState(null);
   const [firstName, setFirstName] = useState(null);
@@ -100,15 +103,37 @@ const SchoolViewApplicantDetail = () => {
     navigate("/schoolPortalDashboard"); // This will go back to the previous page
   };
 
+
+  const getPositionStyle = (position) => {
+    const colors = {
+      president: '#50B5FE',
+      secretary: '#8979FF',
+      treasurer: '#537FF1',
+      ajk: '#ffc107'
+    };
+
+    const lowercasePosition = position.toLowerCase();
+
+    if (colors[lowercasePosition]) {
+      return { backgroundColor: colors[lowercasePosition], color: 'white' };
+    } else {
+      // Randomly select one of the four colors for other positions
+      const colorKeys = Object.keys(colors);
+      const randomColor = colors[colorKeys[Math.floor(Math.random() * colorKeys.length)]];
+      return { backgroundColor: randomColor, color: 'white' };
+    }
+  };
+
+
   const handleWhatsAppClick = useCallback(() => {
     if (contact && countryCode) {
       // Remove any non-digit characters from the phone number and country code
       const cleanCountryCode = countryCode.replace(/\D/g, '');
       const cleanPhoneNumber = contact.replace(/\D/g, '');
-      
+
       // Construct the WhatsApp URL
       const whatsappUrl = `https://wa.me/${cleanCountryCode}${cleanPhoneNumber}`;
-      
+
       // Open the URL in a new tab
       window.open(whatsappUrl, '_blank');
     } else {
@@ -116,7 +141,7 @@ const SchoolViewApplicantDetail = () => {
       alert("WhatsApp contact information is not available for this student.");
     }
   }, [contact, countryCode]);
-  
+
   const copyToClipboard = (text, field) => {
     if (text) {
       navigator.clipboard.writeText(text).then(() => {
@@ -233,19 +258,25 @@ const SchoolViewApplicantDetail = () => {
         }
       );
       if (!response.ok) {
-        throw new Error("Failed to fetch co-curriculum activities");
+        throw new Error("Failed to fetch achievements");
       }
       const result = await response.json();
-      //   console.log("achievement", result);
       if (result.success) {
         setAchievements(result.data);
+        setPaginationInfo(prevState => ({
+          ...prevState,
+          achievements: {
+            currentPage: result.data.current_page,
+            lastPage: result.data.last_page,
+            total: result.data.total,
+            perPage: result.data.per_page,
+          },
+        }));
       } else {
-        throw new Error(
-          result.message || "Failed to fetch co-curriculum activities"
-        );
+        throw new Error(result.message || "Failed to fetch achievements");
       }
     } catch (error) {
-      console.error("Error fetching co-curriculum activities:", error);
+      console.error("Error fetching achievements:", error);
       setError(error.message);
     }
   };
@@ -296,6 +327,8 @@ const SchoolViewApplicantDetail = () => {
       console.error("Failed To get Applicant Detail", error);
     }
   };
+
+
   const getOtherFileCert = async (page = 1) => {
     if (!studentId) {
       console.log("studentId is missing, skipping API call.");
@@ -319,19 +352,27 @@ const SchoolViewApplicantDetail = () => {
         }
       );
       if (!response.ok) {
-        const errorData = await response.json();
-        console.log("Error Data:", errorData["error"]);
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-
       setOtherDocuments(data.data);
-
-      // console.log("academic transcript", data);
+      setPaginationInfo(prevState => ({
+        ...prevState,
+        otherDocuments: {
+          currentPage: data.data.current_page,
+          lastPage: data.data.last_page,
+          total: data.data.total,
+          perPage: data.data.per_page,
+        },
+      }));
     } catch (error) {
-      console.error("Failed To get Applicant Detail", error);
+      console.error("Failed To get Other File Certificates", error);
     }
   };
+
+  const handleUpgradeNow = useCallback(() => {
+    navigate("/schoolPortalDashboard", { state: { showManageAccount: true } });
+  }, [navigate]);
 
   const handleViewDocument = (document) => {
     setCurrentViewDocument(document);
@@ -364,6 +405,7 @@ const SchoolViewApplicantDetail = () => {
         break;
     }
   };
+
 
   const renderPagination = (section) => {
     const info = paginationInfo[section];
@@ -614,6 +656,7 @@ const SchoolViewApplicantDetail = () => {
 
         setStudentId(data.student_id);
         setCourseId(data.courses_id);
+        setCourseName(data);
         // console.log("applicantDetail", data.student_id);
       } catch (error) {
         console.error("Failed To get Applicant Detail", error);
@@ -769,23 +812,29 @@ const SchoolViewApplicantDetail = () => {
     return (
       <div className="academic-results m-3 shadow-lg rounded-5 pt-4 d-flex flex-column">
         <div className="px-4">
-          <select
-            className="sac-form-select mb-3 px-0"
-            value={selectedCategory}
-            onChange={handleCategoryChange}
-          >
-            {transcriptCategories.map((category) => (
-              <option key={category.id} value={category.id}>
-                {category.transcript_category}
-              </option>
-            ))}
-          </select>
+          <div className=" d-flex  sas-pointer-div px-0 ">
+            <select
+              className="sac-form-select mb-1 px-0"
+              value={selectedCategory || ""}
+              onChange={handleCategoryChange}
+            >
+              {transcriptCategories.map((category) => (
+                <option key={category.id || ""} value={category.id || ""}>
+                  {category.transcript_category || ""}
+                </option>
+              ))}
+
+              <span>Subjects and Results</span>
+
+            </select>
+            <BsCaretDownFill size={30} className="sas-pointer align-self-start" />
+          </div>
         </div>
 
         {selectedCategory !== 32 && cgpaInfo && (
           <div className="px-4 mb-3">
             <div className="d-flex justify-content-between align-items-center">
-              <p className="mb-0 d-flex align-items-center">
+              <p className="mb-0 mt-2 d-flex align-items-center">
                 <strong>Program Name:</strong>
                 <p className=" mb-0"
                   style={{
@@ -816,22 +865,22 @@ const SchoolViewApplicantDetail = () => {
             transcriptSubjects.map((subject, index) => (
               <div key={index} className="d-flex justify-content-between py-3">
                 <p className="mb-0"
-                 style={{
-                  wordWrap: 'break-word',
-                  overflowWrap: 'break-word',
-                  wordBreak: 'break-all',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  maxWidth: '350px'
-                }}>
+                  style={{
+                    wordWrap: 'break-word',
+                    overflowWrap: 'break-word',
+                    wordBreak: 'break-all',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    maxWidth: '350px'
+                  }}>
                   <strong>
-                    {subject.subject_name || subject.highTranscript_name}
+                    {subject.subject_name || subject.highTranscript_name || ""}
                   </strong>
                 </p>
                 <p className="mb-0">
                   <strong>
-                    {subject.subject_grade || subject.higherTranscript_grade}
+                    {subject.subject_grade || subject.higherTranscript_grade || ""}
                   </strong>
                 </p>
               </div>
@@ -845,7 +894,7 @@ const SchoolViewApplicantDetail = () => {
         <div className="grade-summary d-flex justify-content-between align-items-stretch border-top">
           <div className="overall-grade text-white w-75 d-flex justify-content-start py-3">
             <h3 className="align-self-center px-5">
-              Grade: {calculateOverallGrade(transcriptSubjects)}
+              Grade: {calculateOverallGrade(transcriptSubjects) || ""}
             </h3>
           </div>
           <Button
@@ -878,19 +927,17 @@ const SchoolViewApplicantDetail = () => {
 
     switch (activeDocumentTab) {
       case "academic":
-        // console.log("academic hello", academicTranscripts.data);
-        documents = academicTranscripts.data || [];
+        documents = academicTranscripts?.data || [];
         columns = ["Name", "File Name", "Actions"];
         paginationSection = "academicTranscripts";
         break;
       case "achievements":
-        documents = achievements.data;
+        documents = achievements?.data || [];
         columns = ["Name", "File Name", "Actions"];
         paginationSection = "achievements";
         break;
       case "other":
-        console.log("academic hello", otherDocuments.data);
-        documents = otherDocuments.data;
+        documents = otherDocuments?.data || [];
         columns = ["Name", "File Name", "Actions"];
         paginationSection = "otherDocuments";
         break;
@@ -928,7 +975,7 @@ const SchoolViewApplicantDetail = () => {
     });
 
     return (
-      <div className="summary-content-yourdocument bg-white shadow-lg">
+      <div className="summary-content-yourdocument ">
         <div className="documents-content pt-2 w-100">
           <div>
             <p className="lead">
@@ -993,9 +1040,9 @@ const SchoolViewApplicantDetail = () => {
                             <FileText className="file-icon me-2" />
                             <div>
                               <div className="file-title name-restrict">
-                                {doc.studentMedia_name}
+                                {doc.studentMedia_name || ""}
                               </div>
-                              <div className="file-date">{doc.created_at}</div>
+                              <div className="file-date">{doc.created_at || ""}</div>
                             </div>
                           </div>
                         </td>
@@ -1003,7 +1050,7 @@ const SchoolViewApplicantDetail = () => {
                           className="border-bottom p-2"
                           data-label="File Name"
                         >
-                          {doc.studentMedia_location}
+                          {doc.studentMedia_location || ""}
                         </td>
                       </>
                     )}
@@ -1014,9 +1061,9 @@ const SchoolViewApplicantDetail = () => {
                             <FileText className="file-icon me-2" />
                             <div>
                               <div className="file-title name-restrict">
-                                {doc.achievement_name}
+                                {doc.achievement_name || ""}
                               </div>
-                              <div className="file-date">{doc.year}</div>
+                              <div className="file-date">{doc.year || ""}</div>
                             </div>
                           </div>
                         </td>
@@ -1024,7 +1071,7 @@ const SchoolViewApplicantDetail = () => {
                           className="border-bottom p-2 "
                           data-label="File Name"
                         >
-                          {doc.achievement_media}
+                          {doc.achievement_media || ""}
                         </td>
                       </>
                     )}
@@ -1034,8 +1081,8 @@ const SchoolViewApplicantDetail = () => {
                           <div className="d-flex align-items-center">
                             <FileText className="file-icon me-2" />
                             <div>
-                              <div className="file-title name-restrict">{doc.name}</div>
-                              <div className="file-date">{doc.created_at}</div>
+                              <div className="file-title name-restrict">{doc.name || ""}</div>
+                              <div className="file-date">{doc.created_at || ""}</div>
                             </div>
                           </div>
                         </td>
@@ -1043,7 +1090,7 @@ const SchoolViewApplicantDetail = () => {
                           className="border-bottom p-2"
                           data-label="File Name"
                         >
-                          {doc.media}
+                          {doc.media || ""}
                         </td>
                       </>
                     )}
@@ -1096,352 +1143,318 @@ const SchoolViewApplicantDetail = () => {
 
   //render the page
   return (
-    <>
-      <Row style={{ backgroundColor: "#f6a192", position: "relative" }}>
-        <span
-          onClick={handleBack}
-          style={{
-            cursor: "pointer",
-            position: "absolute", // Set position to absolute
-            top: "10px", // Adjust the top distance from the top
-            left: "10px", // Adjust the left distance from the left
-            display: "inline-flex",
-            alignItems: "center",
-          }}
-        >
-           <div className='ms-4 mt-3 d-flex mb-0 '>
+    <div className="applicant-app-container-applycourse">
+      <div className="applicant-backgroundimage">
+        <div className='ms-4 mt-3 d-flex mb-0 ' onClick={handleBack}>
           <ChevronLeft style={{ color: "#ad736c" }} className=" " size={30} />
           <h5 className="ms-2 mt-1" style={{ color: "#ad736c" }}>Back</h5>
         </div>
-        </span>
-        <Row className={`${styles.infoBannerRow}`}>
-          <Col md={6} className={`d-flex  ps-5 ${styles.informationBanner}`}>
-            {studentPic ? (
-              <img
-                src={`${import.meta.env.VITE_BASE_URL}storage/${studentPic}`}
-                className={` me-4 ms-2 bg-black ${styles.applicantPhoto}`}
-              />
-            ) : (
-              <div className="text-center">
-                <div
-                  className="spinner-border spinner-border-sm"
-                  role="status"
-                ></div>
-              </div>
-            )}
-            <div className={`${styles.studentNameAndCourse}`}>
-              <p className="my-2 fw-bold" style={{ fontSize: "25px" }}>
-                {`${firstName || ""} ${lastName || ""}`.trim()}
-                <br />
-                <span className="my-2 text-secondary">
-                  <span
-                    style={{
-                      fontWeight: "500",
-                      fontSize: "14px",
-                      opacity: 0.7,
+        <div className="applicant-main-content-applycourse-clone pt-5">
+          <div className="application-summary-container-inside">
+            <div className="application-summary-container-inside rounded">
+              <div className="applicant-summary-header  border border-bottom">
+                <div className="applicant-info">
+                  <img src={`${import.meta.env.VITE_BASE_URL}storage/${studentPic}` || ""}
+                    onError={(e) => {
+                      e.target.onerror = null; // prevents looping
+                      e.target.src = defaultProfilePic;
                     }}
-                  >
-                    Applied For:
-                  </span>
-                  <span
-                    className="text-black ms-2"
-                    style={{
-                      fontSize: "16px",
-                      opacity: 0.7,
-                    }}
-                  >
-                    {courseDetail.course_name}
-                  </span>
+                    className="applicant-photo me-4 ms-2 "
+                    alt="Student" />
+                  <div>
+                    <p className="my-0 school-fontsize-1 ">{`${firstName || ""} ${lastName || ""}`}</p>
+                    <p className="my-0 text-secondary mt-2"><small>Applied For:</small>
+                      <span className="text-black ms-2" >
+                        {courseName.course_name || ""}
+                      </span>
+                    </p>
+                  </div>
+                </div>
+                <span
+                  className="applicant-status-button ms-auto text-white"
+                >
+                  Pending Application
                 </span>
-              </p>
-            </div>
-          </Col>
+                <Button className="applicant-chat-button d-flex align-items-center justify-content-center text-nowrap"
+                  onClick={handleWhatsAppClick}>
+                  <BsWhatsapp className="me-2 whatsapp-button text-nonwrap" size={20} />
+                  Chat on WhatsApp
+                </Button>
+              </div>
+              {/* <Col style={{ backgroundColor: "white" }}>asda</Col> */}
 
-          <Col md={6} className={` pe-3 ${styles.informationBanner}`}>
-            <Button className={`px-4 mt-5 float-right ${styles.pendingButton}`}>
-              Pending Application
-            </Button>
 
-            <Button
-              className={`justify-content-center px-4 mt-5 float-right ${styles.chatOnWhatsappButton}`}
-              onClick={handleWhatsAppClick}
-            >
-              <Whatsapp className="me-2" />{" "}
-              {/* Add margin-end to space icon and text */}
-              Chat on Whatsapp
-            </Button>
-          </Col>
-        </Row>
-        {/* <Col style={{ backgroundColor: "white" }}>asda</Col> */}
-      </Row>
-      <Row>
-        <Row className={` ${styles.infoBannerRow} `}>
-          <div
-            className="summary-tabs d-flex flex-wrap"
-            style={{ backgroundColor: "white" }}
-          >
-            {/* <div className={`${styles.summaryTabs} d-flex flex-wrap px-4`}> */}
-            <Button
-              variant="link"
-              className={activeTab === "info" ? "active" : ""}
-              onClick={() => setActiveTab("info")}
-            >
-              Your Info
-            </Button>
-            <Button
-              variant="link"
-              className={activeTab === "documents" ? "active" : ""}
-              onClick={() => setActiveTab("documents")}
-              disabled={accountType !== 65}
-              style={{
-                pointerEvents: accountType !== 65 ? "none" : "auto",
-                opacity: accountType !== 65 ? 0.6 : 1,
-              }}
-            >
-              Your Documents
-            </Button>
-            <Button
-              variant="link"
-              className={activeTab === "accept-reject" ? "active" : ""}
-              onClick={() => setActiveTab("accept-reject")}
-            >
-              Accept/Reject Application
-            </Button>
-          </div>
-        </Row>
-        <Row className={` ${styles.contentRow} `}>
-          {activeTab === "info" ? (
-            <>
-              <div
-                className="summary-content"
-                style={{ backgroundColor: "white" }}
-              >
-                <div className="basic-info m-3 shadow-lg p-4 rounded-5">
-                  <p className="text-secondary fw-bold border-bottom border-2 pb-3">
-                    Basic Information
-                  </p>
-                  <div className="info-grid">
-                    <div className="row">
-                      <div className="col-md-6 mb-3">
-                        <p>
-                          <strong>Student Name</strong>
-                        </p>
-                        <p className="d-flex align-items-center">
-                          <span className="me-2">
-                            {`${firstName || ''} ${lastName || ''}`.trim()}
-                          </span>
-                          <span
-                            className="copy-icon-wrapper"
-                            onClick={() => copyToClipboard(`${firstName || ''} ${lastName || ''}`.trim(), 'name')}
-                            title={copiedFields.name ? "Copied!" : "Copy to clipboard"}
-                          >
-                            {copiedFields.name
-                              ? <Check size={16} className="copied-icon" />
-                              : <Copy size={16} className="copy-icon" />
-                            }
-                          </span>
-                        </p>
+              <div className="summary-tabs d-flex flex-wrap px-4">
+                {/* <div className={`${styles.summaryTabs} d-flex flex-wrap px-4`}> */}
+                <Button
+                  variant="link"
+                  className={activeTab === "info" ? "active" : ""}
+                  onClick={() => setActiveTab("info")}
+                >
+                  Your Info
+                </Button>
+                <Button
+                  variant="link"
+                  className={activeTab === "documents" ? "active" : ""}
+                  onClick={() => setActiveTab("documents")}
+                  disabled={accountType !== 65}
+                  style={{
+                    pointerEvents: accountType !== 65 ? "none" : "auto",
+                    opacity: accountType !== 65 ? 0.6 : 1,
+                  }}
+                >
+                  Your Documents
+                </Button>
+                <Button
+                  variant="link"
+                  className={activeTab === "accept-reject" ? "active" : ""}
+                  onClick={() => setActiveTab("accept-reject")}
+                >
+                  Accept/Reject Application
+                </Button>
+              </div>
+              {activeTab === "info" && (
+
+                <div
+                  className="summary-content"
+                  style={{ backgroundColor: "white" }}
+                >
+                  <div className="basic-info m-3 shadow-lg p-4 rounded-5">
+                    <p className="text-secondary fw-bold border-bottom border-2 pb-3">
+                      Basic Information
+                    </p>
+                    <div className="info-grid">
+                      <div className="row">
+                        <div className="col-md-6 mb-3">
+                          <p>
+                            <strong>Student Name</strong>
+                          </p>
+                          <p className="d-flex align-items-center">
+                            <span className="me-2">
+                              {`${firstName || ''} ${lastName || ''}`.trim()}
+                            </span>
+                            <span
+                              className="copy-icon-wrapper"
+                              onClick={() => copyToClipboard(`${firstName || ''} ${lastName || ''}`.trim(), 'name')}
+                              title={copiedFields.name ? "Copied!" : "Copy to clipboard"}
+                            >
+                              {copiedFields.name
+                                ? <Check size={16} className="copied-icon" />
+                                : <Copy size={16} className="copy-icon" />
+                              }
+                            </span>
+                          </p>
+                        </div>
+                        <div className="col-md-6 mb-3">
+                          <p>
+                            <strong>Identity Card Number</strong>
+                          </p>
+                          <p className="d-flex align-items-center">
+                            <span className="me-2">{ic}</span>
+                            <span
+                              className="copy-icon-wrapper"
+                              onClick={() => copyToClipboard(ic, 'icNumber')}
+                              title={copiedFields.icNumber ? "Copied!" : "Copy to clipboard"}
+                            >
+                              {copiedFields.icNumber
+                                ? <Check size={16} className="copied-icon" />
+                                : <Copy size={16} className="copy-icon" />
+                              }
+                            </span>
+                          </p>
+                        </div>
+                        <div className="col-md-6 mb-3">
+                          <p>
+                            <strong>Contact Number</strong>
+                          </p>
+                          <p className="d-flex align-items-center">
+                            <span className="me-2">
+                              {`${countryCode || ''} ${contact || ''}`}
+                            </span>
+                            <span
+                              className="copy-icon-wrapper"
+                              onClick={() => copyToClipboard(`${countryCode || ''} ${contact || ''}`, 'contactNumber')}
+                              title={copiedFields.contactNumber ? "Copied!" : "Copy to clipboard"}
+                            >
+                              {copiedFields.contactNumber
+                                ? <Check size={16} className="copied-icon" />
+                                : <Copy size={16} className="copy-icon" />
+                              }
+                            </span>
+                          </p>
+                        </div>
+                        <div className="col-md-6 mb-3">
+                          <p>
+                            <strong>Email Address</strong>
+                          </p>
+                          <p className="d-flex align-items-center" style={{
+                            wordWrap: 'break-word',
+                            overflowWrap: 'break-word',
+                            wordBreak: 'break-all'
+                          }}>
+                            <span className="me-2">{email}</span>
+                            <span
+                              className="copy-icon-wrapper"
+                              onClick={() => copyToClipboard(email, 'email')}
+                              title={copiedFields.email ? "Copied!" : "Copy to clipboard"}
+                            >
+                              {copiedFields.email
+                                ? <Check size={16} className="copied-icon" />
+                                : <Copy size={16} className="copy-icon" />
+                              }
+                            </span>
+                          </p>
+                        </div>
                       </div>
-                      <div className="col-md-6 mb-3">
-                        <p>
-                          <strong>Identity Card Number</strong>
-                        </p>
-                        <p className="d-flex align-items-center">
-                          <span className="me-2">{ic}</span>
-                          <span
-                            className="copy-icon-wrapper"
-                            onClick={() => copyToClipboard(ic, 'icNumber')}
-                            title={copiedFields.icNumber ? "Copied!" : "Copy to clipboard"}
-                          >
-                            {copiedFields.icNumber
-                              ? <Check size={16} className="copied-icon" />
-                              : <Copy size={16} className="copy-icon" />
-                            }
-                          </span>
-                        </p>
-                      </div>
-                      <div className="col-md-6 mb-3">
-                        <p>
-                          <strong>Contact Number</strong>
-                        </p>
-                        <p className="d-flex align-items-center">
-                          <span className="me-2">
-                            {`${countryCode || ''} ${contact || ''}`}
-                          </span>
-                          <span
-                            className="copy-icon-wrapper"
-                            onClick={() => copyToClipboard(`${countryCode || ''} ${contact || ''}`, 'contactNumber')}
-                            title={copiedFields.contactNumber ? "Copied!" : "Copy to clipboard"}
-                          >
-                            {copiedFields.contactNumber
-                              ? <Check size={16} className="copied-icon" />
-                              : <Copy size={16} className="copy-icon" />
-                            }
-                          </span>
-                        </p>
-                      </div>
-                      <div className="col-md-6 mb-3">
-                        <p>
-                          <strong>Email Address</strong>
-                        </p>
-                        <p className="d-flex align-items-center" style={{
-                          wordWrap: 'break-word',
-                          overflowWrap: 'break-word',
-                          wordBreak: 'break-all'
-                        }}>
-                          <span className="me-2">{email}</span>
-                          <span
-                            className="copy-icon-wrapper"
-                            onClick={() => copyToClipboard(email, 'email')}
-                            title={copiedFields.email ? "Copied!" : "Copy to clipboard"}
-                          >
-                            {copiedFields.email
-                              ? <Check size={16} className="copied-icon" />
-                              : <Copy size={16} className="copy-icon" />
-                            }
-                          </span>
-                        </p>
-                      </div>
-                    </div>
-                    <div className="row">
-                      <div className="col-12">
-                        <p>
-                          <strong>Address</strong>
-                        </p>
-                        <p className="d-flex align-items-center">
-                          <span className="me-2">{address}</span>
-                          <span
-                            className="copy-icon-wrapper"
-                            onClick={() => copyToClipboard(address || '', 'address')}
-                            title={copiedFields.address ? "Copied!" : "Copy to clipboard"}
-                          >
-                            {copiedFields.address
-                              ? <Check size={16} className="copied-icon" />
-                              : <Copy size={16} className="copy-icon" />
-                            }
-                          </span>
-                        </p>
+                      <div className="row">
+                        <div className="col-12">
+                          <p>
+                            <strong>Address</strong>
+                          </p>
+                          <p className="d-flex align-items-center">
+                            <span className="me-2">{address}</span>
+                            <span
+                              className="copy-icon-wrapper"
+                              onClick={() => copyToClipboard(address || '', 'address')}
+                              title={copiedFields.address ? "Copied!" : "Copy to clipboard"}
+                            >
+                              {copiedFields.address
+                                ? <Check size={16} className="copied-icon" />
+                                : <Copy size={16} className="copy-icon" />
+                              }
+                            </span>
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
 
-                {renderAcademicResults()}
+                  {renderAcademicResults()}
 
-                {accountType === 65 ? ( // Premium: Show Co-Curriculum and Achievements
-                  <>
-                    {/* cocuriculum  */}
-                    <div className="co-curriculum m-3 shadow-lg p-4 rounded-5">
-                      <p className="text-secondary fw-bold border-bottom border-2 pb-3">
-                        Co-curriculum
-                      </p>
-                      <div
-                        className="activities-grid"
-                        style={{ maxHeight: "20rem", overflowY: "auto" }}
-                      >
-                        {coCurriculum.map((activity, index) => (
-                          <div
-                            key={index}
-                            className="activity-item d-flex flex-wrap justify-content-between align-items-start py-2"
-                          >
-                            <div className="col-12 col-sm-6">
-                              <p className="mb-0 name-restrict">
-                                <strong>{activity.club_name}</strong>
-                              </p>
-                              <p className="mb-0 text-muted name-restrict">
-                                {activity.location}
-                              </p>
-                            </div>
-                            <div className="col-6 col-sm-3 text-start text-sm-center">
-                              <p className="mb-0">{activity.year}</p>
-                            </div>
-                            <div className="col-6 col-sm-3 text-end sac-name-restrict">
+                  {accountType === 65 ? ( // Premium: Show Co-Curriculum and Achievements
+                    <>
+                      {/* cocuriculum  */}
+                      <div className="co-curriculum m-3 shadow-lg p-4 rounded-5">
+                        <p className="text-secondary fw-bold border-bottom border-2 pb-3">
+                          Co-curriculum
+                        </p>
+                        <div
+                          className="activities-grid"
+                          style={{ maxHeight: "20rem", overflowY: "auto" }}
+                        >
+                          {coCurriculum.map((activity, index) => (
+                            <div
+                              key={index}
+                              className="activity-item d-flex flex-wrap justify-content-between align-items-start py-2"
+                            >
+                              <div className="col-12 col-sm-6">
+                                <p className="mb-0 name-restrict">
+                                  <strong>{activity.club_name || ""}</strong>
+                                </p>
+                                <p className="mb-0 text-muted name-restrict">
+                                  {activity.location || ""}
+                                </p>
+                              </div>
+                              <div className="col-6 col-sm-3 text-start text-sm-center">
+                                <p className="mb-0">{activity.year || ""}</p>
+                              </div>
+                              <div className="col-6 col-sm-3 text-end sac-name-restrict">
                               <span
-                                className={`position ${activity.student_position.toLowerCase()} py-1 px-2 rounded-pill`}
-                              >
-                                {activity.student_position}
-                              </span>
+                                  className={`position py-1 px-2 rounded-pill`}
+                                  style={getPositionStyle(activity.student_position)}
+                                >
+                                  {activity.student_position}
+                                </span>
+                              </div>
                             </div>
-                          </div>
-                        ))}
+                          ))}
+                        </div>
                       </div>
-                    </div>
 
-                    {/* achievement  */}
-                    <div className="achievements m-3 shadow-lg p-4 rounded-5">
-                      <p className="text-secondary fw-bold border-bottom border-2 pb-3">
-                        Achievements
-                      </p>
-                      <div
-                        className="achievements-grid"
-                        style={{ maxHeight: "15rem", overflowY: "auto" }}
-                      >
-                        {yourInfoAchievement.map((achievement, index) => (
-                          <div
-                            key={index}
-                            className="achievement-item d-flex flex-wrap justify-content-between align-items-start py-2"
-                          >
-                            <div className="col-12 col-sm-4">
-                              <p className="mb-0 name-restrict">
-                                <strong>{achievement.achievement_name || ""}</strong>
-                              </p>
-                              <p className="mb-0 text-muted name-restrict">
-                                {achievement.awarded_by || ""}
-                              </p>
+                      {/* achievement  */}
+                      <div className="achievements m-3 shadow-lg p-4 rounded-5">
+                        <p className="text-secondary fw-bold border-bottom border-2 pb-3">
+                          Achievements
+                        </p>
+                        <div
+                          className="achievements-grid"
+                          style={{ maxHeight: "15rem", overflowY: "auto" }}
+                        >
+                          {yourInfoAchievement.map((achievement, index) => (
+                            <div
+                              key={index}
+                              className="achievement-item d-flex flex-wrap justify-content-between align-items-start py-2"
+                            >
+                              <div className="col-12 col-sm-4">
+                                <p className="mb-0 name-restrict">
+                                  <strong>{achievement.achievement_name || ""}</strong>
+                                </p>
+                                <p className="mb-0 text-muted name-restrict">
+                                  {achievement.awarded_by || ""}
+                                </p>
+                              </div>
+                              <div className="col-6 col-sm-3 text-start text-sm-center">
+                                <p className="mb-0">{achievement.date || ""}</p>
+                              </div>
+                              <div className="col-6 col-sm-5 text-end">
+                                <span className={`position ${(achievement.title?.core_metaName?.toLowerCase() ?? '').replace(/\s+/g, '-')} py-1 px-2 rounded-pill`}>
+                                  {achievement.title?.core_metaName || 'No Title'}
+                                </span>
+                              </div>
                             </div>
-                            <div className="col-6 col-sm-3 text-start text-sm-center">
-                              <p className="mb-0">{achievement.date || ""}</p>
-                            </div>
-                            <div className="col-6 col-sm-5 text-end">
-                              <span className={`position ${(achievement.title?.core_metaName?.toLowerCase() ?? '').replace(/\s+/g, '-')} py-1 px-2 rounded-pill`}>
-                                {achievement.title?.core_metaName || 'No Title'}
-                              </span>
-                            </div>
-                          </div>
-                        ))}
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  </>
-                ) : (
-                  // Basic: Show overlay
-                  <>
-                    <div className="sdv-cocurriculum m-3 shadow-lg p-4 rounded-5 d-flex align-items-center justify-content-center flex-column ">
-                      <img src={Lock} alt="My Image" />
-                      <p className="text-center text-white mt-3 px-5">
-                        This feature is locked and available only with a premium
-                        account.
-                      </p>
-                      <div className="sdv-div-plan-button rounded-pill mt-3">
-                        <button className="plan-button rounded-pill">
-                          Upgrade Now
-                        </button>
+                    </>
+                  ) : (
+                    // Basic: Show overlay
+                    <>
+                      <div className="sdv-cocurriculum m-3 shadow-lg p-4 rounded-5 d-flex align-items-center justify-content-center flex-column ">
+                        <img src={Lock} alt="My Image" />
+                        <p className="text-center text-white mt-3 px-5">
+                          This feature is locked and available only with a premium
+                          account.
+                        </p>
+                        <div className="sdv-div-plan-button rounded-pill mt-3">
+                          <button className="plan-button rounded-pill" onClick={handleUpgradeNow}>
+                            Upgrade Now
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                    <div className="sdv-achievements m-3 shadow-lg p-4 rounded-5  d-flex align-items-center justify-content-center flex-column ">
-                      <img src={Lock} alt="My Image" />
-                      <p className="text-center text-white mt-3 px-5">
-                        This feature is locked and available only with a premium
-                        account.
-                      </p>
-                      <div className="sdv-div-plan-button rounded-pill mt-3">
-                        <button className="plan-button rounded-pill">
-                          Upgrade Now
-                        </button>
+                      <div className="sdv-achievements m-3 shadow-lg p-4 rounded-5  d-flex align-items-center justify-content-center flex-column ">
+                        <img src={Lock} alt="My Image" />
+                        <p className="text-center text-white mt-3 px-5">
+                          This feature is locked and available only with a premium
+                          account.
+                        </p>
+                        <div className="sdv-div-plan-button rounded-pill mt-3">
+                          <button className="plan-button rounded-pill" onClick={handleUpgradeNow}>
+                            Upgrade Now
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  </>
-                )}
-              </div>
-            </>
-          ) : activeTab === "documents" ? (
-            renderDocumentsContent()
-          ) : activeTab === "accept-reject" ? (
-            <AcceptReject applicantId={applicantID} />
-          ) : null}
-        </Row>
-      </Row>
-    </>
-  );
+                    </>
+                  )}
+                </div>
+              )}
+              {activeTab === 'documents' && (
+                <div className="related-documents  ">
+                  {renderDocumentsContent()}
+                </div>
+              )}
+
+              {activeTab === "accept-reject" ? (
+                <AcceptReject applicantId={applicantID} />
+              ) : null}
+            </div>
+          </div>
+
+        </div>
+      </div >
+    </div >
+
+
+  )
 };
 
 export default SchoolViewApplicantDetail;

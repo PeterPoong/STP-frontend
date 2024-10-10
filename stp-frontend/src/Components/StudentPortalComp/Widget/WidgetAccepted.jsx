@@ -21,7 +21,7 @@ const WidgetAccepted = ({ isOpen, onClose, date , feedbacks }) => {
         </div>
         
         <div className="feedback-container">
-          <div className="feedback-scroll">
+          <div className="feedback-scroll" >
             {feedbacks.map((feedback, index) => (
               <p key={index}>{feedback}</p>
             ))}

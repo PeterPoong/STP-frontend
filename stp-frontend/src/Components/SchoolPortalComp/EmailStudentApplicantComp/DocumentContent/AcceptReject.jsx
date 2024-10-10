@@ -137,7 +137,7 @@ const AcceptRejectTab = ({ applicantId }) => {
       </Modal>
       <div className={`${styles.acceptRejectContentContainer}`}>
         <div className="accept-reject-application">
-          <p className="px-4 mb-3">Actions</p>
+          <p className="px-4 mb-3 ms-4">Actions</p>
           <div className={`${styles.acceptRejectSection}`}>
             {/* Accept Radio Button */}
             <input
@@ -151,7 +151,7 @@ const AcceptRejectTab = ({ applicantId }) => {
               onChange={handleOptionChange}
             />
             <label
-              className={`btn btn-outline-success ms-5 ${styles.acceptBtn}`}
+              className={`btn btn-outline-success ms-2 ${styles.acceptBtn}`}
               htmlFor="success-outlined"
             >
               Accept
@@ -191,8 +191,8 @@ const AcceptRejectTab = ({ applicantId }) => {
         </div>
          {/* Conditionally render the submit button only if an option is selected */}
       {selectedOption && (
-        <div className="d-flex justify-content-end mt-4">
-          <button className={`${styles.submitButton}`} onClick={handleSubmit}>
+        <div className="d-flex justify-content-end mt-4 px-5 " >
+          <button className={`${styles.submitButton}`} style={{margin:0}} onClick={handleSubmit}>
             Submit
           </button>
         </div>

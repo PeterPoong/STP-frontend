@@ -123,6 +123,27 @@ const StudentApplicationSummary = ({ }) => {
     return overallGrade.trim() || "N/A";
   };
 
+  const getPositionStyle = (position) => {
+    const colors = {
+      president: '#50B5FE',
+      secretary: '#8979FF',
+      treasurer: '#537FF1',
+      ajk: '#ffc107'
+    };
+
+    const lowercasePosition = position.toLowerCase();
+
+    if (colors[lowercasePosition]) {
+      return { backgroundColor: colors[lowercasePosition], color: 'white' };
+    } else {
+      // Randomly select one of the four colors for other positions
+      const colorKeys = Object.keys(colors);
+      const randomColor = colors[colorKeys[Math.floor(Math.random() * colorKeys.length)]];
+      return { backgroundColor: randomColor, color: 'white' };
+    }
+  };
+
+
   useEffect(() => {
     fetchTranscriptCategories();
     fetchAchievements();
@@ -1874,11 +1895,11 @@ const StudentApplicationSummary = ({ }) => {
                           >
                             {transcriptCategories.map((category) => (
                               <option key={category.id} value={category.id}>
-                                {category.transcript_category} 
+                                {category.transcript_category}
                               </option>
-                             
+
                             ))}
-                             <span>Subjects and Results</span>
+                            <span>Subjects and Results</span>
                           </select>
                           <BsCaretDownFill size={30} className="sas-pointer align-self-start" />
                         </div>
@@ -1886,7 +1907,7 @@ const StudentApplicationSummary = ({ }) => {
                       {cgpaInfo && selectedExam !== "32" && (
                         <div className="px-4 mb-3">
                           <div className="d-flex justify-content-between align-items-center">
-                            <p className="mb-0 d-flex align-items-center">
+                            <p className="mb-0 mt-2 d-flex align-items-center">
                               <strong>Program Name:</strong>
                               <p className=" mb-0"
                                 style={{
@@ -2004,7 +2025,8 @@ const StudentApplicationSummary = ({ }) => {
                               </div>
                               <div className="col-6 col-sm-3 text-end sac-name-restrict">
                                 <span
-                                  className={`position ${activity.student_position.toLowerCase()} py-1 px-2 rounded-pill`}
+                                  className={`position py-1 px-2 rounded-pill`}
+                                  style={getPositionStyle(activity.student_position)}
                                 >
                                   {activity.student_position}
                                 </span>

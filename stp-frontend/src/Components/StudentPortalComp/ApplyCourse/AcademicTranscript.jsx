@@ -1,6 +1,6 @@
 //applu course
 import React, { useState, useEffect, useCallback } from 'react';
-import { Form, Button, Row, Col } from 'react-bootstrap';
+import { Form, Button, Row, Col, Spinner } from 'react-bootstrap';
 import { Trash2, Edit, Plus, Upload, Save, FileText, X, AlignJustify } from 'lucide-react';
 import Select from 'react-select';
 import WidgetPopUpRemind from "../../../Components/StudentPortalComp/Widget/WidgetPopUpRemind";
@@ -19,7 +19,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isUnsavedChangesPopupOpen, setIsUnsavedChangesPopupOpen] = useState(false);
   const [navigationDirection, setNavigationDirection] = useState(null);
-
+  const [savingStates, setSavingStates] = useState({});
 
   // Replace the existing useEffect hook with this:
   useEffect(() => {
@@ -349,28 +349,28 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
 
   const handleRemoveTranscript = async (index) => {
     const transcript = academicTranscripts[index];
-    
+
     if (!transcript.id) {
       // If the transcript doesn't have an ID, it's not saved in the backend yet
       setAcademicTranscripts(academicTranscripts.filter((_, i) => i !== index));
       return;
     }
-  
+
     // Confirmation dialog
     const isConfirmed = window.confirm(
       "Are you sure you want to remove this transcript? This will delete all associated data including subjects, documents, and CGPA information."
     );
-  
+
     if (!isConfirmed) {
       return;
     }
-  
+
     try {
       const result = await resetTranscript(transcript.id);
       if (result.success) {
         // Remove the transcript from the state
         setAcademicTranscripts(academicTranscripts.filter((_, i) => i !== index));
-        
+
         // Clear any errors associated with this transcript
         setDocumentErrors(prevErrors => {
           const newErrors = { ...prevErrors };
@@ -381,7 +381,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
           });
           return newErrors;
         });
-  
+
         // Optionally, show a success message
         alert("Transcript successfully removed and all associated data has been deleted.");
       } else {
@@ -468,6 +468,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
       } : transcript
     );
     setAcademicTranscripts(updatedTranscripts);
+    setHasUnsavedChanges(true);
   };
 
   const handleRemoveSubject = (transcriptIndex, subjectIndex) => {
@@ -707,6 +708,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
   };
 
   const saveTranscript = async (transcriptIndex) => {
+    setSavingStates(prev => ({ ...prev, [transcriptIndex]: 'loading' }));
     try {
       const transcript = academicTranscripts[transcriptIndex];
 
@@ -816,6 +818,10 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
       });
       const data = await response.json();
       if (data.success) {
+        setSavingStates(prev => ({ ...prev, [transcriptIndex]: 'success' }));
+        setTimeout(() => {
+          setSavingStates(prev => ({ ...prev, [transcriptIndex]: null }));
+        }, 2000);
         //console.log('Transcript saved successfully');
         setHasUnsavedChanges(false);
         fetchSubjects(category.id, transcriptIndex);
@@ -851,6 +857,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
         }
       }
     } catch (error) {
+      setSavingStates(prev => ({ ...prev, [transcriptIndex]: 'failed' }));
       console.error('Error saving transcript:', error);
       setDocumentErrors(prevErrors => ({
         ...prevErrors,
@@ -870,11 +877,11 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
         },
         body: JSON.stringify({ transcriptType }),
       });
-  
+
       if (!response.ok) {
         throw new Error('Failed to reset transcript');
       }
-  
+
       const result = await response.json();
       return result;
     } catch (error) {
@@ -956,7 +963,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                   onChange={(selected) =>
                     handleTranscriptChange(index, { id: selected.value, name: selected.label })
                   }
-                  className="fw-bold border-0 sac-at-bg sac-at-select-style"
+                  className="fw-bold border-0 sac-at-bg sac-at-select-style w-100"
                   placeholder="Choose an education"
                 />
               )}
@@ -974,7 +981,11 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
             </div>
           </div>
 
-
+          {transcript.subjects.length === 0 && (
+              <div className="px-4 py-2 text-muted">
+                No subjects added yet. Click the "+" icon to add a subject.
+              </div>
+            )}
           {transcript.subjects.length > 0 ? (
             <div className="px-4">
               {transcript.subjects.map((subject, subIndex) => (
@@ -999,7 +1010,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                                 options={subjectOptions}
                                 value={subject.id && subject.name ? { value: subject.id, label: subject.name } : null}
                                 onChange={(selected) => handleSubjectSelectChange(index, subIndex, selected)}
-                                className="me-2 w-25"
+                                className="me-2 w-25 "
                                 placeholder="Select Subject"
                               />
                             );
@@ -1016,29 +1027,40 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                           />
                         )}
 
-                        <Form.Control
-                          as="select"
-                          value={subject.grade}
-                          onChange={(e) => handleSubjectChange(index, subIndex, 'grade', e.target.value)}
-                          className={`me-2 w-auto px-2 py-1 px-3 rounded-5 border-0 text-white bg-${getGradeColor(subject.grade)}`}
-                          style={{ fontSize: '0.9rem', fontWeight: "500" }}
-                          required
-                        >
-                          <option value="" disabled>Grade</option>
-                          <option value="A+">A+</option>
-                          <option value="A">A</option>
-                          <option value="A-">A-</option>
-                          <option value="B+">B+</option>
-                          <option value="B">B</option>
-
-                          <option value="C+">C+</option>
-                          <option value="C">C</option>
-
-                          <option value="D">D</option>
-                          <option value="E">E</option>
-                          <option value="G">G</option>
-
-                        </Form.Control>
+                        {transcript.id === 32 ? (
+                          // SPM grade selection
+                          <Form.Control
+                            as="select"
+                            value={subject.grade}
+                            onChange={(e) => handleSubjectChange(index, subIndex, 'grade', e.target.value)}
+                            className={`me-2 w-auto px-4 py-1 px-3 rounded-5  text-black border-1  ms-2`}
+                            style={{ fontSize: '0.9rem', fontWeight: "500", borderColor: "#9E9E9E" }}
+                            required
+                          >
+                            <option value="" disabled>Grade</option>
+                            <option value="A+">A+</option>
+                            <option value="A">A</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B">B</option>
+                            <option value="C+">C+</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                            <option value="E">E</option>
+                            <option value="G">G</option>
+                          </Form.Control>
+                        ) : (
+                          // Other transcripts grade input
+                          <Form.Control
+                            type="text"
+                            value={subject.grade}
+                            onChange={(e) => handleSubjectChange(index, subIndex, 'grade', e.target.value)}
+                            className="me-2 w-auto"
+                            placeholder="Grade"
+                            style={{ fontSize: '0.9rem', fontWeight: "500" }}
+                            required
+                          />
+                        )}
                       </div>
                       <div className="d-flex">
                         <Button variant="link" className="p-0 me-2" onClick={() => handleSaveSubject(index, subIndex)}>
@@ -1064,7 +1086,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                             whiteSpace: 'nowrap',
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
-                            
+
                           }}>{subject.name}</span>
                         <span style={{ fontSize: '0.9rem', fontWeight: "500" }}
                           className={`ms-3 me-2 px-2 py-1 px-3 rounded-5 text-white bg-${getGradeColor(subject.grade)}`}>
@@ -1230,15 +1252,37 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                 )}
               </div>
             ))}
-
+            {transcript.documents.length === 0 && (
+              <div className="px-4 py-2 text-muted">
+                No documents added yet. Click the "+" icon to add a document.
+              </div>
+            )}
           </div>
           <div className="d-flex justify-content-end mt-3 px-4">
             <Button
-              variant="primary"
+              variant={savingStates[index] === 'success' ? 'success' : 'primary'}
               onClick={() => saveTranscript(index)}
               className="sac-save-button "
             >
-              Save
+              {savingStates[index] === 'loading' ? (
+                <>
+                  <Spinner
+                    as="span"
+                    animation="border"
+                    size="sm"
+                    role="status"
+                    aria-hidden="true"
+                    className="me-2"
+                  />
+                  Saving...
+                </>
+              ) : savingStates[index] === 'success' ? (
+                'Saved!'
+              ) : savingStates[index] === 'failed' ? (
+                'Failed!'
+              ) : (
+                'Save'
+              )}
             </Button>
           </div>
         </div>

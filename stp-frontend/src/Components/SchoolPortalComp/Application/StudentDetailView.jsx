@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { FileText, Search, Eye, ChevronDown, ChevronUp, Clock, Copy, Check, X, Download } from 'react-feather';
 import { GraduationCap, CalendarCheck, BookOpenText } from 'lucide-react';
@@ -9,11 +9,11 @@ import { useParams, useNavigate } from 'react-router-dom';
 import WidgetFileUpload from "../../../Components/StudentPortalComp/WidgetFileUpload";
 import WidgetAchievement from "../../../Components/StudentPortalComp/Widget/WidgetAchievement";
 import WidgetFileUploadAcademicTranscript from "../../../Components/StudentPortalComp/WidgetFileUploadAcademicTranscript";
-import { BsWhatsapp,BsCaretDownFill  } from 'react-icons/bs';
+import { BsWhatsapp, BsCaretDownFill } from 'react-icons/bs';
 import Lock from "../../../assets/StudentPortalAssets/lock.svg";
-import { Arrow90degLeft,ChevronLeft } from "react-bootstrap-icons"
+import { Arrow90degLeft, ChevronLeft } from "react-bootstrap-icons"
 import defaultProfilePic from "../../../assets/StudentPortalAssets/sampleprofile.png";
-const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, onActionSuccess }) => {
+const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, onActionSuccess,onActionUpgrade }) => {
   const [accountType, setAccountType] = useState(null);
   const [copiedFields, setCopiedFields] = useState({
     name: false,
@@ -155,15 +155,42 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
     }
   }, [applicantDetails, acceptRejectAction]);
 
+
+
+  const getPositionStyle = (position) => {
+    const colors = {
+      president: '#50B5FE',
+      secretary: '#8979FF',
+      treasurer: '#537FF1',
+      ajk: '#ffc107'
+    };
+
+    const lowercasePosition = position.toLowerCase();
+
+    if (colors[lowercasePosition]) {
+      return { backgroundColor: colors[lowercasePosition], color: 'white' };
+    } else {
+      // Randomly select one of the four colors for other positions
+      const colorKeys = Object.keys(colors);
+      const randomColor = colors[colorKeys[Math.floor(Math.random() * colorKeys.length)]];
+      return { backgroundColor: randomColor, color: 'white' };
+    }
+  };
+
+
+  const handleUpgradePage = () => {
+    onActionUpgrade(); // Invoke the prop to trigger ManageAccount rendering
+  };
+
   const handleWhatsAppClick = useCallback(() => {
     if (basicInfo?.student_contactNo && basicInfo?.student_countryCode) {
       // Remove any non-digit characters from the phone number and country code
       const cleanCountryCode = basicInfo.student_countryCode.replace(/\D/g, '');
       const cleanPhoneNumber = basicInfo.student_contactNo.replace(/\D/g, '');
-      
+
       // Construct the WhatsApp URL
       const whatsappUrl = `https://wa.me/${cleanCountryCode}${cleanPhoneNumber}`;
-      
+
       // Open the URL in a new tab
       window.open(whatsappUrl, '_blank');
     } else {
@@ -176,8 +203,8 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
   const fetchTranscriptCategories = async () => {
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-    //  console.log('Fetching transcript categories...');
-    //  console.log('Token:', token); // Log the token (be careful with this in production)
+      //  console.log('Fetching transcript categories...');
+      //  console.log('Token:', token); // Log the token (be careful with this in production)
 
       const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/school/schoolTranscriptCategoryList`, {
         method: 'POST',
@@ -187,7 +214,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
         },
       });
 
-     // console.log('Response status:', response.status);
+      // console.log('Response status:', response.status);
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -196,7 +223,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
       }
 
       const result = await response.json();
-     // console.log('Transcript categories result:', result);
+      // console.log('Transcript categories result:', result);
 
       if (result.success) {
         setTranscriptCategories(result.data.data);
@@ -415,7 +442,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
       }
 
       const result = await response.json();
-     // console.log('Achievements API response:', result);
+      // console.log('Achievements API response:', result);
 
       // Adjusted response handling based on the new API response structure
       if (result.success && Array.isArray(result.data) && result.data.length > 0) {
@@ -495,7 +522,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
       });
 
       const result = await response.json(); // Parse JSON first
-   //  console.log('API Response:', result);
+      //  console.log('API Response:', result);
 
       if (!response.ok) {
         if (response.status === 422) {
@@ -566,7 +593,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
       }
 
       const result = await response.json();
-     // console.log('Achievements API response:', result);
+      // console.log('Achievements API response:', result);
 
       if (result.success && Array.isArray(result.data.data)) {
         setAchievementDocs(result.data.data);
@@ -628,7 +655,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
       }
 
       const result = await response.json();
-     // console.log('Other Documents API response:', result);
+      // console.log('Other Documents API response:', result);
 
       if (result.success && Array.isArray(result.data.data)) {
         setOtherDocuments(result.data.data);
@@ -754,28 +781,30 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
   const renderAcademicResults = () => {
     return (
       <div className="academic-results m-3 shadow-lg rounded-5 pt-4 d-flex flex-column">
-        <div className="px-4 d-flex align-items-baseline">
-          <select
-            className="sac-form-select mb-3 px-0"
-            value={selectedCategory}
-            onChange={handleCategoryChange}
-          >
-            {transcriptCategories.map((category) => (
-              <option key={category.id} value={category.id}>
-                {category.transcript_category}  Subjects and Results
-              </option>
-            ))}
-          
-            
-           
-          </select>
-          <BsCaretDownFill  size={12} />
+        <div className="px-4">
+          <div className=" d-flex  sas-pointer-div px-0 ">
+            <select
+              className="sac-form-select mb-1 px-0"
+              value={selectedCategory ||""}
+              onChange={handleCategoryChange}
+            >
+              {transcriptCategories.map((category) => (
+                <option key={category.id ||""} value={category.id ||""}>
+                  {category.transcript_category ||""}
+                </option>
+              ))}
+
+              <span>Subjects and Results</span>
+
+            </select>
+            <BsCaretDownFill size={30} className="sas-pointer align-self-start" />
+          </div>
         </div>
 
         {selectedCategory !== 32 && cgpaInfo && (
           <div className="px-4 mb-3">
             <div className="d-flex justify-content-between align-items-center">
-              <p className="mb-0 d-flex align-items-center">
+              <p className="mb-0 mt-2 d-flex align-items-center">
                 <strong>Program Name:</strong>
                 <p className=" mb-0"
                   style={{
@@ -786,9 +815,9 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     maxWidth: '175px',
-                    marginLeft:'20px'
+                    marginLeft: '20px'
                   }} >
-                         {cgpaInfo.program_name || 'N/A'}
+                  {cgpaInfo.program_name || 'N/A'}
                 </p>
               </p>
               <p className="mb-0"><strong>CGPA:</strong> {cgpaInfo.cgpa || 'N/A'}</p>
@@ -801,18 +830,18 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
             transcriptSubjects.map((subject, index) => (
               <div key={index} className="d-flex justify-content-between py-3">
                 <p className="mb-0"
-                 style={{
-                  wordWrap: 'break-word',
-                  overflowWrap: 'break-word',
-                  wordBreak: 'break-all',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  maxWidth: '350px'
-                }}>
-                  <strong>{subject.subject_name || subject.highTranscript_name}</strong>
-                  </p>
-                <p className="mb-0"><strong>{subject.subject_grade || subject.higherTranscript_grade}</strong></p>
+                  style={{
+                    wordWrap: 'break-word',
+                    overflowWrap: 'break-word',
+                    wordBreak: 'break-all',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    maxWidth: '350px'
+                  }}>
+                  <strong>{subject.subject_name || subject.highTranscript_name ||""}</strong>
+                </p>
+                <p className="mb-0"><strong>{subject.subject_grade || subject.higherTranscript_grade ||""}</strong></p>
               </div>
             ))
           ) : (
@@ -824,7 +853,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
         <div className="grade-summary d-flex justify-content-between align-items-stretch border-top">
           <div className="overall-grade text-white w-75 d-flex justify-content-start py-3">
             <h3 className="align-self-center px-5">
-              Grade: {calculateOverallGrade(transcriptSubjects)}
+              Grade: {calculateOverallGrade(transcriptSubjects) ||""}
             </h3>
           </div>
           <Button
@@ -834,7 +863,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
               setActiveTab('documents');
               setActiveDocumentTab('academic');
             }}
-            disabled={accountType !== 65 || 
+            disabled={accountType !== 65 ||
               transcriptDocuments.length === 0}
             style={{
               color: accountType !== 65 ? 'black' : '#B71A18'
@@ -958,12 +987,12 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
                           <div className="d-flex align-items-center">
                             <FileText className="file-icon me-2" />
                             <div>
-                              <div className="file-title name-restrict">{doc.studentMedia_name}</div>
-                              <div className="file-date">{doc.created_at}</div>
+                              <div className="file-title name-restrict">{doc.studentMedia_name ||""}</div>
+                              <div className="file-date">{doc.created_at ||""}</div>
                             </div>
                           </div>
                         </td>
-                        <td className="border-bottom p-2" data-label="File Name">{doc.studentMedia_location}</td>
+                        <td className="border-bottom p-2" data-label="File Name">{doc.studentMedia_location ||""}</td>
                       </>
                     )}
                     {activeDocumentTab === 'achievements' && (
@@ -972,12 +1001,12 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
                           <div className="d-flex align-items-center">
                             <FileText className="file-icon me-2" />
                             <div>
-                              <div className="file-title name-restrict">{doc.achievement_name}</div>
-                              <div className="file-date">{doc.date}</div>
+                              <div className="file-title name-restrict">{doc.achievement_name ||""}</div>
+                              <div className="file-date">{doc.date ||""}</div>
                             </div>
                           </div>
                         </td>
-                        <td className="border-bottom p-2 " data-label="File Name">{doc.achievement_media}</td>
+                        <td className="border-bottom p-2 " data-label="File Name">{doc.achievement_media ||""}</td>
                       </>
                     )}
                     {activeDocumentTab === 'other' && (
@@ -986,12 +1015,12 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
                           <div className="d-flex align-items-center">
                             <FileText className="file-icon me-2" />
                             <div>
-                              <div className="file-title name-restrict">{doc.name}</div>
-                              <div className="file-date">{doc.created_at}</div>
+                              <div className="file-title name-restrict">{doc.name ||""}</div>
+                              <div className="file-date">{doc.created_at ||""}</div>
                             </div>
                           </div>
                         </td>
-                        <td className="border-bottom p-2" data-label="File Name">{doc.media}</td>
+                        <td className="border-bottom p-2" data-label="File Name">{doc.media ||""}</td>
                       </>
                     )}
                     <td className="border-bottom p-2" data-label="Actions">
@@ -1195,7 +1224,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
             <div className="application-summary-container-inside rounded">
               <div className="applicant-summary-header  border border-bottom">
                 <div className="applicant-info">
-                  <img src={`${import.meta.env.VITE_BASE_URL}storage/${basicInfo?.student_profilePic}`}
+                  <img src={`${import.meta.env.VITE_BASE_URL}storage/${basicInfo?.student_profilePic ||""}`}
                     onError={(e) => {
                       e.target.onerror = null; // prevents looping
                       e.target.src = defaultProfilePic;
@@ -1203,8 +1232,8 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
                     className="applicant-photo me-4 ms-2 "
                     alt="Student" />
                   <div>
-                    <p className="my-0 school-fontsize-1 ">{`${basicInfo?.first_name} ${basicInfo?.last_name}`}</p>
-                    <p className="my-0 text-secondary mt-2"><small>Applied For:</small> <span className="text-black ms-2">{applicantDetails.course_name}</span></p>
+                    <p className="my-0 school-fontsize-1 ">{`${basicInfo?.first_name ||""} ${basicInfo?.last_name ||""}`}</p>
+                    <p className="my-0 text-secondary mt-2"><small>Applied For:</small> <span className="text-black ms-2">{applicantDetails.course_name ||""}</span></p>
                   </div>
                 </div>
                 <span
@@ -1218,7 +1247,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
                       'Pending'}
                 </span>
                 <Button className="applicant-chat-button d-flex align-items-center justify-content-center text-nowrap"
-                onClick={handleWhatsAppClick}>
+                  onClick={handleWhatsAppClick}>
                   <BsWhatsapp className="me-2 whatsapp-button text-nonwrap" size={20} />
                   Chat on WhatsApp
                 </Button>
@@ -1276,7 +1305,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
                         <div className="col-md-6 mb-3">
                           <p><strong>Identity Card Number</strong></p>
                           <p className="d-flex align-items-center">
-                            <span className="me-2">{basicInfo?.student_icNumber}</span>
+                            <span className="me-2">{basicInfo?.student_icNumber ||""}</span>
                             <span
                               className="copy-icon-wrapper"
                               onClick={() => copyToClipboard(basicInfo?.student_icNumber, 'icNumber')}
@@ -1315,7 +1344,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
                             overflowWrap: 'break-word',
                             wordBreak: 'break-all'
                           }}>
-                            <span className="me-2">{basicInfo?.student_email}</span>
+                            <span className="me-2">{basicInfo?.student_email ||""}</span>
                             <span
                               className="copy-icon-wrapper"
                               onClick={() => copyToClipboard(basicInfo?.student_email, 'email')}
@@ -1333,7 +1362,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
                         <div className="col-12">
                           <p><strong>Address</strong></p>
                           <p className="d-flex align-items-center">
-                            <span className="me-2">{basicInfo?.address}</span>
+                            <span className="me-2">{basicInfo?.address ||""}</span>
                             <span
                               className="copy-icon-wrapper"
                               onClick={() => copyToClipboard(basicInfo?.address || '', 'address')}
@@ -1361,15 +1390,20 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
                             coCurriculum.map((activity, index) => (
                               <div key={index} className="activity-item d-flex flex-wrap justify-content-between align-items-start py-2">
                                 <div className="col-12 col-sm-3">
-                                  <p className="mb-0 name-restrict"> <strong>{activity.club_name}</strong></p>
-                                  <p className="mb-0 text-muted name-restrict">{activity.location}</p>
+                                  <p className="mb-0 name-restrict"> <strong>{activity.club_name||""}</strong></p>
+                                  <p className="mb-0 text-muted name-restrict">{activity.location||""}</p>
                                 </div>
                                 <div className="col-6 col-sm-3 text-start text-sm-center">
-                                  <p className="mb-0">{activity.year}</p>
+                                  <p className="mb-0">{activity.year||""}</p>
                                 </div>
                                 <div className="col-6 col-sm-3 text-end name-restrict">
                                   {/* Updated to use student_position instead of position */}
-                                  <span className={`position ${activity.student_position.toLowerCase()} py-1 px-2 rounded-pill`}>{activity.student_position}</span>
+                                  <span
+                                  className={`position py-1 px-2 rounded-pill`}
+                                  style={getPositionStyle(activity.student_position)}
+                                >
+                                  {activity.student_position}
+                                </span>
                                 </div>
                               </div>
                             ))
@@ -1385,11 +1419,11 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
                             achievements.map((achievement, index) => (
                               <div key={index} className="achievement-item d-flex flex-wrap justify-content-between align-items-start py-2">
                                 <div className="col-12 col-sm-4">
-                                  <p className="mb-0 name-restrict"><strong>{achievement.achievement_name}</strong></p>
-                                  <p className="mb-0 name-restrict text-muted">{achievement.awarded_by}</p>
+                                  <p className="mb-0 name-restrict"><strong>{achievement.achievement_name ||""}</strong></p>
+                                  <p className="mb-0 name-restrict text-muted">{achievement.awarded_by ||""}</p>
                                 </div>
                                 <div className="col-6 col-sm-3 text-start text-sm-center">
-                                  <p className="mb-0">{achievement.date}</p>
+                                  <p className="mb-0">{achievement.date ||""}</p>
                                 </div>
                                 <div className="col-6 col-sm-5 mx-auto text-end">
                                   <span className={`position ${(achievement.title?.core_metaName?.toLowerCase() ?? '').replace(/\s+/g, '-')} py-1 px-2 rounded-pill`} >
@@ -1413,7 +1447,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
                         <p className="text-center text-white mt-3 px-5">This feature is locked and available
                           only with a premium account.</p>
                         <div className="sdv-div-plan-button rounded-pill mt-3">
-                          <button className="plan-button rounded-pill">Upgrade Now</button>
+                          <button className="plan-button rounded-pill" onClick={ handleUpgradePage}>Upgrade Now</button>
                         </div>
                       </div>
                       <div className="sdv-achievements m-3 shadow-lg p-4 rounded-5  d-flex align-items-center justify-content-center flex-column ">
@@ -1421,7 +1455,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
                         <p className="text-center text-white mt-3 px-5">This feature is locked and available
                           only with a premium account.</p>
                         <div className="sdv-div-plan-button rounded-pill mt-3">
-                          <button className="plan-button rounded-pill">Upgrade Now</button>
+                          <button className="plan-button rounded-pill"  onClick={ handleUpgradePage}>Upgrade Now</button>
                         </div></div>
                     </>
                   )}

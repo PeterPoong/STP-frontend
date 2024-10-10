@@ -24,7 +24,7 @@ const StudentPortalSignUp = () => {
   const [isFormValid, setIsFormValid] = useState(false);
   const [phoneError, setPhoneError] = useState("");
   const navigate = useNavigate();
-
+  const [icError, setIcError] = useState("");
   /*Checking if have token or not if dont have navigate back to studentportalbasicinformations page */
   useEffect(() => {
     const token =
@@ -58,6 +58,18 @@ const StudentPortalSignUp = () => {
     } else {
       setPhoneError("");
     }
+
+
+    // Revalidate IC when country changes
+    if (country.dialCode === "60" && identityCard) {
+      if (!validateMalaysianIC(identityCard)) {
+        setIcError("Malaysian IC must be 12 digits");
+      } else {
+        setIcError("");
+      }
+    } else {
+      setIcError(""); // Clear error for non-Malaysian ICs
+    }
   };
   /*end */
 
@@ -77,6 +89,10 @@ const StudentPortalSignUp = () => {
 
     if (password.length < 8) {
       setSignupStatus("password_too_short");
+      return;
+    }
+    if (countryCode === "60" && !validateMalaysianIC(identityCard)) {
+      setIcError("Malaysian IC must be 12 digits");
       return;
     }
 
@@ -141,6 +157,10 @@ const StudentPortalSignUp = () => {
       });
   };
 
+  const validateMalaysianIC = (ic) => {
+    // Malaysian IC should be exactly 12 digits
+    return /^\d{12}$/.test(ic);
+  };
 
 
   const handleNameChange = (e) => {
@@ -151,6 +171,16 @@ const StudentPortalSignUp = () => {
   const handleIdentityCardChange = (e) => {
     const value = e.target.value.replace(/[^a-zA-Z0-9]/g, '');
     setIdentityCard(value);
+
+    if (countryCode === "60") { // Check if the country is Malaysia
+      if (!validateMalaysianIC(value)) {
+        setIcError("Malaysian IC must be 12 digits");
+      } else {
+        setIcError("");
+      }
+    } else {
+      setIcError(""); // Clear error for non-Malaysian ICs
+    }
   };
   /*end */
 
@@ -288,6 +318,11 @@ const StudentPortalSignUp = () => {
                       title="IC can only contain letters and numbers"
                       className="std-input-placeholder"
                     />
+                    {icError && (
+                      <Form.Control.Feedback type="invalid" style={{ display: 'block' }}>
+                        {icError}
+                      </Form.Control.Feedback>
+                    )}
                   </Form.Group>
                 </Col>
               </Row>

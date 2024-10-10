@@ -1,7 +1,8 @@
-import React, { useState, useEffect,useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Form, Row, Col, Alert } from 'react-bootstrap';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
+import "../../../css/StudentPortalStyles/StudentPortalLoginForm.css";
 import WidgetPopUpFillIn from "../../../Components/StudentPortalComp/Widget/WidgetPopUpFillIn";
 const BasicInformation = ({ onSubmit, nextStep }) => { // Added nextStep as a prop
     const [formData, setFormData] = useState({
@@ -213,24 +214,30 @@ const BasicInformation = ({ onSubmit, nextStep }) => { // Added nextStep as a pr
         const { name, value } = e.target;
         let sanitizedValue = value;
 
-        if (name === 'username' || name === 'icNumber') {
+        if (name === 'username') {
             sanitizedValue = value.replace(/[^a-zA-Z0-9]/g, '');
         } else if (name === 'firstName' || name === 'lastName') {
             sanitizedValue = value.replace(/[^a-zA-Z\s]/g, '');
         } else if (name === 'postcode') {
             sanitizedValue = value.replace(/[^0-9]/g, '');
+        } else if (name === 'icNumber') {
+            if (formData.country_code === '+60') {
+                sanitizedValue = value.replace(/[^0-9]/g, '').slice(0, 12);
+            } else {
+                sanitizedValue = value.replace(/[^a-zA-Z0-9]/g, '');
+            }
         }
 
         setFormData(prevData => {
             const newData = { ...prevData, [name]: sanitizedValue };
-            
+
             if (name === 'icNumber' && newData.country_code === '+60') {
                 const presetGenderValue = presetGender(sanitizedValue, newData.country_code);
                 if (presetGenderValue && !newData.gender) {
                     newData.gender = presetGenderValue;
                 }
             }
-            
+
             return newData;
         });
     };
@@ -360,24 +367,6 @@ const BasicInformation = ({ onSubmit, nextStep }) => { // Added nextStep as a pr
                         <Row className="mb-5">
                             <Col md={6}>
                                 <Form.Group className="sac-form-group d-flex align-items-center">
-                                    <Form.Label htmlFor="username" className="me-2">Username<span className="text-danger">*</span></Form.Label>
-                                    <Form.Control
-                                        type="text"
-                                        id="username"
-                                        name="username"
-                                        value={formData.username}
-                                        onChange={handleInputChange}
-                                        placeholder="Enter username "
-                                        required
-                                        pattern="[a-zA-Z0-9]+"
-                                        title="Username can only contain letters and numbers"
-                                    />
-                                </Form.Group>
-                            </Col>
-                        </Row>
-                        <Row className="mb-5">
-                            <Col md={6}>
-                                <Form.Group className="sac-form-group d-flex align-items-center">
                                     <Form.Label htmlFor="firstName" className="me-2">First Name<span className="text-danger">*</span></Form.Label>
                                     <Form.Control
                                         type="text"
@@ -389,6 +378,7 @@ const BasicInformation = ({ onSubmit, nextStep }) => { // Added nextStep as a pr
                                         required
                                         pattern="[a-zA-Z\s]+"
                                         title="First name can only contain letters and spaces"
+                                        className="std-input-placeholder"
                                     />
                                 </Form.Group>
                             </Col>
@@ -405,6 +395,7 @@ const BasicInformation = ({ onSubmit, nextStep }) => { // Added nextStep as a pr
                                         required
                                         pattern="[a-zA-Z\s]+"
                                         title="Last name can only contain letters and spaces"
+                                        className="std-input-placeholder"
                                     />
                                 </Form.Group>
                             </Col>
@@ -419,10 +410,11 @@ const BasicInformation = ({ onSubmit, nextStep }) => { // Added nextStep as a pr
                                         name="icNumber"
                                         value={formData.icNumber}
                                         onChange={handleInputChange}
-                                        placeholder="Enter IC number (letters and numbers only)"
+                                        placeholder={formData.country_code === '+60' ? "Enter 12-digit IC number" : "Enter IC number"}
                                         required
-                                        pattern="[a-zA-Z0-9]+"
-                                        title="IC number can only contain letters and numbers"
+                                        pattern={formData.country_code === '+60' ? "[0-9]{12}" : "[a-zA-Z0-9]+"}
+                                        title={formData.country_code === '+60' ? "IC must be exactly 12 digits" : "IC can contain letters and numbers"}
+                                        maxLength={formData.country_code === '+60' ? 12 : undefined}
                                     />
                                 </Form.Group>
                             </Col>
@@ -472,6 +464,7 @@ const BasicInformation = ({ onSubmit, nextStep }) => { // Added nextStep as a pr
                                         value={formData.emailAddress}
                                         onChange={handleInputChange}
                                         placeholder="Enter email address"
+                                        className="std-input-placeholder"
                                         required
                                     />
                                 </Form.Group>
@@ -488,6 +481,7 @@ const BasicInformation = ({ onSubmit, nextStep }) => { // Added nextStep as a pr
                                         value={formData.address}
                                         onChange={handleInputChange}
                                         placeholder="Enter address"
+                                        className="std-input-placeholder"
                                         required
                                     />
                                 </Form.Group>
@@ -563,6 +557,7 @@ const BasicInformation = ({ onSubmit, nextStep }) => { // Added nextStep as a pr
                                         value={formData.postcode}
                                         onChange={handleInputChange}
                                         placeholder="Enter postcode (numbers only)"
+                                        className="std-input-placeholder"
                                         required
                                         pattern="[0-9]+"
                                         title="Postcode can only contain numbers"

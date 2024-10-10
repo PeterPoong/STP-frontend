@@ -14,6 +14,8 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [errors, setErrors] = useState({});
   const [achievementTypes, setAchievementTypes] = useState([]);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveStatus, setSaveStatus] = useState(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -57,6 +59,7 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
     setAwardedBy('');
     setAchievementMedia(null);
     setErrors({});
+    setSaveStatus();
   };
   /*end */
 
@@ -122,6 +125,8 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
     setErrors({});
     // Proceed with save
     const formattedDate = date ? formatDate(date) : '';
+    setIsSaving(true);
+    setSaveStatus(null);
     try {
       const result = await onSave({
         id: item ? item.id : null,
@@ -134,17 +139,25 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
       if (!result.success) {
         if (result.message === "Validation Error" && result.error) {
           // Handle validation errors
+          setSaveStatus('error');
           const errorMessages = Object.entries(result.error).map(([key, value]) => `${key}: ${value.join(', ')}`);
           setErrors({ general: errorMessages.join('. ') });
         } else {
           setErrors({ general: result.message || "Failed to save achievement. Please try again." });
         }
       } else {
-        handleClose();
+        setSaveStatus('success');
+        setTimeout(() => {
+          handleClose();
+        }, 1500);
       }
     } catch (error) {
       console.error('Error saving achievement:', error);
       setErrors({ general: "An error occurred. Please try again later." });
+      setSaveStatus('error');
+    }
+    finally {
+      setIsSaving(false);
     }
   };
   /*end */
@@ -207,7 +220,7 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
             <>
               {achievement_name || 'New Acievement'}
               {!isViewMode && (
-                  <Edit2 size={18} color="white" className="buttoneditam" onClick={handleTitleEdit} />        
+                <Edit2 size={18} color="white" className="buttoneditam" onClick={handleTitleEdit} />
               )}
             </>
           )}
@@ -251,7 +264,7 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
                     color: 'white'
                   }}
                 >
-                 
+
                   {achievementTypes.map((type) => (
                     <option key={type.id} value={type.id.toString()} style={{ color: 'black' }}>
                       {type.core_metaName}
@@ -285,7 +298,7 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
                   <label htmlFor="file-upload" className="achievement-upload-label">
                     <Upload size={24} color="#dc3545" />
                     <span>Click to Upload</span>
-                    <span className="achievement-file-limit">(Max. File size: 25 MB)</span>
+                    <span className="achievement-file-limit">(Max. File size: 10 MB)</span>
                     <input
                       id="file-upload"
                       type="file"
@@ -320,8 +333,26 @@ const WidgetAchievement = ({ isOpen, onClose, onSave, item, isViewMode }) => {
 
         {!isViewMode && (
           <div className="d-flex justify-content-center">
-            <button className="achievement-save-btn" onClick={handleSave}>
-              {item ? 'UPDATE' : 'SAVE'}
+            <button
+              className={`achievement-save-btn ${isSaving ? 'saving' : ''} ${saveStatus ? saveStatus : ''}`}
+              onClick={handleSave}
+              disabled={isSaving}
+            >
+              {isSaving ? (
+                <>
+                  <div className="spinner"></div>
+                  <span>Saving...</span>
+                </>
+              ) : saveStatus === 'success' ? (
+                <>
+                  <Check size={18} />
+                  <span>Saved!</span>
+                </>
+              ) : saveStatus === 'error' ? (
+                <span>Failed</span>
+              ) : (
+                <span>{item ? 'UPDATE' : 'SAVE'}</span>
+              )}
             </button>
           </div>
         )}
