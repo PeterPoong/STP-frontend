@@ -1984,10 +1984,10 @@ const StudentApplicationSummary = ({ }) => {
                             setActiveTab("documents"); // Navigate to Your Documents tab
                             setActiveDocumentTab("academic"); // Navigate to Academic Transcript tab
                           }}
-                          disabled={
-                            transcriptSubjects.length === 0 ||
-                            academicTranscripts.length === 0
-                          }
+                         // disabled={
+                         //   transcriptSubjects.length === 0 ||
+                          //  academicTranscripts.length === 0
+                          //}
                           style={{
                             color: transcriptSubjects.length === 0 ||
                               academicTranscripts.length === 0 ? 'black' : '#B71A18'

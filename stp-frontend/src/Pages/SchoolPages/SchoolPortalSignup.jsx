@@ -125,14 +125,10 @@ const SchoolPortalSignup = () => {
       <Row className="h-100">
         <Col
           md={6}
-          className="d-flex align-items-center justify-content-center"
+          className="d-flex align-items-center justify-content-center bg-white "
         >
           <div className="w-100" style={{ maxWidth: "400px" }}>
-            <img
-              src={schoolPortalLoginLogo}
-              className="img-fluid mb-4"
-              alt="StudyPal Logo"
-            />
+            <div className="studypal-school-logo-div"></div>
             <h3 className="text-start mb-2 custom-color-title ">
               Connect with Students Worldwide
             </h3>
@@ -144,7 +140,8 @@ const SchoolPortalSignup = () => {
             )}
             <Form onSubmit={handleSubmit}>
               <Form.Group className="mb-3">
-                <Form.Label className="custom-label">Institute Name</Form.Label>
+                <p className="text-start p-0 mb-0 custom-color-title-label small ">
+                  Institute Name</p>
                 <Form.Control
                   type="text"
                   placeholder="Institute Name"
@@ -164,9 +161,9 @@ const SchoolPortalSignup = () => {
               <Row>
                 <Col xs={12} md={6}>
                   <Form.Group controlId="formBasicPhone" className="mb-3">
-                    <Form.Label className="custom-label">
+                    <p className="text-start p-0 mb-0 custom-color-title-label small ">
                       Contact Number
-                    </Form.Label>
+                    </p>
                     <PhoneInput
                       country={"my"}
                       value={schoolContact}
@@ -211,7 +208,8 @@ const SchoolPortalSignup = () => {
               </Row>
 
               <Form.Group className="mb-3">
-                <Form.Label className="custom-label">Email Address</Form.Label>
+                <p className="text-start p-0 mb-0 custom-color-title-label small ">
+                  Email Address</p>
                 <Form.Control
                   type="email"
                   placeholder="Institute Email"
@@ -229,9 +227,9 @@ const SchoolPortalSignup = () => {
               </Form.Group>
 
               <Form.Group className="mb-3">
-                <Form.Label className="custom-label">
+                <p className="text-start p-0 mb-0 custom-color-title-label small ">
                   Institute Address
-                </Form.Label>
+                </p>
                 <Form.Control
                   type="text"
                   placeholder="Institute Address"
@@ -244,9 +242,10 @@ const SchoolPortalSignup = () => {
               <Row>
                 <Col>
                   <Form.Group className="mb-3">
-                    <Form.Label className="custom-label">
+                    <p className="text-start p-0 mb-0 custom-color-title-label small ">
+
                       Person-In-Charge's Name
-                    </Form.Label>
+                    </p>
                     <Form.Control
                       type="text"
                       placeholder="Person-In-Charge's Name"
@@ -259,9 +258,10 @@ const SchoolPortalSignup = () => {
 
                 <Col>
                   <Form.Group controlId="formBasicPhone" className="mb-3">
-                    <Form.Label className="custom-label">
+                    <p className="text-start p-0 mb-0 custom-color-title-label small ">
+
                       Person-In-Charge's Contact
-                    </Form.Label>
+                    </p>
                     <PhoneInput
                       country={"my"}
                       value={personInChargeContact}
@@ -285,9 +285,10 @@ const SchoolPortalSignup = () => {
 
               <Row>
                 <Form.Group className="mb-3">
-                  <Form.Label className="custom-label">
+                  <p className="text-start p-0 mb-0 custom-color-title-label small ">
+
                     Person-In-Charge's Email Address
-                  </Form.Label>
+                  </p>
                   <Form.Control
                     type="email"
                     placeholder="Person-In-Charge's Email"
@@ -302,7 +303,8 @@ const SchoolPortalSignup = () => {
               <Row>
                 <Col>
                   <Form.Group className="mb-3">
-                    <Form.Label className="custom-label">Password</Form.Label>
+                    <p className="text-start p-0 mb-0 custom-color-title-label small ">
+                      Password</p>
                     <InputGroup hasValidation>
                       <Form.Control
                         type={showPassword ? "text" : "password"}
@@ -338,9 +340,10 @@ const SchoolPortalSignup = () => {
                 </Col>
                 <Col>
                   <Form.Group className="mb-3">
-                    <Form.Label className="custom-label">
+                  <p className="text-start p-0 mb-0 custom-color-title-label small ">
+                 
                       Confirm Password
-                    </Form.Label>
+                    </p>
                     <InputGroup hasValidation>
                       <Form.Control
                         type={showConfirmPassword ? "text" : "password"}
@@ -356,25 +359,25 @@ const SchoolPortalSignup = () => {
                       {(confirmPassword.length === 0 ||
                         (confirmPassword === password &&
                           password.length >= 8)) && (
-                        <div
-                          className="position-absolute top-50 end-0 translate-middle-y pe-3"
-                          style={{ zIndex: 10 }}
-                        >
-                          <span
-                            className="password-toggle"
-                            onClick={() =>
-                              setShowConfirmPassword(!showConfirmPassword)
-                            }
-                            style={{ cursor: "pointer" }}
+                          <div
+                            className="position-absolute top-50 end-0 translate-middle-y pe-3"
+                            style={{ zIndex: 10 }}
                           >
-                            {showConfirmPassword ? (
-                              <Eye size={18} />
-                            ) : (
-                              <EyeOff size={18} />
-                            )}
-                          </span>
-                        </div>
-                      )}
+                            <span
+                              className="password-toggle"
+                              onClick={() =>
+                                setShowConfirmPassword(!showConfirmPassword)
+                              }
+                              style={{ cursor: "pointer" }}
+                            >
+                              {showConfirmPassword ? (
+                                <Eye size={18} />
+                              ) : (
+                                <EyeOff size={18} />
+                              )}
+                            </span>
+                          </div>
+                        )}
                       <Form.Control.Feedback type="invalid">
                         Passwords do not match.
                       </Form.Control.Feedback>

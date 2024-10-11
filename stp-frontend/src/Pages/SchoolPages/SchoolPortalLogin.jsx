@@ -105,15 +105,11 @@ const SchoolPortalLogin = () => {
   return (
     <Container fluid className="h-100">
       <Row className="h-50">
-        <Col md={6} className="d-flex align-items-center">
+        <Col md={6} className="d-flex align-items-center bg-white">
           <Container>
-            <Row className="justify-content-center">
+            <Row className="justify-content-center mt-4">
               <Col md={8} lg={6} className="px-0">
-                <img
-                  src={schoolPortalLoginLogo}
-                  className=" mb-4"
-                  alt="StudyPal Logo"
-                />
+               <div className="studypal-school-logo-div"></div>
                 <h2 className="text-start mb-2 custom-color-title">
                   Login as School
                 </h2>
@@ -134,7 +130,9 @@ const SchoolPortalLogin = () => {
                 )} */}
                 <Form onSubmit={handleSubmit}>
                   <Form.Group controlId="formBasicPhone" className="mb-3">
-                    <Form.Label className="custom-label">Email</Form.Label>
+                  <p className="text-start p-0 mb-0 custom-color-title-label small ">
+                  Email
+                  </p>
                     <InputGroup>
                       <Form.Control
                         type="email"
@@ -147,7 +145,8 @@ const SchoolPortalLogin = () => {
                     </InputGroup>
                   </Form.Group>
                   <Form.Group controlId="formBasicPassword" className="mb-3">
-                    <Form.Label className="custom-label">Password</Form.Label>
+                  <p className="text-start p-0 mb-0 custom-color-title-label small ">
+                  Password</p>
                     <InputGroup>
                       <Form.Control
                         type={showPassword ? "text" : "password"}
