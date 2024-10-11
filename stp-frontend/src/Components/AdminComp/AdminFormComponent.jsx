@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import ReactQuill, { Quill } from "react-quill";
+import "react-quill/dist/quill.snow.css"; // Import the Quill theme
 import { Form, Row, Col, Button, Image, Modal, Card} from "react-bootstrap";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
@@ -12,7 +14,9 @@ import { FaTrashAlt, FaUpload, FaFileImage, FaEye, FaEyeSlash} from 'react-icons
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { format, parseISO } from 'date-fns';
-
+const Size = Quill.import("formats/size");
+Size.whitelist = ["10px", "12px", "14px", "16px", "18px", "24px", "32px"];
+Quill.register(Size, true);
 const AdminFormComponent = ({
   formTitle,
   formFields,
@@ -87,7 +91,7 @@ const AdminFormComponent = ({
   showPreview,
   showCoverPreview,
   previewFile,
-
+ 
 }) => {
   const [formData, setFormData] = useState({});
   
@@ -240,6 +244,7 @@ const handleRadioChange = (radioId, value) => {
     [radioId]: value, // Update the selected radio value in formData
   }));
 };
+
 
   return (
     <Form onSubmit={onSubmit} className="admin-form-component">
@@ -851,43 +856,49 @@ const handleRadioChange = (radioId, value) => {
 )}
           </div>
         )}
-      {formHTML &&
+   {formHTML &&
         formHTML.map((field) => (
           <Form.Group key={field.id} controlId={field.id} className="ms-2">
-            <Form.Label>{field.label}</Form.Label> <span class="text-danger">*</span>
-            <Editor
-              apiKey="2k66p00ufe31mut5ctxu5s6cegpthu6kzc3pd0ap5fsswfst"
-              value={field.value} // Bind TinyMCE's value to the field's value
-              onEditorChange={field.onChange} // Handle changes using field's onChange function
-              init={{
-                height: 500,
-                menubar: false,
-                plugins: [
-                  "advlist",
-                  "autolink",
-                  "link",
-                  "lists",
-                  "charmap",
-                  "anchor",
-                  "pagebreak",
-                  "searchreplace",
-                  "wordcount",
-                  "visualblocks",
-                  "code",
-                  "fullscreen",
-                  "insertdatetime",
-                  "media",
-                  "table",
-                  "emoticons",
-                ],
-                toolbar:
-                  "undo redo | bold italic | alignleft aligncenter alignright alignjustify | " +
-                  "bullist numlist outdent indent",
-                content_style:
-                  "ul {list-style-type: disc; margin-left: 20px;}", // Ensure correct bullet formatting
-                forced_root_block: "div", // Prevents unwanted <p> tags around content
-                entity_encoding: "raw", // Ensure the raw HTML is saved
+            <Form.Label>
+              {field.label} {field.required && <span className="text-danger">*</span>}
+            </Form.Label>
+            <ReactQuill
+              value={field.value} // Bind the value from formHTML
+              onChange={field.onChange} // Handle changes using the onChange passed from formHTML
+              modules={{
+                toolbar: {
+                  container: [
+                    [{ header: "1" }, { header: "2" }, { font: [] }],
+                    [
+                      {
+                        size: ["10px", "12px", "14px", "16px", "18px", "24px", "32px"],
+                      },
+                    ],
+                    [{ list: "ordered" }, { list: "bullet" }],
+                    ["bold", "italic", "underline", "strike"],
+                    [{ align: [] }],
+                    ["link", "image"],
+                    ["clean"], // Remove formatting
+                    ["code-block"],
+                  ],
+                },
               }}
+              formats={[
+                "header",
+                "font",
+                "size",
+                "bold",
+                "italic",
+                "underline",
+                "strike",
+                "list",
+                "bullet",
+                "align",
+                "link",
+                "image",
+                "code-block",
+              ]}
+              theme="snow" // Set the Quill theme to "snow"
             />
           </Form.Group>
         ))}

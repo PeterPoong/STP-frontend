@@ -376,12 +376,13 @@ const fetchCities = (stateId) => {
     const togglePasswordVisibility = () => setShowPassword(prev => !prev);
     const toggleConfirmPasswordVisibility = () => setShowConfirmPassword(prev => !prev);
     
-    const handleEditorChange = (content) => {
-        setFormData(prevFormData => ({
-            ...prevFormData,
-            school_fullDesc: content,
-        }));
-    };
+     // Handle change for the ReactQuill editor
+  const handleEditorChange = (content) => {
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      school_fullDesc: content, // Update the school_fullDesc field
+    }));
+  };
     const handleCountryChange = (e) => {
         const countryId = e.target.value;
         setFormData({
@@ -628,16 +629,15 @@ const fetchCities = (stateId) => {
       ];
       
 
-    const formHTML = [
+      const formHTML = [
         {
-            id: "school_fullDesc",
-            label: "Full Description",
-            value: formData.school_fullDesc,
-            onChange: handleEditorChange,
-            required: true
-        }
-    ];
-
+          id: "school_fullDesc",
+          label: "Full Description",
+          value: formData.school_fullDesc,
+          onChange: handleEditorChange, // Pass the handleEditorChange function
+          required: true,
+        },
+      ];
     const formCheckboxes = schoolFeaturedList.map((feature) => ({
         id: `feature-${feature.id}`,
         label: feature.name,
