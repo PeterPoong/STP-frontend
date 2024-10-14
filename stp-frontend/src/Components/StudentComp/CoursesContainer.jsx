@@ -11,7 +11,7 @@ import "swiper/css/navigation";
 import { Pagination, Navigation } from "swiper/modules";
 
 const baseURL = import.meta.env.VITE_BASE_URL;
-const apiURL = "http://192.168.0.70:8000/api/student/hotPickCategoryList"; // Updated API URL
+const apiURL = `${baseURL}api/student/hotPickCategoryList`; // Updated API URL
 
 const CoursesContainer = () => {
   const [buttons, setButtons] = useState([]);
