@@ -1,4 +1,31 @@
 
+.applycourse-cocurriculum-wordbreak
+{
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-all;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 250px;
+  width:250px;
+}
+
+
+.applycourse-cocurriculum-wordbreak:hover
+{
+    width: max-content;
+    text-overflow: unset;
+    max-width:max-content;
+    overflow: unset;
+}
+
+
+
+.applycourse-basicinfo-margin-bot
+{
+  margin-bottom: 3rem;
+}
 
 .sas-fontsize-1 {
   font-size: 1.25rem;
@@ -66,7 +93,7 @@
 
   background-size: 100% 75%;
 
-  height: 35rem !important;
+  height: 35rem ;
   flex-direction: row;
   align-content: flex-end;
 }
@@ -127,12 +154,14 @@
 .sac-image-applycourse {
   width: auto;
   height: 6.5rem;
+  margin-right:2rem;
 }
 
 .coursetext-applycourse {
   color: #B71A18;
   font-size: 2.25rem;
   text-align: -webkit-center;
+  margin-bottom:2.5rem;
 }
 
 .schooltext-applycourse {
@@ -1724,4 +1753,39 @@ ul {
   .documents-content .file-date {
     font-size: 0.7rem;
   }
+}
+
+@media screen and (max-width: 426px) and (min-width: 250px) {
+.applycourse-basicinfo-margin-bot{
+  margin-bottom: 0.5rem;
+}
+.sac-image-applycourse {
+  width: auto;
+  height: 3.5rem;
+  margin-right:0.5rem;
+}
+
+
+.coursetext-applycourse
+{
+  font-size:1.25rem;
+  margin-bottom:1.25rem;
+}
+
+.schooltext-applycourse 
+{
+  font-size:1.25rem;
+  margin:0;
+}
+
+.backgroundimage
+{
+  height:20rem;
+}
+
+.applycourse-cocurriculum-content
+{
+  text-align: center;
+}
+
 }

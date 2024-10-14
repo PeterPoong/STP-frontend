@@ -340,7 +340,7 @@ const StudentPortalSignUp = () => {
               </Form.Group>
               <Row>
                 <Col>
-                  <Form.Group className="mb-3">
+                  <Form.Group className="mb-3 login-password-input">
                     <p className="text-start p-0 mb-0 custom-color-title-label small ">
                       Password</p>
                     <InputGroup hasValidation>
@@ -377,7 +377,7 @@ const StudentPortalSignUp = () => {
                   </Form.Group>
                 </Col>
                 <Col>
-                  <Form.Group className="mb-3">
+                  <Form.Group className="mb-3 login-password-input">
                     <p className="text-start p-0 mb-0 custom-color-title-label small ">
                       Confirm Password
                     </p>

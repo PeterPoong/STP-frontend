@@ -269,7 +269,7 @@ const OtherCertDoc = () => {
                     <option value={50}>50</option>
                 </select>
                 <span className="me-2 align-self-center">entries</span>
-                <div className="search-bar-sas">
+                <div className="transcript-search-bar-sas">
                     <Search size={20} style={{ color: '#9E9E9E' }} />
                     <input
                         type="text"

@@ -348,6 +348,47 @@ tbody {
 }
 
 
+
+.transcript-academictranscript-subject-icon
+{
+  display: flex;
+  align-self:center;
+}
+
+
+
+.transcript-search-bar-sas {
+  position: relative;
+}
+
+.transcript-search-bar-sas input {
+  padding-left: 2.5rem;
+  border: 0.1rem solid #9E9E9E;
+  /* Adjust the border color and width */
+  border-radius: 0.5rem;
+  /* Optional: Add rounded corners */
+  outline: none;
+  /* Remove default outline */
+  width: 15rem;
+  color: #9E9E9E;
+}
+
+/* If you want to adjust the border on focus */
+.transcript-search-bar-sas input:focus {
+  border-color: #B71A18;
+  /* Change border color on focus */
+  box-shadow: 0 0.25rem 0.25rem rgba(0, 0, 0, 0.05);
+  /* Optional: Add shadow on focus */
+}
+
+.transcript-search-bar-sas svg {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+
+}
+
 /*responsive*/
 @media (max-width: 768px) {
 
@@ -405,12 +446,24 @@ tbody {
     gap: 1rem;
   }
 
+  .transcript-academictranscript-subject
+  {
+    overflow-x: auto !important;
+  }
 }
 
 
 @media (max-width:375px) {
   .transcript-search-bar-container {
     gap: 0.5rem;
+
+
   }
 
+
+  .transcript-search-bar-sas input {
+    
+    width: 12rem;
+   
+  }
 }

@@ -364,7 +364,7 @@ const BasicInformation = ({ onSubmit, nextStep }) => { // Added nextStep as a pr
             <div className="sap-content-caseone w-100 d-flex justify-content-center">
                 <div className="sap-content-caseone w-100 py-5 px-5">
                     <div>
-                        <Row className="mb-5">
+                        <Row className="applycourse-basicinfo-margin-bot">
                             <Col md={6}>
                                 <Form.Group className="sac-form-group d-flex align-items-center">
                                     <Form.Label htmlFor="firstName" className="me-2">First Name<span className="text-danger">*</span></Form.Label>
@@ -400,7 +400,7 @@ const BasicInformation = ({ onSubmit, nextStep }) => { // Added nextStep as a pr
                                 </Form.Group>
                             </Col>
                         </Row>
-                        <Row className="mb-5">
+                        <Row className="applycourse-basicinfo-margin-bot">
                             <Col md={6}>
                                 <Form.Group className="sac-form-group d-flex align-items-center">
                                     <Form.Label htmlFor="icNumber" className="me-2">IC Number<span className="text-danger">*</span></Form.Label>
@@ -437,7 +437,7 @@ const BasicInformation = ({ onSubmit, nextStep }) => { // Added nextStep as a pr
                                 </Form.Group>
                             </Col>
                         </Row>
-                        <Row className="mb-5">
+                        <Row className="applycourse-basicinfo-margin-bot">
                             <Col md={6}>
                                 <Form.Group className="sac-form-group d-flex align-items-center">
                                     <Form.Label htmlFor="contactNumber" className="me-2">Contact Number<span className="text-danger">*</span></Form.Label>
@@ -470,7 +470,7 @@ const BasicInformation = ({ onSubmit, nextStep }) => { // Added nextStep as a pr
                                 </Form.Group>
                             </Col>
                         </Row>
-                        <Row className="mb-5">
+                        <Row className="applycourse-basicinfo-margin-bot">
                             <Col md={12}>
                                 <Form.Group className="sac-form-group d-flex align-items-center">
                                     <Form.Label htmlFor="address" className="me-2">Address<span className="text-danger">*</span></Form.Label>
@@ -487,7 +487,7 @@ const BasicInformation = ({ onSubmit, nextStep }) => { // Added nextStep as a pr
                                 </Form.Group>
                             </Col>
                         </Row>
-                        <Row className="mb-5">
+                        <Row className="applycourse-basicinfo-margin-bot">
                             <Col md={6}>
                                 <Form.Group className="sac-form-group d-flex align-items-center">
                                     <Form.Label htmlFor="country" className="me-2">Country<span className="text-danger">*</span></Form.Label>

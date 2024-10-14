@@ -1242,4 +1242,190 @@ p {
   }
 }
 
+@media screen and (max-width: 426px)  
+{
+  
+.achievement-popup {
+  padding: 15px;
+  max-width: 25rem;
+  max-height:90vh;
+  overflow-y:auto ;
+
+}
+
+.achievement-close-btn {
+  top: px;
+  right: 0px;
+}
+
+
+.achievement-title {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+
+
+.achievement-input-group {
+  display: flex;
+  gap: 1rem;
+  flex-direction: column;
+  
+}
+
+.achievement-input-field {
+  flex: 1;
+  display: flex;
+  flex-direction: column; align-items:stretch;
+  justify-content: space-between;
+}
+
+.custom-datepicker {
+  width: 100%;
+  padding: 0.75rem;
+  border: none;
+  border-bottom: 1px solid white;
+ 
+  background-color: transparent;
+ outline: none;
+
+  box-sizing: border-box;
+}
+
+
+
+
+.achievement-label {
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.achievement-input, .achievement-date-input, .achievement-select-input {
+  background-color: transparent;
+  border: none;
+  border-bottom: 1px solid white;
+  color: white;
+  padding: 5px 0;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+}
+
+.achievement-date-input input, .achievement-select-input input {
+  flex: 1;
+  background-color: transparent;
+  border: none;
+  color: white;
+  font-size: 16px;
+}
+
+.achievement-upload-section {
+  margin-top: 20px;
+}
+
+.achievement-upload-area {
+  background-color: white;
+  border-radius: 0.75rem;
+  padding: 1rem;
+}
+
+
+.achievement-upload-area span {
+  color: #B71A18;
+}
+
+.achievement-upload-label {
+  background-color: white;
+  border: 2px dashed #B71A18;
+  border-radius: 0.75rem;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.achievement-file-uploaded {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f8f9fa;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+.achievement-file-info {
+  display: flex;
+  align-items: center;
+}
+
+.achievement-file-details {
+  margin-left: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.achievement-file-name {
+  font-weight:500;
+  color: #353535;
+}
+
+.achievement-view-button {
+  background: none;
+  padding: 0;
+  margin: 0;
+  align-self: flex-start;
+  border: none;
+  font-size: 0.825rem !important;
+  color: #B71A18;
+  cursor: pointer;
+}
+
+.achievement-delete-button {
+  background: none;
+  border: none;
+  color: #dc3545;
+  cursor: pointer;
+}
+
+.achievement-file-limit {
+  font-size: 12px;
+  margin-top: 5px;
+  color:#353535 !important;
+}
+
+.achievement-save-btn {
+  background-color: white;
+  color: #49416D !important;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 10px 0;
+  width: 50%;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 20px;
+  margin:1rem 0 0.5rem 0;
+}
+
+.achievement-title-input {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid white;
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin-right: 10px;
+  padding: 5px;
+  width:10rem;
+  /*width: calc(100% - 0.1rem);*/
+}
+
+.achievement-title-input:focus {
+  outline: none;
+}
+
+}
+
 /*css for click to view in widgetfileuploadacademic transcript*/

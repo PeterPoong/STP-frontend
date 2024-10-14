@@ -294,8 +294,13 @@ body, html {
 @media (max-width: 575px) {
   .d-flex.align-items-center {
     align-items: flex-start !important;
-    overflow-y: auto;
+    overflow:hidden;
     max-height: 100vh;
+  }
+
+  .login-password-input
+  {
+    margin:0 15px 0 10px;
   }
 }
 

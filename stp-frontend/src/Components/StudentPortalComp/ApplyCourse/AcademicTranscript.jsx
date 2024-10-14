@@ -1061,8 +1061,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                             required
                           />
                         )}
-                      </div>
-                      <div className="d-flex">
+                         <div className="d-flex ms-auto">
                         <Button variant="link" className="p-0 me-2" onClick={() => handleSaveSubject(index, subIndex)}>
                           <Save size={15} color="green" />
                         </Button>
@@ -1070,6 +1069,8 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                           <Trash2 size={15} color="grey" />
                         </Button>
                       </div>
+                      </div>
+                     
                     </>
                   ) : (
                     <>
@@ -1092,8 +1093,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                           className={`ms-3 me-2 px-2 py-1 px-3 rounded-5 text-white bg-${getGradeColor(subject.grade)}`}>
                           Grade: {subject.grade}
                         </span>
-                      </div>
-                      <div className="d-flex">
+                        <div className="d-flex ms-auto">
                         <Button variant="link" className="p-0 me-2" onClick={() => handleSubjectChange(index, subIndex, 'isEditing', true)}>
                           <Edit size={15} color="grey" />
                         </Button>
@@ -1101,6 +1101,8 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                           <Trash2 size={15} color="grey" />
                         </Button>
                       </div>
+                      </div>
+                      
                     </>
                   )}
                 </div>
