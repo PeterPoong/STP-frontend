@@ -349,10 +349,9 @@ tbody {
 
 
 
-.transcript-academictranscript-subject-icon
-{
+.transcript-academictranscript-subject-icon {
   display: flex;
-  align-self:center;
+  align-self: center;
 }
 
 
@@ -412,7 +411,7 @@ tbody {
   input.search:focus {
     outline: none;
 
-    
+
 
   }
 
@@ -446,8 +445,7 @@ tbody {
     gap: 1rem;
   }
 
-  .transcript-academictranscript-subject
-  {
+  .transcript-academictranscript-subject {
     overflow-x: auto !important;
   }
 }
@@ -462,8 +460,90 @@ tbody {
 
 
   .transcript-search-bar-sas input {
-    
+
     width: 12rem;
-   
+
   }
+}
+
+
+@media screen and (max-width: 426px) and (min-width: 250px) {
+  .transcript-responsive-table-div  {
+    display: block;
+  }
+
+  .transcript-responsive-table {
+    width: 100%;
+     
+    margin-bottom: 1rem;
+  }
+
+  .transcript-responsive-table thead {
+    display: none;
+  }
+
+ 
+
+  .transcript-responsive-table tr {
+    display: block;
+    
+    margin-top:10px;
+    background-color: #007bff;
+    border-bottom: 1px solid #e0e0e0;
+    box-shadow: 5px 5px 10px 0px rgb(0, 0, 0,0.15);
+  }
+
+  .transcript-responsive-table td {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    border: none;
+    position: relative;
+    padding-left: 50%;
+  }
+
+  .transcript-responsive-table ::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 6px;
+    padding-right: 10px;
+    white-space: nowrap;
+    font-weight: bold;
+    word-break: break-all;
+    
+  }
+
+  
+
+ .transcript-responsive-table .d-flex
+ {
+  width: 100%;
+  justify-content: flex-end;
+ }
+
+ .transcript-responsive-table tbody td:nth-child(odd) {
+  background-color: #f9f9f9; /* Light gray for odd rows */
+}
+
+.transcript-responsive-table tbody td:nth-child(even) {
+  background-color: #fff; /* White for even rows */
+}
+
+.transcript-responsive-table-workbreak
+{
+  word-break: break-all;
+  width:82.5px;
+}
+
+
+.transcript-responsive-table-text-end
+{
+  text-align: end;
+}
+
+.transcript-responsive-display
+{
+  display: none;
+}
+
 }

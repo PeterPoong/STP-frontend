@@ -59,7 +59,7 @@ const CustomConnector = styled(StepConnector)(({ theme }) => ({
       [`& .${stepConnectorClasses.line}`]: {
         borderColor: '#B71A18',
         borderWidth: "0.35rem",
-        width:"6rem"
+        width:"10rem"
       },
     },
   },

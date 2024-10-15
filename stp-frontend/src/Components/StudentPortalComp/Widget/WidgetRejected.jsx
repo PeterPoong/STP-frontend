@@ -9,11 +9,12 @@ const WidgetRejected = ({ isOpen, onClose, date , feedbacks  }) => {
       <div className="popup-content-rejected">
         <button className="close-button" onClick={onClose}>×</button>
         <div className="trophy-image-rejected"></div>
-        <div className='position-absolute  text-center'>
-        <h1 className='display-6 fw-bolder'>Your application has been rejected.</h1>
+        <div className='position-absolute  '>
+        <h1 className='widget-popup-pending-title-rejected'>Your application has been rejected.</h1>
         </div>
         <div className='w-50'>
-        <p className='fw-normal wa-margin-reject'>We understand this is disappointing news, but please don't give up-your efforts are valued.</p>
+        <p className='fw-normal wa-margin-reject 
+        '>We understand this is disappointing news, but please don't give up-your efforts are valued.</p>
         </div>
         <div className="date-container">
           <span className="date-icon">🕒</span>

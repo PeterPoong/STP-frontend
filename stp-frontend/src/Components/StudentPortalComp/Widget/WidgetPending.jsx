@@ -52,7 +52,7 @@ const WidgetPending = ({ isOpen, onClose, date, feedbacks, formID }) => {
       <div className="popup-content-pending">
         <div className="trophy-image-pending"></div>
         <button className="close-button" onClick={onClose}>×</button>
-        <div className='position-absolute  text-center'><h1 className='display-6 fw-bolder'>Your application is pending.</h1></div>
+        <div className='position-absolute  '><h1 className='widget-popup-pending-title-pending'>Your application is pending.</h1></div>
 
         <p className='fw-normal mb-5 mt-5'>We hope you got accepted!</p>
         <div className="date-container">

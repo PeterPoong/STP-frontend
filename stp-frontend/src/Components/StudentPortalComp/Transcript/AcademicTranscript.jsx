@@ -345,15 +345,15 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
               )
             )}
             <div className="transcript-academictranscript-subject-icon ms-auto">
-            {editingIndex === index || subject.isEditing ? (
-              <Check onClick={() => handleSave(index)} className="text-success cursor-pointer me-2" />
-            ) : (
-              <Edit2 size={18} className="iconat mx-2" onClick={() => handleEdit(index)} />
-            )}
-            <Trash2 size={18} className="iconat-trash mx-2" onClick={() => handleDelete(index)} />
+              {editingIndex === index || subject.isEditing ? (
+                <Check onClick={() => handleSave(index)} className="text-success cursor-pointer me-2" />
+              ) : (
+                <Edit2 size={18} className="iconat mx-2" onClick={() => handleEdit(index)} />
+              )}
+              <Trash2 size={18} className="iconat-trash mx-2" onClick={() => handleDelete(index)} />
+            </div>
           </div>
-          </div>
-          
+
         </div>
       ))}
       {examType === 'SPM' && (
@@ -1414,8 +1414,8 @@ const AcademicTranscript = () => {
 
         </div>
 
-        <div style={{ overflowX: 'auto' }}>
-          <table className="w-100  justify-content-around" >
+        <div className="transcript-responsive-table-div">
+          <table className="w-100  justify-content-around transcript-responsive-table" >
             <thead>
               <tr>
                 <th className="border-bottom p-2 fw-normal">Files</th>
@@ -1428,16 +1428,20 @@ const AcademicTranscript = () => {
                 {files.map((file) => (
                   <CSSTransition key={file.id} timeout={500} classNames="fade">
                     <tr>
-                      <td className="border-bottom p-2">
+                      <td className="border-bottom p-2" data-label="Files">
                         <div className="d-flex align-items-center">
-                          <FileText className="file-icon me-2" />
-                          <div>
+                          <FileText className="file-icon me-2 transcript-responsive-display"/>
+                          <div className="transcript-responsive-table-text-end">
                             <div className="file-title mb-1 sac-name-restrict">{file.studentMedia_name}</div>
                             <div className="file-date">{file.created_at}</div>
                           </div>
                         </div>
                       </td>
-                      <td className="border-bottom p-2 text-end text-secondary">{file.studentMedia_location || 'N/A'}</td>
+                      <td className="border-bottom p-2 text-end " data-label="Filename">
+                        <div className="text-secondary transcript-responsive-table-workbreak">
+                          {file.studentMedia_location || 'N/A'}
+                        </div>
+                      </td>
                       <td className="border-bottom p-2">
                         <div className="d-flex justify-content-end align-items-center">
                           <Trash2 size={18} className="iconat-trash mx-2" onClick={() => openDeletePopup(file)} />

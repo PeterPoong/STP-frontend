@@ -160,12 +160,12 @@ const Achievements = () => {
             } else if (!entry.id) {
                 // If adding a new entry and no file is selected, send an empty string
                 formData.append('achievement_media', '');
-               // console.log('No file selected for new entry');
+                // console.log('No file selected for new entry');
             }
             // Log the formData contents
-          /*  for (let [key, value] of formData.entries()) {
-                console.log(`${key}:`, value);
-            }*/
+            /*  for (let [key, value] of formData.entries()) {
+                  console.log(`${key}:`, value);
+              }*/
 
             const response = await fetch(url, {
                 method: 'POST',
@@ -176,7 +176,7 @@ const Achievements = () => {
             });
 
             const result = await response.json();
-           // console.log('Save/Edit response:', result);
+            // console.log('Save/Edit response:', result);
 
             if (result.success) {
                 setIsPopupOpen(false);
@@ -217,14 +217,14 @@ const Achievements = () => {
                 type: 'delete'
             };
 
-         /*   console.log('Delete Achievement Request:');
-            console.log('URL:', url);
-            console.log('Method: POST');
-            console.log('Headers:', {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            });
-            console.log('Request Body:', JSON.stringify(requestBody, null, 2));*/
+            /*   console.log('Delete Achievement Request:');
+               console.log('URL:', url);
+               console.log('Method: POST');
+               console.log('Headers:', {
+                   'Authorization': `Bearer ${token}`,
+                   'Content-Type': 'application/json',
+               });
+               console.log('Request Body:', JSON.stringify(requestBody, null, 2));*/
 
             const response = await fetch(url, {
                 method: 'POST',
@@ -235,8 +235,8 @@ const Achievements = () => {
                 body: JSON.stringify(requestBody)
             });
 
-           // console.log('Response status:', response.status);
-           // console.log('Response headers:', response.headers);
+            // console.log('Response status:', response.status);
+            // console.log('Response headers:', response.headers);
 
             const contentType = response.headers.get("content-type");
             if (contentType && contentType.indexOf("application/json") !== -1) {
@@ -244,7 +244,7 @@ const Achievements = () => {
                 if (!response.ok) {
                     throw new Error(result.message || `HTTP error! status: ${response.status}`);
                 }
-               // console.log('Delete response:', result);
+                // console.log('Delete response:', result);
             } else {
                 const text = await response.text();
                 console.error('Received non-JSON response:', text);
@@ -257,7 +257,7 @@ const Achievements = () => {
         } catch (error) {
             console.error('Error deleting achievement:', error);
             setError(error.message || 'Failed to delete achievement. Please try again.');
-        }finally {
+        } finally {
             setIsDeleting(false); // End loading
         }
     };
@@ -315,70 +315,78 @@ const Achievements = () => {
                     ADD NEW
                 </button>
             </div>
-            <div style={{ overflowX: 'auto' }}>
-            {Array.isArray(filteredData) && filteredData.length > 0 ? (
-                <table className="w-100">
-                    <thead>
-                        <tr >
-                            <th className="border-bottom p-2 fw-normal">Events</th>
-                            <th className="border-bottom p-2 fw-normal text-end">Title Obtained</th>
-                            <th className="border-bottom p-2 fw-normal text-end">Date of Achievement</th>
-                            <th className="border-bottom p-2 fw-normal text-end">Uploads</th>
-                            <th className="border-bottom p-2 text-end fw-normal">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <TransitionGroup component={null}>
-                            {filteredData.map((item) => (
-                                <CSSTransition key={item.id} timeout={300} classNames="fade">
-                                    <tr>
-                                        <td className="border-bottom py-2 px-2">
-                                            <div className="d-flex align-items-center">
-                                                <div>
-                                                    <div className="file-title mb-1 sac-name-restrict">{item.achievement_name}</div>
-                                                    <div className="file-date">{item.awarded_by}</div>
+            <div className="transcript-responsive-table-div">
+                {Array.isArray(filteredData) && filteredData.length > 0 ? (
+                    <table className="w-100 transcript-responsive-table">
+                        <thead>
+                            <tr >
+                                <th className="border-bottom p-2 fw-normal">Events</th>
+                                <th className="border-bottom p-2 fw-normal text-end">Title Obtained</th>
+                                <th className="border-bottom p-2 fw-normal text-end">Date of Achievement</th>
+                                <th className="border-bottom p-2 fw-normal text-end">Uploads</th>
+                                <th className="border-bottom p-2 text-end fw-normal">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <TransitionGroup component={null}>
+                                {filteredData.map((item) => (
+                                    <CSSTransition key={item.id} timeout={300} classNames="fade">
+                                        <tr>
+                                            <td className="border-bottom py-2 px-2" data-label="Events">
+                                                <div className="d-flex align-items-center">
+                                                    <div className="transcript-responsive-table-text-end">
+                                                        <div className="file-title mb-1 sac-name-restrict">{item.achievement_name}</div>
+                                                        <div className="file-date">{item.awarded_by}</div>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <td className="border-bottom p-2 text-end file-date">{item.title_obtained}</td>
-                                        <td className="border-bottom p-2 text-end">{item.date}</td>
-                                        <td className="border-bottom p-2 text-end file-date">{item.achievement_media}</td>
-                                        <td className="border-bottom p-2">
-                                            <div className="d-flex justify-content-end align-items-center">
-                                                <Trash2 size={20} className="iconat-trash mx-2" onClick={() => openDeletePopup(item)} />
-                                                <Edit2 size={20} className="iconat mx-2" onClick={() => editEntry(item)} />
-                                                <Eye size={20} className="iconat ms-2" onClick={() => viewEntry(item)} />
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </CSSTransition>
-                            ))}
-                        </TransitionGroup>
-                    </tbody>
-                </table>
-            ) : (
-                <div>No achievements found</div>
-            )}
+                                            </td>
+                                            <td className="border-bottom p-2 text-end " data-label="Title Obtained">
+                                                <div className="file-date">
+                                                    {item.title_obtained}
+                                                </div>
+                                            </td>
+                                            <td className="border-bottom p-2 text-end" data-label="Date of Achievement">{item.date}</td>
+                                            <td className="border-bottom p-2 text-end " data-label="Uploads">
+                                                <div className="file-date transcript-responsive-table-workbreak">
+                                                    {item.achievement_media}
+                                                </div>
+                                            </td>
+                                            <td className="border-bottom p-2">
+                                                <div className="d-flex justify-content-end align-items-center">
+                                                    <Trash2 size={20} className="iconat-trash mx-2" onClick={() => openDeletePopup(item)} />
+                                                    <Edit2 size={20} className="iconat mx-2" onClick={() => editEntry(item)} />
+                                                    <Eye size={20} className="iconat ms-2" onClick={() => viewEntry(item)} />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </CSSTransition>
+                                ))}
+                            </TransitionGroup>
+                        </tbody>
+                    </table>
+                ) : (
+                    <div>No achievements found</div>
+                )}
             </div>
             {paginationInfo.lastPage > 1 && (
-            <div className="pagination">
-                <button onClick={() => paginate(paginationInfo.currentPage - 1)} disabled={paginationInfo.currentPage === 1}>
-                    &lt;
-                </button>
-                {getPageNumbers().map((number, index) => (
-                    <button
-                        key={index}
-                        onClick={() => number !== '...' ? paginate(number) : null}
-                        className={paginationInfo.currentPage === number ? 'active' : ''}
-                        disabled={number === '...'}
-                    >
-                        {number}
+                <div className="pagination">
+                    <button onClick={() => paginate(paginationInfo.currentPage - 1)} disabled={paginationInfo.currentPage === 1}>
+                        &lt;
                     </button>
-                ))}
-                <button onClick={() => paginate(paginationInfo.currentPage + 1)} disabled={paginationInfo.currentPage === paginationInfo.lastPage}>
-                    &gt;
-                </button>
-            </div>
+                    {getPageNumbers().map((number, index) => (
+                        <button
+                            key={index}
+                            onClick={() => number !== '...' ? paginate(number) : null}
+                            className={paginationInfo.currentPage === number ? 'active' : ''}
+                            disabled={number === '...'}
+                        >
+                            {number}
+                        </button>
+                    ))}
+                    <button onClick={() => paginate(paginationInfo.currentPage + 1)} disabled={paginationInfo.currentPage === paginationInfo.lastPage}>
+                        &gt;
+                    </button>
+                </div>
             )}
             <WidgetAchievement
                 isOpen={isPopupOpen}
