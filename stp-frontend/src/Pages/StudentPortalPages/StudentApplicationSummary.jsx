@@ -1412,7 +1412,7 @@ const StudentApplicationSummary = ({ }) => {
               />
             </div>
           </div>
-          <table className="w-100">
+          <table className="w-100 ">
             <thead>
               <tr>
                 {columns.map((column, index) => (
@@ -1431,8 +1431,8 @@ const StudentApplicationSummary = ({ }) => {
                         <td className="border-bottom p-4" data-label="Name">
                           <div className="d-flex align-items-center">
                             <FileText className="file-icon me-2" />
-                            <div>
-                              <div className="file-title sac-name-restrict">
+                            <div >
+                              <div className="file-title sac-name-restrict applycourse-responsive-table-text-end">
                                 {doc.studentMedia_name}
                               </div>
                               <div className="file-date">{doc.created_at}</div>
@@ -1443,7 +1443,9 @@ const StudentApplicationSummary = ({ }) => {
                           className="border-bottom p-2"
                           data-label="File Name"
                         >
-                          {doc.studentMedia_location}
+                          <div className="applycourse-yourdocument-workbreak">
+                            {doc.studentMedia_location}
+                          </div>
                         </td>
                       </>
                     )}
@@ -1464,7 +1466,9 @@ const StudentApplicationSummary = ({ }) => {
                           className="border-bottom p-2 "
                           data-label="File Name"
                         >
-                          {doc.achievement_media}
+                          <div className="applycourse-yourdocument-workbreak">
+                            {doc.achievement_media}
+                          </div>
                         </td>
                       </>
                     )}
@@ -1483,7 +1487,9 @@ const StudentApplicationSummary = ({ }) => {
                           className="border-bottom p-2"
                           data-label="File Name"
                         >
-                          {doc.media}
+                          <div className="applycourse-yourdocument-workbreak">
+                            {doc.media}
+                          </div>
                         </td>
                       </>
                     )}
@@ -1984,13 +1990,12 @@ const StudentApplicationSummary = ({ }) => {
                             setActiveTab("documents"); // Navigate to Your Documents tab
                             setActiveDocumentTab("academic"); // Navigate to Academic Transcript tab
                           }}
-                         // disabled={
-                         //   transcriptSubjects.length === 0 ||
+                          // disabled={
+                          //   transcriptSubjects.length === 0 ||
                           //  academicTranscripts.length === 0
                           //}
                           style={{
-                            color: transcriptSubjects.length === 0 ||
-                              academicTranscripts.length === 0 ? 'black' : '#B71A18'
+                            color: '#B71A18'
                           }}
                         >
                           View Result Slip »

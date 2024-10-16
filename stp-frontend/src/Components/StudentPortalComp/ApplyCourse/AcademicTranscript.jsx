@@ -22,13 +22,124 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
   const [savingStates, setSavingStates] = useState({});
 
   // Replace the existing useEffect hook with this:
-  useEffect(() => {
+ /* useEffect(() => {
     const fetchAllData = async () => {
       await fetchTranscriptCategories();
       setIsLoading(false);
     };
     fetchAllData();
+  }, []);*/
+
+
+  useEffect(() => {
+    const fetchAllData = async () => {
+      await fetchTranscriptData();
+      setIsLoading(false);
+    };
+    fetchAllData();
   }, []);
+
+  const fetchTranscriptData = async () => {
+    try {
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      console.log('Token:', token ? 'Token exists' : 'Token is missing');
+  
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/applyCourseTranscript`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      console.log('Response status:', response.status);
+      console.log('Response headers:', response.headers);
+  
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error response:', errorText);
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+      }
+  
+      const result = await response.json();
+      console.log('API response:', result);
+  
+      if (result.success) {
+        processTranscriptData(result.data);
+      } else {
+        throw new Error(result.message || 'Failed to fetch transcript data');
+      }
+    } catch (error) {
+      console.error('Detailed error in fetchTranscriptData:', error);
+      setError(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const processTranscriptData = (data) => {
+    setCategories(data.categories);
+
+    const processedTranscripts = [
+      ...processSubjects(data.transcripts, 32), // SPM
+      ...processHigherTranscripts(data.higherTranscripts)
+    ];
+
+    setAcademicTranscripts(processedTranscripts.filter(transcript =>
+      transcript.subjects.length > 0 || transcript.documents.length > 0 || transcript.cgpa
+    ));
+  };
+  const processSubjects = (transcriptData, categoryId) => {
+    if (!transcriptData || !transcriptData.subjects) return [];
+  
+    return [{
+      id: categoryId,
+      name: "SPM",
+      subjects: transcriptData.subjects.map(subject => ({
+        id: subject.subject_id,
+        name: subject.subject_name,
+        grade: subject.subject_grade || subject.higherTranscript_grade || '', // Handle potential different property names
+        isEditing: false
+      })),
+      documents: processDocuments(transcriptData.document),
+      cgpa: null,
+      programName: null,
+      cgpaId: null
+    }];
+  };
+  
+  const processHigherTranscripts = (higherTranscripts) => {
+    return higherTranscripts.map(transcript => ({
+      id: transcript.id,
+      name: transcript.name,
+      subjects: Array.isArray(transcript.subject) 
+        ? transcript.subject.flat().map(subj => ({
+            id: subj.id,
+            name: subj.highTranscript_name || subj.subject_name,
+            grade: subj.higherTranscript_grade || subj.subject_grade || '',
+            isEditing: false
+          }))
+        : [],
+      documents: processDocuments(transcript.document),
+      cgpa: transcript.cgpa,
+      programName: transcript.program_name,
+      cgpaId: null
+    }));
+  };
+
+
+  const processDocuments = (documents) => {
+    if (!documents) return [];
+    // If documents is an array of arrays, flatten it
+    const flatDocuments = Array.isArray(documents[0]) ? documents.flat() : documents;
+  
+    return flatDocuments.map(doc => ({
+      id: doc.id,
+      name: doc.studentMedia_name || doc.name || 'Untitled',
+      file: doc.studentMedia_location || doc.file || '',
+      isEditing: false
+    }));
+  };
 
   // Replace the existing fetchTranscriptCategories function with this:
   const fetchTranscriptCategories = async () => {
@@ -891,16 +1002,19 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
   };
 
   const getGradeColor = (grade) => {
+    if (!grade) return 'secondary'; // Handle undefined or null grades
+  
+    grade = grade.toString().toUpperCase(); // Convert to string and uppercase
+  
     if (grade.includes('A')) return 'success';
     if (grade.includes('B')) return 'success';
     if (grade.includes('C')) return 'success';
     if (grade.includes('D')) return 'warning';
     if (grade.includes('E')) return 'warning';
     if (grade.includes('G')) return 'danger';
-
+  
     return 'secondary';
   };
-
 
   const handleNext = () => {
     if (academicTranscripts.length === 0) {
