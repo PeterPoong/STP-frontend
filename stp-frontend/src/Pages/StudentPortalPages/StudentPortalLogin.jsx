@@ -1,10 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Form, Button, Container, Row, Col, Alert, InputGroup } from "react-bootstrap";
+import {
+  Form,
+  Button,
+  Container,
+  Row,
+  Col,
+  Alert,
+  InputGroup,
+} from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import studentPortalLogin from "../../assets/StudentPortalAssets/studentPortalLogin.png";
 import studentPortalLoginLogo from "../../assets/StudentPortalAssets/studentPortalLoginLogo.png";
-import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { Eye, EyeOff } from "react-feather";
 import "../../css/StudentPortalStyles/StudentPortalLoginForm.css";
@@ -50,7 +57,9 @@ const StudentPortalLogin = () => {
     //    console.error("Error fetching country codes:", error);
     //  });
     const rememberedCountryCode = localStorage.getItem("rememberedCountryCode");
-    const rememberedContactNumber = localStorage.getItem("rememberedContactNumber");
+    const rememberedContactNumber = localStorage.getItem(
+      "rememberedContactNumber"
+    );
     const rememberedPassword = localStorage.getItem("rememberedPassword");
     if (rememberedCountryCode && rememberedContactNumber) {
       setCountryCode(rememberedCountryCode);
@@ -124,10 +133,13 @@ const StudentPortalLogin = () => {
             if (data.data.token) {
               sessionStorage.setItem("token", data.data.token);
               localStorage.setItem("rememberMe", JSON.stringify(rememberMe));
-              sessionStorage.setItem("userName", userName)
+              sessionStorage.setItem("userName", userName);
               if (rememberMe) {
                 localStorage.setItem("token", data.data.token);
-                localStorage.setItem("rememberedContactNumber", phone.slice(countryCode.length));
+                localStorage.setItem(
+                  "rememberedContactNumber",
+                  phone.slice(countryCode.length)
+                );
                 localStorage.setItem("rememberedCountryCode", countryCode);
                 localStorage.setItem("rememberedPassword", password);
                 localStorage.setItem("userName", userName);
@@ -192,13 +204,11 @@ const StudentPortalLogin = () => {
             <Row className="justify-content-center">
               <Col md={8} lg={6} className="px-0">
                 <div className="studypal-logo-div">
-
                   {/*<img
    src={studentPortalLoginLogo}
    className="img-fluid mb-4"
    alt="StudyPal Logo"
  />*/}
-
                 </div>
                 <h2 className="text-start mb-2 custom-color-title">
                   Login as Student
@@ -247,7 +257,8 @@ const StudentPortalLogin = () => {
                   </Form.Group>
                   <Form.Group controlId="formBasicPassword" className="mb-3">
                     <p className="text-start p-0 mb-0 custom-color-title-label small ">
-                      Password</p>
+                      Password
+                    </p>
                     <InputGroup>
                       <Form.Control
                         type={showPassword ? "text" : "password"}
