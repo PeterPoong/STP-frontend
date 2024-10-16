@@ -592,7 +592,7 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
   return (
     <div>
       <div className="mb-4">
-        <div className="d-flex justify-content-around">
+        <div className="d-flex justify-content-around transcript-academictranscript-cgpa-input">
           <div className="w-1/2">
             <label className="fw-bold small formlabel">Programme Name </label>
             <input
@@ -612,7 +612,7 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
             />
           </div>
         </div>
-      </div>
+      </div >
       <TransitionGroup className="space-y-2 mb-4">
         {subjects.map((subject, index) => (
           <CSSTransition key={index} classNames="fade" timeout={300}>
@@ -662,7 +662,7 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
                   </>
                 )}
               </div>
-              <div>
+              <div className="transcript-academictranscript-subject-icon ms-auto" >
                 {editingIndex === index || subject.isEditing ? (
                   <Check onClick={() => handleSave(index)} className="text-success cursor-pointer me-2" />
                 ) : (

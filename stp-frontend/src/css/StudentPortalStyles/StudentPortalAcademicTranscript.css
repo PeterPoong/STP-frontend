@@ -544,4 +544,9 @@ tbody {
   display: none;
 }
 
+.transcript-academictranscript-cgpa-input
+{
+  flex-direction: column;
+}
+
 }
