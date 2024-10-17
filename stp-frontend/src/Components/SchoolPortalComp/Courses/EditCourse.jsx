@@ -786,7 +786,7 @@ const EditCourse = ({ courseId, handleGoBack }) => {
           >
             {" "}
             <Modal.Header closeButton>
-              <Modal.Title>Missing Intake Month</Modal.Title>
+              <Modal.Title>Missing Required Field</Modal.Title>
             </Modal.Header>
             <Modal.Body>
               <ul>
