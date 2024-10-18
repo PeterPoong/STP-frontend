@@ -111,8 +111,8 @@ const OtherCertDoc = () => {
 
     // Filter data based on search term
     const filteredData = data.filter(item =>
-        (item?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item?.media?.toLowerCase().includes(searchTerm.toLowerCase()))
+    (item?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item?.media?.toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
     // Function to change page
@@ -269,7 +269,7 @@ const OtherCertDoc = () => {
                     <option value={50}>50</option>
                 </select>
                 <span className="me-2 align-self-center">entries</span>
-                <div className="search-bar-sas">
+                <div className="transcript-search-bar-sas">
                     <Search size={20} style={{ color: '#9E9E9E' }} />
                     <input
                         type="text"
@@ -286,9 +286,9 @@ const OtherCertDoc = () => {
                     ADD NEW
                 </button>
             </div>
-            <div style={{ overflowX: 'auto' }}>
+            <div className="transcript-responsive-table-div">
                 {filteredData.length > 0 ? (
-                    <table className="w-100">
+                    <table className="w-100 transcript-responsive-table">
                         <thead>
                             <tr>
                                 <th className="border-bottom fw-normal ps-2">Files</th>
@@ -301,16 +301,20 @@ const OtherCertDoc = () => {
                                 {filteredData.map((item) => (
                                     <CSSTransition key={item.id || item.certificate_name} timeout={300} classNames="fade">
                                         <tr>
-                                            <td className="border-bottom py-2 px-2">
+                                            <td className="border-bottom py-2 px-2" data-label="Files">
                                                 <div className="d-flex align-items-center">
-                                                    <FileText className="file-icon me-2" />
-                                                    <div>
+                                                    <FileText className="file-icon me-2 transcript-responsive-display" />
+                                                    <div className="transcript-responsive-table-text-end">
                                                         <div className="file-title mb-1 sac-name-restrict">{item.name}</div>
                                                         <div className="file-date">{item.created_at || 'No date'}</div>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="border-bottom p-2 text-end text-secondary">{item.media || 'No file'}</td>
+                                            <td className="border-bottom p-2 text-end " data-label="Filename">
+                                                <div className="text-secondary transcript-responsive-table-workbreak">
+                                                    {item.media || 'No file'}
+                                                </div>
+                                            </td>
                                             <td className="border-bottom p-2">
                                                 <div className="d-flex justify-content-end align-items-center">
                                                     <Trash2 size={18} className="iconat-trash mx-2" onClick={() => openDeletePopup(item)} />

@@ -64,12 +64,11 @@ const NavigationBar = () => {
               variant="link"
               as={Link}
               to="/courses"
-              className={`nav-link-custom ${
-                location.pathname === "/courses" ||
+              className={`nav-link-custom ${location.pathname === "/courses" ||
                 location.pathname.startsWith("/courses")
-                  ? "active"
-                  : ""
-              }`}
+                ? "active"
+                : ""
+                }`}
               style={{ marginLeft: "10px" }}
             >
               Courses
@@ -78,20 +77,20 @@ const NavigationBar = () => {
               variant="link"
               as={Link}
               to="/institute"
-              className={`nav-link-custom ${
-                location.pathname === "/institute" ||
+              className={`nav-link-custom ${location.pathname === "/institute" ||
                 location.pathname.startsWith("/institute")
-                  ? "active"
-                  : ""
-              }`}
+                ? "active"
+                : ""
+                }`}
               style={{ marginLeft: "10px" }}
             >
               Schools
             </Button>
           </Nav>
-          <div className="m-10 navbutton-section">
-            {hasToken ? (
-              <>
+
+          {hasToken ? (
+            <>
+              <div className="m-10 navbutton-section-afterlogin">
                 <Button className="m-0 btnfirst" >Hi !</Button>
                 <Button className="m-0 btnsecond" onClick={handleRoute}>
                   {userName}
@@ -99,9 +98,11 @@ const NavigationBar = () => {
                 <Button className="m-0 btnfirstlogout" onClick={handleLogout}>
                   Logout
                 </Button>
-              </>
-            ) : (
-              <>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="m-10 navbutton-section">
                 <ButtonGroup className="mb-2 mb-lg-0">
                   <Dropdown as={ButtonGroup}>
                     <Dropdown.Toggle
@@ -142,9 +143,9 @@ const NavigationBar = () => {
                     </Dropdown.Menu>
                   </Dropdown>
                 </ButtonGroup>
-              </>
-            )}
-          </div>
+              </div>
+            </>
+          )}
         </Navbar.Collapse>
       </Container>
     </Navbar>

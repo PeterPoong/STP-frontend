@@ -348,6 +348,46 @@ tbody {
 }
 
 
+
+.transcript-academictranscript-subject-icon {
+  display: flex;
+  align-self: center;
+}
+
+
+
+.transcript-search-bar-sas {
+  position: relative;
+}
+
+.transcript-search-bar-sas input {
+  padding-left: 2.5rem;
+  border: 0.1rem solid #9E9E9E;
+  /* Adjust the border color and width */
+  border-radius: 0.5rem;
+  /* Optional: Add rounded corners */
+  outline: none;
+  /* Remove default outline */
+  width: 15rem;
+  color: #9E9E9E;
+}
+
+/* If you want to adjust the border on focus */
+.transcript-search-bar-sas input:focus {
+  border-color: #B71A18;
+  /* Change border color on focus */
+  box-shadow: 0 0.25rem 0.25rem rgba(0, 0, 0, 0.05);
+  /* Optional: Add shadow on focus */
+}
+
+.transcript-search-bar-sas svg {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+
+}
+
 /*responsive*/
 @media (max-width: 768px) {
 
@@ -371,7 +411,7 @@ tbody {
   input.search:focus {
     outline: none;
 
-    
+
 
   }
 
@@ -405,12 +445,108 @@ tbody {
     gap: 1rem;
   }
 
+  .transcript-academictranscript-subject {
+    overflow-x: auto !important;
+  }
 }
 
 
 @media (max-width:375px) {
   .transcript-search-bar-container {
     gap: 0.5rem;
+
+
   }
+
+
+  .transcript-search-bar-sas input {
+
+    width: 12rem;
+
+  }
+}
+
+
+@media screen and (max-width: 426px) and (min-width: 250px) {
+  .transcript-responsive-table-div  {
+    display: block;
+  }
+
+  .transcript-responsive-table {
+    width: 100%;
+     
+    margin-bottom: 1rem;
+  }
+
+  .transcript-responsive-table thead {
+    display: none;
+  }
+
+ 
+
+  .transcript-responsive-table tr {
+    display: block;
+    margin-top:10px;
+    border-bottom: 1px solid #e0e0e0;
+    box-shadow: 5px 5px 10px 0px rgb(0, 0, 0,0.15);
+  }
+
+  .transcript-responsive-table td {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    border: none;
+    position: relative;
+    padding-left: 50%;
+  }
+
+  .transcript-responsive-table ::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 6px;
+    padding-right: 10px;
+    white-space: nowrap;
+    font-weight: bold;
+    word-break: break-all;
+    
+  }
+
+  
+
+ .transcript-responsive-table .d-flex
+ {
+  width: 100%;
+  justify-content: flex-end;
+ }
+
+ .transcript-responsive-table tbody td:nth-child(odd) {
+  background-color: #f9f9f9; /* Light gray for odd rows */
+}
+
+.transcript-responsive-table tbody td:nth-child(even) {
+  background-color: #fff; /* White for even rows */
+}
+
+.transcript-responsive-table-workbreak
+{
+  word-break: break-all;
+  width:82.5px;
+}
+
+
+.transcript-responsive-table-text-end
+{
+  text-align: end;
+}
+
+.transcript-responsive-display
+{
+  display: none;
+}
+
+.transcript-academictranscript-cgpa-input
+{
+  flex-direction: column;
+}
 
 }

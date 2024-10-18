@@ -4,6 +4,7 @@ import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { Edit2, Trash2, Eye, Plus, Search, GripVertical, ChevronDown, Info, FileText, X, Check, RefreshCw } from 'lucide-react';
 import Carousel from 'react-material-ui-carousel';
 import { Paper, Button, Tooltip } from '@mui/material';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import SelectSearch from 'react-select-search';
 import 'react-select-search/style.css';
 import "../../../css/StudentPortalStyles/StudentPortalAcademicTranscript.css";
@@ -15,7 +16,30 @@ import WidgetPopUpAcademicRemind from "../../../Components/StudentPortalComp/Wid
 import WidgetPopUpUnsavedChanges from "../../../Components/StudentPortalComp/Widget/WidgetPopUpUnsavedChanges"; // New import
 import SaveButton from "../../../Components/StudentPortalComp/SaveButton"; // Import the SaveButton component
 const ExamSelector = ({ exams, selectedExam, setSelectedExam }) => {
-  const itemsPerPage = 5;
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const is1250ScreenSize = useMediaQuery('(min-width: 1251px)');
+  const is1000ScreenSize = useMediaQuery('(min-width: 1001px) and (max-width: 1250px)');
+  const is750ScreenSize = useMediaQuery('(min-width: 751px) and (max-width: 1000px)');
+  const is500ScreenSize = useMediaQuery('(min-width: 501px) and (max-width: 750px)');
+  const is350ScreenSize = useMediaQuery('(min-width: 351px) and (max-width: 500px)');
+  const isBelow350ScreenSize = useMediaQuery('(max-width: 350px)');
+
+  useEffect(() => {
+    if (is1250ScreenSize) {
+      setItemsPerPage(5);
+    } else if (is1000ScreenSize) {
+      setItemsPerPage(4);
+    } else if (is750ScreenSize) {
+      setItemsPerPage(3);
+    } else if (is500ScreenSize) {
+      setItemsPerPage(2);
+    } else if (is350ScreenSize) {
+      setItemsPerPage(1);
+    } else if (isBelow350ScreenSize) {
+      setItemsPerPage(1);
+    }
+  }, [is1250ScreenSize, is1000ScreenSize, is750ScreenSize, is500ScreenSize, is350ScreenSize, isBelow350ScreenSize]);
+
   const pages = [];
   for (let i = 0; i < exams.length; i += itemsPerPage) {
     pages.push(exams.slice(i, i + itemsPerPage));
@@ -53,7 +77,7 @@ const ExamSelector = ({ exams, selectedExam, setSelectedExam }) => {
               color="primary"
               onClick={() => setSelectedExam(exam.transcript_category)}
               sx={{
-                margin: { xs: '0rem 0.5rem', sm: '0rem 1rem', md: '0rem 2rem' },
+                margin: { xs: '1.5rem 0.75rem', sm: '0rem 1rem', md: '0rem 2rem' },
                 borderRadius: '0px',
                 backgroundColor: selectedExam === exam.transcript_category ? 'white' : 'transparent',
                 color: '#4b5563',
@@ -289,8 +313,8 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
   return (
     <div className="space-y-2 mb-4">
       {subjects.map((subject, index) => (
-        <div key={index} className="d-flex align-items-center justify-content-between bg-white p-2 mb-2 rounded border">
-          <div className="d-flex align-items-center flex-grow-1">
+        <div key={index} className="d-flex align-items-center justify-content-between bg-white p-2 mb-2 rounded border ">
+          <div className="d-flex align-items-center flex-grow-1 transcript-academictranscript-subject">
             <GripVertical className="me-3" size={20} />
             <span className="fw-medium h6 mb-0 me-3" style={{ width: "150px" }}>{subject.name}</span>
             {editingIndex === index || subject.isEditing ? (
@@ -320,15 +344,16 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
                 </span>
               )
             )}
+            <div className="transcript-academictranscript-subject-icon ms-auto">
+              {editingIndex === index || subject.isEditing ? (
+                <Check onClick={() => handleSave(index)} className="text-success cursor-pointer me-2" />
+              ) : (
+                <Edit2 size={18} className="iconat mx-2" onClick={() => handleEdit(index)} />
+              )}
+              <Trash2 size={18} className="iconat-trash mx-2" onClick={() => handleDelete(index)} />
+            </div>
           </div>
-          <div>
-            {editingIndex === index || subject.isEditing ? (
-              <Check onClick={() => handleSave(index)} className="text-success cursor-pointer me-2" />
-            ) : (
-              <Edit2 size={18} className="iconat mx-2" onClick={() => handleEdit(index)} />
-            )}
-            <Trash2 size={18} className="iconat-trash mx-2" onClick={() => handleDelete(index)} />
-          </div>
+
         </div>
       ))}
       {examType === 'SPM' && (
@@ -567,7 +592,7 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
   return (
     <div>
       <div className="mb-4">
-        <div className="d-flex justify-content-around">
+        <div className="d-flex justify-content-around transcript-academictranscript-cgpa-input">
           <div className="w-1/2">
             <label className="fw-bold small formlabel">Programme Name </label>
             <input
@@ -587,12 +612,12 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
             />
           </div>
         </div>
-      </div>
+      </div >
       <TransitionGroup className="space-y-2 mb-4">
         {subjects.map((subject, index) => (
           <CSSTransition key={index} classNames="fade" timeout={300}>
             <div className="d-flex align-items-center justify-content-between bg-white p-2 mb-2 rounded border">
-              <div className="d-flex align-items-center flex-grow-1">
+              <div className="d-flex align-items-center flex-grow-1 transcript-academictranscript-subject">
                 <GripVertical className="me-3" size={20} />
                 {editingIndex === index || subject.isEditing ? (
                   <>
@@ -637,7 +662,7 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
                   </>
                 )}
               </div>
-              <div>
+              <div className="transcript-academictranscript-subject-icon ms-auto" >
                 {editingIndex === index || subject.isEditing ? (
                   <Check onClick={() => handleSave(index)} className="text-success cursor-pointer me-2" />
                 ) : (
@@ -1377,7 +1402,7 @@ const AcademicTranscript = () => {
             <option value={50}>50</option>
           </select>
           <span className="me-2 align-self-center">entries</span>
-          <div className="search-bar-sas  ">
+          <div className="transcript-search-bar-sas  ">
             <Search size={20} style={{ color: '#9E9E9E' }} />
             <input
               type="text" placeholder="Search..." className="form-control custom-input-size"
@@ -1389,8 +1414,8 @@ const AcademicTranscript = () => {
 
         </div>
 
-        <div style={{ overflowX: 'auto' }}>
-          <table className="w-100  justify-content-around" >
+        <div className="transcript-responsive-table-div">
+          <table className="w-100  justify-content-around transcript-responsive-table" >
             <thead>
               <tr>
                 <th className="border-bottom p-2 fw-normal">Files</th>
@@ -1403,16 +1428,20 @@ const AcademicTranscript = () => {
                 {files.map((file) => (
                   <CSSTransition key={file.id} timeout={500} classNames="fade">
                     <tr>
-                      <td className="border-bottom p-2">
+                      <td className="border-bottom p-2" data-label="Files">
                         <div className="d-flex align-items-center">
-                          <FileText className="file-icon me-2" />
-                          <div>
+                          <FileText className="file-icon me-2 transcript-responsive-display"/>
+                          <div className="transcript-responsive-table-text-end">
                             <div className="file-title mb-1 sac-name-restrict">{file.studentMedia_name}</div>
                             <div className="file-date">{file.created_at}</div>
                           </div>
                         </div>
                       </td>
-                      <td className="border-bottom p-2 text-end text-secondary">{file.studentMedia_location || 'N/A'}</td>
+                      <td className="border-bottom p-2 text-end " data-label="Filename">
+                        <div className="text-secondary transcript-responsive-table-workbreak">
+                          {file.studentMedia_location || 'N/A'}
+                        </div>
+                      </td>
                       <td className="border-bottom p-2">
                         <div className="d-flex justify-content-end align-items-center">
                           <Trash2 size={18} className="iconat-trash mx-2" onClick={() => openDeletePopup(file)} />

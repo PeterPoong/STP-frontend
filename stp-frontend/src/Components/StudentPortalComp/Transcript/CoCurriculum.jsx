@@ -40,8 +40,8 @@ const CoCurriculum = () => {
         // Reset to first page when search term changes
         setCurrentPage(1);
     }, [searchTerm]);
- 
- 
+
+
     const fetchCocurriculum = async () => {
         //console.log('Fetching co-curriculum data...');
         setIsLoading(true);
@@ -112,7 +112,7 @@ const CoCurriculum = () => {
             setCurrentPage(totalPages === 0 ? 1 : totalPages);
         }
     }, [filteredData, itemsPerPage, currentPage]);
-    
+
 
     // Calculate pagination
     const indexOfLastItem = currentPage * itemsPerPage;
@@ -226,7 +226,7 @@ const CoCurriculum = () => {
         } catch (error) {
             console.error('Error deleting achievement:', error);
             setError(error.message || 'Failed to delete achievement. Please try again.');
-        }finally {
+        } finally {
             setIsDeleting(false); // End loading
         }
     };
@@ -260,7 +260,7 @@ const CoCurriculum = () => {
                     <option value={50}>50</option>
                 </select>
                 <span className="me-2 align-self-center">entries</span>
-                <div className="search-bar-sas  ">
+                <div className="transcript-search-bar-sas  ">
                     <Search size={20} style={{ color: '#9E9E9E' }} />
                     <input
                         type="text" placeholder="Search..." className="form-control custom-input-size"
@@ -276,9 +276,9 @@ const CoCurriculum = () => {
                     ADD NEW
                 </button>
             </div>
-            <div style={{ overflowX: 'auto' }}>
+            <div className="transcript-responsive-table-div">
                 {Array.isArray(currentItems) && currentItems.length > 0 ? (
-                    <table className="w-100 ">
+                    <table className="w-100 transcript-responsive-table">
                         <thead >
                             <tr>
                                 <th className="border-bottom p-2 fw-normal">Club</th>
@@ -287,21 +287,30 @@ const CoCurriculum = () => {
                                 <th className="border-bottom p-2 text-end fw-normal">Actions</th>
                             </tr>
                         </thead>
-                        <tbody> 
+                        <tbody>
                             <TransitionGroup component={null}>
                                 {currentItems.map((item) => (
                                     <CSSTransition key={item.id || item.club_name} timeout={300} classNames="fade">
                                         <tr>
-                                            <td className="border-bottom py-2 px-2">
+                                            <td className="border-bottom py-2 px-2" data-label="Club">
                                                 <div className="d-flex align-items-center">
-                                                    <div>
+                                                    <div className="transcript-responsive-table-text-end">
                                                         <div className="file-title mb-1 sac-name-restrict">{item.club_name}</div>
                                                         <div className="file-date sac-name-restrict">{item.location}</div>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="border-bottom p-2 sac-name-restrict">{item.student_position}</td>
-                                            <td className="border-bottom p-2">{item.year}</td>
+
+                                            <td className="border-bottom p-2 " data-label="Position">
+                                                <div className="sac-name-restrict">
+                                                    {item.student_position}
+                                                </div>
+                                            </td>
+                                            <td className="border-bottom p-2" data-label="Year">
+                                                <div >
+                                                    {item.year}
+                                                </div>
+                                            </td>
                                             <td className="border-bottom p-2">
                                                 <div className="d-flex justify-content-end align-items-center">
                                                     <Trash2 size={20} className="iconat-trash mx-2" onClick={() => openDeletePopup(item)} />
@@ -320,23 +329,23 @@ const CoCurriculum = () => {
                 )}
             </div>
             {pageNumbers.length > 1 && (
-            <div className="pagination">
-                <button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1}>
-                    &lt;
-                </button>
-                {pageNumbers.map(number => (
-                    <button
-                        key={number}
-                        onClick={() => paginate(number)}
-                        className={currentPage === number ? 'active' : ''}
-                    >
-                        {number}
+                <div className="pagination">
+                    <button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1}>
+                        &lt;
                     </button>
-                ))}
-                <button onClick={() => paginate(currentPage + 1)} disabled={currentPage === pageNumbers.length}>
-                    &gt;
-                </button>
-            </div>
+                    {pageNumbers.map(number => (
+                        <button
+                            key={number}
+                            onClick={() => paginate(number)}
+                            className={currentPage === number ? 'active' : ''}
+                        >
+                            {number}
+                        </button>
+                    ))}
+                    <button onClick={() => paginate(currentPage + 1)} disabled={currentPage === pageNumbers.length}>
+                        &gt;
+                    </button>
+                </div>
             )}
             <WidgetClub
                 isOpen={isPopupOpen}

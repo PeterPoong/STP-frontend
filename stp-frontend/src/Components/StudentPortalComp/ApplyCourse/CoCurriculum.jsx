@@ -243,7 +243,7 @@ const CoCurriculum = ({ onNext, onBack }) => {
                   style={{ fontSize: '1.1rem' }}
                 />
                 <div className="d-flex justify-content-between ps-0">
-                  <div className="d-flex flex-grow-1 px-0">
+                  <div className="d-flex flex-grow-1 px-0 ">
                     <div className="d-flex align-items-center me-3 flex-shrink-0">
                       <Clock size={18} className="me-2" />
                       <DatePicker
@@ -301,35 +301,18 @@ const CoCurriculum = ({ onNext, onBack }) => {
                     maxWidth: '500px'
                   }}>{activity.club_name}</div>
                 <div className="d-flex justify-content-between align-items-center">
-                  <div className="d-flex flex-grow-1">
-                    <div className="me-3 "  >
+                  <div className="d-flex flex-grow-1 applycourse-cocurriculum-content">
+                    <div className="me-3 " style={{width:'200px'}} >
                       <Clock size={18} className="me-2" />
                       <span className="border-end border-2 border-dark pe-2 me-2">Year</span>
                       <a className='mx-2 text-dark fw-normal'>{activity.year}</a>
                     </div>
-                    <div className="me-3" style={{
-                      wordWrap: 'break-word',
-                      overflowWrap: 'break-word',
-                      wordBreak: 'break-all',
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      maxWidth: '250px', // You can adjust this width as needed
-                      width: '250px'
-                    }}>
+                    <div className="me-3 applycourse-cocurriculum-wordbreak">
                       <User size={18} className="me-2" />
                       <span className="border-end  border-2 border-dark pe-2 me-2">Position</span>
                       <a className='mx-2 text-dark fw-normal name-restrict'>{activity.student_position}</a>
                     </div>
-                    <div className="me-3" style={{
-                      wordWrap: 'break-word',
-                      overflowWrap: 'break-word',
-                      wordBreak: 'break-all',
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      maxWidth: '250px' // You can adjust this width as needed
-                    }}>
+                    <div className="me-3 applycourse-cocurriculum-wordbreak" >
                       <Building size={18} className="me-2" />
                       <span className="border-end border-2 border-dark pe-2 me-2">Institute</span>
                       <a className='mx-2 text-dark fw-normal'>{activity.location}</a>
