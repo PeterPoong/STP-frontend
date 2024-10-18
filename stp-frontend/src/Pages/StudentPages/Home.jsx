@@ -60,7 +60,7 @@ const Home = () => {
             <VideoSlide />
           </div>
 
-          <LoadingWidget2
+          {/*<LoadingWidget2
             width={1000}
             height={1200}
             id={1}
@@ -91,7 +91,7 @@ const Home = () => {
               <div className="skeleton-line" style={{ width: '45%', height: '2rem' }} />
             </div>
 
-          </LoadingWidget2>
+          </LoadingWidget2>*/}
         </div>
       </main>
       <div>
