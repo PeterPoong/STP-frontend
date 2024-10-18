@@ -12,8 +12,6 @@ import VideoSlide from "../../Components/StudentComp/VideoSlide";
 import Footer from "../../Components/StudentComp/Footer";
 import "../../css/StudentCss/homePageStudent/UniversityRow.css";
 import SpcFooter from "../../Components/StudentPortalComp/SpcFooter";
-import LoadingWidget2 from "../../Components/StudentPortalComp/LoadingWidget2";
-
 import AOS from "aos";
 import "aos/dist/aos.css";
 
@@ -55,43 +53,9 @@ const Home = () => {
         </div>
         <div>
           <CoursesContainer />
-
           <div>
             <VideoSlide />
           </div>
-
-          <LoadingWidget2
-            width={1000}
-            height={1200}
-            id={1}
-            baseColors={{ 1: '#BA1718' }}
-            animation="shimmer"
-            childrenAnimation="blink"
-          >
-            <div className="skeleton-line mb-5" style={{ width: '45%', height: '2rem', marginBottom: '3.5rem' }} />
-            <div className="bg-transparent d-flex gap-5 mb-5">
-              <div className="skeleton-line" style={{ width: '45%', height: '2rem' }} />
-              <div className="skeleton-line" style={{ width: '45%', height: '2rem' }} />
-            </div>
-            <div className="bg-transparent d-flex gap-5 mb-5">
-              <div className="skeleton-line" style={{ width: '45%', height: '2rem' }} />
-              <div className="skeleton-line" style={{ width: '45%', height: '2rem' }} />
-            </div>
-            <div className="bg-transparent d-flex gap-5 mb-5">
-              <div className="skeleton-line" style={{ width: '45%', height: '2rem' }} />
-              <div className="skeleton-line" style={{ width: '45%', height: '2rem' }} />
-            </div>
-            <div className="skeleton-line mb-5" style={{ width: '95%', height: '2rem', marginBottom: '3.5rem' }} />
-            <div className="bg-transparent d-flex gap-5 mb-5">
-              <div className="skeleton-line" style={{ width: '45%', height: '2rem' }} />
-              <div className="skeleton-line" style={{ width: '45%', height: '2rem' }} />
-            </div>
-            <div className="bg-transparent d-flex gap-5 mb-5">
-              <div className="skeleton-line" style={{ width: '45%', height: '2rem' }} />
-              <div className="skeleton-line" style={{ width: '45%', height: '2rem' }} />
-            </div>
-
-          </LoadingWidget2>
         </div>
       </main>
       <div>

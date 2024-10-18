@@ -10,7 +10,7 @@ import AppliedCourseHistory from "../../Components/StudentPortalComp/AppliedCour
 import AppliedCoursePending from "../../Components/StudentPortalComp/AppliedCourse/AppliedCoursePending";
 import "aos/dist/aos.css";
 import "../../css/StudentPortalStyles/StudentPortalBasicInformation.css";
-
+import LoadingWidget1 from "../../Components/StudentPortalComp/LoadingWidget1";
 
 const StudentPortalBasicInformations = () => {
   const [selectedContent, setSelectedContent] = useState("basicInfo");
@@ -103,7 +103,9 @@ const StudentPortalBasicInformations = () => {
   /*end */
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div>
+      <LoadingWidget1/>
+    </div>;
   }
   if (!isAuthenticated) {
     return null; // Or you could render a "Not Authorized" message

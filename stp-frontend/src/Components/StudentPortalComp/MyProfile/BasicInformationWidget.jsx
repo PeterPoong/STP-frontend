@@ -5,7 +5,7 @@ import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import "../../../css/StudentPortalStyles/StudentButtonGroup.css";
 import axios from 'axios';
-
+import LoadingWidget2 from "../../../Components/StudentPortalComp/LoadingWidget2";
 const BasicInformationWidget = ({ onProfilePicUpdate }) => {
   const [studentData, setStudentData] = useState({
     id: '',
@@ -389,7 +389,42 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
   };
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div>
+      
+      <LoadingWidget2
+            width={1000}
+            height={700}
+            id={1}
+            baseColors={{ 1: '#D9D9D9FF' }}
+            animation="shimmer"
+            childrenAnimation="blink"
+          >
+             <div className="skeleton-line mb-5 mt-3" style={{ width: '45%', height: '2rem', marginBottom: '3.5rem' }} />
+            <div className="skeleton-line mb-5" style={{ width: '45%', height: '2rem', marginBottom: '3.5rem' }} />
+            <div className="bg-transparent d-flex gap-5 mb-5">
+              <div className="skeleton-line" style={{ width: '45%', height: '2rem' }} />
+              <div className="skeleton-line" style={{ width: '45%', height: '2rem' }} />
+            </div>
+            <div className="bg-transparent d-flex gap-5 mb-5">
+              <div className="skeleton-line" style={{ width: '45%', height: '2rem' }} />
+              <div className="skeleton-line" style={{ width: '45%', height: '2rem' }} />
+            </div>
+            <div className="bg-transparent d-flex gap-5 mb-5">
+              <div className="skeleton-line" style={{ width: '45%', height: '2rem' }} />
+              <div className="skeleton-line" style={{ width: '45%', height: '2rem' }} />
+            </div>
+            <div className="skeleton-line mb-5" style={{ width: '95%', height: '2rem', marginBottom: '3.5rem' }} />
+            <div className="bg-transparent d-flex gap-5 mb-5">
+              <div className="skeleton-line" style={{ width: '45%', height: '2rem' }} />
+              <div className="skeleton-line" style={{ width: '45%', height: '2rem' }} />
+            </div>
+            <div className="bg-transparent d-flex gap-5 mb-5">
+              <div className="skeleton-line" style={{ width: '45%', height: '2rem' }} />
+              <div className="skeleton-line" style={{ width: '45%', height: '2rem' }} />
+            </div>
+
+          </LoadingWidget2>
+    </div>;
   }
 
   if (error) {
