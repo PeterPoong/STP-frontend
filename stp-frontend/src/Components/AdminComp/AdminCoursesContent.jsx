@@ -112,14 +112,14 @@ const AdminCoursesContent = () => {
     };
 
     const handleEdit = (id) => {
-        console.log(`Edit Course with ID: ${id}`); // Log the ID being passed
+        // console.log(`Edit Course with ID: ${id}`); // Log the ID being passed
         sessionStorage.setItem('courseId', id); // Store course ID in session storage
         navigate(`/adminEditCourse`); // Navigate to the edit page
     };
     
 
     const handleToggleSwitch = (id, currentStatus) => {
-        console.log("Toggle switch for course with ID:", id);  // Check the id here
+        // console.log("Toggle switch for course with ID:", id);  // Check the id here
         const action = currentStatus === 'Active' ? 'disable' : 'enable';
         
         if (id !== undefined) {
@@ -138,7 +138,7 @@ const AdminCoursesContent = () => {
             return;
         }
     
-        console.log("Target Course for action:", targetCourse);  // Log for debugging
+        // console.log("Target Course for action:", targetCourse);  // Log for debugging
         
         try {
             const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/editCourseStatus`, {
@@ -205,7 +205,7 @@ const AdminCoursesContent = () => {
         </tr>
     );
     const tbodyContent = sortedCourses.map((Course) => {
-        console.log(Course);  // Log each course object to ensure it has an id
+        // console.log(Course);  // Log each course object to ensure it has an id
         return (
             <tr key={Course.id}>
                 <td>{Course.name}</td>

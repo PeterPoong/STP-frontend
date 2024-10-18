@@ -55,12 +55,12 @@ const AdminAddSchoolContent = () => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        console.log("Submitting form data:", formData); // Debugging line
+        // console.log("Submitting form data:", formData); // Debugging line
         const { name, email, logo, location, category, state, city, account, country, school_address, school_website, contact_number, person_in_charge_email, person_in_charge_name, person_in_charge_contact, country_code, confirm_password, school_shortDesc, school_fullDesc, password } = formData;
     
-        console.log("Form Data being sent:", formData);
+        // console.log("Form Data being sent:", formData);
         Object.keys(formData).forEach(key => {
-            console.log(`${key}: ${formData[key]}`);
+            // console.log(`${key}: ${formData[key]}`);
         });
     
         const formPayload = new FormData();
@@ -84,7 +84,7 @@ const AdminAddSchoolContent = () => {
         formPayload.append("confirm_password", confirm_password);
         formPayload.append("school_shortDesc", school_shortDesc);
         formPayload.append("school_fullDesc", school_fullDesc);
-        console.log("Selected Features:", selectedFeatures);
+        // console.log("Selected Features:", selectedFeatures);
     
         // Append each feature id individually to formPayload as featured[]
         selectedFeatures.forEach(feature => {
@@ -106,11 +106,11 @@ const AdminAddSchoolContent = () => {
         });
     
         for (let pair of formPayload.entries()) {
-            console.log(`${pair[0]}: ${pair[1]}`);
+            // console.log(`${pair[0]}: ${pair[1]}`);
         }
     
         try {
-            console.log("FormData before submission:", formPayload);
+            // console.log("FormData before submission:", formPayload);
     
             const addSchoolResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/addSchool`, {
                 method: 'POST',
@@ -238,7 +238,7 @@ useEffect(() => {
       .then(data => {
         if (data.success) {
           setCountryList(data.data);
-          console.log("Countries fetched: ", data.data);
+        //   console.log("Countries fetched: ", data.data);
   
           // Set default country to Malaysia (ID = 132) if no country is selected
           if (!formData.country) {
@@ -359,7 +359,7 @@ const fetchCities = (stateId) => {
 
     const handleFieldChange = (e) => {
         const { id, value, type, files } = e.target;
-        console.log(`Field ${id} updated with value: ${value}`); // Debugging line
+        // console.log(`Field ${id} updated with value: ${value}`); // Debugging line
         if (type === "file") {
             setFormData(prev => ({
                 ...prev,
@@ -423,9 +423,9 @@ const fetchCities = (stateId) => {
 
     const handleRemoveAlbum = async (fileToRemove) => {
         if (fileToRemove.id) {
-            console.log('Removing photo with id:', fileToRemove.id);
+            // console.log('Removing photo with id:', fileToRemove.id);
             const apiUrl = `${import.meta.env.VITE_BASE_URL}api/admin/removeSchoolPhoto`;
-            console.log('API URL:', apiUrl); // Log the full API URL
+            // console.log('API URL:', apiUrl); // Log the full API URL
             
             try {
                 const response = await fetch(apiUrl, {
@@ -452,7 +452,7 @@ const fetchCities = (stateId) => {
                 }
                 
                 const data = await response.json();
-                console.log('API response:', data);
+                // console.log('API response:', data);
     
                 if (data.success) {
                     setAlbumFiles(prevFiles => prevFiles.filter(file => file.id !== fileToRemove.id));

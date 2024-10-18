@@ -69,9 +69,9 @@ const AdminEditBannerContent = () => {
 
         const data = await response.json();
         // Console log the entire response data
-        console.log("Response Data:", data);
+        // console.log('Response Data:', data);
         const bannerDetails = data.data[0]; // Access the first item in the data array
-        console.log("Banner Details:", bannerDetails);
+        // console.log('Banner Details:', bannerDetails);
         if (bannerDetails) {
           setFormData({
             banner_name: bannerDetails.name,

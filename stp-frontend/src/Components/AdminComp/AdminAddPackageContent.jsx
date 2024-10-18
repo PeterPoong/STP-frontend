@@ -27,7 +27,7 @@ const AdminAddPackageContent = () => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        console.log("Submitting form data:", formData); // Debugging line
+        // console.log("Submitting form data:", formData); // Debugging line
         
         const { package_name, package_detail, package_type, package_price } = formData;
         
@@ -39,7 +39,7 @@ const AdminAddPackageContent = () => {
     
         // Debugging: Log FormData
         for (let [key, value] of formPayload.entries()) {
-            console.log(key, value);
+            // console.log(key, value);
         }
     
         try {
@@ -98,7 +98,7 @@ const AdminAddPackageContent = () => {
 
     const handleFieldChange = (e) => {
         const { id, value, type, files } = e.target;
-        console.log(`Field ${id} updated with value: ${value}`); // Debugging line
+        // console.log(`Field ${id} updated with value: ${value}`); // Debugging line
         if (type === "file") {
             setFormData(prev => ({
                 ...prev,

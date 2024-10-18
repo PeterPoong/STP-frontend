@@ -41,7 +41,7 @@ const AdminAddStudentContent = () => {
     const [passwordsMatch, setPasswordsMatch] = useState(true);
     const handleSubmit = async (event) => {
       event.preventDefault();
-      console.log("Submitting form data:", formData);
+      // console.log("Submitting form data:", formData);
   
       const { name, first_name, last_name, gender, ic, postcode, email, state, city, country, address, contact_number, country_code, confirm_password, password } = formData;
   
@@ -75,7 +75,7 @@ const AdminAddStudentContent = () => {
       formPayload.append("confirm_password", confirm_password);
   
       try {
-          console.log("FormData before submission:", formPayload);
+          // console.log("FormData before submission:", formPayload);
   
           const addStudentResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/addStudent`, {
               method: 'POST',
@@ -141,7 +141,7 @@ useEffect(() => {
     .then(data => {
       if (data.success) {
         setCountryList(data.data);
-        console.log("Countries fetched: ", data.data);
+        // console.log("Countries fetched: ", data.data);
 
         // Set default country to Malaysia (ID = 132) if no country is selected
         if (!formData.country) {
@@ -255,7 +255,7 @@ const fetchCities = (stateId) => {
   
     const handleFieldChange = (e) => {
         const { id, value, type, files } = e.target;
-        console.log(`Field ${id} updated with value: ${value}`); // Debugging line
+        // console.log(`Field ${id} updated with value: ${value}`); // Debugging line
         if (type === "file") {
             setFormData(prev => ({
                 ...prev,

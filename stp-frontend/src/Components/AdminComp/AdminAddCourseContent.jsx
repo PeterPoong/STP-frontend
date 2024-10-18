@@ -53,7 +53,7 @@ const AdminAddCourseContent = () => {
         formPayload.append("mode", mode);
 
      if (logo) {
-        console.log('Logo file being sent:', logo); // Log the logo file
+        // console.log('Logo file being sent:', logo); // Log the logo file
             formPayload.append('logo', logo);
         }
         // Append each selected intake value as "intake[]"
@@ -296,7 +296,7 @@ const AdminAddCourseContent = () => {
 
     const handleFieldChange = (e) => {
         const { id, value, type, files } = e.target;
-        console.log(`Field ${id} updated with value: ${value}`); // Debugging line
+        // console.log(`Field ${id} updated with value: ${value}`); // Debugging line
         if (type === "file") {
             setFormData(prev => ({
                 ...prev,
