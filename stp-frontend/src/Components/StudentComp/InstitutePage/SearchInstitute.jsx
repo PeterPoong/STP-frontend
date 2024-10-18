@@ -447,7 +447,7 @@ const SearchInstitute = () => {
 
       {error && <Alert variant="danger">{error}</Alert>}
 
-      {shouldDisplayBlankSlate ? (
+      {/* {shouldDisplayBlankSlate ? (
         <div className="blankslate-institutes">
           <img
             className="blankslate-institutes-top-img"
@@ -465,14 +465,14 @@ const SearchInstitute = () => {
             </p>
           </div>
         </div>
-      ) : (
-        <InstituteListing
-          searchResults={searchResults}
-          countryID={selectedCountry?.id}
-          selectedInstitute={selectedInstitute?.core_metaName}
-          resetTrigger={resetTrigger}
-        />
-      )}
+      ) : ( */}
+      <InstituteListing
+        searchResults={searchResults}
+        countryID={selectedCountry?.id}
+        selectedInstitute={selectedInstitute?.core_metaName}
+        resetTrigger={resetTrigger}
+      />
+      {/* )} */}
     </Container>
   );
 };

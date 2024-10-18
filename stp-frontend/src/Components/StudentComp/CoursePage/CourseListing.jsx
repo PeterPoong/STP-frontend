@@ -24,6 +24,7 @@ const studyModeAPIURL = `${baseURL}api/student/studyModeFilterlist`;
 const categoryAPIURL = `${baseURL}api/student/categoryFilterList`;
 const tuitionFeeAPIURL = `${baseURL}api/student/tuitionFeeFilterRange`;
 const intakeAPIURL = `${baseURL}api/student/intakeFilterList`;
+const listingFilterList = `${baseURL}api/student/listingFilterList`;
 
 const CourseListing = ({
   searchResults,
@@ -35,6 +36,8 @@ const CourseListing = ({
   const location = useLocation();
   const { searchQuery = "" } = location.state || {};
   const { selectedCategory } = location.state || {};
+
+  // State declarations
   const [locationFilters, setLocationFilters] = useState([]);
   const [locationsData, setLocationsData] = useState([]);
   const [categoryFilters, setCategoryFilters] = useState([]);
@@ -55,19 +58,17 @@ const CourseListing = ({
   const [selectedCountry, setSelectedCountry] = useState({});
   const [locationOptions, setLocationOptions] = useState([]);
   const [selectedLocationFilters, setSelectedLocationFilters] = useState([]);
+  const [states, setStates] = useState([]);
 
   // Function for Pagination
   const [currentPage, setCurrentPage] = useState(1);
-
   const itemsPerPage = 20;
-
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentCourses = filteredPrograms.slice(
     indexOfFirstItem,
     indexOfLastItem
   );
-
   // Calculate the total number of pages
   const totalPages = Math.ceil(filteredPrograms.length / itemsPerPage);
 
@@ -84,7 +85,7 @@ const CourseListing = ({
     setCategoryFilters([]);
     setIntakeFilters([]);
     setModeFilters([]);
-    setTuitionFee("");
+    setTuitionFee(0);
   };
 
   // Watch for changes in resetTrigger and reset the filters accordingly
@@ -93,7 +94,7 @@ const CourseListing = ({
   }, [resetTrigger]);
 
   const fetchCourses = useCallback(async () => {
-    if (!selectedCategory) return;
+    if (!selectedCategory) return; // Ensure both category and countryID are available
 
     setLoading(true);
     setError(null);
@@ -104,7 +105,10 @@ const CourseListing = ({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ category: selectedCategory }),
+        body: JSON.stringify({
+          category: selectedCategory,
+          //countryID: countryID,
+        }),
       });
 
       if (!response.ok) {
@@ -124,6 +128,74 @@ const CourseListing = ({
   useEffect(() => {
     fetchCourses();
   }, [fetchCourses]);
+
+  // useEffect(() => {
+  //   if (countryID && selectedCategory) {
+  //     console.log("countryID or selectedCategory is here");
+  //     fetchCourses();
+  //   } else {
+  //     console.log("countryID or selectedCategory is missing");
+  //   }
+  // }, [countryID, selectedCategory]);
+
+  // --- Fetch filters and programs based on countryID and one API ---
+  const fetchFilters = useCallback(async () => {
+    //if (!countryID) return;
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(listingFilterList, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ countryID }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data.success) {
+        setStates(data.data.state || []);
+        setCategoryFilters(data.data.categoryList || []);
+        setIntakeFilters(data.data.intakeList || []);
+        setModeFilters(data.data.studyModeListing || []);
+
+        // Set tuition fee based on API data
+        setMinTuitionFee(data.data.minAmount || 0); // Set minimum tuition fee
+        setMaxTuitionFee(data.data.maxAmount || 100000); // Set maximum tuition fee
+        setTuitionFee(data.data.maxAmount || 100000); // Default the current tuition fee to the maximum available
+      }
+    } catch (error) {
+      setError("Failed to fetch filters. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }, [countryID]);
+
+  useEffect(() => {
+    if (countryID) {
+      fetchFilters();
+    }
+  }, [countryID, fetchFilters]);
+
+  useEffect(() => {
+    filterPrograms();
+  }, [
+    categoryFilters,
+    selectedLocationFilters,
+    intakeFilters,
+    modeFilters,
+    tuitionFee,
+    programs,
+    searchResults,
+    searchQuery,
+  ]);
 
   /* ----------------------University Dropdown--------------------------- */
 
@@ -824,49 +896,59 @@ const CourseListing = ({
         >
           {/* Filters always visible on larger screens */}
           <div className="filters-container">
+            {/* Location Filter */}
             <div className="filter-group">
               <h5 style={{ marginTop: "10px" }}>Location</h5>
               <Form.Group>
-                {locationFilters.length > 0 ? (
-                  locationFilters.map(
-                    (location, index) =>
-                      location.state_name &&
-                      location.state_name.trim() !== "" && (
-                        <Form.Check
-                          key={index}
-                          type="checkbox"
-                          label={location.state_name}
-                          checked={selectedLocationFilters.includes(
-                            location.state_name
-                          )}
-                          onChange={() => handleLocationChange(location)}
-                        />
-                      )
+                {states.length > 0 ? (
+                  states.map((location, index) =>
+                    location.state_name && location.state_name.trim() !== "" ? (
+                      <Form.Check
+                        key={index}
+                        type="checkbox"
+                        label={location.state_name}
+                        checked={selectedLocationFilters.includes(
+                          location.state_name
+                        )}
+                        onChange={() => handleLocationChange(location)}
+                      />
+                    ) : null
                   )
                 ) : (
                   <p>No location available</p>
                 )}
               </Form.Group>
             </div>
+            {/* Category Filter */}
             <div className="filter-group">
               <h5 style={{ marginTop: "25px" }}>Category</h5>
               <Form.Group>
-                {categoriesData.map((category, index) => (
-                  <Form.Check
-                    key={index}
-                    type="checkbox"
-                    label={category.category_name}
-                    checked={categoryFilters.includes(category.category_name)}
-                    onChange={() => handleCategoryChange(category)}
-                  />
-                ))}
+                {categoryFilters.length > 0 ? (
+                  categoryFilters.map((category, index) =>
+                    category.category_name &&
+                    category.category_name.trim() !== "" ? (
+                      <Form.Check
+                        key={index}
+                        type="checkbox"
+                        label={category.category_name}
+                        checked={categoryFilters.includes(
+                          category.category_name
+                        )}
+                        onChange={() => handleCategoryChange(category)}
+                      />
+                    ) : null
+                  )
+                ) : (
+                  <p>No category available</p> // Message when no categories are available
+                )}
               </Form.Group>
             </div>
+            {/* Intake Filter */}
             <div className="filter-group">
               <h5 style={{ marginTop: "25px" }}>Intakes</h5>
               <Form.Group>
-                {intakeData.length > 0 ? (
-                  intakeData.map((intake) => (
+                {intakeFilters.length > 0 ? (
+                  intakeFilters.map((intake) => (
                     <Form.Check
                       key={intake.id} // Use a unique key if available, `intake.id` is preferred
                       type="checkbox"
@@ -880,20 +962,28 @@ const CourseListing = ({
                 )}
               </Form.Group>
             </div>
+            {/* Study Mode Filter */}
             <div className="filter-group">
               <h5 style={{ marginTop: "25px" }}>Study Mode</h5>
               <Form.Group>
-                {studyModes.map((mode, index) => (
-                  <Form.Check
-                    key={index}
-                    type="checkbox"
-                    label={mode.studyMode_name}
-                    checked={modeFilters.includes(mode.studyMode_name)}
-                    onChange={() => handleModeChange(mode)}
-                  />
-                ))}
+                {modeFilters.length > 0 ? (
+                  modeFilters.map((mode, index) =>
+                    mode.studyMode_name && mode.studyMode_name.trim() !== "" ? (
+                      <Form.Check
+                        key={index}
+                        type="checkbox"
+                        label={mode.studyMode_name}
+                        checked={modeFilters.includes(mode.studyMode_name)}
+                        onChange={() => handleModeChange(mode)}
+                      />
+                    ) : null
+                  )
+                ) : (
+                  <p>No study mode available</p> // Message when no study modes are available
+                )}
               </Form.Group>
             </div>
+            {/* Tuition Fee Filter */}
             <div className="filter-group">
               <h5 style={{ marginTop: "25px" }}>Tuition Fee</h5>
               <Form.Group id="customRange1">

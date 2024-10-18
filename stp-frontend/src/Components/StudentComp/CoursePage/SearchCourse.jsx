@@ -26,6 +26,7 @@ const countriesURL = `${baseURL}api/student/countryList`;
 const instituteURL = `${baseURL}api/student/instituteType`;
 const locationAPIURL = `${baseURL}api/student/locationFilterList`;
 const qualificationURL = `${baseURL}api/student/qualificationFilterList`;
+const listingFilterList = `${baseURL}api/student/listingFilterList`;
 
 const SearchCourse = ({ currentCourses }) => {
   const location = useLocation();
@@ -46,10 +47,9 @@ const SearchCourse = ({ currentCourses }) => {
   const [countryFilter, setCountryFilter] = useState("");
   const [defaultCountry, setDefaultCountry] = useState(null); // Track the default country
   const [filteredPrograms, setFilteredPrograms] = useState([]);
-
+  const [categories, setCategories] = useState([]);
   // Function for Pagination
   const itemsPerPage = 20;
-
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   currentCourses = filteredPrograms.slice(indexOfFirstItem, indexOfLastItem);
@@ -242,6 +242,7 @@ const SearchCourse = ({ currentCourses }) => {
   }, [selectedCountry]);
   // End of Fetch Location
 
+  // Call all function
   const fetchData = async (query) => {
     setLoading(true);
     setError(null);
@@ -585,7 +586,7 @@ const SearchCourse = ({ currentCourses }) => {
       )} */}
       {error && <Alert variant="danger">{error}</Alert>}
 
-      {shouldDisplayBlankSlate ? (
+      {/* {shouldDisplayBlankSlate ? (
         <div className="blankslate-courses">
           <img
             className="blankslate-courses-top-img"
@@ -603,15 +604,15 @@ const SearchCourse = ({ currentCourses }) => {
             </p>
           </div>
         </div>
-      ) : (
-        <CourseListing
-          searchResults={searchResults}
-          countryID={selectedCountry?.id}
-          selectedInstitute={selectedInstitute?.core_metaName}
-          selectedQualification={selectedQualification?.qualification_name}
-          resetTrigger={resetTrigger} // Pass reset trigger here
-        />
-      )}
+      ) : ( */}
+      <CourseListing
+        searchResults={searchResults}
+        countryID={selectedCountry?.id}
+        selectedInstitute={selectedInstitute?.core_metaName}
+        selectedQualification={selectedQualification?.qualification_name}
+        resetTrigger={resetTrigger} // Pass reset trigger here
+      />
+      {/* )} */}
     </Container>
   );
 };
