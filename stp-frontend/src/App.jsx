@@ -1,32 +1,27 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import "./App.css";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import Home from "./Pages/student pages/Home";
-import KnowMore from "./Pages/student pages/KnowMore";
-import ApplyNow from "./Pages/student pages/ApplyNow";
-import NavButtons from "./Components/NavButtons";
-import "bootstrap/dist/css/bootstrap.min.css";
-// import VideoSlide from "../Components/VideoSlide";
-import VideoSlide from "./Components/student components/VideoSlide";
-import Footer from "./css/student css/Footer.css";
-import Courses from "./Pages/student pages/CoursesPage";
-import ApplyForm from "./Pages/student pages/ApplyForm";
-import courseDetails from "./Pages/student pages/courseDetails";
-
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import './App.css';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
+import Home from './Pages/StudentPages/Home';
+import KnowMore from './Pages/StudentPages/KnowMore';
+import ApplyNow from './Pages/StudentPages/ApplyNow';
+import NavButtons from './Components/StudentComp/NavButtons';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import VideoSlide from './Components/StudentComp/VideoSlide';
+import Footer from './Components/StudentComp/Footer'; // Update to correct path
+import Courses from './Pages/StudentPages/CoursesPage';
+import StudentPortalLogin from './Pages/StudentPortalPages/StudentPortalLogin'
 // Import Admin Pages
-import AdminSignup from "./Pages/AdminSignup";
-import AdminLogin from "./Pages/AdminLogin";
-import AdminAddSchoolContent from "./Pages/AdminAddSchoolContent";
-import AdminEditSchool from './path/to/AdminEditSchool';
-
+import AdminSignup from './Pages/AdminPages/AdminSignup';
+import AdminLogin from './Pages/AdminPages/AdminLogin';
+import AdminAddSchoolContent from './Pages/AdminPages/AdminAddSchool';
+import AdminEditSchool from './Pages/AdminPages/AdminEditSchool'; // Update to correct path
 
 function App() {
   const style = {
-    backgroundColor: "#f0f0f0", // For solid color
-    // background: 'linear-gradient(to right, #ff7e5f, #feb47b)', // For gradient
-    // backgroundImage: 'url(path/to/your/image.jpg)', // For background image
-    height: "100vh", // Ensures it covers the full viewport height
+    backgroundColor: '#f0f0f0',
+    height: '100vh',
     margin: 0,
   };
 
@@ -38,20 +33,17 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/knowMoreInstitute/:id" element={<KnowMore />} />
             <Route path="/applynow" element={<ApplyNow />} />
-            <Route path="/courseDetails/:id" element={<courseDetails />} />
+            <Route path="/courseDetailsPage/:id" element={<CourseDetailsPage />} />
             <Route path="/login" element={<div>Login Page</div>} />
             <Route path="/school" element={<div>School Page</div>} />
             <Route path="/student" element={<div>Student Page</div>} />
             <Route path="/register" element={<div>Register Page</div>} />
             <Route path="/videoslide" element={<VideoSlide />} />
-            <Route path="/courses" element={<div>CoursesPage</div>} />
+            <Route path="/courses" element={<Courses />} />
             <Route path="/institute" element={<div>InstitutePage</div>} />
-            <Route path="/applycourse" element={<div>ApplyForm </div>} />
-            <Route
-              path="/personaldetails"
-              element={<div>PersonalDetails </div>}
-            />
-
+            <Route path="/applycourse" element={<ApplyForm />} />
+            <Route path="/personaldetails" element={<div>PersonalDetails</div>} />
+            <Route path="/StudentPortallogin" element={<StudentPortalLogin />} />
             {/* Add Admin Routes */}
             <Route path="/adminSignup" element={<AdminSignup />} />
             <Route path="/adminLogin" element={<AdminLogin />} />
