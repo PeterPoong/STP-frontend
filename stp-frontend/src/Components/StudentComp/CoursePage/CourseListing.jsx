@@ -1009,21 +1009,20 @@ const CourseListing = ({
               </Accordion.Header>
               <Accordion.Body className="custom-accordion-body">
                 <Form.Group>
-                  {locationFilters.length > 0 ? (
-                    locationFilters.map(
-                      (location, index) =>
-                        location.state_name &&
-                        location.state_name.trim() !== "" && (
-                          <Form.Check
-                            key={index}
-                            type="checkbox"
-                            label={location.state_name}
-                            checked={locationFilters.includes(
-                              location.state_name
-                            )}
-                            onChange={() => handleLocationChange(location)}
-                          />
-                        )
+                  {states.length > 0 ? (
+                    states.map((location, index) =>
+                      location.state_name &&
+                      location.state_name.trim() !== "" ? (
+                        <Form.Check
+                          key={index}
+                          type="checkbox"
+                          label={location.state_name}
+                          checked={selectedLocationFilters.includes(
+                            location.state_name
+                          )}
+                          onChange={() => handleLocationChange(location)}
+                        />
+                      ) : null
                     )
                   ) : (
                     <p>No location available</p>
@@ -1037,15 +1036,24 @@ const CourseListing = ({
               </Accordion.Header>
               <Accordion.Body className="custom-accordion-body">
                 <Form.Group>
-                  {categoriesData.map((category, index) => (
-                    <Form.Check
-                      key={index}
-                      type="checkbox"
-                      label={category.category_name}
-                      checked={categoryFilters.includes(category.category_name)}
-                      onChange={() => handleCategoryChange(category)}
-                    />
-                  ))}
+                  {categoryFilters.length > 0 ? (
+                    categoryFilters.map((category, index) =>
+                      category.category_name &&
+                      category.category_name.trim() !== "" ? (
+                        <Form.Check
+                          key={index}
+                          type="checkbox"
+                          label={category.category_name}
+                          checked={categoryFilters.includes(
+                            category.category_name
+                          )}
+                          onChange={() => handleCategoryChange(category)}
+                        />
+                      ) : null
+                    )
+                  ) : (
+                    <p>No category available</p> // Message when no categories are available
+                  )}
                 </Form.Group>
               </Accordion.Body>
             </Accordion.Item>
@@ -1055,8 +1063,8 @@ const CourseListing = ({
               </Accordion.Header>
               <Accordion.Body className="custom-accordion-body">
                 <Form.Group>
-                  {intakeData.length > 0 ? (
-                    intakeData.map((intake) => (
+                  {intakeFilters.length > 0 ? (
+                    intakeFilters.map((intake) => (
                       <Form.Check
                         key={intake.id} // Use a unique key if available, `intake.id` is preferred
                         type="checkbox"
@@ -1077,15 +1085,22 @@ const CourseListing = ({
               </Accordion.Header>
               <Accordion.Body className="custom-accordion-body">
                 <Form.Group>
-                  {studyModes.map((mode, index) => (
-                    <Form.Check
-                      key={index}
-                      type="checkbox"
-                      label={mode.studyMode_name}
-                      checked={modeFilters.includes(mode.studyMode_name)}
-                      onChange={() => handleModeChange(mode)}
-                    />
-                  ))}
+                  {modeFilters.length > 0 ? (
+                    modeFilters.map((mode, index) =>
+                      mode.studyMode_name &&
+                      mode.studyMode_name.trim() !== "" ? (
+                        <Form.Check
+                          key={index}
+                          type="checkbox"
+                          label={mode.studyMode_name}
+                          checked={modeFilters.includes(mode.studyMode_name)}
+                          onChange={() => handleModeChange(mode)}
+                        />
+                      ) : null
+                    )
+                  ) : (
+                    <p>No study mode available</p> // Message when no study modes are available
+                  )}
                 </Form.Group>
               </Accordion.Body>
             </Accordion.Item>

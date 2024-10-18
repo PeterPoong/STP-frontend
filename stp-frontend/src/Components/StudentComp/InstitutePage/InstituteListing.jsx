@@ -156,7 +156,7 @@ const InstituteListing = ({
       const data = await response.json();
 
       if (data.success) {
-        setLocationFilters(data.data.state || []);
+        setStates(data.data.state || []);
         //setCategoryFilters(data.data.categoryList || []);
         //setStudyLevelFilters(data.data.qualificationList);
         //setModeFilters(data.data.studyModeListing || []);
@@ -1139,8 +1139,8 @@ const InstituteListing = ({
             <div className="filter-group">
               <h5 style={{ marginTop: "10px" }}>Location</h5>
               <Form.Group>
-                {locationFilters.length > 0 ? (
-                  locationFilters.map(
+                {states.length > 0 ? (
+                  states.map(
                     (location, index) =>
                       location.state_name &&
                       location.state_name.trim() !== "" && (
