@@ -110,7 +110,7 @@ const AdminListContent = () => {
         navigate('/adminAddAdmin');
     };
     const handleEdit = (id) => {
-        console.log(`Edit admin with ID: ${id}`);
+        // console.log(`Edit admin with ID: ${id}`);
         sessionStorage.setItem('token', Authenticate);
         navigate(`/adminEditAdmin/${id}`);
     };

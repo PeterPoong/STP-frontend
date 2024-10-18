@@ -19,6 +19,7 @@ const AdminBannerContent = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [searchQuery, setSearchQuery] = useState("");
+    const [isSearchResults, setIsSearchResults] = useState(false);
     const [showAddButton, setShowAddButton] = useState(true); // Set true if you want the button to always show
 
      // To track if there are search results
@@ -109,7 +110,7 @@ const AdminBannerContent = () => {
         navigate('/adminAddbanner');
     };
     const handleEdit = (id) => {
-        console.log(`Edit Banner with ID: ${id}`); // Log the ID being passed
+        // console.log(`Edit Banner with ID: ${id}`); // Log the ID being passed
         sessionStorage.setItem('bannerId', id); // Store package ID in session storage
         navigate(`/adminEditBanner`); // Navigate to the edit page
     };
@@ -145,7 +146,7 @@ const AdminBannerContent = () => {
     
             if (result.success) {
                 // Log the new status for debugging
-                console.log("New status:", result.newStatus);
+                // console.log("New status:", result.newStatus);
                 await fetchbanners(currentPage, rowsPerPage, searchQuery);
     
             } else {

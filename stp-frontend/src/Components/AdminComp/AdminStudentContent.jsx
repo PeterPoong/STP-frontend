@@ -104,7 +104,7 @@ const AdminStudentContent = () => {
     };
 
     const handleEdit = (id) => {
-        console.log(`Edit student with ID: ${id}`); // Log the ID being passed
+        // console.log(`Edit student with ID: ${id}`); // Log the ID being passed
         sessionStorage.setItem('studentId', id); // Store package ID in session storage
         navigate(`/adminEditStudent`); // Navigate to the edit page
     };

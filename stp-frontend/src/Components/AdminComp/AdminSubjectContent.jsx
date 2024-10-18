@@ -19,6 +19,8 @@ const AdminSubjectContent = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [searchQuery, setSearchQuery] = useState("");
+    const [isSearchResults, setIsSearchResults] = useState(false);
+
     const [showAddButton, setShowAddButton] = useState(true); // Set true if you want the button to always show
     const token = sessionStorage.getItem('token'); // Retrieve the token from sessionStorage
     const Authenticate = `Bearer ${token}`;
@@ -107,7 +109,7 @@ const AdminSubjectContent = () => {
         navigate('/adminAddSubject');
     };
     const handleEdit = (id) => {
-        console.log(`Edit subject with ID: ${id}`); // Log the ID being passed
+        // console.log(`Edit subject with ID: ${id}`); // Log the ID being passed
         sessionStorage.setItem('subjectId', id); // Store package ID in session storage
         navigate(`/adminEditSubject`); // Navigate to the edit page
     };

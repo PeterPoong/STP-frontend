@@ -67,7 +67,7 @@ const AdminEditCourseContent = () => {
             formPayload.append("logo", formData.logo); // New logo file
         }
           // Log the selectedCourses array to check courseFeatured[]
-    console.log('Selected Courses (courseFeatured[]):', selectedCourses);
+    // console.log('Selected Courses (courseFeatured[]):', selectedCourses);
         selectedCourses.forEach(course => {
             formPayload.append("courseFeatured[]", course);
         });
@@ -370,7 +370,7 @@ const AdminEditCourseContent = () => {
 
     const handleFieldChange = (e) => {
         const { id, value, type, files } = e.target;
-        console.log(`Field ${id} updated with value: ${value}`); // Debugging line
+        // console.log(`Field ${id} updated with value: ${value}`); // Debugging line
         if (type === "file") {
             setFormData(prev => ({
                 ...prev,

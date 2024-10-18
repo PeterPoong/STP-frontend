@@ -14,6 +14,7 @@ const AdminSchoolContent = () => {
     const [sortColumn, setSortColumn] = useState(null);
     const [sortDirection, setSortDirection] = useState(null);
     const [showModal, setShowModal] = useState(false);
+    const [isSearchResults, setIsSearchResults] = useState(false);
     const [targetSchool, setTargetSchool] = useState(null);
     const [totalPages, setTotalPages] = useState(1); // Start with 1 page
     const [currentPage, setCurrentPage] = useState(1);
@@ -109,7 +110,7 @@ const AdminSchoolContent = () => {
         navigate('/adminAddSchool');
     };
     const handleEdit = (id) => {
-        console.log(`Edit school with ID: ${id}`); // Log the ID being passed
+        // console.log(`Edit school with ID: ${id}`); // Log the ID being passed
         sessionStorage.setItem('schoolId', id); // Store package ID in session storage
         navigate(`/adminEditSchool`); // Navigate to the edit page
     };

@@ -33,10 +33,10 @@ const AdminAddBannerContent = () => {
   const handleDateChange = (date, type) => {
     if (type === "start") {
       setSelectedStartDate(date);
-      console.log("Start date set to:", date); // Debugging log
+      // console.log("Start date set to:", date); // Debugging log
     } else if (type === "end") {
       setSelectedEndDate(date);
-      console.log("End date set to:", date); // Debugging log
+      
     }
   };
   const handleSubmit = async (event) => {
@@ -70,9 +70,9 @@ const AdminAddBannerContent = () => {
     });
   
     // Log the data being submitted
-    console.log("FormData being submitted:");
+    // console.log("FormData being submitted:");
     for (const pair of submissionData.entries()) {
-      console.log(`${pair[0]}: ${pair[1]}`);
+      // console.log(`${pair[0]}: ${pair[1]}`);
     }
   
     try {
@@ -175,8 +175,6 @@ const AdminAddBannerContent = () => {
 
   return (
     <Container fluid className="admin-add-banner-content">
-     {console.log("Rendered with selectedStartDate:", selectedStartDate)}
-    {console.log("Rendered with selectedEndDate:", selectedEndDate)}
       <AdminFormComponent
         formTitle="Add Banner"
         checkboxDetail="Featured Type(s)"

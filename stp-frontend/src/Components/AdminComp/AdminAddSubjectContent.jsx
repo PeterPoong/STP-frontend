@@ -23,7 +23,7 @@ const AdminAddSubjectContent = () => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        console.log("Submitting form data:", formData); // Debugging line
+        // console.log("Submitting form data:", formData); // Debugging line
         const { name, category} = formData;
         
         const formPayload = new FormData();
@@ -31,7 +31,7 @@ const AdminAddSubjectContent = () => {
         formPayload.append("category", category);
     
         try {
-            console.log("FormData before submission:", formPayload);
+            // console.log("FormData before submission:", formPayload);
             
             const addSubjectResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/addSubject`, {
                 method: 'POST',
@@ -90,7 +90,7 @@ const AdminAddSubjectContent = () => {
 
     const handleFieldChange = (e) => {
         const { id, value, type, files } = e.target;
-        console.log(`Field ${id} updated with value: ${value}`); // Debugging line
+        // console.log(`Field ${id} updated with value: ${value}`); // Debugging line
         if (type === "file") {
             setFormData(prev => ({
                 ...prev,

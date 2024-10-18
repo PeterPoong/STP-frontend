@@ -42,7 +42,7 @@ const AdminEditApplicantContent = () => {
             }
     
             const data = await response.json();
-            console.log('Fetched courses data:', data); 
+            // console.log('Fetched courses data:', data); 
             
             // Ensure the response data is set as an array for easy mapping
             if (data && Array.isArray(data.data)) {
@@ -157,7 +157,7 @@ const AdminEditApplicantContent = () => {
             const addApplicantData = await addApplicantResponse.json();
 
             if (addApplicantResponse.ok) {
-                console.log('Applicant successfully registered:', addApplicantData);
+                // console.log('Applicant successfully registered:', addApplicantData);
                 navigate('/adminApplicant');
             } else {
                 console.error('Validation Error:', addApplicantData.errors);

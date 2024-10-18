@@ -161,7 +161,7 @@ const AdminCategoryContent = () => {
         navigate('/adminAddCategory');
     };
     const handleEdit = (id) => {
-        console.log(`Edit Category with ID: ${id}`); // Log the ID being passed
+        // console.log(`Edit Category with ID: ${id}`); // Log the ID being passed
         sessionStorage.setItem('categoryId', id); // Store course ID in session storage
         navigate(`/adminEditCategory`); // Navigate to the edit page
     };

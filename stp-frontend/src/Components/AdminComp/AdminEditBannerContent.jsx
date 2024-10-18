@@ -67,9 +67,9 @@ const AdminEditBannerContent = () => {
   
         const data = await response.json();
          // Console log the entire response data
-      console.log('Response Data:', data);
+      // console.log('Response Data:', data);
         const bannerDetails = data.data[0]; // Access the first item in the data array
-        console.log('Banner Details:', bannerDetails);
+        // console.log('Banner Details:', bannerDetails);
         if (bannerDetails) {
           setFormData({
             banner_name: bannerDetails.name,
@@ -116,23 +116,22 @@ const AdminEditBannerContent = () => {
     submissionData.append("banner_url", formData.banner_url);
     submissionData.append("banner_start", formattedStartDate);
     submissionData.append("banner_end", formattedEndDate);
-    submissionData.append("featured_id", formData.featured_id)
-   
-  
-   // Only append the banner file if it's a new file and it's an image
-  if (formData.banner_file instanceof File) {
-    const validImageTypes = ['image/jpeg', 'image/png', 'image/gif'];
-    if (validImageTypes.includes(formData.banner_file.type)) {
-      submissionData.append("banner_file", formData.banner_file); // Append the image file
-    } else {
-      console.log("File is not an image, skipping banner_file append.");
+    submissionData.append("featured_id", formData.featured_id);
+
+    // Only append the banner file if it's a new file and it's an image
+    if (formData.banner_file instanceof File) {
+      const validImageTypes = ["image/jpeg", "image/png", "image/gif"];
+      if (validImageTypes.includes(formData.banner_file.type)) {
+        submissionData.append("banner_file", formData.banner_file); // Append the image file
+      } else {
+        console.log("File is not an image, skipping banner_file append.");
+      }
     }
-  }
-  
-   // Log the submission data
-   for (let [key, value] of submissionData.entries()) {
-    console.log(`${key}:`, value);
-  }
+
+    // Log the submission data
+    for (let [key, value] of submissionData.entries()) {
+      console.log(`${key}:`, value);
+    }
     try {
       const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/editBanner`, {
         method: "POST",
