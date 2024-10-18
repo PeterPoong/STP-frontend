@@ -28,6 +28,7 @@ const tuitionFeeAPIURL = `${baseURL}api/student/tuitionFeeFilterRange`;
 const categoryAPIURL = `${baseURL}api/student/categoryFilterList`;
 const intakeAPIURL = `${baseURL}api/student/intakeFilterList`;
 const schoolListAPI = `${baseURL}api/student/schoolList`;
+const listingFilterList = `${baseURL}api/student/listingFilterList`;
 
 const InstituteListing = ({
   searchResults,
@@ -57,19 +58,18 @@ const InstituteListing = ({
   const [selectedCountry, setSelectedCountry] = useState(countryID);
   const [filteredPrograms, setFilteredPrograms] = useState([]);
   const [school, setSchool] = useState([]);
-
   const [selectedLocationFilters, setSelectedLocationFilters] = useState([]);
+  const [states, setStates] = useState([]);
 
+  // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
-
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentInstitutes = filteredPrograms.slice(
     indexOfFirstItem,
     indexOfLastItem
   );
-
   // Calculate the total number of pages
   const totalPages = Math.ceil(filteredPrograms.length / itemsPerPage);
 
@@ -77,6 +77,7 @@ const InstituteListing = ({
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
+  // End of Function for Pagination
 
   const location = useLocation();
   const { searchQuery = "" } = location.state || {};
@@ -91,7 +92,7 @@ const InstituteListing = ({
     setModeFilters([]);
     setTuitionFee([]);
   };
-
+  // Watch for changes in resetTrigger and reset the filters accordingly
   useEffect(() => {
     resetFilters();
   }, [resetTrigger]);
@@ -132,6 +133,65 @@ const InstituteListing = ({
 
     fetchInstitutes();
   }, [selectedCategory]);
+
+  const fetchFilters = useCallback(async () => {
+    //if (!countryID) return;
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(listingFilterList, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ countryID }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data.success) {
+        setLocationFilters(data.data.state || []);
+        //setCategoryFilters(data.data.categoryList || []);
+        //setStudyLevelFilters(data.data.qualificationList);
+        //setModeFilters(data.data.studyModeListing || []);
+        setIntakeFilters(data.data.intakeList || []);
+
+        // Set tuition fee based on API data
+        setMinTuitionFee(data.data.minAmount || 0); // Set minimum tuition fee
+        setMaxTuitionFee(data.data.maxAmount || 100000); // Set maximum tuition fee
+        setTuitionFee(data.data.maxAmount || 100000); // Default the current tuition fee to the maximum available
+      }
+    } catch (error) {
+      setError("Failed to fetch filters. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }, [countryID]);
+
+  useEffect(() => {
+    if (countryID) {
+      fetchFilters();
+    }
+  }, [countryID, fetchFilters]);
+
+  useEffect(() => {
+    filterPrograms();
+  }, [
+    categoryFilters,
+    selectedLocationFilters,
+    intakeFilters,
+    modeFilters,
+    tuitionFee,
+    institutes,
+    searchResults,
+    searchQuery,
+  ]);
 
   /*------- End of Reset filter --------*/
 
