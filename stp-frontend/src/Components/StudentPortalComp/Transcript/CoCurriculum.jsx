@@ -5,6 +5,8 @@ import WidgetClub from "../../../Components/StudentPortalComp/Widget/WidgetClub"
 import WidgetPopUpDelete from "../../../Components/StudentPortalComp/WidgetPopUpDelete";
 import "../../../css/StudentPortalStyles/StudentPortalAcademicTranscript.css";
 import "../../../css/StudentPortalStyles/StudentButtonGroup.css";
+import Cocurriculum from "../../../assets/StudentPortalAssets/Cocurriculum.png"
+import WidgetBackground from "../../../Components/StudentPortalComp/WidgetBackground";
 
 const CoCurriculum = () => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -325,7 +327,19 @@ const CoCurriculum = () => {
                         </tbody>
                     </table>
                 ) : (
-                    <div>No cocurriculum found</div>
+                    <div style={{ height: '225px' }}>
+                        <WidgetBackground>
+
+                            <div style={{ padding: '20px' }} className="d-flex justify-content-center" >
+                                <div className="d-flex flex-column justify-content-center ">
+                                    <h1 className="testing-word-two">No cocurriculum has been found</h1>
+                                    <p className="testing-word-two mb-0">Please upload any cocurriculum activites you have joined.</p>
+                                </div>
+                                <img src={Cocurriculum} className="ms-5 me-4" style={{ height: '100px', width: '100px' }} />
+
+                            </div>
+                        </WidgetBackground>
+                    </div>
                 )}
             </div>
             {pageNumbers.length > 1 && (

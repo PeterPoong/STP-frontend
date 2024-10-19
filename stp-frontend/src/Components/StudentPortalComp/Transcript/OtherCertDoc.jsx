@@ -5,6 +5,8 @@ import WidgetFileUpload from "../../../Components/StudentPortalComp/WidgetFileUp
 import WidgetPopUpDelete from "../../../Components/StudentPortalComp/WidgetPopUpDelete";
 import "../../../css/StudentPortalStyles/StudentPortalAcademicTranscript.css";
 import "../../../css/StudentPortalStyles/StudentButtonGroup.css";
+import File4 from "../../../assets/StudentPortalAssets/File4.png"
+import WidgetBackground from "../../../Components/StudentPortalComp/WidgetBackground";
 
 const OtherCertDoc = () => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -329,7 +331,19 @@ const OtherCertDoc = () => {
                         </tbody>
                     </table>
                 ) : (
-                    <div>No other certificate or documentation found</div>
+                    <div style={{ height: '225px' }}>
+                        <WidgetBackground>
+
+                            <div style={{ padding: '20px' }} className="d-flex justify-content-center" >
+                                <div className="d-flex flex-column justify-content-center ">
+                                    <h1 className="testing-word-two">No other document or certificate have been found</h1>
+                                    <p className="testing-word-two">Please upload any additional information that you feel would be beneficial to your application.</p>
+                                </div>
+                                <img src={File4} className="ms-5 me-4" style={{ height: '100px', width: '100px' }} />
+                               
+                            </div>
+                        </WidgetBackground>
+                    </div>
                 )}
             </div>
             {paginationInfo.lastPage > 1 && (

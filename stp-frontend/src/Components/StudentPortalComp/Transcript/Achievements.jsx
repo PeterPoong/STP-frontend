@@ -5,6 +5,8 @@ import WidgetAchievement from "../../../Components/StudentPortalComp/Widget/Widg
 import WidgetPopUpDelete from "../../../Components/StudentPortalComp/WidgetPopUpDelete";
 import "../../../css/StudentPortalStyles/StudentPortalAcademicTranscript.css";
 import "../../../css/StudentPortalStyles/StudentButtonGroup.css";
+import File3 from "../../../assets/StudentPortalAssets/File3.png"
+import WidgetBackground from "../../../Components/StudentPortalComp/WidgetBackground";
 
 const Achievements = () => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -365,7 +367,17 @@ const Achievements = () => {
                         </tbody>
                     </table>
                 ) : (
-                    <div>No achievements found</div>
+                    <div style={{ height: '300px' }}>
+                        <WidgetBackground >
+                            <div style={{ padding: '20px' }} className="d-flex justify-content-center" >
+                                <img src={File3} className="ms-5 me-4" style={{ height: '100px', width: '100px' }} />
+                                <div className="d-flex flex-column justify-content-center ">
+                                    <h1 className="testing-word-two">No achievements have been found</h1>
+                                    <p className="testing-word-two">Please upload any relevant achievements, accompanied by supporting documentation.</p>
+                                </div>
+                            </div>
+                        </WidgetBackground>
+                    </div>
                 )}
             </div>
             {paginationInfo.lastPage > 1 && (

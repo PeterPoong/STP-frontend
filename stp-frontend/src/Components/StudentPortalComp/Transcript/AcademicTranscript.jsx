@@ -15,6 +15,9 @@ import WidgetPopUpSubmission from "../../../Components/StudentPortalComp/Widget/
 import WidgetPopUpAcademicRemind from "../../../Components/StudentPortalComp/Widget/WidgetPopUpAcademicRemind";
 import WidgetPopUpUnsavedChanges from "../../../Components/StudentPortalComp/Widget/WidgetPopUpUnsavedChanges"; // New import
 import SaveButton from "../../../Components/StudentPortalComp/SaveButton"; // Import the SaveButton component
+import File2 from "../../../assets/StudentPortalAssets/File2.png"
+import WidgetBackground from "../../../Components/StudentPortalComp/WidgetBackground";
+
 const ExamSelector = ({ exams, selectedExam, setSelectedExam }) => {
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const is1250ScreenSize = useMediaQuery('(min-width: 1251px)');
@@ -1415,46 +1418,61 @@ const AcademicTranscript = () => {
         </div>
 
         <div className="transcript-responsive-table-div">
-          <table className="w-100  justify-content-around transcript-responsive-table" >
-            <thead>
-              <tr>
-                <th className="border-bottom p-2 fw-normal">Files</th>
-                <th className="border-bottom p-2 text-end fw-normal">Filename</th>
-                <th className="border-bottom p-2 text-end fw-normal">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <TransitionGroup component={null}>
-                {files.map((file) => (
-                  <CSSTransition key={file.id} timeout={500} classNames="fade">
-                    <tr>
-                      <td className="border-bottom p-2" data-label="Files">
-                        <div className="d-flex align-items-center">
-                          <FileText className="file-icon me-2 transcript-responsive-display"/>
-                          <div className="transcript-responsive-table-text-end">
-                            <div className="file-title mb-1 sac-name-restrict">{file.studentMedia_name}</div>
-                            <div className="file-date">{file.created_at}</div>
+          {currentFiles.length > 0 ? (
+            <table className="w-100  justify-content-around transcript-responsive-table" >
+              <thead>
+                <tr>
+                  <th className="border-bottom p-2 fw-normal">Files</th>
+                  <th className="border-bottom p-2 text-end fw-normal">Filename</th>
+                  <th className="border-bottom p-2 text-end fw-normal">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <TransitionGroup component={null}>
+                  {files.map((file) => (
+                    <CSSTransition key={file.id} timeout={500} classNames="fade">
+                      <tr>
+                        <td className="border-bottom p-2" data-label="Files">
+                          <div className="d-flex align-items-center">
+                            <FileText className="file-icon me-2 transcript-responsive-display" />
+                            <div className="transcript-responsive-table-text-end">
+                              <div className="file-title mb-1 sac-name-restrict">{file.studentMedia_name}</div>
+                              <div className="file-date">{file.created_at}</div>
+                            </div>
                           </div>
-                        </div>
-                      </td>
-                      <td className="border-bottom p-2 text-end " data-label="Filename">
-                        <div className="text-secondary transcript-responsive-table-workbreak">
-                          {file.studentMedia_location || 'N/A'}
-                        </div>
-                      </td>
-                      <td className="border-bottom p-2">
-                        <div className="d-flex justify-content-end align-items-center">
-                          <Trash2 size={18} className="iconat-trash mx-2" onClick={() => openDeletePopup(file)} />
-                          <Edit2 size={18} className="iconat mx-2" onClick={() => openEditModal(file)} />
-                          <Eye size={18} className="iconat ms-2" onClick={() => viewFile(file)} />
-                        </div>
-                      </td>
-                    </tr>
-                  </CSSTransition>
-                ))}
-              </TransitionGroup>
-            </tbody>
-          </table>
+                        </td>
+                        <td className="border-bottom p-2 text-end " data-label="Filename">
+                          <div className="text-secondary transcript-responsive-table-workbreak">
+                            {file.studentMedia_location || 'N/A'}
+                          </div>
+                        </td>
+                        <td className="border-bottom p-2">
+                          <div className="d-flex justify-content-end align-items-center">
+                            <Trash2 size={18} className="iconat-trash mx-2" onClick={() => openDeletePopup(file)} />
+                            <Edit2 size={18} className="iconat mx-2" onClick={() => openEditModal(file)} />
+                            <Eye size={18} className="iconat ms-2" onClick={() => viewFile(file)} />
+                          </div>
+                        </td>
+                      </tr>
+                    </CSSTransition>
+                  ))}
+                </TransitionGroup>
+              </tbody>
+            </table>
+          ) : (
+            <div style={{ height: '225px' }}>
+              <WidgetBackground>
+
+                <div style={{ padding: '20px' }} className="d-flex justify-content-center" >
+                  <img src={File2} className="ms-5 me-4" style={{ height: '100px', width: '100px' }} />
+                  <div className="d-flex flex-column justify-content-center ">
+                    <h1 className="testing-word-two">No certificates or documents has been found</h1>
+                    <p className="testing-word-two mb-0">Please upload offcial result slip, if official result slip not yet released please upload trial result slip. </p>
+                  </div>
+                </div>
+              </WidgetBackground>
+            </div>
+          )}
         </div>
         <div className="pagination">
           <button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1}>
