@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Button, Row, Col } from 'react-bootstrap';
+import { Form, Button, Row, Col,Spinner } from 'react-bootstrap';
 import { Trash2, Edit, Save, Clock, User, Building } from 'lucide-react';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -223,7 +223,15 @@ const CoCurriculum = ({ onNext, onBack }) => {
 
 
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <div>
+     <div>
+      <div className="d-flex justify-content-center align-items-center m-5 " >
+        <Spinner animation="border" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </Spinner>
+      </div>
+    </div>
+  </div>;
   if (error) return <div>Error: {error}</div>;
 
   return (

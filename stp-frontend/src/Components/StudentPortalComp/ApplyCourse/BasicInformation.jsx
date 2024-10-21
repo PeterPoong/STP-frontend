@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Form, Row, Col, Alert } from 'react-bootstrap';
+import { Form, Row, Col, Alert, Spinner } from 'react-bootstrap';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import "../../../css/StudentPortalStyles/StudentPortalLoginForm.css";
@@ -354,7 +354,13 @@ const BasicInformation = ({ onSubmit, nextStep }) => { // Added nextStep as a pr
 
     };
 
-    if (isLoading) return <div>Loading...</div>;
+    if (isLoading) return <div>
+        <div className="d-flex justify-content-center align-items-center m-5">
+            <Spinner animation="border" role="status">
+                <span className="visually-hidden">Loading...</span>
+            </Spinner>
+        </div>
+    </div>;
 
     return (
         <div className="step-content-caseone p-4 rounded">

@@ -1,71 +1,78 @@
 /* UniversityRow.css */
 
-  .university-row-container {
-    display: flex;
+.university-row-container {
+  /* display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
     flex-wrap: nowrap;
-    width: 100%;
-    margin: 0 auto;
-    background-color: white;
-    padding: 1rem 0;
-  }
-  
-  .university-row-title {
-    text-align: left;
-    margin-bottom: 20px;
-    font-size: 20px;
-    font-weight:500;
-    
-  }
-  
-  .university-row-carousel {
-    width: 100%;
-    overflow: hidden;
-  }
-  
-  .swiper-slide-image {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: auto !important; /* Ensure each slide takes its own width */
-  }
-  
-  .university-card {
-    width: auto; /* Adjust width as needed */
-    height: auto; /* Adjust height as needed */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
-    border: none;
-    transition: transform 0.3s;
-    overflow: hidden;
-  }
-  
-  .uni-image {
-    width: auto;
-    height: 67px;
-    object-fit: contain;
-    background-color: transparent;
-    border: none;
-  }
-  
-  .swiper-container {
-    padding: 10px; /* Adjust padding as needed */ 
-  }
-  
-  .swiper-wrapper {
-    display: flex;
+    */
+  width: 100%;
+  margin: 0 auto;
+  background-color: white;
+  padding: 1rem 0;
+}
 
-    flex-wrap: nowrap;
-  }
-  
+.university-row-title {
+  text-align: left;
+  margin-bottom: 20px;
+  font-size: 20px;
+  font-weight: 500;
+
+}
+
+.university-row-carousel {
+  width: 100%;
+  overflow: hidden;
+}
+
+.swiper-slide-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: auto !important;
+  /* Ensure each slide takes its own width */
+}
+
+.university-card {
+  width: auto;
+  /* Adjust width as needed */
+  height: auto;
+  /* Adjust height as needed */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
+  border: none;
+  transition: transform 0.3s;
+  overflow: hidden;
+}
+
+.uni-image {
+  width: auto;
+  height: 67px;
+  object-fit: contain;
+  background-color: transparent;
+  border: none;
+}
+
+.swiper-container {
+  padding: 10px;
+  /* Adjust padding as needed */
+}
+
+.swiper-wrapper {
+  display: flex;
+  justify-content: space-evenly;
+  flex-wrap: nowrap;
+}
+
 .swiper-button-next,
 .swiper-button-prev {
-  width: 40px; /* Adjust width */
-  height: 40px; /* Adjust height */
+  width: 40px;
+  /* Adjust width */
+  height: 40px;
+  /* Adjust height */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -73,6 +80,8 @@
 
 .swiper-button-next::after,
 .swiper-button-prev::after {
-  font-size: 18px; /* Adjust arrow icon size */
-  color: gray; /* Customize icon color */
+  font-size: 18px;
+  /* Adjust arrow icon size */
+  color: gray;
+  /* Customize icon color */
 }

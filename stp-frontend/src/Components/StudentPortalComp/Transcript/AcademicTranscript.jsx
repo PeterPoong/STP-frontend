@@ -15,8 +15,6 @@ import WidgetPopUpSubmission from "../../../Components/StudentPortalComp/Widget/
 import WidgetPopUpAcademicRemind from "../../../Components/StudentPortalComp/Widget/WidgetPopUpAcademicRemind";
 import WidgetPopUpUnsavedChanges from "../../../Components/StudentPortalComp/Widget/WidgetPopUpUnsavedChanges"; // New import
 import SaveButton from "../../../Components/StudentPortalComp/SaveButton"; // Import the SaveButton component
-import File2 from "../../../assets/StudentPortalAssets/File2.png"
-import WidgetBackground from "../../../Components/StudentPortalComp/WidgetBackground";
 
 const ExamSelector = ({ exams, selectedExam, setSelectedExam }) => {
   const [itemsPerPage, setItemsPerPage] = useState(5);
@@ -1460,20 +1458,21 @@ const AcademicTranscript = () => {
               </tbody>
             </table>
           ) : (
-            <div style={{ height: '225px' }}>
-              <WidgetBackground>
-
-                <div style={{ padding: '20px' }} className="d-flex justify-content-center" >
-                  <img src={File2} className="ms-5 me-4" style={{ height: '100px', width: '100px' }} />
-                  <div className="d-flex flex-column justify-content-center ">
-                    <h1 className="testing-word-two">No certificates or documents has been found</h1>
-                    <p className="testing-word-two mb-0">Please upload offcial result slip, if official result slip not yet released please upload trial result slip. </p>
-                  </div>
-                </div>
-              </WidgetBackground>
+            <div>
+            <table className="w-100 transcript-responsive-table">
+              <thead>
+                <tr>
+                  <th className="border-bottom p-2 fw-normal">Files</th>
+                  <th className="border-bottom p-2 text-end fw-normal">Filename</th>
+                  <th className="border-bottom p-2 text-end fw-normal">Actions</th>
+                </tr>
+              </thead>
+            </table>
+            <p className="text-center m-3" >No reulst slip found.</p>
             </div>
           )}
         </div>
+        {pageNumbers.length > 1 && (
         <div className="pagination">
           <button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1}>
             &lt;
@@ -1491,6 +1490,7 @@ const AcademicTranscript = () => {
             &gt;
           </button>
         </div>
+        )}
         <div className="w-100 d-flex flex-row-reverse">
           <button
             className="button-table px-2 py-1 ml-2  "
@@ -1500,6 +1500,7 @@ const AcademicTranscript = () => {
             RESET
           </button>
         </div>
+        
       </div>
 
       <WidgetFileUploadAcademicTranscript

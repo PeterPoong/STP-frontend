@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col, Card } from "react-bootstrap";
+import { Container, Row, Col, Card,Spinner } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
@@ -58,7 +58,14 @@ const UniversityRow = () => {
     <div>
       <div>
         {error && <div>Error: {error}</div>}
-        {loading && <div>Loading...</div>}
+        {loading && <div>
+          <div>
+            <div className="d-flex justify-content-center align-items-center m-5 " >
+              <Spinner animation="border" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </Spinner>
+            </div>
+          </div></div>}
         {!loading && !error && schools.length > 0 && (
           <Container className="university-row-carousel">
             <Swiper

@@ -1,6 +1,6 @@
 // AppliedCourseHistory.jsx
 import React, { useState, useEffect } from 'react';
-import { Card, Button } from "react-bootstrap";
+import { Card, Button, Modal, Spinner } from "react-bootstrap";
 import { GraduationCap, CalendarCheck, BookOpenText } from 'lucide-react';
 import { MapPin, Clock, ChevronLeft, ChevronRight, Filter, X } from 'react-feather';
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -8,8 +8,6 @@ import WidgetAccepted from "../../../Components/StudentPortalComp/Widget/WidgetA
 import WidgetRejected from "../../../Components/StudentPortalComp/Widget/WidgetRejected";
 import "../../../css/StudentPortalStyles/StudentPortalWidget.css";
 import { motion, AnimatePresence } from "framer-motion";
-import WidgetBackground from "../../../Components/StudentPortalComp/WidgetBackground";
-import AppliedCourse from "../../../assets/StudentPortalAssets/AppliedCourse.png"
 import styled from "styled-components";
 
 // Styled Components for Filter
@@ -453,19 +451,16 @@ const AppliedCourseHistory = () => {
           {/* End of Filter Component */}
 
           {loading ? (
-            <p>Loading...</p>
+            <div>
+            <div className="d-flex justify-content-center align-items-center m-5">
+              <Spinner animation="border" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </Spinner>
+            </div>
+          </div>
           ) : filteredApplications.length === 0 ? (
             <div className="m-4">
-              <WidgetBackground>
-                <div style={{ padding: '20px' }} className="d-flex justify-content-center" >
-                  <div className="d-flex flex-column justify-content-center ">
-                    <h1 className="testing-word-two">No application has been found</h1>
-                    <p className="testing-word-two mb-0">Please apply course desired on course page.</p>
-                  </div>
-                  <img src={AppliedCourse} className="ms-5 me-4" style={{ height: '100px', width: '100px' }} />
-
-                </div>
-              </WidgetBackground>
+              <p className="text-center m-3">No application has been found.</p>
             </div>
           ) : (
             currentItems.map((app, index) => (

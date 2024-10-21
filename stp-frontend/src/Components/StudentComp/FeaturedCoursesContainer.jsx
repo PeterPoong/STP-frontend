@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Container } from "react-bootstrap";
+import { Container, Spinner } from "react-bootstrap";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
@@ -67,16 +67,15 @@ const FeaturedCoursesContainer = () => {
 
   const handleApplyNow = (course) => {
     if (course && course.id) {
-      navigate(`/studentApplyCourses/${course.id}`,{
-      state:{
-        programId: course.id,
-        schoolLogoUrl: `${import.meta.env.VITE_BASE_URL}storage/${
-          course.course_logo
-        }`,
-        schoolName: course.course_school,
-        courseName: course.course_name,
-      }
-    })
+      navigate(`/studentApplyCourses/${course.id}`, {
+        state: {
+          programId: course.id,
+          schoolLogoUrl: `${import.meta.env.VITE_BASE_URL}storage/${course.course_logo
+            }`,
+          schoolName: course.course_school,
+          courseName: course.course_name,
+        }
+      })
     } else {
       console.error("Course ID is undefined");
     }
@@ -85,7 +84,14 @@ const FeaturedCoursesContainer = () => {
   return (
     <div>
       {error && <div>Error: {error}</div>}
-      {loading && <div>Loading...</div>}
+      {loading && <div>
+        <div>
+          <div className="d-flex justify-content-center align-items-center m-5 " >
+            <Spinner animation="border" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </Spinner>
+          </div>
+        </div></div>}
       {!loading && !error && courses.length > 0 && (
         <Container className="course-container">
           <Swiper
@@ -163,12 +169,12 @@ const FeaturedCoursesContainer = () => {
                     </p>
                     <p
                       className="course-title"
-                      // style={{
-                      //   color: "#B71A18",
-                      //   fontSize: "18px",
-                      //   fontWeight: "500",
-                      //   marginBottom: "15px",
-                      // }}
+                    // style={{
+                    //   color: "#B71A18",
+                    //   fontSize: "18px",
+                    //   fontWeight: "500",
+                    //   marginBottom: "15px",
+                    // }}
                     >
                       {course.course_name}
                     </p>

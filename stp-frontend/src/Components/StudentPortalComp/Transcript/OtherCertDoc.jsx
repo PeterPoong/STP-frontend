@@ -5,10 +5,7 @@ import WidgetFileUpload from "../../../Components/StudentPortalComp/WidgetFileUp
 import WidgetPopUpDelete from "../../../Components/StudentPortalComp/WidgetPopUpDelete";
 import "../../../css/StudentPortalStyles/StudentPortalAcademicTranscript.css";
 import "../../../css/StudentPortalStyles/StudentButtonGroup.css";
-import File4 from "../../../assets/StudentPortalAssets/File4.png"
-import WidgetBackground from "../../../Components/StudentPortalComp/WidgetBackground";
-import LoadingWidget1 from "../../../Components/StudentPortalComp/LoadingWidget1";
-
+import { Spinner } from "react-bootstrap";
 const OtherCertDoc = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -248,7 +245,11 @@ const OtherCertDoc = () => {
     };
 
     if (isLoading) return <div>
-        <LoadingWidget1/>
+        <div className="d-flex justify-content-center align-items-center m-5">
+            <Spinner animation="border" role="status">
+                <span className="visually-hidden">Loading...</span>
+            </Spinner>
+        </div>
     </div>;
     if (error) return (
         <div>
@@ -334,18 +335,18 @@ const OtherCertDoc = () => {
                         </tbody>
                     </table>
                 ) : (
-                    <div style={{ height: '225px' }}>
-                        <WidgetBackground>
-
-                            <div style={{ padding: '20px' }} className="d-flex justify-content-center" >
-                                <div className="d-flex flex-column justify-content-center ">
-                                    <h1 className="testing-word-two">No other document or certificate have been found</h1>
-                                    <p className="testing-word-two">Please upload any additional information that you feel would be beneficial to your application.</p>
-                                </div>
-                                <img src={File4} className="ms-5 me-4" style={{ height: '100px', width: '100px' }} />
-                               
-                            </div>
-                        </WidgetBackground>
+                    <div>
+                    <table className="w-100 transcript-responsive-table">
+                        <thead>
+                            <tr >
+                                <th className="border-bottom fw-normal ps-2">Files</th>
+                                <th className="border-bottom p-2 fw-normal text-end">Filename</th>
+                                <th className="border-bottom p-2 fw-normal text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        
+                    </table>
+                    <p className="text-center m-3" >No other certificate or document found.</p>
                     </div>
                 )}
             </div>

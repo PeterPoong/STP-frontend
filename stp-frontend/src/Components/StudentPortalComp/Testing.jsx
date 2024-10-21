@@ -6,7 +6,7 @@ import File5 from "../../assets/StudentPortalAssets/File5.png"
 import File6 from "../../assets/StudentPortalAssets/File6.png"
 import WidgetBackground from "../../Components/StudentPortalComp/WidgetBackground";
 import Cocurriculum from "../../assets/StudentPortalAssets/Cocurriculum.png"
-
+import Loading from "../../assets/StudentPortalAssets/Loading.gif"
 const Testing = () => {
     return (
         <div>
@@ -142,6 +142,16 @@ const Testing = () => {
                             <p className="testing-word-two mb-0">Please upload any cocurriculum activites you have joined.</p>
                         </div>
                         <img src={Cocurriculum} className="ms-5 me-4" style={{ height: '100px', width: '100px' }} />
+                    </div>
+                </WidgetBackground>
+            </div>
+            <div className="m-5" style={{ height: '225px', width: 'auto' }}>
+                <WidgetBackground className="m-3 ">
+
+                    <div style={{ padding: '20px' }} >
+                        <img src={Loading} style={{ height: '100px', width: 'auto' }} />
+                        <h1 className="testing-word-two">Loading . . .</h1>
+                        <p className="testing-word-four" >Please wait a moment longer.</p>
                     </div>
                 </WidgetBackground>
             </div>
