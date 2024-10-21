@@ -7,6 +7,7 @@ import "../../../css/StudentPortalStyles/StudentPortalAcademicTranscript.css";
 import "../../../css/StudentPortalStyles/StudentButtonGroup.css";
 import File4 from "../../../assets/StudentPortalAssets/File4.png"
 import WidgetBackground from "../../../Components/StudentPortalComp/WidgetBackground";
+import LoadingWidget1 from "../../../Components/StudentPortalComp/LoadingWidget1";
 
 const OtherCertDoc = () => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -246,7 +247,9 @@ const OtherCertDoc = () => {
         setIsPopupOpen(true);
     };
 
-    if (isLoading) return <div>Loading...</div>;
+    if (isLoading) return <div>
+        <LoadingWidget1/>
+    </div>;
     if (error) return (
         <div>
             <p>Error: {error}</p>

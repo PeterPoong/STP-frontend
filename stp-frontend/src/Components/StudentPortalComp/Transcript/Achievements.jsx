@@ -7,7 +7,8 @@ import "../../../css/StudentPortalStyles/StudentPortalAcademicTranscript.css";
 import "../../../css/StudentPortalStyles/StudentButtonGroup.css";
 import File3 from "../../../assets/StudentPortalAssets/File3.png"
 import WidgetBackground from "../../../Components/StudentPortalComp/WidgetBackground";
-
+import LoadingWidget1 from "../../../Components/StudentPortalComp/LoadingWidget1";
+import Achievement from "../../../assets/StudentPortalAssets/Achievement.png"
 const Achievements = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -278,7 +279,9 @@ const Achievements = () => {
         setIsPopupOpen(true);
     };
 
-    if (isLoading) return <div>Loading...</div>;
+    if (isLoading) return <div>
+        <LoadingWidget1/>
+    </div>;
     if (error) return <div>Error: {error}</div>;
 
     const filteredData = searchTerm
@@ -370,7 +373,7 @@ const Achievements = () => {
                     <div style={{ height: '300px' }}>
                         <WidgetBackground >
                             <div style={{ padding: '20px' }} className="d-flex justify-content-center" >
-                                <img src={File3} className="ms-5 me-4" style={{ height: '100px', width: '100px' }} />
+                                <img src={Achievement} className="ms-5 me-4" style={{ height: '100px', width: '100px' }} />
                                 <div className="d-flex flex-column justify-content-center ">
                                     <h1 className="testing-word-two">No achievements have been found</h1>
                                     <p className="testing-word-two">Please upload any relevant achievements, accompanied by supporting documentation.</p>

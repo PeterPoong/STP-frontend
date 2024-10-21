@@ -6,9 +6,10 @@ import { MapPin, Clock, ChevronLeft, ChevronRight, Filter, X } from 'react-feath
 import "bootstrap/dist/css/bootstrap.min.css";
 import WidgetAccepted from "../../../Components/StudentPortalComp/Widget/WidgetAccepted";
 import WidgetRejected from "../../../Components/StudentPortalComp/Widget/WidgetRejected";
-
 import "../../../css/StudentPortalStyles/StudentPortalWidget.css";
 import { motion, AnimatePresence } from "framer-motion";
+import WidgetBackground from "../../../Components/StudentPortalComp/WidgetBackground";
+import AppliedCourse from "../../../assets/StudentPortalAssets/AppliedCourse.png"
 import styled from "styled-components";
 
 // Styled Components for Filter
@@ -454,7 +455,18 @@ const AppliedCourseHistory = () => {
           {loading ? (
             <p>Loading...</p>
           ) : filteredApplications.length === 0 ? (
-            <p>No course history</p>
+            <div className="m-4">
+              <WidgetBackground>
+                <div style={{ padding: '20px' }} className="d-flex justify-content-center" >
+                  <div className="d-flex flex-column justify-content-center ">
+                    <h1 className="testing-word-two">No application has been found</h1>
+                    <p className="testing-word-two mb-0">Please apply course desired on course page.</p>
+                  </div>
+                  <img src={AppliedCourse} className="ms-5 me-4" style={{ height: '100px', width: '100px' }} />
+
+                </div>
+              </WidgetBackground>
+            </div>
           ) : (
             currentItems.map((app, index) => (
               <Card
@@ -482,7 +494,7 @@ const AppliedCourseHistory = () => {
                         <p className="acp-university-name">{app.school_name}</p>
                         <p className="acp-location">
                           <MapPin size={16} className="acp-icon" />
-                          {`${app.city_name ? app.city_name : ''}${app.state_name ? `, ${app.state_name}` : ''}${app.country_name ? `, ${app.country_name}` : ''}`} 
+                          {`${app.city_name ? app.city_name : ''}${app.state_name ? `, ${app.state_name}` : ''}${app.country_name ? `, ${app.country_name}` : ''}`}
                           {/*<span className="acp-link">click and view on map</span>*/}
                         </p>
                       </div>

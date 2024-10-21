@@ -7,6 +7,7 @@ import "../../../css/StudentPortalStyles/StudentPortalAcademicTranscript.css";
 import "../../../css/StudentPortalStyles/StudentButtonGroup.css";
 import Cocurriculum from "../../../assets/StudentPortalAssets/Cocurriculum.png"
 import WidgetBackground from "../../../Components/StudentPortalComp/WidgetBackground";
+import LoadingWidget1 from "../../../Components/StudentPortalComp/LoadingWidget1";
 
 const CoCurriculum = () => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -247,7 +248,9 @@ const CoCurriculum = () => {
         setIsPopupOpen(true);
     };
 
-    if (isLoading) return <div>Loading...</div>;
+    if (isLoading) return <div>
+        <LoadingWidget1/>
+    </div>;
     if (error) return <div>Error: {error}</div>;
 
     return (

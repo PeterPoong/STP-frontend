@@ -8,6 +8,10 @@ import "../../../css/StudentPortalStyles/StudentPortalWidget.css";
 import WidgetPending from "../../../Components/StudentPortalComp/Widget/WidgetPending";
 import { motion, AnimatePresence } from "framer-motion";
 import styled from "styled-components";
+import LoadingWidget2 from "../../../Components/StudentPortalComp/LoadingWidget2";
+import LoadingWidget1 from "../../../Components/StudentPortalComp/LoadingWidget1";
+import WidgetBackground from "../../../Components/StudentPortalComp/WidgetBackground";
+import AppliedCourse from "../../../assets/StudentPortalAssets/AppliedCourse.png"
 
 // Styled Components for Filter
 const FilterContainer = styled.div`
@@ -494,13 +498,39 @@ const AppliedCoursePending = () => {
 
           {/* Loading Indicator */}
           {loading ? (
-            <div className="d-flex justify-content-center align-items-center mt-4">
-              <Spinner animation="border" role="status">
-                <span className="visually-hidden">Loading...</span>
-              </Spinner>
+            <div>
+              <div className="d-flex justify-content-center align-items-center mt-4">
+                <Spinner animation="border" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </Spinner>
+              </div>
+              <LoadingWidget1 />
+              <LoadingWidget2 >
+                <div className="skeleton-grid">
+
+                  <div className="skeleton-grid-item">
+                    <div className="skeleton-image"></div>
+                    <div className="skeleton-line"></div>
+                  </div>
+
+                </div>
+              </LoadingWidget2>
             </div>
+
+
           ) : filteredApplications.length === 0 ? (
-            <p className="mt-4">No pending applications found.</p>
+            <div className="m-4">
+            <WidgetBackground>
+              <div style={{ padding: '20px' }} className="d-flex justify-content-center" >
+                <div className="d-flex flex-column justify-content-center ">
+                  <h1 className="testing-word-two">No application has been found</h1>
+                  <p className="testing-word-two mb-0">Please apply course desired on course page.</p>
+                </div>
+                <img src={AppliedCourse} className="ms-5 me-4" style={{ height: '100px', width: '100px' }} />
+
+              </div>
+            </WidgetBackground>
+          </div>
           ) : (
             currentItems.map((app, index) => (
               <Card
