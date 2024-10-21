@@ -63,7 +63,7 @@ const SchoolDashboard = () => {
       // Clear the navigation state
       navigate(location.pathname, { replace: true, state: {} });
     }
-  }, [location, navigate]);
+  }, [location, Navigate]);
   const handleUpgradeNow = () => {
     setSelectedDropdownItem("manageAccount");
     setSelectedTab(""); // Clear the selected tab
