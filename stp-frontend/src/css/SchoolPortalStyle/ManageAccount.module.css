@@ -248,11 +248,22 @@
   @media (max-width: 768px) {
     /* Adjust heading and description for smaller screens */
     .heading {
-      font-size: 2rem;
+      font-size: 1.7rem !important;
+      margin-left: -10%;
     }
-  
+    .manageAccountContainer {
+      background-color: #fce9e9;
+      padding: 2rem;
+      width: 100%; /* Make it full width */
+      min-height: fit-content; /* Ensures the container fills the viewport height */
+      max-height: 200vh;
+      position: relative;
+      margin-left: 0%;
+      /* margin: 0 auto; Centers the content */
+  }
     .description {
       font-size: 1rem;
+      margin-left: -23px;
     }
   
     /* Make the stickman image smaller */
@@ -261,13 +272,59 @@
       bottom: -10px;
       z-index: 1; 
     }
-  
+  .packageBasicCard{
+    background-color: #fff;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 2;
+    width: 98%;
+    height: auto;
+    padding: 10px !important;
+    margin-top: 10%;
+    margin-left: -9% !important;
+  }
+  .packagePremiumCard {
+    background-color: #B71A18;
+    border-radius: 15px;
+    padding: 10px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 2;
+    width: 98%;
+    height: auto;
+    margin-top: 20%;
+    margin-left: -25px;
+}
     /* Stack package cards on smaller screens */
     .packageCard {
       max-width: 100%; /* Full width */
       margin: 10px 0; /* Stack vertically */
     }
-  
+    .customCurrentBtn {
+      background-color: #B71A18;
+      color: white;
+      border: none;
+      padding: 10px 40px;
+      border-radius: 3px;
+      font-size: 16px;
+      margin: 0;
+      cursor: default;
+      width: 100%;
+      transition: none;
+  }
+  .contactButton {
+    background-color: white;
+    color: #dc3545;
+    border: none;
+    width: 100%;
+    margin: 0;
+    padding: 10px 40px;
+    transition: all 0.3s ease-in-out;
+}
+.PremiumPriceLabel {
+  margin-bottom: 6px;
+}
     /* Price adjustment */
     .price {
       font-size: 1.5rem;
@@ -277,6 +334,9 @@
     button {
       padding: 8px 16px;
       font-size: 1rem;
+    }
+    .alignBottom{
+      margin-top: -1rem;
     }
   }
   
