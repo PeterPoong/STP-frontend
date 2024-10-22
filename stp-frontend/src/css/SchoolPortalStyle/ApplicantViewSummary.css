@@ -229,3 +229,76 @@
   text-overflow: ellipsis; /* Adds '...' at the point of overflow */
   max-width: 100px; 
 }
+.shadow-school-cocuriculum-box{
+    display: flex;
+}
+@media (max-width: 768px){
+    .applicant-main-content-applycourse-clone {
+        flex: 1;
+        padding: 3rem 0 8.25rem 0;
+        padding: 2rem 2rem;
+    }
+
+    .applicant-summary-header {
+        display: block !important;
+        justify-items: center !important;
+    }
+    .school-fontsize-1{
+        font-size: 20px;
+        text-align: center;
+    }
+    .applicant-info {
+        display: block !important;
+        justify-items: center !important;
+      }
+      .applicant-chat-button {
+        background-color: #25D366;
+        border-color: transparent;
+        padding: 0.25rem 1.75rem;
+        font-weight: bold;
+        width: auto;
+    }
+    .summary-tabs {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+      }
+    
+      .tab-button {
+        font-size: 12px;
+        text-align: center;
+        padding: 12px;
+        width: 100%;
+      }
+      .summary-content {
+        display: block;
+     
+        gap: 1rem;
+        
+      }
+ 
+      .shadow-school-cocuriculum-box{
+        display: block !important;
+        justify-items: center !important;
+      }
+      .plan-button {
+        width: 100%;
+      }
+    
+}
+.tab-button {
+    padding: 10px 20px;
+    font-size: 14px;
+    color: #333;
+    border: none;
+    background-color: transparent;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  
+  
+  
+  .tab-button:hover {
+    background-color: #f0f0f0;
+    border-radius: 5px;
+  }
