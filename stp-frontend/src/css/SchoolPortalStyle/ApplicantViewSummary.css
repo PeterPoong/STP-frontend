@@ -263,9 +263,10 @@
     }
     .summary-tabs {
         display: flex;
-        flex-direction: column;
-        align-items: stretch;
+        /* flex-direction: column; */
+        /* align-items: stretch; */
         gap: 10px;
+        max-width: 289px;
       }
     
       .tab-button {
@@ -306,7 +307,16 @@
     .mobile-action-school{
         display: block !important;
     }
-    
+    .summary-tabs .btn-link.active {
+    max-width: 80px !important;
+    font-size: 11px;
+    text-align: center;
+    }
+    .summary-tabs .btn-link{
+    max-width: 60px !important;
+    font-size: 11px;
+    text-align: center;
+    }
 }
 .tab-button {
     padding: 10px 20px;
