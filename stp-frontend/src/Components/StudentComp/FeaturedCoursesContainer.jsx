@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Container, Spinner } from "react-bootstrap";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
@@ -51,7 +52,7 @@ const FeaturedCoursesContainer = () => {
       }
 
       const result = await response.json();
-      console.log("API Response:", result);
+     // console.log("API Response:", result);
       setCourses(result.data);
     } catch (error) {
       setError(error.message);
@@ -102,26 +103,32 @@ const FeaturedCoursesContainer = () => {
             navigation
             // style={{ padding: "0 100px" }}
             breakpoints={{
+              // Mobile phones (portrait)
               320: {
-                slidesPerView: 1,
-                spaceBetween: 10,
+                slidesPerView: 10,
+                spaceBetween: 20,
+                //centeredSlides: true
               },
-              430: {
-                slidesPerView: 1,
-                spaceBetween: 10,
+              // Large phones & small tablets
+              576: {
+                slidesPerView: 2,
+                spaceBetween: 15
               },
-              640: {
-                slidesPerView: 1,
-                spaceBetween: 10,
-              },
+              // Tablets & small laptops
               768: {
+                slidesPerView: 3,
+                spaceBetween: 15
+              },
+              // Laptops & desktops
+              992: {
                 slidesPerView: 4,
-                spaceBetween: 10,
+                spaceBetween: 20
               },
-              1024: {
+              // Large desktops
+              1200: {
                 slidesPerView: 5,
-                spaceBetween: 10,
-              },
+                spaceBetween: 20
+              }
             }}
           >
             {courses.map((course, idx) => (
@@ -163,8 +170,10 @@ const FeaturedCoursesContainer = () => {
                         fontSize: "16px",
                         fontWeight: "500",
                         marginBottom: "15px",
+                        height: "3rem"
                       }}
                     >
+
                       {course.course_school}
                     </p>
                     <p
@@ -175,8 +184,17 @@ const FeaturedCoursesContainer = () => {
                     //   fontWeight: "500",
                     //   marginBottom: "15px",
                     // }}
+
                     >
-                      {course.course_name}
+                      <Link
+                        style={{ color: "#BA1718" }}
+                        to={{
+                          pathname: `/courseDetails/${course.id}`,
+                          state: { course: course },
+                        }}
+                      >
+                        {course.course_name}
+                      </Link>
                     </p>
                     <div className="d-flex justify-content-center">
                       <i
@@ -207,8 +225,9 @@ const FeaturedCoursesContainer = () => {
             ))}
           </Swiper>
         </Container>
-      )}
-    </div>
+      )
+      }
+    </div >
   );
 };
 

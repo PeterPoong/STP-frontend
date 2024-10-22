@@ -42,7 +42,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
   const fetchTranscriptData = async () => {
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      console.log('Token:', token ? 'Token exists' : 'Token is missing');
+     // console.log('Token:', token ? 'Token exists' : 'Token is missing');
 
       const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/applyCourseTranscript`, {
         method: 'POST',
@@ -52,8 +52,8 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
         },
       });
 
-      console.log('Response status:', response.status);
-      console.log('Response headers:', response.headers);
+      //console.log('Response status:', response.status);
+      //console.log('Response headers:', response.headers);
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -62,7 +62,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
       }
 
       const result = await response.json();
-      console.log('API response:', result);
+      //console.log('API response:', result);
 
       if (result.success) {
         processTranscriptData(result.data);

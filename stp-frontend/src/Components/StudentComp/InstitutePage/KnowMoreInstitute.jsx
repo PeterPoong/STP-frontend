@@ -98,7 +98,7 @@ const KnowMoreInstitute = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("Institute ID: ", id);
+   // console.log("Institute ID: ", id);
 
     // Fetch school detail if institutes are not loaded
     if (!institutes || institutes.length === 0) {
@@ -113,7 +113,7 @@ const KnowMoreInstitute = () => {
       })
         .then((response) => response.json())
         .then((data) => {
-          console.log("Fetched School Detail Data: ", data);
+       //   console.log("Fetched School Detail Data: ", data);
           if (data && data.success && data.data) {
             setInstitutes([data.data]);
             setCourses(data.data.courses);
@@ -143,7 +143,7 @@ const KnowMoreInstitute = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log("Fetched Featured Institutes Data: ", data);
+    //    console.log("Fetched Featured Institutes Data: ", data);
         if (data && data.success && Array.isArray(data.data)) {
           setFeaturedInstitutes(data.data);
         } else {
@@ -173,13 +173,12 @@ const KnowMoreInstitute = () => {
   };
 
   const handleApplyNow = (program, institute) => {
-    console.log("Program object:", program);
+ //  console.log("Program object:", program);
     navigate(`/studentApplyCourses/${program.id}`, {
       state: {
         programId: program.id,
-        schoolLogoUrl: `${import.meta.env.VITE_BASE_URL}storage/${
-          program.course_logo || program.logo
-        }`,
+        schoolLogoUrl: `${import.meta.env.VITE_BASE_URL}storage/${program.course_logo || program.logo
+          }`,
         schoolName: institute.name,
         courseName: program.course_name,
       },
@@ -196,7 +195,7 @@ const KnowMoreInstitute = () => {
               <img
                 src={
                   institute.school_cover &&
-                  institute.school_cover.schoolMedia_location
+                    institute.school_cover.schoolMedia_location
                     ? `${baseURL}storage/${institute.school_cover.schoolMedia_location}`
                     : headerImage // Use headerImage as the default if school_cover is not available
                 }
@@ -554,25 +553,28 @@ const KnowMoreInstitute = () => {
                       </div>
                     </Col>
                     <Col md={12}>
-                      <div style={{ zIndex: 1 }}>
-                        <div
-                          dangerouslySetInnerHTML={{
-                            __html: institute.short_description,
-                          }}
-                        />
-                      </div>
-                    </Col>
-                    <Col md={12}>
-                      <Collapse in={open}>
-                        {/* <div>
+                      {!open ? (
+                        <div id="collapse-course-overview"  className="student-knowmoreinsti-wordbreak">
+                          <div
+                            dangerouslySetInnerHTML={{
+                              __html: institute.short_description,
+                            }}
+                          />
+                          </div>
+                      ) : (
+                        <Collapse in={open}>
+                          {/* <div>
                           <p>{institute.short_description}</p>
                         </div> */}
-                        <div
-                          dangerouslySetInnerHTML={{
-                            __html: institute.short_description,
-                          }}
-                        />
-                      </Collapse>
+                        <div id="collapse-course-overview" >
+                          <div
+                            dangerouslySetInnerHTML={{
+                              __html: institute.short_description,
+                            }}
+                          />
+                          </div>
+                        </Collapse>
+                      )}
                     </Col>
                     <Col className="d-flex justify-content-center">
                       <Button
@@ -759,7 +761,7 @@ const KnowMoreInstitute = () => {
                   <img
                     src={
                       institute.school_cover &&
-                      institute.school_cover.schoolMedia_location
+                        institute.school_cover.schoolMedia_location
                         ? `${baseURL}storage/${institute.school_cover.schoolMedia_location}`
                         : headerImage // Use default headerImage if school_cover is not available
                     }
@@ -861,7 +863,7 @@ const KnowMoreInstitute = () => {
                                   paddingLeft: "30px",
                                   backgroundColor: "#F2F2F2",
                                   marginLeft: "-15px",
-                                  height: "31px",
+                                  height: "fit-content",
                                 }}
                               >
                                 <a
@@ -874,9 +876,8 @@ const KnowMoreInstitute = () => {
                               <div className="d-flex align-items-center">
                                 <div style={{ paddingLeft: "20px" }}>
                                   <img
-                                    src={`${baseURL}storage/${
-                                      course.course_logo || institute.logo
-                                    }`}
+                                    src={`${baseURL}storage/${course.course_logo || institute.logo
+                                      }`}
                                     alt={institute.name}
                                     width="100"
                                   />

@@ -38,7 +38,7 @@ const OtherDocuments = ({ onBack, onSubmit }) => {
         }
   
         const result = await response.json();
-        console.log('API response for page', currentPage, ':', result); // For debugging
+       // console.log('API response for page', currentPage, ':', result); // For debugging
   
         if (result.success && result.data && Array.isArray(result.data.data)) {
           allDocuments = [...allDocuments, ...result.data.data];
@@ -53,7 +53,7 @@ const OtherDocuments = ({ onBack, onSubmit }) => {
         }
       }
   
-      console.log('Total documents fetched:', allDocuments.length); // For debugging
+     // console.log('Total documents fetched:', allDocuments.length); // For debugging
       setDocuments(allDocuments);
     } catch (error) {
       console.error('Error fetching documents:', error);

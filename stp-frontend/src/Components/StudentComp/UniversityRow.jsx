@@ -44,7 +44,7 @@ const UniversityRow = () => {
       }
 
       const result = await response.json();
-      console.log("API Response:", result);
+     // console.log("API Response:", result);
       setSchools(result.data);
     } catch (error) {
       setError(error.message);

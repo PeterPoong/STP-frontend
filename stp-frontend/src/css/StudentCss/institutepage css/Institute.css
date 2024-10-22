@@ -130,7 +130,7 @@
 }
 
 .institute-card .card-image img {
-  max-width: 100%;
+ /* max-width: 100%;*/
   height: auto;
   display: block;
 }
@@ -167,7 +167,7 @@
 .location-container {
   border: 1px solid #dadada;
   border-radius: 10px;
-  height: auto; /* Adjusted for better responsiveness */
+  height: fit-content; /* Adjusted for better responsiveness */
   padding: 20px;
 }
 

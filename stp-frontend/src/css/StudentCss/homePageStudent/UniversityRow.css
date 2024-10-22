@@ -74,8 +74,15 @@
   height: 40px;
   /* Adjust height */
   display: flex;
-  justify-content: center;
   align-items: center;
+}
+
+.swiper-button-next{
+justify-content: flex-end;
+}
+.swiper-button-prev
+{
+justify-content: flex-start;
 }
 
 .swiper-button-next::after,

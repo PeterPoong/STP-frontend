@@ -81,7 +81,7 @@ const Achievements = ({ onBack, onNext }) => {
         }
 
         const result = await response.json();
-        console.log('API response for page', currentPage, ':', result); // For debugging
+       // console.log('API response for page', currentPage, ':', result); // For debugging
 
         if (result.success && result.data && Array.isArray(result.data.data)) {
           const pageAchievements = result.data.data.map((achievement) => {
@@ -107,7 +107,7 @@ const Achievements = ({ onBack, onNext }) => {
         }
       }
 
-      console.log('Total achievements fetched:', allAchievements.length); // For debugging
+     // console.log('Total achievements fetched:', allAchievements.length); // For debugging
       setAchievements(allAchievements);
     } catch (error) {
       console.error('Error fetching achievements:', error);
