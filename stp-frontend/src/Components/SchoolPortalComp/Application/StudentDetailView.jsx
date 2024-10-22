@@ -1124,7 +1124,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
         </div>
 
         <div className="mb-4 px-5 mt-4">
-          <p className="fw-normal">Feedback to Student:</p>
+          <p className="feedback-p-school fw-normal">Feedback to Student:</p>
           {isPending ? (
             <textarea
               id="feedback"
@@ -1142,7 +1142,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
         </div>
 
         {isPending && !currentAction && (
-          <div className="d-flex justify-content-end px-5 ">
+          <div className="mobile-action-school d-flex justify-content-end px-5 ">
             <Button
 
               className="me-2 border border-0"

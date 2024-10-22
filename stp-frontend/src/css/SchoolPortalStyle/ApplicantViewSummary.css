@@ -258,6 +258,9 @@
         font-weight: bold;
         width: auto;
     }
+    .nav-tabs .nav-link {
+        max-width: 110px !important;
+    }
     .summary-tabs {
         display: flex;
         flex-direction: column;
@@ -285,6 +288,24 @@
       .plan-button {
         width: 100%;
       }
+      .applicant-actions-div {
+        /* background-color: inherit; */
+        height: 2.25rem;
+        margin: 0px 3rem;
+        width: 14rem;
+        border-radius: 1rem;
+        /* color: #F5F5F5; */
+        font-weight: 400;
+        align-content: center;
+        text-align: center;
+        font-size: 13px;
+    }
+    .feedback-p-school{
+        font-size: 15px !important;
+    }
+    .mobile-action-school{
+        display: block !important;
+    }
     
 }
 .tab-button {
