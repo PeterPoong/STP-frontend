@@ -472,8 +472,9 @@ const SearchInstitute = () => {
               backgroundColor: "transparent",
               border: "none",
               color: "#B71A18",
+              fontWeight: "lighter",
+              textDecoration: "none",
               cursor: "pointer",
-              marginTop: "10px",
             }}
           >
             <i className="bi bi-funnel" style={{ marginRight: "5px" }} />

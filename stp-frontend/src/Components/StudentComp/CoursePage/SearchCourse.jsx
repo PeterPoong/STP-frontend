@@ -337,7 +337,7 @@ const SearchCourse = () => {
 
   const resetFilters = () => {
     setSelectedInstitute(null);
-    setSelectedCountry(null); // Reset country to 'no country'
+   
     setSelectedQualification(null);
     setSelectedFilters({
       locations: [],
