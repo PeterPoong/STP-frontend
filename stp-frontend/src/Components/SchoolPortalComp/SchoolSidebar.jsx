@@ -10,6 +10,7 @@ import {
   Book,
   Grid,
   List,
+  X,
   BoxArrowRight,
   CardList,
   Gem,
@@ -38,6 +39,7 @@ const Sidebar = ({ onDropdownItemSelect, selectTabPage }) => {
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
+
   useEffect(() => {
     const fetchSchoolDetail = async () => {
       try {
@@ -234,12 +236,16 @@ const Sidebar = ({ onDropdownItemSelect, selectTabPage }) => {
   >
     {/* Mobile Toggle Button (Hamburger Menu) */}
     <Button
-          className="mobile-toggle-btn mb-5"
-          onClick={toggleSidebar}
-          style={{ backgroundColor: "#B71A18", border: "none" }} // Hamburger button color
-        >
-          <List size={20} style={{ color: "#FFF" }} /> {/* Hamburger icon color */}
-        </Button>
+        className="mobile-toggle-btn mb-5"
+        onClick={toggleSidebar}
+        style={{ backgroundColor: "#B71A18", border: "none" }}
+      >
+        {isSidebarOpen ? (
+          <X size={20} style={{ color: "#FFF" }} />  
+        ) : (
+          <List size={20} style={{ color: "#FFF" }} /> 
+        )}
+      </Button>
 
      {/* Sidebar */}
      <div className={`sidebar ${isSidebarOpen ? "open" : ""}`}>
