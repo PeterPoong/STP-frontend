@@ -100,3 +100,34 @@
   box-sizing: border-box; /* Include padding and border in the element's total width and height */
 }
 
+/* Adjust gap and display for the container on mobile devices */
+@media (max-width: 768px) {
+  .drop-filter-course {
+    flex-direction: column !important; /* Stack items vertically on mobile */
+    align-items: center; /* Center items */
+    gap: 1rem; /* Add some spacing between the items */
+  }
+
+  /* Make the dropdown full width on mobile */
+  .drop-filter-course div select {
+    width: 100% !important; /* Take full width */
+    margin-bottom: 1rem; /* Add space between dropdowns */
+  }
+  .col-md-3 div.mobile-label-course{
+    margin-left: 20px !important;
+  }
+  .editButton {
+    padding-left: 0.1rem !important;
+    padding-right: 0.1rem !important;
+    margin-top: -1rem;
+    margin-left: 26px;
+    border-radius: 1rem;
+    width: 90%;
+}
+}
+
+/* Ensure option text wraps inside select when width becomes small */
+.drop-filter-course div option {
+  white-space: normal; /* Allow text to wrap */
+}
+
