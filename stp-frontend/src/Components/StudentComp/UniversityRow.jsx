@@ -44,7 +44,7 @@ const UniversityRow = () => {
       }
 
       const result = await response.json();
-     // console.log("API Response:", result);
+     //console.log("API Response:", result);
       setSchools(result.data);
     } catch (error) {
       setError(error.message);
@@ -68,6 +68,7 @@ const UniversityRow = () => {
           </div></div>}
         {!loading && !error && schools.length > 0 && (
           <Container className="university-row-carousel">
+            
             <Swiper
               modules={[Navigation, Pagination]} // Add required modules here
               spaceBetween={5}
@@ -90,8 +91,10 @@ const UniversityRow = () => {
                 },
               }}
             >
+             
               {schools.map((school, index) => (
                 <SwiperSlide key={index} className="swiper-slide-image">
+                  
                   <Col xs={12} className="mb-3">
                     <Card className="university-card">
                       <Link
@@ -107,9 +110,12 @@ const UniversityRow = () => {
                       </Link>
                     </Card>
                   </Col>
+
                 </SwiperSlide>
               ))}
+              
             </Swiper>
+           
           </Container>
         )}
       </div>

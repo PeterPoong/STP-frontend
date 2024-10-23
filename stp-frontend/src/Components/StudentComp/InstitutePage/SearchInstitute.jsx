@@ -149,7 +149,7 @@ const SearchInstitute = () => {
         requestBody.page = currentPage;
       }
   
-      console.log('Request body:', requestBody);
+      //console.log('Request body:', requestBody);
   
       const response = await fetch(schoolListURL, {
         method: 'POST',
@@ -764,8 +764,12 @@ const SearchInstitute = () => {
               <>
                 {renderInstitutes()}
 
-                {/* Pagination */}
-                {institutes.length > 0 && (
+                
+              </>
+            )}
+          </Col>
+          {/* Pagination */}
+          {institutes.length > 0 && (
                   <Pagination className="d-flex justify-content-end">
                     <Pagination.Prev
                       onClick={() => setCurrentPage(prev => prev - 1)}
@@ -792,9 +796,6 @@ const SearchInstitute = () => {
                     </Pagination.Next>
                   </Pagination>
                 )}
-              </>
-            )}
-          </Col>
         </Row>
       </Container>
     </Container>

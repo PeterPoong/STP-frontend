@@ -19,14 +19,21 @@ const FeaturedUni = () => {
     }
 
     navigate(`/courses`, {
-      state: {
-        searchQuery: trimmedQuery, // Passing the searchQuery to the SearchCourse component
-      },
+    state: { 
+      initialSearchQuery: trimmedQuery,
+      searchTrigger: Date.now() // Add a timestamp to force update
+    },
     });
   };
 
   const handleNavigationClick = (qualification, country) => {
-    navigate("/courses", { state: { qualification, country } });
+    navigate("/courses", { 
+      state: { 
+        initialQualification: qualification,
+        initialCountry: country,
+        filterTrigger: Date.now() // Add a timestamp to force update
+      }
+    });
   };
 
   const handleNavigation = (query) => {

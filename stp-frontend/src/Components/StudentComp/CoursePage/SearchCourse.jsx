@@ -81,7 +81,7 @@ const SearchCourse = () => {
         }
       }
     } catch (error) {
-      console.error("Error fetching countries:", error);
+      //console.error("Error fetching countries:", error);
     }
   };
 
@@ -94,13 +94,13 @@ const SearchCourse = () => {
         body: JSON.stringify({ countryID })
       });
       const result = await response.json();
-      console.log(result)
+      //console.log(result)
       if (result.success) {
 
         setFilterData(result.data);
       }
     } catch (error) {
-      console.error("Error fetching filters:", error);
+     // console.error("Error fetching filters:", error);
     }
   };
 
@@ -113,7 +113,7 @@ const SearchCourse = () => {
 
 
     // Log current filter state
-    console.log("Current Filter State:", {
+    /*console.log("Current Filter State:", {
       country: {
         id: selectedCountry.id,
         name: selectedCountry.country_name
@@ -129,13 +129,14 @@ const SearchCourse = () => {
       filters: selectedFilters,
       page: currentPage,
       search: searchQuery || 'none'
-    });
+    });*/
 
     setLoading(true);
     try {
       // Initialize requestBody with required countryID
       const requestBody = {
         countryID: selectedCountry.id,
+        page: currentPage,
       };
 
       // Conditionally add filters only if they have values
@@ -168,7 +169,7 @@ const SearchCourse = () => {
       }
 
 
-      console.log("Request body being sent:", JSON.stringify(requestBody, null, 2));
+     // console.log("Request body being sent:", JSON.stringify(requestBody, null, 2));
 
       const response = await fetch(courseListURL, {
         method: "POST",
@@ -180,20 +181,29 @@ const SearchCourse = () => {
         body: JSON.stringify(requestBody)
       });
 
-      console.log("Response status:", response.status);
+     // console.log("Response status:", response.status);
 
       // Log raw response for debugging
       const rawResponse = await response.text();
-      console.log("Raw response:", rawResponse);
+
+     // console.log("Raw response:", rawResponse);
 
       // Parse the response
       const result = JSON.parse(rawResponse);
 
-      console.log("Parsed API response:", result);
+     /* console.log('Pagination info:', {
+        currentPage: result.current_page,
+        lastPage: result.last_page,
+        total: result.total,
+        perPage: result.per_page,
+        from: result.from,
+        to: result.to
+      });
+      console.log("Parsed API response:", result);*/
 
       // Validate response structure
       if (!result.data) {
-        console.error("Response missing data array:", result);
+       // console.error("Response missing data array:", result);
         throw new Error("Invalid response structure");
       }
 
@@ -203,26 +213,28 @@ const SearchCourse = () => {
           total: result.total
         });
       } else {
-        console.log(`Successfully fetched ${result.data.length} courses`);
+       // console.log(`Successfully fetched ${result.data.length} courses`);
         // Log first item structure for verification
-        console.log("Sample course data structure:", result.data[0]);
+       // console.log("Sample course data structure:", result.data[0]);
+       console.log('fetch data')
       }
 
       // Set state only if we have valid data structure
       setPrograms(result.data || []);
-      setTotalPages(Math.ceil(result.total / 20));
+      setTotalPages(result.last_page);
 
     } catch (error) {
-      console.error("Error in fetchCourses:", {
+      /*console.error("Error in fetchCourses:", {
         name: error.name,
         message: error.message,
         stack: error.stack
-      });
+      });*/
       setError(`Failed to fetch courses: ${error.message}`);
     } finally {
       setLoading(false);
     }
   };
+
   // Initial Load
   useEffect(() => {
     fetchCountries();
@@ -248,6 +260,54 @@ const SearchCourse = () => {
     searchQuery,
     currentPage
   ]);
+
+  useEffect(() => {
+    if (location.state?.initialSearchQuery) {
+      setSearchQuery(location.state.initialSearchQuery);
+      // Trigger search with the new query
+      if (selectedCountry) {
+        fetchCourses();
+      }
+    }
+  }, [location.state?.initialSearchQuery, location.state?.searchTrigger]);
+
+  // Handle qualification and country filters from FeaturedUni
+  useEffect(() => {
+    if (location.state?.initialQualification) {
+      const qualification = filterData.qualificationList.find(
+        q => q.qualification_name === location.state.initialQualification
+      );
+      if (qualification) {
+        setSelectedQualification(qualification);
+      }
+    }
+
+    if (location.state?.initialCountry) {
+      const country = countries.find(
+        c => c.country_name === location.state.initialCountry
+      );
+      if (country) {
+        setSelectedCountry(country);
+      }
+    }
+  }, [location.state?.initialQualification, location.state?.initialCountry,
+  location.state?.filterTrigger, filterData.qualificationList, countries]);
+
+  // Handle category filter from CoursesContainer
+  useEffect(() => {
+    if (location.state?.initialCategory && filterData.categoryList) {
+      const category = filterData.categoryList.find(
+        c => c.category_name === location.state.initialCategory
+      );
+      if (category) {
+        setSelectedFilters(prev => ({
+          ...prev,
+          categories: [category.id]
+        }));
+      }
+    }
+  }, [location.state?.initialCategory, location.state?.categoryTrigger,
+  filterData.categoryList]);
 
   // Handler Functions
   const handleCountryChange = (country) => {
@@ -677,8 +737,8 @@ const SearchCourse = () => {
                 </Accordion.Header>
                 <Accordion.Body className="custom-accordion-body">
                   <Form.Group>
-                    {filterData.locations && filterData.locations.length > 0 ? (
-                      filterData.locations.map((location, index) => (
+                    {filterData.state && filterData.state.length > 0 ? ( // Changed from filterData.locations to filterData.state
+                      filterData.state.map((location, index) => (
                         <Form.Check
                           key={index}
                           type="checkbox"
@@ -697,12 +757,12 @@ const SearchCourse = () => {
               {/* Course Category Filter */}
               <Accordion.Item eventKey="1">
                 <Accordion.Header className="custom-accordion-header">
-                  Course Category
+                  Category
                 </Accordion.Header>
                 <Accordion.Body className="custom-accordion-body">
                   <Form.Group>
-                    {filterData.categories && filterData.categories.length > 0 ? (
-                      filterData.categories.map((category, index) => (
+                    {filterData.categoryList && filterData.categoryList.length > 0 ? ( // Changed from filterData.categories to filterData.categoryList
+                      filterData.categoryList.map((category, index) => (
                         <Form.Check
                           key={index}
                           type="checkbox"
@@ -844,8 +904,12 @@ const SearchCourse = () => {
               <>
                 {renderPrograms()}
 
-                {/* Pagination */}
-                {programs.length > 0 && (
+               
+              </>
+            )}
+          </Col>
+           {/* Pagination */}
+           {programs.length > 0 && (
                   <Pagination className="d-flex justify-content-end">
                     <Pagination.Prev
                       onClick={() => setCurrentPage(prev => prev - 1)}
@@ -872,9 +936,6 @@ const SearchCourse = () => {
                     </Pagination.Next>
                   </Pagination>
                 )}
-              </>
-            )}
-          </Col>
         </Row>
       </Container>
     </Container>

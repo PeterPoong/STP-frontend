@@ -98,7 +98,7 @@ const KnowMoreInstitute = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-   // console.log("Institute ID: ", id);
+    // console.log("Institute ID: ", id);
 
     // Fetch school detail if institutes are not loaded
     if (!institutes || institutes.length === 0) {
@@ -113,7 +113,7 @@ const KnowMoreInstitute = () => {
       })
         .then((response) => response.json())
         .then((data) => {
-       //   console.log("Fetched School Detail Data: ", data);
+          //console.log("Fetched School Detail Data: ", data);
           if (data && data.success && data.data) {
             setInstitutes([data.data]);
             setCourses(data.data.courses);
@@ -143,7 +143,7 @@ const KnowMoreInstitute = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-    //    console.log("Fetched Featured Institutes Data: ", data);
+        //    console.log("Fetched Featured Institutes Data: ", data);
         if (data && data.success && Array.isArray(data.data)) {
           setFeaturedInstitutes(data.data);
         } else {
@@ -173,7 +173,7 @@ const KnowMoreInstitute = () => {
   };
 
   const handleApplyNow = (program, institute) => {
- //  console.log("Program object:", program);
+    //  console.log("Program object:", program);
     navigate(`/studentApplyCourses/${program.id}`, {
       state: {
         programId: program.id,
@@ -183,6 +183,16 @@ const KnowMoreInstitute = () => {
         courseName: program.course_name,
       },
     });
+  };
+
+  const handleContactSchool = (email) => {
+    if (email) {
+      // Remove any semicolons or other potential invalid characters
+      const cleanEmail = email.replace(/[;,\s]+$/, '');
+      window.location.href = `mailto:${cleanEmail}`;
+    } else {
+      alert('School email is not available at the moment.');
+    }
   };
 
   return (
@@ -247,6 +257,7 @@ const KnowMoreInstitute = () => {
                   className="d-flex align-items-center justify-content-center justify-content-md-end"
                 >
                   <Button
+                    onClick={() => handleContactSchool("institute.school_email")}
                     style={{
                       backgroundColor: "#FF6B00",
                       border: "none",
@@ -554,24 +565,24 @@ const KnowMoreInstitute = () => {
                     </Col>
                     <Col md={12}>
                       {!open ? (
-                        <div id="collapse-course-overview"  className="student-knowmoreinsti-wordbreak">
+                        <div id="collapse-course-overview" className="student-knowmoreinsti-wordbreak">
                           <div
                             dangerouslySetInnerHTML={{
                               __html: institute.short_description,
                             }}
                           />
-                          </div>
+                        </div>
                       ) : (
                         <Collapse in={open}>
                           {/* <div>
                           <p>{institute.short_description}</p>
                         </div> */}
-                        <div id="collapse-course-overview" >
-                          <div
-                            dangerouslySetInnerHTML={{
-                              __html: institute.short_description,
-                            }}
-                          />
+                          <div id="collapse-course-overview" >
+                            <div
+                              dangerouslySetInnerHTML={{
+                                __html: institute.short_description,
+                              }}
+                            />
                           </div>
                         </Collapse>
                       )}
@@ -830,6 +841,7 @@ const KnowMoreInstitute = () => {
               {/* Contact School Button */}
               <div className="d-flex justify-content-center">
                 <Button
+                  onClick={() => handleContactSchool(institute.school_email)}
                   style={{
                     backgroundColor: "#FF6B00",
                     border: "none",

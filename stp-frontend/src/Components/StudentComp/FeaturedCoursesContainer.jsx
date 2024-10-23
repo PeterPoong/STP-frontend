@@ -52,7 +52,7 @@ const FeaturedCoursesContainer = () => {
       }
 
       const result = await response.json();
-     // console.log("API Response:", result);
+      //console.log("API Response:", result);
       setCourses(result.data);
     } catch (error) {
       setError(error.message);
@@ -173,8 +173,17 @@ const FeaturedCoursesContainer = () => {
                         height: "3rem"
                       }}
                     >
+                      <Link
+                         style={{
+                          color: "#514E4E"
+                        }}
+                        to={{
+                          pathname: `/knowMoreInstitute/${course.school_id}`
+                        }}
+                      >
+                        {course.course_school}
+                      </Link>
 
-                      {course.course_school}
                     </p>
                     <p
                       className="course-title"

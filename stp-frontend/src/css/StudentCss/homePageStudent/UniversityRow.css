@@ -77,12 +77,15 @@
   align-items: center;
 }
 
-.swiper-button-next{
-justify-content: flex-end;
-}
-.swiper-button-prev
+
+.swiper-button-prev,.swiper-button-next
 {
-justify-content: flex-start;
+justify-content: center;
+}
+.swiper-button-next:hover ,
+.swiper-button-prev:hover {
+  background-color: rgba(154, 154, 154, 0.5);
+  color: white;
 }
 
 .swiper-button-next::after,

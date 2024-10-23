@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import CoursesButton from "../../Components/StudentComp/CoursesButton";
-import { Container,Spinner } from "react-bootstrap";
+import { Container, Spinner } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import "../../css/StudentCss/course button group/CoursesButton.css";
 
@@ -61,10 +61,12 @@ const CoursesContainer = () => {
 
     fetchData();
   }, []);
-
   const handleButtonClick = (category) => {
     navigate("/courses", {
-      state: { selectedCategory: category.label },
+      state: {
+        initialCategory: category.label,
+        categoryTrigger: Date.now() // Add a timestamp to force update
+      },
     });
   };
 
