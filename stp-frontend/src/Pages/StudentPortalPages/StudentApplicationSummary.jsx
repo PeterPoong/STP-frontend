@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button } from "react-bootstrap";
+import { Button ,Spinner} from "react-bootstrap";
 import defaultProfilePic from "../../assets/StudentPortalAssets/sampleprofile.png";
 import defaultSchoolPic from "../../assets/StudentPortalAssets/defaulschool.png";
 import {
@@ -1569,7 +1569,13 @@ const StudentApplicationSummary = ({ }) => {
   };
   const renderCourseInformation = () => {
     if (!courseInfo) {
-      return <div>Loading course information...</div>;
+      return <div> 
+        <div className="d-flex justify-content-center align-items-center m-5 p-5 " >
+        <Spinner animation="border" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </Spinner>
+      </div>
+      </div>;
     }
     const parseHTML = (html) => {
       const parser = new DOMParser();

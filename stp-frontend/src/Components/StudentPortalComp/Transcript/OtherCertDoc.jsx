@@ -5,7 +5,7 @@ import WidgetFileUpload from "../../../Components/StudentPortalComp/WidgetFileUp
 import WidgetPopUpDelete from "../../../Components/StudentPortalComp/WidgetPopUpDelete";
 import "../../../css/StudentPortalStyles/StudentPortalAcademicTranscript.css";
 import "../../../css/StudentPortalStyles/StudentButtonGroup.css";
-
+import { Spinner } from "react-bootstrap";
 const OtherCertDoc = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -244,7 +244,13 @@ const OtherCertDoc = () => {
         setIsPopupOpen(true);
     };
 
-    if (isLoading) return <div>Loading...</div>;
+    if (isLoading) return <div>
+        <div className="d-flex justify-content-center align-items-center m-5">
+            <Spinner animation="border" role="status">
+                <span className="visually-hidden">Loading...</span>
+            </Spinner>
+        </div>
+    </div>;
     if (error) return (
         <div>
             <p>Error: {error}</p>
@@ -329,7 +335,19 @@ const OtherCertDoc = () => {
                         </tbody>
                     </table>
                 ) : (
-                    <div>No other certificate or documentation found</div>
+                    <div>
+                    <table className="w-100 transcript-responsive-table">
+                        <thead>
+                            <tr >
+                                <th className="border-bottom fw-normal ps-2">Files</th>
+                                <th className="border-bottom p-2 fw-normal text-end">Filename</th>
+                                <th className="border-bottom p-2 fw-normal text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        
+                    </table>
+                    <p className="text-center m-3" >No other certificate or document found.</p>
+                    </div>
                 )}
             </div>
             {paginationInfo.lastPage > 1 && (

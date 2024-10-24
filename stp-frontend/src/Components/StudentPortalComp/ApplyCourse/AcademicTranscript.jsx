@@ -22,13 +22,13 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
   const [savingStates, setSavingStates] = useState({});
 
   // Replace the existing useEffect hook with this:
- /* useEffect(() => {
-    const fetchAllData = async () => {
-      await fetchTranscriptCategories();
-      setIsLoading(false);
-    };
-    fetchAllData();
-  }, []);*/
+  /* useEffect(() => {
+     const fetchAllData = async () => {
+       await fetchTranscriptCategories();
+       setIsLoading(false);
+     };
+     fetchAllData();
+   }, []);*/
 
 
   useEffect(() => {
@@ -42,8 +42,8 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
   const fetchTranscriptData = async () => {
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      console.log('Token:', token ? 'Token exists' : 'Token is missing');
-  
+     // console.log('Token:', token ? 'Token exists' : 'Token is missing');
+
       const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/applyCourseTranscript`, {
         method: 'POST',
         headers: {
@@ -51,19 +51,19 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
           'Content-Type': 'application/json',
         },
       });
-  
-      console.log('Response status:', response.status);
-      console.log('Response headers:', response.headers);
-  
+
+      //console.log('Response status:', response.status);
+      //console.log('Response headers:', response.headers);
+
       if (!response.ok) {
         const errorText = await response.text();
         console.error('Error response:', errorText);
         throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
       }
-  
+
       const result = await response.json();
-      console.log('API response:', result);
-  
+      //console.log('API response:', result);
+
       if (result.success) {
         processTranscriptData(result.data);
       } else {
@@ -91,7 +91,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
   };
   const processSubjects = (transcriptData, categoryId) => {
     if (!transcriptData || !transcriptData.subjects) return [];
-  
+
     return [{
       id: categoryId,
       name: "SPM",
@@ -107,18 +107,18 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
       cgpaId: null
     }];
   };
-  
+
   const processHigherTranscripts = (higherTranscripts) => {
     return higherTranscripts.map(transcript => ({
       id: transcript.id,
       name: transcript.name,
-      subjects: Array.isArray(transcript.subject) 
+      subjects: Array.isArray(transcript.subject)
         ? transcript.subject.flat().map(subj => ({
-            id: subj.id,
-            name: subj.highTranscript_name || subj.subject_name,
-            grade: subj.higherTranscript_grade || subj.subject_grade || '',
-            isEditing: false
-          }))
+          id: subj.id,
+          name: subj.highTranscript_name || subj.subject_name,
+          grade: subj.higherTranscript_grade || subj.subject_grade || '',
+          isEditing: false
+        }))
         : [],
       documents: processDocuments(transcript.document),
       cgpa: transcript.cgpa,
@@ -132,7 +132,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
     if (!documents) return [];
     // If documents is an array of arrays, flatten it
     const flatDocuments = Array.isArray(documents[0]) ? documents.flat() : documents;
-  
+
     return flatDocuments.map(doc => ({
       id: doc.id,
       name: doc.studentMedia_name || doc.name || 'Untitled',
@@ -1003,16 +1003,16 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
 
   const getGradeColor = (grade) => {
     if (!grade) return 'secondary'; // Handle undefined or null grades
-  
+
     grade = grade.toString().toUpperCase(); // Convert to string and uppercase
-  
+
     if (grade.includes('A')) return 'success';
     if (grade.includes('B')) return 'success';
     if (grade.includes('C')) return 'success';
     if (grade.includes('D')) return 'warning';
     if (grade.includes('E')) return 'warning';
     if (grade.includes('G')) return 'danger';
-  
+
     return 'secondary';
   };
 
@@ -1053,7 +1053,15 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
     setNavigationDirection(null);
   };
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <div>
+    <div>
+      <div className="d-flex justify-content-center align-items-center m-5 " >
+        <Spinner animation="border" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </Spinner>
+      </div>
+    </div>
+  </div>;
   if (error) return <div>Error: {error}</div>;
 
   return (
@@ -1096,10 +1104,10 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
           </div>
 
           {transcript.subjects.length === 0 && (
-              <div className="px-4 py-2 text-muted">
-                No subjects added yet. Click the "+" icon to add a subject.
-              </div>
-            )}
+            <div className="px-4 py-2 text-muted">
+              No subjects added yet. Click the "+" icon to add a subject.
+            </div>
+          )}
           {transcript.subjects.length > 0 ? (
             <div className="px-4">
               {transcript.subjects.map((subject, subIndex) => (
@@ -1175,16 +1183,16 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                             required
                           />
                         )}
-                         <div className="d-flex ms-auto">
-                        <Button variant="link" className="p-0 me-2" onClick={() => handleSaveSubject(index, subIndex)}>
-                          <Save size={15} color="green" />
-                        </Button>
-                        <Button variant="link" className="p-0" onClick={() => handleRemoveSubject(index, subIndex)}>
-                          <Trash2 size={15} color="grey" />
-                        </Button>
+                        <div className="d-flex ms-auto">
+                          <Button variant="link" className="p-0 me-2" onClick={() => handleSaveSubject(index, subIndex)}>
+                            <Save size={15} color="green" />
+                          </Button>
+                          <Button variant="link" className="p-0" onClick={() => handleRemoveSubject(index, subIndex)}>
+                            <Trash2 size={15} color="grey" />
+                          </Button>
+                        </div>
                       </div>
-                      </div>
-                     
+
                     </>
                   ) : (
                     <>
@@ -1208,15 +1216,15 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                           Grade: {subject.grade}
                         </span>
                         <div className="d-flex ms-auto">
-                        <Button variant="link" className="p-0 me-2" onClick={() => handleSubjectChange(index, subIndex, 'isEditing', true)}>
-                          <Edit size={15} color="grey" />
-                        </Button>
-                        <Button variant="link" className="p-0" onClick={() => handleRemoveSubject(index, subIndex)}>
-                          <Trash2 size={15} color="grey" />
-                        </Button>
+                          <Button variant="link" className="p-0 me-2" onClick={() => handleSubjectChange(index, subIndex, 'isEditing', true)}>
+                            <Edit size={15} color="grey" />
+                          </Button>
+                          <Button variant="link" className="p-0" onClick={() => handleRemoveSubject(index, subIndex)}>
+                            <Trash2 size={15} color="grey" />
+                          </Button>
+                        </div>
                       </div>
-                      </div>
-                      
+
                     </>
                   )}
                 </div>

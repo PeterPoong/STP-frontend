@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Spinner } from 'react-bootstrap';
 import NavButtonsSP from "../../Components/StudentPortalComp/NavButtonsSP";
 import MyProfileWidget from "../../Components/StudentPortalComp/MyProfileWidget";
 import SpcFooter from "../../Components/StudentPortalComp/SpcFooter";
@@ -10,7 +11,6 @@ import AppliedCourseHistory from "../../Components/StudentPortalComp/AppliedCour
 import AppliedCoursePending from "../../Components/StudentPortalComp/AppliedCourse/AppliedCoursePending";
 import "aos/dist/aos.css";
 import "../../css/StudentPortalStyles/StudentPortalBasicInformation.css";
-
 
 const StudentPortalBasicInformations = () => {
   const [selectedContent, setSelectedContent] = useState("basicInfo");
@@ -56,7 +56,7 @@ const StudentPortalBasicInformations = () => {
       //console.log("Token validation response:", data);
 
       if (data && data.success === true) {
-       // console.log("Token is valid");
+        // console.log("Token is valid");
         setIsAuthenticated(true);
       } else {
         //console.log("Token is invalid based on response structure");
@@ -68,7 +68,7 @@ const StudentPortalBasicInformations = () => {
       localStorage.removeItem("token");
       navigate("/studentPortalLogin");
     } finally {
-      setIsLoading(false);
+        setIsLoading(false); 
     }
   };
   /*end */
@@ -103,26 +103,34 @@ const StudentPortalBasicInformations = () => {
   /*end */
 
   if (isLoading) {
-    return <div>Loading...</div>;
-  }
-  if (!isAuthenticated) {
-    return null; // Or you could render a "Not Authorized" message
-  }
-
-  return (
-    <div className="app-container">
-      <NavButtonsSP />
-      <main className="main-content mt-5">
-        <div className="content-wrapper">
-          <div className="profile-widget-container">
-            <MyProfileWidget onSelectContent={setSelectedContent} profilePic={profilePic} />
-          </div>
-          <div className="content-area">{renderContent()}</div>
+    return <div>
+      <div>
+        <div className="d-flex justify-content-center align-items-center m-5 h-100 w-100" >
+          <Spinner animation="border" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </Spinner>
         </div>
-      </main>
-      <SpcFooter />
-    </div>
-  );
+      </div>
+    </div >;
+  }
+if (!isAuthenticated) {
+  return null; // Or you could render a "Not Authorized" message
+}
+
+return (
+  <div className="app-container">
+    <NavButtonsSP />
+    <main className="main-content mt-5">
+      <div className="content-wrapper">
+        <div className="profile-widget-container">
+          <MyProfileWidget onSelectContent={setSelectedContent} profilePic={profilePic} />
+        </div>
+        <div className="content-area">{renderContent()}</div>
+      </div>
+    </main>
+    <SpcFooter />
+  </div>
+);
 };
 
 export default StudentPortalBasicInformations;

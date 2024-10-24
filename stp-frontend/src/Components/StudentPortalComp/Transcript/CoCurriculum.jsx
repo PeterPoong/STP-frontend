@@ -5,6 +5,8 @@ import WidgetClub from "../../../Components/StudentPortalComp/Widget/WidgetClub"
 import WidgetPopUpDelete from "../../../Components/StudentPortalComp/WidgetPopUpDelete";
 import "../../../css/StudentPortalStyles/StudentPortalAcademicTranscript.css";
 import "../../../css/StudentPortalStyles/StudentButtonGroup.css";
+import { Spinner } from "react-bootstrap";
+
 
 const CoCurriculum = () => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -245,7 +247,13 @@ const CoCurriculum = () => {
         setIsPopupOpen(true);
     };
 
-    if (isLoading) return <div>Loading...</div>;
+    if (isLoading) return <div>
+        <div className="d-flex justify-content-center align-items-center m-5">
+            <Spinner animation="border" role="status">
+                <span className="visually-hidden">Loading...</span>
+            </Spinner>
+        </div>
+    </div>;
     if (error) return <div>Error: {error}</div>;
 
     return (
@@ -325,7 +333,19 @@ const CoCurriculum = () => {
                         </tbody>
                     </table>
                 ) : (
-                    <div>No cocurriculum found</div>
+                    <div>
+                    <table className="w-100 transcript-responsive-table">
+                        <thead>
+                            <tr>
+                                <th className="border-bottom p-2 fw-normal">Club</th>
+                                <th className="border-bottom p-2 fw-normal">Position</th>
+                                <th className="border-bottom p-2 fw-normal">Year</th>
+                                <th className="border-bottom p-2 text-end fw-normal">Actions</th>
+                            </tr>
+                        </thead>
+                    </table>
+                    <p className="text-center m-3" >No other certificate or document found.</p>
+                    </div>
                 )}
             </div>
             {pageNumbers.length > 1 && (

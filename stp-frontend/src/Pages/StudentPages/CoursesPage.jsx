@@ -1,7 +1,7 @@
 import React from "react";
 import NavButtonsSP from "../../Components/StudentPortalComp/NavButtonsSP";
 import SearchCourse from "../../Components/StudentComp/CoursePage/SearchCourse";
-import headerImage from "../../assets/StudentAssets/coursepage image/heading.png";
+import headerImage from "../../assets/StudentAssets/coursepage image/heading.webp";
 import CourseListing from "../../Components/StudentComp/CoursePage/CourseListing";
 import Footer from "../../Components/StudentComp/Footer";
 import NavButtons from "../../Components/StudentComp/NavButtons";

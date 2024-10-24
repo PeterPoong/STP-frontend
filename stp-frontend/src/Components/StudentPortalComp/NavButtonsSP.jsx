@@ -55,7 +55,17 @@ const NavigationBar = () => {
     >
       <Container>
         <Navbar.Brand as={Link} to="/">
-          <img src={logo} alt="Logo" className="logo" />
+          <img 
+          src={logo} 
+          alt="Logo" 
+          className="logo"
+          loading="eager" // Prioritize this image
+          fetchPriority="high"
+          decoding="async"
+          onLoad={(e) => {
+            // Remove placeholder when image loads
+            e.target.previousSibling?.remove();
+          }} />
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">

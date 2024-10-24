@@ -1,3 +1,19 @@
+.student-knowmoreinsti-wordbreak
+{
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-all;
+  white-space-collapse: break-spaces;
+  text-wrap: wrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: auto;
+  width: auto;
+  height:3rem;
+}
+
+
+
 .featured-institute-card {
   margin: 10px;
   text-align: center;

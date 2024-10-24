@@ -494,13 +494,19 @@ const AppliedCoursePending = () => {
 
           {/* Loading Indicator */}
           {loading ? (
-            <div className="d-flex justify-content-center align-items-center mt-4">
-              <Spinner animation="border" role="status">
-                <span className="visually-hidden">Loading...</span>
-              </Spinner>
+            <div>
+              <div className="d-flex justify-content-center align-items-center m-5">
+                <Spinner animation="border" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </Spinner>
+              </div>
             </div>
+
+
           ) : filteredApplications.length === 0 ? (
-            <p className="mt-4">No pending applications found.</p>
+            <div className="m-4">
+              <p className="text-center m-3">No application has been found.</p>
+            </div>
           ) : (
             currentItems.map((app, index) => (
               <Card
