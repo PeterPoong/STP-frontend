@@ -363,7 +363,7 @@ const SearchInstitute = () => {
                         />
                       </Link>
                     </div>
-                    <div style={{ paddingLeft: "30px" }} className="searchinstitute-two">
+                    <div className="searchinstitute-two">
                       <Link
                         to={`/knowMoreInstitute/${institute.id}`}
                         style={{ textDecoration: "none", color: "black" }}

@@ -4,6 +4,11 @@
 
 }
 
+.searchinstitute-two
+{
+  padding-left: 30px;
+}
+
 .searchinstitute-three-list
 {
   display: flex;
@@ -556,6 +561,7 @@ width:10rem;
 .searchinstitute-two
 {
   text-align:center;
+  padding:0;
 }
 
 .searchinstitute-two-description
