@@ -106,73 +106,76 @@ const SearchInstitute = () => {
   // Step 3: Fetch Schools/Institutes
   const fetchInstitutes = async () => {
     if (!selectedCountry) return;
-  
+
     setLoading(true);
     try {
       // Build the request body according to backend expectations
       const requestBody = {
-        country: selectedCountry.id,  // Single country ID as required
+        country: selectedCountry.id,
+        page: currentPage, // Send current page
+        per_page: 10  // Single country ID as required
       };
-  
+
       // Add university/institute category if selected
       if (selectedInstitute?.id) {
         requestBody.category = [selectedInstitute.id];  // As array
       }
-  
+
       // Add location filters
       if (selectedFilters.locations?.length > 0) {
         requestBody.location = selectedFilters.locations;  // Already an array
       }
-  
+
       // Add study level filters
       if (selectedFilters.studyLevels?.length > 0) {
         requestBody.studyLevel = selectedFilters.studyLevels;  // Already an array
       }
-  
+
       // Add study mode filters
       if (selectedFilters.studyModes?.length > 0) {
         requestBody.studyMode = selectedFilters.studyModes;  // Already an array
       }
-  
+
       // Add category filters if any
       if (selectedFilters.categories?.length > 0) {
         requestBody.courseCategory = selectedFilters.categories;  // Already an array
       }
-  
+
       // Add search if present
       if (searchQuery) {
         requestBody.search = searchQuery.trim();  // As string, not array
       }
-  
+
       // Add pagination
       if (currentPage) {
         requestBody.page = currentPage;
       }
-  
+
       //console.log('Request body:', requestBody);
-  
+
       const response = await fetch(schoolListURL, {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
           // Add any other headers if needed
         },
         body: JSON.stringify(requestBody)
       });
-  
+
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-  
+
       const result = await response.json();
-      
+
       if (result.success) {
         setInstitutes(result.data || []);
-        setTotalPages(Math.ceil((result.total || 0) / itemsPerPage));
+        setCurrentPage(result.current_page);
+        setTotalPages(result.last_page);
       } else {
         throw new Error(result.message || 'Failed to fetch institutes');
       }
-  
+
     } catch (error) {
       console.error('Error fetching institutes:', error);
       setError(error.message);
@@ -180,6 +183,8 @@ const SearchInstitute = () => {
       setLoading(false);
     }
   };
+
+
   // Initial Load
   useEffect(() => {
     fetchCountries();
@@ -250,6 +255,74 @@ const SearchInstitute = () => {
       state: { institute: institute }
     });
   };
+
+  // Update the pagination handling functions
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Replace your current pagination JSX with this updated version
+  const renderPagination = () => {
+    if (!institutes.length || totalPages <= 1) return null;
+
+    return (
+      <div className="d-flex justify-content-end mt-4">
+        <Pagination>
+          <Pagination.Prev
+            onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+            disabled={currentPage === 1}
+          />
+
+          {/* First page */}
+          {currentPage > 2 && (
+            <>
+              <Pagination.Item onClick={() => handlePageChange(1)}>1</Pagination.Item>
+              {currentPage > 3 && <Pagination.Ellipsis />}
+            </>
+          )}
+
+          {/* Pages around current page */}
+          {Array.from({ length: totalPages }, (_, i) => i + 1)
+            .filter(page => {
+              if (totalPages <= 5) return true;
+              return Math.abs(page - currentPage) <= 1 || page === 1 || page === totalPages;
+            })
+            .map((page, index, array) => {
+              // Add ellipsis where there are gaps
+              if (index > 0 && page - array[index - 1] > 1) {
+                return (
+                  <React.Fragment key={`ellipsis-${page}`}>
+                    <Pagination.Ellipsis />
+                    <Pagination.Item
+                      active={page === currentPage}
+                      onClick={() => handlePageChange(page)}
+                    >
+                      {page}
+                    </Pagination.Item>
+                  </React.Fragment>
+                );
+              }
+              return (
+                <Pagination.Item
+                  key={page}
+                  active={page === currentPage}
+                  onClick={() => handlePageChange(page)}
+                >
+                  {page}
+                </Pagination.Item>
+              );
+            })}
+
+          <Pagination.Next
+            onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+            disabled={currentPage === totalPages}
+          />
+        </Pagination>
+      </div>
+    );
+  };
+
 
   const renderInstitutes = () => {
     if (!institutes.length) {
@@ -326,7 +399,7 @@ const SearchInstitute = () => {
                             <div style={{ marginTop: "10px" }}>
                               <i className="bi bi-mortarboard" style={{ marginRight: "10px" }}></i>
                               <span style={{ paddingLeft: "20px" }}>
-                                {institute.courses } courses offered
+                                {institute.courses} courses offered
                               </span>
                             </div>
                             <div style={{ marginTop: "10px" }}>
@@ -379,9 +452,9 @@ const SearchInstitute = () => {
       {/* Top Row - Dropdowns */}
       <Row className="align-items-center mb-2 mb-md-0">
         {/* Country Dropdown */}
-       
-       
-       
+
+
+
         <Col xs={12} sm={4} md={3} lg={2} className="mb-2 mb-sm-0">
           <ButtonGroup className="w-100">
             <Dropdown as={ButtonGroup} className="w-100">
@@ -765,38 +838,11 @@ const SearchInstitute = () => {
               <>
                 {renderInstitutes()}
 
-                
+
               </>
             )}
           </Col>
-          {/* Pagination */}
-          {institutes.length > 0 && (
-                  <Pagination className="d-flex justify-content-end">
-                    <Pagination.Prev
-                      onClick={() => setCurrentPage(prev => prev - 1)}
-                      disabled={currentPage === 1}
-                    >
-                      <span aria-hidden="true">&laquo;</span>
-                    </Pagination.Prev>
-
-                    {[...Array(totalPages)].map((_, index) => (
-                      <Pagination.Item
-                        key={index + 1}
-                        active={index + 1 === currentPage}
-                        onClick={() => setCurrentPage(index + 1)}
-                      >
-                        {index + 1}
-                      </Pagination.Item>
-                    ))}
-
-                    <Pagination.Next
-                      onClick={() => setCurrentPage(prev => prev + 1)}
-                      disabled={currentPage === totalPages}
-                    >
-                      <span aria-hidden="true">&raquo;</span>
-                    </Pagination.Next>
-                  </Pagination>
-                )}
+          {renderPagination()}
         </Row>
       </Container>
     </Container>

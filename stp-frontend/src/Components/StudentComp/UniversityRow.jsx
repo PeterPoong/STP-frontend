@@ -78,11 +78,11 @@ const UniversityRow = () => {
               // style={{ padding: "0 5px" }}
               breakpoints={{
                 640: {
-                  slidesPerView: 1,
-                  spaceBetween: 10,
+                  slidesPerView: 10,
+                  spaceBetween: 20,
                 },
                 768: {
-                  slidesPerView: 2,
+                  slidesPerView: 5,
                   spaceBetween: 15,
                 },
                 1024: {

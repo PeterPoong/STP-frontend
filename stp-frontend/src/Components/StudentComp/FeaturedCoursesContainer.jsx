@@ -105,7 +105,7 @@ const FeaturedCoursesContainer = () => {
             breakpoints={{
               // Mobile phones (portrait)
               320: {
-                slidesPerView: 10,
+                slidesPerView: 20,
                 spaceBetween: 20,
                 //centeredSlides: true
               },
