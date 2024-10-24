@@ -560,7 +560,7 @@ const KnowMoreInstitute = () => {
                   <Row>
                     <Col md={10} className="d-flex align-items-center">
                       <div>
-                        <h5 className="card-title">Course Overview</h5>
+                        <h5 className="card-title">School Overview</h5>
                       </div>
                     </Col>
                     <Col md={12}>
