@@ -279,17 +279,18 @@ const SearchInstitute = () => {
             <Row>
               <Col md={6} lg={6}>
                 <div className="card-image mb-3 mb-md-0">
-                  <div className="d-flex" style={{ width: "100%", marginTop: "10px" }}>
-                    <div style={{ paddingLeft: "10px" }}>
+                  <div className="d-flex searchinstitute-one" style={{ width: "100%", marginTop: "10px" }}>
+                    <div style={{ paddingLeft: "10px" }} className="searchinstitute-one-linkimage">
                       <Link to={`/knowMoreInstitute/${institute.id}`}>
                         <img
                           src={`${baseURL}storage/${institute.logo}`}
                           alt={institute.name}
                           width="120"
+                          className="searchinstitute-one-image"
                         />
                       </Link>
                     </div>
-                    <div style={{ paddingLeft: "30px" }}>
+                    <div style={{ paddingLeft: "30px" }} className="searchinstitute-two">
                       <Link
                         to={`/knowMoreInstitute/${institute.id}`}
                         style={{ textDecoration: "none", color: "black" }}
@@ -301,7 +302,7 @@ const SearchInstitute = () => {
                         {institute.state}, {institute.country}
                       </span>
                       <div>
-                        <p className="card-text mt-2">
+                        <p className="card-text mt-2 searchinstitute-two-description">
                           {institute.description}
                         </p>
                       </div>
@@ -310,9 +311,9 @@ const SearchInstitute = () => {
                 </div>
               </Col>
               <Col md={6} lg={6}>
-                <div className="d-flex flex-grow-1 justify-content-between">
+                <div className="d-flex flex-grow-1 justify-content-between searchinstitute-three">
                   <div className="details-div-institute" style={{ width: "70%" }}>
-                    <div className="d-flex align-items-center flex-wrap">
+                    <div className=" searchinstitute-three-list flex-wrap">
                       <Col>
                         <div>
                           <Row style={{ paddingTop: "10px" }}>
@@ -325,7 +326,7 @@ const SearchInstitute = () => {
                             <div style={{ marginTop: "10px" }}>
                               <i className="bi bi-mortarboard" style={{ marginRight: "10px" }}></i>
                               <span style={{ paddingLeft: "20px" }}>
-                                {institute.courses }
+                                {institute.courses } courses offered
                               </span>
                             </div>
                             <div style={{ marginTop: "10px" }}>
@@ -341,15 +342,11 @@ const SearchInstitute = () => {
                       </Col>
                     </div>
                   </div>
-                  <div className="knowmore-button">
+                  <div className="knowmore-button searchinstitute-four">
                     <button
                       className="featured-institute-button"
                       onClick={() => handleKnowMoreInstitute(institute)}
-                      style={{
-                        marginTop: "90px",
-                        width: "150px",
-                        marginLeft: "50px"
-                      }}
+
                     >
                       Know More
                     </button>
@@ -382,6 +379,9 @@ const SearchInstitute = () => {
       {/* Top Row - Dropdowns */}
       <Row className="align-items-center mb-2 mb-md-0">
         {/* Country Dropdown */}
+       
+       
+       
         <Col xs={12} sm={4} md={3} lg={2} className="mb-2 mb-sm-0">
           <ButtonGroup className="w-100">
             <Dropdown as={ButtonGroup} className="w-100">

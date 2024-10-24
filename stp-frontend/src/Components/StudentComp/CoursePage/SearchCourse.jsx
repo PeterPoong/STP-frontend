@@ -383,7 +383,7 @@ const SearchCourse = () => {
           {program.featured && <div className="featured-badge">Featured</div>}
           {/* Program card content - same as your original design */}
           <div className="card-body d-flex flex-column flex-md-row align-items-start">
-            <Row>
+            <Row className="coursepage-row">
               <Col md={6} lg={6}>
                 <div className="card-image mb-3 mb-md-0">
                   <h5 className="card-title">
@@ -391,15 +391,16 @@ const SearchCourse = () => {
                       {program.name}
                     </Link>
                   </h5>
-                  <div className="d-flex align-items-center">
-                    <div style={{ paddingLeft: "20px" }}>
+                  <div className="coursepage-searchcourse-courselist-first">
+                    <div classname="coursepage-img" style={{ paddingLeft: "20px" }}>
                       <img
                         src={`${baseURL}storage/${program.logo}`}
                         alt={program.school_name}
                         width="100"
+                        className="coursepage-img-size"
                       />
                     </div>
-                    <div style={{ paddingLeft: "30px" }}>
+                    <div classname="coursepage-coursename" style={{ paddingLeft: "30px" }}>
                       <h5 className="card-text">{program.school_name}</h5>
                       <i className="bi bi-geo-alt" style={{ marginRight: "10px", color: "#AAAAAA" }}></i>
                       <span style={{ paddingLeft: "10px" }}>
@@ -410,9 +411,9 @@ const SearchCourse = () => {
                 </div>
               </Col>
               <Col md={6} lg={6}>
-                <div className="d-flex flex-grow-1 justify-content-between">
-                  <div className="details-div" style={{ width: "60%" }}>
-                    <div className="d-flex align-items-center flex-wrap">
+                <div className="d-flex flex-grow-1 justify-content-between coursepage-searchcourse-courselist-second ">
+                  <div className="details-div" >
+                    <div className=" flex-wrap coursepage-info-one">
                       <Col>
                         <div>
                           <Row style={{ paddingTop: "10px" }}>
@@ -443,7 +444,7 @@ const SearchCourse = () => {
                   </div>
                   <div className="fee-apply">
                     <div className="fee-info text-right" style={{ marginTop: "25px" }}>
-                      <p style={{ fontSize: "14px", marginRight: "10px" }}>
+                      <p style={{ fontSize: "14px" }} className="coursepage-estimatefee">
                         estimate fee<br />
                         <p style={{ fontSize: "16px" }}>
                           <strong>RM </strong> {program.cost}
@@ -452,7 +453,7 @@ const SearchCourse = () => {
                     </div>
                     <div className="apply-button">
                       <button
-                        className="featured"
+                        className="featured coursepage-applybutton"
                         onClick={() => handleApplyNow(program)}
                       >
                         Apply Now

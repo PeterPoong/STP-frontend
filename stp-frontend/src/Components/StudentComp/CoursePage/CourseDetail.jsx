@@ -338,7 +338,7 @@ const CourseDetail = () => {
                           {/* Use dangerouslySetInnerHTML to render HTML safely */}
                           <div
                             dangerouslySetInnerHTML={{
-                              __html: program.schoolShortDescription,
+                              __html: program.description,
                             }}
                           />
                         </div>
@@ -348,7 +348,7 @@ const CourseDetail = () => {
                             {/* Use dangerouslySetInnerHTML to render HTML safely */}
                             <div
                               dangerouslySetInnerHTML={{
-                                __html: program.schoolShortDescription,
+                                __html: program.description,
                               }}
                             />
                           </div>

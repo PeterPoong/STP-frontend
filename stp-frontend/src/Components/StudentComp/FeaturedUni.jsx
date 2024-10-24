@@ -100,7 +100,7 @@ const FeaturedUni = () => {
             ></i>
           </InputGroup>
         </Form>
-        <div className="button-container mt-3 d-flex justify-content-center flex-wrap">
+        <div className=" featured-uni-button-group">
           <button
             className="diploma-button mb-2 mx-2"
             onClick={() => handleNavigationClick("Diploma", null)}
