@@ -1124,7 +1124,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
         </div>
 
         <div className="mb-4 px-5 mt-4">
-          <p className="fw-normal">Feedback to Student:</p>
+          <p className="feedback-p-school fw-normal">Feedback to Student:</p>
           {isPending ? (
             <textarea
               id="feedback"
@@ -1142,7 +1142,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
         </div>
 
         {isPending && !currentAction && (
-          <div className="d-flex justify-content-end px-5 ">
+          <div className="mobile-action-school d-flex justify-content-end px-5 ">
             <Button
 
               className="me-2 border border-0"
@@ -1222,7 +1222,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
 
           <div className="application-summary-container-inside">
             <div className="application-summary-container-inside rounded">
-              <div className="applicant-summary-header  border border-bottom">
+              <div className="applicant-summary-header border border-bottom">
                 <div className="applicant-info">
                   <img src={`${import.meta.env.VITE_BASE_URL}storage/${basicInfo?.student_profilePic ||""}`}
                     onError={(e) => {
@@ -1246,38 +1246,41 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
                     applicantDetails?.form_status === 3 ? 'Rejected' :
                       'Pending'}
                 </span>
-                <Button className="applicant-chat-button d-flex align-items-center justify-content-center text-nowrap"
+                <Button className="applicant-chat-button align-items-center justify-content-center text-nowrap"
                   onClick={handleWhatsAppClick}>
                   <BsWhatsapp className="me-2 whatsapp-button text-nonwrap" size={20} />
                   Chat on WhatsApp
                 </Button>
               </div>
-              <div className="summary-tabs d-flex flex-wrap px-4">
-                <Button
-                  variant="link"
-                  className={activeTab === 'info' ? 'active' : ''}
-                  onClick={() => setActiveTab('info')}
-                >
-                  Student Info
-                </Button>
-                <Button
-                  variant="link"
-                  className={activeTab === 'documents' ? 'active' : ''}
-                  onClick={() => setActiveTab('documents')}
-                  disabled={accountType !== 65}
-                  style={{ pointerEvents: accountType !== 65 ? 'none' : 'auto', opacity: accountType !== 65 ? 0.6 : 1 }}
+              <div className="summary-tabs d-flex flex-wrap px-2 py-2 justify-content-center">
+  <Button
+    variant="link"
+    className={`tab-button ${activeTab === 'info' ? 'active' : ''}`}
+    onClick={() => setActiveTab('info')}
+  >
+    Student Info
+  </Button>
+  <Button
+    variant="link"
+    className={`tab-button ${activeTab === 'documents' ? 'active' : ''}`}
+    onClick={() => setActiveTab('documents')}
+    disabled={accountType !== 65}
+    style={{
+      pointerEvents: accountType !== 65 ? 'none' : 'auto',
+      opacity: accountType !== 65 ? 0.6 : 1,
+    }}
+  >
+    Related Documents
+  </Button>
+  <Button
+    variant="link"
+    className={`tab-button ${activeTab === 'accept-reject' ? 'active' : ''}`}
+    onClick={() => setActiveTab('accept-reject')}
+  >
+    Accept/Reject Application
+  </Button>
+</div>
 
-                >
-                  Related Documents
-                </Button>
-                <Button
-                  variant="link"
-                  className={activeTab === 'accept-reject' ? 'active' : ''}
-                  onClick={() => setActiveTab('accept-reject')}
-                >
-                  Accept/Reject Application
-                </Button>
-              </div>
               {activeTab === 'info' && (
                 <div className="summary-content">
                   <div className="basic-info m-3 shadow-lg p-4 rounded-5">
@@ -1383,61 +1386,65 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
 
                   {accountType === 65 ? ( // Premium: Show Co-Curriculum and Achievements
                     <>
-                      <div className="co-curriculum m-3 shadow-lg p-4 rounded-5">
-                        <p className="text-secondary fw-bold border-bottom border-2 pb-3">Co-curriculum</p>
-                        <div className="activities-grid" style={{ maxHeight: '15rem', overflowY: 'auto' }}>
-                          {coCurriculum.length > 0 ? (
-                            coCurriculum.map((activity, index) => (
-                              <div key={index} className="activity-item d-flex flex-wrap justify-content-between align-items-start py-2">
-                                <div className="col-12 col-sm-3">
-                                  <p className="mb-0 name-restrict"> <strong>{activity.club_name||""}</strong></p>
-                                  <p className="mb-0 text-muted name-restrict">{activity.location||""}</p>
-                                </div>
-                                <div className="col-6 col-sm-3 text-start text-sm-center">
-                                  <p className="mb-0">{activity.year||""}</p>
-                                </div>
-                                <div className="col-6 col-sm-3 text-end name-restrict">
-                                  {/* Updated to use student_position instead of position */}
-                                  <span
-                                  className={`position py-1 px-2 rounded-pill`}
-                                  style={getPositionStyle(activity.student_position)}
-                                >
-                                  {activity.student_position}
-                                </span>
-                                </div>
-                              </div>
-                            ))
-                          ) : (
-                            <p className="text-center text-muted">No co-curricular activities added yet.</p>
-                          )}
-                        </div>
-                      </div>
-                      <div className="achievements m-3 shadow-lg p-4 rounded-5">
-                        <p className="text-secondary fw-bold border-bottom border-2 pb-3">Achievements</p>
-                        <div className="achievements-grid" style={{ maxHeight: '15rem', overflowY: 'auto' }}>
-                          {achievements.length > 0 ? (
-                            achievements.map((achievement, index) => (
-                              <div key={index} className="achievement-item d-flex flex-wrap justify-content-between align-items-start py-2">
-                                <div className="col-12 col-sm-4">
-                                  <p className="mb-0 name-restrict"><strong>{achievement.achievement_name ||""}</strong></p>
-                                  <p className="mb-0 name-restrict text-muted">{achievement.awarded_by ||""}</p>
-                                </div>
-                                <div className="col-6 col-sm-3 text-start text-sm-center">
-                                  <p className="mb-0">{achievement.date ||""}</p>
-                                </div>
-                                <div className="col-6 col-sm-5 mx-auto text-end">
-                                  <span className={`position ${(achievement.title?.core_metaName?.toLowerCase() ?? '').replace(/\s+/g, '-')} py-1 px-2 rounded-pill`} >
-                                    {achievement.title?.core_metaName || 'No Title'}
-                                  </span>
+        
+        <div className="row">
+  <div className="col-12 col-md-6 mb-3">
+    <div className="co-curriculum m-3 shadow-lg p-4 rounded-5">
+      <p className="text-secondary fw-bold border-bottom border-2 pb-3">Co-curriculum</p>
+      <div className="activities-grid" style={{ maxHeight: '15rem', overflowY: 'auto' }}>
+        {coCurriculum.length > 0 ? (
+          coCurriculum.map((activity, index) => (
+            <div key={index} className="activity-item d-flex flex-wrap justify-content-between align-items-start py-2">
+              <div className="col-12 col-sm-3">
+                <p className="mb-0 name-restrict"><strong>{activity.club_name || ""}</strong></p>
+                <p className="mb-0 text-muted name-restrict">{activity.location || ""}</p>
+              </div>
+              <div className="col-6 col-sm-3 text-start text-sm-center">
+                <p className="mb-0">{activity.year || ""}</p>
+              </div>
+              <div className="col-6 col-sm-3 text-end name-restrict">
+                <span className={`position py-1 px-2 rounded-pill`} style={getPositionStyle(activity.student_position)}>
+                  {activity.student_position}
+                </span>
+              </div>
+            </div>
+          ))
+        ) : (
+          <p className="text-center text-muted">No co-curricular activities added yet.</p>
+        )}
+      </div>
+    </div>
+  </div>
 
-                                </div>
-                              </div>
-                            ))
-                          ) : (
-                            <p className="text-center text-muted">No achievements added yet.</p>
-                          )}
-                        </div>
-                      </div>
+  <div className="col-12 col-md-6 mb-3">
+    <div className="achievements m-3 shadow-lg p-4 rounded-5">
+      <p className="text-secondary fw-bold border-bottom border-2 pb-3">Achievements</p>
+      <div className="achievements-grid" style={{ maxHeight: '15rem', overflowY: 'auto' }}>
+        {achievements.length > 0 ? (
+          achievements.map((achievement, index) => (
+            <div key={index} className="achievement-item d-flex flex-wrap justify-content-between align-items-start py-2">
+              <div className="col-12 col-sm-4">
+                <p className="mb-0 name-restrict"><strong>{achievement.achievement_name || ""}</strong></p>
+                <p className="mb-0 name-restrict text-muted">{achievement.awarded_by || ""}</p>
+              </div>
+              <div className="col-6 col-sm-3 text-start text-sm-center">
+                <p className="mb-0">{achievement.date || ""}</p>
+              </div>
+              <div className="col-6 col-sm-5 mx-auto text-end">
+                <span className={`position ${(achievement.title?.core_metaName?.toLowerCase() ?? '').replace(/\s+/g, '-')} py-1 px-2 rounded-pill`}>
+                  {achievement.title?.core_metaName || 'No Title'}
+                </span>
+              </div>
+            </div>
+          ))
+        ) : (
+          <p className="text-center text-muted">No achievements added yet.</p>
+        )}
+      </div>
+    </div>
+  </div>
+</div>
+
                     </>
 
                   ) : ( // Basic: Show overlay

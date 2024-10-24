@@ -149,7 +149,7 @@ const Dashboard = () => {
       <Container>
         <Row className="mt-5">
           <Col md={8}>
-            <h5 className="ms-4">
+            <h5 className="ms-md-4">
               <span style={{ color: "#B71A18", fontWeight: "bold" }}>
                 {typeOfFilter}
               </span>{" "}
@@ -162,7 +162,7 @@ const Dashboard = () => {
               <Form.Group controlId="formDropdown">
                 <Form.Label className="d-none">Select Duration</Form.Label>
                 <Form.Select
-                  className="float-end"
+                  className="float-end-md float-start"
                   aria-label="Select Duration"
                   style={{ width: "150px" }}
                   value={durationFilter} // bind the value to the state
@@ -182,12 +182,14 @@ const Dashboard = () => {
             </Form>
           </Col>
         </Row>
-        <Row className="mt-4">
+        <Row className="mt-4 d-md-none">
+          <row className="d-flex mb-2">
           {/* Statistics */}
-          <Col md={2} className="border shadow-sm rounded mx-4 ms-5">
+          <Col xs={6} md={4} className="border shadow-sm rounded mx-md-4 ms-md-5">
             <p
-              className="mt-2"
-              style={{ fontSize: "0.8rem", color: "#B71A18" }}
+              className="mt-2 p-2"
+              style={{ fontSize: "0.8rem", color: "#B71A18", textAlign: "center" }}
+
             >
               NEW APPLICATIONS
             </p>
@@ -203,10 +205,10 @@ const Dashboard = () => {
             )}
           </Col>
 
-          <Col md={2} className="border shadow-sm rounded mx-4 ms-5">
+          <Col xs={6} md={4} className="border shadow-sm rounded mx-md-4 ms-2 ms-md-5">
             <p
-              className="mt-2"
-              style={{ fontSize: "0.8rem", color: "#B71A18" }}
+              className="mt-2 p-2"
+              style={{ fontSize: "0.8rem", color: "#B71A18", textAlign: "center" }}
             >
               PENDING APPLICATIONS
             </p>
@@ -221,11 +223,12 @@ const Dashboard = () => {
               </div>
             )}
           </Col>
-
-          <Col md={2} className="border shadow-sm rounded mx-4 ms-5">
+          </row>
+          <row className="d-flex">
+          <Col xs={6} md={4} className="border shadow-sm rounded mx-md-4 ms-md-5">
             <p
-              className="mt-2"
-              style={{ fontSize: "0.8rem", color: "#B71A18" }}
+              className="mt-2 p-2"
+              style={{ fontSize: "0.8rem", color: "#B71A18", textAlign: "center" }}
             >
               ACCEPT APPLICATION
             </p>
@@ -241,10 +244,10 @@ const Dashboard = () => {
             )}
           </Col>
 
-          <Col md={2} className="border shadow-sm rounded mx-4 ms-5">
+          <Col xs={6} md={4} className="border shadow-sm rounded mx-md-4 ms-2 ms-md-5">
             <p
-              className="mt-2"
-              style={{ fontSize: "0.8rem", color: "#B71A18" }}
+              className="mt-2 p-2"
+              style={{ fontSize: "0.8rem", color: "#B71A18", textAlign: "center" }}
             >
               REJECT APPLICATIONS
             </p>
@@ -259,67 +262,173 @@ const Dashboard = () => {
               </div>
             )}
           </Col>
+          </row>
+        </Row>
+        <Row className="mt-md-4 d-md-flex d-none">
+          {/* Statistics */}
+          <Col md={2} className="border shadow-sm rounded mx-md-4 ms-md-5">
+            <p
+              className="mt-2 p-2"
+              style={{ fontSize: "0.8rem", color: "#B71A18", textAlign: "center" }}
+
+            >
+              NEW APPLICATIONS
+            </p>
+            {newApplication !== null ? (
+              <h1 className={styles.applicantNumber}>{newApplication}</h1>
+            ) : (
+              <div className="text-center">
+                <div
+                  className="spinner-border spinner-border-sm"
+                  role="status"
+                ></div>
+              </div>
+            )}
+          </Col>
+
+          <Col md={2} className="border shadow-sm rounded mx-md-4 ms-2 ms-md-5">
+            <p
+              className="mt-2 p-2"
+              style={{ fontSize: "0.8rem", color: "#B71A18", textAlign: "center" }}
+            >
+              PENDING APPLICATIONS
+            </p>
+            {pendingApplication !== null ? (
+              <h1 className={styles.applicantNumber}>{pendingApplication}</h1>
+            ) : (
+              <div className="text-center">
+                <div
+                  className="spinner-border spinner-border-sm"
+                  role="status"
+                ></div>
+              </div>
+            )}
+          </Col>
+          <Col md={2} className="border shadow-sm rounded mx-md-4 ms-md-5">
+            <p
+              className="mt-2 p-2"
+              style={{ fontSize: "0.8rem", color: "#B71A18", textAlign: "center" }}
+            >
+              ACCEPT APPLICATION
+            </p>
+            {acceptApplication !== null ? (
+              <h1 className={styles.applicantNumber}>{acceptApplication}</h1>
+            ) : (
+              <div className="text-center">
+                <div
+                  className="spinner-border spinner-border-sm"
+                  role="status"
+                ></div>
+              </div>
+            )}
+          </Col>
+
+          <Col md={2} className="border shadow-sm rounded mx-md-4 ms-2 ms-md-5">
+            <p
+              className="mt-2 p-2"
+              style={{ fontSize: "0.8rem", color: "#B71A18", textAlign: "center" }}
+            >
+              REJECT APPLICATIONS
+            </p>
+            {rejectApplication !== null ? (
+              <h1 className={styles.applicantNumber}>{rejectApplication}</h1>
+            ) : (
+              <div className="text-center">
+                <div
+                  className="spinner-border spinner-border-sm"
+                  role="status"
+                ></div>
+              </div>
+            )}
+          </Col>
+         
         </Row>
 
         {/* sort by  */}
         <Row className="mt-5 ms-4">
           <h5>Sort By</h5>
         </Row>
-
         <Row>
-          {/* Country */}
-          <Col md={2}>
-            <button
-              className={`${styles.sortButton} ${
-                activeTab === "country" ? styles.active : ""
-              }`}
-              onClick={() => handleTabClick("country")}
-            >
-              <GeoAlt className={styles.iconLarge} />
-              <span>Country</span>
-            </button>
-          </Col>
+<row className="d-flex">
 
-          {/* Age group */}
-          <Col md={2}>
-            <button
-              className={`${styles.sortButton} ${
-                activeTab === "qualification" ? styles.active : ""
-              }`}
-              onClick={() => handleTabClick("qualification")}
-            >
-              <Bookmark className={styles.iconLarge} />
-              <span>Qualification</span>
-            </button>
-          </Col>
+  {/* Country */}
 
-          {/* Gender */}
-          <Col md={2}>
-            <button
-              className={`${styles.sortButton} ${
-                activeTab === "gender" ? styles.active : ""
-              }`}
-              onClick={() => handleTabClick("gender")}
-            >
-              <GenderAmbiguous className={styles.iconLarge} />
-              <span>GENDER</span>
-            </button>
-          </Col>
+    <button
+      className={`${styles.sortButton} ${
+        activeTab === "country" ? styles.active : ""
+      }`}
+      onClick={() => handleTabClick("country")}
+    >
+      <GeoAlt className={styles.iconLarge} />
+      <span>Country</span>
+    </button>
 
-          {/* Programs */}
-          <Col md={2}>
-            <button
-              className={`${styles.sortButton} ${
-                activeTab === "programs" ? styles.active : ""
-              }`}
-              onClick={() => handleTabClick("programs")}
-            >
-              <Book className={styles.iconLarge} />
-              <span>PROGRAMS</span>
-            </button>
-          </Col>
-        </Row>
 
+  {/* Age group */}
+ 
+    <button
+      className={`${styles.sortButton} ${
+        activeTab === "qualification" ? styles.active : ""
+      }`}
+      onClick={() => handleTabClick("qualification")}
+    >
+      <Bookmark className={styles.iconLarge} />
+      <span>Qualification</span>
+    </button>
+    <div className="d-none d-md-flex">
+    <button
+      className={`${styles.sortButton1} ${
+        activeTab === "gender" ? styles.active : ""
+      }`}
+      onClick={() => handleTabClick("gender")}
+    >
+      <GenderAmbiguous className={styles.iconLarge} />
+      <span>Gender</span>
+    </button>
+
+  {/* Programs */}
+  
+    <button
+      className={`${styles.sortButton1} ${
+        activeTab === "programs" ? styles.active : ""
+      }`}
+      onClick={() => handleTabClick("programs")}
+    >
+      <Book className={styles.iconLarge} />
+      <span>Programs</span>
+    </button>
+
+    </div>
+    </row>
+    <row className="d-flex d-md-none">
+
+  {/* Gender */}
+
+    <button
+      className={`${styles.sortButton} ${
+        activeTab === "gender" ? styles.active : ""
+      }`}
+      onClick={() => handleTabClick("gender")}
+    >
+      <GenderAmbiguous className={styles.iconLarge} />
+      <span>Gender</span>
+    </button>
+  
+
+  {/* Programs */}
+  
+    <button
+      className={`${styles.sortButton} ${
+        activeTab === "programs" ? styles.active : ""
+      }`}
+      onClick={() => handleTabClick("programs")}
+    >
+      <Book className={styles.iconLarge} />
+      <span>Programs</span>
+    </button>
+
+</row>
+</Row>
         {renderTabContent()}
       </Container>
     </>

@@ -151,7 +151,88 @@
     margin-right: 0;
     margin-bottom: 20px;
   }
+
+  .applicant-title {
+    margin-top: 50px;
+    margin-left: 0;
+  }
+
+  .search-label {
+    display: none;
+  }
+
+  .search-bar {
+    background-color: #fff;
+    width: 100%;
+  }
+
+  .search-filter-container {
+    margin-top: 20px;
+    margin-left: 0;
+  }
+
+  /* Filter dropdown container adjustments */
+  .filter-dropdowns {
+    margin-left: 0;
+    margin-right: 5px;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px; /* Add some spacing between dropdowns */
+  }
+
+  /* Ensure dropdowns are sized properly */
+  .filter-dropdowns .dropdown {
+    flex: 1 1 100%; /* Full width on mobile */
+  }
+
+  .filter-dropdowns .dropdown select {
+    width: 100%; /* Ensure the select box takes full width */
+    padding: 7px 21px 7px 6px !important;
+    font-size: 14px !important;
+    text-align: center;
+  }
+  .application-status{
+    height: 38% !important;
+  }
+  .awards-curriculum{
+    margin-left: 20px !important;
+    gap: 0;
+  }
+  .separator{
+    margin: 20px -7px 3px 21px !important;
+  }
+.curriculum{
+padding-left: 0px !important;
+margin-left: -7px;
 }
+.awards{
+  padding-right: 0px !important;
+}
+
+.awards-number{
+  text-align: center;
+}
+.curriculum-number{
+  text-align: center;
+}
+.awards-label{
+  text-align: center;
+}
+.reject-accept{
+  display: block !important;
+}
+.curriculum-label{
+  text-align: center;
+}
+  /* For larger mobile screens (like tablets), reduce width */
+  @media (min-width: 576px) and (max-width: 768px) {
+    .filter-dropdowns .dropdown {
+      flex: 1 1 calc(33.3333% - 10px); /* 3 dropdowns in one row */
+    }
+  }
+}
+
 
 .information {
   width: 84%;
