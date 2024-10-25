@@ -17,6 +17,7 @@ import "react-phone-input-2/lib/style.css";
 import { Eye, EyeOff } from "react-feather";
 import "../../css/StudentPortalStyles/StudentPortalLoginForm.css";
 import "../../css/StudentPortalStyles/StudentButtonGroup.css";
+import Login from "./Login";
 
 const StudentPortalLogin = () => {
   const [password, setPassword] = useState("");
@@ -84,6 +85,109 @@ const StudentPortalLogin = () => {
   /*end*/
 
   /*Longin api*/
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   setLoginStatus(null);
+  //   setError("");
+
+  //   const formData = {
+  //     password: password,
+  //     country_code: `+${countryCode}`,
+  //     contact_number: phone.slice(countryCode.length),
+  //   };
+
+  //   //console.log("Sending login data:", formData);
+  //   fetch(`${import.meta.env.VITE_BASE_URL}api/student/login`, {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify(formData),
+  //   })
+  //     .then((response) => {
+  //       if (response.status === 429) {
+  //         throw new Error(
+  //           "The website is currently busy, please try again later."
+  //         );
+  //       }
+  //       if (!response.ok) {
+  //         return response.json().then((err) => Promise.reject(err));
+  //       }
+  //       return response.json();
+  //     })
+  //     .then((data) => {
+  //       //console.log("Full API response:", data);
+  //       if (data.true === true && data.data && data.data.user) {
+  //         //console.log("Login successful:", data);
+  //         setLoginStatus("success");
+
+  //         const studentStatus = data.data.user.student_status;
+  //         const token = data.data.token;
+  //         const userId = data.data.user.id;
+  //         const userName = data.data.user.student_userName;
+  //         if (studentStatus === 3) {
+  //           // Redirect to password reset page with token and user ID
+  //           navigate("/studentPortalResetPassword", {
+  //             state: { token: token, userId: userId },
+  //           });
+  //         } else {
+  //           // Existing login logic
+  //           if (data.data.token) {
+  //             sessionStorage.setItem("token", data.data.token);
+  //             localStorage.setItem("rememberMe", JSON.stringify(rememberMe));
+  //             sessionStorage.setItem("userName", userName)
+  //             if (rememberMe) {
+  //               localStorage.setItem("token", data.data.token);
+  //               localStorage.setItem("rememberedContactNumber", phone.slice(countryCode.length));
+  //               localStorage.setItem("rememberedCountryCode", countryCode);
+  //               localStorage.setItem("rememberedPassword", password);
+  //               localStorage.setItem("userName", userName);
+  //             } else {
+  //               localStorage.removeItem("token");
+  //               localStorage.removeItem("rememberedContactNumber");
+  //               localStorage.removeItem("rememberedCountryCode");
+  //               localStorage.removeItem("rememberedPassword");
+  //               localStorage.setItem("userName", userName);
+  //             }
+
+  //             const userId = data.data.user.id;
+  //             if (userId) {
+  //               const id = userId.toString();
+  //               sessionStorage.setItem("id", id);
+  //               if (rememberMe) {
+  //                 localStorage.setItem("id", id);
+  //               }
+  //             } else {
+  //               console.error("User ID not found in response:", data);
+  //             }
+
+  //             setTimeout(
+  //               () => navigate("/studentPortalBasicInformations"),
+  //               500
+  //             );
+  //           } else {
+  //             console.error("Token not found in response");
+  //             setError(
+  //               "Login successful, but token not received. Please try again."
+  //             );
+  //           }
+  //         }
+  //       } else {
+  //         console.error("Login failed:", data);
+  //         setLoginStatus("failed");
+  //         setError(
+  //           data.message || "Login failed. Please check your credentials."
+  //         );
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error during login:", error);
+  //       setError(error.message || "An error occurred. Please try again later.");
+  //       setLoginStatus("error");
+  //     });
+  // };
+  // /*end*/
+
   const handleSubmit = (e) => {
     e.preventDefault();
     setLoginStatus(null);
@@ -95,7 +199,6 @@ const StudentPortalLogin = () => {
       contact_number: phone.slice(countryCode.length),
     };
 
-    //console.log("Sending login data:", formData);
     fetch(`${import.meta.env.VITE_BASE_URL}api/student/login`, {
       method: "POST",
       headers: {
@@ -115,9 +218,7 @@ const StudentPortalLogin = () => {
         return response.json();
       })
       .then((data) => {
-        //console.log("Full API response:", data);
         if (data.true === true && data.data && data.data.user) {
-          //console.log("Login successful:", data);
           setLoginStatus("success");
 
           const studentStatus = data.data.user.student_status;
@@ -125,7 +226,6 @@ const StudentPortalLogin = () => {
           const userId = data.data.user.id;
           const userName = data.data.user.student_userName;
           if (studentStatus === 3) {
-            // Redirect to password reset page with token and user ID
             navigate("/studentPortalResetPassword", {
               state: { token: token, userId: userId },
             });
@@ -175,7 +275,6 @@ const StudentPortalLogin = () => {
             }
           }
         } else {
-          console.error("Login failed:", data);
           setLoginStatus("failed");
           setError(
             data.message || "Login failed. Please check your credentials."
@@ -183,19 +282,11 @@ const StudentPortalLogin = () => {
         }
       })
       .catch((error) => {
-        console.error("Error during login:", error);
         setError(error.message || "An error occurred. Please try again later.");
         setLoginStatus("error");
       });
   };
   /*end*/
-
-  const handleFacebookLogin = () => {
-    // Redirect to the Facebook login URL
-    window.location.href =
-      // "https://developmentbackend.studypal.my/api/auth/facebook/";
-      `${import.meta.env.VITE_BASE_URL}api/auth/facebook/`;
-  };
 
   return (
     <Container fluid className="h-100">
@@ -327,6 +418,7 @@ const StudentPortalLogin = () => {
                       <p className="text-center text-secondary small">
                         or Login/Signup using
                       </p>
+                      <Login />
                     </Col>
                   </Row>
                   <Row className="justify-content-center">
