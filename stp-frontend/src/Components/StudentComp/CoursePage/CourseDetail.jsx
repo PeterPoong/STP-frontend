@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useRef } from "react";
 import { useParams, useLocation, Link, useNavigate } from "react-router-dom";
 import NavButtons from "../NavButtons";
 import NavButtonsSP from "../../../Components/StudentPortalComp/NavButtonsSP";
@@ -20,6 +20,8 @@ const baseURL = import.meta.env.VITE_BASE_URL;
 const courseDetailAPI = `${baseURL}api/student/courseDetail`;
 
 const CourseDetail = () => {
+  const [contentHeight, setContentHeight] = useState(0);
+  const contentRef = useRef(null);
   const [openDescription, setOpenDescription] = useState(false);
   const [openRequirement, setOpenRequirement] = useState(false);
   const [openAboutInstitute, setOpenAboutInstitute] = useState(false);
@@ -32,6 +34,12 @@ const CourseDetail = () => {
 
   const [showSwiperModal, setShowSwiperModal] = useState(false);
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
+
+  const handleContentHeight = () => {
+    if (contentRef.current) {
+      setContentHeight(contentRef.current.scrollHeight);
+    }
+  };
 
   const openSwiperModal = (index) => {
     setActivePhotoIndex(index);
@@ -104,12 +112,12 @@ const CourseDetail = () => {
       })
         .then((response) => response.json())
         .then((data) => {
-         // console.log("Fetched Course Data:", data);
+          // console.log("Fetched Course Data:", data);
           if (data && data.data && Array.isArray(data.data)) {
             const selectedProgram = data.find(
               (item) => item.id === parseInt(id)
             );
-           // console.log("Selected Program:", selectedProgram);
+            // console.log("Selected Program:", selectedProgram);
             setPrograms(selectedProgram ? [selectedProgram] : []);
           } else {
             console.error("Invalid data structure:");
@@ -131,8 +139,8 @@ const CourseDetail = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-       // console.log("Fetched Featured Courses:", data.data);
-       // console.log('Program school photo:', program.schoolPhoto);
+        // console.log("Fetched Featured Courses:", data.data);
+        // console.log('Program school photo:', program.schoolPhoto);
         if (data && data.success && Array.isArray(data.data)) {
           setFeaturedCourses(data.data);
         } else {
@@ -153,6 +161,16 @@ const CourseDetail = () => {
       </div>
     );
   }
+
+   // Function to handle displaying more courses
+   const handleViewMore = () => {
+    setExpanded(!expanded); // Toggle collapse state
+    if (!expanded) {
+      setVisibleCourses(courses.length); // Show all courses when expanded
+    } else {
+      setVisibleCourses(5); // Show only 5 courses when collapsed
+    }
+  };
 
   return (
     <div style={{ backgroundColor: "#F5F4F4" }}>
@@ -184,8 +202,8 @@ const CourseDetail = () => {
                     alt="Program"
                     className="img-thumbnail apply-now-program-image"
                     style={{
-                      height:"100%",
-                      borderRadius:"8px",
+                      height: "100%",
+                      borderRadius: "8px",
                       maxWidth: "auto",
                       marginLeft: "30px",
                     }}
@@ -338,7 +356,7 @@ const CourseDetail = () => {
                           {/* Use dangerouslySetInnerHTML to render HTML safely */}
                           <div
                             dangerouslySetInnerHTML={{
-                              __html: program.schoolShortDescription,
+                              __html: program.description,
                             }}
                           />
                         </div>
@@ -348,7 +366,7 @@ const CourseDetail = () => {
                             {/* Use dangerouslySetInnerHTML to render HTML safely */}
                             <div
                               dangerouslySetInnerHTML={{
-                                __html: program.schoolShortDescription,
+                                __html: program.description,
                               }}
                             />
                           </div>
@@ -394,7 +412,7 @@ const CourseDetail = () => {
                                 __html: program.requirement,
                               }}
                             />
-                            
+
                           </div>
                         </Collapse>
                       )}
@@ -420,8 +438,13 @@ const CourseDetail = () => {
               <div
                 style={{
                   position: "relative",
-                  marginBottom: openAboutInstitute ? "20px" : "0px",
+                  top: 0,
+                  left: 0,
+                  zIndex: 0,
+                  marginBottom: openAboutInstitute ? "1rem" : "0px",
                   marginTop: "10%",
+                  overflow: "hidden",
+                  transition: "all 0.5s ease", // Added transition for smooth effect
                 }}
               >
                 {/* Background Image */}
@@ -431,23 +454,39 @@ const CourseDetail = () => {
                     top: 0,
                     left: 0,
                     zIndex: 0,
+                    borderRadius: '1rem',
                     width: "100%",
-                    height: openAboutInstitute ? "600px" : "300px",
+                    height: openAboutInstitute ? `${contentHeight + 500}px` : "25rem", 
                     overflow: "hidden",
                     transition: "height 0.5s ease",
                   }}
                 >
-                  <div className="cover-photo">
+                   <div style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: openAbout ? "20rem" : "100%", // This creates the partial reveal effect
+                    transition: "height 0.5s ease",
+                  }}>
                     <img
-                      src={
+                       src={
                         program.coverPhoto
                           ? `${baseURL}storage/${program.coverPhoto}`
                           : headerImage
                       }
                       alt="Header"
-                      className="cover-image"
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "fill",
+                        objectPosition: "center top", // Anchor image to top
+                        transition: "transform 0.5s ease",
+                        transform: openAbout ? "scale(1)" : "scale(1.1)", // Subtle zoom effect
+                      }}
                     />
                   </div>
+                 
 
                   {/* Card */}
                   <div
@@ -458,6 +497,9 @@ const CourseDetail = () => {
                       margin: "0 auto",
                       zIndex: 1,
                       position: "absolute",
+                      backgroundColor: "white",
+                      boxShadow: "0 -4px 10px rgba(0,0,0,0.1)",
+                      borderRadius: "20px 20px 0 0",
                     }}
                   >
                     <div className="card-body" style={{ padding: "50px" }}>
@@ -470,7 +512,15 @@ const CourseDetail = () => {
                           </div>
                         </Col>
                         <Col md={12}>
-                          <div style={{ zIndex: 1 }}>
+                        <div
+                            ref={contentRef}
+                            style={{
+                              zIndex: 1,
+                              maxHeight: openAboutInstitute ? "none" : "100px",
+                              overflow: "hidden",
+                              transition: "max-height 0.5s ease",
+                            }}
+                          >
                             <div
                               dangerouslySetInnerHTML={{
                                 __html: program.schoolLongDescription,
@@ -488,11 +538,21 @@ const CourseDetail = () => {
                         </Col>
                         <Col className="d-flex justify-content-center">
                           <Button
-                            style={{ textDecoration: "none" }}
-                            variant="link"
-                            onClick={() =>
-                              setOpenAboutInstitute(!openAboutInstitute)
-                            }
+                            style={{
+                              textDecoration: "none",
+                              color: "#007bff",
+                              background: "none",
+                              border: "none",
+                              marginTop: "20px",
+                              cursor: "pointer",
+                            }}
+                            onClick={() => {
+                              setOpenAboutInstitute(!openAboutInstitute);
+                              // Add a small delay to ensure the content is rendered before measuring
+                              setTimeout(() => {
+                                handleContentHeight();
+                              }, 0);
+                            }}
                             aria-controls="collapse-about-institute"
                             aria-expanded={openAboutInstitute}
                           >
@@ -530,7 +590,7 @@ const CourseDetail = () => {
                           objectFit: "cover",
                         }}
                         onError={(e) => {
-                        //  console.log('Image failed to load:', e.target.src);
+                          //  console.log('Image failed to load:', e.target.src);
                           e.target.src = studypal12;
                         }}
                       />
@@ -611,7 +671,7 @@ const CourseDetail = () => {
                               maxHeight: "70vh",
                             }}
                             onError={(e) => {
-                           //   console.log('Modal image failed to load:', e.target.src);
+                              //   console.log('Modal image failed to load:', e.target.src);
                               e.target.src = studypal12;
                             }}
                           />
@@ -682,7 +742,7 @@ const CourseDetail = () => {
                           }}
                           onClick={() => openSwiperModal(index)}
                           onError={(e) => {
-                           // console.log('Modal image failed to load:', e.target.src);
+                            // console.log('Modal image failed to load:', e.target.src);
                             e.target.src = studypal12;
                           }}
                         />

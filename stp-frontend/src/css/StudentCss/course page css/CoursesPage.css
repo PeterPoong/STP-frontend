@@ -1,3 +1,22 @@
+.coursepage-searchcourse-courselist-first
+{
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  margin-top:1rem;
+}
+
+.coursepage-info-one
+{
+  display: flex;
+  align-items: center;
+}
+
+.coursepage-estimatefee
+{
+  margin-right: 10px;;
+}
+
 .apply-button .featured {
   margin-left: 10px;
   background-color: #B71A18;
@@ -452,6 +471,11 @@
   border: none;
 }
 
+.details-div
+{
+  width:60%;
+}
+
 @media (max-width: 768px) {
   .pagination-item, .pagination-arrow {
     padding: 0.5rem;
@@ -575,45 +599,89 @@
   }
 }
 
-
-/* Responsive adjustments for smaller screens */
-@media (max-width: 768px) {
-  .blankslate-courses {
-    padding: 1rem; /* Reduce padding for smaller screens */
-  }
-
-  .blankslate-courses-body {
-    font-size: 0.9rem; /* Slightly reduce text size */
-    margin-bottom: 0.75rem; /* Adjust spacing */
-  }
-
-  .blankslate-courses-top-img {
-    max-width: 80px; /* Reduce image size */
-    margin-bottom: 0.75rem;
-  }
-
-  .blankslate-courses-actions .btn {
-    width: 100%; /* Buttons take full width */
-    margin: 0.25rem 0; /* Adjust margins for buttons */
-  }
+@media (max-width: 426px)
+{
+  .coursepage-searchcourse-courselist-second
+{
+  flex-direction: column;
 }
 
-@media (max-width: 480px) {
-  .blankslate-courses {
-    padding: 0.5rem; /* Further reduce padding */
-  }
+.coursepage-img
+{
+  width:10rem;
+}
 
-  .blankslate-courses-body {
-    font-size: 0.8rem; /* Further reduce text size */
-    margin-bottom: 0.5rem;
-  }
+.coursepage-img-size
+{
+  min-width:-webkit-fill-available;
+}
 
-  .blankslate-courses-top-img {
-    max-width: 60px; /* Further reduce image size */
-  }
+.coursepage-coursename
+{
+  margin-top:1rem;
+}
 
-  .blankslate-courses-actions .btn {
-    width: 100%; /* Ensure buttons are full width */
-    margin: 0.25rem 0; /* Keep margins compact */
-  }
+.details-div{
+  border-top:1px solid #c9c9c9;
+  border-bottom:1px solid #c9c9c9;
+}
+
+.coursepage-info-one
+{
+  padding:0;
+  margin:1rem 0;
+}
+
+.fee-info
+{
+  text-align:center;
+}
+
+.fee-apply{
+  text-align: center;
+}
+
+.fee-apply
+{
+  margin-top:25px;
+  text-align:center;
+}
+
+.coursepage-applybutton
+{
+
+  width:10rem;
+}
+
+.apply-button .featured
+{
+margin-left:0;
+}
+.details-div{
+  width:100%;
+}
+
+.coursepage-info-one
+{
+  align-self:center;
+  padding:0;
+}
+.coursepage-searchcourse-courselist-first
+{
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  margin-top:1rem;
+}
+
+.coursepage-row
+{
+  width:-webkit-fill-available;
+}
+
+.coursepage-seaerchcourse-courselist-list
+{
+  text-align: center;
+}
+
 }

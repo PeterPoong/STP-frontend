@@ -36,6 +36,8 @@ const NavigationBar = () => {
     localStorage.removeItem("userName");
     sessionStorage.removeItem("userName");
     sessionStorage.removeItem("lastAppliedCourseId");
+    sessionStorage.setItem("id");
+    localStorage.setItem("id");
     setHasToken(false);
     navigate("/");
   };
@@ -69,7 +71,7 @@ const NavigationBar = () => {
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="mx-auto">
+          <Nav className="me-auto">
             <Button
               variant="link"
               as={Link}

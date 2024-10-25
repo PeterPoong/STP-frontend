@@ -111,7 +111,9 @@ const SearchInstitute = () => {
     try {
       // Build the request body according to backend expectations
       const requestBody = {
-        country: selectedCountry.id, // Single country ID as required
+        country: selectedCountry.id,
+        page: currentPage, // Send current page
+        per_page: 10, // Single country ID as required
       };
 
       // Add university/institute category if selected
@@ -168,7 +170,8 @@ const SearchInstitute = () => {
 
       if (result.success) {
         setInstitutes(result.data || []);
-        setTotalPages(Math.ceil((result.total || 0) / itemsPerPage));
+        setCurrentPage(result.current_page);
+        setTotalPages(result.last_page);
       } else {
         throw new Error(result.message || "Failed to fetch institutes");
       }
@@ -179,6 +182,7 @@ const SearchInstitute = () => {
       setLoading(false);
     }
   };
+
   // Initial Load
   useEffect(() => {
     fetchCountries();
@@ -252,6 +256,81 @@ const SearchInstitute = () => {
     });
   };
 
+  // Update the pagination handling functions
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // Replace your current pagination JSX with this updated version
+  const renderPagination = () => {
+    if (!institutes.length || totalPages <= 1) return null;
+
+    return (
+      <div className="d-flex justify-content-end mt-4">
+        <Pagination>
+          <Pagination.Prev
+            onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+            disabled={currentPage === 1}
+          />
+
+          {/* First page */}
+          {currentPage > 2 && (
+            <>
+              <Pagination.Item onClick={() => handlePageChange(1)}>
+                1
+              </Pagination.Item>
+              {currentPage > 3 && <Pagination.Ellipsis />}
+            </>
+          )}
+
+          {/* Pages around current page */}
+          {Array.from({ length: totalPages }, (_, i) => i + 1)
+            .filter((page) => {
+              if (totalPages <= 5) return true;
+              return (
+                Math.abs(page - currentPage) <= 1 ||
+                page === 1 ||
+                page === totalPages
+              );
+            })
+            .map((page, index, array) => {
+              // Add ellipsis where there are gaps
+              if (index > 0 && page - array[index - 1] > 1) {
+                return (
+                  <React.Fragment key={`ellipsis-${page}`}>
+                    <Pagination.Ellipsis />
+                    <Pagination.Item
+                      active={page === currentPage}
+                      onClick={() => handlePageChange(page)}
+                    >
+                      {page}
+                    </Pagination.Item>
+                  </React.Fragment>
+                );
+              }
+              return (
+                <Pagination.Item
+                  key={page}
+                  active={page === currentPage}
+                  onClick={() => handlePageChange(page)}
+                >
+                  {page}
+                </Pagination.Item>
+              );
+            })}
+
+          <Pagination.Next
+            onClick={() =>
+              handlePageChange(Math.min(totalPages, currentPage + 1))
+            }
+            disabled={currentPage === totalPages}
+          />
+        </Pagination>
+      </div>
+    );
+  };
+
   const renderInstitutes = () => {
     if (!institutes.length) {
       return (
@@ -281,19 +360,23 @@ const SearchInstitute = () => {
               <Col md={6} lg={6}>
                 <div className="card-image mb-3 mb-md-0">
                   <div
-                    className="d-flex"
+                    className="d-flex searchinstitute-one"
                     style={{ width: "100%", marginTop: "10px" }}
                   >
-                    <div style={{ paddingLeft: "10px" }}>
+                    <div
+                      style={{ paddingLeft: "10px" }}
+                      className="searchinstitute-one-linkimage"
+                    >
                       <Link to={`/knowMoreInstitute/${institute.id}`}>
                         <img
                           src={`${baseURL}storage/${institute.logo}`}
                           alt={institute.name}
                           width="120"
+                          className="searchinstitute-one-image"
                         />
                       </Link>
                     </div>
-                    <div style={{ paddingLeft: "30px" }}>
+                    <div className="searchinstitute-two">
                       <Link
                         to={`/knowMoreInstitute/${institute.id}`}
                         style={{ textDecoration: "none", color: "black" }}
@@ -308,7 +391,7 @@ const SearchInstitute = () => {
                         {institute.state}, {institute.country}
                       </span>
                       <div>
-                        <p className="card-text mt-2">
+                        <p className="card-text mt-2 searchinstitute-two-description">
                           {institute.description}
                         </p>
                       </div>
@@ -317,12 +400,12 @@ const SearchInstitute = () => {
                 </div>
               </Col>
               <Col md={6} lg={6}>
-                <div className="d-flex flex-grow-1 justify-content-between">
+                <div className="d-flex flex-grow-1 justify-content-between searchinstitute-three">
                   <div
                     className="details-div-institute"
                     style={{ width: "70%" }}
                   >
-                    <div className="d-flex align-items-center flex-wrap">
+                    <div className=" searchinstitute-three-list flex-wrap">
                       <Col>
                         <div>
                           <Row style={{ paddingTop: "10px" }}>
@@ -341,10 +424,13 @@ const SearchInstitute = () => {
                                 style={{ marginRight: "10px" }}
                               ></i>
                               <span style={{ paddingLeft: "20px" }}>
-                                {institute.courses}
+                                {institute.courses} courses offered
                               </span>
                             </div>
-                            <div style={{ marginTop: "10px" }}>
+                            <div
+                              style={{ marginTop: "10px" }}
+                              className="d-flex searchinstitute-institutelist-list"
+                            >
                               <i
                                 className="bi bi-calendar2-week"
                                 style={{ marginRight: "10px" }}
@@ -361,15 +447,10 @@ const SearchInstitute = () => {
                       </Col>
                     </div>
                   </div>
-                  <div className="knowmore-button">
+                  <div className="knowmore-button searchinstitute-four">
                     <button
                       className="featured-institute-button"
                       onClick={() => handleKnowMoreInstitute(institute)}
-                      style={{
-                        marginTop: "90px",
-                        width: "150px",
-                        marginLeft: "50px",
-                      }}
                     >
                       Know More
                     </button>
@@ -403,6 +484,7 @@ const SearchInstitute = () => {
       {/* Top Row - Dropdowns */}
       <Row className="align-items-center mb-2 mb-md-0">
         {/* Country Dropdown */}
+
         <Col xs={12} sm={4} md={3} lg={2} className="mb-2 mb-sm-0">
           <ButtonGroup className="w-100">
             <Dropdown as={ButtonGroup} className="w-100">
@@ -839,34 +921,7 @@ const SearchInstitute = () => {
               <>{renderInstitutes()}</>
             )}
           </Col>
-          {/* Pagination */}
-          {institutes.length > 0 && (
-            <Pagination className="d-flex justify-content-end">
-              <Pagination.Prev
-                onClick={() => setCurrentPage((prev) => prev - 1)}
-                disabled={currentPage === 1}
-              >
-                <span aria-hidden="true">&laquo;</span>
-              </Pagination.Prev>
-
-              {[...Array(totalPages)].map((_, index) => (
-                <Pagination.Item
-                  key={index + 1}
-                  active={index + 1 === currentPage}
-                  onClick={() => setCurrentPage(index + 1)}
-                >
-                  {index + 1}
-                </Pagination.Item>
-              ))}
-
-              <Pagination.Next
-                onClick={() => setCurrentPage((prev) => prev + 1)}
-                disabled={currentPage === totalPages}
-              >
-                <span aria-hidden="true">&raquo;</span>
-              </Pagination.Next>
-            </Pagination>
-          )}
+          {renderPagination()}
         </Row>
       </Container>
     </Container>
