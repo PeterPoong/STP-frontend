@@ -36,6 +36,8 @@ const NavigationBar = () => {
     localStorage.removeItem("userName");
     sessionStorage.removeItem("userName");
     sessionStorage.removeItem("lastAppliedCourseId");
+    sessionStorage.setItem("id");
+    localStorage.setItem("id");
     setHasToken(false);
     navigate("/");
   };

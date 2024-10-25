@@ -402,7 +402,7 @@ const SearchInstitute = () => {
                                 {institute.courses} courses offered
                               </span>
                             </div>
-                            <div style={{ marginTop: "10px" }}>
+                            <div style={{ marginTop: "10px" }} className="d-flex searchinstitute-institutelist-list">
                               <i className="bi bi-calendar2-week" style={{ marginRight: "10px" }}></i>
                               <span style={{ paddingLeft: "20px" }}>
                                 {Array.isArray(institute.intake) && institute.intake.length > 0

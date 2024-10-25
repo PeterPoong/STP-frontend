@@ -416,7 +416,7 @@ const SearchCourse = () => {
                     <div className=" flex-wrap coursepage-info-one">
                       <Col>
                         <div>
-                          <Row style={{ paddingTop: "10px" }}>
+                          <Row style={{ paddingTop: "10px" }} className=" coursepage-seaerchcourse-courselist-list">
                             <div>
                               <i className="bi bi-mortarboard" style={{ marginRight: "10px" }}></i>
                               <span style={{ paddingLeft: "20px" }}>{program.qualification}</span>
@@ -429,7 +429,7 @@ const SearchCourse = () => {
                               <i className="bi bi-clock" style={{ marginRight: "10px" }}></i>
                               <span style={{ paddingLeft: "20px" }}>{program.period}</span>
                             </div>
-                            <div style={{ marginTop: "10px" }}>
+                            <div style={{ marginTop: "10px" }} className="d-flex">
                               <i className="bi bi-calendar2-week" style={{ marginRight: "10px" }}></i>
                               <span style={{ paddingLeft: "20px" }}>
                                 {Array.isArray(program.intake) && program.intake.length > 0
