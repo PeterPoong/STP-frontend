@@ -296,13 +296,3 @@ button.confirm:hover{
     top: -1px;
     left: 2px;
 }
-.ellipsis .page-link {
-    background-color: #e9ecef !important; /* Same background color as other links */
-    color: #6c757d !important; /* Same text color */
-    border-radius: 0.25rem; /* Same border radius */
-    padding: 0.5rem 0.75rem; /* Same padding */
-}
-
-.ellipsis .page-link:hover {
-    background-color: #d3d3d3; /* Change color on hover (optional) */
-}

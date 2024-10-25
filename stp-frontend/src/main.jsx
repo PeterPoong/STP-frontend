@@ -1,7 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { GoogleOAuthProvider } from "@react-oauth/google"; // Add this import
 import Home from "./Pages/StudentPages/Home";
 import NotFoundPage from "./Pages/StudentPages/NotFoundPage";
 import KnowMore from "./Pages/StudentPages/KnowMore"; // Import KnowMore component
@@ -61,7 +60,6 @@ import StudentApplyCourses from "./Pages/StudentPortalPages/StudentApplyCourses"
 import StudentApplyCourse from "./Pages/StudentPortalPages/StudentApplyCourse";
 import StudentApplicationSummary from "./Pages/StudentPortalPages/StudentApplicationSummary";
 
-import App from "./App";
 //schoolPortal Page
 import SchoolPortalLogin from "./Pages/SchoolPages/SchoolPortalLogin";
 import SchoolPortalSignup from "./Pages/SchoolPages/SchoolPortalSignup";
@@ -70,11 +68,6 @@ import SchoolPortalForgetPassword from "./Pages/SchoolPages/schoolPortalForgetPa
 import ExistSchool from "./Pages/SchoolPages/ExistSchool";
 import SchoolViewApplicantDetail from "./Pages/SchoolPages/StudentApplicantDetail";
 import SchoolBasicInformation from "./Pages/SchoolPages/SchoolBasicInformation";
-
-import Login from "./Pages/StudentPortalPages/Login";
-
-const clientId =
-  "774436244056-stulhvhickchj7h7i6pnbomgg76dlbo5.apps.googleusercontent.com"; // Replace with your actual Client ID
 
 import FacebookSocialPageRedirectPage from "./Pages/StudentPortalPages/FacebookSocialPageRedirectPage";
 const router = createBrowserRouter([
@@ -286,10 +279,6 @@ const router = createBrowserRouter([
     path: "/studentPortalSignUp",
     element: <StudentPortalSignUp />,
   },
-  {
-    path: "/googleLogin",
-    element: <Login />,
-  },
 
   {
     path: "/studentPortalBasicInformations",
@@ -348,11 +337,8 @@ const router = createBrowserRouter([
   },
 ]);
 
-const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(
-  <GoogleOAuthProvider clientId={clientId}>
-    <React.StrictMode>
-      <RouterProvider router={router} />
-    </React.StrictMode>
-  </GoogleOAuthProvider>
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <RouterProvider router={router} />
+  </React.StrictMode>
 );

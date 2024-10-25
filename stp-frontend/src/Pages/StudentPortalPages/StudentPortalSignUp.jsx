@@ -8,8 +8,6 @@ import studentPortalLoginLogo from "../../assets/StudentPortalAssets/studentPort
 import { Eye, EyeOff } from "react-feather";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
-import Login from './Login';
-import { GoogleLogin } from '@react-oauth/google'; // Correct ES6 import
 
 const StudentPortalSignUp = () => {
   const [name, setName] = useState("");
@@ -435,9 +433,7 @@ const StudentPortalSignUp = () => {
               </div>
               <p className="text-center text-muted small">
                 or Login/Sign Up using
-                <Login />
               </p>
-              
               {/* <Row className="justify-content-center">
                 <Col xs="auto">
                   <button
