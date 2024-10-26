@@ -1,0 +1,79 @@
+.manageAccountContainer {
+  padding: 3rem; /* Larger padding for the container */
+  background-color: #f9f9f9;
+}
+
+.heading {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.description {
+  font-size: 1.4rem;
+  color: #666;
+  margin-bottom: 2.5rem;
+}
+
+.packageRow {
+  gap: 2rem; /* Space between the package columns */
+}
+
+.packageCol {
+  display: flex;
+  justify-content: center;
+}
+
+.packageCard {
+  width: 100%;
+  padding: 3rem;
+  border-radius: 12px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  text-align: left;
+  transition: transform 0.3s ease;
+}
+
+.packageCard:hover {
+  transform: translateY(-8px);
+}
+
+.basicPackage {
+  background-color: #ffffff;
+  border: 3px solid #b71a18;
+}
+
+.premiumPackage {
+  background-color: #b71a18;
+  color: #ffffff;
+}
+
+.packageIcon {
+  width: 60px;
+  margin-bottom: 1.5rem;
+}
+
+.packageName {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 1rem 0;
+  color: inherit;
+}
+
+.packageDetails {
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+  color: inherit;
+}
+
+.packagePrice {
+  font-size: 2rem;
+  font-weight: bold;
+  margin: 1rem 0;
+  color: inherit;
+}
+
+.packagePriceLabel {
+  font-size: 1rem;
+  color: inherit;
+}
