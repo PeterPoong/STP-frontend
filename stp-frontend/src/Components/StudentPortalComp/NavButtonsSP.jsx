@@ -10,41 +10,58 @@ import logo from "../../assets/StudentAssets/nav logo/logo.png";
 import "../../css/StudentPortalStyles/StudentNavBar.css";
 
 const NavigationBar = () => {
-  const [hasToken, setHasToken] = useState(null); // Set initial state to null
+  const [hasToken, setHasToken] = useState(null);
   const [userName, setUserName] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token =
-      sessionStorage.getItem("token") || localStorage.getItem("token");
-    if (token) {
-      setHasToken(true);
-      const storedUserName =
-        sessionStorage.getItem("userName") || localStorage.getItem("userName");
+    const checkAuth = () => {
+      const token = sessionStorage.getItem("token") || localStorage.getItem("token");
+      const storedUserName = sessionStorage.getItem("userName") || localStorage.getItem("userName");
+      
+      setHasToken(!!token);
       if (storedUserName) {
         setUserName(storedUserName);
       }
-    } else {
-      setHasToken(false);
-    }
+    };
+
+    checkAuth();
+    // Add event listener for storage changes
+    window.addEventListener('storage', checkAuth);
+    return () => window.removeEventListener('storage', checkAuth);
   }, []);
 
   const handleLogout = () => {
-    sessionStorage.removeItem("token");
-    sessionStorage.removeItem("loginTimestamp");
-    localStorage.removeItem("token");
-    localStorage.removeItem("userName");
-    sessionStorage.removeItem("userName");
-    sessionStorage.removeItem("lastAppliedCourseId");
+    // Clear session storage
+    const itemsToRemove = [
+      "token",
+      "loginTimestamp",
+      "userName",
+      "lastAppliedCourseId",
+      "id"
+    ];
+    
+    itemsToRemove.forEach(item => {
+      sessionStorage.removeItem(item);
+      localStorage.removeItem(item);
+    });
+
+    // Reset state
     setHasToken(false);
-    navigate("/");
+    setUserName("");
+
+    // Force a re-render by updating localStorage
+    localStorage.setItem('logoutTimestamp', Date.now().toString());
+
+    // Navigate to home page
+    navigate("/", { replace: true });
   };
 
   const handleRoute = () => {
     navigate("/studentPortalBasicInformations");
   };
 
-  if (hasToken === null) return null; // Prevent rendering until check is complete
+  if (hasToken === null) return null;
 
   return (
     <Navbar
@@ -55,20 +72,29 @@ const NavigationBar = () => {
     >
       <Container>
         <Navbar.Brand as={Link} to="/">
-          <img src={logo} alt="Logo" className="logo" />
+          <img 
+            src={logo} 
+            alt="Logo" 
+            className="logo"
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
+            onLoad={(e) => {
+              e.target.previousSibling?.remove();
+            }}
+          />
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="mx-auto">
+          <Nav className="me-auto">
             <Button
               variant="link"
               as={Link}
               to="/courses"
-              className={`nav-link-custom ${
-                location.pathname === "/courses" ||
+              className={`nav-link-custom ${location.pathname === "/courses" ||
                 location.pathname.startsWith("/courses")
-                  ? "active"
-                  : ""
+                ? "active"
+                : ""
               }`}
               style={{ marginLeft: "10px" }}
             >
@@ -78,73 +104,71 @@ const NavigationBar = () => {
               variant="link"
               as={Link}
               to="/institute"
-              className={`nav-link-custom ${
-                location.pathname === "/institute" ||
+              className={`nav-link-custom ${location.pathname === "/institute" ||
                 location.pathname.startsWith("/institute")
-                  ? "active"
-                  : ""
+                ? "active"
+                : ""
               }`}
               style={{ marginLeft: "10px" }}
             >
               Schools
             </Button>
           </Nav>
-          <div className="m-10 navbutton-section">
-            {hasToken ? (
-              <>
-                <Button className="m-0 btnfirst" >Hi !</Button>
-                <Button className="m-0 btnsecond" onClick={handleRoute}>
-                  {userName}
-                </Button>
-                <Button className="m-0 btnfirstlogout" onClick={handleLogout}>
-                  Logout
-                </Button>
-              </>
-            ) : (
-              <>
-                <ButtonGroup className="mb-2 mb-lg-0">
-                  <Dropdown as={ButtonGroup}>
-                    <Dropdown.Toggle
-                      className="nav-button"
-                      id="dropdown-custom-1"
+
+          {hasToken ? (
+            <div className="m-10 navbutton-section-afterlogin">
+              <Button className="m-0 btnfirst">Hi !</Button>
+              <Button className="m-0 btnsecond" onClick={handleRoute}>
+                {userName}
+              </Button>
+              <Button className="m-0 btnfirstlogout" onClick={handleLogout}>
+                Logout
+              </Button>
+            </div>
+          ) : (
+            <div className="m-10 navbutton-section">
+              <ButtonGroup className="mb-2 mb-lg-0">
+                <Dropdown as={ButtonGroup}>
+                  <Dropdown.Toggle
+                    className="nav-button"
+                    id="dropdown-custom-1"
+                  >
+                    Login
+                  </Dropdown.Toggle>
+                  <Dropdown.Menu>
+                    <Dropdown.Item
+                      className="dropdown"
+                      as={Link}
+                      to="/studentPortalLogin"
                     >
-                      Login
-                    </Dropdown.Toggle>
-                    <Dropdown.Menu>
-                      <Dropdown.Item
-                        className="dropdown"
-                        as={Link}
-                        to="/studentPortalLogin"
-                      >
-                        Login as Student
-                      </Dropdown.Item>
-                      <Dropdown.Item as={Link} to="/schoolPortalLogin">
-                        Login as School
-                      </Dropdown.Item>
-                    </Dropdown.Menu>
-                  </Dropdown>
-                </ButtonGroup>
-                <ButtonGroup>
-                  <Dropdown as={ButtonGroup}>
-                    <Dropdown.Toggle
-                      className="nav-button"
-                      id="dropdown-custom-2"
-                    >
-                      Register
-                    </Dropdown.Toggle>
-                    <Dropdown.Menu>
-                      <Dropdown.Item as={Link} to="/studentPortalSignUp">
-                        Register as Student
-                      </Dropdown.Item>
-                      <Dropdown.Item as={Link} to="/register-school">
-                        Register as School
-                      </Dropdown.Item>
-                    </Dropdown.Menu>
-                  </Dropdown>
-                </ButtonGroup>
-              </>
-            )}
-          </div>
+                      Login as Student
+                    </Dropdown.Item>
+                    <Dropdown.Item as={Link} to="/schoolPortalLogin">
+                      Login as School
+                    </Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
+              </ButtonGroup>
+              <ButtonGroup>
+                <Dropdown as={ButtonGroup}>
+                  <Dropdown.Toggle
+                    className="nav-button"
+                    id="dropdown-custom-2"
+                  >
+                    Register
+                  </Dropdown.Toggle>
+                  <Dropdown.Menu>
+                    <Dropdown.Item as={Link} to="/studentPortalSignUp">
+                      Register as Student
+                    </Dropdown.Item>
+                    <Dropdown.Item as={Link} to="/register-school">
+                      Register as School
+                    </Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
+              </ButtonGroup>
+            </div>
+          )}
         </Navbar.Collapse>
       </Container>
     </Navbar>

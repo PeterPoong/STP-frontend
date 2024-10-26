@@ -12,7 +12,6 @@ import VideoSlide from "../../Components/StudentComp/VideoSlide";
 import Footer from "../../Components/StudentComp/Footer";
 import "../../css/StudentCss/homePageStudent/UniversityRow.css";
 import SpcFooter from "../../Components/StudentPortalComp/SpcFooter";
-
 import AOS from "aos";
 import "aos/dist/aos.css";
 
@@ -54,7 +53,6 @@ const Home = () => {
         </div>
         <div>
           <CoursesContainer />
-
           <div>
             <VideoSlide />
           </div>

@@ -74,9 +74,9 @@ const AdminLogin = () => {
         })
         .then(response => response.json())
         .then(data => {
-          console.log('API Response:', data); // Add this line
+        //   console.log('API Response:', data); // Add this line
           if (data.true === true) {
-            console.log('Login successful:', data);
+            // console.log('Login successful:', data);
             const { token, user } = data.data;
             sessionStorage.setItem('token', token);
             sessionStorage.setItem('user', JSON.stringify(user)); // Store user data

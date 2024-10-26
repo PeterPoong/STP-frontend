@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
-
+import React, { useState, useEffect, useCallback } from "react";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 import {
   ButtonGroup,
   Container,
@@ -10,246 +9,469 @@ import {
   Pagination,
   Row,
   Col,
-  Button,
   Spinner,
+  Accordion,
   Alert,
 } from "react-bootstrap";
-import { Link } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "../../../css/StudentCss/institutepage css/Institute.css";
-// import InstituteListing from "./InstituteListing";
-import InstituteListing from "../../../Components/StudentComp/InstitutePage/InstituteListing";
 import CountryFlag from "react-country-flag";
+import "../../../css/StudentCss/institutepage css/Institute.css";
+import StudyPal from "../../../assets/StudentAssets/institute image/StudyPal.png";
 import emptyStateImage from "../../../assets/StudentAssets/emptyStateImage/emptystate.png";
 
 const baseURL = import.meta.env.VITE_BASE_URL;
-
-const apiURL = `${baseURL}api/student/schoolList`;
 const countriesURL = `${baseURL}api/student/countryList`;
-const instituteURL = `${baseURL}api/student/instituteType`;
-const locationAPIURL = `${baseURL}api/student/locationFilterList`;
-
-const qualificationURL = `${baseURL}api/student/qualificationFilterList`;
+const filterURL = `${baseURL}api/student/listingFilterList`;
+const schoolListURL = `${baseURL}api/student/schoolList`;
 
 const SearchInstitute = () => {
-  const [locationFilters, setLocationFilters] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
+  const location = useLocation();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  // Country States
+  const [countries, setCountries] = useState([]);
+  const [selectedCountry, setSelectedCountry] = useState(null);
+  const [countryFilter, setCountryFilter] = useState("");
+
+  // Filter States
+  const [filterData, setFilterData] = useState({
+    state: [],
+    categoryList: [],
+    qualificationList: [], // This will be used for study level
+    studyModeListing: [],
+    intakeList: [],
+    maxAmount: 0,
+    institueList: [],
+  });
+
+  // Selected Filter States
+  const [selectedInstitute, setSelectedInstitute] = useState(null);
+  const [selectedFilters, setSelectedFilters] = useState({
+    locations: [],
+    categories: [],
+    studyLevels: [], // Changed from qualifications
+    studyModes: [],
+    intakes: [],
+    tuitionFee: 0,
+  });
+
+  // Schools/Institutes State
+  const [institutes, setInstitutes] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [selectedCountry, setSelectedCountry] = useState(null);
-  const [institutes, setInstitutes] = useState([]);
-  const [selectedInstitute, setSelectedInstitute] = useState(null);
-  const [countryFilter, setCountryFilter] = useState("");
-  const [countries, setCountries] = useState([]);
-  const [defaultCountry, setDefaultCountry] = useState(null); // Track the default country
+  const itemsPerPage = 20;
 
-  const location = useLocation();
+  // Step 1: Fetch Countries
+  const fetchCountries = async () => {
+    try {
+      const response = await fetch(countriesURL);
+      const result = await response.json();
 
-  /* Reset Filter here */
-  const [resetTrigger, setResetTrigger] = useState(false);
+      if (result.data) {
+        setCountries(result.data);
 
-  const resetAllFilters = () => {
-    setSelectedCountry(null);
-    setSelectedInstitute(null);
-    setCountryFilter("");
-    setSearchQuery("");
-    setCurrentPage(1);
-
-    // Set the default country (Malaysia) as the selected country
-    if (countries.length > 0) {
-      const malaysia = countries.find(
-        (country) => country.country_name === "Malaysia"
-      );
-      if (malaysia) {
-        setSelectedCountry(malaysia); // Set Malaysia as default
-      }
-    }
-
-    setResetTrigger((prev) => !prev);
-
-    fetchData("");
-  };
-
-  const shouldDisplayBlankSlate =
-    !loading && searchResults.length === 0 && selectedCountry !== null;
-
-  /* End of Reset Filter here */
-
-  const handleCountryFilterChange = (event) => {
-    setCountryFilter(event.target.value.toLowerCase());
-  };
-
-  const filteredCountries = Array.isArray(countries)
-    ? countries.filter((country) =>
-        country.country_name.toLowerCase().includes(countryFilter)
-      )
-    : [];
-
-  useEffect(() => {
-    if (location.state) {
-      const { country } = location.state;
-
-      if (country) {
-        const selectedCountry = countries.find(
-          (c) => c.country_name === country
-        );
-        setSelectedCountry(selectedCountry);
-      }
-    }
-  }, [location.state, countries]);
-
-  // Fetch countries from API
-  useEffect(() => {
-    fetch(countriesURL)
-      .then((response) => response.json())
-      .then((data) => setCountries(data))
-      .catch((error) => console.error("Error fetching countries:", error));
-  }, []);
-
-  // Fetch locations when a country is selected
-  useEffect(() => {
-    if (selectedCountry) {
-      fetch(locationAPIURL, {
-        method: "POST", // Change method to POST if that's what the API expects
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ countryID: selectedCountry.id }), // Send countryId in the request body
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-          }
-          return response.json();
-        })
-        .then((data) => {
-          setLocationFilters(data);
-        })
-        .catch((error) => {
-          console.error("Error fetching locations:", error);
-          setLocationFilters([]); // Reset if there's an error
-        });
-    } else {
-      setLocationFilters([]); // Reset locations if no country is selected
-    }
-  }, [selectedCountry]);
-
-  // Fetch institutes from API
-  useEffect(() => {
-    const fetchCountries = async () => {
-      try {
-        const response = await fetch(countriesURL);
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        const result = await response.json();
-
-        // Ensure the response is an array
-        setCountries(result.data || []);
-
-        // Set Malaysia as the default country if it exists
+        // Set Malaysia as default
         const malaysia = result.data.find(
           (country) => country.country_name === "Malaysia"
         );
         if (malaysia) {
           setSelectedCountry(malaysia);
         }
-      } catch (error) {
-        console.error("Error fetching countries:", error);
-        setCountries([]);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching countries:", error);
+    }
+  };
 
-    fetchCountries();
-  }, []);
-
-  useEffect(() => {
-    const fetchInstitutes = async () => {
-      try {
-        const response = await fetch(instituteURL);
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
-        const result = await response.json();
-        setInstitutes(result.data || []);
-      } catch (error) {
-        console.error("Error fetching institutes:", error);
-        setInstitutes([]);
-      }
-    };
-
-    fetchInstitutes();
-  }, []);
-
-  const fetchData = async (query) => {
-    setLoading(true);
-    setError(null);
-
+  // Step 2: Fetch Filters
+  const fetchFilters = async (countryID) => {
     try {
-      const response = await fetch(apiURL, {
+      const response = await fetch(filterURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ countryID }),
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        setFilterData(result.data);
+      }
+    } catch (error) {
+      console.error("Error fetching filters:", error);
+    }
+  };
+
+  // Step 3: Fetch Schools/Institutes
+  const fetchInstitutes = async () => {
+    if (!selectedCountry) return;
+
+    setLoading(true);
+    try {
+      // Build the request body according to backend expectations
+      const requestBody = {
+        country: selectedCountry.id,
+        page: currentPage, // Send current page
+        per_page: 10, // Single country ID as required
+      };
+
+      // Add university/institute category if selected
+      if (selectedInstitute?.id) {
+        requestBody.category = [selectedInstitute.id]; // As array
+      }
+
+      // Add location filters
+      if (selectedFilters.locations?.length > 0) {
+        requestBody.location = selectedFilters.locations; // Already an array
+      }
+
+      // Add study level filters
+      if (selectedFilters.studyLevels?.length > 0) {
+        requestBody.studyLevel = selectedFilters.studyLevels; // Already an array
+      }
+
+      // Add study mode filters
+      if (selectedFilters.studyModes?.length > 0) {
+        requestBody.studyMode = selectedFilters.studyModes; // Already an array
+      }
+
+      // Add category filters if any
+      if (selectedFilters.categories?.length > 0) {
+        requestBody.courseCategory = selectedFilters.categories; // Already an array
+      }
+
+      // Add search if present
+      if (searchQuery) {
+        requestBody.search = searchQuery.trim(); // As string, not array
+      }
+
+      // Add pagination
+      if (currentPage) {
+        requestBody.page = currentPage;
+      }
+
+      //console.log('Request body:', requestBody);
+
+      const response = await fetch(schoolListURL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          // Add any other headers if needed
         },
-        body: JSON.stringify({
-          //search: selectedCountry ? "" : query.trim(),
-          search: query.trim() || "", // Ensure we send something
-          page: currentPage,
-          country: selectedCountry?.id || "",
-          category: selectedInstitute?.id,
-        }),
+        body: JSON.stringify(requestBody),
       });
 
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
-      const contentType = response.headers.get("content-type");
-      if (!contentType || !contentType.includes("application/json")) {
-        throw new Error("Response is not JSON");
-      }
-
       const result = await response.json();
 
-      setSearchResults(result.data || []); // Assuming result.data contains search results
-      setTotalPages(result.totalPages || 1); // Update total pages based on API response
+      if (result.success) {
+        setInstitutes(result.data || []);
+        setCurrentPage(result.current_page);
+        setTotalPages(result.last_page);
+      } else {
+        throw new Error(result.message || "Failed to fetch institutes");
+      }
     } catch (error) {
-      console.error("Error fetching search results:", error);
-      setError("Failed to fetch search results. Please try again.");
+      console.error("Error fetching institutes:", error);
+      setError(error.message);
     } finally {
       setLoading(false);
     }
   };
 
+  // Initial Load
   useEffect(() => {
-    if (searchQuery.trim() || selectedCountry) {
-      fetchData(searchQuery); // Pass the search query to fetchData
+    fetchCountries();
+  }, []);
+
+  // Fetch filters when country changes
+  useEffect(() => {
+    if (selectedCountry) {
+      fetchFilters(selectedCountry.id);
     }
-  }, [searchQuery, currentPage, selectedCountry, selectedInstitute]);
+  }, [selectedCountry]);
 
-  const handleSearchChange = (event) => {
-    const query = event.target.value;
-    setSearchQuery(query);
-  };
+  // Fetch institutes when filters change
+  useEffect(() => {
+    if (selectedCountry) {
+      fetchInstitutes();
+    }
+  }, [
+    selectedCountry,
+    selectedInstitute,
+    selectedFilters,
+    searchQuery,
+    currentPage,
+  ]);
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
-
+  // Handler Functions
   const handleCountryChange = (country) => {
     setSelectedCountry(country);
-    localStorage.setItem("selectedCountry", JSON.stringify(country)); // Store the selected country
-    setCurrentPage(1); // Reset pagination
+    setCurrentPage(1);
+    resetFilters();
   };
 
-  const handleInstituteChange = (institute) => {
-    setSelectedInstitute(institute);
-    console.log("Selected University ID test:", institute);
+  const handleFilterChange = (filterType, value) => {
+    setSelectedFilters((prev) => {
+      const newFilters = { ...prev };
+
+      if (Array.isArray(newFilters[filterType])) {
+        if (newFilters[filterType].includes(value)) {
+          newFilters[filterType] = newFilters[filterType].filter(
+            (v) => v !== value
+          );
+        } else {
+          newFilters[filterType] = [...newFilters[filterType], value];
+        }
+      } else {
+        newFilters[filterType] = value;
+      }
+
+      return newFilters;
+    });
+    setCurrentPage(1);
+  };
+
+  const resetFilters = () => {
+    setSelectedInstitute(null);
+    setSelectedFilters({
+      locations: [],
+      categories: [],
+      studyLevels: [],
+      studyModes: [],
+      intakes: [],
+      tuitionFee: 0,
+    });
+    setSearchQuery("");
+    setCurrentPage(1);
+  };
+
+  const handleKnowMoreInstitute = (institute) => {
+    navigate(`/knowMoreInstitute/${institute.id}`, {
+      state: { institute: institute },
+    });
+  };
+
+  // Update the pagination handling functions
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // Replace your current pagination JSX with this updated version
+  const renderPagination = () => {
+    if (!institutes.length || totalPages <= 1) return null;
+
+    return (
+      <div className="d-flex justify-content-end mt-4">
+        <Pagination>
+          <Pagination.Prev
+            onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+            disabled={currentPage === 1}
+          />
+
+          {/* First page */}
+          {currentPage > 2 && (
+            <>
+              <Pagination.Item onClick={() => handlePageChange(1)}>
+                1
+              </Pagination.Item>
+              {currentPage > 3 && <Pagination.Ellipsis />}
+            </>
+          )}
+
+          {/* Pages around current page */}
+          {Array.from({ length: totalPages }, (_, i) => i + 1)
+            .filter((page) => {
+              if (totalPages <= 5) return true;
+              return (
+                Math.abs(page - currentPage) <= 1 ||
+                page === 1 ||
+                page === totalPages
+              );
+            })
+            .map((page, index, array) => {
+              // Add ellipsis where there are gaps
+              if (index > 0 && page - array[index - 1] > 1) {
+                return (
+                  <React.Fragment key={`ellipsis-${page}`}>
+                    <Pagination.Ellipsis />
+                    <Pagination.Item
+                      active={page === currentPage}
+                      onClick={() => handlePageChange(page)}
+                    >
+                      {page}
+                    </Pagination.Item>
+                  </React.Fragment>
+                );
+              }
+              return (
+                <Pagination.Item
+                  key={page}
+                  active={page === currentPage}
+                  onClick={() => handlePageChange(page)}
+                >
+                  {page}
+                </Pagination.Item>
+              );
+            })}
+
+          <Pagination.Next
+            onClick={() =>
+              handlePageChange(Math.min(totalPages, currentPage + 1))
+            }
+            disabled={currentPage === totalPages}
+          />
+        </Pagination>
+      </div>
+    );
+  };
+
+  const renderInstitutes = () => {
+    if (!institutes.length) {
+      return (
+        <div className="blankslate-institutes text-center">
+          <img
+            src={emptyStateImage}
+            alt="No results"
+            style={{ height: "175px" }}
+          />
+          <div className="blankslate-institutes-body">
+            <h4>No institutes found</h4>
+            <p>
+              There are no institutes that match your selected filters. Please
+              try adjusting your filters and search criteria.
+            </p>
+          </div>
+        </div>
+      );
+    }
+
+    return institutes.map((institute, index) => (
+      <React.Fragment key={institute.id}>
+        <div className="card mb-4 institute-card">
+          {institute.featured && <div className="featured-badge">Featured</div>}
+          <div className="card-body d-flex flex-column flex-md-row align-items-start">
+            <Row>
+              <Col md={6} lg={6}>
+                <div className="card-image mb-3 mb-md-0">
+                  <div
+                    className="d-flex searchinstitute-one"
+                    style={{ width: "100%", marginTop: "10px" }}
+                  >
+                    <div
+                      style={{ paddingLeft: "10px" }}
+                      className="searchinstitute-one-linkimage"
+                    >
+                      <Link to={`/knowMoreInstitute/${institute.id}`}>
+                        <img
+                          src={`${baseURL}storage/${institute.logo}`}
+                          alt={institute.name}
+                          width="120"
+                          className="searchinstitute-one-image"
+                        />
+                      </Link>
+                    </div>
+                    <div className="searchinstitute-two">
+                      <Link
+                        to={`/knowMoreInstitute/${institute.id}`}
+                        style={{ textDecoration: "none", color: "black" }}
+                      >
+                        <h5 className="card-text">{institute.name}</h5>
+                      </Link>
+                      <i
+                        className="bi bi-geo-alt"
+                        style={{ marginRight: "10px", color: "#AAAAAA" }}
+                      ></i>
+                      <span>
+                        {institute.state}, {institute.country}
+                      </span>
+                      <div>
+                        <p className="card-text mt-2 searchinstitute-two-description">
+                          {institute.description}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Col>
+              <Col md={6} lg={6}>
+                <div className="d-flex flex-grow-1 justify-content-between searchinstitute-three">
+                  <div
+                    className="details-div-institute"
+                    style={{ width: "70%" }}
+                  >
+                    <div className=" searchinstitute-three-list flex-wrap">
+                      <Col>
+                        <div>
+                          <Row style={{ paddingTop: "10px" }}>
+                            <div>
+                              <i
+                                className="bi bi-building"
+                                style={{ marginRight: "10px" }}
+                              ></i>
+                              <span style={{ paddingLeft: "20px" }}>
+                                {institute.category}
+                              </span>
+                            </div>
+                            <div style={{ marginTop: "10px" }}>
+                              <i
+                                className="bi bi-mortarboard"
+                                style={{ marginRight: "10px" }}
+                              ></i>
+                              <span style={{ paddingLeft: "20px" }}>
+                                {institute.courses} courses offered
+                              </span>
+                            </div>
+                            <div
+                              style={{ marginTop: "10px" }}
+                              className="d-flex searchinstitute-institutelist-list"
+                            >
+                              <i
+                                className="bi bi-calendar2-week"
+                                style={{ marginRight: "10px" }}
+                              ></i>
+                              <span style={{ paddingLeft: "20px" }}>
+                                {Array.isArray(institute.intake) &&
+                                institute.intake.length > 0
+                                  ? institute.intake.join(", ")
+                                  : "N/A"}
+                              </span>
+                            </div>
+                          </Row>
+                        </div>
+                      </Col>
+                    </div>
+                  </div>
+                  <div className="knowmore-button searchinstitute-four">
+                    <button
+                      className="featured-institute-button"
+                      onClick={() => handleKnowMoreInstitute(institute)}
+                    >
+                      Know More
+                    </button>
+                  </div>
+                </div>
+              </Col>
+            </Row>
+          </div>
+        </div>
+        {index === 2 && (
+          <div className="ad-container">
+            <img
+              src={StudyPal}
+              alt="Study Pal"
+              className="studypal-image"
+              style={{ height: "100px" }}
+            />
+          </div>
+        )}
+      </React.Fragment>
+    ));
   };
 
   return (
@@ -258,14 +480,16 @@ const SearchInstitute = () => {
         Institute in{" "}
         {selectedCountry ? selectedCountry.country_name : "Malaysia"}
       </h3>
-      {/* Country Dropdown */}
+
+      {/* Top Row - Dropdowns */}
       <Row className="align-items-center mb-2 mb-md-0">
+        {/* Country Dropdown */}
+
         <Col xs={12} sm={4} md={3} lg={2} className="mb-2 mb-sm-0">
           <ButtonGroup className="w-100">
             <Dropdown as={ButtonGroup} className="w-100">
               <Dropdown.Toggle
                 className="country-dropdown-institute w-100"
-                id="dropdown-country"
                 style={{
                   backgroundColor: selectedCountry ? "white" : "",
                   color: selectedCountry ? "#000" : "",
@@ -293,26 +517,19 @@ const SearchInstitute = () => {
                 <InputGroup className="mb-2">
                   <Form.Control
                     placeholder="Filter countries"
-                    onChange={handleCountryFilterChange}
+                    onChange={(e) =>
+                      setCountryFilter(e.target.value.toLowerCase())
+                    }
                     value={countryFilter}
                   />
-                  <i
-                    className="bi bi-search"
-                    style={{
-                      position: "absolute",
-                      left: "90%",
-                      top: "50%",
-                      transform: "translate(-50%, -50%)",
-                      fontSize: "14px",
-                      color: "#808080",
-                    }}
-                  ></i>
                 </InputGroup>
-                {filteredCountries.length > 0 ? (
-                  filteredCountries.map((country, index) => (
+                {countries
+                  .filter((country) =>
+                    country.country_name.toLowerCase().includes(countryFilter)
+                  )
+                  .map((country, index) => (
                     <Dropdown.Item
                       key={index}
-                      className="dropdown"
                       onClick={() => handleCountryChange(country)}
                     >
                       <CountryFlag
@@ -326,26 +543,22 @@ const SearchInstitute = () => {
                       />
                       {country.country_name}
                     </Dropdown.Item>
-                  ))
-                ) : (
-                  <Dropdown.Item>No countries available</Dropdown.Item>
-                )}
+                  ))}
               </Dropdown.Menu>
             </Dropdown>
           </ButtonGroup>
         </Col>
 
-        {/* University Dropdown */}
+        {/* University Type Dropdown */}
         <Col xs={12} sm={4} md={3} lg={2} className="mb-2 mb-sm-0">
           <ButtonGroup className="w-100">
             <Dropdown as={ButtonGroup} className="w-100">
               <Dropdown.Toggle
                 className="university-dropdown-institute w-100"
-                id="dropdown-university"
                 style={{
-                  backgroundColor: selectedInstitute ? "white" : "", // Set background color to white if a country is selected
-                  color: selectedInstitute ? "#000" : "", // Optional: Change text color for better contrast
-                  border: selectedInstitute ? "1px solid #B71A18" : "", // Set border width, style, and color
+                  backgroundColor: selectedInstitute ? "white" : "",
+                  color: selectedInstitute ? "#000" : "",
+                  border: selectedInstitute ? "1px solid #B71A18" : "",
                 }}
               >
                 {selectedInstitute
@@ -353,29 +566,23 @@ const SearchInstitute = () => {
                   : "University"}
               </Dropdown.Toggle>
               <Dropdown.Menu>
-                {institutes.length > 0 ? (
-                  institutes.map((institute, index) => (
-                    <Dropdown.Item
-                      key={index}
-                      onClick={() => handleInstituteChange(institute)}
-                    >
-                      {institute.core_metaName}
-                    </Dropdown.Item>
-                  ))
-                ) : (
-                  <Dropdown.Item>No institutes available</Dropdown.Item>
-                )}
+                {filterData.institueList.map((institute, index) => (
+                  <Dropdown.Item
+                    key={index}
+                    onClick={() => setSelectedInstitute(institute)}
+                  >
+                    {institute.core_metaName}
+                  </Dropdown.Item>
+                ))}
               </Dropdown.Menu>
             </Dropdown>
           </ButtonGroup>
         </Col>
 
+        {/* Reset Button */}
         <Col xs={12} sm={4} md={3} lg={2} className="mb-2 mb-sm-0">
           <button
-            onClick={(e) => {
-              e.preventDefault();
-              resetAllFilters();
-            }}
+            onClick={resetFilters}
             style={{
               backgroundColor: "transparent",
               border: "none",
@@ -383,96 +590,340 @@ const SearchInstitute = () => {
               fontWeight: "lighter",
               textDecoration: "none",
               cursor: "pointer",
-              marginTop: "10px",
             }}
           >
-            <i
-              className="bi bi-funnel"
-              style={{
-                marginRight: "5px",
-              }}
-            />{" "}
+            <i className="bi bi-funnel" style={{ marginRight: "5px" }} />
             Reset Filters
           </button>
         </Col>
-
-        {/* <Col className="d-flex justify-content-end">
-          <Pagination className="ml-auto mb-2 mb-md-0">
-            <Pagination.Prev
-              aria-label="Previous"
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-            >
-              <span aria-hidden="true">&laquo;</span>
-            </Pagination.Prev>
-            {[...Array(totalPages)].map((_, index) => (
-              <Pagination.Item
-                key={index}
-                active={index + 1 === currentPage}
-                onClick={() => handlePageChange(index + 1)}
-              >
-                {index + 1}
-              </Pagination.Item>
-            ))}
-            <Pagination.Next
-              aria-label="Next"
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-            >
-              <span aria-hidden="true">&raquo;</span>
-            </Pagination.Next>
-          </Pagination>
-        </Col> */}
       </Row>
 
-      <Form>
+      {/* Search Bar */}
+      <Form
+        onSubmit={(e) => {
+          e.preventDefault();
+          fetchInstitutes();
+        }}
+      >
         <InputGroup className="mb-3">
           <Form.Control
             className="custom-placeholder"
             style={{ height: "45px", marginTop: "9px" }}
             placeholder="Search for Institutions, Country"
-            aria-label="Search for Institutions, Country"
-            aria-describedby="search-icon"
             value={searchQuery}
-            onChange={handleSearchChange}
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
         </InputGroup>
       </Form>
 
-      {/* {loading && (
-        <div className="d-flex justify-content-center">
-          <Spinner animation="border" />
-        </div>
-      )} */}
+      {/* Main Content */}
+      <Container className="my-5">
+        <Row>
+          {/* Left Sidebar - Filters */}
+          <Col
+            md={4}
+            className="location-container"
+            style={{ backgroundColor: "white", padding: "20px" }}
+          >
+            {/* Desktop Filters */}
+            <div className="filters-container">
+              {/* Location Filter */}
+              <div className="filter-group">
+                <h5 style={{ marginTop: "10px" }}>Location</h5>
+                <Form.Group>
+                  {filterData.state.map((location, index) => (
+                    <Form.Check
+                      key={index}
+                      type="checkbox"
+                      label={location.state_name}
+                      checked={selectedFilters.locations.includes(location.id)}
+                      onChange={() =>
+                        handleFilterChange("locations", location.id)
+                      }
+                    />
+                  ))}
+                </Form.Group>
+              </div>
 
-      {error && <Alert variant="danger">{error}</Alert>}
+              {/* Category Filter */}
+              <div className="filter-group">
+                <h5 style={{ marginTop: "25px" }}>Category</h5>
+                <Form.Group>
+                  {filterData.categoryList.map((category, index) => (
+                    <Form.Check
+                      key={index}
+                      type="checkbox"
+                      label={category.category_name}
+                      checked={selectedFilters.categories.includes(category.id)}
+                      onChange={() =>
+                        handleFilterChange("categories", category.id)
+                      }
+                    />
+                  ))}
+                </Form.Group>
+              </div>
 
-      {shouldDisplayBlankSlate ? (
-        <div className="blankslate-institutes">
-          <img
-            className="blankslate-institutes-top-img"
-            src={emptyStateImage}
-            alt="Empty State"
-            style={{ height: "175px" }}
-          />
-          <div className="blankslate-institutes-body">
-            <h4>
-              <strong>No institutes found ☹️</strong>
-            </h4>
-            <p>
-              There are no institutes that match your selected country. Please
-              try adjusting your filters and search criteria.
-            </p>
-          </div>
-        </div>
-      ) : (
-        <InstituteListing
-          searchResults={searchResults}
-          countryID={selectedCountry?.id}
-          selectedInstitute={selectedInstitute?.core_metaName}
-          resetTrigger={resetTrigger}
-        />
-      )}
+              {/* Study Level Filter */}
+              <div className="filter-group">
+                <h5 style={{ marginTop: "25px" }}>Study Level</h5>
+                <Form.Group>
+                  {filterData.qualificationList.map((level, index) => (
+                    <Form.Check
+                      key={index}
+                      type="checkbox"
+                      label={level.qualification_name}
+                      checked={selectedFilters.studyLevels.includes(level.id)}
+                      onChange={() =>
+                        handleFilterChange("studyLevels", level.id)
+                      }
+                    />
+                  ))}
+                </Form.Group>
+              </div>
+
+              {/* Study Mode Filter */}
+              <div className="filter-group">
+                <h5 style={{ marginTop: "25px" }}>Study Mode</h5>
+                <Form.Group>
+                  {filterData.studyModeListing.map((mode, index) => (
+                    <Form.Check
+                      key={index}
+                      type="checkbox"
+                      label={mode.studyMode_name}
+                      checked={selectedFilters.studyModes.includes(mode.id)}
+                      onChange={() => handleFilterChange("studyModes", mode.id)}
+                    />
+                  ))}
+                </Form.Group>
+              </div>
+
+              {/* Intake Filter */}
+              <div className="filter-group">
+                <h5 style={{ marginTop: "25px" }}>Intakes</h5>
+                <Form.Group>
+                  {filterData.intakeList.map((intake, index) => (
+                    <Form.Check
+                      key={index}
+                      type="checkbox"
+                      label={intake.month}
+                      checked={selectedFilters.intakes.includes(intake.month)}
+                      onChange={() =>
+                        handleFilterChange("intakes", intake.month)
+                      }
+                    />
+                  ))}
+                </Form.Group>
+              </div>
+
+              {/* Tuition Fee Filter */}
+              <div className="filter-group">
+                <h5 style={{ marginTop: "25px" }}>Tuition Fee</h5>
+                <Form.Group id="customRange1">
+                  <Form.Label className="custom-range-label">{`RM${selectedFilters.tuitionFee}`}</Form.Label>
+                  <Form.Control
+                    className="custom-range-input"
+                    type="range"
+                    min={0}
+                    max={filterData.maxAmount || 100000}
+                    step="500"
+                    value={selectedFilters.tuitionFee}
+                    onChange={(e) =>
+                      handleFilterChange("tuitionFee", Number(e.target.value))
+                    }
+                  />
+                </Form.Group>
+              </div>
+            </div>
+
+            {/* Mobile Accordion Filters */}
+            {/* Mobile Accordion Filters */}
+            <Accordion
+              defaultActiveKey="0"
+              className="custom-accordion d-md-none"
+            >
+              {/* Location Filter */}
+              <Accordion.Item eventKey="0">
+                <Accordion.Header className="custom-accordion-header">
+                  Location
+                </Accordion.Header>
+                <Accordion.Body className="custom-accordion-body">
+                  <Form.Group>
+                    {filterData.state && filterData.state.length > 0 ? (
+                      filterData.state.map((location, index) => (
+                        <Form.Check
+                          key={index}
+                          type="checkbox"
+                          label={location.state_name}
+                          checked={selectedFilters.locations.includes(
+                            location.id
+                          )}
+                          onChange={() =>
+                            handleFilterChange("locations", location.id)
+                          }
+                        />
+                      ))
+                    ) : (
+                      <p>No location available</p>
+                    )}
+                  </Form.Group>
+                </Accordion.Body>
+              </Accordion.Item>
+
+              {/* Category Filter */}
+              <Accordion.Item eventKey="1">
+                <Accordion.Header className="custom-accordion-header">
+                  Category
+                </Accordion.Header>
+                <Accordion.Body className="custom-accordion-body">
+                  <Form.Group>
+                    {filterData.categoryList &&
+                      filterData.categoryList.map((category, index) => (
+                        <Form.Check
+                          key={index}
+                          type="checkbox"
+                          label={category.category_name}
+                          checked={selectedFilters.categories.includes(
+                            category.id
+                          )}
+                          onChange={() =>
+                            handleFilterChange("categories", category.id)
+                          }
+                        />
+                      ))}
+                  </Form.Group>
+                </Accordion.Body>
+              </Accordion.Item>
+
+              {/* Study Level Filter */}
+              <Accordion.Item eventKey="2">
+                <Accordion.Header className="custom-accordion-header">
+                  Study Level
+                </Accordion.Header>
+                <Accordion.Body className="custom-accordion-body">
+                  <Form.Group>
+                    {filterData.qualificationList &&
+                      filterData.qualificationList.map((level, index) => (
+                        <Form.Check
+                          key={index}
+                          type="checkbox"
+                          label={level.qualification_name}
+                          checked={selectedFilters.studyLevels.includes(
+                            level.id
+                          )}
+                          onChange={() =>
+                            handleFilterChange("studyLevels", level.id)
+                          }
+                        />
+                      ))}
+                  </Form.Group>
+                </Accordion.Body>
+              </Accordion.Item>
+
+              {/* Study Mode Filter */}
+              <Accordion.Item eventKey="3">
+                <Accordion.Header className="custom-accordion-header">
+                  Study Mode
+                </Accordion.Header>
+                <Accordion.Body className="custom-accordion-body">
+                  <Form.Group>
+                    {filterData.studyModeListing &&
+                      filterData.studyModeListing.map((mode, index) => (
+                        <Form.Check
+                          key={index}
+                          type="checkbox"
+                          label={mode.studyMode_name}
+                          checked={selectedFilters.studyModes.includes(mode.id)}
+                          onChange={() =>
+                            handleFilterChange("studyModes", mode.id)
+                          }
+                        />
+                      ))}
+                  </Form.Group>
+                </Accordion.Body>
+              </Accordion.Item>
+
+              {/* Intakes Filter */}
+              <Accordion.Item eventKey="4">
+                <Accordion.Header className="custom-accordion-header">
+                  Intakes
+                </Accordion.Header>
+                <Accordion.Body className="custom-accordion-body">
+                  <Form.Group>
+                    {filterData.intakeList &&
+                    filterData.intakeList.length > 0 ? (
+                      filterData.intakeList.map((intake, index) => (
+                        <Form.Check
+                          key={index}
+                          type="checkbox"
+                          label={intake.month}
+                          checked={selectedFilters.intakes.includes(
+                            intake.month
+                          )}
+                          onChange={() =>
+                            handleFilterChange("intakes", intake.month)
+                          }
+                        />
+                      ))
+                    ) : (
+                      <p>No intakes available</p>
+                    )}
+                  </Form.Group>
+                </Accordion.Body>
+              </Accordion.Item>
+
+              {/* Tuition Fee Filter */}
+              <Accordion.Item eventKey="5">
+                <Accordion.Header className="custom-accordion-header">
+                  Tuition Fee
+                </Accordion.Header>
+                <Accordion.Body className="custom-accordion-body">
+                  <Form.Group id="customRange1">
+                    <Form.Label className="custom-range-label">{`RM${selectedFilters.tuitionFee}`}</Form.Label>
+                    <Form.Control
+                      className="custom-range-input"
+                      type="range"
+                      min={0}
+                      max={filterData.maxAmount || 100000}
+                      step="500"
+                      value={selectedFilters.tuitionFee}
+                      onChange={(e) =>
+                        handleFilterChange("tuitionFee", Number(e.target.value))
+                      }
+                    />
+                  </Form.Group>
+                </Accordion.Body>
+              </Accordion.Item>
+            </Accordion>
+          </Col>
+
+          {/* Right Content - Institute Listings */}
+          <Col xs={12} md={8} className="degreeinstitutes-division">
+            <div>
+              <img
+                src={StudyPal}
+                alt="Study Pal"
+                className="studypal-image"
+                style={{ height: "175px" }}
+              />
+            </div>
+
+            {loading ? (
+              <div className="text-center">
+                <Spinner animation="border" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </Spinner>
+              </div>
+            ) : error ? (
+              <div className="text-center text-danger">
+                <p>Error: {error}</p>
+              </div>
+            ) : (
+              <>{renderInstitutes()}</>
+            )}
+          </Col>
+          {renderPagination()}
+        </Row>
+      </Container>
     </Container>
   );
 };

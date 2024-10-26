@@ -1,4 +1,9 @@
-import { useParams, Navigate, useNavigate, useLocation } from "react-router-dom";
+import {
+  useParams,
+  Navigate,
+  useNavigate,
+  useLocation,
+} from "react-router-dom";
 import Sidebar from "../../Components/SchoolPortalComp/SchoolSidebar";
 import { useEffect, useState } from "react";
 import { ArrowClockwise } from "react-bootstrap-icons";
@@ -16,9 +21,9 @@ const SchoolDashboard = () => {
   const [selectedDropdownItem, setSelectedDropdownItem] = useState("");
   const [selectedTab, setSelectedTab] = useState("");
   // const token = sessionStorage.getItem("token");
-  const token = localStorage.getItem("token");
-  const location = useLocation();
-  const navigate = useNavigate();
+  const token =
+    localStorage.getItem("token") || sessionStorage.getItem("token");
+  console.log("token", token);
 
   if (!token) {
     return <Navigate to="/schoolPortalLogin" />;
@@ -58,7 +63,7 @@ const SchoolDashboard = () => {
       // Clear the navigation state
       navigate(location.pathname, { replace: true, state: {} });
     }
-  }, [location, navigate]);
+  }, [location, Navigate]);
   const handleUpgradeNow = () => {
     setSelectedDropdownItem("manageAccount");
     setSelectedTab(""); // Clear the selected tab
@@ -83,8 +88,7 @@ const SchoolDashboard = () => {
       default:
         switch (selectedTab) {
           case "application":
-            return <Applicant
-              onActionUpgrade={handleUpgradeNow} />;
+            return <Applicant onActionUpgrade={handleUpgradeNow} />;
           case "dashboard":
             return <Dashboard />;
           case "courses":

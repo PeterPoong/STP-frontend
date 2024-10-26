@@ -139,7 +139,7 @@ const AdminDataContent = () => {
         navigate('/adminAddData');
     };
     const handleEdit = (id) => {
-        console.log(`Edit Data with ID: ${id}`);
+        // console.log(`Edit Data with ID: ${id}`);
         sessionStorage.setItem('token', Authenticate);
         navigate(`/adminEditData/${id}`);
     };
@@ -214,7 +214,7 @@ const AdminDataContent = () => {
     );
 
     const tbodyContent = sortedDatas.map((Data) => {
-        console.log(Data); // Add this to check if 'id' is fetched
+        // console.log(Data); // Add this to check if 'id' is fetched
         return (
             <tr key={Data.id}>
                 <td>{Data.core_metaType}</td>

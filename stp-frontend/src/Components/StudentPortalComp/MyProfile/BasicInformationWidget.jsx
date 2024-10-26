@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Form, Button, Row, Col, Alert } from 'react-bootstrap';
+import { Card, Form, Button, Row, Col, Alert,Spinner } from 'react-bootstrap';
 import "../../../css/StudentPortalStyles/StudentPortalLoginForm.css";
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import "../../../css/StudentPortalStyles/StudentButtonGroup.css";
-import axios from 'axios';
 
 const BasicInformationWidget = ({ onProfilePicUpdate }) => {
   const [studentData, setStudentData] = useState({
@@ -389,7 +388,15 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
   };
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div>
+      <div>
+            <div className="d-flex justify-content-center align-self-center m-5" >
+              <Spinner animation="border" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </Spinner>
+            </div>
+          </div>
+    </div>;
   }
 
   if (error) {

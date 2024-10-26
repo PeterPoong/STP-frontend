@@ -39,9 +39,9 @@ const AdminAddCategoryContent = () => {
         }
     
         // Debugging: Log what is being sent to the backend
-        console.log("FormData being sent:");
+        // console.log("FormData being sent:");
         for (let [key, value] of formPayload.entries()) {
-            console.log(`${key}:`, value);
+            // console.log(`${key}:`, value);
         }
     
         try {
@@ -88,7 +88,7 @@ const AdminAddCategoryContent = () => {
     
     const handleFieldChange = (e) => {
         const { id, value, type, files } = e.target;
-        console.log(`Field ${id} updated with value: ${value}`); // Debugging line
+        // console.log(`Field ${id} updated with value: ${value}`); // Debugging line
         if (type === "file") {
             setFormData(prev => ({
                 ...prev,

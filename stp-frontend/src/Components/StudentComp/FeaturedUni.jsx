@@ -19,14 +19,21 @@ const FeaturedUni = () => {
     }
 
     navigate(`/courses`, {
-      state: {
-        searchQuery: trimmedQuery, // Passing the searchQuery to the SearchCourse component
-      },
+    state: { 
+      initialSearchQuery: trimmedQuery,
+      searchTrigger: Date.now() // Add a timestamp to force update
+    },
     });
   };
 
   const handleNavigationClick = (qualification, country) => {
-    navigate("/courses", { state: { qualification, country } });
+    navigate("/courses", { 
+      state: { 
+        initialQualification: qualification,
+        initialCountry: country,
+        filterTrigger: Date.now() // Add a timestamp to force update
+      }
+    });
   };
 
   const handleNavigation = (query) => {
@@ -93,7 +100,7 @@ const FeaturedUni = () => {
             ></i>
           </InputGroup>
         </Form>
-        <div className="button-container mt-3 d-flex justify-content-center flex-wrap">
+        <div className=" featured-uni-button-group">
           <button
             className="diploma-button mb-2 mx-2"
             onClick={() => handleNavigationClick("Diploma", null)}

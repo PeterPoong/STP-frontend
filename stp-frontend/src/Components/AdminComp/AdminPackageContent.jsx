@@ -110,7 +110,7 @@ const AdminPackageContent = () => {
     };
 
     const handleEdit = (id) => {
-        console.log(`Edit Package with ID: ${id}`); // Log the ID being passed
+        // console.log(`Edit Package with ID: ${id}`); // Log the ID being passed
         sessionStorage.setItem('packageId', id); // Store package ID in session storage
         navigate(`/adminEditPackage`); // Navigate to the edit page
     };
@@ -118,7 +118,7 @@ const AdminPackageContent = () => {
 
     const handleToggleSwitch = (id, currentStatus) => {
         const action = (currentStatus === 'Active') ? 'Delete' : 'Enable';
-        console.log(`Toggle Switch Clicked: id=${id}, action=${action}`);
+        // console.log(`Toggle Switch Clicked: id=${id}, action=${action}`);
         setTargetPackage({ id, action });
         setShowModal(true);
     };
@@ -127,7 +127,7 @@ const AdminPackageContent = () => {
     const confirmAction = async () => {
         if (!targetPackage) return;
     
-        console.log(`Confirm Action: ${JSON.stringify(targetPackage)}`);
+        // console.log(`Confirm Action: ${JSON.stringify(targetPackage)}`);
     
         try {
             const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/deletePackage`, {
@@ -142,14 +142,14 @@ const AdminPackageContent = () => {
                 }),
             });
     
-            console.log(`API Response Status: ${response.status}`);
+            // console.log(`API Response Status: ${response.status}`);
     
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
     
             const result = await response.json();
-            console.log('API Response Data:', result);
+            // console.log('API Response Data:', result);
     
             if (result.success) {
                 // Action was successful, fetch the updated package data

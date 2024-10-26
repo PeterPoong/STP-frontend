@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useRef } from "react";
 import { useParams, useLocation, Link, useNavigate } from "react-router-dom";
 import NavButtons from "../NavButtons";
 import NavButtonsSP from "../../../Components/StudentPortalComp/NavButtonsSP";
@@ -20,6 +20,8 @@ const baseURL = import.meta.env.VITE_BASE_URL;
 const courseDetailAPI = `${baseURL}api/student/courseDetail`;
 
 const CourseDetail = () => {
+  const [contentHeight, setContentHeight] = useState(0);
+  const contentRef = useRef(null);
   const [openDescription, setOpenDescription] = useState(false);
   const [openRequirement, setOpenRequirement] = useState(false);
   const [openAboutInstitute, setOpenAboutInstitute] = useState(false);
@@ -32,6 +34,12 @@ const CourseDetail = () => {
 
   const [showSwiperModal, setShowSwiperModal] = useState(false);
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
+
+  const handleContentHeight = () => {
+    if (contentRef.current) {
+      setContentHeight(contentRef.current.scrollHeight);
+    }
+  };
 
   const openSwiperModal = (index) => {
     setActivePhotoIndex(index);
@@ -73,16 +81,24 @@ const CourseDetail = () => {
       console.error("Course ID is undefined");
     }
   };
-  const handleApplyNow = (courseID) => {
-    if (courseID) {
-      navigate(`/studentApplyCourses/${courseID}`);
+  const handleApplyNow = (program) => {
+    // Change the parameter to receive the full program object
+    if (program) {
+      navigate(`/studentApplyCourses/${program.id}`, {
+        state: {
+          programId: program.id,
+          schoolLogoUrl: `${import.meta.env.VITE_BASE_URL}storage/${program.logo}`,
+          schoolName: program.school,
+          courseName: program.course,
+        }
+      });
     } else {
-      console.error("Course ID is undefined");
+      console.error("Program is undefined");
     }
   };
 
   useEffect(() => {
-    console.log("Program ID:", id);
+    //console.log("Program ID:", id);
 
     if (!programs || programs.length === 0) {
       fetch(courseDetailAPI, {
@@ -96,15 +112,15 @@ const CourseDetail = () => {
       })
         .then((response) => response.json())
         .then((data) => {
-          console.log("Fetched Course Data:", data);
+          // console.log("Fetched Course Data:", data);
           if (data && data.data && Array.isArray(data.data)) {
             const selectedProgram = data.find(
               (item) => item.id === parseInt(id)
             );
-            console.log("Selected Program:", selectedProgram);
+            // console.log("Selected Program:", selectedProgram);
             setPrograms(selectedProgram ? [selectedProgram] : []);
           } else {
-            console.error("Invalid data structure:", data);
+            console.error("Invalid data structure:");
             setPrograms([data.data]);
           }
         })
@@ -123,7 +139,8 @@ const CourseDetail = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log("Fetched Featured Courses:", data.data);
+        // console.log("Fetched Featured Courses:", data.data);
+        // console.log('Program school photo:', program.schoolPhoto);
         if (data && data.success && Array.isArray(data.data)) {
           setFeaturedCourses(data.data);
         } else {
@@ -144,6 +161,16 @@ const CourseDetail = () => {
       </div>
     );
   }
+
+   // Function to handle displaying more courses
+   const handleViewMore = () => {
+    setExpanded(!expanded); // Toggle collapse state
+    if (!expanded) {
+      setVisibleCourses(courses.length); // Show all courses when expanded
+    } else {
+      setVisibleCourses(5); // Show only 5 courses when collapsed
+    }
+  };
 
   return (
     <div style={{ backgroundColor: "#F5F4F4" }}>
@@ -173,8 +200,10 @@ const CourseDetail = () => {
                   <img
                     src={`${baseURL}storage/${program.logo}`}
                     alt="Program"
-                    className="img-fluid img-thumbnail apply-now-program-image"
+                    className="img-thumbnail apply-now-program-image"
                     style={{
+                      height: "100%",
+                      borderRadius: "8px",
                       maxWidth: "auto",
                       marginLeft: "30px",
                     }}
@@ -223,7 +252,7 @@ const CourseDetail = () => {
                       height: "50px",
                       marginBottom: "20px",
                     }}
-                    onClick={() => handleApplyNow(program.id)} // Pass the correct ID
+                    onClick={() => handleApplyNow(program)} // Pass the correct ID
                   >
                     Apply Now
                   </Button>
@@ -281,7 +310,7 @@ const CourseDetail = () => {
                         ></i>{" "}
                         <span style={{ paddingLeft: "20px" }}>
                           {Array.isArray(program.intake) &&
-                          program.intake.length > 0
+                            program.intake.length > 0
                             ? program.intake.join(", ")
                             : "N/A"}{" "}
                         </span>
@@ -303,7 +332,7 @@ const CourseDetail = () => {
                       className="d-flex align-items-center justify-content-center"
                     >
                       <div>
-                        <p>
+                        <p className="mb-0">
                           <strong>RM </strong>
                           {program.cost}/year
                         </p>
@@ -321,24 +350,28 @@ const CourseDetail = () => {
                       </div>
                     </Col>
                     <Col md={12}>
-                      <div id="collapse-description">
-                        {/* Use dangerouslySetInnerHTML to render HTML safely */}
-                        <div
-                          dangerouslySetInnerHTML={{
-                            __html: program.schoolShortDescription,
-                          }}
-                        />
-                      </div>
-                      <Collapse in={openDescription}>
-                        <div id="collapse-description">
+                      {!openDescription ? (
+
+                        <div id="collapse-description" className="student-coursedetil-wordbreak">
                           {/* Use dangerouslySetInnerHTML to render HTML safely */}
                           <div
                             dangerouslySetInnerHTML={{
-                              __html: program.schoolShortDescription,
+                              __html: program.description,
                             }}
                           />
                         </div>
-                      </Collapse>
+                      ) : (
+                        <Collapse in={openDescription}>
+                          <div id="collapse-description">
+                            {/* Use dangerouslySetInnerHTML to render HTML safely */}
+                            <div
+                              dangerouslySetInnerHTML={{
+                                __html: program.description,
+                              }}
+                            />
+                          </div>
+                        </Collapse>
+                      )}
                     </Col>
                     <Col className="d-flex justify-content-center">
                       <Button
@@ -363,33 +396,39 @@ const CourseDetail = () => {
                       </div>
                     </Col>
                     <Col md={12}>
-                      <div
-                        dangerouslySetInnerHTML={{
-                          __html: program.requirement,
-                        }}
-                      />
-
-                      <Collapse in={openRequirement}>
-                        <div id="collapse-requirement">
+                      {!openRequirement ? (
+                        <div id="collapse-requirement" className="student-coursedetil-wordbreak">
                           <div
                             dangerouslySetInnerHTML={{
                               __html: program.requirement,
                             }}
                           />
                         </div>
-                      </Collapse>
-                      <Col className="d-flex justify-content-center">
-                        <Button
-                          onClick={() => setOpenRequirement(!openRequirement)}
-                          aria-controls="collapse-requirement"
-                          aria-expanded={openRequirement}
-                          style={{ textDecoration: "none" }}
-                          variant="link"
-                        >
-                          {openRequirement ? "View Less" : "View More"}
-                        </Button>
-                      </Col>
+                      ) : (
+                        <Collapse in={openRequirement}>
+                          <div id="collapse-requirement">
+                            <div
+                              dangerouslySetInnerHTML={{
+                                __html: program.requirement,
+                              }}
+                            />
+
+                          </div>
+                        </Collapse>
+                      )}
                     </Col>
+                    <Col className="d-flex justify-content-center">
+                      <Button
+                        onClick={() => setOpenRequirement(!openRequirement)}
+                        aria-controls="collapse-requirement"
+                        aria-expanded={openRequirement}
+                        style={{ textDecoration: "none" }}
+                        variant="link"
+                      >
+                        {openRequirement ? "View Less" : "View More"}
+                      </Button>
+                    </Col>
+
                   </Row>
                 </div>
               </div>
@@ -399,8 +438,13 @@ const CourseDetail = () => {
               <div
                 style={{
                   position: "relative",
-                  marginBottom: openAboutInstitute ? "20px" : "0px",
+                  top: 0,
+                  left: 0,
+                  zIndex: 0,
+                  marginBottom: openAboutInstitute ? "1rem" : "0px",
                   marginTop: "10%",
+                  overflow: "hidden",
+                  transition: "all 0.5s ease", // Added transition for smooth effect
                 }}
               >
                 {/* Background Image */}
@@ -410,23 +454,39 @@ const CourseDetail = () => {
                     top: 0,
                     left: 0,
                     zIndex: 0,
+                    borderRadius: '1rem',
                     width: "100%",
-                    height: openAboutInstitute ? "600px" : "300px",
+                    height: openAboutInstitute ? `${contentHeight + 500}px` : "25rem", 
                     overflow: "hidden",
                     transition: "height 0.5s ease",
                   }}
                 >
-                  <div className="cover-photo">
+                   <div style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: openAbout ? "20rem" : "100%", // This creates the partial reveal effect
+                    transition: "height 0.5s ease",
+                  }}>
                     <img
-                      src={
+                       src={
                         program.coverPhoto
                           ? `${baseURL}storage/${program.coverPhoto}`
                           : headerImage
                       }
                       alt="Header"
-                      className="cover-image"
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "fill",
+                        objectPosition: "center top", // Anchor image to top
+                        transition: "transform 0.5s ease",
+                        transform: openAbout ? "scale(1)" : "scale(1.1)", // Subtle zoom effect
+                      }}
                     />
                   </div>
+                 
 
                   {/* Card */}
                   <div
@@ -437,6 +497,9 @@ const CourseDetail = () => {
                       margin: "0 auto",
                       zIndex: 1,
                       position: "absolute",
+                      backgroundColor: "white",
+                      boxShadow: "0 -4px 10px rgba(0,0,0,0.1)",
+                      borderRadius: "20px 20px 0 0",
                     }}
                   >
                     <div className="card-body" style={{ padding: "50px" }}>
@@ -449,7 +512,15 @@ const CourseDetail = () => {
                           </div>
                         </Col>
                         <Col md={12}>
-                          <div style={{ zIndex: 1 }}>
+                        <div
+                            ref={contentRef}
+                            style={{
+                              zIndex: 1,
+                              maxHeight: openAboutInstitute ? "none" : "100px",
+                              overflow: "hidden",
+                              transition: "max-height 0.5s ease",
+                            }}
+                          >
                             <div
                               dangerouslySetInnerHTML={{
                                 __html: program.schoolLongDescription,
@@ -467,11 +538,21 @@ const CourseDetail = () => {
                         </Col>
                         <Col className="d-flex justify-content-center">
                           <Button
-                            style={{ textDecoration: "none" }}
-                            variant="link"
-                            onClick={() =>
-                              setOpenAboutInstitute(!openAboutInstitute)
-                            }
+                            style={{
+                              textDecoration: "none",
+                              color: "#007bff",
+                              background: "none",
+                              border: "none",
+                              marginTop: "20px",
+                              cursor: "pointer",
+                            }}
+                            onClick={() => {
+                              setOpenAboutInstitute(!openAboutInstitute);
+                              // Add a small delay to ensure the content is rendered before measuring
+                              setTimeout(() => {
+                                handleContentHeight();
+                              }, 0);
+                            }}
                             aria-controls="collapse-about-institute"
                             aria-expanded={openAboutInstitute}
                           >
@@ -486,32 +567,31 @@ const CourseDetail = () => {
 
               {/* Image Swiper */}
               <div className="image-gallery-course">
-                {programs.map((program) =>
-                  (Array.isArray(program.schoolPhoto) &&
-                  program.schoolPhoto.length > 0
-                    ? program.schoolPhoto.slice(0, 5)
-                    : [{ id: "default", schoolPhoto: null }]
-                  ).map((photo, index) => (
+                {programs.map((program) => {
+                  // Ensure schoolPhoto is an array and has items
+                  const photos = Array.isArray(program.schoolPhoto) ? program.schoolPhoto : [];
+
+                  return photos.slice(0, 5).map((photoPath, index) => (
                     <div
-                      key={photo.id}
+                      key={index}
                       style={{
                         display: "inline-block",
                         position: "relative",
-                        cursor: "pointer", // Indicates the images are clickable
+                        cursor: "pointer",
                       }}
                       onClick={() => openModal(program.schoolPhoto, index)}
                     >
                       <img
-                        src={
-                          program.schoolPhoto
-                            ? `${baseURL}storage/${program.schoolPhoto}`
-                            : studypal12
-                        }
+                        src={`${baseURL}storage/${photoPath}`} // Direct use of the photo path
                         className="gallery-image-courses"
-                        alt={photo.schoolMedia_name}
+                        alt={`School Photo ${index + 1}`}
                         width="500"
                         style={{
                           objectFit: "cover",
+                        }}
+                        onError={(e) => {
+                          //  console.log('Image failed to load:', e.target.src);
+                          e.target.src = studypal12;
                         }}
                       />
                       {index === 4 && program.schoolPhoto.length > 5 && (
@@ -522,7 +602,7 @@ const CourseDetail = () => {
                             left: 0,
                             right: 0,
                             bottom: 0,
-                            backgroundColor: "rgba(0, 0, 0, 0.5)", // Dark overlay for emphasis
+                            backgroundColor: "rgba(0, 0, 0, 0.5)",
                             display: "flex",
                             justifyContent: "center",
                             alignItems: "center",
@@ -540,20 +620,16 @@ const CourseDetail = () => {
                               padding: "10px 20px",
                               border: "none",
                               width: "100%",
-                              height: "100%", // Smooth hover effect
+                              height: "100%",
                             }}
-                            onMouseOver={(e) =>
-                              (e.target.style.color = "#f8f9fa")
-                            } // Lighten on hover
-                            onMouseOut={(e) => (e.target.style.color = "white")} // Reset on hover out
                           >
                             see more
                           </button>
                         </div>
                       )}
                     </div>
-                  ))
-                )}
+                  ));
+                })}
 
                 {/* Modal for Swiper Gallery */}
                 <Modal
@@ -565,7 +641,7 @@ const CourseDetail = () => {
                   <Modal.Header
                     closeButton
                     style={{
-                      backgroundColor: "#B71A18", // Dark background for the Swiper modal
+                      backgroundColor: "#B71A18",
                       color: "#fff",
                     }}
                   >
@@ -581,22 +657,22 @@ const CourseDetail = () => {
                       pagination={{ clickable: true }}
                       modules={[Navigation, Pagination]}
                       style={{
-                        padding: "20px 0", // Padding to create breathing space for the swiper
+                        padding: "20px 0",
                       }}
                     >
-                      {selectedPhotos.map((program) => (
-                        <SwiperSlide key={program.id}>
+                      {selectedPhotos.map((photoPath, index) => (
+                        <SwiperSlide key={index}>
                           <img
-                            src={
-                              program.schoolPhoto
-                                ? `${baseURL}storage/${program.schoolPhoto}`
-                                : studypal12
-                            }
+                            src={`${baseURL}storage/${photoPath}`}
                             className="w-100"
-                            alt={`Slide ${program.id}`}
+                            alt={`Slide ${index + 1}`}
                             style={{
-                              objectFit: "contain", // Maintain aspect ratio
-                              maxHeight: "70vh", // Prevent image from being too large
+                              objectFit: "contain",
+                              maxHeight: "70vh",
+                            }}
+                            onError={(e) => {
+                              //   console.log('Modal image failed to load:', e.target.src);
+                              e.target.src = studypal12;
                             }}
                           />
                         </SwiperSlide>
@@ -605,6 +681,7 @@ const CourseDetail = () => {
                   </Modal.Body>
                 </Modal>
 
+                {/* Modal for All Photos */}
                 {/* Modal for All Photos */}
                 <Modal
                   show={showAllPhotosModal}
@@ -615,7 +692,7 @@ const CourseDetail = () => {
                   <Modal.Header
                     closeButton
                     style={{
-                      backgroundColor: "#B71A18", // Dark background color for contrast
+                      backgroundColor: "#B71A18",
                       color: "#fff",
                       padding: "20px",
                       borderTopLeftRadius: "8px",
@@ -638,35 +715,35 @@ const CourseDetail = () => {
                     style={{
                       maxHeight: "70vh",
                       overflowY: "auto",
-                      paddingRight: "15px", // Padding for a more spacious feel
+                      paddingRight: "15px",
                     }}
                   >
                     <div
                       className="image-gallery-course-modal"
                       style={{
-                        display: "grid", // Grid layout for image gallery
-                        gridTemplateColumns:
-                          "repeat(auto-fill, minmax(150px, 1fr))", // Responsive grid
-                        gridGap: "10px", // Spacing between images
+                        display: "grid",
+                        gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
+                        gridGap: "10px",
                       }}
                     >
-                      {selectedPhotos.map((program) => (
+                      {selectedPhotos.map((photoPath, index) => (
                         <img
-                          key={program.id}
-                          src={
-                            program.schoolPhoto
-                              ? `${baseURL}storage/${program.schoolPhoto}`
-                              : studypal12
-                          }
+                          key={index}
+                          src={`${baseURL}storage/${photoPath}`}
                           className="gallery-image"
-                          alt={program.course}
+                          alt={`School Photo ${index + 1}`}
                           style={{
                             width: "100%",
-                            height: "100%",
-                            objectFit: "cover", // Ensure images are cropped nicely
-                            borderRadius: "4px", // Rounded corners
-                            cursor: "pointer", // Add a pointer cursor to indicate it's clickable
-                            boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)", // Subtle shadow
+                            height: "150px",
+                            objectFit: "cover",
+                            borderRadius: "4px",
+                            cursor: "pointer",
+                            boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+                          }}
+                          onClick={() => openSwiperModal(index)}
+                          onError={(e) => {
+                            // console.log('Modal image failed to load:', e.target.src);
+                            e.target.src = studypal12;
                           }}
                         />
                       ))}
@@ -773,11 +850,11 @@ const CourseDetail = () => {
                     height: "50px",
                     marginTop: "20px",
                   }}
-                  onClick={() => handleApplyNow(program.id)} // Ensure you pass the correct course or program ID
+                  onClick={() => handleApplyNow(program)} // Ensure you pass the correct course or program ID
                 >
                   Apply Now
                 </Button>
-                <Button
+                {/* <Button
                   style={{
                     backgroundColor: "#FFA500",
                     border: "none",
@@ -788,7 +865,7 @@ const CourseDetail = () => {
                   onClick={() => handleKnowMoreClick(program.id)} // Pass the correct course ID
                 >
                   Know More
-                </Button>
+                </Button>*/}
               </div>
 
               {/* Featured courses */}
@@ -898,9 +975,12 @@ const CourseDetail = () => {
                             </button>
                             <button
                               className="button-apply-now"
-                              onClick={() =>
-                                handleApplyNow(course.id || course.course_id)
-                              } // Ensure correct ID is used
+                              onClick={() => handleApplyNow({
+                                id: course.id || course.course_id,
+                                logo: course.course_logo,
+                                school: course.course_school,
+                                course: course.course_name
+                              })}
                             >
                               {course.applyNowText || "Apply Now"}
                             </button>

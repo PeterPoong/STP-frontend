@@ -1,17 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
-import {
-  Search,
-  GeoAlt,
-  Alarm,
-  CalendarCheck,
-  Book,
-  ThreeDots,
-} from "react-bootstrap-icons";
 
+// Third-party libraries
+import { Search, GeoAlt, Alarm, CalendarCheck, Book, ThreeDots } from "react-bootstrap-icons";
 import "bootstrap/dist/css/bootstrap.min.css"; // Import Bootstrap CSS
 import { Row, Col, Form, Button, InputGroup, Modal } from "react-bootstrap";
-import styles from "../../../css/SchoolPortalStyle/Courses.module.css";
 import SchoolOutlinedIcon from "@mui/icons-material/SchoolOutlined";
+
+// Custom styles and components
+import styles from "../../../css/SchoolPortalStyle/Courses.module.css";
 import CourseDetail from "./CourseDetail";
 
 //AddCourseForm
@@ -303,61 +299,60 @@ const CoursesListing = ({ onAddCourseClick, courseID, editCourse }) => {
         </Col>
 
         <Col md={6}>
-          <div className="d-flex gap-5">
-            {/* Sort By Dropdown */}
-            <Form.Group controlId="sortBy">
-              <Form.Label className="fw-light">Sort By:</Form.Label>
+        <div className="d-block d-md-flex gap-2">
+    {/* Sort By Dropdown */}
+    <Form.Group controlId="sortBy">
+      <Form.Label className="fw-light">Sort By:</Form.Label>
+      <Form.Select
+        value={qualification}
+        onChange={(e) => setQualification(e.target.value)}
+        required
+      >
+        <option value="">Course Qualification</option>
+        {loadingQualification ? (
+          <p>Loading...</p>
+        ) : qualificationList.length === 0 ? (
+          <p>No courses available.</p>
+        ) : (
+          qualificationList.map((qualification) => (
+            <option value={qualification.id} key={qualification.id}>
+              {qualification.qualification_name}
+            </option>
+          ))
+        )}
+      </Form.Select>
+    </Form.Group>
 
-              <Form.Select
-                value={qualification}
-                onChange={(e) => setQualification(e.target.value)}
-                required
-              >
-                <option value="">Course Qualification</option>
+    {/* Category Dropdown */}
+    <Form.Group controlId="category">
+      <Form.Label className="fw-light">Category:</Form.Label>
+      <Form.Select
+        value={category}
+        onChange={(e) => setCategory(e.target.value)}
+        required
+      >
+        <option value="">Course Category</option>
+        {loadingCategory ? (
+          <p>Loading...</p>
+        ) : categoryList.length === 0 ? (
+          <p>No categories available.</p>
+        ) : (
+          categoryList.map((category) => (
+            <option value={category.id} key={category.id}>
+              {category.category_name}
+            </option>
+          ))
+        )}
+      </Form.Select>
+    </Form.Group>
 
-                {loadingQualification ? (
-                  <p>Loading...</p>
-                ) : qualificationList.length === 0 ? (
-                  <p>No courses available.</p>
-                ) : (
-                  qualificationList.map((qualification) => (
-                    <option value={qualification.id}>
-                      {qualification.qualification_name}
-                    </option>
-                  ))
-                )}
-              </Form.Select>
-            </Form.Group>
+    {/* Reset Filter */}
+    <p className="resetFilter" onClick={resetFilters}>
+      Reset Filter
+    </p>
+  </div>
+</Col>
 
-            {/* Category Dropdown */}
-            <Form.Group controlId="category">
-              <Form.Label className="fw-light">Category:</Form.Label>
-              <Form.Select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                required
-              >
-                <option value="">Course Category</option>
-
-                {loadingCategory ? (
-                  <p>Loading...</p>
-                ) : categoryList.length === 0 ? (
-                  <p>No courses available.</p>
-                ) : (
-                  categoryList.map((category) => (
-                    <option value={category.id}>
-                      {category.category_name}
-                    </option>
-                  ))
-                )}
-              </Form.Select>
-            </Form.Group>
-
-            <p className={`${styles.resetFilter}`} onClick={resetFilters}>
-              Reset Filter
-            </p>
-          </div>
-        </Col>
 
         <Col md={3}>
           {/* <Button
@@ -396,7 +391,7 @@ const CoursesListing = ({ onAddCourseClick, courseID, editCourse }) => {
                       className="card-header mt-3 mb-2 px-2"
                       style={{ borderBottom: "none" }}
                     >
-                      <h6>{course.name}</h6>
+                      <h6 className="ms-md-0 ms-3">{course.name}</h6>
                     </div>
                   </Col>
                 </Row>
@@ -437,7 +432,7 @@ const CoursesListing = ({ onAddCourseClick, courseID, editCourse }) => {
               </Col>
               <Col md={3}>
                 <div>
-                  <div className="mb-2 mt-4">
+                <div className="mb-2 mt-4 ms-4 ms-md-0">
                     <p>
                       <span role="img" aria-label="degree" className="me-2">
                         <SchoolOutlinedIcon />

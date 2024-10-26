@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Button, Row, Col } from 'react-bootstrap';
+import { Form, Button, Row, Col,Spinner } from 'react-bootstrap';
 import { Trash2, Edit, Save, FileText, Upload, X } from 'lucide-react';
 import WidgetPopUpUnsavedChanges from "../../../Components/StudentPortalComp/Widget/WidgetPopUpUnsavedChanges";
 
@@ -38,7 +38,7 @@ const OtherDocuments = ({ onBack, onSubmit }) => {
         }
   
         const result = await response.json();
-        console.log('API response for page', currentPage, ':', result); // For debugging
+       // console.log('API response for page', currentPage, ':', result); // For debugging
   
         if (result.success && result.data && Array.isArray(result.data.data)) {
           allDocuments = [...allDocuments, ...result.data.data];
@@ -53,7 +53,7 @@ const OtherDocuments = ({ onBack, onSubmit }) => {
         }
       }
   
-      console.log('Total documents fetched:', allDocuments.length); // For debugging
+     // console.log('Total documents fetched:', allDocuments.length); // For debugging
       setDocuments(allDocuments);
     } catch (error) {
       console.error('Error fetching documents:', error);
@@ -218,7 +218,15 @@ const OtherDocuments = ({ onBack, onSubmit }) => {
   const handleUnsavedChangesCancel = () => {
     setIsUnsavedChangesPopupOpen(false);
   };
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <div>
+     <div>
+      <div className="d-flex justify-content-center align-items-center m-5 " >
+        <Spinner animation="border" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </Spinner>
+      </div>
+    </div>
+  </div>;
   if (error) return <div>Error: {error}</div>;
 
   return (

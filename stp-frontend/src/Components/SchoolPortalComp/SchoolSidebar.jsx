@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Nav, Image, Button, Modal } from "react-bootstrap";
+import { Nav, Navbar, Collapse, Image, Button, Modal } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import "typeface-ubuntu";
 import { ArrowClockwise } from "react-bootstrap-icons";
@@ -9,6 +9,8 @@ import {
   Person,
   Book,
   Grid,
+  List,
+  X,
   BoxArrowRight,
   CardList,
   Gem,
@@ -23,18 +25,20 @@ import "../../css/SchoolPortalStyle/SchoolPortalSidebar.css";
 // const Sidebar = ({ detail, onDropdownItemSelect, selectTabPage }) => {
 const Sidebar = ({ onDropdownItemSelect, selectTabPage }) => {
   // Destructure `detail` from props
-
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState("dashboard");
   const [selectedDropdownItem, setSelectedDropdownItem] = useState("");
   // const [accountType, setAccountType] = useState(detail.data.account_type);
   const [accountType, setAccountType] = useState("");
   const [schoolLogo, setSchoolLogo] = useState(defaultProfilePic);
-
   const [detail, setDetail] = useState("");
 
   const navigate = useNavigate();
   const token = sessionStorage.getItem("token");
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
 
   useEffect(() => {
     const fetchSchoolDetail = async () => {
@@ -73,8 +77,11 @@ const Sidebar = ({ onDropdownItemSelect, selectTabPage }) => {
     setSelectedDropdownItem("");
     selectTabPage(tabName);
     onDropdownItemSelect("");
+    // Close sidebar when a tab is clicked
+    if (isSidebarOpen) {
+      toggleSidebar();
+    }
   };
-
   const handleManageAccount = () => {
     setIsProfileDropdownOpen(true);
     setSelectedTab("myProfile");
@@ -137,7 +144,13 @@ const Sidebar = ({ onDropdownItemSelect, selectTabPage }) => {
   const handleDropdownItemClick = (itemName) => {
     setSelectedDropdownItem(itemName);
     onDropdownItemSelect(itemName);
+    
+    // Close the sidebar if it's open
+    if (isSidebarOpen) {
+      toggleSidebar(); // This function should handle toggling the sidebar open/close
+    }
   };
+  
 
   const testHandleTabClick = (tab) => {
     switch (tab) {
@@ -210,15 +223,37 @@ const Sidebar = ({ onDropdownItemSelect, selectTabPage }) => {
   };
 
   return (
-    <div
-      className="d-flex flex-column vh-100"
-      style={{
-        width: "100%",
-        maxWidth: "200px",
-        backgroundColor: "#f8f9fa",
-        boxShadow: "2px 0 5px rgba(0,0,0,0.1)",
-      }}
-    >
+    
+    <div>
+      <div
+    className="d-flex flex-column vh-100"
+    style={{
+      width: "100%",
+      maxWidth: "200px",
+      backgroundColor: "#f8f9fa",
+      boxShadow: "2px 0 5px rgba(0,0,0,0.1)",
+    }}
+  >
+    {/* Mobile Toggle Button (Hamburger Menu) */}
+    <Button
+        className="mobile-toggle-btn mb-5"
+        onClick={toggleSidebar}
+        style={{ backgroundColor: "#B71A18", border: "none" }}
+      >
+        {isSidebarOpen ? (
+          <X size={20} style={{ color: "#FFF" }} />  
+        ) : (
+          <List size={20} style={{ color: "#FFF" }} /> 
+        )}
+      </Button>
+
+     {/* Sidebar */}
+     <div className={`sidebar ${isSidebarOpen ? "open" : ""}`}>
+     {/* Close button on mobile
+     <Button className="sidebar-close-btn" onClick={toggleSidebar}>
+       &times;
+     </Button> */}
+ 
       {/* Logo */}
       <div className="text-center py-3">
         <Image
@@ -431,6 +466,8 @@ const Sidebar = ({ onDropdownItemSelect, selectTabPage }) => {
           Sign-out
         </Nav.Link>
       </div>
+    </div>
+    </div>
     </div>
   );
 };

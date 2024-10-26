@@ -69,6 +69,7 @@ import ExistSchool from "./Pages/SchoolPages/ExistSchool";
 import SchoolViewApplicantDetail from "./Pages/SchoolPages/StudentApplicantDetail";
 import SchoolBasicInformation from "./Pages/SchoolPages/SchoolBasicInformation";
 
+import FacebookSocialPageRedirectPage from "./Pages/StudentPortalPages/FacebookSocialPageRedirectPage";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -287,6 +288,11 @@ const router = createBrowserRouter([
   {
     path: "/studentApplyCourse",
     element: <StudentApplyCourse />,
+  },
+
+  {
+    path: "/FacebookSocialPageRedirectPage",
+    element: <FacebookSocialPageRedirectPage />,
   },
 
   //School Portal

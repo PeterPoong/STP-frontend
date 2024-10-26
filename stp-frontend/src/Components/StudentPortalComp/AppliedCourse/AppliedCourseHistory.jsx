@@ -1,12 +1,11 @@
 // AppliedCourseHistory.jsx
 import React, { useState, useEffect } from 'react';
-import { Card, Button } from "react-bootstrap";
+import { Card, Button, Modal, Spinner } from "react-bootstrap";
 import { GraduationCap, CalendarCheck, BookOpenText } from 'lucide-react';
 import { MapPin, Clock, ChevronLeft, ChevronRight, Filter, X } from 'react-feather';
 import "bootstrap/dist/css/bootstrap.min.css";
 import WidgetAccepted from "../../../Components/StudentPortalComp/Widget/WidgetAccepted";
 import WidgetRejected from "../../../Components/StudentPortalComp/Widget/WidgetRejected";
-
 import "../../../css/StudentPortalStyles/StudentPortalWidget.css";
 import { motion, AnimatePresence } from "framer-motion";
 import styled from "styled-components";
@@ -17,6 +16,11 @@ const FilterContainer = styled.div`
   display: flex;
   align-items: center;
   margin-bottom: 0px;
+   @media screen and (max-width: 426px)
+  {
+    align-items:flex-start;
+    flex-direction: column;
+  }
 `;
 
 const FilterButton = styled(motion.button)`
@@ -49,6 +53,14 @@ const ExpandedMenu = styled(motion.div)`
   padding:5px 10px;
   min-width: 500px;
  
+  @media screen and (max-width: 426px)
+  {
+  align-items: flex-start;
+  flex-direction: column;
+  margin:0;
+  padding:0;
+  }
+ 
 `;
 
 const FilterOptionButton = styled(motion.button)`
@@ -65,13 +77,17 @@ const FilterOptionButton = styled(motion.button)`
   transition: all 0.3s ease;
   width: 150px;
   box-sizing: border-box; /* Ensure padding is included in width */
- overflow: hidden;
+  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   &:hover {
     background-color: #b71a18;
     color: white;
   }
+      @media screen and (max-width: 426px)
+    {
+    margin:0.5em;
+    }
 `;
 
 const OptionsList = styled(motion.div)`
@@ -95,12 +111,10 @@ const OptionsList = styled(motion.div)`
    padding:10px 0px;
     background-color: #F5F5F5;
   }
-
   &::-webkit-scrollbar-thumb {
     border-radius: 10px;
     background-color: #C6C6C6;
   }
-
   &::-webkit-scrollbar-thumb:hover {
     background-color: #A8A8A8;
   }
@@ -113,7 +127,6 @@ const OptionItem = styled(motion.div)`
   box-sizing: border-box; /* Ensure padding is included in width */
   width: 100%; /* Ensure the option item doesn't exceed the container's width */
   white-space: nowrap; /* Prevent text from wrapping */
-
   &:hover {
     background-color: #f0f0f0;
   }
@@ -131,11 +144,15 @@ const ResetButton = styled(motion.button)`
   transition: all 0.3s ease;
   width: 150px;
   box-sizing: border-box; /* Ensure padding is included in width */
-margin-top:0;
-margin-bottom:0;
-  &:hover {
-    background-color: #a01717;
-  }
+  margin-top:0;
+  margin-bottom:0;
+    &:hover {
+      background-color: #a01717;
+    }
+     @media screen and (max-width: 426px)
+    {
+    margin:0.5em;
+    }
 `;
 
 // Filter Component
@@ -434,9 +451,17 @@ const AppliedCourseHistory = () => {
           {/* End of Filter Component */}
 
           {loading ? (
-            <p>Loading...</p>
+            <div>
+            <div className="d-flex justify-content-center align-items-center m-5">
+              <Spinner animation="border" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </Spinner>
+            </div>
+          </div>
           ) : filteredApplications.length === 0 ? (
-            <p>No course history</p>
+            <div className="m-4">
+              <p className="text-center m-3">No application has been found.</p>
+            </div>
           ) : (
             currentItems.map((app, index) => (
               <Card
@@ -464,7 +489,7 @@ const AppliedCourseHistory = () => {
                         <p className="acp-university-name">{app.school_name}</p>
                         <p className="acp-location">
                           <MapPin size={16} className="acp-icon" />
-                          {`${app.city_name ? app.city_name : ''}${app.state_name ? `, ${app.state_name}` : ''}${app.country_name ? `, ${app.country_name}` : ''}`} 
+                          {`${app.city_name ? app.city_name : ''}${app.state_name ? `, ${app.state_name}` : ''}${app.country_name ? `, ${app.country_name}` : ''}`}
                           {/*<span className="acp-link">click and view on map</span>*/}
                         </p>
                       </div>

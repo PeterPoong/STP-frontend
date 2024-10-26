@@ -108,7 +108,7 @@ const AdminApplicantContent = () => {
         setShowModal(true);
     };
     const handleEdit = (id) => {
-        console.log(`Edit applicant with ID: ${id}`); // Log the ID being passed
+        // console.log(`Edit applicant with ID: ${id}`); // Log the ID being passed
         sessionStorage.setItem('applicantId', id); // Store package ID in session storage
         navigate(`/adminEditApplicant`); // Navigate to the edit page
     };

@@ -38,12 +38,29 @@ const CustomConnector = styled(StepConnector)(({ theme }) => ({
     borderColor: '#e0e0e0',
     borderWidth: "0.5rem",
   },
-  '@media (max-width: 375px)': {
+  '@media screen and (max-width: 426px) and (min-width: 250px)': {
     [`&.${stepConnectorClasses.alternativeLabel}`]: {
-      top: 20,
+      top: 17.5,
+      left: 'calc(-50% + 10.825px)',
+      right: 'calc(50% + 0px)',
     },
     [`& .${stepConnectorClasses.line}`]: {
-      borderWidth: "0.3rem",
+      borderWidth: "0.35rem",
+      width:"7rem"
+    },
+    [`&.${stepConnectorClasses.active}`]: {
+      [`& .${stepConnectorClasses.line}`]: {
+        borderColor: '#B71A18',
+        borderWidth: "0.35rem",
+        width:"5rem"
+      },
+    },
+    [`&.${stepConnectorClasses.completed}`]: {
+      [`& .${stepConnectorClasses.line}`]: {
+        borderColor: '#B71A18',
+        borderWidth: "0.35rem",
+        width:"10rem"
+      },
     },
   },
 }));
@@ -51,10 +68,11 @@ const CustomConnector = styled(StepConnector)(({ theme }) => ({
 const CustomStepper = styled(Stepper)(({ theme }) => ({
   '& .MuiStepConnector-line': {
     borderWidth: "0.5rem",
+    
   },
-  '@media (max-width: 375px)': {
+  '@media screen and (max-width: 426px) and (min-width: 250px)': {
     '& .MuiStep-root': {
-      padding: '0 4px',
+      padding: '0 0.25px',
     },
   },
 }));
@@ -77,11 +95,21 @@ const CustomStepLabel = styled(StepLabel)(({ theme }) => ({
       fontWeight: "bold"
     },
   },
-  '@media (max-width: 375px)': {
+  '@media screen and (max-width: 426px) and (min-width: 250px)': {
     '& .MuiStepLabel-label': {
-      fontSize: '0.7rem',
-      marginTop: '5px',
+      fontSize: '0.625rem',
+      marginTop: '10px',
+      '&.Mui-active': {
+      fontSize: '0.625em',
+      
     },
+    '&.Mui-completed': {
+     
+      fontSize: '0.625rem',
+    
+    },
+    },
+    
   },
 }));
 
@@ -97,10 +125,10 @@ const CustomStepIcon = styled('div')(({ theme, ownerState }) => ({
   fontWeight: 'bold',
   fontSize: '1.5rem',
   zIndex: 1,
-  '@media (max-width: 375px)': {
-    width: 40,
-    height: 40,
-    fontSize: '1.2rem',
+  '@media screen and (max-width: 426px) and (min-width: 250px)': {
+    width: 35,
+    height: 35,
+    fontSize: '0.825rem',
   },
 }));
 
@@ -288,11 +316,11 @@ const StudentApplyCourses = () => {
         <div className="backgroundimage">
           <div className="widget-applying-course justify-content-center">
             <h3 className="text-black align-self-center fw-normal mb-3">You are now applying for </h3>
-            <p className="coursetext-applycourse  align-self-center fw-bold mb-5">{courseName || "Bachelor in Mass Communication"}</p>
+            <p className="coursetext-applycourse  align-self-center fw-bold ">{courseName || "Bachelor in Mass Communication"}</p>
             <div className="d-flex justify-content-center">
               <img
                 src={schoolLogoUrl || image1}
-                className="sac-image-applycourse me-5"
+                className="sac-image-applycourse "
                 alt={`${schoolName || "University"} Logo`}
               />
               <p className="schooltext-applycourse text-black fw-bold align-self-center">{schoolName || "Swinburne University of Technology"}</p>

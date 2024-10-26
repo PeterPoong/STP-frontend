@@ -97,9 +97,9 @@ const AdminEditSchoolContent = () => {
                         }
                     });
 
-                // Log the separated cover file and album files
-                console.log('Cover file:', coverFile);
-                console.log('Album files:', albumFiles);
+                // // Log the separated cover file and album files
+                // console.log('Cover file:', coverFile);
+                // console.log('Album files:', albumFiles);
         
                     setFormData({
                         name: schoolDetails.name || '',
@@ -207,7 +207,7 @@ const AdminEditSchoolContent = () => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        console.log("Submitting form data:", formData); // Debugging line
+        // console.log("Submitting form data:", formData); // Debugging line
     
         const schoolId = sessionStorage.getItem('schoolId'); // Retrieve schoolId from sessionStorage
         if (!schoolId) {
@@ -338,7 +338,7 @@ useEffect(() => {
       .then(data => {
         if (data.success) {
           setCountryList(data.data);
-          console.log("Countries fetched: ", data.data);
+        //   console.log("Countries fetched: ", data.data);
   
           // Set default country to Malaysia (ID = 132) if no country is selected
           if (!formData.country) {
@@ -517,9 +517,9 @@ useEffect(() => {
 
     const handleRemoveAlbum = async (fileToRemove) => {
         if (fileToRemove.id) {
-            console.log('Removing photo with id:', fileToRemove.id);
+            // console.log('Removing photo with id:', fileToRemove.id);
             const apiUrl = `${import.meta.env.VITE_BASE_URL}api/admin/removeSchoolPhoto`;
-            console.log('API URL:', apiUrl); // Log the full API URL
+            // console.log('API URL:', apiUrl); // Log the full API URL
             
             try {
                 const response = await fetch(apiUrl, {
@@ -546,7 +546,7 @@ useEffect(() => {
                 }
                 
                 const data = await response.json();
-                console.log('API response:', data);
+                // console.log('API response:', data);
     
                 if (data.success) {
                     setAlbumFiles(prevFiles => prevFiles.filter(file => file.id !== fileToRemove.id));

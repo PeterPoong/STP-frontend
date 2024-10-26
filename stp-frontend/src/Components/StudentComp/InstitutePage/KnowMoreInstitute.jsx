@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate, useParams, Link } from "react-router-dom";
 import NavButtons from "../NavButtons";
 import NavButtonsSP from "../../../Components/StudentPortalComp/NavButtonsSP";
@@ -31,6 +31,8 @@ const baseURL = import.meta.env.VITE_BASE_URL;
 const schoolDetailAPIURL = `${baseURL}api/student/schoolDetail`;
 
 const KnowMoreInstitute = () => {
+  const [contentHeight, setContentHeight] = useState(0);
+  const contentRef = useRef(null);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [showAllPhotosModal, setShowAllPhotosModal] = useState(false);
   const [selectedPhotos, setSelectedPhotos] = useState([]);
@@ -97,8 +99,13 @@ const KnowMoreInstitute = () => {
   const [featuredInstitutes, setFeaturedInstitutes] = useState([]);
   const navigate = useNavigate();
 
+  const handleContentHeight = () => {
+    if (contentRef.current) {
+      setContentHeight(contentRef.current.scrollHeight);
+    }
+  };
   useEffect(() => {
-    console.log("Institute ID: ", id);
+    // console.log("Institute ID: ", id);
 
     // Fetch school detail if institutes are not loaded
     if (!institutes || institutes.length === 0) {
@@ -113,7 +120,7 @@ const KnowMoreInstitute = () => {
       })
         .then((response) => response.json())
         .then((data) => {
-          console.log("Fetched School Detail Data: ", data);
+          //console.log("Fetched School Detail Data: ", data);
           if (data && data.success && data.data) {
             setInstitutes([data.data]);
             setCourses(data.data.courses);
@@ -143,7 +150,7 @@ const KnowMoreInstitute = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log("Fetched Featured Institutes Data: ", data);
+        //    console.log("Fetched Featured Institutes Data: ", data);
         if (data && data.success && Array.isArray(data.data)) {
           setFeaturedInstitutes(data.data);
         } else {
@@ -160,6 +167,7 @@ const KnowMoreInstitute = () => {
       });
   }, [id]);
 
+
   if (!institutes || institutes.length === 0) {
     return (
       <div className="spinner-container">
@@ -173,18 +181,29 @@ const KnowMoreInstitute = () => {
   };
 
   const handleApplyNow = (program, institute) => {
-    console.log("Program object:", program);
+    //  console.log("Program object:", program);
     navigate(`/studentApplyCourses/${program.id}`, {
       state: {
         programId: program.id,
-        schoolLogoUrl: `${import.meta.env.VITE_BASE_URL}storage/${
-          program.course_logo || program.logo
-        }`,
+        schoolLogoUrl: `${import.meta.env.VITE_BASE_URL}storage/${program.course_logo || program.logo
+          }`,
         schoolName: institute.name,
         courseName: program.course_name,
       },
     });
   };
+
+  const handleContactSchool = (email) => {
+    if (email) {
+      // Remove any semicolons or other potential invalid characters
+      const cleanEmail = email.replace(/[;,\s]+$/, '');
+      window.location.href = `mailto:${cleanEmail}`;
+    } else {
+      alert('School email is not available at the moment.');
+    }
+  };
+
+
 
   return (
     <div style={{ backgroundColor: "#F5F4F4" }}>
@@ -196,7 +215,7 @@ const KnowMoreInstitute = () => {
               <img
                 src={
                   institute.school_cover &&
-                  institute.school_cover.schoolMedia_location
+                    institute.school_cover.schoolMedia_location
                     ? `${baseURL}storage/${institute.school_cover.schoolMedia_location}`
                     : headerImage // Use headerImage as the default if school_cover is not available
                 }
@@ -248,6 +267,7 @@ const KnowMoreInstitute = () => {
                   className="d-flex align-items-center justify-content-center justify-content-md-end"
                 >
                   <Button
+                    onClick={() => handleContactSchool("institute.school_email")}
                     style={{
                       backgroundColor: "#FF6B00",
                       border: "none",
@@ -550,29 +570,32 @@ const KnowMoreInstitute = () => {
                   <Row>
                     <Col md={10} className="d-flex align-items-center">
                       <div>
-                        <h5 className="card-title">Course Overview</h5>
+                        <h5 className="card-title">School Overview</h5>
                       </div>
                     </Col>
                     <Col md={12}>
-                      <div style={{ zIndex: 1 }}>
-                        <div
-                          dangerouslySetInnerHTML={{
-                            __html: institute.short_description,
-                          }}
-                        />
-                      </div>
-                    </Col>
-                    <Col md={12}>
-                      <Collapse in={open}>
-                        {/* <div>
+                      {!open ? (
+                        <div id="collapse-course-overview" className="student-knowmoreinsti-wordbreak">
+                          <div
+                            dangerouslySetInnerHTML={{
+                              __html: institute.short_description,
+                            }}
+                          />
+                        </div>
+                      ) : (
+                        <Collapse in={open}>
+                          {/* <div>
                           <p>{institute.short_description}</p>
                         </div> */}
-                        <div
-                          dangerouslySetInnerHTML={{
-                            __html: institute.short_description,
-                          }}
-                        />
-                      </Collapse>
+                          <div id="collapse-course-overview" >
+                            <div
+                              dangerouslySetInnerHTML={{
+                                __html: institute.short_description,
+                              }}
+                            />
+                          </div>
+                        </Collapse>
+                      )}
                     </Col>
                     <Col className="d-flex justify-content-center">
                       <Button
@@ -737,63 +760,83 @@ const KnowMoreInstitute = () => {
                   top: 0,
                   left: 0,
                   zIndex: 0,
-                  marginBottom: openAbout ? "20px" : "0px",
+                  marginBottom: openAbout ? "1rem" : "0px",
                   marginTop: "10%",
                   overflow: "hidden",
-                  transition: "height 0.5s ease",
+                  transition: "all 0.5s ease", // Added transition for smooth effect
                 }}
               >
-                {/* Background Image */}
-                <div
-                  style={{
-                    position: "relative", // Position the background image absolutely
+                {/* Background Image Container */}
+                <div style={{
+                  position: "relative",
+                  top: 0,
+                  left: 0,
+                  zIndex: 0,
+                  borderRadius: '1rem',
+                  width: "100%",
+                  height: openAbout ? `${contentHeight + 500}px` : "25rem", // Add padding for other elements
+                  overflow: "hidden",
+                  transition: "height 0.5s ease",
+                }}>
+                  {/* Image with zoom effect */}
+                  <div style={{
+                    position: "absolute",
                     top: 0,
                     left: 0,
-                    zIndex: 0, // Behind other elements
-                    width: "100%", // Set width to 1457px
-                    height: openAbout ? "600px" : "300px", // Adjust height as needed
-                    overflow: "hidden",
-                    transition: "height 0.5s ease", // Smooth transition for height
-                  }}
-                >
-                  <img
-                    src={
-                      institute.school_cover &&
-                      institute.school_cover.schoolMedia_location
-                        ? `${baseURL}storage/${institute.school_cover.schoolMedia_location}`
-                        : headerImage // Use default headerImage if school_cover is not available
-                    }
-                    alt="Header"
-                    style={{
-                      position: "absolute",
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                      zIndex: 0,
-                    }}
-                  />
+                    width: "100%",
+                    height: openAbout ? "20rem" : "100%", // This creates the partial reveal effect
+                    transition: "height 0.5s ease",
+                  }}>
+                    <img
+                      src={
+                        institute.school_cover &&
+                          institute.school_cover.schoolMedia_location
+                          ? `${baseURL}storage/${institute.school_cover.schoolMedia_location}`
+                          : headerImage
+                      }
+                      alt="Header"
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "fill",
+                        objectPosition: "center top", // Anchor image to top
+                        transition: "transform 0.5s ease",
+                        transform: openAbout ? "scale(1)" : "scale(1.1)", // Subtle zoom effect
+                      }}
+                    />
+                  </div>
+
                   {/* Card */}
                   <div
                     className="card know-more-card"
                     style={{
                       bottom: -10,
-                      width: "100%", // Set the card's width to a percentage or specific px value
-                      margin: "0 auto", // Center the card horizontally
+                      width: "100%",
+                      margin: "0 auto",
                       position: "absolute",
-                      zIndex: 1, // Ensure it appears above the background image
+                      zIndex: 1,
+                      backgroundColor: "white",
+                      boxShadow: "0 -4px 10px rgba(0,0,0,0.1)",
+                      borderRadius: "20px 20px 0 0",
                     }}
                   >
                     <div className="card-body" style={{ padding: "50px" }}>
                       <Row>
                         <Col md={10} className="d-flex align-items-center">
                           <div>
-                            <h5 className="card-title">
-                              About {institute.name}
-                            </h5>
+                            <h5 className="card-title">About {institute.name}</h5>
                           </div>
                         </Col>
                         <Col md={12}>
-                          <div style={{ zIndex: 1 }}>
+                          <div
+                            ref={contentRef}
+                            style={{
+                              zIndex: 1,
+                              maxHeight: openAbout ? "none" : "100px",
+                              overflow: "hidden",
+                              transition: "max-height 0.5s ease",
+                            }}
+                          >
                             <div
                               dangerouslySetInnerHTML={{
                                 __html: institute.long_description,
@@ -801,16 +844,23 @@ const KnowMoreInstitute = () => {
                             />
                           </div>
                         </Col>
-                        <Col md={12}>
-                          <Collapse in={openAbout}>
-                            <div style={{ zIndex: 1 }}></div>
-                          </Collapse>
-                        </Col>
                         <Col className="d-flex justify-content-center">
                           <Button
-                            style={{ textDecoration: "none" }}
-                            variant="link"
-                            onClick={() => setOpenAbout(!openAbout)}
+                            style={{
+                              textDecoration: "none",
+                              color: "#007bff",
+                              background: "none",
+                              border: "none",
+                              marginTop: "20px",
+                              cursor: "pointer",
+                            }}
+                            onClick={() => {
+                              setOpenAbout(!openAbout);
+                              // Add a small delay to ensure the content is rendered before measuring
+                              setTimeout(() => {
+                                handleContentHeight();
+                              }, 0);
+                            }}
                             aria-controls="collapse-about-institute"
                             aria-expanded={openAbout}
                           >
@@ -822,12 +872,12 @@ const KnowMoreInstitute = () => {
                   </div>
                 </div>
               </div>
-
               {/* --------- End of About School --------- */}
 
               {/* Contact School Button */}
               <div className="d-flex justify-content-center">
                 <Button
+                  onClick={() => handleContactSchool(institute.school_email)}
                   style={{
                     backgroundColor: "#FF6B00",
                     border: "none",
@@ -861,7 +911,7 @@ const KnowMoreInstitute = () => {
                                   paddingLeft: "30px",
                                   backgroundColor: "#F2F2F2",
                                   marginLeft: "-15px",
-                                  height: "31px",
+                                  height: "fit-content",
                                 }}
                               >
                                 <a
@@ -874,9 +924,8 @@ const KnowMoreInstitute = () => {
                               <div className="d-flex align-items-center">
                                 <div style={{ paddingLeft: "20px" }}>
                                   <img
-                                    src={`${baseURL}storage/${
-                                      course.course_logo || institute.logo
-                                    }`}
+                                    src={`${baseURL}storage/${course.course_logo || institute.logo
+                                      }`}
                                     alt={institute.name}
                                     width="100"
                                   />
@@ -1082,11 +1131,12 @@ const KnowMoreInstitute = () => {
               <img src={studypal11} alt="Header" className="adverstise-image" />
             </Container>
           </div>
-        ))}
+        ))
+      }
       <div>
         <SpcFooter />
       </div>
-    </div>
+    </div >
   );
 };
 

@@ -15,6 +15,13 @@ const FilterContainer = styled.div`
   display: flex;
   align-items: center;
   margin-bottom: 0px;
+  @media screen and (max-width: 426px)
+  {
+    align-items:flex-start;
+    flex-direction: column;
+  }
+
+  
 `;
 
 const FilterButton = styled(motion.button)`
@@ -35,6 +42,8 @@ const FilterButton = styled(motion.button)`
   &:hover {
     background-color: #a01717;
   }
+
+  
 `;
 
 const ExpandedMenu = styled(motion.div)`
@@ -46,6 +55,14 @@ const ExpandedMenu = styled(motion.div)`
   border-radius: 10px;
   padding:5px 10px;
   min-width: 500px;
+
+  @media screen and (max-width: 426px)
+  {
+  align-items: flex-start;
+  flex-direction: column;
+  margin:0;
+  padding:0;
+  }
  
 `;
 
@@ -63,13 +80,17 @@ const FilterOptionButton = styled(motion.button)`
   transition: all 0.3s ease;
   width: 150px;
   box-sizing: border-box; /* Ensure padding is included in width */
- overflow: hidden;
+  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   &:hover {
     background-color: #b71a18;
     color: white;
   }
+      @media screen and (max-width: 426px)
+    {
+    margin:0.5em;
+    }
 `;
 
 const OptionsList = styled(motion.div)`
@@ -93,12 +114,10 @@ const OptionsList = styled(motion.div)`
    padding:10px 0px;
     background-color: #F5F5F5;
   }
-
   &::-webkit-scrollbar-thumb {
     border-radius: 10px;
     background-color: #C6C6C6;
   }
-
   &::-webkit-scrollbar-thumb:hover {
     background-color: #A8A8A8;
   }
@@ -111,7 +130,6 @@ const OptionItem = styled(motion.div)`
   box-sizing: border-box; /* Ensure padding is included in width */
   width: 100%; /* Ensure the option item doesn't exceed the container's width */
   white-space: nowrap; /* Prevent text from wrapping */
-
   &:hover {
     background-color: #f0f0f0;
   }
@@ -129,11 +147,15 @@ const ResetButton = styled(motion.button)`
   transition: all 0.3s ease;
   width: 150px;
   box-sizing: border-box; /* Ensure padding is included in width */
-margin-top:0;
-margin-bottom:0;
-  &:hover {
-    background-color: #a01717;
-  }
+  margin-top:0;
+  margin-bottom:0;
+    &:hover {
+      background-color: #a01717;
+    }
+    @media screen and (max-width: 426px)
+    {
+    margin:0.5em;
+    }
 `;
 
 // Filter Component
@@ -472,13 +494,19 @@ const AppliedCoursePending = () => {
 
           {/* Loading Indicator */}
           {loading ? (
-            <div className="d-flex justify-content-center align-items-center mt-4">
-              <Spinner animation="border" role="status">
-                <span className="visually-hidden">Loading...</span>
-              </Spinner>
+            <div>
+              <div className="d-flex justify-content-center align-items-center m-5">
+                <Spinner animation="border" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </Spinner>
+              </div>
             </div>
+
+
           ) : filteredApplications.length === 0 ? (
-            <p className="mt-4">No pending applications found.</p>
+            <div className="m-4">
+              <p className="text-center m-3">No application has been found.</p>
+            </div>
           ) : (
             currentItems.map((app, index) => (
               <Card

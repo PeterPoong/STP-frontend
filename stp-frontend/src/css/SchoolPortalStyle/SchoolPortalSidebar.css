@@ -167,3 +167,64 @@
   background-color: #B71A18; /* Red background on hover */
   color: white; /* White text on hover */
 }
+
+/* Sidebar CSS for mobile view */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed; /* Keep it fixed on the screen */
+    top: 0;
+    right: 0; /* Align to the right */
+    width: 250px; /* Set a width for the sidebar */
+    height: 100%; /* Full height */
+    background-color: #f8f9fa; /* Sidebar background */
+    box-shadow: -2px 0 5px rgba(0,0,0,0.1); /* Shadow effect */
+    transform: translateX(100%); /* Initially offscreen */
+    transition: transform 0.3s ease; /* Transition effect */
+    z-index: 999; /* Ensure it is above other elements */
+  }
+  
+  .sidebar.open {
+    transform: translateX(0); /* Bring it into view */
+  }
+  
+
+  .mobile-toggle-btn {
+    display: block;
+    position: fixed;
+    top: 2px; /* Adjust this value as needed */
+    right: 10px; /* Position to the right */
+    z-index: 1000;
+    border: none;
+    background-color: #B71A18;
+  }
+  
+
+  /* Ensure the logo and profile are in a single line */
+  .sidebar .d-flex {
+    display: flex;
+    /* justify-content: space-between; */
+    align-items: center;
+    padding: 10px; /* Adjust padding as needed */
+  }
+
+  /* Ensure buttons are aligned properly */
+  .custom-blue-button, .custom-border-gradient-button {
+    margin-left: 10px; /* Spacing between the buttons */
+  }
+}
+
+/* Sidebar for larger screens */
+@media (min-width: 769px) {
+  .sidebar {
+    position: static;
+    width: 200px;
+    height: 100vh;
+    left: 0;
+    background-color: #f8f9fa;
+    transition: none;
+  }
+
+  .mobile-toggle-btn {
+    display: none;
+  }
+}

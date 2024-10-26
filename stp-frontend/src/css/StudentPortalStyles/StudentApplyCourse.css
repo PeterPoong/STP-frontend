@@ -1,4 +1,27 @@
+.applycourse-cocurriculum-wordbreak {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-all;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 250px;
+  width: 250px;
+}
 
+
+.applycourse-cocurriculum-wordbreak:hover {
+  width: max-content;
+  text-overflow: unset;
+  max-width: max-content;
+  overflow: unset;
+}
+
+
+
+.applycourse-basicinfo-margin-bot {
+  margin-bottom: 3rem;
+}
 
 .sas-fontsize-1 {
   font-size: 1.25rem;
@@ -66,7 +89,7 @@
 
   background-size: 100% 75%;
 
-  height: 35rem !important;
+  height: 35rem;
   flex-direction: row;
   align-content: flex-end;
 }
@@ -127,12 +150,14 @@
 .sac-image-applycourse {
   width: auto;
   height: 6.5rem;
+  margin-right: 2rem;
 }
 
 .coursetext-applycourse {
   color: #B71A18;
   font-size: 2.25rem;
   text-align: -webkit-center;
+  margin-bottom: 2.5rem;
 }
 
 .schooltext-applycourse {
@@ -706,14 +731,13 @@ ul {
   white-space: nowrap;
 }
 
-.sas-pointer{
+.sas-pointer {
   margin-right: 17.5rem;
 }
 
-.sas-pointer-div
-{
+.sas-pointer-div {
   border-bottom: 2px solid #dee2e6;
-  padding:0 0.75rem;
+  padding: 0 0.75rem;
 }
 
 /*select*/
@@ -1337,14 +1361,12 @@ ul {
 
   .activity-item,
   .achievement-item {
-    flex-direction: column;
     align-items: flex-start;
   }
 
   .activity-item>div,
   .achievement-item>div {
-    width: 100%;
-    text-align: left;
+   
     margin-bottom: 0.5rem;
   }
 
@@ -1391,12 +1413,18 @@ ul {
     margin-bottom: 1rem;
     border: 1px solid #dee2e6;
     border-radius: 0.25rem;
+    margin-top: 10px;
+    border-bottom: 1px solid #e0e0e0;
+    box-shadow: 5px 5px 10px 0px rgb(0, 0, 0, 0.15);
   }
 
   .documents-content table td {
-    text-align: right;
-    padding-left: 50%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    border: none;
     position: relative;
+    padding-left: 50%;
   }
 
   .documents-content table td::before {
@@ -1410,9 +1438,58 @@ ul {
     font-weight: bold;
   }
 
+
   .documents-content .file-icon {
     display: none;
   }
+
+  .applycourse-yourdocument-workbreak {
+    word-wrap: break-word;
+    /* For wrapping long words */
+    overflow-wrap: break-word;
+    /* Breaks words at the right points */
+    word-break: break-all;
+    /* Forces the break for long words */
+    white-space: nowrap;
+    /* Prevents the text from wrapping to the next line */
+    overflow: hidden;
+    /* Ensures overflowed content is hidden */
+    text-overflow: ellipsis;
+    /* Adds '...' at the point of overflow */
+    width: 175px;
+
+
+  }
+
+  .summary-content-yourdocument {
+    padding: 0.75rem 2rem;
+  }
+
+  .applycourse-responsive-table-text-end {
+    text-align: end;
+    max-width:100%;
+  }
+
+  .activity-item .col-12
+  {
+    width:30%;
+  }
+
+  .activity-item .col-6
+  {
+    width:30%;
+  }
+
+  .activity-item .col-3
+  {
+    width:30%;
+  }
+
+  .col-12,.col-6,.col-3{
+    width:auto !important;
+  }
+
+
 }
 
 
@@ -1655,7 +1732,7 @@ ul {
 
   .activity-item>div,
   .achievement-item>div {
-    width: 100%;
+    
     padding: 0.2rem 0;
   }
 
@@ -1671,7 +1748,7 @@ ul {
 
   .activity-item .col-3:last-of-type,
   .achievement-item .col-3:last-of-type {
-    order: 2;
+  order:2;
   }
 
   .position {
@@ -1724,4 +1801,33 @@ ul {
   .documents-content .file-date {
     font-size: 0.7rem;
   }
+}
+
+@media screen and (max-width: 426px) and (min-width: 250px) {
+  .applycourse-basicinfo-margin-bot {
+    margin-bottom: 0.5rem;
+  }
+
+  .sac-image-applycourse {
+    width: auto;
+    height: 3.5rem;
+    margin-right: 0.5rem;
+  }
+
+
+  .coursetext-applycourse {
+    font-size: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .schooltext-applycourse {
+    font-size: 1.25rem;
+    margin: 0;
+  }
+
+  .backgroundimage {
+    height: 20rem;
+  }
+
+
 }

@@ -67,7 +67,7 @@ const AdminSignup = () => {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    console.log('Registration successful:', data);
+                    // console.log('Registration successful:', data);
                     navigate('/adminLogin'); // Redirect to login page
                 } else {
                     setErrorMessage(`Registration failed: ${data.message}`);
