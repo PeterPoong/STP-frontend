@@ -12,7 +12,9 @@ import {
 import "bootstrap/dist/css/bootstrap.min.css";
 import studentPortalLogin from "../../assets/StudentPortalAssets/studentPortalLogin.png";
 import studentPortalLoginLogo from "../../assets/StudentPortalAssets/studentPortalLoginLogo.png";
-import "react-phone-input-2/lib/style.css";
+
+import PhoneInput from "react-phone-input-2";
+
 import { Eye, EyeOff } from "react-feather";
 import "../../css/StudentPortalStyles/StudentPortalLoginForm.css";
 import "../../css/StudentPortalStyles/StudentButtonGroup.css";
