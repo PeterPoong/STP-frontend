@@ -65,7 +65,7 @@ const CoursesContainer = () => {
     navigate("/courses", {
       state: {
         initialCategory: category.label,
-        categoryTrigger: Date.now() // Add a timestamp to force update
+        categoryTrigger: Date.now(), // Add a timestamp to force update
       },
     });
   };
@@ -91,13 +91,16 @@ const CoursesContainer = () => {
           Hot pick Courses
         </h4>
         {loading ? (
-          <div style={{ textAlign: "center", padding: "40px" }}> <div>
-            <div className="d-flex justify-content-center align-items-center m-5 " >
-              <Spinner animation="border" role="status">
-                <span className="visually-hidden">Loading...</span>
-              </Spinner>
+          <div style={{ textAlign: "center", padding: "40px" }}>
+            {" "}
+            <div>
+              <div className="d-flex justify-content-center align-items-center m-5 ">
+                <Spinner animation="border" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </Spinner>
+              </div>
             </div>
-          </div></div>
+          </div>
         ) : error ? (
           <div style={{ textAlign: "center", padding: "40px" }}>
             Error: {error}
