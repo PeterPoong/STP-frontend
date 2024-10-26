@@ -69,7 +69,11 @@ import ExistSchool from "./Pages/SchoolPages/ExistSchool";
 import SchoolViewApplicantDetail from "./Pages/SchoolPages/StudentApplicantDetail";
 import SchoolBasicInformation from "./Pages/SchoolPages/SchoolBasicInformation";
 
+//marketing
+import AccountPackages from "./Pages/MarketingPages/AccountPackages";
+
 import FacebookSocialPageRedirectPage from "./Pages/StudentPortalPages/FacebookSocialPageRedirectPage";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -334,6 +338,12 @@ const router = createBrowserRouter([
   {
     path: "/school/ApplicantDetail/:applicantID",
     element: <SchoolViewApplicantDetail />,
+  },
+
+  //marketing
+  {
+    path: "/marketing/AccountPackages",
+    element: <AccountPackages />,
   },
 ]);
 
