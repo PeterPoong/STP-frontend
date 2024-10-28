@@ -95,33 +95,32 @@ const FeaturedCoursesContainer = () => {
         </div></div>}
       {!loading && !error && courses.length > 0 && (
         <Container className="course-container">
+
           <Swiper
             modules={[Navigation, Pagination]}
             spaceBetween={5}
             slidesPerView={5}
             loop={true}
-            navigation
-            // style={{ padding: "0 100px" }}
+            navigation  // Helps with loop smoothness
             breakpoints={{
               // Mobile phones (portrait)
               320: {
-                slidesPerView: 17,
-                spaceBetween: 20,
-                //centeredSlides: true
+                slidesPerView: 12,
+                spaceBetween: 1, 
               },
               // Large phones & small tablets
               576: {
-                slidesPerView: 17,
-                spaceBetween:20,
+                slidesPerView: 12,
+                spaceBetween: 1,
               },
               // Tablets & small laptops
               768: {
-                slidesPerView: 3,
-                spaceBetween: 5,
+                slidesPerView: 12,
+                spaceBetween: 10,
               },
               // Laptops & desktops
               992: {
-                slidesPerView: 4,
+                slidesPerView: 12,
                 spaceBetween: 5,
               },
               // Large desktops
@@ -174,7 +173,7 @@ const FeaturedCoursesContainer = () => {
                       }}
                     >
                       <Link
-                         style={{
+                        style={{
                           color: "#514E4E"
                         }}
                         to={{
