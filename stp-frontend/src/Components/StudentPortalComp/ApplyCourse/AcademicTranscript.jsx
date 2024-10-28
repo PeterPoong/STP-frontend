@@ -1111,10 +1111,10 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
           {transcript.subjects.length > 0 ? (
             <div className="px-4">
               {transcript.subjects.map((subject, subIndex) => (
-                <div key={subIndex} className="justify-content-between subject-item d-flex align-items-center mb-2 bg-white p-1 rounded-3">
+                <div key={subIndex} className="justify-content-between subject-item  mb-2 bg-white p-1 rounded-3 applycourse-overflow">
                   {subject.isEditing ? (
                     <>
-                      <div className="d-flex align-items-center flex-grow-1">
+                      <div className="applycourse-academictranscript-dflex align-items-center flex-grow-1">
                         <AlignJustify className="mx-2" size={15} color="grey" />
                         {transcript.id === 32 ? (
                           (() => {
@@ -1196,7 +1196,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                     </>
                   ) : (
                     <>
-                      <div className="d-flex align-items-center flex-grow-1">
+                      <div className="applycourse-academictranscript-dflex align-items-center flex-grow-1">
                         <AlignJustify size={15} className="me-2 ms-2" style={{ alignSelf: 'center' }} />
                         <span className="me-2"
                           style={{

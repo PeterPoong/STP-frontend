@@ -1,3 +1,18 @@
+.applycourse-overflow
+{
+  display:flex;
+  align-items:center;
+}
+.applycourse-academictranscript-dflex
+{
+  display: flex;
+}
+
+.applycourse-cocurriculum-clubname-input
+{
+  width:25%;
+}
+
 .applycourse-cocurriculum-wordbreak {
   word-wrap: break-word;
   overflow-wrap: break-word;
@@ -1829,5 +1844,37 @@ ul {
     height: 20rem;
   }
 
+.applycourse-cocurriculum-content-card
+{
+justify-self: center;
+text-align-last:center ;
+}
 
+.applycourse-cocurriculum-content,.applycourse-cocurriculum-content-clubname
+{
+  text-align: center;
+}
+
+.applycourse-cocurriculum-icon
+{
+  align-self:center;
+  margin-bottom:1rem;
+}
+
+.applycourse-cocurriculum-clubname-input
+{
+  width:100%;
+}
+
+.applycourse-alignself-center
+{
+  align-self:center;
+}
+
+
+
+.applycourse-overflow
+{
+  overflow: scroll;
+}
 }

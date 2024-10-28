@@ -1614,7 +1614,6 @@ const StudentApplicationSummary = ({ }) => {
                 );
               }
             }}
-            disabled={isFetchingSchoolId || !schoolId}
           >
             {isFetchingSchoolId ? "Loading..." : "Know More"}
           </Button>

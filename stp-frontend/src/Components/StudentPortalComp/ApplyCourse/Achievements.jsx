@@ -81,7 +81,7 @@ const Achievements = ({ onBack, onNext }) => {
         }
 
         const result = await response.json();
-       // console.log('API response for page', currentPage, ':', result); // For debugging
+        // console.log('API response for page', currentPage, ':', result); // For debugging
 
         if (result.success && result.data && Array.isArray(result.data.data)) {
           const pageAchievements = result.data.data.map((achievement) => {
@@ -107,7 +107,7 @@ const Achievements = ({ onBack, onNext }) => {
         }
       }
 
-     // console.log('Total achievements fetched:', allAchievements.length); // For debugging
+      // console.log('Total achievements fetched:', allAchievements.length); // For debugging
       setAchievements(allAchievements);
     } catch (error) {
       console.error('Error fetching achievements:', error);
@@ -383,13 +383,13 @@ const Achievements = ({ onBack, onNext }) => {
                   placeholder="Name of Achievement..."
                   value={achievement.achievement_name}
                   onChange={(e) => handleAchievementChange(index, 'achievement_name', e.target.value)}
-                  className="mb-2 ps-2 border p-0 fw-bold w-25 ac-input-placeholder"
+                  className="mb-2 ps-2 border p-0 fw-bold applycourse-cocurriculum-clubname-input ac-input-placeholder"
                   style={{ fontSize: '1.1rem' }}
                 />
                 <div className="d-flex justify-content-between ps-0">
-                  <div className="d-flex flex-grow-1 px-0">
+                  <div className="d-flex flex-grow-1  px-0">
                     <div className="d-flex align-items-center me-3 flex-shrink-0">
-                      <Clock size={18} className="me-2" />
+                      <Clock size={18} className="me-2 applycourse-cocurriculum-icon" />
                       <DatePicker
                         selected={
                           achievement.date instanceof Date ? achievement.date : new Date(achievement.date)
@@ -401,7 +401,7 @@ const Achievements = ({ onBack, onNext }) => {
                       />
                     </div>
                     <div className="d-flex align-items-center me-3 flex-shrink-0">
-                      <Trophy size={18} className="me-2" />
+                      <Trophy size={18} className="me-2 applycourse-cocurriculum-icon" />
                       <Form.Control
                         as="select"
                         value={achievement.title}
@@ -417,7 +417,7 @@ const Achievements = ({ onBack, onNext }) => {
                       </Form.Control>
                     </div>
                     <div className="d-flex align-items-center me-3 flex-shrink-0">
-                      <Building size={18} className="me-2" />
+                      <Building size={18} className="me-2 applycourse-cocurriculum-icon" />
                       <Form.Control
                         type="text"
                         placeholder="Awarded By"
@@ -429,8 +429,8 @@ const Achievements = ({ onBack, onNext }) => {
                     <div className="d-flex justify-content-center align-items-center">
                       {achievement.achievement_media ? (
                         <div className="d-flex align-items-center">
-                          <FileText size={18} className="me-2" />
-                          <span className="mx-0 text-decoration-underline text-truncate file-name">
+                          <FileText size={18} className="me-2 applycourse-cocurriculum-icon" />
+                          <span className="mx-0 text-decoration-underline text-truncate file-name applycourse-alignself-center">
                             {achievement.achievement_media instanceof File
                               ? achievement.achievement_media.name
                               : typeof achievement.achievement_media === 'string'
@@ -439,7 +439,7 @@ const Achievements = ({ onBack, onNext }) => {
                           </span>
                           <Button
                             variant="link"
-                            className="p-0 me-5 text-danger"
+                            className="p-0 me-5 text-danger applycourse-alignself-center"
                             onClick={() => handleRemoveFile(index)}
                           >
                             <X size={18} />
@@ -447,10 +447,10 @@ const Achievements = ({ onBack, onNext }) => {
                         </div>
                       ) : (
                         <div className="d-flex align-items-center ms-2">
-                          <FileText size={18} className="me-2" />
+                          <FileText size={18} className="me-2 applycourse-alignself-center" />
                           <Button
                             variant="secondary"
-                            className="d-flex align-items-center py-1 px-4 rounded-2"
+                            className="d-flex align-items-center py-1 px-4 rounded-2 applycourse-alignself-center"
                             onClick={() =>
                               document.getElementById(`achievementFileInput-${index}`).click()
                             }
@@ -460,14 +460,14 @@ const Achievements = ({ onBack, onNext }) => {
                           <input
                             id={`achievementFileInput-${index}`}
                             type="file"
-                            className="d-none"
+                            className="d-none "
                             onChange={(e) => handleFileUpload(index, e.target.files[0])}
                           />
                         </div>
                       )}
                     </div>
                   </div>
-                  <div className="d-flex justify-content-end">
+                  <div className="applycourse-cocurriculum-content">
                     <Button
                       variant="link"
                       onClick={() => handleSaveAchievement(index)}
@@ -483,7 +483,7 @@ const Achievements = ({ onBack, onNext }) => {
               </>
             ) : (
               <>
-                <div className="fw-bold mb-2" style={{
+                <div className="fw-bold mb-2 applycourse-cocurriculum-content" style={{
                   fontSize: '1.1rem',
                   wordWrap: 'break-word',
                   overflowWrap: 'break-word',
@@ -496,7 +496,7 @@ const Achievements = ({ onBack, onNext }) => {
                   {achievement.achievement_name}
                 </div>
                 <div className="d-flex justify-content-between">
-                  <div className="d-flex flex-grow-1 align-items-center">
+                  <div className="d-flex flex-grow-1 align-items-center applycourse-cocurriculum-content">
                     <div className="me-3">
                       <Clock size={18} className="me-2" />
                       <span className="border-end border-2 border-dark pe-2 me-2">Date</span>
@@ -524,17 +524,19 @@ const Achievements = ({ onBack, onNext }) => {
 
                     {achievement.achievement_media && (
                       <div className="d-flex align-items-center text-decoration-underline ">
-                        <FileText size={18} className="me-2" />
-                        <span style={{
-                          width: '225px',
-                          wordWrap: 'break-word',
-                          overflowWrap: 'break-word',
-                          wordBreak: 'break-all',
-                          whiteSpace: 'nowrap',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          maxWidth: '225px'
-                        }}>
+                        <FileText size={18} className="me-2 applycourse-alignself-center" />
+                        <span
+                        className="applycourse-alignself-center"
+                          style={{
+                            width: '225px',
+                            wordWrap: 'break-word',
+                            overflowWrap: 'break-word',
+                            wordBreak: 'break-all',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            maxWidth: '225px'
+                          }}>
                           {achievement.achievement_media instanceof File
                             ? achievement.achievement_media.name
                             : typeof achievement.achievement_media === 'string'
@@ -544,7 +546,7 @@ const Achievements = ({ onBack, onNext }) => {
                       </div>
                     )}
                   </div>
-                  <div className="d-flex justify-content-end">
+                  <div className="applycourse-cocurriculum-content">
                     <Button
                       variant="link"
                       onClick={() => {
@@ -564,7 +566,7 @@ const Achievements = ({ onBack, onNext }) => {
                           )
                         );
                       }}
-                      className="me-2"
+                      className="me-2 "
                     >
                       <Edit size={18} color="black" />
                     </Button>
