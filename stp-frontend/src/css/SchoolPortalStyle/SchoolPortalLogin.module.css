@@ -14,3 +14,10 @@
     background-color: #B71A18; /* Red background on hover */
     color: white; /* White text on hover */
   }
+
+  @media (max-width: 768px){
+    .loginButton{
+      padding: 0.5rem 10rem;
+      width:100%;
+    }
+  }
