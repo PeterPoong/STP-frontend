@@ -22,7 +22,7 @@ const SpcFooter = () => {
         }}
       >
         <div style={{ marginBottom: "5px", marginTop: "5px" }}>
-        <Row className="gap-3">
+          <Row className="gap-3">
             <a
               href="https://www.facebook.com/imediamyy"
               target="_blank"
@@ -70,7 +70,7 @@ const SpcFooter = () => {
               </svg>
             </a>
             <a
-              href="mailto:imediamyy@gmail.com"
+              href="mailto:	admin@studypal.my"
               className="btn btn-outline-danger rounded-circle p-0 social-btn email-btn"
               style={{
                 width: "40px",
