@@ -132,7 +132,7 @@ const SchoolPortalSignup = () => {
             <h3 className="text-start mb-2 custom-color-title ">
               Connect with Students Worldwide
             </h3>
-            <p className="text-start mb-4 custom-color-title small">
+            <p className="text-start mb-md-4 mb-2 custom-color-title small">
               Engage with students everywhere.
             </p>
             {signupStatus === "success" && (
@@ -240,7 +240,7 @@ const SchoolPortalSignup = () => {
               </Form.Group>
 
               <Row>
-                <Col>
+              <Col xs={12} md={6}>
                   <Form.Group className="mb-3">
                     <p className="text-start p-0 mb-0 custom-color-title-label small ">
 
@@ -256,7 +256,7 @@ const SchoolPortalSignup = () => {
                   </Form.Group>
                 </Col>
 
-                <Col>
+                <Col xs={12} md={6}>
                   <Form.Group controlId="formBasicPhone" className="mb-3">
                     <p className="text-start p-0 mb-0 custom-color-title-label small ">
 
@@ -301,7 +301,7 @@ const SchoolPortalSignup = () => {
               </Row>
 
               <Row>
-                <Col>
+              <Col xs={12} md={6}>
                   <Form.Group className="mb-3">
                     <p className="text-start p-0 mb-0 custom-color-title-label small ">
                       Password</p>
@@ -338,7 +338,7 @@ const SchoolPortalSignup = () => {
                     </InputGroup>
                   </Form.Group>
                 </Col>
-                <Col>
+                <Col xs={12} md={6}>
                   <Form.Group className="mb-3">
                   <p className="text-start p-0 mb-0 custom-color-title-label small ">
                  
@@ -456,7 +456,7 @@ const SchoolPortalSignup = () => {
           </div>
         </Col>
 
-        <Col md={6} className="p-0">
+        <Col md={6} className="p-0 d-md-flex d-none">
           <img
             src={schoolPortalLoginBanner}
             className="w-100 h-100 object-fit-cover"

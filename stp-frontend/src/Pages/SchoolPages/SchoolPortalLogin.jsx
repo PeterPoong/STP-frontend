@@ -246,7 +246,7 @@ const SchoolPortalLogin = () => {
                   >
                     Login
                   </Button>
-                  <Row>
+                  {/* <Row>
                     <Col>
                       <p className="text-center text-secondary small">
                         or Login/Signup using
@@ -301,7 +301,7 @@ const SchoolPortalLogin = () => {
                         </svg>
                       </button>
                     </Col>
-                  </Row>
+                  </Row> */}
                   <div className="text-center text-lg-center m-5 pt-2">
                     <p className="small pt-1 mb-0 text-secondary">
                       Not Registered Yet?{" "}
@@ -319,7 +319,7 @@ const SchoolPortalLogin = () => {
           </Container>
         </Col>
 
-        <Col md={6} className="p-0 h-100">
+        <Col md={6} className="p-0 h-100 d-md-flex d-none">
           <img
             src={schoolPortalLoginBanner}
             alt="Student Portal Login"

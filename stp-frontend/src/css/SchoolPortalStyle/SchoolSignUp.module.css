@@ -15,3 +15,10 @@
     background-color: #B71A18; /* Red background on hover */
     color: white; /* White text on hover */
   }
+
+  @media (max-width:768px){
+    .signUpButton{
+      font-size: 12px;
+      padding: 0.5rem 9rem; /* Adjust padding for button size */
+    }
+  }
