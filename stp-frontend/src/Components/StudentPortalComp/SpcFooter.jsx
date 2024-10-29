@@ -24,7 +24,7 @@ const SpcFooter = () => {
         <div style={{ marginBottom: "5px", marginTop: "5px" }}>
           <Row className="gap-3">
             <a
-              href="https://www.facebook.com/imediamyy"
+              href="https://www.facebook.com/profile.php?id=61567875925810"
               target="_blank"
               rel="noopener noreferrer"
               className="btn btn-outline-primary rounded-circle p-0 social-btn facebook-btn"
