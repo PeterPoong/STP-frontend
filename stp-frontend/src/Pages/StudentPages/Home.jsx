@@ -18,7 +18,7 @@ import "aos/dist/aos.css";
 const Home = () => {
   useEffect(() => {
     // Set the page title
-    document.title = "studypal.my - Home";
+    document.title = "StudyPal - Home";
 
     // Set meta description
     const metaDescription = document.createElement('meta');

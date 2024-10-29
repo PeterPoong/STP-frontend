@@ -11,7 +11,7 @@ import SpcFooter from "../../Components/StudentPortalComp/SpcFooter";
 const CoursesPage = () => {
   useEffect(() => {
     // Set the page title
-    document.title = "studypal.my - Search for Courses";
+    document.title = "StudyPal- Search for Courses";
 
     // Set meta description
     const metaDescription = document.createElement("meta");

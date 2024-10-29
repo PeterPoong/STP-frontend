@@ -14,7 +14,7 @@ const InstitutePage = () => {
 
   useEffect(() => {
     // Set the page title
-    document.title = "studypal.my - Search for University";
+    document.title = "StudyPal - Search for University";
 
     // Set meta description
     const metaDescription = document.createElement("meta");

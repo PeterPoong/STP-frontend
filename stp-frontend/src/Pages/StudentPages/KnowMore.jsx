@@ -4,7 +4,7 @@ import KnowMoreInstitute from "../../Components/StudentComp/InstitutePage/KnowMo
 const KnowMore = () => {
   useEffect(() => {
     // Set the page title
-    document.title = "studypal.my - University detail for student";
+    document.title = "StudyPal- University detail for student";
 
     // Set meta description
     const metaDescription = document.createElement("meta");

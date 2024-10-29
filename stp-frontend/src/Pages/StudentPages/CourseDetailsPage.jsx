@@ -6,7 +6,7 @@ const CourseDetailsPage = () => {
 
   useEffect(() => {
     // Set the page title
-    document.title = "studypal.my - Course detail for student";
+    document.title = "StudyPal - Course detail for student";
 
     // Set meta description
     const metaDescription = document.createElement("meta");
