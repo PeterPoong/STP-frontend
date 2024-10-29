@@ -120,7 +120,7 @@ const KnowMoreInstitute = () => {
       })
         .then((response) => response.json())
         .then((data) => {
-          //console.log("Fetched School Detail Data: ", data);
+         // console.log("Fetched School Detail Data: ", data);
           if (data && data.success && data.data) {
             setInstitutes([data.data]);
             setCourses(data.data.courses);
@@ -670,7 +670,7 @@ const KnowMoreInstitute = () => {
                               }}
                               className="card-title"
                             >
-                              Total Courses Offered
+                              Total {institute.number_courses} Courses Offered
                             </h6>
                           </div>
                         </Col>
@@ -938,13 +938,13 @@ const KnowMoreInstitute = () => {
                                   <span style={{ paddingLeft: "10px" }}>
                                     {institute.city}, {institute.state}
                                   </span>
-                                  <a
+                                  {/*<a
                                     href="#"
                                     className="map-link"
                                     style={{ paddingLeft: "5px" }}
                                   >
                                     click and view on map
-                                  </a>
+                                  </a>*/}
                                 </div>
                               </div>
                             </div>
@@ -1021,7 +1021,13 @@ const KnowMoreInstitute = () => {
                                   >
                                     estimate fee<br></br>
                                     <p style={{ fontSize: "16px" }}>
-                                      <strong>RM </strong> {course.course_cost}
+                                      {course.course_cost === "0.00" || course.course_cost === "RM0.00" ? (
+                                        "N/A"
+                                      ) : (
+                                        <>
+                                          <strong>RM </strong> {course.course_cost}
+                                        </>
+                                      )}
                                     </p>
                                   </p>
                                 </div>

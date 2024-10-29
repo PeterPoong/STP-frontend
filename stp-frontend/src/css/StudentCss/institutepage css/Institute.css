@@ -1,25 +1,26 @@
 /* Layout Adjustments */
+.institute-reset-display {
+  display: none;
+}
+
 .card-body {
   flex-direction: column;
 
 }
 
-.searchinstitute-two
-{
+.searchinstitute-two {
   padding-left: 30px;
 }
 
-.searchinstitute-three-list
-{
+.searchinstitute-three-list {
   display: flex;
-  align-items:center;
+  align-items: center;
 }
 
-.featured-institute-button
-{
-margin-top:90px;
-width:150px;
-margin-left: 50px;
+.featured-institute-button {
+  margin-top: 90px;
+  width: 150px;
+  margin-left: 50px;
 }
 
 .custom-accordion {
@@ -131,10 +132,11 @@ margin-left: 50px;
   height: auto;
   border-color: #B71A18;
   border-radius: 10px;
-  margin-bottom: 20px; /* Add spacing between cards */
+  margin-bottom: 20px;
+  /* Add spacing between cards */
 }
 
-.institute-card .card-body{
+.institute-card .card-body {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
@@ -144,11 +146,12 @@ margin-left: 50px;
 .institute-card .card-image {
   flex-shrink: 0;
   margin-right: 20px;
-  margin-bottom: 10px; /* Adjusted for smaller screens */
+  margin-bottom: 10px;
+  /* Adjusted for smaller screens */
 }
 
 .institute-card .card-image img {
- /* max-width: 100%;*/
+  /* max-width: 100%;*/
   height: auto;
   display: block;
 }
@@ -174,7 +177,8 @@ margin-left: 50px;
 }
 
 .institute-card .institute-card-body {
-  margin-left: 100px; /* Pushes the fee-apply div to the right side */
+  margin-left: 100px;
+  /* Pushes the fee-apply div to the right side */
   display: flex;
   flex-direction: row;
   align-items: flex-start;
@@ -185,7 +189,8 @@ margin-left: 50px;
 .location-container {
   border: 1px solid #dadada;
   border-radius: 10px;
-  height: fit-content; /* Adjusted for better responsiveness */
+  height: fit-content;
+  /* Adjusted for better responsiveness */
   padding: 20px;
 }
 
@@ -193,7 +198,8 @@ margin-left: 50px;
 .location-text,
 .detail-text {
   padding-left: 10px;
-  font-size: 14px; /* Consistent font size */
+  font-size: 14px;
+  /* Consistent font size */
 }
 
 .map-link {
@@ -269,7 +275,8 @@ margin-left: 50px;
 
   .institute-card {
     display: flex;
-    flex-direction: row; /* Change to row layout */
+    flex-direction: row;
+    /* Change to row layout */
     height: auto;
     width: 100%;
     align-items: flex-start;
@@ -277,7 +284,8 @@ margin-left: 50px;
 
   .institute-card .card-body {
     display: flex;
-    flex-direction: row; /* Row layout for card body */
+    flex-direction: row;
+    /* Row layout for card body */
     align-items: center;
     width: 100%;
     justify-content: space-between;
@@ -299,7 +307,7 @@ margin-left: 50px;
     width: 100%;
     margin-top: 10px;
   }
-  
+
   .institute-card .card-image {
     flex-shrink: 0;
     margin-right: 15px;
@@ -325,38 +333,47 @@ margin-left: 50px;
 
 
 @media (max-width: 767px) {
+
   /* General Styles */
   .custom-accordion {
     display: block;
   }
 
   .filters-container {
-    display: none; /* Hide filters on smaller screens */
+    display: none;
+    /* Hide filters on smaller screens */
   }
 
   .blankslate-institutes {
     align-items: center;
     text-align: center;
-    padding: 2rem; /* Maintain padding */
+    padding: 2rem;
+    /* Maintain padding */
   }
 
   .blankslate-institutes-actions .btn {
-    margin: 0.5rem; /* Space between buttons */
+    margin: 0.5rem;
+    /* Space between buttons */
   }
 
   .blankslate-institutes-body {
-    margin-bottom: 1rem; /* Space below body */
+    margin-bottom: 1rem;
+    /* Space below body */
   }
 
   .blankslate-institutes-top-img {
-    max-width: 100px; /* Limit image size */
-    margin-bottom: 1rem; /* Space below image */
+    max-width: 100px;
+    /* Limit image size */
+    margin-bottom: 1rem;
+    /* Space below image */
   }
 
   .country-dropdown-institute,
-  .university-dropdown-institute{
-    width: 100%; /* Full width */
-    min-width: 0; /* Remove fixed min-width for better responsiveness */
+  .university-dropdown-institute {
+    width: 100%;
+    /* Full width */
+    min-width: 0;
+    /* Remove fixed min-width for better responsiveness */
   }
 
   .country-dropdown-institute,
@@ -364,76 +381,104 @@ margin-left: 50px;
     background-color: #ffffff;
     color: #ffffff;
     border: 1px solid #B71A18;
-    margin-top: 35px; /* Maintain margin */
+    margin-top: 35px;
+    /* Maintain margin */
   }
 
   .country-dropdown-institute:hover,
   .university-dropdown-institute:hover {
-    background-color: #9c1515; /* Hover background color */
-    color: #ffffff; /* Hover text color */
-    border: none; /* Remove border on hover */
+    background-color: #9c1515;
+    /* Hover background color */
+    color: #ffffff;
+    /* Hover text color */
+    border: none;
+    /* Remove border on hover */
   }
 
   /* Institute Card Styles */
   .institute-card {
-    flex-direction: column; /* Stack elements vertically */
-    width: 100%; /* Full width */
-    margin-bottom: 20px; /* Space between cards */
+    flex-direction: column;
+    /* Stack elements vertically */
+    width: 100%;
+    /* Full width */
+    margin-bottom: 20px;
+    /* Space between cards */
   }
 
   .institute-card .card-body {
-    flex-direction: column; /* Stack body items */
-    align-items: flex-start; /* Align items to the start */
-    width: 100%; /* Full width */
+    flex-direction: column;
+    /* Stack body items */
+    align-items: flex-start;
+    /* Align items to the start */
+    width: 100%;
+    /* Full width */
   }
 
   .institute-card .card-image {
-    margin-bottom: 15px; /* Space below image */
+    margin-bottom: 15px;
+    /* Space below image */
   }
 
   .institute-card .card-text {
-    margin-bottom: 10px; /* Space below text */
+    margin-bottom: 10px;
+    /* Space below text */
   }
 
   .institute-card .card-content {
-    width: 100%; /* Full width for content */
+    width: 100%;
+    /* Full width for content */
   }
 
   .institute-card .details-div-institute {
-    width: 100%; /* Full width for details */
+    width: 100%;
+    /* Full width for details */
   }
 
   .institute-card .fee-apply {
-    width: 100%; /* Full width for fee-apply */
-    text-align: left; /* Left align text */
-    margin-top: 15px; /* Space above fee-apply */
+    width: 100%;
+    /* Full width for fee-apply */
+    text-align: left;
+    /* Left align text */
+    margin-top: 15px;
+    /* Space above fee-apply */
   }
 
   .studypal-image {
-    width: 100%; /* Full width for images */
-    max-width: none; /* Remove max-width restrictions */
-    margin-bottom: 20px; /* Space below image */
+    width: 100%;
+    /* Full width for images */
+    max-width: none;
+    /* Remove max-width restrictions */
+    margin-bottom: 20px;
+    /* Space below image */
   }
 
   .location-container {
-    width: 100%; /* Full width for location */
-    padding: 10px; /* Padding adjustments */
+    width: 100%;
+    /* Full width for location */
+    padding: 10px;
+    /* Padding adjustments */
   }
 
   .location-text,
   .detail-text {
-    font-size: 12px; /* Smaller font size */
+    font-size: 12px;
+    /* Smaller font size */
   }
 
   .featured-badge {
-    width: 80px; /* Width for badges */
-    height: 30px; /* Height for badges */
-    font-size: 10px; /* Font size for badges */
-    padding: 3px 5px; /* Padding for badges */
+    width: 80px;
+    /* Width for badges */
+    height: 30px;
+    /* Height for badges */
+    font-size: 10px;
+    /* Font size for badges */
+    padding: 3px 5px;
+    /* Padding for badges */
   }
 }
 
 @media (max-width: 576px) {
+
   .country-dropdown-institute,
   .university-dropdown-institute {
     width: 100%;
@@ -446,7 +491,8 @@ margin-left: 50px;
 
   .institute-card {
     display: flex;
-    flex-direction: column; /* Stack elements vertically */
+    flex-direction: column;
+    /* Stack elements vertically */
     width: 100%;
     height: auto;
     margin-bottom: 20px;
@@ -454,7 +500,8 @@ margin-left: 50px;
 
   .institute-card .card-body {
     display: flex;
-    flex-direction: column; /* Column layout for card body */
+    flex-direction: column;
+    /* Column layout for card body */
     align-items: flex-start;
     width: 100%;
   }
@@ -473,7 +520,7 @@ margin-left: 50px;
     width: 100%;
     max-width: 400px;
     margin-bottom: 10px;
-    
+
   }
 
   .institute-card .fee-apply {
@@ -482,7 +529,7 @@ margin-left: 50px;
     width: 100%;
     max-width: 100px;
     margin-top: 10px;
-    
+
   }
 
   .fee-apply .featured-institute-button {
@@ -497,10 +544,12 @@ margin-left: 50px;
 }
 
 @media (max-width: 992px) {
+
   .country-dropdown-institute,
-  .university-dropdown-institute{
+  .university-dropdown-institute {
     width: 100%;
-    min-width: 160px; /* Remove fixed min-width */
+    min-width: 160px;
+    /* Remove fixed min-width */
   }
 }
 
@@ -509,7 +558,8 @@ margin-left: 50px;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh; /* Full viewport height for centering */
+  height: 100vh;
+  /* Full viewport height for centering */
 }
 
 .custom-spinner {
@@ -525,6 +575,7 @@ margin-left: 50px;
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }
@@ -538,70 +589,80 @@ margin-left: 50px;
   }
 }
 
-@media (max-width: 426px)
-{
-.searchinstitute-one
-{
-  flex-wrap: wrap;
-  width:100%;
-  margin-top:10px;
-}
+@media (max-width: 426px) {
+  .searchinstitute-one {
+    flex-wrap: wrap;
+    width: 100%;
+    margin-top: 10px;
+  }
 
-.searchinstitute-one-linkimage
-{
-  width:-webkit-fill-available;
-  margin-bottom:1rem;
-  text-align:-webkit-center;
-}
+  .searchinstitute-one-linkimage {
+    width: -webkit-fill-available;
+    margin-bottom: 1rem;
+    text-align: -webkit-center;
+  }
 
-.searchinstitute-one-image{
-width:10rem;
-}
+  .searchinstitute-one-image {
+    width: 10rem;
+  }
 
-.searchinstitute-two
-{
-  text-align:center;
-  padding:0;
-}
+  .searchinstitute-two {
+    text-align: center;
+    padding: 0;
+  }
 
-.searchinstitute-two-description
+  .searchinstitute-two-description {
+    border-bottom: 1px solid #c3c3c3c3;
+    border-top: 1px solid hsla(0, 0%, 76%, 0.765);
+    padding: 0.825rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    /* Show only 2 lines of text */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-wrap: break-word;
+    word-break: normal;
+    /* Changed from break-all to prevent breaking within words */
+    white-space: normal;
+    /* Changed from wrap to normal for better text flow */
+    max-height: 5.7rem;
+    /* Approximately 2 lines of text (adjust if needed) */
+  }
 
-{
-  border-bottom:1px solid #c3c3c3c3;
-  border-top:1px solid #c3c3c3c3;
-  padding:0.825rem;
-}
 
-.searchinstitute-three
-{
-  flex-wrap:wrap;
-}
+  .searchinstitute-three {
+    flex-wrap: wrap;
+  }
 
-.details-div-institute
-{
-  border-bottom:1px solid #c3c3c3;
-  text-align:center;
-  padding-bottom:1rem;
-}
+  .details-div-institute {
+    border-bottom: 1px solid #c3c3c3;
+    text-align: center;
+    padding-bottom: 1rem;
+  }
 
-.searchinstitute-three-list
-{
-  padding:0;
-}
+  .searchinstitute-three-list {
+    padding: 0;
+  }
 
-.searchinstitute-four
-{
-  width:-webkit-fill-available;
-  text-align:-webkit-center;
-}
+  .searchinstitute-four {
+    width: -webkit-fill-available;
+    text-align: -webkit-center;
+  }
 
-.featured-institute-button
-{
-  margin:1rem 0rem;
-}
+  .featured-institute-button {
+    margin: 1rem 0rem;
+  }
 
-.searchinstitute-institutelist-list
-{
-  justify-content: center;
-}
+  .searchinstitute-institutelist-list {
+    justify-content: center;
+  }
+
+  .saerchinstitute-display-none
+  {
+    display: none;
+  }
+  .institute-reset-display {
+    display: grid;
+  }
 }

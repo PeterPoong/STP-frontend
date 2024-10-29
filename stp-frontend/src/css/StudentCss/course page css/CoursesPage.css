@@ -1,3 +1,8 @@
+.coursepage-reset-display
+{
+  display: none;
+}
+
 .coursepage-searchcourse-courselist-first
 {
   display: flex;
@@ -123,7 +128,7 @@
 
 .degree-card .card-title {
   background-color: #F2F2F2;
-  padding-left: 30px;
+  padding:1rem 2rem;
   height: fit-content;
   margin-left: -15px;
 }
@@ -496,7 +501,7 @@
     background-color: #F2F2F2;
     /* padding-left: 30px; */
     height: 100%;
-    width: 100%;
+    /*width: 100%;*/
     text-align: left;
     /* margin-left: -15px; */
   }
@@ -535,9 +540,9 @@
   .degree-card .card-title {
     background-color: #F2F2F2;
     height: 100%;
-    width: 100%;
+   /* width: 100%;*/
     max-width: 767px;
-    text-align: left;    
+    text-align: center;    
     /* padding-left: 30px; */
     /* margin-left: -15px; */
   }
@@ -548,7 +553,7 @@
     
   }
 
-  .degree-card .card-image img {
+  .degree-card img {
     max-width: 80px;
   }
 
@@ -613,7 +618,7 @@
 
 .coursepage-img-size
 {
-  min-width:-webkit-fill-available;
+  min-width:10rem;
 }
 
 .coursepage-coursename
@@ -684,4 +689,22 @@ margin-left:0;
   text-align: center;
 }
 
+.card-title{
+  margin-top:1rem;
+  width:fit-content;
+  margin-left:0;
+  justify-self:center;
+}
+.card-image
+{
+  margin-right:0 !important;
+}
+
+.saerchcourse-display-none
+{display: none;}
+
+.coursepage-reset-display
+{
+  display: grid;
+}
 }

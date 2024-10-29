@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams, useLocation, Link, useNavigate } from "react-router-dom";
 import NavButtons from "../NavButtons";
 import NavButtonsSP from "../../../Components/StudentPortalComp/NavButtonsSP";
@@ -162,8 +162,8 @@ const CourseDetail = () => {
     );
   }
 
-   // Function to handle displaying more courses
-   const handleViewMore = () => {
+  // Function to handle displaying more courses
+  const handleViewMore = () => {
     setExpanded(!expanded); // Toggle collapse state
     if (!expanded) {
       setVisibleCourses(courses.length); // Show all courses when expanded
@@ -333,8 +333,13 @@ const CourseDetail = () => {
                     >
                       <div>
                         <p className="mb-0">
-                          <strong>RM </strong>
-                          {program.cost}/year
+                          {program.cost === "0.00" || program.cost === "RM0.00" ? (
+                            "N/A"
+                          ) : (
+                            <>
+                              <strong>RM </strong> {program.cost}/year
+                            </>
+                          )}
                         </p>
                       </div>
                     </Col>
@@ -456,12 +461,12 @@ const CourseDetail = () => {
                     zIndex: 0,
                     borderRadius: '1rem',
                     width: "100%",
-                    height: openAboutInstitute ? `${contentHeight + 500}px` : "25rem", 
+                    height: openAboutInstitute ? `${contentHeight + 500}px` : "25rem",
                     overflow: "hidden",
                     transition: "height 0.5s ease",
                   }}
                 >
-                   <div style={{
+                  <div style={{
                     position: "absolute",
                     top: 0,
                     left: 0,
@@ -470,7 +475,7 @@ const CourseDetail = () => {
                     transition: "height 0.5s ease",
                   }}>
                     <img
-                       src={
+                      src={
                         program.coverPhoto
                           ? `${baseURL}storage/${program.coverPhoto}`
                           : headerImage
@@ -486,7 +491,7 @@ const CourseDetail = () => {
                       }}
                     />
                   </div>
-                 
+
 
                   {/* Card */}
                   <div
@@ -512,7 +517,7 @@ const CourseDetail = () => {
                           </div>
                         </Col>
                         <Col md={12}>
-                        <div
+                          <div
                             ref={contentRef}
                             style={{
                               zIndex: 1,

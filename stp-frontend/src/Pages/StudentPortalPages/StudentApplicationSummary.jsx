@@ -1662,7 +1662,14 @@ const StudentApplicationSummary = ({ }) => {
           <h5 className="fw-bold">Estimate Fee</h5>
           <span className="lead">
             {" "}
-            <strong>RM</strong> {courseInfo.cost.toLocaleString()} / year
+            {courseInfo.cost === "0.00" || courseInfo.cost === "RM0.00" ? (
+                                        "N/A"
+                                      ) : (
+                                        <>
+                                        <strong>RM</strong> {courseInfo.cost.toLocaleString()} / year
+                                        </>
+                                      )}
+           
           </span>
         </div>
 

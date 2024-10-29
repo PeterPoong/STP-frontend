@@ -391,7 +391,7 @@ const SearchInstitute = () => {
                         {institute.state}, {institute.country}
                       </span>
                       <div>
-                        <p className="card-text mt-2 searchinstitute-two-description">
+                        <p className="card-text mt-2 searchinstitute-two-description institutepage-wordbreak-all">
                           {institute.description}
                         </p>
                       </div>
@@ -437,7 +437,7 @@ const SearchInstitute = () => {
                               ></i>
                               <span style={{ paddingLeft: "20px" }}>
                                 {Array.isArray(institute.intake) &&
-                                institute.intake.length > 0
+                                  institute.intake.length > 0
                                   ? institute.intake.join(", ")
                                   : "N/A"}
                               </span>
@@ -482,7 +482,7 @@ const SearchInstitute = () => {
       </h3>
 
       {/* Top Row - Dropdowns */}
-      <Row className="align-items-center mb-2 mb-md-0">
+      <Row className="align-items-center mb-2 mb-md-0 saerchinstitute-display-none">
         {/* Country Dropdown */}
 
         <Col xs={12} sm={4} md={3} lg={2} className="mb-2 mb-sm-0">
@@ -616,6 +616,23 @@ const SearchInstitute = () => {
         </InputGroup>
       </Form>
 
+      <div className="institute-reset-display">
+        <button
+          onClick={resetFilters}
+          style={{
+            backgroundColor: "transparent",
+            border: "none",
+            color: "#B71A18",
+            fontWeight: "lighter",
+            textDecoration: "none",
+            cursor: "pointer",
+          }}
+        >
+          <i className="bi bi-funnel" style={{ marginRight: "5px" }} />
+          Reset Filters
+        </button>
+      </div>
+
       {/* Main Content */}
       <Container className="my-5">
         <Row>
@@ -741,8 +758,96 @@ const SearchInstitute = () => {
               defaultActiveKey="0"
               className="custom-accordion d-md-none"
             >
-              {/* Location Filter */}
+
               <Accordion.Item eventKey="0">
+                <Accordion.Header className="custom-accordion-header">
+                  {selectedCountry ? (
+                    <>
+                      <CountryFlag
+                        countryCode={selectedCountry.country_code}
+                        svg
+                        style={{
+                          width: "20px",
+                          height: "20px",
+                          marginRight: "10px",
+                        }}
+                      />
+                      {selectedCountry.country_name}
+                    </>
+                  ) : (
+                    "Select Country"
+                  )}
+                </Accordion.Header>
+                <Accordion.Body>
+                  <InputGroup className="mb-2">
+                    <Form.Control
+                      placeholder="Filter countries"
+                      onChange={(e) => setCountryFilter(e.target.value.toLowerCase())}
+                      value={countryFilter}
+                    />
+                  </InputGroup>
+                  <div className="country-list">
+                    {countries
+                      .filter((country) =>
+                        country.country_name.toLowerCase().includes(countryFilter)
+                      )
+                      .map((country, index) => (
+                        <Form.Check
+                          key={index}
+                          type="checkbox"
+                          id={`country-${country.id}`}
+                          label={
+                            <div
+                              className="d-flex align-items-center"
+                              style={{
+                                marginRight: "10px",
+                                paddingTop: "0",
+                                paddingBottom: "0"
+                              }}>
+                              <CountryFlag
+                                countryCode={country.country_code}
+                                svg
+                                style={{
+                                  width: "20px",
+                                  height: "20px",
+                                  marginRight: "10px",
+                                  paddingTop: "0",
+                                  paddingBottom: "0"
+                                }}
+                              />
+                              {country.country_name}
+                            </div>
+                          }
+                          checked={selectedCountry?.id === country.id}
+                          onChange={() => handleCountryChange(country)}
+                          className="mb-2"
+                        />
+                      ))}
+                  </div>
+                </Accordion.Body>
+              </Accordion.Item>
+
+              {/* University Type Accordion Item */}
+              <Accordion.Item eventKey="1">
+                <Accordion.Header className="custom-accordion-header">
+                  {selectedInstitute ? selectedInstitute.core_metaName : "Select University Type"}
+                </Accordion.Header>
+                <Accordion.Body>
+                  {filterData.institueList.map((institute, index) => (
+                    <Form.Check
+                      key={index}
+                      type="checkbox"
+                      id={`institute-${institute.id}`}
+                      label={institute.core_metaName}
+                      checked={selectedInstitute?.id === institute.id}
+                      onChange={() => setSelectedInstitute(institute)}
+                      className="mb-2"
+                    />
+                  ))}
+                </Accordion.Body>
+              </Accordion.Item>
+              {/* Location Filter */}
+              <Accordion.Item eventKey="2">
                 <Accordion.Header className="custom-accordion-header">
                   Location
                 </Accordion.Header>
@@ -770,7 +875,7 @@ const SearchInstitute = () => {
               </Accordion.Item>
 
               {/* Category Filter */}
-              <Accordion.Item eventKey="1">
+              <Accordion.Item eventKey="3">
                 <Accordion.Header className="custom-accordion-header">
                   Category
                 </Accordion.Header>
@@ -795,7 +900,7 @@ const SearchInstitute = () => {
               </Accordion.Item>
 
               {/* Study Level Filter */}
-              <Accordion.Item eventKey="2">
+              <Accordion.Item eventKey="4">
                 <Accordion.Header className="custom-accordion-header">
                   Study Level
                 </Accordion.Header>
@@ -820,7 +925,7 @@ const SearchInstitute = () => {
               </Accordion.Item>
 
               {/* Study Mode Filter */}
-              <Accordion.Item eventKey="3">
+              <Accordion.Item eventKey="5">
                 <Accordion.Header className="custom-accordion-header">
                   Study Mode
                 </Accordion.Header>
@@ -843,14 +948,14 @@ const SearchInstitute = () => {
               </Accordion.Item>
 
               {/* Intakes Filter */}
-              <Accordion.Item eventKey="4">
+              <Accordion.Item eventKey="6">
                 <Accordion.Header className="custom-accordion-header">
                   Intakes
                 </Accordion.Header>
                 <Accordion.Body className="custom-accordion-body">
                   <Form.Group>
                     {filterData.intakeList &&
-                    filterData.intakeList.length > 0 ? (
+                      filterData.intakeList.length > 0 ? (
                       filterData.intakeList.map((intake, index) => (
                         <Form.Check
                           key={index}
@@ -872,7 +977,7 @@ const SearchInstitute = () => {
               </Accordion.Item>
 
               {/* Tuition Fee Filter */}
-              <Accordion.Item eventKey="5">
+              <Accordion.Item eventKey="7">
                 <Accordion.Header className="custom-accordion-header">
                   Tuition Fee
                 </Accordion.Header>
