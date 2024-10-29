@@ -16,6 +16,22 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 
 const Home = () => {
+  useEffect(() => {
+    // Set the page title
+    document.title = "studypal.my - Home";
+
+    // Set meta description
+    const metaDescription = document.createElement('meta');
+    metaDescription.name = "description";
+    metaDescription.content = "Explore top universities, featured courses, and study options with StudyPal at studypal.my.";
+    document.head.appendChild(metaDescription);
+
+    // Clean up by removing the meta tag when component unmounts
+    return () => {
+      document.head.removeChild(metaDescription);
+    };
+  }, []);
+
   return (
     <div className="app-container" style={{ backgroundColor: " #F5F4F4" }}>
       <NavButtonsSP />

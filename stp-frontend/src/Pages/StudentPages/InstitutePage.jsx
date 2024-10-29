@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 // import NavButtons from "../Components/student components/NavButtons";
 import NavButtons from "../../Components/StudentComp/NavButtons";
 import NavButtonsSP from "../../Components/StudentPortalComp/NavButtonsSP";
@@ -11,6 +11,23 @@ import Footer from "../../Components/StudentComp/Footer";
 import SpcFooter from "../../Components/StudentPortalComp/SpcFooter";
 
 const InstitutePage = () => {
+
+  useEffect(() => {
+    // Set the page title
+    document.title = "studypal.my - Search for University";
+
+    // Set meta description
+    const metaDescription = document.createElement("meta");
+    metaDescription.name = "description";
+    metaDescription.content = "Explore premier universities to continue your education, with diploma certificate, degree, master's, and PhD courses available through StudyPal at studypal.my.";
+    document.head.appendChild(metaDescription);
+
+    // Clean up by removing the meta tag when component unmounts
+    return () => {
+      document.head.removeChild(metaDescription);
+    };
+  }, []);
+
   return (
     <div style={{ backgroundColor: "#F5F4F4" }}>
       <NavButtonsSP />
