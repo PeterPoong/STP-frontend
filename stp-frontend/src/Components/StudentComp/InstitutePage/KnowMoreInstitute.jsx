@@ -699,7 +699,7 @@ const KnowMoreInstitute = () => {
                               }}
                               className="card-title"
                             >
-                              Total {institute.number_courses} Courses Offered
+                              Total Courses Offered
                             </h6>
                           </div>
                         </Col>
@@ -717,7 +717,7 @@ const KnowMoreInstitute = () => {
                               color: "#514E4E",
                             }}
                           >
-                            {institute.category}
+                            {/*{institute.category}*/} {institute.number_courses} Courses
                           </h5>
                         </div>
                       </Row>
@@ -1050,7 +1050,7 @@ const KnowMoreInstitute = () => {
                                   >
                                     estimate fee<br></br>
                                     <p style={{ fontSize: "16px" }}>
-                                      {course.course_cost === "0.00" || course.course_cost === "RM0.00" ? (
+                                      {course.course_cost === "0" || course.course_cost === "RM0.00" ? (
                                         "N/A"
                                       ) : (
                                         <>

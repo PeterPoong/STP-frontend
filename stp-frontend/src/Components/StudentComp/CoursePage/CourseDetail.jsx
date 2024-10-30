@@ -324,7 +324,7 @@ const CourseDetail = () => {
               <div className="card mt-4 apply-now-card">
                 <div className="card-body">
                   <Row>
-                    <Col md={10} className="d-flex align-items-center">
+                    <Col md={10} className="">
                       <div>
                         <h5 className="card-title">Estimate Fee</h5>
                       </div>
@@ -351,7 +351,7 @@ const CourseDetail = () => {
               <div className="card mt-4 apply-now-card">
                 <div className="card-body">
                   <Row>
-                    <Col md={10} className="d-flex align-items-center">
+                    <Col md={10} className="">
                       <div>
                         <h5 className="card-title">Course Overview</h5>
                       </div>
