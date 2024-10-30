@@ -700,6 +700,11 @@ margin-left:0;
   margin-right:0 !important;
 }
 
+}
+
+@media(max-width: 766px)
+{
+  
 .saerchcourse-display-none
 {display: none;}
 

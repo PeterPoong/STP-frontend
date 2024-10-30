@@ -38,6 +38,9 @@ const KnowMoreInstitute = () => {
   const [selectedPhotos, setSelectedPhotos] = useState([]);
   const [startIndex, setStartIndex] = useState(0);
 
+  const [enlargedImageIndex, setEnlargedImageIndex] = useState(null);
+
+
   const [showSwiperModal, setShowSwiperModal] = useState(false);
   const [activePhotoIndex, setActivePhotoIndex] = useState(0); // To track the clicked photo
 
@@ -120,7 +123,7 @@ const KnowMoreInstitute = () => {
       })
         .then((response) => response.json())
         .then((data) => {
-         // console.log("Fetched School Detail Data: ", data);
+          // console.log("Fetched School Detail Data: ", data);
           if (data && data.success && data.data) {
             setInstitutes([data.data]);
             setCourses(data.data.courses);
@@ -378,6 +381,7 @@ const KnowMoreInstitute = () => {
                       modules={[Navigation, Pagination]}
                       style={{
                         padding: "20px 0", // Padding to add spacing around the Swiper content
+                      
                       }}
                     >
                       {selectedPhotos.map((photo) => (
@@ -388,11 +392,12 @@ const KnowMoreInstitute = () => {
                                 ? `${baseURL}storage/${photo.schoolMedia_location}`
                                 : studypal12 // Use studypal12 as the default image if schoolMedia_location is not available
                             }
-                            className="w-100"
+                            className=""
                             alt={`Slide ${photo.id}`}
                             style={{
                               objectFit: "contain", // Ensure the image maintains its aspect ratio
                               maxHeight: "70vh", // Limit the height for better viewing on small screens
+                              marginBottom: "2rem"
                             }}
                           />
                         </SwiperSlide>
@@ -441,13 +446,6 @@ const KnowMoreInstitute = () => {
                   >
                     <div
                       className="image-gallery-institute-modal"
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns:
-                          "repeat(auto-fill, minmax(150px, 1fr))",
-                        gridGap: "10px",
-                        justifyItems: "center",
-                      }}
                     >
                       {selectedPhotos.map((photo, index) => (
                         <img
@@ -457,20 +455,51 @@ const KnowMoreInstitute = () => {
                               ? `${baseURL}storage/${photo.schoolMedia_location}`
                               : studypal12 // Use studypal12 as the default image if schoolMedia_location is not available
                           }
-                          className="gallery-image"
                           alt={photo.schoolMedia_name}
                           style={{
                             width: "100%",
-                            height: "100%",
+                            height: "150px",
                             objectFit: "cover",
                             borderRadius: "4px",
                             boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
                             cursor: "pointer", // Add a pointer cursor to indicate it's clickable
                           }}
-                          onClick={() => openSwiperModal(index)} // On click, open Swiper modal
+                          onClick={() => setEnlargedImageIndex(index)}
                         />
                       ))}
                     </div>
+                    {enlargedImageIndex !== null && (
+                      <div
+                        className="enlarged-image-overlay"
+                        onClick={() => setEnlargedImageIndex(null)}
+                        style={{
+                          position: "fixed",
+                          top: 0,
+                          left: 0,
+                          width: "100vw",
+                          height: "100vh",
+                          backgroundColor: "rgba(0,0,0,0.5)",
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          zIndex: 1000,
+                        }}
+                      >
+                        <img
+                          src={
+                            selectedPhotos[enlargedImageIndex].schoolMedia_location
+                              ? `${baseURL}storage/${selectedPhotos[enlargedImageIndex].schoolMedia_location}`
+                              : studypal12
+                          }
+                          alt={selectedPhotos[enlargedImageIndex].schoolMedia_name}
+                          style={{
+                            maxWidth: "90%",
+                            maxHeight: "90%",
+                            objectFit: "contain",
+                          }}
+                        />
+                      </div>
+                    )}
                   </Modal.Body>
                   <Modal.Footer
                     style={{

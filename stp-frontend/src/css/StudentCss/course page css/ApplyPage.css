@@ -14,6 +14,14 @@
 }
 
 
+/*App Photo*/
+.image-gallery-course-modal
+{
+  display: grid;
+  grid-template-columns: repeat(auto-fill,minmax(150px,1fr));
+  gap:10px;
+}
+
 /* General Styles */
 .image-gallery-course {
   display: flex;
@@ -301,4 +309,15 @@
     max-height: 100px;
 
   }
+}
+
+@media(max-width: 426px)
+{
+  .image-gallery-course-modal
+  {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+  }
+
 }
