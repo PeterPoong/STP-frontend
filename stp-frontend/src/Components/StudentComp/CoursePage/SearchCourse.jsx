@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
-
+import "../../../css/StudentCss/course page css/SearchCourse.css";
 import {
   ButtonGroup,
   Container,
@@ -62,6 +62,14 @@ const SearchCourse = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('en-MY', {
+      style: 'decimal',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(amount);
+  };
 
   // Step 1: Fetch Countries
   const fetchCountries = async () => {
@@ -444,7 +452,7 @@ const SearchCourse = () => {
                     <div className=" flex-wrap coursepage-info-one">
                       <Col>
                         <div>
-                          <Row
+                          {/*<Row
                             style={{ paddingTop: "10px" }}
                             className=" coursepage-seaerchcourse-courselist-list"
                           >
@@ -490,7 +498,54 @@ const SearchCourse = () => {
                                   : "N/A"}
                               </span>
                             </div>
-                          </Row>
+
+                          </Row>*/}
+                          <div >
+                            <Row>
+                              <div className="searchcourse-dflex-center" >
+                                <i
+                                  className="bi bi-mortarboard"
+                                  style={{ marginRight: "10px" }}
+                                ></i>
+                                <p style={{ paddingLeft: "20px" }}>
+                                  {program.qualification}
+                                </p>
+                              </div>
+                              <div style={{ marginTop: "10px" }} className="searchcourse-dflex-center">
+                                <i
+                                  className="bi bi-calendar-check"
+                                  style={{ marginRight: "10px" }}
+                                ></i>
+                                <p style={{ paddingLeft: "20px" }}>
+                                  {program.mode}
+                                </p>
+                              </div>
+                              <div style={{ marginTop: "10px" }} className="searchcourse-dflex-center">
+                                <i
+                                  className="bi bi-clock"
+                                  style={{ marginRight: "10px" }}
+                                ></i>
+                                <p style={{ paddingLeft: "20px" }}>
+                                  {program.period}
+                                </p>
+                              </div>
+                              <div
+                                style={{ marginTop: "10px" }}
+                                className="searchcourse-dflex-center"
+                              >
+                                <i
+                                  className="bi bi-calendar2-week"
+                                  style={{ marginRight: "10px" }}
+                                ></i>
+                                <p style={{ paddingLeft: "20px" }}>
+                                  {Array.isArray(program.intake) &&
+                                    program.intake.length > 0
+                                    ? program.intake.join(", ")
+                                    : "N/A"}
+                                </p>
+                              </div>
+                            </Row>
+                          </div>
                         </div>
                       </Col>
                     </div>
@@ -818,9 +873,13 @@ const SearchCourse = () => {
 
               {/* Tuition Fee Filter */}
               <div className="filter-group">
-                <h5 style={{ marginTop: "25px" }}>Tuition Fee</h5>
+                <h5 style={{ marginTop: "25px" }}>
+                  Tuition Fee
+                </h5>
                 <Form.Group id="customRange1">
-                  <Form.Label className="custom-range-label">{`RM${selectedFilters.tuitionFee}`}</Form.Label>
+                  <Form.Label className="custom-range-label d-flex justify-content-between">
+                    <span>Current: RM{formatCurrency(selectedFilters.tuitionFee)}</span>
+                  </Form.Label>
                   <Form.Control
                     className="custom-range-input"
                     type="range"
@@ -828,10 +887,12 @@ const SearchCourse = () => {
                     max={filterData.maxAmount || 100000}
                     step="500"
                     value={selectedFilters.tuitionFee}
-                    onChange={(e) =>
-                      handleFilterChange("tuitionFee", Number(e.target.value))
-                    }
+                    onChange={(e) => handleFilterChange("tuitionFee", Number(e.target.value))}
                   />
+                  <div className="d-flex justify-content-between mt-2">
+                    <p>RM0</p>
+                    <p>RM{formatCurrency(filterData.maxAmount || 100000)}</p>
+                  </div>
                 </Form.Group>
               </div>
             </div>

@@ -6,7 +6,7 @@ import NavButtonsSP from "../../../Components/StudentPortalComp/NavButtonsSP";
 import headerImage from "../../../assets/StudentAssets/institute image/StudyPal10.png";
 import studypal12 from "../../../assets/StudentAssets/coursepage image/StudyPal12.jpg";
 import SpcFooter from "../../../Components/StudentPortalComp/SpcFooter";
-
+import ImageSlider from "../../../Components/StudentComp/ImageSlider";
 import "../../../css/StudentCss/institutepage css/KnowMoreInstitute.css";
 import {
   Container,
@@ -381,7 +381,7 @@ const KnowMoreInstitute = () => {
                       modules={[Navigation, Pagination]}
                       style={{
                         padding: "20px 0", // Padding to add spacing around the Swiper content
-                      
+
                       }}
                     >
                       {selectedPhotos.map((photo) => (
@@ -469,36 +469,12 @@ const KnowMoreInstitute = () => {
                       ))}
                     </div>
                     {enlargedImageIndex !== null && (
-                      <div
-                        className="enlarged-image-overlay"
-                        onClick={() => setEnlargedImageIndex(null)}
-                        style={{
-                          position: "fixed",
-                          top: 0,
-                          left: 0,
-                          width: "100vw",
-                          height: "100vh",
-                          backgroundColor: "rgba(0,0,0,0.5)",
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                          zIndex: 1000,
-                        }}
-                      >
-                        <img
-                          src={
-                            selectedPhotos[enlargedImageIndex].schoolMedia_location
-                              ? `${baseURL}storage/${selectedPhotos[enlargedImageIndex].schoolMedia_location}`
-                              : studypal12
-                          }
-                          alt={selectedPhotos[enlargedImageIndex].schoolMedia_name}
-                          style={{
-                            maxWidth: "90%",
-                            maxHeight: "90%",
-                            objectFit: "contain",
-                          }}
-                        />
-                      </div>
+                      <ImageSlider
+                        selectedPhotos={selectedPhotos.map(photo => photo.schoolMedia_location)}
+                        enlargedImageIndex={enlargedImageIndex}
+                        baseURL={baseURL}
+                        onClose={() => setEnlargedImageIndex(null)}
+                      />
                     )}
                   </Modal.Body>
                   <Modal.Footer

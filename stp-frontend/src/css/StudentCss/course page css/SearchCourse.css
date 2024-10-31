@@ -1,0 +1,33 @@
+.searchcourse-dflex-center-row
+{
+    
+}
+
+.searchcourse-display-none
+{
+    display: none;
+}
+
+.searchcourse-dflex-center
+{
+    display:flex;
+    justify-content: flex-start;
+}
+
+.searchcourse-dflex-center p
+{
+    margin-bottom: 0;
+}
+
+@media (max-width: 426px) {
+    .searchcourse-dflex-center {
+        display: flex;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+    }
+
+    .searchcourse-dflex-center p {
+        width: 10rem;
+    }
+
+}

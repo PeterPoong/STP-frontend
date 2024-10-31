@@ -276,7 +276,6 @@
     
   }
 
-  .total-course-card .card-title, .intake-period-card .card-title,
   .total-course-card h6, .intake-period-card h6 {
     font-size: 0.75rem; /* Even smaller font size */
     text-align: center;
@@ -330,5 +329,25 @@
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
+  }
+
+
+  .image-gallery{
+    flex-direction: column;
+    gap:1rem;
+    align-content:center;
+    margin:1rem;
+  }
+
+  .gallery-image{
+    max-width:25rem;
+    height:10rem;
+    object-fit: cover;
+    border-radius: 0.25rem;
+  }
+
+  .total-course-card .card-title, .intake-period-card .card-title
+  {
+    font-size: 1.25rem;
   }
 }
