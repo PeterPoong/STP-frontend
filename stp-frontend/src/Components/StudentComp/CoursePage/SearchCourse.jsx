@@ -195,7 +195,7 @@ const SearchCourse = () => {
 
       // Parse the response
       const result = JSON.parse(rawResponse);
-      console.log(result);
+      //console.log(result);
       /* console.log('Pagination info:', {
         currentPage: result.current_page,
         lastPage: result.last_page,
@@ -423,18 +423,31 @@ const SearchCourse = () => {
                       classname="coursepage-img"
                       style={{ paddingLeft: "20px" }}
                     >
-                      <img
-                        src={`${baseURL}storage/${program.logo}`}
-                        alt={program.school_name}
-                        width="100"
-                        className="coursepage-img-size"
-                      />
+                      <Link
+                        to={`/knowMoreInstitute/${program.school_id}`}
+                        style={{ color: "black" }}
+                      >
+                        <img
+                          src={`${baseURL}storage/${program.logo}`}
+                          alt={program.school_name}
+                          width="100"
+                          className="coursepage-img-size"
+                        />
+                      </Link>
                     </div>
                     <div
-                      classname="coursepage-coursename"
-                      style={{ paddingLeft: "30px" }}
+                      className="searchcourse-coursename-schoolname"
                     >
-                      <h5 className="card-text">{program.school_name}</h5>
+                      <Link
+                        to={`/knowMoreInstitute/${program.school_id}`}
+                        style={{ color: "black" }}
+                      >
+                        <h5 className="card-text">
+                          {program.school_name}
+
+                        </h5>
+                      </Link>
+
                       <i
                         className="bi bi-geo-alt"
                         style={{ marginRight: "10px", color: "#AAAAAA" }}
@@ -573,12 +586,18 @@ const SearchCourse = () => {
                       </p>
                     </div>
                     <div className="apply-button">
-                      <button
-                        className="featured coursepage-applybutton"
-                        onClick={() => handleApplyNow(program)}
-                      >
-                        Apply Now
-                      </button>
+                      {program.institute_category === "Local University" ? (
+                        <button
+                          onClick={() => window.location.href = `mailto:${program.email}`}
+                          className="featured coursepage-applybutton"
+                        >
+                          Contact Now
+                        </button>
+                      ) : (
+                        <button className="featured coursepage-applybutton"  onClick={() => handleApplyNow(program)}>
+                          Apply Now
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -766,7 +785,7 @@ const SearchCourse = () => {
           fetchCourses();
         }}
       >
-        <InputGroup className="mb-3">
+        <InputGroup className="mb-3  saerchcourse-display-none">
           <Form.Control
             className="custom-placeholder"
             style={{ height: "45px", marginTop: "9px" }}
@@ -776,7 +795,23 @@ const SearchCourse = () => {
           />
         </InputGroup>
       </Form>
-      <div className="coursepage-reset-display">
+      <div className="coursepage-reset-display-search">
+        <Form
+          onSubmit={(e) => {
+            e.preventDefault();
+            fetchCourses();
+          }}
+        >
+          <InputGroup >
+            <Form.Control
+              className="custom-placeholder"
+              style={{ height: "45px", marginTop: "9px" }}
+              placeholder="Search for Courses, Institutions"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </InputGroup>
+        </Form>
         <button
           onClick={resetFilters}
           style={{
@@ -878,7 +913,7 @@ const SearchCourse = () => {
                 </h5>
                 <Form.Group id="customRange1">
                   <Form.Label className="custom-range-label d-flex justify-content-between">
-                    <span>Current: RM{formatCurrency(selectedFilters.tuitionFee)}</span>
+                    <span>Current: RM{(selectedFilters.tuitionFee)}</span>
                   </Form.Label>
                   <Form.Control
                     className="custom-range-input"
@@ -891,7 +926,7 @@ const SearchCourse = () => {
                   />
                   <div className="d-flex justify-content-between mt-2">
                     <p>RM0</p>
-                    <p>RM{formatCurrency(filterData.maxAmount || 100000)}</p>
+                    <p>RM{(filterData.maxAmount || 100000)}</p>
                   </div>
                 </Form.Group>
               </div>

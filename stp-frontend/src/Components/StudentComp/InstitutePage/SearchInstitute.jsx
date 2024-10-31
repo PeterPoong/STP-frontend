@@ -17,7 +17,7 @@ import CountryFlag from "react-country-flag";
 import "../../../css/StudentCss/institutepage css/Institute.css";
 import StudyPal from "../../../assets/StudentAssets/institute image/StudyPal.png";
 import emptyStateImage from "../../../assets/StudentAssets/emptyStateImage/emptystate.png";
-
+import "../../../css/StudentCss/course page css/SearchCourse.css";
 const baseURL = import.meta.env.VITE_BASE_URL;
 const countriesURL = `${baseURL}api/student/countryList`;
 const filterURL = `${baseURL}api/student/listingFilterList`;
@@ -62,6 +62,15 @@ const SearchInstitute = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const itemsPerPage = 20;
+
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('en-MY', {
+      style: 'decimal',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(amount);
+  };
+
 
   // Step 1: Fetch Countries
   const fetchCountries = async () => {
@@ -409,38 +418,38 @@ const SearchInstitute = () => {
                       <Col>
                         <div>
                           <Row style={{ paddingTop: "10px" }}>
-                            <div>
+                            <div className="searchinstitute-dflex-center" >
                               <i
                                 className="bi bi-building"
                                 style={{ marginRight: "10px" }}
                               ></i>
-                              <span style={{ paddingLeft: "20px" }}>
+                              <p style={{ paddingLeft: "20px" }}>
                                 {institute.category}
-                              </span>
+                              </p>
                             </div>
-                            <div style={{ marginTop: "10px" }}>
+                            <div style={{ marginTop: "10px" }} className="searchinstitute-dflex-center">
                               <i
                                 className="bi bi-mortarboard"
                                 style={{ marginRight: "10px" }}
                               ></i>
-                              <span style={{ paddingLeft: "20px" }}>
+                              <p style={{ paddingLeft: "20px" }}>
                                 {institute.courses} courses offered
-                              </span>
+                              </p>
                             </div>
                             <div
                               style={{ marginTop: "10px" }}
-                              className="d-flex searchinstitute-institutelist-list"
+                              className="searchinstitute-dflex-center"
                             >
                               <i
                                 className="bi bi-calendar2-week"
                                 style={{ marginRight: "10px" }}
                               ></i>
-                              <span style={{ paddingLeft: "20px" }}>
+                              <p style={{ paddingLeft: "20px" }}>
                                 {Array.isArray(institute.intake) &&
                                   institute.intake.length > 0
                                   ? institute.intake.join(", ")
                                   : "N/A"}
-                              </span>
+                              </p>
                             </div>
                           </Row>
                         </div>
@@ -607,7 +616,7 @@ const SearchInstitute = () => {
       >
         <InputGroup className="mb-3">
           <Form.Control
-            className="custom-placeholder"
+            className="custom-placeholder saerchinstitute-display-none"
             style={{ height: "45px", marginTop: "9px" }}
             placeholder="Search for Institutions, Country"
             value={searchQuery}
@@ -617,6 +626,22 @@ const SearchInstitute = () => {
       </Form>
 
       <div className="institute-reset-display">
+      <Form
+        onSubmit={(e) => {
+          e.preventDefault();
+          fetchInstitutes();
+        }}
+      >
+        <InputGroup >
+          <Form.Control
+            className="custom-placeholder"
+            style={{ height: "45px", marginTop: "9px" }}
+            placeholder="Search for Institutions, Country"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </InputGroup>
+      </Form>
         <button
           onClick={resetFilters}
           style={{
@@ -736,7 +761,9 @@ const SearchInstitute = () => {
               <div className="filter-group">
                 <h5 style={{ marginTop: "25px" }}>Tuition Fee</h5>
                 <Form.Group id="customRange1">
-                  <Form.Label className="custom-range-label">{`RM${selectedFilters.tuitionFee}`}</Form.Label>
+                  <Form.Label className="custom-range-label d-flex justify-content-between">
+                    <span>Current: RM{(selectedFilters.tuitionFee)}</span>
+                  </Form.Label>
                   <Form.Control
                     className="custom-range-input"
                     type="range"
@@ -748,6 +775,10 @@ const SearchInstitute = () => {
                       handleFilterChange("tuitionFee", Number(e.target.value))
                     }
                   />
+                  <div className="d-flex justify-content-between mt-2">
+                    <p>RM0</p>
+                    <p>RM{(filterData.maxAmount || 100000)}</p>
+                  </div>
                 </Form.Group>
               </div>
             </div>

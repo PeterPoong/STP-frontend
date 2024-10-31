@@ -663,6 +663,6 @@
     display: none;
   }
   .institute-reset-display {
-    display: grid;
+    display: flex;
   }
 }

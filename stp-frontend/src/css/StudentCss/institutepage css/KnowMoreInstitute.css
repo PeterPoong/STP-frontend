@@ -1,22 +1,31 @@
-.student-knowmoreinsti-wordbreak
-{
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  word-break: break-all;
-  white-space-collapse: break-spaces;
-  text-wrap: wrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: auto;
-  width: auto;
-  height:3rem;
+.knowmoreinstitute-cardtitle-courselist-institutecity {
+  padding-left: 30px;
 }
 
-.image-gallery-institute-modal
-{
+.knowmoreinstitute-cardtitle-courselist-img {
+  padding-left: 20px;
+}
+
+.knowmoreinstitute-cardtitle-courselist {
+  padding-left: 30px;
+  background-color: #f2f2f2;
+  margin-left: -15px;
+  height: fit-content;
+}
+
+.student-knowmoreinsti-wordbreak {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+}
+
+.image-gallery-institute-modal {
   display: grid;
-  grid-template-columns: repeat(auto-fill,minmax(150px,1fr));
-  gap:10px;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
 }
 
 
@@ -41,7 +50,8 @@
 
 .know-more-container {
   position: relative;
-  top: -5px; /* Adjust this value to control the overlap */
+  top: -5px;
+  /* Adjust this value to control the overlap */
 }
 
 .know-more-row {
@@ -49,7 +59,8 @@
 }
 
 .know-more-image-col {
-  top: -75px; /* Adjust this value to control the overlap */
+  top: -75px;
+  /* Adjust this value to control the overlap */
   z-index: 1;
 }
 
@@ -69,7 +80,8 @@
   display: block;
   object-fit: cover;
 }
-.adverstise-image{
+
+.adverstise-image {
   width: 100%;
   height: 200px;
   display: block;
@@ -79,10 +91,11 @@
 
 .about-institute-school-container {
   position: relative;
-  top: -100px; /* Adjust this value to control the overlap */
+  top: -100px;
+  /* Adjust this value to control the overlap */
 }
 
-.random-images-carousel{
+.random-images-carousel {
   max-height: 300px;
   object-fit: contain;
   margin-top: 15px;
@@ -135,7 +148,9 @@
   font-size: 20px;
   font-weight: bold;
 }
-.total-course-card, .intake-period-card {
+
+.total-course-card,
+.intake-period-card {
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -143,19 +158,23 @@
   align-items: center;
 }
 
-.total-course-card .card-body, .intake-period-card .card-body {
+.total-course-card .card-body,
+.intake-period-card .card-body {
   padding: 20px;
 }
 
-.total-course-card .card-title, .intake-period-card .card-title,
-.total-course-card h5, .intake-period-card h5 {
+.total-course-card .card-title,
+.intake-period-card .card-title,
+.total-course-card h5,
+.intake-period-card h5 {
   font-size: 1rem;
   color: #514E4E;
 }
 
 .map-responsive {
   overflow: hidden;
-  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  padding-bottom: 56.25%;
+  /* 16:9 aspect ratio */
   position: relative;
   height: 0;
 }
@@ -204,7 +223,7 @@
 .gallery-image:last-child {
   margin-right: 0;
 }
- 
+
 .icon-lg {
   font-size: 2rem;
   padding-left: 20px;
@@ -227,42 +246,49 @@
 /* CSS for smaller screens */
 @media (max-width: 768px) {
   .icon-lg {
-    font-size: 3rem; /* Smaller size for larger screens */
+    font-size: 3rem;
+    /* Smaller size for larger screens */
   }
 
-  .total-course-card, .intake-period-card {
+  .total-course-card,
+  .intake-period-card {
     flex-direction: row;
     align-items: center;
   }
-  
-  .total-course-card .card-title, .intake-period-card .card-title
-  .total-course-card h5, .intake-period-card h5 {
-    font-size: 0.875rem; /* Smaller font size */
+
+  .total-course-card .card-title,
+  .intake-period-card .card-title .total-course-card h5,
+  .intake-period-card h5 {
+    font-size: 0.875rem;
+    /* Smaller font size */
     text-align: center;
   }
 
   .about-institute-school-container {
     position: relative;
-    top: 0px; /* Adjust this value to control the overlap */
+    top: 0px;
+    /* Adjust this value to control the overlap */
   }
 
   .know-more-container {
     position: relative;
-    top: -50px; /* Adjust this value to control the overlap */
+    top: -50px;
+    /* Adjust this value to control the overlap */
   }
-  
+
 }
 
 @media (max-width: 576px) {
 
-  
 
-  .know-more-header-image {    
+
+  .know-more-header-image {
     height: 250px;
   }
 
   .icon-lg {
-    font-size: 2rem; /* Even smaller size for smaller screens */
+    font-size: 2rem;
+    /* Even smaller size for smaller screens */
   }
 
   .gallery-image {
@@ -270,21 +296,25 @@
     height: 60px;
   }
 
-  .total-course-card, .intake-period-card {
+  .total-course-card,
+  .intake-period-card {
     flex-direction: row;
     align-items: center;
-    
+
   }
 
-  .total-course-card h6, .intake-period-card h6 {
-    font-size: 0.75rem; /* Even smaller font size */
+  .total-course-card h6,
+  .intake-period-card h6 {
+    font-size: 0.75rem;
+    /* Even smaller font size */
     text-align: center;
 
   }
 
   .about-institute-school-container {
     position: relative;
-    top: 10px; /* Adjust this value to control the overlap */
+    top: 10px;
+    /* Adjust this value to control the overlap */
   }
 }
 
@@ -293,7 +323,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh; /* Adjust based on the page height */
+  height: 100vh;
+  /* Adjust based on the page height */
 }
 
 .custom-spinner {
@@ -309,6 +340,7 @@
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }
@@ -322,32 +354,67 @@
   }
 }
 
-@media (max-width:426px)
-{
-  .image-gallery-institute-modal
-  {
+@media (max-width:426px) {
+  .image-gallery-institute-modal {
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
   }
 
 
-  .image-gallery{
+  .image-gallery {
     flex-direction: column;
-    gap:1rem;
-    align-content:center;
-    margin:1rem;
+    gap: 1rem;
+    align-content: center;
+    margin: 1rem;
   }
 
-  .gallery-image{
-    max-width:25rem;
-    height:10rem;
+  .gallery-image {
+    max-width: 20rem;
+    height: 10rem;
     object-fit: cover;
     border-radius: 0.25rem;
   }
 
-  .total-course-card .card-title, .intake-period-card .card-title
-  {
+  .total-course-card .card-title,
+  .intake-period-card .card-title {
     font-size: 1.25rem;
+  }
+
+  .knowmoreinstitute-cardtitle {
+    width: 100%
+  }
+
+  .knowmoreinstitute-cardtitle-courselist {
+    padding-left: 0;
+    background-color: transparent;
+    margin-left: 0;
+    text-align: center;
+  }
+
+  .knowmoreinstitute-cardtitle-courselist-name {
+    flex-wrap: wrap;
+    padding-bottom: 0;
+  }
+
+  .knowmoreinstitute-cardtitle-courselist-img {
+    padding-left: 0px;
+    width: -webkit-fill-available;
+    text-align: center;
+  }
+
+  .knowmoreinstitute-cardtitle-courselist-institutecity {
+    padding-left: 0;
+    text-align: center;
+    padding-top: 1rem;
+  }
+
+  .knowmoreinstitute-cardtitle-courselist-list {
+    flex-wrap: wrap;
+  }
+
+  .knowmoreinstitute-cardtitle-courselist-feeapply {
+    width: -webkit-fill-available;
+    justify-items: center;
   }
 }
