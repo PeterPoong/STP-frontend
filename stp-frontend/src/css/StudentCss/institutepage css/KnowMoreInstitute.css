@@ -12,12 +12,6 @@
   height:3rem;
 }
 
-.image-gallery-institute-modal
-{
-  display: grid;
-  grid-template-columns: repeat(auto-fill,minmax(150px,1fr));
-  gap:10px;
-}
 
 
 .featured-institute-card {
@@ -320,15 +314,5 @@
     width: 30px;
     height: 30px;
     border-width: 3px;
-  }
-}
-
-@media (max-width:426px)
-{
-  .image-gallery-institute-modal
-  {
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
   }
 }

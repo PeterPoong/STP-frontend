@@ -27,8 +27,6 @@ const CourseDetail = () => {
   const [openAboutInstitute, setOpenAboutInstitute] = useState(false);
   const [openAbout, setOpenAbout] = useState(false);
 
-  const [enlargedImageIndex, setEnlargedImageIndex] = useState(null);
-
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [showAllPhotosModal, setShowAllPhotosModal] = useState(false);
   const [selectedPhotos, setSelectedPhotos] = useState([]);
@@ -324,7 +322,7 @@ const CourseDetail = () => {
               <div className="card mt-4 apply-now-card">
                 <div className="card-body">
                   <Row>
-                    <Col md={10} className="">
+                    <Col md={10} className="d-flex align-items-center">
                       <div>
                         <h5 className="card-title">Estimate Fee</h5>
                       </div>
@@ -351,7 +349,7 @@ const CourseDetail = () => {
               <div className="card mt-4 apply-now-card">
                 <div className="card-body">
                   <Row>
-                    <Col md={10} className="">
+                    <Col md={10} className="d-flex align-items-center">
                       <div>
                         <h5 className="card-title">Course Overview</h5>
                       </div>
@@ -727,12 +725,17 @@ const CourseDetail = () => {
                   >
                     <div
                       className="image-gallery-course-modal"
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
+                        gridGap: "10px",
+                      }}
                     >
                       {selectedPhotos.map((photoPath, index) => (
                         <img
                           key={index}
                           src={`${baseURL}storage/${photoPath}`}
-
+                          className="gallery-image"
                           alt={`School Photo ${index + 1}`}
                           style={{
                             width: "100%",
@@ -742,7 +745,7 @@ const CourseDetail = () => {
                             cursor: "pointer",
                             boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
                           }}
-                          onClick={() => setEnlargedImageIndex(index)}
+                          onClick={() => openSwiperModal(index)}
                           onError={(e) => {
                             // console.log('Modal image failed to load:', e.target.src);
                             e.target.src = studypal12;
@@ -750,34 +753,6 @@ const CourseDetail = () => {
                         />
                       ))}
                     </div>
-                    {enlargedImageIndex !== null && (
-                      <div
-                        className="enlarged-image-overlay"
-                        onClick={() => setEnlargedImageIndex(null)}
-                        style={{
-                          position: "fixed",
-                          top: 0,
-                          left: 0,
-                          width: "100vw",
-                          height: "100vh",
-                          backgroundColor: "rgba(0,0,0,0.5)",
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                          zIndex: 1000,
-                        }}
-                      >
-                        <img
-                          src={`${baseURL}storage/${selectedPhotos[enlargedImageIndex]}`}
-                          alt={`School Photo ${enlargedImageIndex + 1}`}
-                          style={{
-                            maxWidth: "90%",
-                            maxHeight: "90%",
-                            objectFit: "contain",
-                          }}
-                        />
-                      </div>
-                    )}
                   </Modal.Body>
                   <Modal.Footer
                     style={{

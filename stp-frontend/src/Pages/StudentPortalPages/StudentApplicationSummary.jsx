@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Spinner } from "react-bootstrap";
+import { Button ,Spinner} from "react-bootstrap";
 import defaultProfilePic from "../../assets/StudentPortalAssets/sampleprofile.png";
 import defaultSchoolPic from "../../assets/StudentPortalAssets/defaulschool.png";
 import {
@@ -1569,12 +1569,12 @@ const StudentApplicationSummary = ({ }) => {
   };
   const renderCourseInformation = () => {
     if (!courseInfo) {
-      return <div>
+      return <div> 
         <div className="d-flex justify-content-center align-items-center m-5 p-5 " >
-          <Spinner animation="border" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </Spinner>
-        </div>
+        <Spinner animation="border" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </Spinner>
+      </div>
       </div>;
     }
     const parseHTML = (html) => {
@@ -1662,14 +1662,14 @@ const StudentApplicationSummary = ({ }) => {
           <h5 className="fw-bold">Estimate Fee</h5>
           <span className="lead">
             {" "}
-            {courseInfo.cost === "0" || courseInfo.cost === "RM0.00" ? (
-              "N/A"
-            ) : (
-              <>
-                <strong>RM</strong> {courseInfo.cost.toLocaleString()} / year
-              </>
-            )}
-
+            {courseInfo.cost === "0.00" || courseInfo.cost === "RM0.00" ? (
+                                        "N/A"
+                                      ) : (
+                                        <>
+                                        <strong>RM</strong> {courseInfo.cost.toLocaleString()} / year
+                                        </>
+                                      )}
+           
           </span>
         </div>
 
