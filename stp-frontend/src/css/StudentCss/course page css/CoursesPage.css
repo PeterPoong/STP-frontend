@@ -128,7 +128,7 @@
 
 .degree-card .card-title {
   background-color: #F2F2F2;
-  padding:1rem 2rem;
+  padding:0.725rem 2rem;
   height: fit-content;
   margin-left: -15px;
 }
@@ -700,6 +700,11 @@ margin-left:0;
   margin-right:0 !important;
 }
 
+}
+
+@media(max-width: 766px)
+{
+  
 .saerchcourse-display-none
 {display: none;}
 

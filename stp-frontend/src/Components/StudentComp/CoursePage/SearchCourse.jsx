@@ -507,7 +507,7 @@ const SearchCourse = () => {
                         estimate fee
                         <br />
                         <p style={{ fontSize: "16px" }}>
-                          {program.cost === "0.00" || program.cost === "RM0.00" ? (
+                          {program.cost === "0" || program.cost === "RM0" ? (
                             "N/A"
                           ) : (
                             <>

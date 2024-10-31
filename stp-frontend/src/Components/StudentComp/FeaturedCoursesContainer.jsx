@@ -105,22 +105,22 @@ const FeaturedCoursesContainer = () => {
             breakpoints={{
               // Mobile phones (portrait)
               320: {
-                slidesPerView: 12,
+                slidesPerView: 10,
                 spaceBetween: 1, 
               },
               // Large phones & small tablets
               576: {
-                slidesPerView: 12,
+                slidesPerView: 10,
                 spaceBetween: 1,
               },
               // Tablets & small laptops
               768: {
-                slidesPerView: 12,
+                slidesPerView: 10,
                 spaceBetween: 10,
               },
               // Laptops & desktops
               992: {
-                slidesPerView: 12,
+                slidesPerView: 10,
                 spaceBetween: 5,
               },
               // Large desktops
