@@ -325,4 +325,14 @@
     border-radius: 0.25rem;
     object-fit: cover;
   }
+
+  .coursedetail-entryrequirement-title
+  {
+    justify-content: center;
+  }
+
+  .coursedetail-summary-content
+  {
+    justify-self: center !important;
+  }
 }

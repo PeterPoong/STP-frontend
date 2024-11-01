@@ -715,14 +715,15 @@ const KnowMoreInstitute = () => {
                               flexDirection: "column",
                               alignItems: "center",
                               justifyContent: "center",
-                              height: "100%", // Adjust as per your container height
+                              height: "100%",
+                              alignSelf:"center" // Adjust as per your container height
                             }}
                           >
                             <h6
                               style={{
                                 color: "#514E4E",
                               }}
-                              className="card-title"
+                              className="card-title "
                             >
                               Intake Period
                             </h6>

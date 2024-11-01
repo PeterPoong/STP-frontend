@@ -274,7 +274,7 @@ const CourseDetail = () => {
               <div className="card mt-4 apply-now-card">
                 <div className="card-body">
                   <h5 className="card-title">Summary</h5>
-                  <Row style={{ paddingLeft: "50px" }}>
+                  <Row style={{ paddingLeft: "50px" }} className="coursedetail-summary-content">
                     <Col md={4}>
                       <div style={{ marginBottom: "10px" }}>
                         <i
@@ -397,7 +397,7 @@ const CourseDetail = () => {
               <div className="card mt-4 apply-now-card">
                 <div className="card-body">
                   <Row>
-                    <Col md={10} className="d-flex align-items-center">
+                    <Col md={10} className="d-flex align-items-center coursedetail-entryrequirement-title">
                       <div>
                         <h5 className="card-title">Entry Requirement</h5>
                       </div>

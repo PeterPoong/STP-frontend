@@ -407,6 +407,7 @@
     padding-left: 0;
     text-align: center;
     padding-top: 1rem;
+    width:-webkit-fill-available;
   }
 
   .knowmoreinstitute-cardtitle-courselist-list {

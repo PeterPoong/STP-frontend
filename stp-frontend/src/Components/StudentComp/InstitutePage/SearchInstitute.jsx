@@ -786,7 +786,7 @@ const SearchInstitute = () => {
             {/* Mobile Accordion Filters */}
             {/* Mobile Accordion Filters */}
             <Accordion
-              defaultActiveKey="0"
+              //defaultActiveKey="0"
               className="custom-accordion d-md-none"
             >
 
