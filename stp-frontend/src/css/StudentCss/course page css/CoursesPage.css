@@ -723,6 +723,7 @@ margin-left:0;
 .coursepage-reset-display-search
 {
   display: flex;
+  flex-direction: column;
 }
 
 

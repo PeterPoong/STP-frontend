@@ -956,7 +956,7 @@ const KnowMoreInstitute = () => {
                                   <Col>
                                     <div>
                                       <Row style={{ paddingTop: "20px" }}>
-                                      <div className="searchcourse-dflex-center" >
+                                      <div className="knowmoreinstitute-dflex-center" >
                                           <i
                                             className="bi bi-mortarboard"
                                             style={{ marginRight: "10px" }}
@@ -965,7 +965,7 @@ const KnowMoreInstitute = () => {
                                             {course.qualification}
                                           </p>
                                         </div>
-                                        <div style={{ marginTop: "10px" }} className="searchcourse-dflex-center">
+                                        <div style={{ marginTop: "10px" }} className="knowmoreinstitute-dflex-center">
                                           <i
                                             className="bi bi-calendar-check"
                                             style={{ marginRight: "10px" }}
@@ -974,7 +974,7 @@ const KnowMoreInstitute = () => {
                                             {course.study_mode}
                                           </p>
                                         </div>
-                                        <div style={{ marginTop: "10px" }} className="searchcourse-dflex-center">
+                                        <div style={{ marginTop: "10px" }} className="knowmoreinstitute-dflex-center">
                                           <i
                                             className="bi bi-clock"
                                             style={{ marginRight: "10px" }}
@@ -988,7 +988,7 @@ const KnowMoreInstitute = () => {
                                             marginTop: "10px",
                                             display: "flex",
                                           }}
-                                          className="searchcourse-dflex-center"
+                                          className="knowmoreinstitute-dflex-center"
                                         >
                                           <i
                                             className="bi bi-calendar2-week"
