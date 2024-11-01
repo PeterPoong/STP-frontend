@@ -285,7 +285,7 @@ const CoCurriculum = ({ onNext, onBack }) => {
                       />
                     </div>
                   </div>
-                  <div className="applycourse-cocurriculum-content">
+                  <div className="applycourse-cocurriculum-content applycourse-cocurriculum-content-flexend">
                     <Button  variant="link" onClick={() => handleSaveActivity(index)} className="me-2">
                       <Save size={18} color="green" />
                     </Button>
@@ -327,7 +327,7 @@ const CoCurriculum = ({ onNext, onBack }) => {
                     </div>
 
                   </div>
-                  <div>
+                  <div className="applycourse-cocurriculum-content-button">
                     <Button variant="link" onClick={() => {
                       handleActivityChange(index, 'isEditing', true); // Set isEditing to true
                       // No need to set id again, it should already be present

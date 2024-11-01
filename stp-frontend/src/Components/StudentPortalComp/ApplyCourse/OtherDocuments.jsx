@@ -293,7 +293,7 @@ const OtherDocuments = ({ onBack, onSubmit }) => {
               </>
             ) : (
               <>
-                <div className="d-flex justify-content-between">
+                <div className="d-flex justify-content-between applycourse-otherdoccert-direction">
                   <div>
                     <div className="fw-bold mb-2" style={{ fontSize: '1.1rem',
                        wordWrap: 'break-word',
