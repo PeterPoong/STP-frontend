@@ -26,7 +26,7 @@ const Home = () => {
           </div>
           <div
             className="university-row-container"
-            style={{ marginTop: "40px" }}
+            style={{ marginTop: "115px" }}
           >
             <UniversityRow />
           </div>

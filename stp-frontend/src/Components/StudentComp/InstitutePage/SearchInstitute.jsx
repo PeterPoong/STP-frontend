@@ -502,7 +502,7 @@ const SearchInstitute = () => {
                 style={{
                   backgroundColor: selectedCountry ? "white" : "",
                   color: selectedCountry ? "#000" : "",
-                  border: selectedCountry ? "1px solid #B71A18" : "",
+                  border: selectedCountry ? "1px solid #B71A18" : "#B71A18",
                 }}
               >
                 {selectedCountry ? (
@@ -559,15 +559,15 @@ const SearchInstitute = () => {
         </Col>
 
         {/* University Type Dropdown */}
-        <Col xs={12} sm={4} md={3} lg={2} className="mb-2 mb-sm-0">
-          <ButtonGroup className="w-100">
+        <Col xs={12} sm={4} md={3} lg={2} className="mb-2 mb-sm-0 ">
+          <ButtonGroup className="w-100 ">
             <Dropdown as={ButtonGroup} className="w-100">
               <Dropdown.Toggle
                 className="university-dropdown-institute w-100"
                 style={{
                   backgroundColor: selectedInstitute ? "white" : "",
                   color: selectedInstitute ? "#000" : "",
-                  border: selectedInstitute ? "1px solid #B71A18" : "",
+                  border: selectedInstitute ? "1px solid #B71A18" : "#B71A18",
                 }}
               >
                 {selectedInstitute

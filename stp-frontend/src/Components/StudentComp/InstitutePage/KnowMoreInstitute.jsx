@@ -881,7 +881,7 @@ const KnowMoreInstitute = () => {
               {/* --------- End of About School --------- */}
 
               {/* Contact School Button */}
-              <div className="d-flex justify-content-center">
+              <div className="d-flex justify-content-center mt-3">
                 <Button
                   onClick={() => handleContactSchool(institute.school_email)}
                   style={{
