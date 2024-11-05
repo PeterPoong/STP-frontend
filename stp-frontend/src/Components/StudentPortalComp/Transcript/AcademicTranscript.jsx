@@ -1,5 +1,6 @@
 //transcript
 import React, { useState, useEffect, useCallback } from 'react';
+import { Spinner } from 'react-bootstrap';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { Edit2, Trash2, Eye, Plus, Search, GripVertical, ChevronDown, Info, FileText, X, Check, RefreshCw } from 'lucide-react';
 import Carousel from 'react-material-ui-carousel';
@@ -114,6 +115,7 @@ const ExamSelector = ({ exams, selectedExam, setSelectedExam }) => {
 const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveAll, setHasUnsavedChanges }) => {
   const [editingIndex, setEditingIndex] = useState(null);
   const [availableSubjects, setAvailableSubjects] = useState([]);
+  const [isLoadingSubjects, setIsLoadingSubjects] = useState(true);
   const [hasCheckedForPreset, setHasCheckedForPreset] = useState(false);
   const [isNewUser, setIsNewUser] = useState(true); // New state to track if it's a new user
   // Function to convert letter grades to integer codes
@@ -135,6 +137,7 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
   }, [examType, isInitialLoad]);
   const checkAndPresetSubjectsForNewUser = async () => {
     try {
+      setIsLoadingSubjects(true);
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/transcriptSubjectList`, {
         method: 'GET',
@@ -163,6 +166,7 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
     } catch (error) {
       console.error('Error checking for existing subjects:', error);
     } finally {
+      setIsLoadingSubjects(false);
       setHasCheckedForPreset(true);
       setIsInitialLoad(false);
     }
@@ -181,32 +185,32 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
   };
 
   const fetchAvailableSubjects = useCallback(async () => {
-    if (!isNewUser) {
-      try {
-        const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-        const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/subjectList`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            category: 32,
-            selectedSubject: subjects.map(s => s.id)
-          }),
-        });
-        const data = await response.json();
-        if (data.success) {
-          const filteredSubjects = data.data.filter(subject =>
-            !subjects.some(s => s.id === subject.id)
-          );
-          setAvailableSubjects(filteredSubjects);
-        }
-      } catch (error) {
-        console.error('Error fetching available subjects:', error);
+
+    try {
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/subjectList`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          category: 32,
+          selectedSubject: subjects.map(s => s.id)
+        }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        const filteredSubjects = data.data.filter(subject =>
+          !subjects.some(s => s.id === subject.id)
+        );
+        setAvailableSubjects(filteredSubjects);
       }
+    } catch (error) {
+      console.error('Error fetching available subjects:', error);
     }
-  }, [subjects, isNewUser]);
+
+  }, [subjects]);
 
   useEffect(() => {
     if (examType === 'SPM' && !isInitialLoad) {
@@ -313,74 +317,83 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
 
   return (
     <div className="space-y-2 mb-4">
-      {subjects.map((subject, index) => (
-        <div key={index} className="d-flex align-items-center justify-content-between bg-white p-2 mb-2 rounded border ">
-          <div className="d-flex align-items-center flex-grow-1 transcript-academictranscript-subject">
-            <GripVertical className="me-3" size={20} />
-            <span className="fw-medium h6 mb-0 me-3" style={{ width: "150px" }}>{subject.name}</span>
-            {editingIndex === index || subject.isEditing ? (
-              <select
-                value={subject.grade}
-                onChange={(e) => handleGradeChange(index, e.target.value)}
-                className="editingplaceholder"
-                required
-              >
-                <option value="" disabled>Select Grade</option>
-                <option value="A+">A+</option>
-                <option value="A">A</option>
-                <option value="A-">A-</option>
-                <option value="B+">B+</option>
-                <option value="B">B</option>
-                <option value="C+">C+</option>
-                <option value="C">C</option>
-                <option value="D">D</option>
-                <option value="E">E</option>
-                <option value="G">G</option>
-              </select>
+      {isLoadingSubjects ? (
+        <div className="d-flex justify-content-center align-items-center py-5">
+          <Spinner animation="border" role="status">
+            <span className="visually-hidden">Loading subjects...</span>
+          </Spinner>
+        </div>
+      ) : (
+        <>
+          {subjects.map((subject, index) => (
+            <div key={index} className="d-flex align-items-center justify-content-between bg-white p-2 mb-2 rounded border ">
+              <div className="d-flex align-items-center flex-grow-1 transcript-academictranscript-subject">
+                <GripVertical className="me-3" size={20} />
+                <span className="fw-medium h6 mb-0 me-3" style={{ width: "150px" }}>{subject.name}</span>
+                {editingIndex === index || subject.isEditing ? (
+                  <select
+                    value={subject.grade}
+                    onChange={(e) => handleGradeChange(index, e.target.value)}
+                    className="editingplaceholder"
+                    required
+                  >
+                    <option value="" disabled>Select Grade</option>
+                    <option value="A+">A+</option>
+                    <option value="A">A</option>
+                    <option value="A-">A-</option>
+                    <option value="B+">B+</option>
+                    <option value="B">B</option>
+                    <option value="C+">C+</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                    <option value="E">E</option>
+                    <option value="G">G</option>
+                  </select>
 
-            ) : (
-              subject.grade && (
-                <span className={`rounded-pill px-4 text-white ${getGradeColor(subject.grade)}`}>
-                  GRADE: {gradeToString(subject.grade)}
-                </span>
-              )
-            )}
-            <div className="transcript-academictranscript-subject-icon ms-auto">
-              {editingIndex === index || subject.isEditing ? (
-                <Check onClick={() => handleSave(index)} className="text-success cursor-pointer me-2" />
-              ) : (
-                <Edit2 size={18} className="iconat mx-2" onClick={() => handleEdit(index)} />
-              )}
-              <Trash2 size={18} className="iconat-trash mx-2" onClick={() => handleDelete(index)} />
+                ) : (
+                  subject.grade && (
+                    <span className={`rounded-pill px-4 text-white ${getGradeColor(subject.grade)}`}>
+                      GRADE: {gradeToString(subject.grade)}
+                    </span>
+                  )
+                )}
+                <div className="transcript-academictranscript-subject-icon ms-auto">
+                  {editingIndex === index || subject.isEditing ? (
+                    <Check onClick={() => handleSave(index)} className="text-success cursor-pointer me-2" />
+                  ) : (
+                    <Edit2 size={18} className="iconat mx-2" onClick={() => handleEdit(index)} />
+                  )}
+                  <Trash2 size={18} className="iconat-trash mx-2" onClick={() => handleDelete(index)} />
+                </div>
+              </div>
+
             </div>
+          ))}
+          {examType === 'SPM' && (
+            <div className="my-4">
+              <label className="fw-bold small formlabel">Add Subject:</label>
+              <select
+                className="form-select my-2"
+                onChange={(e) => handleAddSubject(e.target.value)}
+                value=""
+              >
+                <option value="">Select a subject</option>
+                {availableSubjects.map(subject => (
+                  <option key={subject.id} value={subject.id}>{subject.name}</option>
+                ))}
+              </select>
+            </div>
+          )}
+          <div className="d-flex justify-content-end mt-4">
+            <SaveButton
+              onSave={async () => {
+                const result = await onSaveAll();
+                await fetchAvailableSubjects();
+                return result;
+              }} />
           </div>
-
-        </div>
-      ))}
-      {examType === 'SPM' && (
-        <div className="my-4">
-          <label className="fw-bold small formlabel">Add Subject:</label>
-          <select
-            className="form-select my-2"
-            onChange={(e) => handleAddSubject(e.target.value)}
-            value=""
-          >
-            <option value="">Select a subject</option>
-            {availableSubjects.map(subject => (
-              <option key={subject.id} value={subject.id}>{subject.name}</option>
-            ))}
-          </select>
-        </div>
+        </>
       )}
-      <div className="d-flex justify-content-end mt-4">
-        <SaveButton
-          onSave={async () => {
-            const result = await onSaveAll();
-            await fetchAvailableSubjects();
-            return result;
-          }}
-        />
-      </div>
     </div>
   );
 };
@@ -391,6 +404,7 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
   const [cgpa, setCgpa] = useState('');
   const [cgpaId, setCgpaId] = useState(null);
   const [isRemindPopupOpen, setIsRemindPopupOpen] = useState(false);
+  const [isLoadingSubjects, setIsLoadingSubjects] = useState(true);
   useEffect(() => {
     if (categoryId) {
       fetchProgramCgpa();
@@ -399,6 +413,7 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
 
   const fetchProgramCgpa = async () => {
     try {
+      setIsLoadingSubjects(true);
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/programCgpaList`, {
         method: 'POST',
@@ -429,6 +444,9 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
       }
     } catch (error) {
       console.error('Error fetching program CGPA:', error);
+    }
+    finally {
+      setIsLoadingSubjects(false);
     }
   };
 
@@ -592,113 +610,123 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
   };
   return (
     <div>
-      <div className="mb-4">
-        <div className="d-flex justify-content-around transcript-academictranscript-cgpa-input">
-          <div className="w-1/2">
-            <label className="fw-bold small formlabel">Programme Name </label>
-            <input
-              type="text"
-              className="inputat"
-              value={programName}
-              onChange={handleProgramNameChange}
-            />
-          </div>
-          <div className="w-1/2">
-            <label className="fw-bold small formlabel">CGPA <span className="text-danger">*</span></label>
-            <input
-              type="text"
-              className="inputat"
-              value={cgpa}
-              onChange={handleCgpaChange}
-            />
-          </div>
+      {isLoadingSubjects ? (
+        <div className="d-flex justify-content-center align-items-center py-5">
+          <Spinner animation="border" role="status">
+            <span className="visually-hidden">Loading subjects...</span>
+          </Spinner>
         </div>
-      </div >
-      <TransitionGroup className="space-y-2 mb-4">
-        {subjects.map((subject, index) => (
-          <CSSTransition key={index} classNames="fade" timeout={300}>
-            <div className="d-flex align-items-center justify-content-between bg-white p-2 mb-2 rounded border">
-              <div className="d-flex align-items-center flex-grow-1 transcript-academictranscript-subject">
-                <GripVertical className="me-3" size={20} />
-                {editingIndex === index || subject.isEditing ? (
-                  <>
-                    <input
-                      type="text"
-                      value={subject.name}
-                      onChange={(e) => handleNameChange(index, e.target.value)}
-                      className="editingplaceholder me-2"
-                      placeholder="Enter subject name"
-                      required
-                    />
-                    <input
-                      type="text"
-                      value={subject.grade}
-                      onChange={(e) => handleGradeChange(index, e.target.value)}
-                      className="editingplaceholder"
-                      placeholder="Enter grade"
-                      required
-                    />
-                  </>
-                ) : (
-                  <>
-                    <span className="fw-medium h6 mb-0 me-3"
-                      style={{
-                        fontSize: '0.9rem',
-                        fontWeight: "500",
-                        width: "275px",
-                        wordWrap: 'break-word',
-                        overflowWrap: 'break-word',
-                        wordBreak: 'break-all',
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-
-                      }}
-                    >{subject.name}</span>
-                    {subject.grade && (
-                      <span className={`rounded-pill px-4 text-white ms-2 ${getGradeColor(subject.grade)}`}>
-                        GRADE: {subject.grade}
-                      </span>
-                    )}
-                  </>
-                )}
+      ) : (
+        <>
+          <div className="mb-4">
+            <div className="d-flex justify-content-around transcript-academictranscript-cgpa-input">
+              <div className="w-1/2">
+                <label className="fw-bold small formlabel">Programme Name </label>
+                <input
+                  type="text"
+                  className="inputat"
+                  value={programName}
+                  onChange={handleProgramNameChange}
+                />
               </div>
-              <div className="transcript-academictranscript-subject-icon ms-auto" >
-                {editingIndex === index || subject.isEditing ? (
-                  <Check onClick={() => handleSave(index)} className="text-success cursor-pointer me-2" />
-                ) : (
-                  <Edit2 size={18} className="iconat mx-2" onClick={() => handleEdit(index)} />
-                )}
-                <Trash2 size={18} className="iconat-trash mx-2" onClick={() => handleDelete(index)} />
+              <div className="w-1/2">
+                <label className="fw-bold small formlabel">CGPA <span className="text-danger">*</span></label>
+                <input
+                  type="text"
+                  className="inputat"
+                  value={cgpa}
+                  onChange={handleCgpaChange}
+                />
               </div>
             </div>
-          </CSSTransition>
-        ))}
-      </TransitionGroup>
-      <form onSubmit={handleAddSubject} className="mb-4">
-        <label className="fw-bold small formlabel mb-2">Insert a subject/course:</label>
-        <div className="d-flex justify-content-center position-relative">
-          <input
-            type="text"
-            className="subject-input"
-            placeholder="Enter subject name"
-            value={newSubject}
-            onChange={(e) => setNewSubject(e.target.value)}
+          </div >
+          <TransitionGroup className="space-y-2 mb-4">
+            {subjects.map((subject, index) => (
+              <CSSTransition key={index} classNames="fade" timeout={300}>
+                <div className="d-flex align-items-center justify-content-between bg-white p-2 mb-2 rounded border">
+                  <div className="d-flex align-items-center flex-grow-1 transcript-academictranscript-subject">
+                    <GripVertical className="me-3" size={20} />
+                    {editingIndex === index || subject.isEditing ? (
+                      <>
+                        <input
+                          type="text"
+                          value={subject.name}
+                          onChange={(e) => handleNameChange(index, e.target.value)}
+                          className="editingplaceholder me-2"
+                          placeholder="Enter subject name"
+                          required
+                        />
+                        <input
+                          type="text"
+                          value={subject.grade}
+                          onChange={(e) => handleGradeChange(index, e.target.value)}
+                          className="editingplaceholder"
+                          placeholder="Enter grade"
+                          required
+                        />
+                      </>
+                    ) : (
+                      <>
+                        <span className="fw-medium h6 mb-0 me-3"
+                          style={{
+                            fontSize: '0.9rem',
+                            fontWeight: "500",
+                            width: "275px",
+                            wordWrap: 'break-word',
+                            overflowWrap: 'break-word',
+                            wordBreak: 'break-all',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+
+                          }}
+                        >{subject.name}</span>
+                        {subject.grade && (
+                          <span className={`rounded-pill px-4 text-white ms-2 ${getGradeColor(subject.grade)}`}>
+                            GRADE: {subject.grade}
+                          </span>
+                        )}
+                      </>
+                    )}
+                  </div>
+                  <div className="transcript-academictranscript-subject-icon ms-auto" >
+                    {editingIndex === index || subject.isEditing ? (
+                      <Check onClick={() => handleSave(index)} className="text-success cursor-pointer me-2" />
+                    ) : (
+                      <Edit2 size={18} className="iconat mx-2" onClick={() => handleEdit(index)} />
+                    )}
+                    <Trash2 size={18} className="iconat-trash mx-2" onClick={() => handleDelete(index)} />
+                  </div>
+                </div>
+              </CSSTransition>
+            ))}
+          </TransitionGroup>
+          <form onSubmit={handleAddSubject} className="mb-4">
+            <label className="fw-bold small formlabel mb-2">Insert a subject/course:</label>
+            <div className="d-flex justify-content-center position-relative">
+              <input
+                type="text"
+                className="subject-input"
+                placeholder="Enter subject name"
+                value={newSubject}
+                onChange={(e) => setNewSubject(e.target.value)}
+              />
+              <button type="submit" className="add-button">
+                <Plus size={15} />
+              </button>
+            </div>
+          </form>
+          <div className="d-flex justify-content-end mt-4">
+            <SaveButton
+              onSave={handleSaveAll}
+            />
+          </div>
+          <WidgetPopUpAcademicRemind
+            isOpen={isRemindPopupOpen}
+            onClose={() => setIsRemindPopupOpen(false)}
           />
-          <button type="submit" className="add-button">
-            <Plus size={15} />
-          </button>
-        </div>
-      </form>
-      <div className="d-flex justify-content-end mt-4">
-        <SaveButton
-          onSave={handleSaveAll}
-        />
-      </div>
-      <WidgetPopUpAcademicRemind
-        isOpen={isRemindPopupOpen}
-        onClose={() => setIsRemindPopupOpen(false)}
-      />
+        </>
+      )}
     </div>
   );
 };
@@ -1459,37 +1487,37 @@ const AcademicTranscript = () => {
             </table>
           ) : (
             <div>
-            <table className="w-100 transcript-responsive-table">
-              <thead>
-                <tr>
-                  <th className="border-bottom p-2 fw-normal">Files</th>
-                  <th className="border-bottom p-2 text-end fw-normal">Filename</th>
-                  <th className="border-bottom p-2 text-end fw-normal">Actions</th>
-                </tr>
-              </thead>
-            </table>
-            <p className="text-center m-3" >No reulst slip found.</p>
+              <table className="w-100 transcript-responsive-table">
+                <thead>
+                  <tr>
+                    <th className="border-bottom p-2 fw-normal">Files</th>
+                    <th className="border-bottom p-2 text-end fw-normal">Filename</th>
+                    <th className="border-bottom p-2 text-end fw-normal">Actions</th>
+                  </tr>
+                </thead>
+              </table>
+              <p className="text-center m-3" >No reulst slip found.</p>
             </div>
           )}
         </div>
         {pageNumbers.length > 1 && (
-        <div className="pagination">
-          <button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1}>
-            &lt;
-          </button>
-          {pageNumbers.map(number => (
-            <button
-              key={number}
-              onClick={() => paginate(number)}
-              className={currentPage === number ? 'active' : ''}
-            >
-              {number}
+          <div className="pagination">
+            <button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1}>
+              &lt;
             </button>
-          ))}
-          <button onClick={() => paginate(currentPage + 1)} disabled={currentPage === paginationInfo.lastPage}>
-            &gt;
-          </button>
-        </div>
+            {pageNumbers.map(number => (
+              <button
+                key={number}
+                onClick={() => paginate(number)}
+                className={currentPage === number ? 'active' : ''}
+              >
+                {number}
+              </button>
+            ))}
+            <button onClick={() => paginate(currentPage + 1)} disabled={currentPage === paginationInfo.lastPage}>
+              &gt;
+            </button>
+          </div>
         )}
         <div className="w-100 d-flex flex-row-reverse">
           <button
@@ -1500,7 +1528,7 @@ const AcademicTranscript = () => {
             RESET
           </button>
         </div>
-        
+
       </div>
 
       <WidgetFileUploadAcademicTranscript
