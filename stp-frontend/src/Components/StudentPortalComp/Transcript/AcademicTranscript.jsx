@@ -175,10 +175,10 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
   const presetSubjectsForNewUser = () => {
     const presetSubjects = [
       { id: 1, name: "Bahasa Melayu", grade: "", isEditing: true },
-      { id: 2, name: "English", grade: "", isEditing: true },
-      { id: 3, name: "Mathematics", grade: "", isEditing: true },
-      { id: 4, name: "Science", grade: "", isEditing: true },
-      { id: 5, name: "History", grade: "", isEditing: true }
+      { id: 2, name: "Bahasa Inggeris", grade: "", isEditing: true },
+      { id: 3, name: "Pendidikan Moral", grade: "", isEditing: true },
+      { id: 4, name: "Matematik", grade: "", isEditing: true },
+      { id: 5, name: "Sains", grade: "", isEditing: true }
     ];
     onSubjectsChange(presetSubjects);
     setHasUnsavedChanges(true);

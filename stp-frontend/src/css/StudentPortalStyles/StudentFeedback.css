@@ -1,7 +1,86 @@
-.SF-container
+:root {
+    --SF-content-height-fixed: 50rem;
+    --SF-content-width-fixed: 50rem;
+    --SF-default-color:#B71a18;
+}
+
+/*Overall Container*/
+.SF-container {
+    margin-top: 5.8rem;
+    background-color: rgb(255, 255, 255);
+    height: auto;
+    width: 100%;
+    display: flex;
+}
+
+/*Image Container*/
+.SF-image-container {
+    height: auto;
+}
+
+.SF-image {
+    width: var(--SF-content-width-fixed);
+    height: var(--SF-content-height-fixed);
+}
+
+/*From Container*/
+.SF-Form-Container {
+    width: var(--SF-content-width-fixed);
+    height: var(--SF-content-height-fixed);
+    padding: 10rem;
+}
+
+.SF-Form-Group {
+    margin-bottom: 1rem;
+}
+
+.SF-Form-Group p {
+    text-align: start;
+    padding: 0;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    color: #828282;
+    font-weight: 500;
+}
+
+.SF-Form-Placeholder {
+    border: 2px solid #dee2e6;
+}
+
+.SF-Form-Container .form-control.SF-Form-Placeholder,
+.SF-Form-Container .form-select.SF-Form-Placeholder {
+    border: 2px solid #dee2e6;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.SF-Form-Container .form-control.SF-Form-Placeholder:focus,
+.SF-Form-Container .form-select.SF-Form-Placeholder:focus {
+    border: 2px solid var( --SF-default-color);
+    outline: none;
+    box-shadow: none;
+}
+
+.SF-Form-Container .form-control.SF-Form-Placeholder:active,
+.SF-Form-Container .form-select.SF-Form-Placeholder:active {
+    border-color: var( --SF-default-color);
+}
+
+
+/* Specific styles for textarea
+.SF-Form-Container .form-control.SF-Form-Placeholder[as="textarea"] {
+    min-height: 100px;
+    padding: 10px;
+    resize: none;
+    line-height: 1.5;
+} */
+
+.SF-Form-Placeholder::placeholder
 {
-    margin-top:5.8rem;
-    background-color: rgb(243, 0, 0);
-    height:30.8rem;
-    width:100%
+    color:#E0E0E0;
+}
+
+.SF-Form-Button
+{
+    width:100%;
+    margin-left:0;
 }
