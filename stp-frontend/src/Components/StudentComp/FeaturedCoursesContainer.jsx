@@ -107,24 +107,24 @@ const FeaturedCoursesContainer = () => {
             loop={true}
             navigation  // Helps with loop smoothness
             breakpoints={{
-               // Mobile phones (portrait)
-               320: {
-                slidesPerView:  getSlidesPerView(),
+              // Mobile phones (portrait)
+              320: {
+                slidesPerView: getSlidesPerView(),
                 spaceBetween: 1,
               },
               // Large phones & small tablets
               576: {
-                slidesPerView:  getSlidesPerView(),
+                slidesPerView: getSlidesPerView(),
                 spaceBetween: 1,
               },
               // Tablets & small laptops
               768: {
-                slidesPerView:  getSlidesPerView(),
+                slidesPerView: getSlidesPerView(),
                 spaceBetween: 10,
               },
               // Laptops & desktops
               992: {
-                slidesPerView:  getSlidesPerView(),
+                slidesPerView: getSlidesPerView(),
                 spaceBetween: 5,
               },
               // Mobile phones (portrait)
@@ -173,17 +173,22 @@ const FeaturedCoursesContainer = () => {
                         {course.course_qualification}
                       </span>
                     )}
-
-                    <img
-                      src={`${baseURL}storage/${course.course_logo}`}
-                      alt={course.course_school}
-                      className="section-image"
-                      style={{
-                        height: "80px",
-                        width: "150px",
-                        objectFit: "contain",
+                    <Link
+                      to={{
+                        pathname: `/knowMoreInstitute/${course.school_id}`
                       }}
-                    />
+                    >
+                      <img
+                        src={`${baseURL}storage/${course.course_logo}`}
+                        alt={course.course_school}
+                        className="section-image"
+                        style={{
+                          height: "80px",
+                          width: "150px",
+                          objectFit: "contain",
+                        }}
+                      />
+                    </Link>
                   </div>
                   <div>
                     <p

@@ -263,7 +263,7 @@ const CourseDetail = () => {
 
               <div
                 className="card mt-3 apply-now-card"
-                style={{ paddingLeft: "25px" }}
+                style={{ paddingLeft: "25px",paddingTop:"1rem",paddingBottom:"1rem" }}
               >
                 <div className="row">
                   <div className="col-md-12">
@@ -274,9 +274,9 @@ const CourseDetail = () => {
               <div className="card mt-4 apply-now-card">
                 <div className="card-body">
                   <h5 className="card-title">Summary</h5>
-                  <Row style={{ paddingLeft: "50px" }}>
+                  <Row /*style={{ paddingLeft: "50px"}}*/ className="coursedetail-summary-content">
                     <Col md={4}>
-                      <div style={{ marginBottom: "10px" }}>
+                      <div style={{ marginBottom: "25px",marginTop:"10px" }}>
                         <i
                           className="bi bi-mortarboard"
                           style={{ marginRight: "10px" }}
@@ -296,7 +296,7 @@ const CourseDetail = () => {
                       </div>
                     </Col>
                     <Col md={4}>
-                      <div style={{ marginBottom: "10px" }}>
+                      <div style={{ marginBottom: "25px",marginTop:"10px" }}>
                         <i
                           className="bi bi-clock"
                           style={{ marginRight: "10px" }}
@@ -335,8 +335,8 @@ const CourseDetail = () => {
                     >
                       <div>
                         <p className="mb-0">
-                          {program.cost === "0.00" || program.cost === "RM0.00" ? (
-                            "N/A"
+                          {program.cost === "0" || program.cost === "RM0" ? (
+                            <p className="mb-0"><strong>RM</strong> N/A</p> 
                           ) : (
                             <>
                               <strong>RM </strong> {program.cost}/year
@@ -397,7 +397,7 @@ const CourseDetail = () => {
               <div className="card mt-4 apply-now-card">
                 <div className="card-body">
                   <Row>
-                    <Col md={10} className="d-flex align-items-center">
+                    <Col md={10} className="d-flex align-items-center coursedetail-entryrequirement-title">
                       <div>
                         <h5 className="card-title">Entry Requirement</h5>
                       </div>
@@ -859,7 +859,7 @@ const CourseDetail = () => {
                     border: "none",
                     width: "180px",
                     height: "50px",
-                    marginTop: "20px",
+                    marginTop: "2rem",
                   }}
                   onClick={() => handleApplyNow(program)} // Ensure you pass the correct course or program ID
                 >

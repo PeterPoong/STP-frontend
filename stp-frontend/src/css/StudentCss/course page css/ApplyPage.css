@@ -1,3 +1,5 @@
+
+
 /*word break*/
 .student-coursedetil-wordbreak
 {
@@ -324,5 +326,17 @@
     height: 10rem;
     border-radius: 0.25rem;
     object-fit: cover;
+  }
+
+  .coursedetail-entryrequirement-title
+  {
+    justify-content: center;
+  }
+
+  .coursedetail-summary-content
+  {
+    justify-self: center !important;
+    padding:2rem 0;
+    gap:1rem;
   }
 }

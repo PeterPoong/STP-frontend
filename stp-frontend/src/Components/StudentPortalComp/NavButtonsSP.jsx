@@ -113,6 +113,19 @@ const NavigationBar = () => {
             >
               Schools
             </Button>
+            <Button
+              variant="link"
+              as={Link}
+              to="/studentFeedback"
+              className={`nav-link-custom ${location.pathname === "/studentFeedback" ||
+                location.pathname.startsWith("/studentFeedback")
+                ? "active"
+                : ""
+              }`}
+              style={{ marginLeft: "10px" }}
+            >
+             Contact Us
+            </Button>
           </Nav>
 
           {hasToken ? (

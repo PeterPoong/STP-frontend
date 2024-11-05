@@ -935,7 +935,7 @@ const SearchCourse = () => {
             {/* Mobile Accordion Filters */}
             {/* Mobile Accordion Filters */}
             <Accordion
-              defaultActiveKey="0"
+              //defaultActiveKey="0"
               className="custom-accordion d-md-none"
             >
               <Accordion.Item eventKey="0">
