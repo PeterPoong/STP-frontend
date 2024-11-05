@@ -1,16 +1,27 @@
-.applycourse-overflow
+.applycourse-academictranscript-select-width
 {
-  display:flex;
-  align-items:center;
+  width:25%;
 }
-.applycourse-academictranscript-dflex
-{
+
+
+.applycourse-cocurriculum-content {
+  display: flex;
+  flex-grow: 1;
+  align-items: center;
+}
+
+
+.applycourse-overflow {
+  display: flex;
+  align-items: center;
+}
+
+.applycourse-academictranscript-dflex {
   display: flex;
 }
 
-.applycourse-cocurriculum-clubname-input
-{
-  width:25%;
+.applycourse-cocurriculum-clubname-input {
+  width: 25%;
 }
 
 .applycourse-cocurriculum-wordbreak {
@@ -958,6 +969,11 @@ ul {
 
 
   /*case2*/
+.applycourse-cocurriculum-content-flexend
+{
+  justify-content: flex-end;
+}
+
   .step-content {
     padding: 1.5rem 1.5rem 0 1.5rem;
     margin: 1.5rem 3rem 0 3rem;
@@ -1013,11 +1029,13 @@ ul {
   }
 
   /*case4*/
+  .applycourse-otherdoccert-direction {
+    flex-direction: column;
+  }
+
   .other-doc-item {
     padding: 1rem;
   }
-
-
 
   .other-doc-item .d-flex>div {
     width: 100%;
@@ -1281,6 +1299,16 @@ ul {
   }
 
   /*case3*/
+  .applycourse-cocurriculum-content {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    text-align-last:start;
+  }
+
+  .applycourse-cocurriculum-content-button {
+    text-align-last: end;
+  }
+
   .step-content {
     padding: 1rem 1rem 0 1rem;
     margin: 1rem 1rem 0 1rem;
@@ -1381,7 +1409,7 @@ ul {
 
   .activity-item>div,
   .achievement-item>div {
-   
+
     margin-bottom: 0.5rem;
   }
 
@@ -1482,26 +1510,25 @@ ul {
 
   .applycourse-responsive-table-text-end {
     text-align: end;
-    max-width:100%;
+    max-width: 100%;
   }
 
-  .activity-item .col-12
-  {
-    width:30%;
+  .activity-item .col-12 {
+    width: 30%;
   }
 
-  .activity-item .col-6
-  {
-    width:30%;
+  .activity-item .col-6 {
+    width: 30%;
   }
 
-  .activity-item .col-3
-  {
-    width:30%;
+  .activity-item .col-3 {
+    width: 30%;
   }
 
-  .col-12,.col-6,.col-3{
-    width:auto !important;
+  .col-12,
+  .col-6,
+  .col-3 {
+    width: auto !important;
   }
 
 
@@ -1747,7 +1774,7 @@ ul {
 
   .activity-item>div,
   .achievement-item>div {
-    
+
     padding: 0.2rem 0;
   }
 
@@ -1763,7 +1790,7 @@ ul {
 
   .activity-item .col-3:last-of-type,
   .achievement-item .col-3:last-of-type {
-  order:2;
+    order: 2;
   }
 
   .position {
@@ -1844,37 +1871,59 @@ ul {
     height: 20rem;
   }
 
-.applycourse-cocurriculum-content-card
-{
-justify-self: center;
-text-align-last:center ;
-}
-
-.applycourse-cocurriculum-content,.applycourse-cocurriculum-content-clubname
-{
-  text-align: center;
-}
-
-.applycourse-cocurriculum-icon
-{
-  align-self:center;
-  margin-bottom:1rem;
-}
-
-.applycourse-cocurriculum-clubname-input
-{
-  width:100%;
-}
-
-.applycourse-alignself-center
-{
-  align-self:center;
-}
+  .applycourse-cocurriculum-content-card {
+    justify-self: center;
+    text-align-last: center;
+    width:-webkit-fill-available;
+    padding:0.75rem 0 !important;
+  }
 
 
+  .document-item 
+  {
+    flex-wrap:wrap;
+    overflow: scroll;
+  }
 
-.applycourse-overflow
-{
-  overflow: scroll;
-}
+  .document-item-mobile
+  {
+    flex-wrap:wrap;
+    justify-content: center;
+    gap:1rem;
+  }
+
+  .applycourse-cocurriculum-icon {
+    align-self: center;
+    margin-bottom: 1rem;
+  }
+
+  .applycourwse-academictranscript-documentedit
+  {
+    width:-webkit-fill-available;
+    flex-direction: row-reverse;
+  }
+
+  .applycourse-cocurriculum-clubname-input {
+    width: 100%;
+  }
+
+  .applycourse-alignself-center {
+    align-self: center;
+  }
+
+  .applycourse-achievements-file-direction {
+    flex-direction: row !important;
+    padding: 0 !important;
+  }
+
+  .applycourse-overflow {
+    overflow: scroll;
+  }
+
+  .applycourse-academictranscript-select-width
+  {
+    width:10rem;
+  }
+
+  
 }

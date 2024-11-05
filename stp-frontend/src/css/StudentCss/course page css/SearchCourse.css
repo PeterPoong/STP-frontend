@@ -1,33 +1,83 @@
-.searchcourse-dflex-center-row
-{
-    
+.searchcourse-coursename-schoolname {
+    padding-left: 30px;
 }
 
-.searchcourse-display-none
-{
-    display: none;
-}
-
-.searchcourse-dflex-center
-{
-    display:flex;
+.searchinstitute-dflex-center {
+    display: flex;
     justify-content: flex-start;
 }
 
-.searchcourse-dflex-center p
-{
+.searchinstitute-dflex-center p {
+    margin-bottom: 0;
+    width: 10rem;
+
+}
+
+.searchcourse-display-none {
+    display: none;
+}
+
+
+.searchcourse-dflex-center {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.searchcourse-dflex-center p {
+    margin-bottom: 0;
+}
+
+.knowmoreinstitute-dflex-center {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.knowmoreinstitute-dflex-center p {
     margin-bottom: 0;
 }
 
 @media (max-width: 426px) {
     .searchcourse-dflex-center {
         display: flex;
-        justify-content: flex-end;
+        justify-content: center;
         flex-wrap: wrap;
     }
 
     .searchcourse-dflex-center p {
         width: 10rem;
+        text-align: justify;
     }
+
+    .knowmoreinstitute-dflex-center 
+    {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-left: 1.75rem;
+    }
+
+    .knowmoreinstitute-dflex-center p 
+    {
+        width: 10rem;
+        text-align: justify;
+    }
+
+    .searchcourse-coursename-schoolname {
+        padding-left: 0;
+        margin-top: 1rem;
+    }
+
+    .searchinstitute-dflex-center {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .searchinstitute-dflex-center p {
+        width: 10rem;
+        text-align: justify;
+    }
+
+    ;
 
 }

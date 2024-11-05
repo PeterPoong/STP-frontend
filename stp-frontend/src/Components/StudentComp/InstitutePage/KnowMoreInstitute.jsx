@@ -17,7 +17,7 @@ import {
   Card,
   Modal,
 } from "react-bootstrap";
-
+import "../../../css/StudentCss/course page css/SearchCourse.css"
 import studypal11 from "../../../assets/StudentAssets/institute image/StudyPal11.png";
 import Footer from "../../../Components/StudentComp/Footer";
 
@@ -574,8 +574,8 @@ const KnowMoreInstitute = () => {
                 <div className="card-body">
                   <Row>
                     <Col md={10} className="d-flex align-items-center">
-                      <div>
-                        <h5 className="card-title">School Overview</h5>
+                      <div className="knowmoreinstitute-cardtitle">
+                        <h5 className="card-title ">School Overview</h5>
                       </div>
                     </Col>
                     <Col md={12}>
@@ -715,14 +715,15 @@ const KnowMoreInstitute = () => {
                               flexDirection: "column",
                               alignItems: "center",
                               justifyContent: "center",
-                              height: "100%", // Adjust as per your container height
+                              height: "100%",
+                              alignSelf:"center" // Adjust as per your container height
                             }}
                           >
                             <h6
                               style={{
                                 color: "#514E4E",
                               }}
-                              className="card-title"
+                              className="card-title "
                             >
                               Intake Period
                             </h6>
@@ -880,7 +881,7 @@ const KnowMoreInstitute = () => {
               {/* --------- End of About School --------- */}
 
               {/* Contact School Button */}
-              <div className="d-flex justify-content-center">
+              <div className="d-flex justify-content-center mt-3">
                 <Button
                   onClick={() => handleContactSchool(institute.school_email)}
                   style={{
@@ -911,13 +912,8 @@ const KnowMoreInstitute = () => {
                           <Col md={6} lg={6}>
                             <div className="card-image mb-3 mb-md-0">
                               <h5
-                                className="card-title"
-                                style={{
-                                  paddingLeft: "30px",
-                                  backgroundColor: "#F2F2F2",
-                                  marginLeft: "-15px",
-                                  height: "fit-content",
-                                }}
+                                className="card-title knowmoreinstitute-cardtitle-courselist"
+                               
                               >
                                 <a
                                   style={{ color: "black" }}
@@ -926,8 +922,8 @@ const KnowMoreInstitute = () => {
                                   {course.course_name}
                                 </a>
                               </h5>
-                              <div className="d-flex align-items-center">
-                                <div style={{ paddingLeft: "20px" }}>
+                              <div className="d-flex align-items-center knowmoreinstitute-cardtitle-courselist-name">
+                                <div className="knowmoreinstitute-cardtitle-courselist-img">
                                   <img
                                     src={`${baseURL}storage/${course.course_logo || institute.logo
                                       }`}
@@ -935,7 +931,7 @@ const KnowMoreInstitute = () => {
                                     width="100"
                                   />
                                 </div>
-                                <div style={{ paddingLeft: "30px" }}>
+                                <div className="knowmoreinstitute-cardtitle-courselist-institutecity">
                                   <h5 className="card-text">
                                     {institute.name}
                                   </h5>
@@ -955,61 +951,62 @@ const KnowMoreInstitute = () => {
                             </div>
                           </Col>
                           <Col md={6} lg={6}>
-                            <div className="d-flex flex-grow-1 justify-content-between">
+                            <div className="d-flex flex-grow-1 justify-content-between knowmoreinstitute-cardtitle-courselist-list" >
                               <div className="details-div">
                                 <div className="d-flex align-items-center flex-wrap">
                                   <Col>
                                     <div>
                                       <Row style={{ paddingTop: "20px" }}>
-                                        <div>
+                                      <div className="knowmoreinstitute-dflex-center" >
                                           <i
                                             className="bi bi-mortarboard"
                                             style={{ marginRight: "10px" }}
                                           ></i>
-                                          <span style={{ paddingLeft: "20px" }}>
+                                          <p style={{ paddingLeft: "20px" }}>
                                             {course.qualification}
-                                          </span>
+                                          </p>
                                         </div>
-                                        <div style={{ marginTop: "10px" }}>
+                                        <div style={{ marginTop: "10px" }} className="knowmoreinstitute-dflex-center">
                                           <i
                                             className="bi bi-calendar-check"
                                             style={{ marginRight: "10px" }}
                                           ></i>
-                                          <span style={{ paddingLeft: "20px" }}>
+                                          <p style={{ paddingLeft: "20px" }} >
                                             {course.study_mode}
-                                          </span>
+                                          </p>
                                         </div>
-                                        <div style={{ marginTop: "10px" }}>
+                                        <div style={{ marginTop: "10px" }} className="knowmoreinstitute-dflex-center">
                                           <i
                                             className="bi bi-clock"
                                             style={{ marginRight: "10px" }}
                                           ></i>{" "}
-                                          <span style={{ paddingLeft: "10px" }}>
+                                          <p style={{ paddingLeft: "20px" }} >
                                             {course.course_period}
-                                          </span>
+                                          </p>
                                         </div>
                                         <div
                                           style={{
                                             marginTop: "10px",
                                             display: "flex",
                                           }}
+                                          className="knowmoreinstitute-dflex-center"
                                         >
                                           <i
                                             className="bi bi-calendar2-week"
                                             style={{ marginRight: "10px" }}
                                           ></i>
-                                          <span style={{ paddingLeft: "20px" }}>
+                                          <p style={{ paddingLeft: "20px" }}>
                                             {Array.isArray(course.course_intake)
                                               ? course.course_intake.join(", ")
                                               : course.course_intake}
-                                          </span>
+                                          </p>
                                         </div>
                                       </Row>
                                     </div>
                                   </Col>
                                 </div>
                               </div>
-                              <div className="fee-apply">
+                              <div className="fee-apply knowmoreinstitute-cardtitle-courselist-feeapply">
                                 <div
                                   className="fee-info text-right"
                                   style={{

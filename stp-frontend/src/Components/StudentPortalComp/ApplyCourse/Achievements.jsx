@@ -467,7 +467,7 @@ const Achievements = ({ onBack, onNext }) => {
                       )}
                     </div>
                   </div>
-                  <div className="applycourse-cocurriculum-content">
+                  <div className="applycourse-cocurriculum-content-button">
                     <Button
                       variant="link"
                       onClick={() => handleSaveAchievement(index)}
@@ -496,7 +496,7 @@ const Achievements = ({ onBack, onNext }) => {
                   {achievement.achievement_name}
                 </div>
                 <div className="d-flex justify-content-between">
-                  <div className="d-flex flex-grow-1 align-items-center applycourse-cocurriculum-content">
+                  <div className=" applycourse-cocurriculum-content">
                     <div className="me-3">
                       <Clock size={18} className="me-2" />
                       <span className="border-end border-2 border-dark pe-2 me-2">Date</span>
@@ -523,7 +523,7 @@ const Achievements = ({ onBack, onNext }) => {
                     </div>
 
                     {achievement.achievement_media && (
-                      <div className="d-flex align-items-center text-decoration-underline ">
+                      <div className="d-flex align-items-center text-decoration-underline applycourse-achievements-file-direction ">
                         <FileText size={18} className="me-2 applycourse-alignself-center" />
                         <span
                         className="applycourse-alignself-center"
@@ -546,7 +546,7 @@ const Achievements = ({ onBack, onNext }) => {
                       </div>
                     )}
                   </div>
-                  <div className="applycourse-cocurriculum-content">
+                  <div className="applycourse-cocurriculum-content-button">
                     <Button
                       variant="link"
                       onClick={() => {

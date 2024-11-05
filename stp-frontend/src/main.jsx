@@ -59,6 +59,7 @@ import StudentPortalBasicInformations from "./Pages/StudentPortalPages/StudentPo
 import StudentApplyCourses from "./Pages/StudentPortalPages/StudentApplyCourses";
 import StudentApplyCourse from "./Pages/StudentPortalPages/StudentApplyCourse";
 import StudentApplicationSummary from "./Pages/StudentPortalPages/StudentApplicationSummary";
+import StudentFeedback from  "./Pages/StudentPortalPages/StudentFeedback";
 
 //schoolPortal Page
 import SchoolPortalLogin from "./Pages/SchoolPages/SchoolPortalLogin";
@@ -299,6 +300,11 @@ const router = createBrowserRouter([
     element: <FacebookSocialPageRedirectPage />,
   },
 
+  {
+    path: "/studentFeedback",
+    element: <StudentFeedback/>,
+  },
+
   //School Portal
   {
     path: "/schoolPortalLogin",
@@ -339,6 +345,8 @@ const router = createBrowserRouter([
     path: "/school/ApplicantDetail/:applicantID",
     element: <SchoolViewApplicantDetail />,
   },
+
+
 
   //marketing
   {

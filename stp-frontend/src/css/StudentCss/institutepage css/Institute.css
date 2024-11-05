@@ -1,3 +1,18 @@
+
+.searchinstitute-two-description {
+  padding: 0.825rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  /* Show only 2 lines of text */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-wrap: break-word;
+  word-break: normal;
+  white-space: normal;
+  max-height: 5.5rem;
+}
+
 /* Layout Adjustments */
 .institute-reset-display {
   display: none;
@@ -663,6 +678,7 @@
     display: none;
   }
   .institute-reset-display {
-    display: grid;
+    display: flex;
+    flex-direction: column;
   }
 }

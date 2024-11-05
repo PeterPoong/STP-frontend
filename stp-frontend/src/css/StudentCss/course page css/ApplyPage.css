@@ -1,16 +1,14 @@
+
+
 /*word break*/
 .student-coursedetil-wordbreak
 {
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  word-break: break-all;
-  white-space-collapse: break-spaces;
-  text-wrap: wrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: auto;
-  width: auto;
-  height:3rem;
+  white-space: normal; 
 }
 
 
@@ -324,8 +322,21 @@
   }
 
   .gallery-image-courses {
-    width: 25rem;
+    width: 20rem;
     height: 10rem;
+    border-radius: 0.25rem;
     object-fit: cover;
+  }
+
+  .coursedetail-entryrequirement-title
+  {
+    justify-content: center;
+  }
+
+  .coursedetail-summary-content
+  {
+    justify-self: center !important;
+    padding:2rem 0;
+    gap:1rem;
   }
 }

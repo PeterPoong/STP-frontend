@@ -1132,7 +1132,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                                 options={subjectOptions}
                                 value={subject.id && subject.name ? { value: subject.id, label: subject.name } : null}
                                 onChange={(selected) => handleSubjectSelectChange(index, subIndex, selected)}
-                                className="me-2 w-25 "
+                                className="me-2 applycourse-academictranscript-select-width"
                                 placeholder="Select Subject"
                               />
                             );
@@ -1142,7 +1142,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                             type="text"
                             value={subject.name}
                             onChange={(e) => handleSubjectChange(index, subIndex, 'name', e.target.value)}
-                            className="me-2 w-25"
+                            className="me-2 applycourse-academictranscript-select-width"
                             placeholder="Enter Subject Name"
                             style={{ fontSize: '0.9rem', fontWeight: "500" }}
                             required
@@ -1273,10 +1273,10 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
 
             {transcript.documents.map((doc, docIndex) => (
               <div key={docIndex} className="px-4">
-                <div className="document-item d-flex align-items-center mb-2 bg-white p-1 gap-1 justify-content-between rounded-3">
+                <div className="overflow-scroll document-item d-flex align-items-center mb-2 bg-white p-1 gap-1 justify-content-between rounded-3">
                   {doc.isEditing ? (
                     <>
-                      <div className="d-flex flex-grow-1 align-items-center">
+                      <div className="d-flex flex-grow-1 align-items-center document-item-mobile">
                         <div className="me-3 border-end px-3">
                           {doc.file ? (
                             <>
@@ -1322,9 +1322,9 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                           />
                         </div>
                       </div>
-                      <div>
+                      <div className="applycourwse-academictranscript-documentedit">
                         <Button variant="link" className="p-0 me-2" onClick={() => handleSaveDocument(index, docIndex)}>
-                          <Save size={15} color="grey" />
+                          <Save size={15} color="green" />
                         </Button>
                         <Button variant="link" className="p-0" onClick={() => handleRemoveDocument(index, docIndex)}>
                           <Trash2 size={15} color="grey" />

@@ -82,6 +82,10 @@ const FeaturedCoursesContainer = () => {
     }
   };
 
+  const getSlidesPerView = () => {
+    return courses.length > 0 ? courses.length - 1 : 1;
+  };
+
   return (
     <div>
       {error && <div>Error: {error}</div>}
@@ -105,8 +109,28 @@ const FeaturedCoursesContainer = () => {
             breakpoints={{
               // Mobile phones (portrait)
               320: {
+                slidesPerView: getSlidesPerView(),
+                spaceBetween: 1,
+              },
+              // Large phones & small tablets
+              576: {
+                slidesPerView: getSlidesPerView(),
+                spaceBetween: 1,
+              },
+              // Tablets & small laptops
+              768: {
+                slidesPerView: getSlidesPerView(),
+                spaceBetween: 10,
+              },
+              // Laptops & desktops
+              992: {
+                slidesPerView: getSlidesPerView(),
+                spaceBetween: 5,
+              },
+              // Mobile phones (portrait)
+              /*320: {
                 slidesPerView: 10,
-                spaceBetween: 1, 
+                spaceBetween: 1,
               },
               // Large phones & small tablets
               576: {
@@ -122,7 +146,7 @@ const FeaturedCoursesContainer = () => {
               992: {
                 slidesPerView: 10,
                 spaceBetween: 5,
-              },
+              },*/
               // Large desktops
               1200: {
                 slidesPerView: 5,
@@ -149,17 +173,22 @@ const FeaturedCoursesContainer = () => {
                         {course.course_qualification}
                       </span>
                     )}
-
-                    <img
-                      src={`${baseURL}storage/${course.course_logo}`}
-                      alt={course.course_school}
-                      className="section-image"
-                      style={{
-                        height: "80px",
-                        width: "150px",
-                        objectFit: "contain",
+                    <Link
+                      to={{
+                        pathname: `/knowMoreInstitute/${course.school_id}`
                       }}
-                    />
+                    >
+                      <img
+                        src={`${baseURL}storage/${course.course_logo}`}
+                        alt={course.course_school}
+                        className="section-image"
+                        style={{
+                          height: "80px",
+                          width: "150px",
+                          objectFit: "contain",
+                        }}
+                      />
+                    </Link>
                   </div>
                   <div>
                     <p
