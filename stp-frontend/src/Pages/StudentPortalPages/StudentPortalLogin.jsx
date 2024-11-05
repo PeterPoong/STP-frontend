@@ -119,7 +119,7 @@ const StudentPortalLogin = () => {
       .then((data) => {
         //console.log("Full API response:", data);
         if (data.true === true && data.data && data.data.user) {
-          console.log("Login successful:", data);
+          //console.log("Login successful:", data);
           setLoginStatus("success");
 
           const studentStatus = data.data.user.student_status;

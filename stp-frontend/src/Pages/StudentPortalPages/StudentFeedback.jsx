@@ -1,10 +1,17 @@
+//react library
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Form } from "react-bootstrap";
+
+//component
 import NavButtonsSP from "../../Components/StudentPortalComp/NavButtonsSP";
 import SpcFooter from "../../Components/StudentPortalComp/SpcFooter";
+
+//asset and style
 import "../../css/StudentPortalStyles/StudentFeedback.css";
+import StudyPalLogo from "../../assets/StudentPortalAssets/StudyPalLogo.svg";
 import contactUs from "../../assets/StudentPortalAssets/contactUs.JPEG";
-import { Form } from "react-bootstrap";
+
 const StudentFeedback = () => {
 
 
@@ -16,6 +23,19 @@ const StudentFeedback = () => {
           <img src={contactUs} alt="contactus" className="SF-image" />
         </div>
         <div className="SF-Form-Container">
+          <div className="SF-Form-Logo">
+            <img
+              src={StudyPalLogo}
+              alt="StudentFeedbackLogo"
+            />
+            <h2 className="text-start mb-1 custom-color-title">
+              Contact Us
+            </h2>
+            <p className="text-start mb-4 small custom-color-title">
+              We'd love to hear from you. Please fill out this form.
+            </p>
+          </div>
+
           <Form >
             <Form.Group className="SF-Form-Group">
               <p>Full Name</p>
@@ -32,7 +52,7 @@ const StudentFeedback = () => {
               <p>Email Address</p>
               <Form.Control
                 type="text"
-                placeholder="Your Name "
+                placeholder="Your Email"
                 required
                 pattern="[a-zA-Z0-9]+"
                 title="Username can only contain letters and numbers"
@@ -43,7 +63,7 @@ const StudentFeedback = () => {
               <p>Contact Number</p>
               <Form.Control
                 type="text"
-                placeholder="Your Name "
+                placeholder="Your Contact"
                 required
                 pattern="[a-zA-Z0-9]+"
                 title="Username can only contain letters and numbers"
