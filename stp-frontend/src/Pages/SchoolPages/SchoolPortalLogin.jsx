@@ -146,9 +146,29 @@ const SchoolPortalLogin = () => {
     }
   };
 
+  const handleBackClick = () => {
+    navigate('/'); // This navigates to the previous page in history
+  };
+
   return (
     <Container fluid className="h-100">
       <Row className="h-50">
+        <div className="position-absolute top-0 ">
+          <button
+            className="p-1 login-back-button rounded-circle"
+            onClick={handleBackClick}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="1.5rem"
+              height="1.25rem"
+              fill="#FFFFFFFF"
+              class="bi bi-chevron-left"
+              viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0" />
+            </svg>
+          </button>
+        </div>
         <Col md={6} className="d-flex align-items-center bg-white">
           <Container>
             <Row className="justify-content-center mt-4">
