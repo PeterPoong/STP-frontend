@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 // Third-party libraries
 import { Search, GeoAlt, Alarm, CalendarCheck, Book, ThreeDots } from "react-bootstrap-icons";
 import "bootstrap/dist/css/bootstrap.min.css"; // Import Bootstrap CSS
-import { Row, Col, Form, Button, InputGroup, Modal } from "react-bootstrap";
+import { Row, Col, Form, Button, InputGroup, Modal, Spinner} from "react-bootstrap";
 import SchoolOutlinedIcon from "@mui/icons-material/SchoolOutlined";
 
 // Custom styles and components
@@ -299,59 +299,59 @@ const CoursesListing = ({ onAddCourseClick, courseID, editCourse }) => {
         </Col>
 
         <Col md={6}>
-        <div className="d-block d-md-flex gap-2">
-    {/* Sort By Dropdown */}
-    <Form.Group controlId="sortBy">
-      <Form.Label className="fw-light">Sort By:</Form.Label>
-      <Form.Select
-        value={qualification}
-        onChange={(e) => setQualification(e.target.value)}
-        required
-      >
-        <option value="">Course Qualification</option>
-        {loadingQualification ? (
-          <p>Loading...</p>
-        ) : qualificationList.length === 0 ? (
-          <p>No courses available.</p>
-        ) : (
-          qualificationList.map((qualification) => (
-            <option value={qualification.id} key={qualification.id}>
-              {qualification.qualification_name}
-            </option>
-          ))
-        )}
-      </Form.Select>
-    </Form.Group>
+          <div className="d-block d-md-flex gap-2">
+            {/* Sort By Dropdown */}
+            <Form.Group controlId="sortBy">
+              <Form.Label className="fw-light">Sort By:</Form.Label>
+              <Form.Select
+                value={qualification}
+                onChange={(e) => setQualification(e.target.value)}
+                required
+              >
+                <option value="">Course Qualification</option>
+                {loadingQualification ? (
+                  <p>Loading...</p>
+                ) : qualificationList.length === 0 ? (
+                  <p>No courses available.</p>
+                ) : (
+                  qualificationList.map((qualification) => (
+                    <option value={qualification.id} key={qualification.id}>
+                      {qualification.qualification_name}
+                    </option>
+                  ))
+                )}
+              </Form.Select>
+            </Form.Group>
 
-    {/* Category Dropdown */}
-    <Form.Group controlId="category">
-      <Form.Label className="fw-light">Category:</Form.Label>
-      <Form.Select
-        value={category}
-        onChange={(e) => setCategory(e.target.value)}
-        required
-      >
-        <option value="">Course Category</option>
-        {loadingCategory ? (
-          <p>Loading...</p>
-        ) : categoryList.length === 0 ? (
-          <p>No categories available.</p>
-        ) : (
-          categoryList.map((category) => (
-            <option value={category.id} key={category.id}>
-              {category.category_name}
-            </option>
-          ))
-        )}
-      </Form.Select>
-    </Form.Group>
+            {/* Category Dropdown */}
+            <Form.Group controlId="category">
+              <Form.Label className="fw-light">Category:</Form.Label>
+              <Form.Select
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                required
+              >
+                <option value="">Course Category</option>
+                {loadingCategory ? (
+                  <p>Loading...</p>
+                ) : categoryList.length === 0 ? (
+                  <p>No categories available.</p>
+                ) : (
+                  categoryList.map((category) => (
+                    <option value={category.id} key={category.id}>
+                      {category.category_name}
+                    </option>
+                  ))
+                )}
+              </Form.Select>
+            </Form.Group>
 
-    {/* Reset Filter */}
-    <p className="resetFilter" onClick={resetFilters}>
-      Reset Filter
-    </p>
-  </div>
-</Col>
+            {/* Reset Filter */}
+            <p className="resetFilter" onClick={resetFilters}>
+              Reset Filter
+            </p>
+          </div>
+        </Col>
 
 
         <Col md={3}>
@@ -377,7 +377,10 @@ const CoursesListing = ({ onAddCourseClick, courseID, editCourse }) => {
       {/* Courses Card */}
       {/* Display loading message */}
       {loading ? (
-        <p>Loading...</p>
+        <div className="w-100 h-100 align-items-center justify-content-center">
+          <Spinner animation="border" role="status">
+          </Spinner>
+        </div>
       ) : coursesList.length === 0 ? (
         <p>No courses available.</p>
       ) : (
@@ -399,9 +402,8 @@ const CoursesListing = ({ onAddCourseClick, courseID, editCourse }) => {
                   <Col md={4}>
                     <div className="d-flex flex-column align-items-start ms-4 mt-3">
                       <img
-                        src={`${import.meta.env.VITE_BASE_URL}storage/${
-                          course.logo
-                        }`}
+                        src={`${import.meta.env.VITE_BASE_URL}storage/${course.logo
+                          }`}
                         alt="University Logo"
                         className="img-fluid mb-2"
                         style={{
@@ -432,7 +434,7 @@ const CoursesListing = ({ onAddCourseClick, courseID, editCourse }) => {
               </Col>
               <Col md={3}>
                 <div>
-                <div className="mb-2 mt-4 ms-4 ms-md-0">
+                  <div className="mb-2 mt-4 ms-4 ms-md-0">
                     <p>
                       <span role="img" aria-label="degree" className="me-2">
                         <SchoolOutlinedIcon />
@@ -480,7 +482,7 @@ const CoursesListing = ({ onAddCourseClick, courseID, editCourse }) => {
                           className={`dropdown-item ${styles.customDropdownItem}`}
                           onClick={() => detailPage(course.id)}
 
-                          // onClick={() => handleViewDetail(course.id)} // Pass the function correctly
+                        // onClick={() => handleViewDetail(course.id)} // Pass the function correctly
                         >
                           View Detail
                         </button>

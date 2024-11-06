@@ -365,14 +365,21 @@ const SearchCourse = () => {
   };
 
   const handleApplyNow = (program) => {
-    navigate(`/studentApplyCourses/${program.id}`, {
-      state: {
-        programId: program.id,
-        schoolLogoUrl: `${baseURL}storage/${program.logo}`,
-        schoolName: program.school_name,
-        courseName: program.name,
-      },
-    });
+
+    const token =
+      sessionStorage.getItem("token") || localStorage.getItem("token");
+    if (!token) {
+      navigate("/studentPortalLogin");
+    } else {
+      navigate(`/studentApplyCourses/${program.id}`, {
+        state: {
+          programId: program.id,
+          schoolLogoUrl: `${baseURL}storage/${program.logo}`,
+          schoolName: program.school_name,
+          courseName: program.name,
+        },
+      });
+    }
   };
 
   const renderPrograms = () => {
@@ -594,7 +601,7 @@ const SearchCourse = () => {
                           Contact Now
                         </button>
                       ) : (
-                        <button className="featured coursepage-applybutton"  onClick={() => handleApplyNow(program)}>
+                        <button className="featured coursepage-applybutton" onClick={() => handleApplyNow(program)}>
                           Apply Now
                         </button>
                       )}
