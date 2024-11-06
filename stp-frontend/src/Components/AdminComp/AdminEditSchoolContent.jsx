@@ -125,7 +125,13 @@ const AdminEditSchoolContent = () => {
                     });
         
                     setLogo(schoolDetails.logo ? `${import.meta.env.VITE_BASE_URL}storage/${schoolDetails.logo}` : null);
-                    setSelectedFeatures(schoolDetails.schoolFeatured.map(feature => feature.featured_type));
+                    // setSelectedFeatures(schoolDetails.schoolFeatured.map(feature => feature.featured_type));
+                    setSelectedFeatures(
+                        Array.isArray(schoolDetails.schoolFeatured) 
+                          ? schoolDetails.schoolFeatured.map(feature => feature.featured_type) 
+                          : []
+                      );
+                      
         
                     // setCoverFile(schoolDetails.coverFile || null);
                     // setAlbumFiles(schoolDetails.albumFiles || []);
