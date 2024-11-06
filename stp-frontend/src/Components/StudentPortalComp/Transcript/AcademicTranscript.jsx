@@ -1151,7 +1151,7 @@ const AcademicTranscript = () => {
             name: subject.highTranscript_name,
             grade: subject.higherTranscript_grade
           }));
-        console.log('Formatted subjects:', formattedSubjects);
+        //console.log('Formatted subjects:', formattedSubjects);
         setSubjects(formattedSubjects);
       } else {
         console.error('Failed to fetch subjects:', result);
