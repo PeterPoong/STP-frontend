@@ -936,7 +936,7 @@ const AdminFormComponent = ({
           {showCoverPreview && (
             <Modal
               show={showCoverPreview}
-              onHide={() => setShowCoverPreview(false)}
+              onHide={handleCloseCoverPreview}
               centered
               size="lg"
               dialogClassName="modal-preview"
@@ -967,7 +967,7 @@ const AdminFormComponent = ({
           {showPreview && (
             <Modal
               show={showPreview}
-              onHide={() => setShowPreview(false)}
+              onHide={handleClosePreview}
               centered
               size="lg"
               dialogClassName="modal-preview"
