@@ -1,7 +1,7 @@
-//react library
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Form } from "react-bootstrap";
+import { Loader2 } from "lucide-react";
 
 //component
 import NavButtonsSP from "../../Components/StudentPortalComp/NavButtonsSP";
@@ -13,7 +13,50 @@ import StudyPalLogo from "../../assets/StudentPortalAssets/StudyPalLogo.svg";
 import contactUs from "../../assets/StudentPortalAssets/contactUs.JPEG";
 
 const StudentFeedback = () => {
+  const [saveState, setSaveState] = useState('idle'); // idle, saving, success
 
+  const handleSave = async (e) => {
+    e.preventDefault();
+    setSaveState('saving');
+    
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    setSaveState('success');
+    
+    // Reset button state after showing success
+    setTimeout(() => {
+      setSaveState('idle');
+    }, 1500);
+  };
+
+  const getButtonContent = () => {
+    switch (saveState) {
+      case 'saving':
+        return (
+          <>
+            <Loader2 className="animate-spin h-4 w-4 mr-2 inline-block" />
+            Saving...
+          </>
+        );
+      case 'success':
+        return 'Saved!';
+      default:
+        return 'Save';
+    }
+  };
+
+  const getButtonStyle = () => {
+    const baseStyle = "SF-Form-Button transition-all duration-200 flex items-center justify-center";
+    switch (saveState) {
+      case 'saving':
+        return `${baseStyle} bg-gray-400 cursor-not-allowed`;
+      case 'success':
+        return `${baseStyle} bg-green-500 text-white`;
+      default:
+        return baseStyle;
+    }
+  };
 
   return (
     <div>
@@ -36,7 +79,7 @@ const StudentFeedback = () => {
             </p>
           </div>
 
-          <Form >
+          <Form onSubmit={handleSave}>
             <Form.Group className="SF-Form-Group">
               <p>Full Name</p>
               <Form.Control
@@ -72,18 +115,18 @@ const StudentFeedback = () => {
             </Form.Group>
             <Form.Group className="SF-Form-Group">
               <p>Subject</p>
-              <Form.Label visuallyHidden>Subject</Form.Label>  <Form.Select
+              <Form.Label visuallyHidden>Subject</Form.Label>
+              <Form.Select
                 required
                 className="SF-Form-Placeholder"
-                defaultValue=""  >
+                defaultValue=""
+              >
                 <option value="" disabled>Select a subject</option>
                 <option value="general">General Inquiry</option>
                 <option value="technical">Technical Support</option>
                 <option value="feedback">Feedback</option>
                 <option value="partnership">Partnership</option>
-
                 <option value="other">Other</option>
-
               </Form.Select>
             </Form.Group>
             <Form.Group className="SF-Form-Group">
@@ -96,7 +139,6 @@ const StudentFeedback = () => {
                 className="SF-Form-Placeholder"
                 style={{
                   resize: 'none',
-                  // Remove Bootstrap's default focus styles
                   '&:focus': {
                     boxShadow: 'none',
                     borderColor: '#B71A18'
@@ -104,8 +146,14 @@ const StudentFeedback = () => {
                 }}
               />
             </Form.Group>
+            <button 
+              type="submit"
+              className={getButtonStyle()}
+              disabled={saveState !== 'idle'}
+            >
+              {getButtonContent()}
+            </button>
           </Form>
-          <button className="SF-Form-Button">Save</button>
         </div>
       </div>
       <SpcFooter />
