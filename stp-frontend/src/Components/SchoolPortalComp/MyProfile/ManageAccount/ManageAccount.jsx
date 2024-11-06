@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Row, Col, Container, Button } from "react-bootstrap";
+import { Row, Col, Container, Button, Spinner } from "react-bootstrap";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import stickman from "../../../../assets/SchoolPortalAssets/20856932_6381326 1.png";
@@ -12,7 +12,7 @@ const ManageAccount = () => {
   const [basicPackage, setBasicPackage] = useState({});
   const [premiumPackage, setPremiumPackage] = useState({});
   const [accountType, setAccountType] = useState("");
-
+  const [isLoading, setIsLoading] = useState(true)
   const getPackage = async (type) => {
     try {
       const formData = { package_type: type };
@@ -39,6 +39,7 @@ const ManageAccount = () => {
       } else if (type === 77) {
         setPremiumPackage(fetchedData.data[0]);
       }
+      setIsLoading(false)
     } catch (error) {
       console.error("Failed to get package data", error);
     }
@@ -71,6 +72,7 @@ const ManageAccount = () => {
   };
 
   useEffect(() => {
+    setIsLoading(true);
     getPackage(76); // Basic Package
     getPackage(77); // Premium Package
     getAccountDetail();
@@ -91,6 +93,14 @@ const ManageAccount = () => {
   const handleRedirect = () => {
     window.location.href = "https://example.com"; // Change to the desired URL
   };
+
+  if (isLoading) return <div>
+    <div className="w-100 h-100 align-items-center justify-content-center">
+      <Spinner animation="border" role="status">
+        <span className="visually-hidden">Loading...</span>
+      </Spinner>
+    </div>
+  </div>;
 
   return (
     <Container fluid className={` ${styles.manageAccountContainer}`}>

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Row, Col, Container } from "react-bootstrap";
-import styles from "../../../css/SchoolPortalStyle/Dashboard.module.css";
-
+import "../../../css/SchoolPortalStyle/SchoolDashboard.css";
 import {
   GeoAlt,
   People,
@@ -146,18 +145,17 @@ const Dashboard = () => {
 
   return (
     <>
-      <Container>
-        <Row className="mt-5">
-          <Col md={8}>
-            <h5 className="ms-md-4">
+      <Container className="px-4 py-3">
+        <div className="SchoolDashboard-Title-Container">
+          <div className="SchoolDashboard-Title-Container-Title">
+            <h5>
               <span style={{ color: "#B71A18", fontWeight: "bold" }}>
                 {typeOfFilter}
-              </span>{" "}
-              Statistic
+              </span>
+              &nbsp; Statistics
             </h5>
-          </Col>
-
-          <Col md={4}>
+          </div>
+          <div>
             <Form>
               <Form.Group controlId="formDropdown">
                 <Form.Label className="d-none">Select Duration</Form.Label>
@@ -180,21 +178,15 @@ const Dashboard = () => {
                 </Form.Select>
               </Form.Group>
             </Form>
-          </Col>
-        </Row>
-        <Row className="mt-4 d-md-none">
-          <row className="d-flex mb-2">
-          {/* Statistics */}
-          <Col xs={6} md={4} className="border shadow-sm rounded mx-md-4 ms-md-5">
-            <p
-              className="mt-2 p-2"
-              style={{ fontSize: "0.8rem", color: "#B71A18", textAlign: "center" }}
-
-            >
+          </div>
+        </div>
+        <div className="SchoolDashboard-Application-Container">
+          <div className="border shadow-sm rounded SchoolDasboard-Application-Content">
+            <p className="SchoolDashboard-Application-Title">
               NEW APPLICATIONS
             </p>
             {newApplication !== null ? (
-              <h1 className={styles.applicantNumber}>{newApplication}</h1>
+              <h1 >{newApplication}</h1>
             ) : (
               <div className="text-center">
                 <div
@@ -203,17 +195,14 @@ const Dashboard = () => {
                 ></div>
               </div>
             )}
-          </Col>
+          </div>
 
-          <Col xs={6} md={4} className="border shadow-sm rounded mx-md-4 ms-2 ms-md-5">
-            <p
-              className="mt-2 p-2"
-              style={{ fontSize: "0.8rem", color: "#B71A18", textAlign: "center" }}
-            >
+          <div className="border shadow-sm rounded SchoolDasboard-Application-Content">
+            <p className="SchoolDashboard-Application-Title">
               PENDING APPLICATIONS
             </p>
             {pendingApplication !== null ? (
-              <h1 className={styles.applicantNumber}>{pendingApplication}</h1>
+              <h1 >{pendingApplication}</h1>
             ) : (
               <div className="text-center">
                 <div
@@ -222,18 +211,13 @@ const Dashboard = () => {
                 ></div>
               </div>
             )}
-          </Col>
-          </row>
-          <row className="d-flex">
-          <Col xs={6} md={4} className="border shadow-sm rounded mx-md-4 ms-md-5">
-            <p
-              className="mt-2 p-2"
-              style={{ fontSize: "0.8rem", color: "#B71A18", textAlign: "center" }}
-            >
+          </div>
+          <div className="border shadow-sm rounded SchoolDasboard-Application-Content">
+            <p className="SchoolDashboard-Application-Title">
               ACCEPT APPLICATION
             </p>
             {acceptApplication !== null ? (
-              <h1 className={styles.applicantNumber}>{acceptApplication}</h1>
+              <h1 >{acceptApplication}</h1>
             ) : (
               <div className="text-center">
                 <div
@@ -242,17 +226,13 @@ const Dashboard = () => {
                 ></div>
               </div>
             )}
-          </Col>
-
-          <Col xs={6} md={4} className="border shadow-sm rounded mx-md-4 ms-2 ms-md-5">
-            <p
-              className="mt-2 p-2"
-              style={{ fontSize: "0.8rem", color: "#B71A18", textAlign: "center" }}
-            >
+          </div>
+          <div className="border shadow-sm rounded SchoolDasboard-Application-Content">
+            <p className="SchoolDashboard-Application-Title">
               REJECT APPLICATIONS
             </p>
             {rejectApplication !== null ? (
-              <h1 className={styles.applicantNumber}>{rejectApplication}</h1>
+              <h1 >{rejectApplication}</h1>
             ) : (
               <div className="text-center">
                 <div
@@ -261,174 +241,40 @@ const Dashboard = () => {
                 ></div>
               </div>
             )}
-          </Col>
-          </row>
-        </Row>
-        <Row className="mt-md-4 d-md-flex d-none">
-          {/* Statistics */}
-          <Col md={2} className="border shadow-sm rounded mx-md-4 ms-md-5">
-            <p
-              className="mt-2 p-2"
-              style={{ fontSize: "0.8rem", color: "#B71A18", textAlign: "center" }}
-
-            >
-              NEW APPLICATIONS
-            </p>
-            {newApplication !== null ? (
-              <h1 className={styles.applicantNumber}>{newApplication}</h1>
-            ) : (
-              <div className="text-center">
-                <div
-                  className="spinner-border spinner-border-sm"
-                  role="status"
-                ></div>
-              </div>
-            )}
-          </Col>
-
-          <Col md={2} className="border shadow-sm rounded mx-md-4 ms-2 ms-md-5">
-            <p
-              className="mt-2 p-2"
-              style={{ fontSize: "0.8rem", color: "#B71A18", textAlign: "center" }}
-            >
-              PENDING APPLICATIONS
-            </p>
-            {pendingApplication !== null ? (
-              <h1 className={styles.applicantNumber}>{pendingApplication}</h1>
-            ) : (
-              <div className="text-center">
-                <div
-                  className="spinner-border spinner-border-sm"
-                  role="status"
-                ></div>
-              </div>
-            )}
-          </Col>
-          <Col md={2} className="border shadow-sm rounded mx-md-4 ms-md-5">
-            <p
-              className="mt-2 p-2"
-              style={{ fontSize: "0.8rem", color: "#B71A18", textAlign: "center" }}
-            >
-              ACCEPT APPLICATION
-            </p>
-            {acceptApplication !== null ? (
-              <h1 className={styles.applicantNumber}>{acceptApplication}</h1>
-            ) : (
-              <div className="text-center">
-                <div
-                  className="spinner-border spinner-border-sm"
-                  role="status"
-                ></div>
-              </div>
-            )}
-          </Col>
-
-          <Col md={2} className="border shadow-sm rounded mx-md-4 ms-2 ms-md-5">
-            <p
-              className="mt-2 p-2"
-              style={{ fontSize: "0.8rem", color: "#B71A18", textAlign: "center" }}
-            >
-              REJECT APPLICATIONS
-            </p>
-            {rejectApplication !== null ? (
-              <h1 className={styles.applicantNumber}>{rejectApplication}</h1>
-            ) : (
-              <div className="text-center">
-                <div
-                  className="spinner-border spinner-border-sm"
-                  role="status"
-                ></div>
-              </div>
-            )}
-          </Col>
-         
-        </Row>
-
-        {/* sort by  */}
-        <Row className="mt-5 ms-4">
+          </div>
+        </div>
+        <div className="SchoolDashboard-SortBy-Container">
           <h5>Sort By</h5>
-        </Row>
-        <Row>
-<row className="d-flex">
-
-  {/* Country */}
-
-    <button
-      className={`${styles.sortButton} ${
-        activeTab === "country" ? styles.active : ""
-      }`}
-      onClick={() => handleTabClick("country")}
-    >
-      <GeoAlt className={styles.iconLarge} />
-      <span>Country</span>
-    </button>
-
-
-  {/* Age group */}
- 
-    <button
-      className={`${styles.sortButton} ${
-        activeTab === "qualification" ? styles.active : ""
-      }`}
-      onClick={() => handleTabClick("qualification")}
-    >
-      <Bookmark className={styles.iconLarge} />
-      <span>Qualification</span>
-    </button>
-    <div className="d-none d-md-flex">
-    <button
-      className={`${styles.sortButton1} ${
-        activeTab === "gender" ? styles.active : ""
-      }`}
-      onClick={() => handleTabClick("gender")}
-    >
-      <GenderAmbiguous className={styles.iconLarge} />
-      <span>Gender</span>
-    </button>
-
-  {/* Programs */}
-  
-    <button
-      className={`${styles.sortButton1} ${
-        activeTab === "programs" ? styles.active : ""
-      }`}
-      onClick={() => handleTabClick("programs")}
-    >
-      <Book className={styles.iconLarge} />
-      <span>Programs</span>
-    </button>
-
-    </div>
-    </row>
-    <row className="d-flex d-md-none">
-
-  {/* Gender */}
-
-    <button
-      className={`${styles.sortButton} ${
-        activeTab === "gender" ? styles.active : ""
-      }`}
-      onClick={() => handleTabClick("gender")}
-    >
-      <GenderAmbiguous className={styles.iconLarge} />
-      <span>Gender</span>
-    </button>
-  
-
-  {/* Programs */}
-  
-    <button
-      className={`${styles.sortButton} ${
-        activeTab === "programs" ? styles.active : ""
-      }`}
-      onClick={() => handleTabClick("programs")}
-    >
-      <Book className={styles.iconLarge} />
-      <span>Programs</span>
-    </button>
-
-</row>
-</Row>
+        </div>
+        <div className="SchoolDashboard-SortBy-Buttons">
+          {/* Country */}
+          <button
+            onClick={() => handleTabClick("country")}
+          >
+            <GeoAlt size={22}/>
+            <p>Country</p>
+          </button>
+          {/* Age group */}
+          <button
+            onClick={() => handleTabClick("qualification")}
+          >
+            <Bookmark size={22} />
+            <p>Qualification</p>
+          </button>
+          <button
+            onClick={() => handleTabClick("gender")}
+          >
+            <GenderAmbiguous size={22} />
+            <p>Gender</p>
+          </button>
+          {/* Programs */}
+          <button
+            onClick={() => handleTabClick("programs")}
+          >
+            <Book size={22}/>
+            <p>Category</p>
+          </button>
+        </div>
         {renderTabContent()}
       </Container>
     </>

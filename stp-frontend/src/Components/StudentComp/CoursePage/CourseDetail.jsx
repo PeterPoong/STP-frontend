@@ -219,9 +219,9 @@ const CourseDetail = () => {
                   style={{ paddingBottom: "25px" }}
                 >
                   <div style={{ marginLeft: "30px" }}>
-                    <h4>{program.school}</h4>
+                    <h4 className="pb-5">{program.school}</h4>
                     <p>{import.meta.env.VITE_random_Var}</p>
-                    <p>
+                    {/* <p>
                       <i
                         className="bi bi-geo-alt"
                         style={{ marginRight: "10px", color: "#AAAAAA" }}
@@ -237,7 +237,7 @@ const CourseDetail = () => {
                       >
                         Click and view on map
                       </a>
-                    </p>
+                    </p>*/}
                   </div>
                 </Col>
 
@@ -263,7 +263,7 @@ const CourseDetail = () => {
 
               <div
                 className="card mt-3 apply-now-card"
-                style={{ paddingLeft: "25px",paddingTop:"1rem",paddingBottom:"1rem" }}
+                style={{ paddingLeft: "25px", paddingTop: "1rem", paddingBottom: "1rem" }}
               >
                 <div className="row">
                   <div className="col-md-12">
@@ -276,7 +276,7 @@ const CourseDetail = () => {
                   <h5 className="card-title">Summary</h5>
                   <Row /*style={{ paddingLeft: "50px"}}*/ className="coursedetail-summary-content">
                     <Col md={4}>
-                      <div style={{ marginBottom: "25px",marginTop:"10px" }}>
+                      <div style={{ marginBottom: "25px", marginTop: "10px" }}>
                         <i
                           className="bi bi-mortarboard"
                           style={{ marginRight: "10px" }}
@@ -296,7 +296,7 @@ const CourseDetail = () => {
                       </div>
                     </Col>
                     <Col md={4}>
-                      <div style={{ marginBottom: "25px",marginTop:"10px" }}>
+                      <div style={{ marginBottom: "25px", marginTop: "10px" }}>
                         <i
                           className="bi bi-clock"
                           style={{ marginRight: "10px" }}
@@ -336,7 +336,7 @@ const CourseDetail = () => {
                       <div>
                         <p className="mb-0">
                           {program.cost === "0" || program.cost === "RM0" ? (
-                            <p className="mb-0"><strong>RM</strong> N/A</p> 
+                            <p className="mb-0"><strong>RM</strong> N/A</p>
                           ) : (
                             <>
                               <strong>RM </strong> {program.cost}/year
@@ -676,7 +676,7 @@ const CourseDetail = () => {
                             style={{
                               objectFit: "contain",
                               maxHeight: "70vh",
-                              marginBottom:"2rem"
+                              marginBottom: "2rem"
                             }}
                             onError={(e) => {
                               //   console.log('Modal image failed to load:', e.target.src);
