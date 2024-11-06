@@ -40,7 +40,7 @@ function BasicInformation() {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        console.log("testing", data);
+        //console.log("testing", data);
         setSchoolDetail(data);
       } catch (error) {
         console.error("Failed to fetch school details:", error);

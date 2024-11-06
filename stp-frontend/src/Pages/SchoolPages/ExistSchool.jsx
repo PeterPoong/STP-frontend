@@ -37,7 +37,7 @@ const ExistSchool = () => {
       newPassword: newPassword,
       confirmPassword: confirmPassword,
     };
-    console.log("Checking formData:", formData);
+   // console.log("Checking formData:", formData);
 
     const response = await fetch(
       `${import.meta.env.VITE_BASE_URL}api/school/resetSchoolPassword`,
@@ -62,14 +62,14 @@ const ExistSchool = () => {
       setCurrentPasswordError(errorData.error.currentPassword ?? "");
       setNewPasswordError(errorData.error.newPassword ?? "");
       setConfirmPasswordError(errorData.error.confirmPassword ?? "");
-      console.log(errorData);
+     //console.log(errorData);
       if (
         errorData.error.currentPassword == null &&
         errorData.error.newPassword == null &&
         errorData.error.confirmPassword == null
       ) {
         setError(errorData.error[0]);
-        console.log(errorData);
+       // console.log(errorData);
       }
     } else {
       const errorData = await response.json();

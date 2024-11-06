@@ -23,7 +23,7 @@ const SchoolDashboard = () => {
   // const token = sessionStorage.getItem("token");
   const token =
     localStorage.getItem("token") || sessionStorage.getItem("token");
-  console.log("token", token);
+  //console.log("token", token);
 
   if (!token) {
     return <Navigate to="/schoolPortalLogin" />;

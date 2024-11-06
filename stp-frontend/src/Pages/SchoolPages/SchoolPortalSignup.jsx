@@ -89,9 +89,9 @@ const SchoolPortalSignup = () => {
       person_in_charge_contact: personInChargeContact,
       person_in_charge_email: personInChargeEmail,
     };
-    console.log("Sending signup data:", formData);
-    console.log("codeLength", schoolCountryCode.length);
-    console.log("contact", schoolContact.slice(2));
+    //console.log("Sending signup data:", formData);
+    //console.log("codeLength", schoolCountryCode.length);
+    //console.log("contact", schoolContact.slice(2));
 
     const response = await fetch(
       `${import.meta.env.VITE_BASE_URL}api/school/register`,
@@ -116,8 +116,8 @@ const SchoolPortalSignup = () => {
       setEmailErrorMessage(errorData.errors.email);
       setSchoolNameErrorMessage(errorData.errors.name);
       setSchoolContactErrorMessage(errorData.errors.contact_no);
-      console.log("emailError", errorData.errors.email);
-      console.log(errorData);
+     // console.log("emailError", errorData.errors.email);
+    //  console.log(errorData);
     }
   };
 

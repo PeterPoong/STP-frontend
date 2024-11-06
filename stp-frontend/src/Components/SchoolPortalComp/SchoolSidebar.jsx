@@ -98,7 +98,7 @@ const Sidebar = ({ onDropdownItemSelect, selectTabPage }) => {
       // console.log("detail", data);
       for (const key in data) {
         if (!excludeKeys.includes(key) && data[key] === null) {
-          console.log("not gull", key);
+          //console.log("not gull", key);
           setIsProfileDropdownOpen(true);
           setSelectedTab("myProfile");
           setSelectedDropdownItem("basicInfo");
@@ -111,7 +111,7 @@ const Sidebar = ({ onDropdownItemSelect, selectTabPage }) => {
       setSchoolLogo(
         `${import.meta.env.VITE_BASE_URL}storage/${detail["school_logo"]}`
       );
-      console.log("All keys have values.");
+     // console.log("All keys have values.");
       handleTabClick("dashboard");
     };
 
@@ -182,7 +182,7 @@ const Sidebar = ({ onDropdownItemSelect, selectTabPage }) => {
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     setSelectedFile(file);
-    console.log("Selected file:", file);
+   // console.log("Selected file:", file);
   };
 
   const handleUpload = async () => {
@@ -209,11 +209,11 @@ const Sidebar = ({ onDropdownItemSelect, selectTabPage }) => {
         if (!response.ok) {
           const errorData = await response.json();
           setErrorUploadMessage("Image must be either: jpeg,png or jpg");
-          console.log("errorTest:", errorData);
+         // console.log("errorTest:", errorData);
           throw new Error("error:".response);
         }
         const data = await response.json();
-        console.log("File uploaded successfully:", data.data);
+        //console.log("File uploaded successfully:", data.data);
         setShowModal(false); // Close the modal after successful upload
         setSchoolLogo(`${import.meta.env.VITE_BASE_URL}storage/${data.data}`);
       } catch (error) {

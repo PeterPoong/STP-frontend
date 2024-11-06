@@ -66,7 +66,7 @@ const CoursesListing = ({ onAddCourseClick, courseID, editCourse }) => {
       );
       if (!response.ok) {
         const errorData = await response.json();
-        console.log("Error Data:", errorData["errors"]);
+        //console.log("Error Data:", errorData["errors"]);
         throw new Error(errorData["errors"] || "Internal Server Error");
       }
       const data = await response.json();
@@ -107,7 +107,7 @@ const CoursesListing = ({ onAddCourseClick, courseID, editCourse }) => {
         );
         if (!response.ok) {
           const errorData = await response.json();
-          console.log("Error Data:", errorData["errors"]);
+         // console.log("Error Data:", errorData["errors"]);
           throw new Error(errorData["errors"] || "Internal Server Error");
         }
 
@@ -149,7 +149,7 @@ const CoursesListing = ({ onAddCourseClick, courseID, editCourse }) => {
         );
         if (!response.ok) {
           const errorData = await response.json();
-          console.log("Error Data:", errorData["errors"]);
+          //console.log("Error Data:", errorData["errors"]);
           throw new Error(errorData["errors"] || "Internal Server Error");
         }
         const data = await response.json();
@@ -175,7 +175,7 @@ const CoursesListing = ({ onAddCourseClick, courseID, editCourse }) => {
         );
         if (!response.ok) {
           const errorData = await response.json();
-          console.log("Error Data:", errorData["errors"]);
+          //console.log("Error Data:", errorData["errors"]);
           throw new Error(errorData["errors"] || "Internal Server Error");
         }
         const data = await response.json();

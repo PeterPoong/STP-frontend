@@ -25,10 +25,10 @@ const SchoolPortalForgetPassword = () => {
     console.log("Initiating password reset request for email:", email);
 
     try {
-      console.log(
-        "Sending request to:",
-        `${import.meta.env.VITE_BASE_URL}sendOtp`
-      );
+      //console.log(
+      //  "Sending request to:",
+      //  `${import.meta.env.VITE_BASE_URL}sendOtp`
+      //);
       const response = await fetch(
         `${import.meta.env.VITE_BASE_URL}api/sendOtp`,
         {
@@ -43,10 +43,10 @@ const SchoolPortalForgetPassword = () => {
         }
       );
 
-      console.log("Response status:", response.status);
+      // console.log("Response status:", response.status);
 
       const responseText = await response.text();
-      console.log("Raw response:", responseText);
+      // console.log("Raw response:", responseText);
 
       if (response.ok) {
         console.log("Reset request sent successfully");
@@ -75,7 +75,7 @@ const SchoolPortalForgetPassword = () => {
     e.preventDefault();
     setError("");
     setSuccess("");
-    console.log("Verifying OTP for email:", email);
+    //console.log("Verifying OTP for email:", email);
 
     try {
       const response = await fetch(
@@ -135,13 +135,13 @@ const SchoolPortalForgetPassword = () => {
       setError("Passwords do not match.");
       return;
     }
-    console.log("Initiating password reset for email:", email);
+    //console.log("Initiating password reset for email:", email);
 
     try {
-      console.log(
-        "Sending request to:",
-        "http://192.168.0.69:8000/api/resetPassword"
-      );
+      //console.log(
+      //  "Sending request to:",
+      //  "http://192.168.0.69:8000/api/resetPassword"
+      //);
       const response = await fetch(
         `${import.meta.env.VITE_BASE_URL}api/resetPassword`,
         {
@@ -158,9 +158,9 @@ const SchoolPortalForgetPassword = () => {
         }
       );
 
-      console.log("Response status:", response.status);
+      //console.log("Response status:", response.status);
       const responseText = await response.text();
-      console.log("Raw response:", responseText);
+      //console.log("Raw response:", responseText);
 
       if (response.ok) {
         console.log("Password reset successful");
