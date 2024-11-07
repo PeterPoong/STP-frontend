@@ -245,7 +245,7 @@ const router = createBrowserRouter([
   },
 
   {
-    path: "/adminAddBanner",
+    path: "/adminAddbanner",
     element: <AdminAddBanner />,
   },
   {

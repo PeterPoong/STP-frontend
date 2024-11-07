@@ -12,12 +12,10 @@ import { FaTrashAlt } from 'react-icons/fa';
 
 const AdminReplyEnquiryContent = () => {
     const [categoryList, setCategoryList] = useState([]); 
-    const [icon, setIcon] = useState(null); 
-    const [newIcon, setNewIcon] = useState(null);
     const [formData, setFormData] = useState({
         name: "",
         description:"",
-        icon: null
+
     });
     const [selectedIntakes, setSelectedIntakes] = useState([]);
     const [error, setError] = useState(null);
@@ -28,19 +26,13 @@ const AdminReplyEnquiryContent = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
     
-        const { name, description, icon } = formData; // Now, icon is the actual file
+        const { name, description } = formData; // Now, icon is the actual file
     
         const formPayload = new FormData();
         formPayload.append("id", categoryId);
         formPayload.append("name", name);
         formPayload.append("description", description);
 
-
-    
-        // Append the icon if it exists
-        if (icon) {
-            formPayload.append("icon", icon); // icon is now the actual file
-        }
     
         // Debugging: Log what is being sent to the backend
         // console.log("FormData being sent:");
@@ -102,7 +94,6 @@ const AdminReplyEnquiryContent = () => {
                         description: categoryDetails.description,
 
                     });
-                    setIcon(categoryDetails.icon ? `${import.meta.env.VITE_BASE_URL}storage/${categoryDetails.icon}` : null);
                 } else {
                     console.error("Category not found with ID:", categoryId);
                 }
@@ -113,26 +104,8 @@ const AdminReplyEnquiryContent = () => {
         };
         fetchCategoryDetails();
     }, [categoryId, Authenticate]);
-    
-    const handleIconChange = (e) => {
-        const file = e.target.files[0]; // Get the selected file
-        if (file) {
-            // Set the icon in formData
-            setFormData((prevFormData) => ({
-                ...prevFormData,
-                icon: file,
-            }));
-    
-            // Preview the image as base64 (optional)
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setNewIcon(reader.result); // This is just for preview purposes
-            };
-            reader.readAsDataURL(file); // Read the file as a data URL for the preview
-        }
-    };
-    
-    const handleFieldChange = (e) => {
+
+     const handleFieldChange = (e) => {
         const { id, value, type, files } = e.target;
         // console.log(`Field ${id} updated with value: ${value}`); // Debugging line
         if (type === "file") {
@@ -155,26 +128,56 @@ const AdminReplyEnquiryContent = () => {
             description: content,
         }));
     };
-  
-    const formFields = [
+    const formRead = [
         {
             id: "name",
-            label: "Category Name",
-            type: "text",
-            placeholder: "Enter category name",
+            label: "Received from",
             value: formData.name,
+        },
+        {
+            id: "phone_number",
+            label: "Phone Number",
+            value: `${formData.country_code} ${formData.contact_number}`, // Concatenate country code and contact number
+          },
+          {
+            id: "Enquiry Subject",
+            label: "subject",
+            value: formData.message,
+          },
+          {
+            id: "Message",
+            label: "Message",
+            value: formData.message,
+          },
+    ];
+
+    const formFields = [
+        {
+            id: "email",
+            label: "To",
+            type: "text",
+            placeholder: "Enter receipient email",
+            value: formData.email,
             onChange: handleFieldChange,
             required: true
         },
-    
+        {
+            id: "subject",
+            label: "Subject",
+            type: "text",
+            placeholder: "Enter subject",
+            value: formData.subject,
+            onChange: handleFieldChange,
+            required: true
+        },
  
     ];
 
     const formHTML = [
         {
-            id: "description",
-            label: "Category Description",
-            value: formData.description,
+            id: "message",
+            label: "Reply Message",
+            value: formData.message,
             onChange: handleEditorChange,
             required: true
         }
@@ -192,15 +195,12 @@ const AdminReplyEnquiryContent = () => {
         
                 <Container fluid className="admin-add-school-container">
                     <AdminFormComponent
-           formTitle="Category Details"
+           formTitle="Reply Enquiry"
            formFields={formFields}
            formHTML={formHTML}
            onSubmit={handleSubmit}
            error={error}
            buttons={buttons}
-           newIcon={newIcon}
-           icon={icon}
-           handleIconChange={handleIconChange}
                 />
                 </Container>
     );

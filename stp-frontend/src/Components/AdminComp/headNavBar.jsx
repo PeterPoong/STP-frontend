@@ -20,32 +20,98 @@ const HeadNavBar = () => {
       case '/adminSchool':
         return 'School';
 
+        case '/adminAddSchool':
+          return 'Add New School';
+
+          case '/adminEditSchool':
+            return 'Edit School';
+
       case '/adminBanner':
         return 'Banner';
+
+        case '/adminAddbanner':
+        return 'Add New Banner';
+
+          case '/adminEditBanner':
+          return 'Edit Banner';
 
       case '/adminStudent':
         return 'Student';
 
+        case '/adminAddStudent':
+        return 'Add New Student';
+       
+          case '/adminEditStudent':
+          return 'Edit Student';
+
       case '/adminCourses':
         return 'Courses';
+
+        case '/adminAddCourse':
+          return 'Add New Course';
+          
+          case '/adminEditCourse':
+            return 'Add Edit Course';
 
       case '/adminCategory':
         return 'Category';
 
+        case '/adminAddCategory':
+          return 'Add New Category';
+
+          case '/adminEditCategory':
+            return 'EditCategory';
+
       case '/adminSubject':
         return 'Subject';
+
+        case '/adminAddSubject':
+          return 'Add New Subject';
+
+          case '/adminEditSubject':
+            return 'Edit Subject';
 
       case '/adminList':
         return 'Admin';
 
+        case '/adminAddList':
+          return 'Add New Admin';
+
+          case '/adminEditList':
+          return 'Add Edit Admin';
+
       case '/adminApplicant':
         return 'Applicant';
+
+        case '/adminAddApplicant':
+          return 'Add New Applicant';
+
+          case '/adminEditApplicant':
+          return 'Edit Application Information';
 
       case '/adminPackage':
         return 'Package';
 
+        case '/adminAddPackage':
+        return 'Add New Package';
+
+          case '/adminEditPackage':
+          return 'Edit Package';
+
       case '/adminData':
         return 'Data';
+
+        case '/adminAddData':
+          return 'Add New Data';
+
+          case '/adminEditData':
+          return 'Edit Data';
+
+        case '/adminEnquiry':
+          return 'Enquiry';
+
+          case '/adminReplyEnquiry':
+            return 'Reply Enquiry';
       default:
         return 'Dashboard'; // Default title if path doesn't match any case
     }

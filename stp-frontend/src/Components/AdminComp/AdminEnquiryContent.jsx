@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Table, Button, Modal } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit } from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faReply } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import { MDBSwitch } from 'mdb-react-ui-kit';
 import '../../css/AdminStyles/AdminTableStyles.css';
@@ -158,7 +158,7 @@ const AdminEnquiryContent = () => {
     const handleEdit = (id) => {
         // console.log(`Edit enquiry with ID: ${id}`); // Log the ID being passed
         sessionStorage.setItem('enquiryId', id); // Store package ID in session storage
-        navigate(`/adminEditEnquiry`); // Navigate to the edit page
+        navigate(`/adminReplyEnquiry`); // Navigate to the edit page
     };
     
 
@@ -278,18 +278,10 @@ const handleSubjectChange = (subjectId) => {
                     <>
                     <FontAwesomeIcon
                         className="icon-color-edit"
-                        title="Edit"
-                        icon={faEdit}
+                        title="Reply"
+                        icon={faReply}
                         style={{ marginRight: '8px', color: '#691ED2', cursor: 'pointer' }}
                         onClick={() => handleEdit(enquiry.id)}
-                    />
-                    <MDBSwitch
-                        id={`switch-${enquiry.id}`}
-                        checked={enquiry.enquiry_status === 1}
-                        onChange={() => handleToggleSwitch(enquiry.id, enquiry.enquiry_status)}
-                        style={{
-                            color: (enquiry.enquiry_status === 1) ? 'green' : ''
-                        }}
                     />
                 </>
                  )}
@@ -311,7 +303,6 @@ const handleSubjectChange = (subjectId) => {
                 currentPage={currentPage}
                 onPageChange={handlePageChange}
                 onRowsPerPageChange={handleRowsPerPageChange}
-                showAddButton={showAddButton}
                 showSearch={showSearch} // Pass showSearch here
                 subjectList={subjectList} // Pass subject list to TableWithControls
                 onSubjectChange={handleSubjectChange} // Pass handler for subject selection
