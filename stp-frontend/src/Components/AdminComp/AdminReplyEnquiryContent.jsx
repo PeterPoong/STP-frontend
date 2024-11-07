@@ -22,14 +22,14 @@ const AdminReplyEnquiryContent = () => {
     const navigate = useNavigate();
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`
-    const categoryId = sessionStorage.getItem('categoryId'); 
+    const enquiryId = sessionStorage.getItem('enquiryId'); 
     const handleSubmit = async (event) => {
         event.preventDefault();
     
         const { name, description } = formData; // Now, icon is the actual file
     
         const formPayload = new FormData();
-        formPayload.append("id", categoryId);
+        formPayload.append("id", enquiryId);
         formPayload.append("name", name);
         formPayload.append("description", description);
 
@@ -65,20 +65,20 @@ const AdminReplyEnquiryContent = () => {
     };
 
     useEffect(() => {
-        if (!categoryId) {
-            console.error("Category ID is not available in sessionStorage");
+        if (!enquiryId) {
+            console.error("Enquiry ID is not available in sessionStorage");
             return;
         }
 
-        const fetchCategoryDetails = async () => {
+        const fetchEnquiryDetails = async () => {
             try {
-                const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/categoryDetail`, {
+                const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/enquiryDetail`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': Authenticate,
                     },
-                    body: JSON.stringify({ id: categoryId })
+                    body: JSON.stringify({ id: enquiryId })
                 });
 
                 if (!response.ok) {
@@ -86,24 +86,27 @@ const AdminReplyEnquiryContent = () => {
                 }
 
                 const data = await response.json();
-                const categoryDetails = data.data; // Use the packageId
+                const enquiryDetails = data.data; // Use the packageId
 
-                if (categoryDetails) {
+                if (enquiryDetails) {
                     setFormData({
-                        name: categoryDetails.name,
-                        description: categoryDetails.description,
+                        name: enquiryDetails.name,
+                        email: enquiryDetails.email,
+                        phone: enquiryDetails.phone,
+                        subject: enquiryDetails.subject,
+                        message: enquiryDetails.message
 
                     });
                 } else {
-                    console.error("Category not found with ID:", categoryId);
+                    console.error("Category not found with ID:", enquiryId);
                 }
             } catch (error) {
                 console.error('Error fetching package details:', error.message);
                 setError(error.message);
             }
         };
-        fetchCategoryDetails();
-    }, [categoryId, Authenticate]);
+        fetchEnquiryDetails();
+    }, [enquiryId, Authenticate]);
 
      const handleFieldChange = (e) => {
         const { id, value, type, files } = e.target;
@@ -137,12 +140,12 @@ const AdminReplyEnquiryContent = () => {
         {
             id: "phone_number",
             label: "Phone Number",
-            value: `${formData.country_code} ${formData.contact_number}`, // Concatenate country code and contact number
+            value: formData.phone,
           },
           {
             id: "Enquiry Subject",
             label: "subject",
-            value: formData.message,
+            value: formData.subject,
           },
           {
             id: "Message",
@@ -151,10 +154,12 @@ const AdminReplyEnquiryContent = () => {
           },
     ];
 
+   const shouldRenderHorizontalLine =[]
+
     const formFields = [
         {
             id: "email",
-            label: "To",
+            label: "Reply to",
             type: "text",
             placeholder: "Enter receipient email",
             value: formData.email,
@@ -175,9 +180,9 @@ const AdminReplyEnquiryContent = () => {
 
     const formHTML = [
         {
-            id: "message",
+            id: "reply",
             label: "Reply Message",
-            value: formData.message,
+            value: formData.reply,
             onChange: handleEditorChange,
             required: true
         }
@@ -193,9 +198,12 @@ const AdminReplyEnquiryContent = () => {
 
     return (
         
-                <Container fluid className="admin-add-school-container">
-                    <AdminFormComponent
+    <Container fluid className="admin-add-school-container">
+        <AdminFormComponent
            formTitle="Reply Enquiry"
+          
+           formRead={formRead}
+           shouldRenderHorizontalLine={shouldRenderHorizontalLine}
            formFields={formFields}
            formHTML={formHTML}
            onSubmit={handleSubmit}

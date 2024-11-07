@@ -29,6 +29,7 @@ const AdminFormComponent = ({
   formTextarea,
   formPassword,
   shouldRenderPasswordCard,
+  shouldRenderHorizontalLine,
   formCheckboxes,
   formPersonInCharge,
   formCategory,
@@ -265,7 +266,13 @@ const AdminFormComponent = ({
                 </div>
               </Form.Group>
             ))}
+          {shouldRenderHorizontalLine && (
+                <div className="mt-5 mb-2">
+                  <hr></hr>
+                  </div>
+          )}
           <Col md={6}>
+         
             {formFields &&
               formFields.map((field, index) => (
                 <Form.Group key={index} controlId={field.id} className="mb-5">
@@ -1050,6 +1057,11 @@ const AdminFormComponent = ({
             />
           </Form.Group>
         ))}
+      {shouldRenderHorizontalLine && (
+                    <div className="mt-5 mb-2">
+                      <hr></hr>
+                      </div>
+              )}
       {/* Render checkboxes conditionally */}
       {formCheckboxes && formCheckboxes.length > 0 && (
         <div className="check">
