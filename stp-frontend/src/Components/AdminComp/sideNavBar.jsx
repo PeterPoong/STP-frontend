@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faTachometerAlt, faAd, faSchool, faUserGraduate, faBullhorn, 
   faBook, faThList, faClipboardList, faUserShield, faFileAlt, 
-  faDatabase, faBars
+  faDatabase, faBars, faClipboardQuestion
 } from '@fortawesome/free-solid-svg-icons';
 import { NavLink } from 'react-router-dom';
 import '../../css/AdminStyles/AdminSideNav.css';
@@ -129,6 +129,15 @@ const SideNavBar = () => {
         >
           <FontAwesomeIcon icon={faDatabase} fixedWidth />
           <span className="link-text">Data</span>
+        </NavLink>
+
+        <NavLink 
+          to='/adminEnquiry' 
+          className='nav-link' 
+          activeClassName="active"
+        >
+          <FontAwesomeIcon icon={faClipboardQuestion} fixedWidth />
+          <span className="link-text">Enquiry</span>
         </NavLink>
       </Nav>
     </div>

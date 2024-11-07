@@ -7,14 +7,14 @@ import AdminDashContent from '../../Components/AdminComp/AdminDashContent';
 
 //Other Page Content(Testing)
 import AdminSchoolContent from '../../Components/AdminComp/AdminSchoolContent';
-import AdminReplyEnquiryContent from '../../Components/AdminComp/AdminReplyEnquiryContent';
+import AdminEnquiryContent from '../../Components/AdminComp/AdminEnquiryContent';
 import AdminCategoryContent from '../../Components/AdminComp/AdminCategoryContent';
 import AdminCoursesContent from '../../Components/AdminComp/AdminCoursesContent';
 import AdminSubjectContent from '../../Components/AdminComp/AdminSubjectContent';
 import AdminStudentContent from '../../Components/AdminComp/AdminStudentContent';
 import '../../css/AdminStyles/PageAdminDash.css';
 
-const AdminReplyEnquiry = () => {
+const AdminEnquiry = () => {
   return (
     <div className='PageContainer'>
       <div className='SideNavContainer'>
@@ -24,11 +24,11 @@ const AdminReplyEnquiry = () => {
       <div className='HeadNavBarContainer'>
         <HeadNavBar />
         <div>
-          <AdminReplyEnquiryContent />
+          <AdminEnquiryContent />
         </div>
       </div>
     </div>
   );
 };
 
-export default AdminReplyEnquiry;
+export default AdminEnquiry;

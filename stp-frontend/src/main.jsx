@@ -49,13 +49,10 @@ import AdminData from "./Pages/AdminPages/AdminData";
 import AdminBanner from "./Pages/AdminPages/AdminBanner";
 import AdminAddBanner from "./Pages/AdminPages/AdminAddBanner";
 import AdminEditBanner from "./Pages/AdminPages/AdminEditBanner";
-<<<<<<< Updated upstream
-=======
 import AdminEnquiry from "./Pages/AdminPages/AdminEnquiry";
 import AdminReplyEnquiry from "./Pages/AdminPages/AdminReplyEnquiry";
 
 
->>>>>>> Stashed changes
 
 //StudentPortal Page
 import StudentPortalLogin from "./Pages/StudentPortalPages/StudentPortalLogin";
@@ -271,8 +268,6 @@ const router = createBrowserRouter([
     path: "/adminData",
     element: <AdminData />,
   },
-<<<<<<< Updated upstream
-=======
   {
     path: "/adminEnquiry",
     element: <AdminEnquiry />,
@@ -281,7 +276,6 @@ const router = createBrowserRouter([
     path: "/adminReplyEnquiry",
     element: <AdminReplyEnquiry />,
   },
->>>>>>> Stashed changes
   //Student Portal Page
   {
     path: "/studentPortalLogin",
