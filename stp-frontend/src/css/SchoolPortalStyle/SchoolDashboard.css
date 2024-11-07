@@ -59,7 +59,7 @@
 {
     display:flex;
     gap:2rem;
-    justify-content: flex;
+    justify-content: flex-start;
 }
 
 .SchoolDashboard-SortBy-Buttons button
@@ -95,4 +95,32 @@
     /*letter-spacing: -2px;
     transform: scaleX(0.7); 
     transform-origin: left;*/ 
+}
+
+@media screen and (max-width: 426px) and (min-width: 250px) {
+    .SchoolDasboard-Application-Content
+    {
+        width:-webkit-fill-available;        
+    }
+
+    .SchoolDashboard-Application-Container
+    {
+        gap:1rem;
+    }
+
+    .SchoolDashboard-Application-Title  
+    {
+     justify-self: center;   
+    }
+    .SchoolDashboard-SortBy-Buttons
+    {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .SchoolDashboard-SortBy-Buttons button
+    {
+        width:8rem;
+        padding:0 0;
+    }
 }
