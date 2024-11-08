@@ -27,7 +27,7 @@ function PersonInCharge() {
         person_contact: personContact,
         person_email: personEmail,
       };
-      console.log("formData", formData);
+     // console.log("formData", formData);
       const update = async () => {
         try {
           const response = await fetch(
@@ -44,7 +44,7 @@ function PersonInCharge() {
 
           if (!response.ok) {
             const errorData = await response.json();
-            console.log("Error Data:", errorData["errors"]);
+           // console.log("Error Data:", errorData["errors"]);
             setShowError(true);
             throw new Error(errorData["errors"] || "Internal Server Error");
           }
@@ -53,7 +53,7 @@ function PersonInCharge() {
         }
       };
       await update();
-      console.log("status", updateStatus);
+     // console.log("status", updateStatus);
       setUpdateStatus("success");
       console.log("update person in charge");
     }
@@ -95,7 +95,7 @@ function PersonInCharge() {
         setPersonContact(data.data.person_inChargeNumber ?? null);
         setPersonEmail(data.data.person_inChargeEmail ?? null);
 
-        console.log("data", data);
+       // console.log("data", data);
       } catch (error) {
         console.error("Failed to get Person In Charge Detail", error);
       }

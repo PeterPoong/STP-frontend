@@ -4,7 +4,7 @@ import Box from "@mui/material/Box";
 import { Row, Col } from "react-bootstrap";
 import Typography from "@mui/material/Typography";
 import Skeleton from "@mui/material/Skeleton";
-
+import "../../../css/SchoolPortalStyle/SchoolDashboard.css";
 // Define your chart options for pie chart
 const options = {
   pieHole: 0.4,
@@ -142,13 +142,19 @@ const GenderChart = ({ typeOfFilter }) => {
     <>
       <Row className="mt-5">
         <Col md={6}>
+          {/*
           <Typography variant="h8" gutterBottom>
             <b>
               Distribution of Applications by{" "}
               <span style={{ color: "#B71A18" }}>GENDER</span>
             </b>
-          </Typography>
-
+          </Typography> */}
+          <div style={{ fontSize: "1.25rem" }}>
+            <b>
+              Distribution of Applications by{" "}
+              <span style={{ color: "#B71A18" }}>GENDER</span>
+            </b>
+          </div>
           <Box
             sx={{
               width: "100%",
@@ -177,12 +183,18 @@ const GenderChart = ({ typeOfFilter }) => {
         </Col>
 
         <Col md={6}>
-          <Typography variant="h8" gutterBottom>
+          {/*   <Typography variant="h8" gutterBottom>
             <b>
               Number of Applications by{" "}
               <span style={{ color: "#B71A18" }}>GENDER</span>
             </b>
-          </Typography>
+          </Typography> */}
+          <div style={{ fontSize: "1.25rem" }}>
+            <b>
+              Number of Applications by{" "}
+              <span style={{ color: "#B71A18" }}>GENDER</span>
+            </b>
+          </div>
           <Box
             sx={{
               width: "100%",

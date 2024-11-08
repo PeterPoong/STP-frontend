@@ -56,8 +56,8 @@ const SchoolPortalLogin = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log("Full API response:", data);
-        console.log("trueTest", data.true);
+        //console.log("Full API response:", data);
+       // console.log("trueTest", data.true);
         if (data.true == true) {
           setErrorMessage("");
           console.log("Login successful:", data.data.user.school_status);
@@ -133,7 +133,7 @@ const SchoolPortalLogin = () => {
       if (!response.ok) {
         console.log("ok");
         const errorData = await response.json();
-        console.log("Error Data:", errorData["errors"]);
+      //  console.log("Error Data:", errorData["errors"]);
         throw new Error(errorData["errors"] || "Internal Server Error");
       }
 

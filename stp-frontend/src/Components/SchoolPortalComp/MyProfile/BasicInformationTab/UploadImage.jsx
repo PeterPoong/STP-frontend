@@ -22,7 +22,7 @@ function UploadBox() {
     e.preventDefault();
     setHighlight(false);
     const files = e.dataTransfer.files;
-    console.log("Files uploaded:", files);
+    //console.log("Files uploaded:", files);
   };
 
   // Prevent default behavior when dragging over
@@ -40,14 +40,14 @@ function UploadBox() {
   const handleFileChange = (e) => {
     const files = e.target.files;
     setUploadFiles(files);
-    console.log("Cover photo uploaded:", files);
+    //console.log("Cover photo uploaded:", files);
   };
 
   // Handle photo album input change
   const handleUploadPhoto = (e) => {
     const files = e.target.files;
     setUploadPhoto(files);
-    console.log("Photo album files uploaded:", files);
+    //console.log("Photo album files uploaded:", files);
   };
 
   // Handle form submission
@@ -130,7 +130,7 @@ function UploadBox() {
           );
           const data = await updateCover.json();
           getCoverPhoto();
-          console.log("Cover photo updated:", data);
+         // console.log("Cover photo updated:", data);
         } catch (error) {
           console.error("Error updating cover photo:", error);
         }
@@ -209,7 +209,7 @@ function UploadBox() {
           const data = await uploadSchoolPhoto.json();
           //getPhoto
           getPhoto();
-          console.log("photo uploaded", data);
+          //console.log("photo uploaded", data);
         } catch (error) {
           console.error("Error uploading school photo:", error);
         }

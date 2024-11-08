@@ -11,7 +11,7 @@ const FacebookSocialPageRedirectPage = () => {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const encryptedData = urlParams.get("data"); // Get encrypted data from URL params
-    console.log("Encrypt", encryptedData);
+    //console.log("Encrypt", encryptedData);
 
     const decryptData = async () => {
       try {

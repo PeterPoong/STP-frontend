@@ -142,13 +142,13 @@ const ProgramChart = ({ typeOfFilter }) => {
     <>
       <Row className="mt-5">
         <Col md={6}>
-          <Typography variant="h8" gutterBottom>
+          <div style={{ fontSize: "1.25rem" }}>
             <b>
               {" "}
-              Distribution of FOUNDATION graduates by{" "}
-              <span style={{ color: "#B71A18" }}>PROGRAMMES</span>
+              Distribution of Applications by{" "}
+              <span style={{ color: "#B71A18" }}>CATEGORY</span>
             </b>
-          </Typography>
+          </div>
 
           <Box
             sx={{
@@ -178,12 +178,18 @@ const ProgramChart = ({ typeOfFilter }) => {
         </Col>
 
         <Col md={6}>
-          <Typography variant="h8" gutterBottom>
+          {/*   <Typography variant="h8" gutterBottom>
             <b>
-              Number of FOUNDATION GRADUATES by{" "}
-              <span style={{ color: "#B71A18" }}>PROGRAMMES</span>
+              Number of Applications by{" "}
+              <span style={{ color: "#B71A18" }}>CATEGORY</span>
             </b>
-          </Typography>
+          </Typography>*/}
+          <div style={{ fontSize: "1.25rem" }}>
+            <b>
+              Number of Applications by{" "}
+              <span style={{ color: "#B71A18" }}>CATEGORY</span>
+            </b>
+          </div>
           <Box
             sx={{
               width: "100%",

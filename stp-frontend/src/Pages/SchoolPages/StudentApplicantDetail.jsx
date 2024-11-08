@@ -164,7 +164,7 @@ const SchoolViewApplicantDetail = () => {
     }
     try {
       const formData = { studentId: studentId };
-      console.log("formdata", formData);
+      //console.log("formdata", formData);
       const response = await fetch(
         `${import.meta.env.VITE_BASE_URL
         }api/school/schoolApplicantCocurriculum`,
@@ -306,7 +306,7 @@ const SchoolViewApplicantDetail = () => {
       );
       if (!response.ok) {
         const errorData = await response.json();
-        console.log("Error Data:", errorData["error"]);
+        //console.log("Error Data:", errorData["error"]);
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
@@ -456,8 +456,8 @@ const SchoolViewApplicantDetail = () => {
     try {
       const token =
         sessionStorage.getItem("token") || localStorage.getItem("token");
-      console.log("Fetching transcript categories...");
-      console.log("Token:", token); // Log the token (be careful with this in production)
+     // console.log("Fetching transcript categories...");
+      //console.log("Token:", token); // Log the token (be careful with this in production)
 
       const response = await fetch(
         `${import.meta.env.VITE_BASE_URL
@@ -471,7 +471,7 @@ const SchoolViewApplicantDetail = () => {
         }
       );
 
-      console.log("Response status:", response.status);
+     // console.log("Response status:", response.status);
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -482,7 +482,7 @@ const SchoolViewApplicantDetail = () => {
       }
 
       const result = await response.json();
-      console.log("Transcript categories result:", result);
+      //console.log("Transcript categories result:", result);
 
       if (result.success) {
         setTranscriptCategories(result.data.data);
@@ -649,7 +649,7 @@ const SchoolViewApplicantDetail = () => {
         );
         if (!response.ok) {
           const errorData = await response.json();
-          console.log("Error Data:", errorData["error"]);
+         // console.log("Error Data:", errorData["error"]);
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
@@ -742,7 +742,7 @@ const SchoolViewApplicantDetail = () => {
         );
         if (!response.ok) {
           const errorData = await response.json();
-          console.log("Error Data:", errorData["error"]);
+        //  console.log("Error Data:", errorData["error"]);
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
@@ -777,7 +777,7 @@ const SchoolViewApplicantDetail = () => {
         );
         if (!response.ok) {
           const errorData = await response.json();
-          console.log("Error Data:", errorData["error"]);
+        //  console.log("Error Data:", errorData["error"]);
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();

@@ -47,7 +47,7 @@ const CourseDetail = ({ courseId, handleGoBack, editCourse }) => {
       );
       if (!response.ok) {
         const errorData = await response.json();
-        console.log("Error Data:", errorData);
+       // console.log("Error Data:", errorData);
         throw new Error(errorData["errors"] || "Internal Server Error");
       }
       const data = await response.json();
