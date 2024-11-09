@@ -147,12 +147,12 @@ const SearchInstitute = () => {
         country: selectedCountry.id,
         page: currentPage, // Send current page
         per_page: 10, // Single country ID as required
-        seed: currentPage
+       // seed: currentPage
       };
 
       // Add university/institute category if selected
       if (selectedInstitute?.id) {
-        requestBody.institute_id = [selectedInstitute.id]; // As array
+        requestBody.institute = selectedInstitute.id; // As array
       }
 
       // Add location filters
@@ -172,7 +172,21 @@ const SearchInstitute = () => {
 
       // Add category filters if any
       if (selectedFilters.categories?.length > 0) {
-        requestBody.courseCategory = selectedFilters.categories; // Already an array
+        requestBody.category_id = [selectedFilters.categories]; // Single value
+      }
+
+     
+      if (selectedFilters.intakes?.length > 0) {
+        // Find matching intake IDs from the filter data
+        const intakeIds = filterData.intakeList
+          .filter(intake => selectedFilters.intakes.includes(intake.month))
+          .map(intake => intake.id);
+        
+        requestBody.intake_month = intakeIds; // Now sending array of IDs
+      }
+
+      if (selectedFilters.tuitionFee > 0) {
+        requestBody.tuition_fee = selectedFilters.tuitionFee;
       }
 
       // Add search if present
