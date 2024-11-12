@@ -199,10 +199,9 @@ const Testing3 = () => {
     };
 
     return (
-        <div className="container">
+        <div className="testing-container">
             <style>{`
-        .container {
-          height: 100vh;
+        .testing-container {
           width: 100%;
           background-color: transparent;
           display: flex;
@@ -216,12 +215,12 @@ const Testing3 = () => {
           transform-style: preserve-3d;
           position: relative;
           width: 35rem;
-          height: 35rem;
+          height: 31rem;
           user-select: none;
           touch-action: none;
         }
 
-        .carousel-wrapper {
+        .testing-carousel-wrapper {
           position: absolute;
           left: 50%;
           top: 50%;
@@ -237,12 +236,12 @@ const Testing3 = () => {
           will-change: transform;
         }
 
-        .carousel-wrapper:active {
+        .testing-carousel-wrapper:active {
           cursor: grabbing;
           transition: none;
         }
 
-        .carousel-item {
+        .testing-carousel-item {
           position: absolute;
           width: var(--item-width);
           height: var(--item-height);
@@ -252,28 +251,27 @@ const Testing3 = () => {
           backface-visibility: hidden;
           transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
           border-radius: 0.5rem;
-          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-                     0 2px 4px -1px rgba(0, 0, 0, 0.06);
+          
           display: flex;
           align-items: center;
           justify-content: center;
         }
 
-        .carousel-item:nth-child(1) { --index: 0; }
-        .carousel-item:nth-child(2) { --index: 1; }
-        .carousel-item:nth-child(3) { --index: 2; }
-        .carousel-item:nth-child(4) { --index: 3; }
-        .carousel-item:nth-child(5) { --index: 4; }
-        .carousel-item:nth-child(6) { --index: 5; }
-        .carousel-item:nth-child(7) { --index: 6; }
-        .carousel-item:nth-child(8) { --index: 7; }
+        .testing-carousel-item:nth-child(1) { --index: 0; }
+        .testing-carousel-item:nth-child(2) { --index: 1; }
+        .testing-carousel-item:nth-child(3) { --index: 2; }
+        .testing-carousel-item:nth-child(4) { --index: 3; }
+        .testing-carousel-item:nth-child(5) { --index: 4; }
+        .testing-carousel-item:nth-child(6) { --index: 5; }
+        .testing-carousel-item:nth-child(7) { --index: 6; }
+        .testing-carousel-item:nth-child(8) { --index: 7; }
 
-        .carousel-item {
+        .testing-carousel-item {
           transform: rotateY(calc(var(--a) * var(--index))) 
                      translateZ(calc(var(--r) * -1));
         }
 
-        .carousel-item:hover {
+        .testing-carousel-item:hover {
           transform: rotateY(calc(var(--a) * var(--index))) 
                      translateZ(calc(var(--r) * -1))
                      scale(1.05);
@@ -298,7 +296,7 @@ const Testing3 = () => {
                 onTouchMove={handleTouchMove}
             >
                 <div
-                    className="carousel-wrapper"
+                    className="testing-carousel-wrapper"
                     style={{
                         '--rotation': `${rotation}deg`
                     }}
@@ -306,7 +304,7 @@ const Testing3 = () => {
                     {items.map((item) => (
                         <div
                             key={item.id}
-                            className="carousel-item"
+                            className="testing-carousel-item"
                             style={{ backgroundColor: item.color }}
                         >
                             <div className="item-number">{item.id}</div>
@@ -320,8 +318,8 @@ const Testing3 = () => {
                                     <div className="Testing-Container-Card-Features-Container">
                                         {item.features.map((feature, index) => (
                                             <div key={index} className="Testing-Container-Card-Features">
-                                                <i className="bi bi-check-circle-fill" style={{ color: "#BA1718" }}></i>
-                                                <p className="m-0">{feature}</p>
+                                                <i className="bi bi-check-circle-fill" style={{ color: "#BA1718"}}></i>
+                                                <p>{feature}</p>
                                             </div>
                                         ))}
                                     </div>

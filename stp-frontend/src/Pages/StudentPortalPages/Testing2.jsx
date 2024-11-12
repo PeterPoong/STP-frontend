@@ -165,6 +165,66 @@ const Testing2 = () => {
           </div>*/}
         </div>
       </div>
+       <div class="pricing_summary_container">
+        <h2 class="pricing_summary_title">Summary</h2>
+        
+        <div class="pricing_summary_section">
+            <h3 class="pricing_summary_section_header">Your current plan</h3>
+            <div class="pricing_plan_item">
+                <div>
+                    <p class="pricing_plan_name">Basic Package</p>
+                    <p class="pricing_subscription_text">1 month subscription</p>
+                </div>
+                <div class="pricing_total_amount">RM 250.00</div>
+            </div>
+        </div>
+
+        <div class="pricing_summary_section">
+            <h3 class="pricing_summary_section_header">Add Ons</h3>
+            
+            <table class="pricing_addons_table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Amount</th>
+                        <th>Slots</th>
+                        <th>Total Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="pricing_addon_details">
+                                <p class="pricing_plan_name">Featured Course on Home Page</p>
+                                <p class="pricing_subscription_text">1 month subscription</p>
+                            </div>
+                        </td>
+                        <td>RM 250.00</td>
+                        <td>x10</td>
+                        <td>RM 2500.00</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="pricing_addon_details">
+                                <p class="pricing_plan_name">Featured Course on Course Page</p>
+                                <p class="pricing_subscription_text">1 month subscription</p>
+                            </div>
+                        </td>
+                        <td>RM 150.00</td>
+                        <td>x2</td>
+                        <td>RM 300.00</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pricing_summary_total">
+            <div class="pricing_total_text">Total</div>
+            <div class="pricing_total_amount">RM 250.00</div>
+        </div>
+
+        <button class="pricing_contact_button">Contact Us</button>
+    </div>
     </div>
     /* <div id="all">
        <div
