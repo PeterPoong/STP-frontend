@@ -127,7 +127,7 @@ const SearchInstitute = () => {
       });
 
       const result = await response.json();
-      console.log(result);
+     // console.log(result);
       if (result.success) {
         setFilterData(result.data);
       }
@@ -200,7 +200,7 @@ const SearchInstitute = () => {
       }
 
       //console.log('Request body:', requestBody);
-      console.log("Request body:", requestBody);
+    //  console.log("Request body:", requestBody);
 
 
       const response = await fetch(schoolListURL, {
@@ -217,7 +217,7 @@ const SearchInstitute = () => {
       }
 
       const result = await response.json();
-      console.log("result", result);
+     // console.log("result", result);
       // In your fetchInstitutes function, update the success block:
 
       if (result.success) {
@@ -232,7 +232,7 @@ const SearchInstitute = () => {
           data = [];
         }
 
-        console.log("Processed data:", data); // Debug log
+//console.log("Processed data:", data); // Debug log
 
         // Sort the data only if we have items
         const sortedData = data.length > 0 ? data.sort((a, b) => {
