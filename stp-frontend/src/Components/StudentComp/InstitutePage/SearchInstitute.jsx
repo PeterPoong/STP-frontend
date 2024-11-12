@@ -127,6 +127,7 @@ const SearchInstitute = () => {
       });
 
       const result = await response.json();
+     // console.log(result);
       if (result.success) {
         setFilterData(result.data);
       }
@@ -146,11 +147,12 @@ const SearchInstitute = () => {
         country: selectedCountry.id,
         page: currentPage, // Send current page
         per_page: 10, // Single country ID as required
+       // seed: currentPage
       };
 
       // Add university/institute category if selected
       if (selectedInstitute?.id) {
-        requestBody.category = [selectedInstitute.id]; // As array
+        requestBody.institute = selectedInstitute.id; // As array
       }
 
       // Add location filters
@@ -160,17 +162,31 @@ const SearchInstitute = () => {
 
       // Add study level filters
       if (selectedFilters.studyLevels?.length > 0) {
-        requestBody.studyLevel = selectedFilters.studyLevels; // Already an array
+        requestBody.qualification_id = selectedFilters.studyLevels[0]; // Changed from qualification to qualification_id
       }
-
+  
       // Add study mode filters
       if (selectedFilters.studyModes?.length > 0) {
-        requestBody.studyMode = selectedFilters.studyModes; // Already an array
+        requestBody.study_mode = selectedFilters.studyModes; // Already an array
       }
 
       // Add category filters if any
       if (selectedFilters.categories?.length > 0) {
-        requestBody.courseCategory = selectedFilters.categories; // Already an array
+        requestBody.category_id = [selectedFilters.categories]; // Single value
+      }
+
+     
+      if (selectedFilters.intakes?.length > 0) {
+        // Find matching intake IDs from the filter data
+        const intakeIds = filterData.intakeList
+          .filter(intake => selectedFilters.intakes.includes(intake.month))
+          .map(intake => intake.id);
+        
+        requestBody.intake_month = intakeIds; // Now sending array of IDs
+      }
+
+      if (selectedFilters.tuitionFee > 0) {
+        requestBody.tuition_fee = selectedFilters.tuitionFee;
       }
 
       // Add search if present
@@ -184,6 +200,8 @@ const SearchInstitute = () => {
       }
 
       //console.log('Request body:', requestBody);
+    //  console.log("Request body:", requestBody);
+
 
       const response = await fetch(schoolListURL, {
         method: "POST",
@@ -199,9 +217,33 @@ const SearchInstitute = () => {
       }
 
       const result = await response.json();
+     // console.log("result", result);
+      // In your fetchInstitutes function, update the success block:
 
       if (result.success) {
-        setInstitutes(result.data || []);
+        // Handle both array and object data formats
+        let data;
+        if (Array.isArray(result.data)) {
+          data = result.data;
+        } else if (typeof result.data === 'object' && result.data !== null) {
+          // Convert object to array if it's an object
+          data = Object.values(result.data);
+        } else {
+          data = [];
+        }
+
+//console.log("Processed data:", data); // Debug log
+
+        // Sort the data only if we have items
+        const sortedData = data.length > 0 ? data.sort((a, b) => {
+          // First sort by featured status
+          if (a.featured && !b.featured) return -1;
+          if (!a.featured && b.featured) return 1;
+          // Then by id for consistent ordering
+          return a.id - b.id;
+        }) : [];
+
+        setInstitutes(sortedData);
         setCurrentPage(result.current_page);
         setTotalPages(result.last_page);
       } else {
@@ -445,7 +487,7 @@ const SearchInstitute = () => {
                                 style={{ marginRight: "10px" }}
                               ></i>
                               <p style={{ paddingLeft: "20px" }}>
-                                {institute.courses} courses offered
+                                {institute.course_count} courses offered
                               </p>
                             </div>
                             <div

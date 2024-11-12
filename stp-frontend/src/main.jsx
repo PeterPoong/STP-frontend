@@ -64,7 +64,8 @@ import StudentApplyCourses from "./Pages/StudentPortalPages/StudentApplyCourses"
 import StudentApplyCourse from "./Pages/StudentPortalPages/StudentApplyCourse";
 import StudentApplicationSummary from "./Pages/StudentPortalPages/StudentApplicationSummary";
 import StudentFeedback from  "./Pages/StudentPortalPages/StudentFeedback";
-
+import Testing from "./Pages/StudentPortalPages/Testing";
+import Testing2 from "./Pages/StudentPortalPages/Testing2";
 //schoolPortal Page
 import SchoolPortalLogin from "./Pages/SchoolPages/SchoolPortalLogin";
 import SchoolPortalSignup from "./Pages/SchoolPages/SchoolPortalSignup";
@@ -315,6 +316,16 @@ const router = createBrowserRouter([
   {
     path: "/studentFeedback",
     element: <StudentFeedback/>,
+  },
+
+  {
+    path:"/testing",
+    element:<Testing/>,
+  },
+
+  {
+    path:"/testing2",
+    element:<Testing2/>,
   },
 
   //School Portal
