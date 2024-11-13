@@ -126,12 +126,18 @@ const AdminEditSchoolContent = () => {
         
                     setLogo(schoolDetails.logo ? `${import.meta.env.VITE_BASE_URL}storage/${schoolDetails.logo}` : null);
                     // setSelectedFeatures(schoolDetails.schoolFeatured.map(feature => feature.featured_type));
+                    // setSelectedFeatures(
+                    //     Array.isArray(schoolDetails.schoolFeatured) 
+                    //       ? schoolDetails.schoolFeatured.map(feature => feature.featured_type) 
+                    //       : []
+                    //   );
+                      
                     setSelectedFeatures(
                         Array.isArray(schoolDetails.schoolFeatured) 
-                          ? schoolDetails.schoolFeatured.map(feature => feature.featured_type) 
-                          : []
-                      );
-                      
+                            ? schoolDetails.schoolFeatured.map(feature => feature.featured_type)
+                            : Object.values(schoolDetails.schoolFeatured).map(feature => feature.featured_type)
+                    );
+                    
         
                     // setCoverFile(schoolDetails.coverFile || null);
                     // setAlbumFiles(schoolDetails.albumFiles || []);
@@ -214,7 +220,7 @@ const AdminEditSchoolContent = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         // console.log("Submitting form data:", formData); // Debugging line
-    
+        console.log("Selected features:", selectedFeatures);
         const schoolId = sessionStorage.getItem('schoolId'); // Retrieve schoolId from sessionStorage
         if (!schoolId) {
             console.error('School ID is not found in sessionStorage.');
