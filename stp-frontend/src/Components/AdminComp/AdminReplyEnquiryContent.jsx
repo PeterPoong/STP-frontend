@@ -171,10 +171,17 @@ const AdminReplyEnquiryContent = () => {
             label: "Subject",
             type: "text",
             placeholder: "Enter subject",
-            value: formData.subject,
-            onChange: handleFieldChange,
+            value: `Re: ${formData.subject || ""}`, // Add prefix here
+            onChange: (e) => {
+                const newValue = e.target.value.startsWith("Re: ") 
+                    ? e.target.value.slice(4)   // Remove "RE: " prefix from user input
+                    : e.target.value;
+        
+                handleFieldChange({ target: { id: "subject", value: newValue } });
+            },
             required: true
-        },
+        }
+        
  
     ];
 
