@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Container } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDropzone } from "react-dropzone";
+import SkeletonLoader from './SkeletonLoader';
 import AdminFormComponent from './AdminFormComponent';
 import 'typeface-ubuntu';
 import "../../css/AdminStyles/AdminFormStyle.css";
@@ -50,16 +51,17 @@ const AdminEditSchoolContent = () => {
     const [countryList, setCountryList]= useState ([]);
     const [stateList, setStateList]= useState ([]);
     const [cityList, setCityList]= useState ([]);
+    const [loading, setLoading] = useState(true);
     const schoolId = sessionStorage.getItem('schoolId');
     useEffect(() => {
         const fetchSchoolDetails = async () => {
             const schoolId = sessionStorage.getItem('schoolId');
-        
             if (!schoolId) {
                 setError('No school ID found in session storage.');
+                setLoading(false);
                 return;
             }
-        
+
             try {
                 const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/schoolDetail`, {
                     method: 'POST',
@@ -69,19 +71,19 @@ const AdminEditSchoolContent = () => {
                     },
                     body: JSON.stringify({ id: schoolId })
                 });
-        
+
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    throw new Error(`Failed to fetch school details. HTTP status: ${response.status}`);
                 }
+
                 const data = await response.json();
-        
                 if (data.success) {
                     const schoolDetails = data.data;
-        
+
                     // Separate media into cover photo and album
                     let coverFile = null;
                     const albumFiles = [];
-        
+
                     schoolDetails.media.forEach(media => {
                         if (media.schoolMedia_type === 66) {
                             coverFile = {
@@ -90,17 +92,13 @@ const AdminEditSchoolContent = () => {
                             };
                         } else if (media.schoolMedia_type === 67) {
                             albumFiles.push({
-                                id: media.id, // store the photo ID
+                                id: media.id,
                                 name: media.schoolMedia_name,
                                 location: `${import.meta.env.VITE_BASE_URL}storage/${media.schoolMedia_location}`
                             });
                         }
                     });
 
-                // // Log the separated cover file and album files
-                // console.log('Cover file:', coverFile);
-                // console.log('Album files:', albumFiles);
-        
                     setFormData({
                         name: schoolDetails.name || '',
                         email: schoolDetails.email || '',
@@ -113,7 +111,7 @@ const AdminEditSchoolContent = () => {
                         school_address: schoolDetails.school_address || '',
                         category: schoolDetails.category || '',
                         account: schoolDetails.account || '',
-                        password: '', 
+                        password: '',
                         confirm_password: '',
                         location: schoolDetails.location || '',
                         school_shortDesc: schoolDetails.shortDescription || '',
@@ -123,43 +121,42 @@ const AdminEditSchoolContent = () => {
                         city: schoolDetails.city_id || '',
                         logo: schoolDetails.logo ? `${import.meta.env.VITE_BASE_URL}storage/${schoolDetails.logo}` : null
                     });
-        
+
                     setLogo(schoolDetails.logo ? `${import.meta.env.VITE_BASE_URL}storage/${schoolDetails.logo}` : null);
-                    // setSelectedFeatures(schoolDetails.schoolFeatured.map(feature => feature.featured_type));
-                    // setSelectedFeatures(
-                    //     Array.isArray(schoolDetails.schoolFeatured) 
-                    //       ? schoolDetails.schoolFeatured.map(feature => feature.featured_type) 
-                    //       : []
-                    //   );
-                      
                     setSelectedFeatures(
                         Array.isArray(schoolDetails.schoolFeatured) 
                             ? schoolDetails.schoolFeatured.map(feature => feature.featured_type)
                             : Object.values(schoolDetails.schoolFeatured).map(feature => feature.featured_type)
                     );
-                    
-        
-                    // setCoverFile(schoolDetails.coverFile || null);
-                    // setAlbumFiles(schoolDetails.albumFiles || []);
+
                     setCoverFile(coverFile);
                     setAlbumFiles(albumFiles);
-                    // Fetch states and cities after setting the country and state
+
                     if (schoolDetails.country_id) {
-                        await fetchStates(schoolDetails.country_id); // Fetch states based on country
+                        try {
+                            await fetchStates(schoolDetails.country_id);
+                        } catch {
+                            setError('Error fetching states based on country.');
+                        }
                     }
-                    
+
                     if (schoolDetails.state_id) {
-                        await fetchCities(schoolDetails.state_id); // Fetch cities based on state
+                        try {
+                            await fetchCities(schoolDetails.state_id);
+                        } catch {
+                            setError('Error fetching cities based on state.');
+                        }
                     }
                 } else {
-                    setError(data.message);
+                    setError(data.message || 'Failed to load school details data.');
                 }
             } catch (error) {
-                setError('An error occurred while fetching school details.');
-                console.error('Error fetching school details:', error);
+                setError(error.message || 'An error occurred while fetching school details.');
+            } finally {
+                setLoading(false);
             }
         };
-        
+
         const fetchFeatured = async () => {
             try {
                 const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/universityFeaturedList`, {
@@ -812,7 +809,9 @@ const handleShowCoverPreview = () => {
     return (
         <Container fluid className="admin-add-school-container">
             {error && <div className="alert alert-danger">{error}</div>}
-     
+            {loading ? (
+                    <SkeletonLoader />
+                ) : (
                 <AdminFormComponent
                    formTitle="School Information"
                    checkboxTitle="School Advertising Feature"
@@ -858,7 +857,7 @@ const handleShowCoverPreview = () => {
                    setCoverFile={setCoverFile}
                    setAlbumFiles={setAlbumFiles}
                 />
-  
+            )}
         </Container>
     );
 };
