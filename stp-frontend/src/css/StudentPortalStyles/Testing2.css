@@ -345,6 +345,28 @@
   height: 50vh;
 }
 
+.Testing-Container {
+  width: 100%;  /* Since you have 3 sections */
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;  /* Makes it snap to each section */
+}
+
+.Testing-Container-Overall {
+  background: linear-gradient(#BA1718 50%, transparent 50%);
+
+
+  width: 50%;  /* Changed from 50% to 33.33% since we now have 3 sections */
+  height: 100vh;
+  flex-shrink: 0;  /* Prevents the section from shrinking */
+  scroll-snap-align: start;  /* Makes each section snap into place */
+}
+
+.Testing-Container {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 .Testing-Container-One {
   color: white;
   padding: 1rem 0 0 0;
@@ -377,7 +399,7 @@
   height: 19rem;
   width: 15rem;
   padding: 0 1rem 0 1rem;
-  box-shadow: 3px 3px 4px rgb(139, 139, 139);
+  box-shadow: 0px 3px 4px rgb(139, 139, 139);
   position: relative;
 }
 
@@ -549,6 +571,7 @@
   margin: 2rem auto;
   padding: 1.5rem;
   background: white;
+  box-shadow: 0px 3px 4px rgb(139, 139, 139);
 }
 
 .pricing_summary_title {
