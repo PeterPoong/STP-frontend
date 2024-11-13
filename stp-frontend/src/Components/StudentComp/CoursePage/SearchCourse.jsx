@@ -23,7 +23,7 @@ const baseURL = import.meta.env.VITE_BASE_URL;
 const countriesURL = `${baseURL}api/student/countryList`;
 const filterURL = `${baseURL}api/student/listingFilterList`;
 const courseListURL = `${baseURL}api/student/courseList`;
-
+const adsAURL = `${baseURL}api/student/advertisementList`;
 const SearchCourse = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -62,6 +62,11 @@ const SearchCourse = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+
+  //ads image
+  const [adsImageA, setAdsImageA] = useState(null);
+  const [adsImageB, setAdsImageB] = useState([]);
+
 
   const topRef = useRef(null);
   const scrollToTop = () => {
@@ -262,6 +267,51 @@ const SearchCourse = () => {
     }
   };
 
+
+
+
+  //Fecth Ads Image A
+  const fetchAddsImageA = async () => {
+    try {
+
+      const response = await fetch(adsAURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ advertisement_type: 69 }),
+      });
+
+      const result = await response.json();
+      //console.log(result);
+      if (result.success) {
+        setAdsImageA(result.data);
+      }
+    } catch (error) {
+      console.error("Error fetching advertisements:", error);
+    }
+  };
+
+
+  //Fecth Ads Image B
+  const fetchAddsImageB = async () => {
+    try {
+
+      const response = await fetch(adsAURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ advertisement_type: 70 }),
+      });
+
+      const result = await response.json();
+     // console.log(result);
+      if (result.success) {
+        setAdsImageB(result.data);
+      }
+    } catch (error) {
+      console.error("Error fetching advertisements:", error);
+    }
+  };
+
+
   // Initial Load
   useEffect(() => {
     fetchCountries();
@@ -278,6 +328,8 @@ const SearchCourse = () => {
   useEffect(() => {
     if (selectedCountry) {
       fetchCourses();
+      fetchAddsImageA();
+      fetchAddsImageB();
     }
   }, [
     selectedCountry,
@@ -637,12 +689,44 @@ const SearchCourse = () => {
         </div>
         {index === 2 && (
           <div key="ad" className="ad-container">
-            <img
+            {/*<img
               src={StudyPal}
               alt="Study Pal"
               className="studypal-image"
               style={{ height: "100px" }}
-            />
+            />*/}
+
+            {Array.isArray(adsImageB) && adsImageB.length > 0 ? (
+              <div className="advertisements-container">
+                {adsImageB.map((ad, index) => (
+                  <div key={ad.id} className="advertisement-item mb-3">
+                    <a
+                      href={ad.banner_url.startsWith('http') ? ad.banner_url : `https://${ad.banner_url}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <img
+                        src={`${baseURL}storage/${ad.banner_file}`}
+                        alt={`Advertisement ${ad.banner_name}`}
+                        className="studypal-image"
+                        style={{
+                          height: "100px",
+                          objectFit: "fill",
+                          marginBottom: index < adsImageB.length - 1 ? "20px" : "0"
+                        }}
+                      />
+                    </a>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <img
+                src={StudyPal}
+                alt="Study Pal"
+                className="studypal-image"
+                style={{ height: "100px" }}
+              />
+            )}
           </div>
         )}
       </React.Fragment>
@@ -1260,12 +1344,37 @@ const SearchCourse = () => {
             {/* Right Content - Course Listings */}
             <Col xs={12} md={8} className="degreeprograms-division">
               <div>
-                <img
-                  src={StudyPal}
-                  alt="Study Pal"
-                  className="studypal-image"
-                  style={{ height: "175px" }}
-                />
+                {Array.isArray(adsImageA) && adsImageA.length > 0 ? (
+                  <div >
+                    {adsImageA.map((ad, index) => (
+                      <div key={ad.id} className="advertisement-item mb-3">
+                        <a
+                          href={ad.banner_url.startsWith('http') ? ad.banner_url : `https://${ad.banner_url}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <img
+                            src={`${baseURL}storage/${ad.banner_file}`}
+                            alt={`Advertisement ${ad.banner_name}`}
+                            className="studypal-image"
+                            style={{
+                              height: "175px",
+                              objectFit: "fill",
+                              marginBottom: index < adsImageA.length - 1 ? "20px" : "0"
+                            }}
+                          />
+                        </a>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <img
+                    src={StudyPal}
+                    alt="Study Pal"
+                    className="studypal-image"
+                    style={{ height: "175px" }}
+                  />
+                )}
               </div>
 
               {loading ? (

@@ -29,7 +29,7 @@ import { Pagination, Navigation } from "swiper/modules";
 
 const baseURL = import.meta.env.VITE_BASE_URL;
 const schoolDetailAPIURL = `${baseURL}api/student/schoolDetail`;
-
+const adsAURL = `${baseURL}api/student/advertisementList`;
 const KnowMoreInstitute = () => {
   const [contentHeight, setContentHeight] = useState(0);
   const contentRef = useRef(null);
@@ -47,6 +47,8 @@ const KnowMoreInstitute = () => {
   // State to track the number of displayed courses
   const [visibleCourses, setVisibleCourses] = useState(5);
   const [expanded, setExpanded] = useState(false); // Track if the list is expanded
+
+  const [adsImage, setAdsImage] = useState(null);
 
   // Function to handle displaying more courses
   const handleViewMore = () => {
@@ -107,9 +109,28 @@ const KnowMoreInstitute = () => {
       setContentHeight(contentRef.current.scrollHeight);
     }
   };
-  useEffect(() => {
-    // console.log("Institute ID: ", id);
 
+  //Fecth Ads Image 
+  const fetchAddsImage = async () => {
+    try {
+
+      const response = await fetch(adsAURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ advertisement_type: 73 }),
+      });
+
+      const result = await response.json();
+     // console.log(result);
+      if (result.success) {
+        setAdsImage(result.data);
+      }
+    } catch (error) {
+      console.error("Error fetching advertisements:", error);
+    }
+  };
+
+  const fetchSchool = async () => {
     // Fetch school detail if institutes are not loaded
     if (!institutes || institutes.length === 0) {
       fetch(`${baseURL}api/student/schoolDetail`, {
@@ -168,6 +189,13 @@ const KnowMoreInstitute = () => {
         console.error("Error fetching featured institutes data: ", error);
         setFeaturedInstitutes([]);
       });
+  };
+
+
+  useEffect(() => {
+    // console.log("Institute ID: ", id);
+    fetchSchool();
+    fetchAddsImage();
   }, [id]);
 
 
@@ -716,7 +744,7 @@ const KnowMoreInstitute = () => {
                               alignItems: "center",
                               justifyContent: "center",
                               height: "100%",
-                              alignSelf:"center" // Adjust as per your container height
+                              alignSelf: "center" // Adjust as per your container height
                             }}
                           >
                             <h6
@@ -913,7 +941,7 @@ const KnowMoreInstitute = () => {
                             <div className="card-image mb-3 mb-md-0">
                               <h5
                                 className="card-title knowmoreinstitute-cardtitle-courselist"
-                               
+
                               >
                                 <a
                                   style={{ color: "black" }}
@@ -957,7 +985,7 @@ const KnowMoreInstitute = () => {
                                   <Col>
                                     <div>
                                       <Row style={{ paddingTop: "20px" }}>
-                                      <div className="knowmoreinstitute-dflex-center" >
+                                        <div className="knowmoreinstitute-dflex-center" >
                                           <i
                                             className="bi bi-mortarboard"
                                             style={{ marginRight: "10px" }}
@@ -1136,7 +1164,33 @@ const KnowMoreInstitute = () => {
                   {/* End of Featured institutes */}
                 </Container>
               )}
-              <img src={studypal11} alt="Header" className="adverstise-image" />
+
+              {Array.isArray(adsImage) && adsImage.length > 0 ? (
+                <div className="advertisements-container">
+                  {adsImage.map((ad, index) => (
+                    <div key={ad.id} className="advertisement-item mb-3">
+                      <a
+                        href={ad.banner_url.startsWith('http') ? ad.banner_url : `https://${ad.banner_url}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <img
+                          src={`${baseURL}storage/${ad.banner_file}`}
+                          alt={`Advertisement ${ad.banner_name}`}
+                          className="adverstise-image"
+                          style={{
+                            height: "175px",
+                            objectFit: "fill",
+                            marginBottom: index < adsImage.length - 1 ? "20px" : "0"
+                          }}
+                        />
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <img src={studypal11} alt="Header" className="KMI-adverstise-image" />
+              )}
             </Container>
           </div>
         ))

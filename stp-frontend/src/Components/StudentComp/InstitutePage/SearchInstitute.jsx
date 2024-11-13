@@ -22,7 +22,7 @@ const baseURL = import.meta.env.VITE_BASE_URL;
 const countriesURL = `${baseURL}api/student/countryList`;
 const filterURL = `${baseURL}api/student/listingFilterList`;
 const schoolListURL = `${baseURL}api/student/schoolList`;
-
+const adsAURL = `${baseURL}api/student/advertisementList`;
 const SearchInstitute = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -33,6 +33,10 @@ const SearchInstitute = () => {
   const [countries, setCountries] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [countryFilter, setCountryFilter] = useState("");
+
+  //ads image
+  const [adsImageA, setAdsImageA] = useState(null);
+  const [adsImageB, setAdsImageB] = useState([]);
 
   // Filter States
   const [filterData, setFilterData] = useState({
@@ -127,7 +131,7 @@ const SearchInstitute = () => {
       });
 
       const result = await response.json();
-     // console.log(result);
+      // console.log(result);
       if (result.success) {
         setFilterData(result.data);
       }
@@ -147,7 +151,7 @@ const SearchInstitute = () => {
         country: selectedCountry.id,
         page: currentPage, // Send current page
         per_page: 10, // Single country ID as required
-       // seed: currentPage
+        // seed: currentPage
       };
 
       // Add university/institute category if selected
@@ -164,7 +168,7 @@ const SearchInstitute = () => {
       if (selectedFilters.studyLevels?.length > 0) {
         requestBody.qualification_id = selectedFilters.studyLevels[0]; // Changed from qualification to qualification_id
       }
-  
+
       // Add study mode filters
       if (selectedFilters.studyModes?.length > 0) {
         requestBody.study_mode = selectedFilters.studyModes; // Already an array
@@ -175,13 +179,13 @@ const SearchInstitute = () => {
         requestBody.category_id = [selectedFilters.categories]; // Single value
       }
 
-     
+
       if (selectedFilters.intakes?.length > 0) {
         // Find matching intake IDs from the filter data
         const intakeIds = filterData.intakeList
           .filter(intake => selectedFilters.intakes.includes(intake.month))
           .map(intake => intake.id);
-        
+
         requestBody.intake_month = intakeIds; // Now sending array of IDs
       }
 
@@ -200,7 +204,7 @@ const SearchInstitute = () => {
       }
 
       //console.log('Request body:', requestBody);
-    //  console.log("Request body:", requestBody);
+      //  console.log("Request body:", requestBody);
 
 
       const response = await fetch(schoolListURL, {
@@ -217,7 +221,7 @@ const SearchInstitute = () => {
       }
 
       const result = await response.json();
-     // console.log("result", result);
+      // console.log("result", result);
       // In your fetchInstitutes function, update the success block:
 
       if (result.success) {
@@ -232,7 +236,7 @@ const SearchInstitute = () => {
           data = [];
         }
 
-//console.log("Processed data:", data); // Debug log
+        //console.log("Processed data:", data); // Debug log
 
         // Sort the data only if we have items
         const sortedData = data.length > 0 ? data.sort((a, b) => {
@@ -257,6 +261,49 @@ const SearchInstitute = () => {
     }
   };
 
+
+  //Fecth Ads Image A
+  const fetchAddsImageA = async () => {
+    try {
+
+      const response = await fetch(adsAURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ advertisement_type: 71 }),
+      });
+
+      const result = await response.json();
+     // console.log(result);
+      if (result.success) {
+        setAdsImageA(result.data);
+      }
+    } catch (error) {
+      console.error("Error fetching advertisements:", error);
+    }
+  };
+
+
+  //Fecth Ads Image B
+  const fetchAddsImageB = async () => {
+    try {
+
+      const response = await fetch(adsAURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ advertisement_type: 72 }),
+      });
+
+      const result = await response.json();
+      //console.log(result);
+      if (result.success) {
+        setAdsImageB(result.data);
+      }
+    } catch (error) {
+      console.error("Error fetching advertisements:", error);
+    }
+  };
+
+
   // Initial Load
   useEffect(() => {
     fetchCountries();
@@ -273,6 +320,8 @@ const SearchInstitute = () => {
   useEffect(() => {
     if (selectedCountry) {
       fetchInstitutes();
+      fetchAddsImageA();
+      fetchAddsImageB();
     }
   }, [
     selectedCountry,
@@ -525,12 +574,45 @@ const SearchInstitute = () => {
         </div>
         {index === 2 && (
           <div className="ad-container">
-            <img
+           {/*} <img
               src={StudyPal}
               alt="Study Pal"
               className="studypal-image"
               style={{ height: "100px" }}
-            />
+            />*/}
+
+            {Array.isArray(adsImageB) && adsImageB.length > 0 ? (
+              <div className="advertisements-container">
+                {adsImageB.map((ad, index) => (
+                  <div key={ad.id} className="advertisement-item mb-3">
+                    <a
+                      href={ad.banner_url.startsWith('http') ? ad.banner_url : `https://${ad.banner_url}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <img
+                        src={`${baseURL}storage/${ad.banner_file}`}
+                        alt={`Advertisement ${ad.banner_name}`}
+                        className="studypal-image"
+                        style={{
+                          height: "100px",
+                          objectFit: "fill",
+                          marginBottom: index < adsImageB.length - 1 ? "20px" : "0"
+                        }}
+                      />
+                    </a>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <img
+                src={StudyPal}
+                alt="Study Pal"
+                className="studypal-image"
+                style={{ height: "100px" }}
+              />
+            )}
+
           </div>
         )}
       </React.Fragment>
@@ -1089,14 +1171,37 @@ const SearchInstitute = () => {
 
             {/* Right Content - Institute Listings */}
             <Col xs={12} md={8} className="degreeinstitutes-division">
-              <div>
+              {Array.isArray(adsImageA) && adsImageA.length > 0 ? (
+                <div >
+                  {adsImageA.map((ad, index) => (
+                    <div key={ad.id} className="advertisement-item mb-3">
+                      <a
+                        href={ad.banner_url.startsWith('http') ? ad.banner_url : `https://${ad.banner_url}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <img
+                          src={`${baseURL}storage/${ad.banner_file}`}
+                          alt={`Advertisement ${ad.banner_name}`}
+                          className="studypal-image"
+                          style={{
+                            height: "175px",
+                            objectFit: "fill",
+                            marginBottom: index < adsImageA.length - 1 ? "20px" : "0"
+                          }}
+                        />
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              ) : (
                 <img
                   src={StudyPal}
                   alt="Study Pal"
                   className="studypal-image"
                   style={{ height: "175px" }}
                 />
-              </div>
+              )}
 
               {loading ? (
                 <div className="text-center">
