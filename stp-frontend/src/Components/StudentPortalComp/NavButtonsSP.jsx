@@ -77,7 +77,7 @@ const NavigationBar = () => {
             alt="Logo" 
             className="logo"
             loading="eager"
-            fetchPriority="high"
+            fetchpriority="high"
             decoding="async"
             onLoad={(e) => {
               e.target.previousSibling?.remove();

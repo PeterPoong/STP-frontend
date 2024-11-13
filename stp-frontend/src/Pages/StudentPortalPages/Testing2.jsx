@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import '../../css/StudentPortalStyles/Testing2.css';
 import Testing from "../../assets/StudentPortalAssets/Testing.png"
 import CheckCircle from "../../assets/StudentPortalAssets/checkCircle.svg"
+import Testing3 from "../../Pages/StudentPortalPages/Testing3";
 const Testing2 = () => {
   const [isHovered, setIsHovered] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
@@ -39,6 +40,26 @@ const Testing2 = () => {
     "Managing courses details"
   ];
 
+  const featuresAddOns = [
+    "Featured courses show on home page",
+    "More exposure",
+    "1 month subscription"
+  ];
+
+  // In your component, add a state for quantity
+  const [quantity, setQuantity] = useState(1);
+
+  // Add functions to handle increase/decrease
+  const handleDecrease = () => {
+    if (quantity > 1) {
+      setQuantity(quantity - 1);
+    }
+  };
+
+  const handleIncrease = () => {
+    setQuantity(quantity + 1);
+  };
+
   const handleDragStart = (e) => {
     setIsDragging(true);
     e.dataTransfer.setData('text/plain', JSON.stringify(noteContents[currentPage]));
@@ -74,8 +95,8 @@ const Testing2 = () => {
   };
 
   return (
-    <div>
-      <div className="Testing-Container-Overall">
+    <div className="d-flex">
+      <div className="Testing-Container-Overall ">
         <div className="Testing-Container-One">
           <h1 className="">MORE PACKAGE</h1>
           <h5>HOW TO GET STARTED:</h5>
@@ -86,24 +107,124 @@ const Testing2 = () => {
             <li>CONTACT OUR TEAM</li>
           </ol>
         </div>
-        <div className="Testing-Container-Two">
-          <div className="Testing-Container-Card" >
-            <p className="Testing-Container-Package-Title">Bacic Package</p>
-            <p>RM250.00 <span>/month</span></p>
-            <p className="Testing-Container-Features-Title">Features</p>
-            <div className="Testing-Container-Card-Features-Container">
-              {features.map((feature, index) => (
-                <div key={index} className="Testing-Container-Card-Features">
-                  <i className="bi bi-check-circle-fill text-[#BA1718]"></i>
-                  <p className="m-0">{feature}</p>
-                </div>
-              ))}
-            </div>
+        <Testing3/>
+        <div className="d-flex">
+         {/* <div className="Testing-Container-Two">
+            <div className="Testing-Container-Card" >
+              <p className="Testing-Container-Current">Current Plan</p>
+              <p className="Testing-Container-Package-Title">Bacic Package</p>
+              <p className="Testing-Container-Price-Title">RM250.00 <span>/month</span></p>
+              <p className="Testing-Container-Features-Title">Features</p>
+              <div className="Testing-Container-Card-Features-Container">
+                {features.map((feature, index) => (
+                  <div key={index} className="Testing-Container-Card-Features">
+                    <i className="bi bi-check-circle-fill" style={{ color: "#BA1718" }}></i>
+                    <p className="m-0">{feature}</p>
+                  </div>
+                ))}
+              </div>
 
+            </div>
           </div>
+          <div className="Testing-Container-Two">
+            <div className="Testing-Container-Card" >
+              <p className="Testing-Container-Current-AddOns">Add Ons</p>
+              <p className="Testing-Container-Package-Title">Featured Courses on HomePage</p>
+              <p className="Testing-Container-Price-Title">RM250.00 <span>/slot</span></p>
+              <p className="Testing-Container-Features-Title">Features</p>
+              <div className="Testing-Container-Card-Features-AddOns">
+                {featuresAddOns.map((feature, index) => (
+                  <div key={index} className="Testing-Container-Card-Features">
+                    <i className="bi bi-check-circle-fill" style={{ color: "#BA1718" }}></i>
+                    <p className="m-0">{feature}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="Testing-Container-Last">
+                <div className="Testing-Container-Quantity">
+                  <p className="Testing-Container-Quantity-Label">Quantity:</p>
+                  <div className="Testing-Container-Quantity-Controls">
+                    <button
+                      className="Testing-Container-Quantity-Button"
+                      onClick={handleDecrease}
+                    >
+                      <i class="bi bi-dash-square"></i>
+                    </button>
+                    <span className="Testing-Container-Quantity-Value">{quantity}</span>
+                    <button
+                      className="Testing-Container-Quantity-Button"
+                      onClick={handleIncrease}
+                    >
+                      <i class="bi bi-plus-square"></i>
+                    </button>
+                  </div>
+                </div>
+                <button className="Testing-Container-Features-Button">Select</button>
+              </div>
+            </div>
+          </div>*/}
         </div>
       </div>
+       <div class="pricing_summary_container">
+        <h2 class="pricing_summary_title">Summary</h2>
+        
+        <div class="pricing_summary_section">
+            <h3 class="pricing_summary_section_header">Your current plan</h3>
+            <div class="pricing_plan_item">
+                <div>
+                    <p class="pricing_plan_name">Basic Package</p>
+                    <p class="pricing_subscription_text">1 month subscription</p>
+                </div>
+                <div class="pricing_total_amount">RM 250.00</div>
+            </div>
+        </div>
 
+        <div class="pricing_summary_section">
+            <h3 class="pricing_summary_section_header">Add Ons</h3>
+            
+            <table class="pricing_addons_table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Amount</th>
+                        <th>Slots</th>
+                        <th>Total Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="pricing_addon_details">
+                                <p class="pricing_plan_name">Featured Course on Home Page</p>
+                                <p class="pricing_subscription_text">1 month subscription</p>
+                            </div>
+                        </td>
+                        <td>RM 250.00</td>
+                        <td>x10</td>
+                        <td>RM 2500.00</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="pricing_addon_details">
+                                <p class="pricing_plan_name">Featured Course on Course Page</p>
+                                <p class="pricing_subscription_text">1 month subscription</p>
+                            </div>
+                        </td>
+                        <td>RM 150.00</td>
+                        <td>x2</td>
+                        <td>RM 300.00</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pricing_summary_total">
+            <div class="pricing_total_text">Total</div>
+            <div class="pricing_total_amount">RM 250.00</div>
+        </div>
+
+        <button class="pricing_contact_button">Contact Us</button>
+    </div>
     </div>
     /* <div id="all">
        <div

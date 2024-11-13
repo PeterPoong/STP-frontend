@@ -18,7 +18,7 @@ import { Pagination, Navigation } from "swiper/modules";
 import "../../../css/StudentCss/course page css/ApplyPage.css"
 const baseURL = import.meta.env.VITE_BASE_URL;
 const courseDetailAPI = `${baseURL}api/student/courseDetail`;
-
+const adsAURL = `${baseURL}api/student/advertisementList`;
 const CourseDetail = () => {
   const [contentHeight, setContentHeight] = useState(0);
   const contentRef = useRef(null);
@@ -36,6 +36,8 @@ const CourseDetail = () => {
 
   const [showSwiperModal, setShowSwiperModal] = useState(false);
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
+
+  const [adsImage, setAdsImage] = useState(null);
 
   const handleContentHeight = () => {
     if (contentRef.current) {
@@ -99,8 +101,27 @@ const CourseDetail = () => {
     }
   };
 
-  useEffect(() => {
-    //console.log("Program ID:", id);
+  //Fecth Ads Image 
+  const fetchAddsImage = async () => {
+    try {
+
+      const response = await fetch(adsAURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ advertisement_type: 74 }),
+      });
+
+      const result = await response.json();
+      //console.log(result);
+      if (result.success) {
+        setAdsImage(result.data);
+      }
+    } catch (error) {
+      console.error("Error fetching advertisements:", error);
+    }
+  };
+
+  const fetchProgram = async () => {
 
     if (!programs || programs.length === 0) {
       fetch(courseDetailAPI, {
@@ -154,6 +175,12 @@ const CourseDetail = () => {
         console.error("Error fetching featured courses:", error);
         setFeaturedCourses([]);
       });
+  };
+  useEffect(() => {
+    //console.log("Program ID:", id);
+    fetchProgram();
+    fetchAddsImage();
+
   }, [id]);
 
   if (!programs || programs.length === 0) {
@@ -1008,7 +1035,32 @@ const CourseDetail = () => {
             </Container >
           </div >
         ))}
-      <img src={studypal11} alt="Header" className="adverstise-image" />
+      {Array.isArray(adsImage) && adsImage.length > 0 ? (
+        <div className="advertisements-container">
+          {adsImage.map((ad, index) => (
+            <div key={ad.id} className="advertisement-item mb-3">
+              <a
+                href={ad.banner_url.startsWith('http') ? ad.banner_url : `https://${ad.banner_url}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img
+                  src={`${baseURL}storage/${ad.banner_file}`}
+                  alt={`Advertisement ${ad.banner_name}`}
+                  className="adverstise-image"
+                  style={{
+                    height: "175px",
+                    objectFit: "fill",
+                    marginBottom: index < adsImage.length - 1 ? "20px" : "0"
+                  }}
+                />
+              </a>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <img src={studypal11} alt="Header" className="adverstise-image" />
+      )}
       <div>
         <SpcFooter />
       </div>
