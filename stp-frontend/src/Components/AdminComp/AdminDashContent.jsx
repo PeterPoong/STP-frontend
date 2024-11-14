@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import CircleDotLoader from './CircleDotLoader';
 import { Card, CardBody, CardTitle, Container } from 'react-bootstrap';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import '../../css/AdminStyles/DashContent.css'
@@ -9,6 +10,7 @@ const AdminDashContent =()=>{
     const navigate = useNavigate();
     const token = sessionStorage.getItem('token'); // Retrieve the token from sessionStorage
     const Authenticate = `Bearer ${token}`;
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -42,7 +44,9 @@ const AdminDashContent =()=>{
           } catch (error) {
             console.error('Error fetching data:', error);
             // You might want to handle other types of errors (e.g., network errors) here
-          }
+          } finally {
+            setLoading(false);
+        }
         };
     
         fetchData();

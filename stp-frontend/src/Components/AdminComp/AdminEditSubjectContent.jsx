@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Container, Col, Button, Modal } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { useDropzone } from "react-dropzone";
+import SkeletonLoader from './SkeletonLoader';
 import AdminFormComponent from './AdminFormComponent';
 import 'typeface-ubuntu';
 import "../../css/AdminStyles/AdminFormStyle.css";
-import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 
 import { FaTrashAlt } from 'react-icons/fa';
@@ -19,7 +18,7 @@ const AdminEditSubjectContent = () => {
     const [error, setError] = useState(null);
     const navigate = useNavigate();
     const token = sessionStorage.getItem('token');
-    const [loading, setLoading] = useState(false); 
+    const [loading, setLoading] = useState(true); 
     const Authenticate = `Bearer ${token}`;
     const subjectId = sessionStorage.getItem('subjectId');
 
@@ -33,8 +32,6 @@ const AdminEditSubjectContent = () => {
         formPayload.append("name", name);
         formPayload.append("category", category);
    
-  
-        setLoading(true);  // Set loading state to true
     
         try {
             const addSubjectResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/editSubject`, {
@@ -57,8 +54,6 @@ const AdminEditSubjectContent = () => {
         } catch (error) {
             setError('An error occurred during subject registration. Please try again later.');
             console.error('Error during subject registration:', error);
-        } finally {
-            setLoading(false);  // Ensure loading state is set to false after completion
         }
     };
      
@@ -98,6 +93,8 @@ const AdminEditSubjectContent = () => {
             } catch (error) {
                 console.error('Error fetching subject details:', error.message);
                 setError(error.message);
+            } finally {
+                setLoading(false);
             }
         };
     
@@ -183,18 +180,21 @@ const AdminEditSubjectContent = () => {
 
     return (
         
-                <Container fluid className="admin-add-subject-container">
-                    <AdminFormComponent
-           formTitle="Subject Information"
-           checkboxTitle="School Advertising Feature"
-           formFields={formFields}
-           formCategory={formCategory}
-           onSubmit={handleSubmit}
-           error={error}
-           buttons={buttons}
-    
+        <Container fluid className="admin-add-subject-container">
+             {loading ? (
+                    <SkeletonLoader />
+                ) : (
+            <AdminFormComponent
+                formTitle="Subject Information"
+                checkboxTitle="School Advertising Feature"
+                formFields={formFields}
+                formCategory={formCategory}
+                onSubmit={handleSubmit}
+                error={error}
+                buttons={buttons}
                 />
-                </Container>
+            )}
+        </Container>
     );
 };
 

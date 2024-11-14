@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useDropzone } from "react-dropzone";
 import AdminFormComponent from './AdminFormComponent';
 import 'typeface-ubuntu';
+import SkeletonLoader from './SkeletonLoader';
 import "../../css/AdminStyles/AdminFormStyle.css";
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
@@ -20,7 +21,7 @@ const AdminEditCourseContent = () => {
     const courseId = sessionStorage.getItem('courseId');
     const [logo, setLogo] = useState(null); 
     const [newLogo, setNewLogo] = useState(null);
-    const [loading, setLoading] = useState(false); 
+    const [loading, setLoading] = useState(true); 
     const [formData, setFormData] = useState({
         
         name: "",
@@ -72,8 +73,7 @@ const AdminEditCourseContent = () => {
             formPayload.append("courseFeatured[]", course);
         });
     
-        setLoading(true);  // Set loading state to true
-    
+
         try {
             const addCourseResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/editCourse`, {
                 method: 'POST',
@@ -95,9 +95,7 @@ const AdminEditCourseContent = () => {
         } catch (error) {
             setError('An error occurred during course registration. Please try again later.');
             console.error('Error during course registration:', error);
-        } finally {
-            setLoading(false);  // Ensure loading state is set to false after completion
-        }
+        } 
     };
      
     useEffect(() => {
@@ -147,6 +145,8 @@ const AdminEditCourseContent = () => {
             } catch (error) {
                 console.error('Error fetching course details:', error.message);
                 setError(error.message);
+            } finally {
+                setLoading(false);
             }
         };
     
@@ -531,8 +531,11 @@ const formCourse = courseFeaturedList.map((course) => ({
 
     return (
         
-                <Container fluid className="admin-add-school-container">
-                    <AdminFormComponent
+        <Container fluid className="admin-add-school-container">
+            {loading ? (
+                    <SkeletonLoader />
+                ) : (
+            <AdminFormComponent
            formTitle="Course Details"
            checkboxTitle="Intake"
            courseTitle="Course Featured"
@@ -555,7 +558,8 @@ const formCourse = courseFeaturedList.map((course) => ({
            newLogo={newLogo}
             loading={loading}
                 />
-                </Container>
+            )}
+        </Container>
     );
 };
 
