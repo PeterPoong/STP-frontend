@@ -144,7 +144,7 @@ const KnowMoreInstitute = () => {
       })
         .then((response) => response.json())
         .then((data) => {
-          // console.log("Fetched School Detail Data: ", data);
+         //  console.log("Fetched School Detail Data: ", data);
           if (data && data.success && data.data) {
             setInstitutes([data.data]);
             setCourses(data.data.courses);
@@ -967,13 +967,13 @@ const KnowMoreInstitute = () => {
                                   <span style={{ paddingLeft: "10px" }}>
                                     {institute.city}, {institute.state}
                                   </span>
-                                  {/*<a
-                                    href="#"
+                                  <a
+                                    href={institute.google_map_location}
                                     className="map-link"
                                     style={{ paddingLeft: "5px" }}
                                   >
                                     click and view on map
-                                  </a>*/}
+                                  </a>
                                 </div>
                               </div>
                             </div>

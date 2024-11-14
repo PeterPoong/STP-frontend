@@ -221,7 +221,7 @@ const SearchInstitute = () => {
       }
 
       const result = await response.json();
-      // console.log("result", result);
+      //console.log("result", result);
       // In your fetchInstitutes function, update the success block:
 
       if (result.success) {
@@ -502,6 +502,14 @@ const SearchInstitute = () => {
                       <span>
                         {institute.state}, {institute.country}
                       </span>
+                      <a
+                        href={institute.google_map_location}
+                        style={{ paddingLeft: "15px" }}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Click and view on map
+                      </a>
                       <div>
                         <p className="card-text mt-2 searchinstitute-two-description institutepage-wordbreak-all">
                           {institute.description}

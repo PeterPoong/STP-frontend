@@ -536,7 +536,16 @@ const SearchCourse = () => {
                       ></i>
                       <span style={{ paddingLeft: "10px" }}>
                         {program.state || "N/A"}, {program.country || "N/A"}
-                      </span>
+                      </span>   
+                      <a
+                        href={program.school_location}
+                        style={{ paddingLeft: "15px" }}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Click and view on map
+                      </a>
+                    
                     </div>
                   </div>
                 </div>

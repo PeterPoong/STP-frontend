@@ -248,23 +248,14 @@ const CourseDetail = () => {
                   <div style={{ marginLeft: "30px" }}>
                     <h4 className="pb-5">{program.school}</h4>
                     <p>{import.meta.env.VITE_random_Var}</p>
-                    {/* <p>
-                      <i
-                        className="bi bi-geo-alt"
-                        style={{ marginRight: "10px", color: "#AAAAAA" }}
-                      ></i>
-                      <span style={{ paddingLeft: "10px" }}>
-                        {program.location}
-                      </span>
                       <a
-                        href="https://www.google.com/maps/place/Curtin+University+Malaysia/@4.5143003,114.0152549,17z/data=!3m1!4b1!4m6!3m5!1s0x321f4826b4a6b637:0xe688be6fc8cd1d35!8m2!3d4.5143003!4d114.0178298!16s%2Fm%2F02qj2fj?entry=ttu&g_ep=EgoyMDI0MDgyMS4wIKXMDSoASAFQAw%3D%3D"
+                        href={program.google_map_location}
                         style={{ paddingLeft: "15px" }}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
                         Click and view on map
                       </a>
-                    </p>*/}
                   </div>
                 </Col>
 
