@@ -273,7 +273,7 @@ const SearchInstitute = () => {
       });
 
       const result = await response.json();
-     // console.log(result);
+      // console.log(result);
       if (result.success) {
         setAdsImageA(result.data);
       }
@@ -448,6 +448,7 @@ const SearchInstitute = () => {
       return (
         <div className="blankslate-institutes text-center">
           <img
+            loading="lazy"
             src={emptyStateImage}
             alt="No results"
             style={{ height: "175px" }}
@@ -481,6 +482,7 @@ const SearchInstitute = () => {
                     >
                       <Link to={`/knowMoreInstitute/${institute.id}`}>
                         <img
+                          loading="lazy"
                           src={`${baseURL}storage/${institute.logo}`}
                           alt={institute.name}
                           width="120"
@@ -582,7 +584,7 @@ const SearchInstitute = () => {
         </div>
         {index === 2 && (
           <div className="ad-container">
-           {/*} <img
+            {/*} <img
               src={StudyPal}
               alt="Study Pal"
               className="studypal-image"
@@ -599,6 +601,7 @@ const SearchInstitute = () => {
                       rel="noopener noreferrer"
                     >
                       <img
+                        loading="lazy"
                         src={`${baseURL}storage/${ad.banner_file}`}
                         alt={`Advertisement ${ad.banner_name}`}
                         className="studypal-image"
@@ -614,6 +617,7 @@ const SearchInstitute = () => {
               </div>
             ) : (
               <img
+                loading="lazy"
                 src={StudyPal}
                 alt="Study Pal"
                 className="studypal-image"
@@ -1189,6 +1193,7 @@ const SearchInstitute = () => {
                         rel="noopener noreferrer"
                       >
                         <img
+                          loading="lazy"
                           src={`${baseURL}storage/${ad.banner_file}`}
                           alt={`Advertisement ${ad.banner_name}`}
                           className="studypal-image"
@@ -1204,6 +1209,7 @@ const SearchInstitute = () => {
                 </div>
               ) : (
                 <img
+                  loading="lazy"
                   src={StudyPal}
                   alt="Study Pal"
                   className="studypal-image"
