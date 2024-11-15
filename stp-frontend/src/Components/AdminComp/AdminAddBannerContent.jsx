@@ -3,7 +3,7 @@ import { Container } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import AdminFormComponent from './AdminFormComponent';
 import "../../css/AdminStyles/AdminFormStyle.css";
-
+import ErrorModal from "./Error";
 const AdminAddBannerContent = () => {
   const [bannerFeaturedList, setBannerFeaturedList] = useState([]);
   const [formData, setFormData] = useState({
@@ -16,6 +16,9 @@ const AdminAddBannerContent = () => {
   const [selectedStartDate, setSelectedStartDate] = useState('');
   const [selectedEndDate, setSelectedEndDate] = useState('');
   const [error, setError] = useState(null);
+  const [errorModalVisible, setErrorModalVisible] = useState(false);
+  const [generalError, setGeneralError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
   const navigate = useNavigate();
   const token = sessionStorage.getItem('token');
   const Authenticate = `Bearer ${token}`;
@@ -53,9 +56,15 @@ const AdminAddBannerContent = () => {
     // Check if all required fields are filled
     if (!formData.banner_name || !formData.banner_url || !formattedStartDate || !formattedEndDate || !formData.banner_file) {
       setError("Please fill out all required fields.");
+            setErrorModalVisible(true);
       return;
     }
   
+    if (!Array.isArray(selectedFeatures) || selectedFeatures.length === 0) {
+      setError("Please select at least one feature.");
+      setErrorModalVisible(true);
+      return;
+  }
     // Create FormData object
     const submissionData = new FormData();
     submissionData.append("banner_name", formData.banner_name);
@@ -66,8 +75,12 @@ const AdminAddBannerContent = () => {
   
     // Add selected features
     selectedFeatures.forEach((featureId) => {
-      submissionData.append("featured_id[]", featureId);
-    });
+      if (featureId) {
+          submissionData.append("featured_id[]", featureId);
+      } else {
+          throw new Error("Invalid feature ID detected.");
+      }
+  });
   
     // Log the data being submitted
     // console.log("FormData being submitted:");
@@ -90,11 +103,13 @@ const AdminAddBannerContent = () => {
         navigate("/adminBanner");
       } else {
         setError(result.message || "Failed to add banner.");
-      }
-    } catch (error) {
-      setError(error.message);
+        setErrorModalVisible(true);
     }
-  };
+  } catch (error) {
+    setError(error.message || "An error occurred while adding the banner. Please try again later.");
+    setErrorModalVisible(true);
+  }
+};
   
   useEffect(() => {
     const fetchFeatured = async () => {
@@ -175,6 +190,13 @@ const AdminAddBannerContent = () => {
 
   return (
     <Container fluid className="admin-add-banner-content">
+      <ErrorModal
+        errorModalVisible={errorModalVisible}
+        setErrorModalVisible={setErrorModalVisible}
+        generalError={generalError || error} // Ensure `generalError` or fallback to `error`
+        fieldErrors={fieldErrors}
+    />
+
       <AdminFormComponent
         formTitle="Add Banner"
         checkboxDetail="Featured Type(s)"

@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import { MDBSwitch } from 'mdb-react-ui-kit';
+import CircleDotLoader from './CircleDotLoader';
 import '../../css/AdminStyles/AdminTableStyles.css';
 import TableWithControls from './TableWithControls';
 
@@ -192,59 +193,68 @@ const AdminBannerContent = () => {
         </tr>
     );
 
-    const tbodyContent = sortedbanners.map((banner) => (
-        <tr key={banner.id}>
-            <td>{banner.name}</td>
-            <td>{banner.file}</td>
-            <td>{banner.featured ? banner.featured.core_metaName : 'No Featured'}</td>
-            <td>{banner.banner_duration}</td>
-            <td className={getStatusClass(banner.status)}>
-                {banner.status}
-            </td>
-            <td>
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                {banner.status === 'Pending' ? (
-                    <>
-                        <Button className="accept"
-                            variant="success"
-                            onClick={() => handlePendingAction(banner.id, 'enable')}
-                        >
-                            Accept
-                        </Button>
-                        <Button className="reject"
-                            variant="danger"
-                            onClick={() => handlePendingAction(banner.id, 'disable')}
-                        >
-                            Reject
-                        </Button>
-                    </>
-                ) : (
-                    <>
-                    <FontAwesomeIcon
-                        className="icon-color-edit"
-                        title="Edit"
-                        icon={faEdit}
-                        style={{ marginRight: '8px', color: '#691ED2', cursor: 'pointer' }}
-                        onClick={() => handleEdit(banner.id)}
-                    />
-                    <MDBSwitch
-                        id={`switch-${banner.id}`}
-                        checked={banner.status === 'Active' || banner.status === 'Temporary'}
-                        onChange={() => handleToggleSwitch(banner.id, banner.status)}
-                        style={{
-                            color: (banner.status === 'Active' || banner.status === 'Temporary') ? 'green' : ''
-                        }}
-                    />
-                </>
-                 )}
-                </div>
-                
-            </td>
+    const tbodyContent = sortedbanners.length > 0 ? (
+        sortedbanners.map((banner) => (
+            <tr key={banner.id}>
+                <td>{banner.name}</td>
+                <td>{banner.file}</td>
+                <td>{banner.featured ? banner.featured.core_metaName : 'No Featured'}</td>
+                <td>{banner.banner_duration}</td>
+                <td className={getStatusClass(banner.status)}>
+                    {banner.status}
+                </td>
+                <td>
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        {banner.status === 'Pending' ? (
+                            <>
+                                <Button className="accept"
+                                    variant="success"
+                                    onClick={() => handlePendingAction(banner.id, 'enable')}
+                                >
+                                    Accept
+                                </Button>
+                                <Button className="reject"
+                                    variant="danger"
+                                    onClick={() => handlePendingAction(banner.id, 'disable')}
+                                >
+                                    Reject
+                                </Button>
+                            </>
+                        ) : (
+                            <>
+                                <FontAwesomeIcon
+                                    className="icon-color-edit"
+                                    title="Edit"
+                                    icon={faEdit}
+                                    style={{ marginRight: '8px', color: '#691ED2', cursor: 'pointer' }}
+                                    onClick={() => handleEdit(banner.id)}
+                                />
+                                <MDBSwitch
+                                    id={`switch-${banner.id}`}
+                                    checked={banner.status === 'Active' || banner.status === 'Temporary'}
+                                    onChange={() => handleToggleSwitch(banner.id, banner.status)}
+                                    style={{
+                                        color: (banner.status === 'Active' || banner.status === 'Temporary') ? 'green' : ''
+                                    }}
+                                />
+                            </>
+                        )}
+                    </div>
+                </td>
+            </tr>
+        ))
+    ) : (
+        <tr>
+            <td colSpan="6" style={{ textAlign: "center" }}>No Data Available</td>
         </tr>
-    ));
+    );
+    
 
     return (
         <>
+        {loading ? (
+            <CircleDotLoader />
+            ) : (
             <TableWithControls
                 theadContent={theadContent}
                 tbodyContent={tbodyContent}
@@ -257,6 +267,7 @@ const AdminBannerContent = () => {
                 onRowsPerPageChange={handleRowsPerPageChange}
                 showAddButton={showAddButton}
             />
+        )}
             <Modal show={showModal} onHide={() => setShowModal(false)}>
                 <Modal.Header closeButton>
                     <Modal.Title>Confirm Action</Modal.Title>

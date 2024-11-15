@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Container } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import AdminFormComponent from "./AdminFormComponent";
+import SkeletonLoader from './SkeletonLoader';
 import "../../css/AdminStyles/AdminFormStyle.css";
 
 const AdminEditBannerContent = () => {
@@ -22,6 +23,7 @@ const AdminEditBannerContent = () => {
   const token = sessionStorage.getItem("token");
   const Authenticate = `Bearer ${token}`;
   const bannerId = sessionStorage.getItem("bannerId");
+  const [loading, setLoading] = useState(true);
 
   const formatDateForSubmission = (date) => {
     if (!date) return "";
@@ -105,7 +107,9 @@ const AdminEditBannerContent = () => {
       } catch (error) {
         console.error("Error fetching banner details:", error.message);
         setError(error.message);
-      }
+      }finally {
+         setLoading(false);
+     }
     };
 
     fetchBannerDetails();
@@ -273,6 +277,9 @@ const AdminEditBannerContent = () => {
 
   return (
     <Container fluid className="admin-add-banner-content">
+      {loading ? (
+            <SkeletonLoader />
+        ) : (
       <AdminFormComponent
         formTitle="Edit Banner"
         checkboxDetail="Featured Type(s)"
@@ -292,6 +299,7 @@ const AdminEditBannerContent = () => {
         newBannerFile={newBannerFile}
         handleBannerFileChange={handleBannerFileChange}
       />
+    )}
     </Container>
   );
 };

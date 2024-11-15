@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import { MDBSwitch } from 'mdb-react-ui-kit';
+import CircleDotLoader from './CircleDotLoader';
 import '../../css/AdminStyles/AdminTableStyles.css';
 import TableWithControls from './TableWithControls';
 
@@ -209,7 +210,8 @@ const AdminPackageContent = () => {
         </tr>
     );
 
-    const tbodyContent = sortedPackages.map((Package) => (
+    const tbodyContent = sortedPackages.length > 0 ? (
+        sortedPackages.map((Package) => (
         <tr key={Package.id}>
             <td>{Package.package_name}</td>
             <td>{getPackageClass(Package.package_type)}</td>
@@ -241,10 +243,18 @@ const AdminPackageContent = () => {
                 
             </td>
         </tr>
-    ));
+     ))
+    ) : (
+        <tr>
+            <td colSpan="6" style={{ textAlign: "center" }}>No Data Available</td>
+        </tr>
+    );
 
     return (
         <>
+         {loading ? (
+            <CircleDotLoader />
+            ) : (
             <TableWithControls
                 theadContent={theadContent}
                 tbodyContent={tbodyContent}
@@ -257,6 +267,7 @@ const AdminPackageContent = () => {
                 onRowsPerPageChange={handleRowsPerPageChange}
                 showAddButton={showAddButton}
             />
+        )}
             <Modal show={showModal} onHide={() => setShowModal(false)}>
                 <Modal.Header closeButton>
                     <Modal.Title>Confirm Action</Modal.Title>

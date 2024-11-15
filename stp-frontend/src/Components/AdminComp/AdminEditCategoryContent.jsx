@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Container, Col, Button, Modal } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useDropzone } from "react-dropzone";
+import SkeletonLoader from './SkeletonLoader';
 import AdminFormComponent from './AdminFormComponent';
 import 'typeface-ubuntu';
 import "../../css/AdminStyles/AdminFormStyle.css";
@@ -24,7 +25,10 @@ const AdminEditCategoryContent = () => {
     const navigate = useNavigate();
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`
+    const [loading, setLoading] = useState(true);
+    
     const categoryId = sessionStorage.getItem('categoryId'); 
+   
     const handleSubmit = async (event) => {
         event.preventDefault();
     
@@ -109,6 +113,8 @@ const AdminEditCategoryContent = () => {
             } catch (error) {
                 console.error('Error fetching package details:', error.message);
                 setError(error.message);
+            } finally {
+                setLoading(false);
             }
         };
         fetchCategoryDetails();
@@ -190,19 +196,23 @@ const AdminEditCategoryContent = () => {
 
     return (
         
-                <Container fluid className="admin-add-school-container">
-                    <AdminFormComponent
-           formTitle="Category Details"
-           formFields={formFields}
-           formHTML={formHTML}
-           onSubmit={handleSubmit}
-           error={error}
-           buttons={buttons}
-           newIcon={newIcon}
-           icon={icon}
-           handleIconChange={handleIconChange}
+        <Container fluid className="admin-add-school-container">
+            {loading ? (
+            <SkeletonLoader />
+                 ) : (
+            <AdminFormComponent
+                formTitle="Category Details"
+                formFields={formFields}
+                formHTML={formHTML}
+                onSubmit={handleSubmit}
+                error={error}
+                buttons={buttons}
+                newIcon={newIcon}
+                icon={icon}
+                handleIconChange={handleIconChange}
                 />
-                </Container>
+            )}
+        </Container>
     );
 };
 

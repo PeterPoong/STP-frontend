@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import { MDBSwitch } from 'mdb-react-ui-kit';
+import CircleDotLoader from './CircleDotLoader';
 import '../../css/AdminStyles/AdminTableStyles.css';
 import TableWithControls from './TableWithControls';
 
@@ -43,6 +44,8 @@ const AdminDataContent = () => {
             setFilterOptions(result.data || []);
         } catch (error) {
             console.error("Error fetching filter options:", error);
+        }finally {
+            setLoading(false);
         }
     };
 
@@ -182,9 +185,6 @@ const AdminDataContent = () => {
         }
     };
     
-    
-    
-    
     const getStatusClass = (status) => {
         switch (status) {
             case 0:
@@ -213,9 +213,9 @@ const AdminDataContent = () => {
         </tr>
     );
 
-    const tbodyContent = sortedDatas.map((Data) => {
+    const tbodyContent = sortedDatas.length > 0 ? ( 
+        sortedDatas.map((Data) => (
         // console.log(Data); // Add this to check if 'id' is fetched
-        return (
             <tr key={Data.id}>
                 <td>{Data.core_metaType}</td>
                 <td>{Data.core_metaName}</td>
@@ -224,7 +224,6 @@ const AdminDataContent = () => {
                 </td>
                 <td>
                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                   
                         <>
                         {/* <FontAwesomeIcon
                             className="icon-color-edit"
@@ -247,8 +246,12 @@ const AdminDataContent = () => {
                     
                 </td>
             </tr>
-        );
-    });
+    ))
+) : (
+    <tr>
+        <td colSpan="6" style={{ textAlign: "center" }}>No Data Available (Please Select A Data Type)</td>
+    </tr>
+);
     
 
     return (
@@ -267,7 +270,9 @@ const AdminDataContent = () => {
                     </div>
                 </div>
             </Form.Group>
-
+            {loading ? (
+                <CircleDotLoader />
+                ) : (
             <TableWithControls
                 theadContent={theadContent}
                 tbodyContent={tbodyContent}
@@ -280,7 +285,7 @@ const AdminDataContent = () => {
                 showSearch={false}  // Set to false if you don't want to show search
                 showRowsPerPage={false}  // Set to false if you don't want to show rows-per-page dropdown
             />
-
+             )}
             <Modal show={showModal} onHide={() => setShowModal(false)}>
                 <Modal.Header closeButton>
                     <Modal.Title>Confirm Action</Modal.Title>

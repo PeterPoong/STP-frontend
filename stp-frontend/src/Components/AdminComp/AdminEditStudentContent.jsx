@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Container, Col, Button, Modal, Card } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useDropzone } from "react-dropzone";
+import SkeletonLoader from './SkeletonLoader';
 import AdminFormComponent from './AdminFormComponent';
 import 'typeface-ubuntu';
 import "../../css/AdminStyles/AdminFormStyle.css";
@@ -39,6 +40,7 @@ const AdminEditStudentContent = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [passwordsMatch, setPasswordsMatch] = useState(true);
+    const [loading, setLoading] = useState(true);
     
     const studentId = sessionStorage.getItem('studentId');
     const fetchStudentDetails = async () => {
@@ -83,7 +85,9 @@ const AdminEditStudentContent = () => {
       } catch (error) {
           console.error('Error fetching student details:', error.message);
           setError(error.message);
-      }
+      }finally {
+        setLoading(false);
+    }
   };
   useEffect(() => {
     if (!studentId) {
@@ -525,8 +529,11 @@ const fetchCities = (stateId) => {
 
     return (
         
-                <Container fluid className="admin-add-student-container">
-                    <AdminFormComponent
+        <Container fluid className="admin-add-student-container">
+           {loading ? (
+                    <SkeletonLoader />
+                ) : (
+           <AdminFormComponent
            formTitle="Student Information"
            formFields={formFields}
            shouldRenderPasswordCard={shouldRenderPasswordCard}
@@ -544,12 +551,13 @@ const fetchCities = (stateId) => {
            handleRadioChange={handleRadioChange}
            formData={formData}
                 />
-                 {!passwordsMatch && (
-                <div className="text-danger">
-                    Passwords do not match.
-                </div>
+          )}
+            {!passwordsMatch && (
+              <div className="text-danger">
+                  Passwords do not match.
+              </div>
             )}
-                </Container>
+      </Container>
     );
 };
 

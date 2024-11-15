@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Container, Col, Button, Modal } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { useDropzone } from "react-dropzone";
 import AdminFormComponent from './AdminFormComponent';
 import 'typeface-ubuntu';
+import SkeletonLoader from './SkeletonLoader';
 import "../../css/AdminStyles/AdminFormStyle.css";
-import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 
 import { FaTrashAlt } from 'react-icons/fa';
@@ -22,6 +21,7 @@ const AdminReplyEnquiryContent = () => {
     const navigate = useNavigate();
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`
+    const [loading, setLoading] = useState(true);
     const enquiryId = sessionStorage.getItem('enquiryId'); 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -103,6 +103,8 @@ const AdminReplyEnquiryContent = () => {
             } catch (error) {
                 console.error('Error fetching package details:', error.message);
                 setError(error.message);
+            } finally {
+                setLoading(false);
             }
         };
         fetchEnquiryDetails();
@@ -206,9 +208,12 @@ const AdminReplyEnquiryContent = () => {
     return (
         
     <Container fluid className="admin-add-school-container">
+       {error && <div className="alert alert-danger">{error}</div>}
+        {loading ? (
+                <SkeletonLoader />
+            ) : (
         <AdminFormComponent
            formTitle="Reply Enquiry"
-          
            formRead={formRead}
            shouldRenderHorizontalLine={shouldRenderHorizontalLine}
            formFields={formFields}
@@ -217,7 +222,8 @@ const AdminReplyEnquiryContent = () => {
            error={error}
            buttons={buttons}
                 />
-                </Container>
+            )}
+     </Container>
     );
 };
 

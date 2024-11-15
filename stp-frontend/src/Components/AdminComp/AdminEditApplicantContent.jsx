@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { Container } from "react-bootstrap";
+import SkeletonLoader from './SkeletonLoader';
 import AdminFormComponent from './AdminFormComponent';
 import "../../css/AdminStyles/AdminFormStyle.css";
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { format, parseISO } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
+import ErrorModal from "./Error";
 
 
 const AdminEditApplicantContent = () => {
     const [courseList, setCourseList] = useState([]); 
     const [schoolList, setSchoolList] = useState([]); 
-    const [loading, setLoading] = useState(false); 
+    const [loading, setLoading] = useState(true);
 
     const [formData, setFormData] = useState({
         courses_id: "",
@@ -99,6 +101,8 @@ const AdminEditApplicantContent = () => {
         } catch (error) {
             console.error('Error fetching applicant details:', error.message);
             setError(error.message);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -318,6 +322,11 @@ const AdminEditApplicantContent = () => {
 
     return (
         <Container fluid className="admin-add-subject-container">
+           <ErrorModal error={error} onClose={() => setError(null)} />
+            {error && <div className="alert alert-danger">{error}</div>}
+            {loading ? (
+                    <SkeletonLoader />
+                ) : (
             <AdminFormComponent
                 formTitle="Applicant Information"
                 formRead={formRead}
@@ -330,6 +339,7 @@ const AdminEditApplicantContent = () => {
                 error={error}
                 buttons={buttons}
             />
+        )}
         </Container>
     );
 };

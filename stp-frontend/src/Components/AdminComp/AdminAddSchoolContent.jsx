@@ -7,7 +7,7 @@ import 'typeface-ubuntu';
 import "../../css/AdminStyles/AdminFormStyle.css";
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
-
+import ErrorModal from "./Error";
 import { FaTrashAlt } from 'react-icons/fa';
 
 const AdminAddSchoolContent = () => {
@@ -36,7 +36,7 @@ const AdminAddSchoolContent = () => {
         confirm_password: "",
         school_shortDesc: "",
         school_fullDesc: "",
-        location:"",
+        // location:"",
         logo: null
     });
     const [selectedFeatures, setSelectedFeatures] = useState([]);
@@ -56,7 +56,7 @@ const AdminAddSchoolContent = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         // console.log("Submitting form data:", formData); // Debugging line
-        const { name, email, logo, location, category, state, city, account, country, school_address, school_website, contact_number, person_in_charge_email, person_in_charge_name, person_in_charge_contact, country_code, confirm_password, school_shortDesc, school_fullDesc, password } = formData;
+        const { name, email, logo, category, state, city, account, country, school_address, school_website, contact_number, person_in_charge_email, person_in_charge_name, person_in_charge_contact, country_code, confirm_password, school_shortDesc, school_fullDesc, password } = formData;
     
         // console.log("Form Data being sent:", formData);
         Object.keys(formData).forEach(key => {
@@ -80,7 +80,7 @@ const AdminAddSchoolContent = () => {
         formPayload.append("state", state);
         formPayload.append("city", city);
         formPayload.append("password", password);
-        formPayload.append("location", location);
+        // formPayload.append("location", location);
         formPayload.append("confirm_password", confirm_password);
         formPayload.append("school_shortDesc", school_shortDesc);
         formPayload.append("school_fullDesc", school_fullDesc);
@@ -542,15 +542,15 @@ const fetchCities = (stateId) => {
     ];
 
     const formAddress = [
-        {
-            id: "location",
-            label: "School Location (Google Map URL)",
-            type: "text",
-            placeholder: "Enter School Location",
-            value: formData.location,
-            onChange: handleFieldChange,
-            required: true
-        },
+        // {
+        //     id: "location",
+        //     label: "School Location (Google Map URL)",
+        //     type: "text",
+        //     placeholder: "Enter School Location",
+        //     value: formData.location,
+        //     onChange: handleFieldChange,
+        //     required: true
+        // },
         {
             id: "school_address",
             label: "School Full Address",
@@ -702,8 +702,9 @@ const fetchCities = (stateId) => {
 
     return (
         
-                <Container fluid className="admin-add-school-container">
-                    <AdminFormComponent
+        <Container fluid className="admin-add-school-container">
+             <ErrorModal error={error} onClose={() => setError(null)} />
+            <AdminFormComponent
            formTitle="School Information"
            checkboxTitle="School Advertising Feature"
            formFields={formFields}

@@ -3,6 +3,7 @@ import { Table, Button, Modal } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
+import CircleDotLoader from './CircleDotLoader';
 import { MDBSwitch } from 'mdb-react-ui-kit';
 import '../../css/AdminStyles/AdminTableStyles.css';
 import TableWithControls from './TableWithControls';
@@ -196,7 +197,8 @@ const AdminSchoolContent = () => {
         </tr>
     );
 
-    const tbodyContent = sortedSchools.map((school) => (
+    const tbodyContent = sortedSchools.length > 0 ? (
+        sortedSchools.map((school) => (
         <tr key={school.id}>
             <td>{school.name}</td>
             <td>{school.email}</td>
@@ -245,10 +247,18 @@ const AdminSchoolContent = () => {
                 
             </td>
         </tr>
-    ));
+    ))
+    ) : (
+        <tr>
+            <td colSpan="6" style={{ textAlign: "center" }}>No Data Available</td>
+        </tr>
+    );
 
     return (
         <>
+         {loading ? (
+            <CircleDotLoader />
+            ) : (
             <TableWithControls
                 theadContent={theadContent}
                 tbodyContent={tbodyContent}
@@ -261,6 +271,7 @@ const AdminSchoolContent = () => {
                 onRowsPerPageChange={handleRowsPerPageChange}
                 showAddButton={showAddButton}
             />
+        )}
             <Modal show={showModal} onHide={() => setShowModal(false)}>
                 <Modal.Header closeButton>
                     <Modal.Title>Confirm Action</Modal.Title>

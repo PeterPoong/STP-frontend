@@ -3,7 +3,7 @@ import { Table, Button, Modal } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faReply } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
-import { MDBSwitch } from 'mdb-react-ui-kit';
+import CircleDotLoader from './CircleDotLoader';
 import '../../css/AdminStyles/AdminTableStyles.css';
 import TableWithControls from './TableWithControls';
 
@@ -247,7 +247,8 @@ const handleSubjectChange = (subjectId) => {
         </tr>
     );
 
-    const tbodyContent = sortedenquirys.map((enquiry) => (
+    const tbodyContent = sortedenquirys.length > 0 ? (
+    sortedenquirys.map((enquiry) => (
         <tr key={enquiry.id}>
             <td>{enquiry.enquiry_name}</td>
             <td>{enquiry.enquiry_email}</td>
@@ -289,10 +290,19 @@ const handleSubjectChange = (subjectId) => {
                 
             </td>
         </tr>
-    ));
+  ))
+) : (
+    <tr>
+        <td colSpan="6" style={{ textAlign: "center" }}>No Data Available</td>
+    </tr>
+);
+
 
     return (
         <>
+         {loading ? (
+            <CircleDotLoader />
+            ) : (
             <TableWithControls
                 theadContent={theadContent}
                 tbodyContent={tbodyContent}
@@ -307,6 +317,7 @@ const handleSubjectChange = (subjectId) => {
                 subjectList={subjectList} // Pass subject list to TableWithControls
                 onSubjectChange={handleSubjectChange} // Pass handler for subject selection
             />
+        )}
             <Modal show={showModal} onHide={() => setShowModal(false)}>
                 <Modal.Header closeButton>
                     <Modal.Title>Confirm Action</Modal.Title>
