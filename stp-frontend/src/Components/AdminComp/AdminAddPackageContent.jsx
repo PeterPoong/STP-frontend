@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useDropzone } from "react-dropzone";
 import AdminFormComponent from './AdminFormComponent';
 import 'typeface-ubuntu';
+import ErrorModal from "./Error";
 import "../../css/AdminStyles/AdminFormStyle.css";
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
@@ -20,17 +21,23 @@ const AdminAddPackageContent = () => {
         package_price: "",
     });
 
-    const [error, setError] = useState(null);
     const navigate = useNavigate();
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`;
-
+    const [error, setError] = useState(null);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
+    const [generalError, setGeneralError] = useState('');
+    const [fieldErrors, setFieldErrors] = useState({});
     const handleSubmit = async (event) => {
         event.preventDefault();
         // console.log("Submitting form data:", formData); // Debugging line
         
         const { package_name, package_detail, package_type, package_price } = formData;
-        
+        if (!package_name || !package_detail || !package_type || !package_price) {
+            setError("Please fill in all required fields.");
+            setErrorModalVisible(true);
+            return; // Stop form submission if any required field is missing
+        }
         const formPayload = new FormData();
         formPayload.append("package_name", package_name);
         formPayload.append("package_detail", package_detail); // TinyMCE raw HTML
@@ -57,12 +64,12 @@ const AdminAddPackageContent = () => {
                 console.log('Package successfully registered:', addPackageData);
                 navigate('/adminPackage'); // Ensure navigate function is properly defined
             } else {
-                console.error('Validation Error:', addPackageData.errors);
-                throw new Error(`Package Registration failed: ${addPackageData.message}`);
+                setError(addPackageData.message || "Failed to add new package.");
+                setErrorModalVisible(true);
             }
         } catch (error) {
-            setError('An error occurred during Package registration. Please try again later.');
-            console.error('Error during Package registration:', error);
+            setError(error.message || "An error occurred while adding the package. Please try again later.");
+            setErrorModalVisible(true);
         }
     };
     
@@ -178,8 +185,14 @@ const AdminAddPackageContent = () => {
 
     return (
         
-                <Container fluid className="admin-add-package-container">
-                    <AdminFormComponent
+    <Container fluid className="admin-add-package-container">
+         <ErrorModal
+            errorModalVisible={errorModalVisible}
+            setErrorModalVisible={setErrorModalVisible}
+            generalError={generalError || error} // Ensure `generalError` or fallback to `error`
+            fieldErrors={fieldErrors}
+            />
+        <AdminFormComponent
            formTitle="Package Information"
            formFields={formFields}
            formHTML={formHTML}
@@ -188,9 +201,8 @@ const AdminAddPackageContent = () => {
            onSubmit={handleSubmit}
            error={error}
            buttons={buttons}
-
                 />
-                </Container>
+    </Container>
     );
 };
 

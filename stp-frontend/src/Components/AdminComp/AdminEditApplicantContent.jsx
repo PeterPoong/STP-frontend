@@ -7,6 +7,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { format, parseISO } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
+import ErrorModal from "./Error";
 
 
 const AdminEditApplicantContent = () => {
@@ -321,6 +322,7 @@ const AdminEditApplicantContent = () => {
 
     return (
         <Container fluid className="admin-add-subject-container">
+           <ErrorModal error={error} onClose={() => setError(null)} />
             {error && <div className="alert alert-danger">{error}</div>}
             {loading ? (
                     <SkeletonLoader />

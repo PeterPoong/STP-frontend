@@ -175,6 +175,8 @@ const AdminEditCourseContent = () => {
             } catch (error) {
                 console.error('Error fetching course intake list:', error.message);
                 setError(error.message);
+            }finally {
+                setLoading(false);
             }
         };
     
@@ -206,6 +208,8 @@ const AdminEditCourseContent = () => {
             } catch (error) {
                 console.error('Error fetching course featured list:', error.message);
                 setError(error.message);
+            }finally {
+                setLoading(false);
             }
         };
 
@@ -235,6 +239,8 @@ const AdminEditCourseContent = () => {
             } catch (error) {
                 console.error('Error fetching categories:', error.message);
                 setError(error.message);
+            }finally {
+                setLoading(false);
             }
         };
     
@@ -264,6 +270,8 @@ const AdminEditCourseContent = () => {
             } catch (error) {
                 console.error('Error fetching qualifications:', error.message);
                 setError(error.message);
+            }finally {
+                setLoading(false);
             }
         };
     
@@ -293,6 +301,8 @@ const AdminEditCourseContent = () => {
             } catch (error) {
                 console.error('Error fetching schools:', error.message);
                 setError(error.message);
+            }finally {
+                setLoading(false);
             }
         };
     
@@ -324,6 +334,8 @@ const AdminEditCourseContent = () => {
             } catch (error) {
                 console.error('Error fetching modes:', error.message);
                 setError(error.message);
+            }finally {
+                setLoading(false);
             }
         };
     

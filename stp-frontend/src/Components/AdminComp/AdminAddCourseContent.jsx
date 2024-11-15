@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useDropzone } from "react-dropzone";
 import AdminFormComponent from './AdminFormComponent';
 import 'typeface-ubuntu';
+import ErrorModal from "./Error";
 import "../../css/AdminStyles/AdminFormStyle.css";
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
@@ -31,8 +32,10 @@ const AdminAddCourseContent = () => {
     });
     const [selectedIntakes, setSelectedIntakes] = useState([]);
     const [selectedCourses, setSelectedCourses] = useState([]);
-
     const [error, setError] = useState(null);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
+    const [generalError, setGeneralError] = useState('');
+    const [fieldErrors, setFieldErrors] = useState({});
     const navigate = useNavigate();
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`
@@ -40,7 +43,12 @@ const AdminAddCourseContent = () => {
         event.preventDefault();
         
         const { name, schoolID, logo, description, requirement, cost, period, category, qualification, mode } = formData;
-        
+         // Check if all required fields are filled
+         if (!name || !schoolID || !description || !requirement || !period || !category || !qualification || !mode) {
+            setError("Please fill in all required fields.");
+            setErrorModalVisible(true);
+            return; // Stop form submission if any required field is missing
+        }
         const formPayload = new FormData();
         formPayload.append("name", name);
         formPayload.append("schoolID", schoolID);
@@ -58,10 +66,18 @@ const AdminAddCourseContent = () => {
         }
         // Append each selected intake value as "intake[]"
         selectedIntakes.forEach(intake => {
-            formPayload.append("intake[]", intake);
+            if (intake){
+                formPayload.append("intake[]", intake);
+            } else {
+                throw new Error("Invalid intakes array detected.");
+            }
         });
         selectedCourses.forEach(course => {
+            if (course) {
             formPayload.append("courseFeatured[]", course);
+            } else {
+                throw new Error("Invalid course featured array detected.");
+            }
         });
         try {
             const addCourseResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/addCourses`, {
@@ -78,12 +94,12 @@ const AdminAddCourseContent = () => {
                 console.log('Course successfully registered:', addCourseData);
                 navigate('/adminCourses');
             } else {
-                console.error('Validation Error:', addCourseData.errors);
-                throw new Error(`Course Registration failed: ${addCourseData.message}`);
+                setError(addCourseData.message || "Failed to add new course.");
+                setErrorModalVisible(true);
             }
         } catch (error) {
-            setError('An error occurred during course registration. Please try again later.');
-            console.error('Error during course registration:', error);
+            setError(error.message || "An error occurred while adding the course. Please try again later.");
+            setErrorModalVisible(true);
         }
     };    
     useEffect(() => {
@@ -456,8 +472,14 @@ const AdminAddCourseContent = () => {
 
     return (
         
-                <Container fluid className="admin-add-school-container">
-                    <AdminFormComponent
+        <Container fluid className="admin-add-school-container">
+             <ErrorModal
+                errorModalVisible={errorModalVisible}
+                setErrorModalVisible={setErrorModalVisible}
+                generalError={generalError || error} // Ensure `generalError` or fallback to `error`
+                fieldErrors={fieldErrors}
+            />
+            <AdminFormComponent
            formTitle="Course Details"
            checkboxTitle="Intake"
            helperStar="*"
