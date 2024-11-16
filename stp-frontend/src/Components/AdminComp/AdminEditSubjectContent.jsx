@@ -6,6 +6,7 @@ import AdminFormComponent from './AdminFormComponent';
 import 'typeface-ubuntu';
 import "../../css/AdminStyles/AdminFormStyle.css";
 import 'react-phone-input-2/lib/style.css';
+import ErrorModal from "./Error";
 
 import { FaTrashAlt } from 'react-icons/fa';
 
