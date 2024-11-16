@@ -67,7 +67,6 @@ const AdminEditSchoolContent = () => {
                 setLoading(false);
                 return;
             }
-    
             try {
                 const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/schoolDetail`, {
                     method: 'POST',
@@ -77,22 +76,17 @@ const AdminEditSchoolContent = () => {
                     },
                     body: JSON.stringify({ id: schoolId })
                 });
-    
                 if (!response.ok) {
                     throw new Error(`Failed to fetch school details. HTTP status: ${response.status}`);
                 }
-    
                 const data = await response.json();
                 if (data.success) {
                     const schoolDetails = data.data;
-    
                     // Reset field errors for fresh fetch
                     const newFieldErrors = {};
-    
                     // Separate media into cover photo and album
                     let coverFile = null;
                     const albumFiles = [];
-                    
                     if (!schoolDetails.media) {
                         newFieldErrors.media = 'Cover or Album photo could not be fetched.';
                     } else {
@@ -111,7 +105,6 @@ const AdminEditSchoolContent = () => {
                             }
                         });
                     }
-    
                     setFormData({
                         name: schoolDetails.name || '',
                         email: schoolDetails.email || '',
@@ -135,7 +128,12 @@ const AdminEditSchoolContent = () => {
                         city: schoolDetails.city_id || '',
                         logo: schoolDetails.logo ? `${import.meta.env.VITE_BASE_URL}storage/${schoolDetails.logo}` : null
                     });
-    
+                    setLogo(schoolDetails.logo ? `${import.meta.env.VITE_BASE_URL}storage/${schoolDetails.logo}` : null);
+                    setSelectedFeatures(
+                        Array.isArray(schoolDetails.schoolFeatured) 
+                            ? schoolDetails.schoolFeatured.map(feature => feature.featured_type)
+                            : Object.values(schoolDetails.schoolFeatured).map(feature => feature.featured_type)
+                    );
                     if (schoolDetails.country_id) {
                         try {
                             await fetchStates(schoolDetails.country_id);
@@ -143,7 +141,6 @@ const AdminEditSchoolContent = () => {
                             newFieldErrors.state = 'Error fetching states based on country.';
                         }
                     }
-    
                     if (schoolDetails.state_id) {
                         try {
                             await fetchCities(schoolDetails.state_id);
@@ -151,7 +148,6 @@ const AdminEditSchoolContent = () => {
                             newFieldErrors.city = 'Error fetching cities based on state.';
                         }
                     }
-    
                     setFieldErrors(newFieldErrors);
                     if (Object.keys(newFieldErrors).length > 0) {
                         setErrorModalVisible(true);
@@ -167,7 +163,6 @@ const AdminEditSchoolContent = () => {
                 setLoading(false);
             }
         };
-
         const fetchFeatured = async () => {
             try {
                 const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/universityFeaturedList`, {
@@ -177,11 +172,9 @@ const AdminEditSchoolContent = () => {
                         'Authorization': Authenticate,
                     },
                 });
-
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-
                 const data = await response.json();
 
                 if (data && data.data) {
@@ -205,11 +198,9 @@ const AdminEditSchoolContent = () => {
                     },
                     body: JSON.stringify({})
                 });
-
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-
                 const data = await response.json();
                 if (data && data.data) {
                     setCategoryList(data.data);
@@ -227,16 +218,28 @@ const AdminEditSchoolContent = () => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-
+    
         const schoolId = sessionStorage.getItem('schoolId');
         if (!schoolId) {
             setGeneralError('School ID is not found in sessionStorage.');
             setErrorModalVisible(true);
             return;
         }
-
-        const { name, email, category, school_google_map_location, school_location, state, city, account, country, school_address, school_website, contact_number, person_in_charge_email, person_in_charge_name, person_in_charge_contact, country_code, confirm_password, school_shortDesc, school_fullDesc, password } = formData;
-        
+    
+        const {
+            name, email, category, school_google_map_location, school_location, state, city, account, country,
+            school_address, school_website, contact_number, person_in_charge_email, person_in_charge_name,
+            person_in_charge_contact, country_code, confirm_password, school_shortDesc, school_fullDesc, password
+        } = formData;
+    
+        if (!name || !email || !logo || !category || !state || !city || !account || !country || !school_address ||
+            !school_website || !contact_number || !person_in_charge_email || !person_in_charge_name ||
+            !person_in_charge_contact || !country_code || !school_shortDesc || !school_fullDesc) {
+            setError("Please fill in all required fields.");
+            setErrorModalVisible(true);
+            return; // Stop form submission if any required field is missing
+        }
+    
         const formPayload = new FormData();
         formPayload.append("id", schoolId);
         formPayload.append("school_address", school_address);
@@ -259,27 +262,49 @@ const AdminEditSchoolContent = () => {
         formPayload.append("confirm_password", confirm_password);
         formPayload.append("school_shortDesc", school_shortDesc);
         formPayload.append("school_fullDesc", school_fullDesc);
-
-        selectedFeatures.forEach(feature => {
+    
+        let fieldErrors = {};
+    
+        selectedFeatures.forEach((feature) => {
             formPayload.append("featured[]", feature);
         });
-
+    
         if (formData.logo instanceof File) {
-            formPayload.append("logo", formData.logo);
+            try {
+                formPayload.append("logo", formData.logo);
+            } catch {
+                fieldErrors.logo = ["Something went wrong with the logo file."];
+            }
         }
-
+    
         if (coverFile && coverFile.type && coverFile.type.startsWith('image/')) {
-            formPayload.append('cover', coverFile);
+            try {
+                formPayload.append('cover', coverFile);
+            } catch {
+                fieldErrors.cover = ["Something went wrong with the cover photo."];
+            }
         }
-
+    
         if (albumFiles && albumFiles.length > 0) {
             albumFiles.forEach((file, index) => {
                 if (file && file.type && file.type.startsWith('image/')) {
-                    formPayload.append(`album[${index}]`, file);
+                    try {
+                        formPayload.append(`album[${index}]`, file);
+                    } catch {
+                        fieldErrors.album = fieldErrors.album || [];
+                        fieldErrors.album.push(`Error with file ${index + 1}`);
+                    }
                 }
             });
         }
-
+    
+        // Check for field errors
+        if (Object.keys(fieldErrors).length > 0) {
+            setFieldErrors(fieldErrors);
+            setErrorModalVisible(true);
+            return; // Stop further processing
+        }
+    
         try {
             const editSchoolResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/editSchool`, {
                 method: 'POST',
@@ -288,31 +313,22 @@ const AdminEditSchoolContent = () => {
                 },
                 body: formPayload,
             });
-
+    
             const editSchoolData = await editSchoolResponse.json();
-
+    
             if (editSchoolResponse.ok) {
                 console.log('School successfully updated:', editSchoolData);
                 navigate('/adminSchool');
             } else {
-                console.error('Validation Error:', editSchoolData.errors);
-                if (editSchoolData.errors) {
-                    // Populate field-specific errors
-                    setFieldErrors(editSchoolData.errors);
-                    setGeneralError('');
-                } else {
-                    setGeneralError(editSchoolData.message || 'School Update failed.');
-                    setFieldErrors({});
-                }
+                setError(editSchoolData.message || "Failed to edit the school.");
                 setErrorModalVisible(true);
             }
         } catch (error) {
-            setGeneralError('An error occurred during school update. Please try again later.');
-            console.error('Error during school update:', error);
+            setError(error.message || "An error occurred while editing the school. Please try again later.");
             setErrorModalVisible(true);
         }
     };
-
+    
     
     useEffect(() => {
         const fetchAccounts = async () => {

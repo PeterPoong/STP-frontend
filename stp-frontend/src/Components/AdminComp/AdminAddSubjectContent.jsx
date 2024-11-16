@@ -7,6 +7,7 @@ import 'typeface-ubuntu';
 import "../../css/AdminStyles/AdminFormStyle.css";
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
+import ErrorModal from "./Error";
 
 import { FaTrashAlt } from 'react-icons/fa';
 
@@ -16,16 +17,24 @@ const AdminAddSubjectContent = () => {
         name: "",
         category:"",
     });
-    const [error, setError] = useState(null);
+    
     const navigate = useNavigate();
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`;
+    const [error, setError] = useState(null);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
+    const [generalError, setGeneralError] = useState('');
+    const [fieldErrors, setFieldErrors] = useState({});
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         // console.log("Submitting form data:", formData); // Debugging line
         const { name, category} = formData;
-        
+        if (!name || !category) {
+            setError("Please fill in all required fields.");
+            setErrorModalVisible(true);
+            return; // Stop form submission if any required field is missing
+        }
         const formPayload = new FormData();
         formPayload.append("name", name);
         formPayload.append("category", category);
@@ -47,12 +56,12 @@ const AdminAddSubjectContent = () => {
                 console.log('Subject successfully registered:', addSubjectData);
                 navigate('/adminSubject');
             } else {
-                console.error('Validation Error:', addSubjectData.errors); // Debugging line
-                throw new Error(`Subject Registration failed: ${addSubjectData.message}`);
+                setError(addSubjectData.message || "Failed to add new subject.");
+                setErrorModalVisible(true);
             }
         } catch (error) {
-            setError('An error occurred during subject registration. Please try again later.');
-            console.error('Error during subject registration:', error);
+            setError(error.message || "An error occurred while adding the subject. Please try again later.");
+            setErrorModalVisible(true);
         }
     };
     
@@ -139,16 +148,21 @@ const AdminAddSubjectContent = () => {
 
     return (
         
-                <Container fluid className="admin-add-subject-container">
-                    <AdminFormComponent
-           formTitle="Subject Information"
-           checkboxTitle="School Advertising Feature"
-           formFields={formFields}
-           formCategory={formCategory}
-           onSubmit={handleSubmit}
-           error={error}
-           buttons={buttons}
-    
+        <Container fluid className="admin-add-subject-container">
+             <ErrorModal
+                errorModalVisible={errorModalVisible}
+                setErrorModalVisible={setErrorModalVisible}
+                generalError={generalError || error} // Ensure `generalError` or fallback to `error`
+                fieldErrors={fieldErrors}
+            />
+            <AdminFormComponent
+            formTitle="Subject Information"
+            checkboxTitle="School Advertising Feature"
+            formFields={formFields}
+            formCategory={formCategory}
+            onSubmit={handleSubmit}
+            error={error}
+            buttons={buttons}
                 />
                 </Container>
     );
