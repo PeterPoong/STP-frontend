@@ -76,13 +76,19 @@ const NavigationBar = () => {
             src={logo} 
             alt="Logo" 
             className="logo"
+            loading="lazy"
+          />
+           {/*<img 
+            src={logo} 
+            alt="Logo" 
+            className="logo"
             loading="eager"
             fetchpriority="high"
             decoding="async"
             onLoad={(e) => {
               e.target.previousSibling?.remove();
             }}
-          />
+          />*/}
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">

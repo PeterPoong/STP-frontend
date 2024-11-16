@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Carousel from "react-bootstrap/Carousel";
 import { Form, FormControl, InputGroup } from "react-bootstrap";
 import library from "../../assets/StudentAssets/background image/library.jpg";
-import blurbg from "../../assets/StudentAssets/background image/blurbg.png";
+import blurbg from "../../assets/StudentAssets/background image/blurbg.webp";
 import "../../css/StudentCss/homePageStudent/FeaturedUni.css";
 
 const FeaturedUni = () => {
@@ -19,16 +19,16 @@ const FeaturedUni = () => {
     }
 
     navigate(`/courses`, {
-    state: { 
-      initialSearchQuery: trimmedQuery,
-      searchTrigger: Date.now() // Add a timestamp to force update
-    },
+      state: {
+        initialSearchQuery: trimmedQuery,
+        searchTrigger: Date.now() // Add a timestamp to force update
+      },
     });
   };
 
   const handleNavigationClick = (qualification, country) => {
-    navigate("/courses", { 
-      state: { 
+    navigate("/courses", {
+      state: {
         initialQualification: qualification,
         initialCountry: country,
         filterTrigger: Date.now() // Add a timestamp to force update
@@ -46,6 +46,7 @@ const FeaturedUni = () => {
         <Carousel.Item>
           <div className="carousel-image-wrapper">
             <img
+              loading="lazy"
               className="d-block w-100 carousel-image"
               src={library}
               alt="First slide"
@@ -55,6 +56,7 @@ const FeaturedUni = () => {
         <Carousel.Item>
           <div className="carousel-image-wrapper">
             <img
+              loading="lazy"
               className="d-block w-100 carousel-image"
               src={blurbg}
               alt="Second slide"

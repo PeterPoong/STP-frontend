@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import "../../../css/StudentCss/course page css/SearchCourse.css";
 import {
@@ -16,7 +16,7 @@ import {
 } from "react-bootstrap";
 import CountryFlag from "react-country-flag";
 import debounce from "lodash.debounce";
-import StudyPal from "../../../assets/StudentAssets/coursepage image/StudyPal.png";
+import StudyPal from "../../../assets/StudentAssets/coursepage image/StudyPal.webp"
 import emptyStateImage from "../../../assets/StudentAssets/emptyStateImage/emptystate.png";
 
 const baseURL = import.meta.env.VITE_BASE_URL;
@@ -89,16 +89,6 @@ const SearchCourse = () => {
     }
   }, [currentPage]);
 
-
-
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-MY', {
-      style: 'decimal',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }).format(amount);
-  };
-
   // Step 1: Fetch Countries
   const fetchCountries = async () => {
     try {
@@ -145,35 +135,12 @@ const SearchCourse = () => {
       console.log("No country selected, returning early");
       return;
     }
-
-    // Log current filter state
-    /*console.log("Current Filter State:", {
-      country: {
-        id: selectedCountry.id,
-        name: selectedCountry.country_name
-      },
-      institute: selectedInstitute ? {
-        id: selectedInstitute.id,
-        name: selectedInstitute.core_metaName
-      } : null,
-      qualification: selectedQualification ? {
-        id: selectedQualification.id,
-        name: selectedQualification.qualification_name
-      } : null,
-      filters: selectedFilters,
-      page: currentPage,
-      search: searchQuery || 'none'
-    });*/
-
     setLoading(true);
     try {
-      // Initialize requestBody with required countryID
       const requestBody = {
         countryID: selectedCountry.id,
         page: currentPage,
       };
-
-      // Conditionally add filters only if they have values
       if (selectedInstitute) {
         requestBody.institute = selectedInstitute.id;
       }
@@ -201,85 +168,46 @@ const SearchCourse = () => {
       if (currentPage) {
         requestBody.page = currentPage;
       }
-
-      // console.log("Request body being sent:", JSON.stringify(requestBody, null, 2));
-
       const response = await fetch(courseListURL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          // Add any additional headers your API might require
           Accept: "application/json",
         },
         body: JSON.stringify(requestBody),
       });
-
       // console.log("Response status:", response.status);
-
-      // Log raw response for debugging
       const rawResponse = await response.text();
-
       // console.log("Raw response:", rawResponse);
-
-      // Parse the response
       const result = JSON.parse(rawResponse);
       //console.log(result);
-      /* console.log('Pagination info:', {
-        currentPage: result.current_page,
-        lastPage: result.last_page,
-        total: result.total,
-        perPage: result.per_page,
-        from: result.from,
-        to: result.to
-      });
-      console.log("Parsed API response:", result);*/
-
-      // Validate response structure
       if (!result.data) {
-        // console.error("Response missing data array:", result);
         throw new Error("Invalid response structure");
       }
-
       if (result.data.length === 0) {
         console.warn("No courses found with current filters:", {
           filters: requestBody,
           total: result.total,
         });
       } else {
-        // console.log(`Successfully fetched ${result.data.length} courses`);
-        // Log first item structure for verification
-        // console.log("Sample course data structure:", result.data[0]);
         console.log("fetch data");
       }
-
-      // Set state only if we have valid data structure
       setPrograms(result.data || []);
       setTotalPages(result.last_page);
     } catch (error) {
-      /*console.error("Error in fetchCourses:", {
-        name: error.name,
-        message: error.message,
-        stack: error.stack
-      });*/
       setError(`Failed to fetch courses: ${error.message}`);
     } finally {
       setLoading(false);
     }
   };
 
-
-
-
-  //Fecth Ads Image A
   const fetchAddsImageA = async () => {
     try {
-
       const response = await fetch(adsAURL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ advertisement_type: 69 }),
       });
-
       const result = await response.json();
       //console.log(result);
       if (result.success) {
@@ -290,19 +218,15 @@ const SearchCourse = () => {
     }
   };
 
-
-  //Fecth Ads Image B
   const fetchAddsImageB = async () => {
     try {
-
       const response = await fetch(adsAURL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ advertisement_type: 70 }),
       });
-
       const result = await response.json();
-     // console.log(result);
+      // console.log(result);
       if (result.success) {
         setAdsImageB(result.data);
       }
@@ -311,20 +235,16 @@ const SearchCourse = () => {
     }
   };
 
-
-  // Initial Load
   useEffect(() => {
     fetchCountries();
   }, []);
 
-  // Fetch filters when country changes
   useEffect(() => {
     if (selectedCountry) {
       fetchFilters(selectedCountry.id);
     }
   }, [selectedCountry]);
 
-  // Fetch courses when filters change
   useEffect(() => {
     if (selectedCountry) {
       fetchCourses();
@@ -406,7 +326,6 @@ const SearchCourse = () => {
   const handleFilterChange = (filterType, value) => {
     setSelectedFilters((prev) => {
       const newFilters = { ...prev };
-
       if (Array.isArray(newFilters[filterType])) {
         if (newFilters[filterType].includes(value)) {
           newFilters[filterType] = newFilters[filterType].filter(
@@ -418,7 +337,6 @@ const SearchCourse = () => {
       } else {
         newFilters[filterType] = value;
       }
-
       return newFilters;
     });
     setCurrentPage(1);
@@ -426,7 +344,6 @@ const SearchCourse = () => {
 
   const resetFilters = () => {
     setSelectedInstitute(null);
-
     setSelectedQualification(null);
     setSelectedFilters({
       locations: [],
@@ -440,7 +357,6 @@ const SearchCourse = () => {
   };
 
   const handleApplyNow = (program) => {
-
     const token =
       sessionStorage.getItem("token") || localStorage.getItem("token");
     if (!token) {
@@ -465,6 +381,7 @@ const SearchCourse = () => {
           style={{ marginLeft: "100px" }}
         >
           <img
+            loading="lazy"
             className="blankslate-courses-top-img"
             src={emptyStateImage}
             alt="Empty State"
@@ -494,6 +411,7 @@ const SearchCourse = () => {
                 <div className="card-image mb-3 mb-md-0">
                   <h5 className="card-title">
                     <Link
+                      rel="preload"
                       to={`/courseDetails/${program.id}`}
                       style={{ color: "black" }}
                     >
@@ -502,14 +420,16 @@ const SearchCourse = () => {
                   </h5>
                   <div className="coursepage-searchcourse-courselist-first">
                     <div
-                      classname="coursepage-img"
+                      className="coursepage-img"
                       style={{ paddingLeft: "20px" }}
                     >
                       <Link
+                        rel="preload"
                         to={`/knowMoreInstitute/${program.school_id}`}
                         style={{ color: "black" }}
                       >
                         <img
+                          loading="lazy"
                           src={`${baseURL}storage/${program.logo}`}
                           alt={program.school_name}
                           width="100"
@@ -521,6 +441,7 @@ const SearchCourse = () => {
                       className="searchcourse-coursename-schoolname"
                     >
                       <Link
+                        rel="preload"
                         to={`/knowMoreInstitute/${program.school_id}`}
                         style={{ color: "black" }}
                       >
@@ -537,6 +458,15 @@ const SearchCourse = () => {
                       <span style={{ paddingLeft: "10px" }}>
                         {program.state || "N/A"}, {program.country || "N/A"}
                       </span>
+                      <a
+                        href={program.school_location}
+                        style={{ paddingLeft: "15px" }}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Click and view on map
+                      </a>
+
                     </div>
                   </div>
                 </div>
@@ -706,6 +636,7 @@ const SearchCourse = () => {
                       rel="noopener noreferrer"
                     >
                       <img
+                        loading="lazy"
                         src={`${baseURL}storage/${ad.banner_file}`}
                         alt={`Advertisement ${ad.banner_name}`}
                         className="studypal-image"
@@ -721,6 +652,7 @@ const SearchCourse = () => {
               </div>
             ) : (
               <img
+                loading="lazy"
                 src={StudyPal}
                 alt="Study Pal"
                 className="studypal-image"
@@ -1354,6 +1286,7 @@ const SearchCourse = () => {
                           rel="noopener noreferrer"
                         >
                           <img
+                            loading="lazy"
                             src={`${baseURL}storage/${ad.banner_file}`}
                             alt={`Advertisement ${ad.banner_name}`}
                             className="studypal-image"
@@ -1369,6 +1302,7 @@ const SearchCourse = () => {
                   </div>
                 ) : (
                   <img
+                    loading="lazy"
                     src={StudyPal}
                     alt="Study Pal"
                     className="studypal-image"
@@ -1447,7 +1381,6 @@ const SearchCourse = () => {
                     {totalPages}
                   </Pagination.Item>
                 )}
-
                 <Pagination.Next
                   onClick={() => setCurrentPage((prev) => prev + 1)}
                   disabled={currentPage === totalPages}
@@ -1455,7 +1388,6 @@ const SearchCourse = () => {
                   <span aria-hidden="true">&raquo;</span>
                 </Pagination.Next>
               </Pagination>
-
             )}
           </Row>
         </Container >
