@@ -208,14 +208,15 @@ const AdminEnquiryContent = () => {
     
     const getStatusClass = (status) => {
         switch (status) {
-            case 0 :
-                return 'status-disable';
-            case 1 :
-                return 'status-active';
+            case 1:
+                return 'status-replied'; // Green color
+            case 2:
+                return 'status-pending'; // Yellow color
             default:
-                return '';
+                return 'status-disable'; // Default for other cases
         }
     };
+    
 // Function to handle subject change
 const handleSubjectChange = (subjectId) => {
     console.log("Filtering enquiries with Subject ID:", subjectId); // Log subject ID
@@ -248,55 +249,35 @@ const handleSubjectChange = (subjectId) => {
     );
 
     const tbodyContent = sortedenquirys.length > 0 ? (
-    sortedenquirys.map((enquiry) => (
-        <tr key={enquiry.id}>
-            <td>{enquiry.enquiry_name}</td>
-            <td>{enquiry.enquiry_email}</td>
-            <td>{enquiry.enquiry_phone}</td>
-            <td>{enquiry.enquiry_subject}</td>
-            <td>{enquiry.enquiry_message}</td>
-            <td className={getStatusClass(enquiry.enquiry_status)}>
-                {enquiry.enquiry_status}
-            </td>
-            <td>
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                {enquiry.enquiry_status === 'Pending' ? (
-                    <>
-                        <Button className="accept"
-                            variant="success"
-                            onClick={() => handlePendingAction(enquiry.id, 'enable')}
-                        >
-                            Accept
-                        </Button>
-                        <Button className="reject"
-                            variant="danger"
-                            onClick={() => handlePendingAction(enquiry.id, 'disable')}
-                        >
-                            Reject
-                        </Button>
-                    </>
-                ) : (
-                    <>
-                    <FontAwesomeIcon
-                        className="icon-color-edit"
-                        title="Reply"
-                        icon={faReply}
-                        style={{ marginRight: '8px', color: '#691ED2', cursor: 'pointer' }}
-                        onClick={() => handleEdit(enquiry.id)}
-                    />
-                </>
-                 )}
-                </div>
-                
-            </td>
+        sortedenquirys.map((enquiry) => (
+            <tr key={enquiry.id}>
+                <td>{enquiry.enquiry_name}</td>
+                <td>{enquiry.enquiry_email}</td>
+                <td>{enquiry.enquiry_phone}</td>
+                <td>{enquiry.enquiry_subject}</td>
+                <td>{enquiry.enquiry_message}</td>
+                <td className={getStatusClass(enquiry.enquiry_status)}>
+                    {enquiry.enquiry_status === 1 ? "Replied" : enquiry.enquiry_status === 2 ? "Pending" : "Disabled"}
+                </td>
+                <td>
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <FontAwesomeIcon
+                            className="icon-color-edit"
+                            title="Reply"
+                            icon={faReply}
+                            style={{ marginRight: '8px', color: '#691ED2', cursor: 'pointer' }}
+                            onClick={() => handleEdit(enquiry.id)}
+                        />
+                    </div>
+                </td>
+            </tr>
+        ))
+    ) : (
+        <tr>
+            <td colSpan="7" style={{ textAlign: "center" }}>No Data Available</td>
         </tr>
-  ))
-) : (
-    <tr>
-        <td colSpan="6" style={{ textAlign: "center" }}>No Data Available</td>
-    </tr>
-);
-
+    );
+    
 
     return (
         <>
