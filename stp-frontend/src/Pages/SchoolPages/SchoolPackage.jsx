@@ -151,7 +151,7 @@ const SchoolPackage = () => {
   };
 
   return (
-    <div className="d-flex SP-Container">
+    <div className="SP-Container">
       <div className="SP-Container-Overall ">
         <div className="SP-Container-One">
           <h1 className="">MORE PACKAGE</h1>
@@ -167,7 +167,7 @@ const SchoolPackage = () => {
         </div>
         <PackageRotate items={items} />
       </div >
-      <div className="SP-Container-Overall ">
+      <div className="SP-Container-Overall-Pricing ">
         <div class="pricing_summary_container" >
           <div className="pricing_summary-section_inside">
             <h2 className="pricing_summary_title" > Summary</h2>

@@ -1,24 +1,21 @@
-.SP-Container-Overall {
-    background-color: #BA1718;
-    width: 50%;
-    height: 50vh;
-  }
+
   
   .SP-Container {
     width: 100%;
     display: flex;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
+    display:flex;
   }
   
-  .SP-Container-Overall {
+  .SP-Container-Overall,.SP-Container-Overall-Pricing {
     background: linear-gradient(#BA1718 50%, transparent 50%);
     width: 50%;
     height: 100vh;
     flex-shrink: 0;
     scroll-snap-align: start;
   }
-  
+
   .SP-Container-Overall-One {
     background-color: white;
     width: 50%;
@@ -413,3 +410,20 @@
     opacity: 0.9;
   }
   
+
+  @media (max-width:426px)
+  {
+    .SP-Container
+    {
+      flex-direction: column;
+    }
+
+    .SP-Container-Overall,.SP-Container-Overall-Pricing
+    {
+      width:100%;
+    }
+    .SP-Container-Overall-Pricing
+    {
+      margin-top:10rem;
+    }
+  }

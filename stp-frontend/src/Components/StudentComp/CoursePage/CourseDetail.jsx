@@ -900,23 +900,31 @@ const CourseDetail = () => {
               {/* Featured courses */}
               {
                 featuredCourses.length > 0 && (
-                  <Container className="my-4">
+                  <Container className="university-row-carousel my-4">
                     <h4>Featured Courses</h4>
                     <Swiper
-                      spaceBetween={30}
-                      slidesPerView={5}
+                      spaceBetween={20}
+                      slidesPerView={1}
                       navigation
                       style={{ padding: "0 50px" }}
                       loop={true}
                       modules={[Pagination, Navigation]}
-                      className="featured-courses-swiper"
                       breakpoints={{
-                        640: {
+                        400: {
                           slidesPerView: 1,
+                          spaceBetween: 20,
+                        },
+                        // Large phones & small tablets
+                        576: {
+                          slidesPerView: 2,
+                          spaceBetween: 5,
+                        },
+                        640: {
+                          slidesPerView: 3,
                           spaceBetween: 10,
                         },
                         768: {
-                          slidesPerView: 2,
+                          slidesPerView: 4,
                           spaceBetween: 15,
                         },
                         1024: {
