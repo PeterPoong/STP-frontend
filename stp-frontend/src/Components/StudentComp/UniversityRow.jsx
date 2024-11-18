@@ -95,7 +95,7 @@ const UniversityRow = () => {
               {schools.map((school, index) => (
                 <SwiperSlide key={index} className="swiper-slide-image">
                   
-                  <Col xs={12} className="mb-3">
+                  <Col xs={12} className="mb-3 ">
                     <Card className="university-card">
                       <Link
                         to={`/knowMoreInstitute/${school.schoolID}`}

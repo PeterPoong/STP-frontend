@@ -5,7 +5,7 @@
 
 .SideNavContainer {
     width: 250px; /* Adjust width as needed */
-    background-color: #d9d9d9;
+    background-color: transparent;
     /* Ensure the sidebar is full height */
     display: flex;
     flex-direction: column;

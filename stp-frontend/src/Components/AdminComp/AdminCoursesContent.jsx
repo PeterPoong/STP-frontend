@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import { MDBSwitch } from 'mdb-react-ui-kit';
+import CircleDotLoader from './CircleDotLoader';
 import '../../css/AdminStyles/AdminTableStyles.css';
 import TableWithControls from './TableWithControls';
 
@@ -204,9 +205,9 @@ const AdminCoursesContent = () => {
             <th>Action</th>
         </tr>
     );
-    const tbodyContent = sortedCourses.map((Course) => {
+    const tbodyContent = sortedCourses.length > 0 ? (
+        sortedCourses.map((Course) => (
         // console.log(Course);  // Log each course object to ensure it has an id
-        return (
             <tr key={Course.id}>
                 <td>{Course.name}</td>
                 <td>{Course.school}</td>
@@ -217,6 +218,7 @@ const AdminCoursesContent = () => {
                 </td>
                 <td>
                     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <>
                         <FontAwesomeIcon
                             className="icon-color-edit"
                             title="Edit"
@@ -232,16 +234,25 @@ const AdminCoursesContent = () => {
                                 color: Course.status === 'Active' ? 'green' : ''
                             }}
                         />
+                    </>
+        
                     </div>
                 </td>
             </tr>
-        );
-    });
+    ))
+) : (
+    <tr>
+        <td colSpan="6" style={{ textAlign: "center" }}>No Data Available</td>
+    </tr>
+);
     
    
                         
     return (
         <>
+        {loading ? (
+        <CircleDotLoader />
+        ) : (
             <TableWithControls
                 theadContent={theadContent}
                 tbodyContent={tbodyContent}
@@ -254,6 +265,7 @@ const AdminCoursesContent = () => {
                 onRowsPerPageChange={handleRowsPerPageChange}
                 showAddButton={showAddButton}
             />
+            )}
             <Modal show={showModal} onHide={() => setShowModal(false)}>
                 <Modal.Header closeButton>
                     <Modal.Title>Confirm Action</Modal.Title>

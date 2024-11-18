@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useDropzone } from "react-dropzone";
 import AdminFormComponent from './AdminFormComponent';
 import 'typeface-ubuntu';
+import ErrorModal from "./Error";
 import "../../css/AdminStyles/AdminFormStyle.css";
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
@@ -39,12 +40,19 @@ const AdminAddStudentContent = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [passwordsMatch, setPasswordsMatch] = useState(true);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
+    const [generalError, setGeneralError] = useState('');
+    const [fieldErrors, setFieldErrors] = useState({});
     const handleSubmit = async (event) => {
       event.preventDefault();
       // console.log("Submitting form data:", formData);
   
       const { name, first_name, last_name, gender, ic, postcode, email, state, city, country, address, contact_number, country_code, confirm_password, password } = formData;
-  
+      if (!name || !first_name || !last_name || !gender || !ic || !postcode || !email || !state || !city || !country || !address || !contact_number || !country_code || !confirm_password || !password ) {
+        setError("Please fill in all required fields.");
+        setErrorModalVisible(true);
+        return; // Stop form submission if any required field is missing
+    }
       // Convert strings to integers where needed
       const icInt = parseInt(ic, 10);
       const cityInt = parseInt(city, 10);
@@ -54,6 +62,7 @@ const AdminAddStudentContent = () => {
   
       if ( isNaN(cityInt) || isNaN(genderInt) || isNaN(stateInt) || isNaN(countryInt)) {
           setError("Some fields must be valid integers.");
+          setErrorModalVisible(true);
           return;
       }
   
@@ -91,12 +100,12 @@ const AdminAddStudentContent = () => {
               console.log('Student successfully registered:', addStudentData);
               navigate('/adminStudent');
           } else {
-              console.error('Validation Error:', addStudentData.errors);
-              throw new Error(`Student Registration failed: ${addStudentData.message}`);
+            setError(addStudentData.message || "Failed to add new student.");
+            setErrorModalVisible(true);
           }
       } catch (error) {
-          setError('An error occurred during student registration. Please try again later.');
-          console.error('Error during student registration:', error);
+        setError(error.message || "An error occurred while adding the student. Please try again later.");
+        setErrorModalVisible(true);
       }
   };
   
@@ -479,8 +488,14 @@ const fetchCities = (stateId) => {
 
     return (
         
-                <Container fluid className="admin-add-student-container">
-                    <AdminFormComponent
+        <Container fluid className="admin-add-student-container">
+           <ErrorModal
+                errorModalVisible={errorModalVisible}
+                setErrorModalVisible={setErrorModalVisible}
+                generalError={generalError || error} // Ensure `generalError` or fallback to `error`
+                fieldErrors={fieldErrors}
+            />
+          <AdminFormComponent
            formTitle="Student Information"
            formFields={formFields}
            formPassword={formPassword}

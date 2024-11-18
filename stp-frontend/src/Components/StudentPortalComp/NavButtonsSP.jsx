@@ -113,6 +113,19 @@ const NavigationBar = () => {
             >
               Schools
             </Button>
+            <Button
+              variant="link"
+              as={Link}
+              to="/studentFeedback"
+              className={`nav-link-custom ${location.pathname === "/studentFeedback" ||
+                location.pathname.startsWith("/studentFeedback")
+                ? "active"
+                : ""
+              }`}
+              style={{ marginLeft: "10px" }}
+            >
+             Contact Us
+            </Button>
           </Nav>
 
           {hasToken ? (
@@ -161,7 +174,7 @@ const NavigationBar = () => {
                     <Dropdown.Item as={Link} to="/studentPortalSignUp">
                       Register as Student
                     </Dropdown.Item>
-                    <Dropdown.Item as={Link} to="/register-school">
+                    <Dropdown.Item as={Link} to="/schoolPortalSignUp">
                       Register as School
                     </Dropdown.Item>
                   </Dropdown.Menu>

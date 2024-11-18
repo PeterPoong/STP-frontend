@@ -1,3 +1,13 @@
+
+.coursepage-reset-display
+{
+  display: none;
+}
+.coursepage-reset-display-search
+{
+  display: none;
+}
+
 .coursepage-searchcourse-courselist-first
 {
   display: flex;
@@ -123,7 +133,7 @@
 
 .degree-card .card-title {
   background-color: #F2F2F2;
-  padding-left: 30px;
+  padding:0.725rem 2rem;
   height: fit-content;
   margin-left: -15px;
 }
@@ -496,7 +506,7 @@
     background-color: #F2F2F2;
     /* padding-left: 30px; */
     height: 100%;
-    width: 100%;
+    /*width: 100%;*/
     text-align: left;
     /* margin-left: -15px; */
   }
@@ -535,9 +545,9 @@
   .degree-card .card-title {
     background-color: #F2F2F2;
     height: 100%;
-    width: 100%;
+   /* width: 100%;*/
     max-width: 767px;
-    text-align: left;    
+    text-align: center;    
     /* padding-left: 30px; */
     /* margin-left: -15px; */
   }
@@ -548,7 +558,7 @@
     
   }
 
-  .degree-card .card-image img {
+  .degree-card img {
     max-width: 80px;
   }
 
@@ -613,13 +623,10 @@
 
 .coursepage-img-size
 {
-  min-width:-webkit-fill-available;
+  min-width:10rem;
 }
 
-.coursepage-coursename
-{
-  margin-top:1rem;
-}
+
 
 .details-div{
   border-top:1px solid #c9c9c9;
@@ -629,7 +636,7 @@
 .coursepage-info-one
 {
   padding:0;
-  margin:1rem 0;
+  margin:1rem 0 1rem 3rem;
 }
 
 .fee-info
@@ -684,4 +691,43 @@ margin-left:0;
   text-align: center;
 }
 
+.card-title{
+  margin-top:1rem;
+  width:fit-content;
+  margin-left:0;
+  justify-self:center;
+}
+
+.degree-card .card-title {
+ padding:0;
+ margin-left:0;
+}
+.card-image
+{
+  margin-right:0 !important;
+}
+
+}
+
+@media(max-width: 766px)
+{
+  
+.saerchcourse-display-none
+{display: none;}
+
+.coursepage-reset-display
+{
+  display: grid;
+}
+
+.coursepage-reset-display-search
+{
+  display: flex;
+  flex-direction: column;
+}
+
+
+.degree-card .card-title {
+  background-color: transparent;
+}
 }

@@ -2,11 +2,13 @@ import React, { useState, useEffect } from "react";
 import { Container } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDropzone } from "react-dropzone";
+import SkeletonLoader from './SkeletonLoader';
 import AdminFormComponent from './AdminFormComponent';
 import 'typeface-ubuntu';
 import "../../css/AdminStyles/AdminFormStyle.css";
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
+import ErrorModal from "./Error";
 
 const AdminEditSchoolContent = () => {
     const [schoolFeaturedList, setSchoolFeaturedList] = useState([]);
@@ -28,12 +30,16 @@ const AdminEditSchoolContent = () => {
         school_shortDesc: "",
         school_fullDesc: "",
         school_address:"",
-        location:"",
+        school_location:"",
+        school_google_map_location:"",
         country:"",
         logo:null
     });
     const [selectedFeatures, setSelectedFeatures] = useState([]);
     const [error, setError] = useState(null);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
+    const [generalError, setGeneralError] = useState('');
+    const [fieldErrors, setFieldErrors] = useState({});
     const navigate = useNavigate();
     const { id } = useParams(); // Get the school ID from URL
     const token = sessionStorage.getItem('token');
@@ -50,16 +56,17 @@ const AdminEditSchoolContent = () => {
     const [countryList, setCountryList]= useState ([]);
     const [stateList, setStateList]= useState ([]);
     const [cityList, setCityList]= useState ([]);
+    const [loading, setLoading] = useState(true);
     const schoolId = sessionStorage.getItem('schoolId');
     useEffect(() => {
         const fetchSchoolDetails = async () => {
             const schoolId = sessionStorage.getItem('schoolId');
-        
             if (!schoolId) {
-                setError('No school ID found in session storage.');
+                setGeneralError('No school ID found in session storage.');
+                setErrorModalVisible(true);
+                setLoading(false);
                 return;
             }
-        
             try {
                 const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/schoolDetail`, {
                     method: 'POST',
@@ -69,38 +76,35 @@ const AdminEditSchoolContent = () => {
                     },
                     body: JSON.stringify({ id: schoolId })
                 });
-        
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    throw new Error(`Failed to fetch school details. HTTP status: ${response.status}`);
                 }
                 const data = await response.json();
-        
                 if (data.success) {
                     const schoolDetails = data.data;
-        
+                    // Reset field errors for fresh fetch
+                    const newFieldErrors = {};
                     // Separate media into cover photo and album
                     let coverFile = null;
                     const albumFiles = [];
-        
-                    schoolDetails.media.forEach(media => {
-                        if (media.schoolMedia_type === 66) {
-                            coverFile = {
-                                name: media.schoolMedia_name,
-                                location: `${import.meta.env.VITE_BASE_URL}storage/${media.schoolMedia_location}`
-                            };
-                        } else if (media.schoolMedia_type === 67) {
-                            albumFiles.push({
-                                id: media.id, // store the photo ID
-                                name: media.schoolMedia_name,
-                                location: `${import.meta.env.VITE_BASE_URL}storage/${media.schoolMedia_location}`
-                            });
-                        }
-                    });
-
-                // // Log the separated cover file and album files
-                // console.log('Cover file:', coverFile);
-                // console.log('Album files:', albumFiles);
-        
+                    if (!schoolDetails.media) {
+                        newFieldErrors.media = 'Cover or Album photo could not be fetched.';
+                    } else {
+                        schoolDetails.media.forEach(media => {
+                            if (media.schoolMedia_type === 66) {
+                                coverFile = {
+                                    name: media.schoolMedia_name,
+                                    location: `${import.meta.env.VITE_BASE_URL}storage/${media.schoolMedia_location}`
+                                };
+                            } else if (media.schoolMedia_type === 67) {
+                                albumFiles.push({
+                                    id: media.id,
+                                    name: media.schoolMedia_name,
+                                    location: `${import.meta.env.VITE_BASE_URL}storage/${media.schoolMedia_location}`
+                                });
+                            }
+                        });
+                    }
                     setFormData({
                         name: schoolDetails.name || '',
                         email: schoolDetails.email || '',
@@ -113,9 +117,10 @@ const AdminEditSchoolContent = () => {
                         school_address: schoolDetails.school_address || '',
                         category: schoolDetails.category || '',
                         account: schoolDetails.account || '',
-                        password: '', 
+                        password: '',
                         confirm_password: '',
-                        location: schoolDetails.location || '',
+                        school_location: schoolDetails.location || '',
+                        school_google_map_location: schoolDetails.school_google_map_location || '',
                         school_shortDesc: schoolDetails.shortDescription || '',
                         school_fullDesc: schoolDetails.fullDescription || '',
                         country: schoolDetails.country_id || '',
@@ -123,31 +128,41 @@ const AdminEditSchoolContent = () => {
                         city: schoolDetails.city_id || '',
                         logo: schoolDetails.logo ? `${import.meta.env.VITE_BASE_URL}storage/${schoolDetails.logo}` : null
                     });
-        
                     setLogo(schoolDetails.logo ? `${import.meta.env.VITE_BASE_URL}storage/${schoolDetails.logo}` : null);
-                    setSelectedFeatures(schoolDetails.schoolFeatured.map(feature => feature.featured_type));
-        
-                    // setCoverFile(schoolDetails.coverFile || null);
-                    // setAlbumFiles(schoolDetails.albumFiles || []);
-                    setCoverFile(coverFile);
-                    setAlbumFiles(albumFiles);
-                    // Fetch states and cities after setting the country and state
+                    setSelectedFeatures(
+                        Array.isArray(schoolDetails.schoolFeatured) 
+                            ? schoolDetails.schoolFeatured.map(feature => feature.featured_type)
+                            : Object.values(schoolDetails.schoolFeatured).map(feature => feature.featured_type)
+                    );
                     if (schoolDetails.country_id) {
-                        await fetchStates(schoolDetails.country_id); // Fetch states based on country
+                        try {
+                            await fetchStates(schoolDetails.country_id);
+                        } catch {
+                            newFieldErrors.state = 'Error fetching states based on country.';
+                        }
                     }
-                    
                     if (schoolDetails.state_id) {
-                        await fetchCities(schoolDetails.state_id); // Fetch cities based on state
+                        try {
+                            await fetchCities(schoolDetails.state_id);
+                        } catch {
+                            newFieldErrors.city = 'Error fetching cities based on state.';
+                        }
+                    }
+                    setFieldErrors(newFieldErrors);
+                    if (Object.keys(newFieldErrors).length > 0) {
+                        setErrorModalVisible(true);
                     }
                 } else {
-                    setError(data.message);
+                    setGeneralError(data.message || 'Failed to load school details data.');
+                    setErrorModalVisible(true);
                 }
             } catch (error) {
-                setError('An error occurred while fetching school details.');
-                console.error('Error fetching school details:', error);
+                setGeneralError(error.message || 'An error occurred while fetching school details.');
+                setErrorModalVisible(true);
+            } finally {
+                setLoading(false);
             }
         };
-        
         const fetchFeatured = async () => {
             try {
                 const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/universityFeaturedList`, {
@@ -157,11 +172,9 @@ const AdminEditSchoolContent = () => {
                         'Authorization': Authenticate,
                     },
                 });
-
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-
                 const data = await response.json();
 
                 if (data && data.data) {
@@ -185,11 +198,9 @@ const AdminEditSchoolContent = () => {
                     },
                     body: JSON.stringify({})
                 });
-
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-
                 const data = await response.json();
                 if (data && data.data) {
                     setCategoryList(data.data);
@@ -207,18 +218,30 @@ const AdminEditSchoolContent = () => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        // console.log("Submitting form data:", formData); // Debugging line
     
-        const schoolId = sessionStorage.getItem('schoolId'); // Retrieve schoolId from sessionStorage
+        const schoolId = sessionStorage.getItem('schoolId');
         if (!schoolId) {
-            console.error('School ID is not found in sessionStorage.');
+            setGeneralError('School ID is not found in sessionStorage.');
+            setErrorModalVisible(true);
             return;
         }
     
-        const { name, email, category,  location, state, city, account, country, school_address, school_website, contact_number, person_in_charge_email, person_in_charge_name, person_in_charge_contact, country_code, confirm_password, school_shortDesc, school_fullDesc, password } = formData;
-        
+        const {
+            name, email, category, school_google_map_location, school_location, state, city, account, country,
+            school_address, school_website, contact_number, person_in_charge_email, person_in_charge_name,
+            person_in_charge_contact, country_code, confirm_password, school_shortDesc, school_fullDesc, password
+        } = formData;
+    
+        if (!name || !email || !logo || !category || !state || !city || !account || !country || !school_address ||
+            !school_website || !contact_number || !person_in_charge_email || !person_in_charge_name ||
+            !person_in_charge_contact || !country_code || !school_shortDesc || !school_fullDesc) {
+            setError("Please fill in all required fields.");
+            setErrorModalVisible(true);
+            return; // Stop form submission if any required field is missing
+        }
+    
         const formPayload = new FormData();
-        formPayload.append("id", schoolId); // Include the school ID
+        formPayload.append("id", schoolId);
         formPayload.append("school_address", school_address);
         formPayload.append("name", name);
         formPayload.append("email", email);
@@ -228,7 +251,8 @@ const AdminEditSchoolContent = () => {
         formPayload.append("person_in_charge_name", person_in_charge_name);
         formPayload.append("person_in_charge_email", person_in_charge_email);
         formPayload.append("school_website", school_website);
-        formPayload.append("location", location);
+        formPayload.append("school_location", school_location);
+        formPayload.append("school_google_map_location", school_google_map_location);
         formPayload.append("category", category);
         formPayload.append("account", account);
         formPayload.append("country", country);
@@ -238,52 +262,70 @@ const AdminEditSchoolContent = () => {
         formPayload.append("confirm_password", confirm_password);
         formPayload.append("school_shortDesc", school_shortDesc);
         formPayload.append("school_fullDesc", school_fullDesc);
-        
-        // Append each feature id individually to formPayload as featured[]
-        selectedFeatures.forEach(feature => {
+    
+        let fieldErrors = {};
+    
+        selectedFeatures.forEach((feature) => {
             formPayload.append("featured[]", feature);
         });
-          // Append the icon if it exists
-       // Only append the new logo if one is selected
-       if (formData.logo instanceof File) {
-        formPayload.append("logo", formData.logo); // New logo file
-    }
-    if (coverFile && coverFile.type && coverFile.type.startsWith('image/')) {
-        formPayload.append('cover', coverFile);
-    }
     
-    if (albumFiles && albumFiles.length > 0) {
-        albumFiles.forEach((file, index) => {
-            if (file && file.type && file.type.startsWith('image/')) {  // Check if file exists and is an image
-                formPayload.append(`album[${index}]`, file);
+        if (formData.logo instanceof File) {
+            try {
+                formPayload.append("logo", formData.logo);
+            } catch {
+                fieldErrors.logo = ["Something went wrong with the logo file."];
             }
-        });
-    }
+        }
     
-
+        if (coverFile && coverFile.type && coverFile.type.startsWith('image/')) {
+            try {
+                formPayload.append('cover', coverFile);
+            } catch {
+                fieldErrors.cover = ["Something went wrong with the cover photo."];
+            }
+        }
+    
+        if (albumFiles && albumFiles.length > 0) {
+            albumFiles.forEach((file, index) => {
+                if (file && file.type && file.type.startsWith('image/')) {
+                    try {
+                        formPayload.append(`album[${index}]`, file);
+                    } catch {
+                        fieldErrors.album = fieldErrors.album || [];
+                        fieldErrors.album.push(`Error with file ${index + 1}`);
+                    }
+                }
+            });
+        }
+    
+        // Check for field errors
+        if (Object.keys(fieldErrors).length > 0) {
+            setFieldErrors(fieldErrors);
+            setErrorModalVisible(true);
+            return; // Stop further processing
+        }
+    
         try {
-            console.log("FormData before submission:", formPayload);
-            
             const editSchoolResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/editSchool`, {
                 method: 'POST',
                 headers: {
                     'Authorization': Authenticate,
                 },
-                body: formPayload, // Using FormData directly as the body
+                body: formPayload,
             });
-        
+    
             const editSchoolData = await editSchoolResponse.json();
-        
+    
             if (editSchoolResponse.ok) {
                 console.log('School successfully updated:', editSchoolData);
                 navigate('/adminSchool');
             } else {
-                console.error('Validation Error:', editSchoolData.errors); // Debugging line
-                throw new Error(`School Update failed: ${editSchoolData.message}`);
+                setError(editSchoolData.message || "Failed to edit the school.");
+                setErrorModalVisible(true);
             }
         } catch (error) {
-            setError('An error occurred during school update. Please try again later.');
-            console.error('Error during school update:', error);
+            setError(error.message || "An error occurred while editing the school. Please try again later.");
+            setErrorModalVisible(true);
         }
     };
     
@@ -640,11 +682,20 @@ const handleShowCoverPreview = () => {
 
     const formAddress = [
         {
-            id: "location",
-            label: "School Location (Google Map URL)",
+            id: "school_location",
+            label: "School Location (iFrame)",
             type: "text",
             placeholder: "Enter School Location",
-            value: formData.location,
+            value: formData.school_location,
+            onChange: handleFieldChange,
+            required: true
+        },
+        {
+            id:"school_google_map_location",
+            label:"School Location (Google Map URL)",
+            type: "text",
+            placeholder: "Enter School Location",
+            value: formData.school_google_map_location,
             onChange: handleFieldChange,
             required: true
         },
@@ -799,8 +850,15 @@ const handleShowCoverPreview = () => {
     ];
     return (
         <Container fluid className="admin-add-school-container">
-            {error && <div className="alert alert-danger">{error}</div>}
-     
+             <ErrorModal
+                errorModalVisible={errorModalVisible}
+                setErrorModalVisible={setErrorModalVisible}
+                generalError={generalError}
+                fieldErrors={fieldErrors}
+            />
+            {loading ? (
+                    <SkeletonLoader />
+                ) : (
                 <AdminFormComponent
                    formTitle="School Information"
                    checkboxTitle="School Advertising Feature"
@@ -846,7 +904,7 @@ const handleShowCoverPreview = () => {
                    setCoverFile={setCoverFile}
                    setAlbumFiles={setAlbumFiles}
                 />
-  
+            )}
         </Container>
     );
 };

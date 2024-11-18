@@ -1,0 +1,227 @@
+:root {
+    /* Base variables */
+    --SF-content-height-fixed: 50rem;
+    --SF-content-width-fixed: 50rem;
+    --SF-default-color: #B71a18;
+    
+    /* Responsive variables */
+    --SF-padding-scale: 1;
+    --SF-container-width: 100%;
+    --SF-form-width: 50%;
+    --SF-image-width: 50%;
+    
+    /* Minimum sizes */
+    --SF-min-font-size: 0.875rem;
+    --SF-min-padding: 1rem;
+}
+
+/*Overall Container*/
+.SF-container {
+    margin-top: max(3rem, calc(5.8rem * var(--SF-padding-scale)));
+    background-color: rgb(255, 255, 255);
+    height: auto;
+    width: var(--SF-container-width);
+    display: flex;
+}
+
+/*Image Container*/
+.SF-image-container {
+    height: auto;
+    width: var(--SF-image-width);
+}
+
+.SF-image {
+    width: 100%;
+    height:100%;
+    object-fit: cover;
+}
+
+
+/*Form Container*/
+.SF-Form-Container {
+    width: var(--SF-form-width);
+    height: auto;
+    min-height: var(--SF-content-height-fixed);
+    padding: max(var(--SF-min-padding), calc(1rem * var(--SF-padding-scale)))
+             max(var(--SF-min-padding), calc(10rem * var(--SF-padding-scale)))
+             max(var(--SF-min-padding), calc(0rem * var(--SF-padding-scale)))
+             max(var(--SF-min-padding), calc(10rem * var(--SF-padding-scale)));
+}
+
+
+.SF-Form-Group {
+    margin-bottom: max(1rem, calc(1rem * var(--SF-padding-scale)));
+}
+
+.SF-Form-Group p {
+    text-align: start;
+    padding: 0;
+    margin-bottom: 0.5rem;
+    font-size: max(var(--SF-min-font-size), calc(0.875rem * var(--SF-padding-scale)));
+    color: #828282;
+    font-weight: 500;
+}
+
+.SF-Form-Placeholder {
+    border: 2px solid #dee2e6;
+    font-size: max(1rem, calc(1rem * var(--SF-padding-scale)));
+    padding: 0.75rem;
+    width: 100%;
+}
+
+.SF-Form-Container .form-control.SF-Form-Placeholder,
+.SF-Form-Container .form-select.SF-Form-Placeholder {
+    border: 2px solid #dee2e6;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    min-height: 42px;
+}
+
+.SF-Form-Container .form-control.SF-Form-Placeholder:focus,
+.SF-Form-Container .form-select.SF-Form-Placeholder:focus {
+    border: 2px solid var(--SF-default-color);
+    outline: none;
+    box-shadow: none;
+}
+
+.SF-Form-Container .form-control.SF-Form-Placeholder:active,
+.SF-Form-Container .form-select.SF-Form-Placeholder:active {
+    border-color: var(--SF-default-color);
+}
+
+/* Textarea specific styles */
+.SF-Form-Container textarea.SF-Form-Placeholder {
+    min-height: 120px;
+}
+
+.SF-Form-Placeholder::placeholder {
+    color: #E0E0E0;
+}
+
+.SF-Form-Button {
+    width: 100%;
+    margin-left: 0;
+    padding: 0.75rem 1rem;
+    font-size: max(1rem, calc(1rem * var(--SF-padding-scale)));
+    min-height: 48px;
+}
+
+/*Form Logo*/
+.SF-Form-Logo {
+    width: 100%;
+    height: auto;
+    margin-bottom: 1.5rem;
+}
+
+.SF-Form-Logo img {
+    max-width: 150px;
+    height: auto;
+}
+
+/* Custom title styles */
+.custom-color-title {
+    font-size: max(1.5rem, calc(1.5rem * var(--SF-padding-scale)));
+    margin-bottom: 0.5rem;
+}
+
+.custom-color-title.small {
+    font-size: max(0.875rem, calc(1rem * var(--SF-padding-scale)));
+    margin-bottom: 1.5rem;
+}
+
+/* Mobile-specific adjustments */
+@media screen and (max-width: 576px) {
+    .SF-Form-Container {
+        min-height: auto;
+    }
+    
+    .SF-Form-Group {
+        margin-bottom: 1.25rem;
+    }
+    
+    .SF-Form-Placeholder {
+        font-size: 1rem;
+    }
+    
+    .custom-color-title {
+        font-size: 1.5rem;
+    }
+    
+    .custom-color-title.small {
+        font-size: 0.875rem;
+    }
+    .SF-Form-Button {
+       margin-bottom: 2rem;
+    }
+}
+
+@media screen and (max-width: 992px) {
+    .SF-image {
+        height: 300px; /* Fixed height for mobile */
+    }
+
+    .SF-container {
+        flex-direction: column-reverse;
+    }
+
+    .SF-Form-Container
+    {
+        padding:0 1rem;
+
+    }
+    .SF-Form-Button {
+        margin-bottom: 2rem;
+     }
+    
+}
+
+@media screen and (max-width: 576px) {
+    
+    .SF-container {
+        flex-direction: column-reverse;
+    }
+    .SF-Form-Container
+    {
+        padding:0 1rem;
+
+    }
+}
+
+
+/* Media query variables */
+@media screen and (max-width: 1400px) {
+    :root {
+        --SF-content-height-fixed: 45rem;
+        --SF-content-width-fixed: 45rem;
+        --SF-padding-scale: 0.9;
+    }
+}
+
+@media screen and (max-width: 1200px) {
+    :root {
+        --SF-content-height-fixed: 40rem;
+        --SF-content-width-fixed: 40rem;
+        --SF-padding-scale: 0.8;
+    }
+}
+
+@media screen and (max-width: 992px) {
+    :root {
+        --SF-content-height-fixed: auto;
+        --SF-content-width-fixed: 100%;
+        --SF-form-width: 100%;
+        --SF-image-width: 100%;
+        --SF-padding-scale: 0.7;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    :root {
+        --SF-padding-scale: 0.6;
+    }
+}
+
+@media screen and (max-width: 576px) {
+    :root {
+        --SF-padding-scale: 1; /* Reset scale for better mobile layout */
+    }
+}

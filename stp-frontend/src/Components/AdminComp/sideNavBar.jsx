@@ -1,46 +1,49 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Nav } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faTachometerAlt, faAd, faSchool, faUserGraduate, faBullhorn, 
   faBook, faThList, faClipboardList, faUserShield, faFileAlt, 
-  faDatabase, faBars
+  faDatabase, faBars, faClipboardQuestion
 } from '@fortawesome/free-solid-svg-icons';
 import { NavLink } from 'react-router-dom';
 import '../../css/AdminStyles/AdminSideNav.css';
 import logo from '../../assets/AdminAssets/Images/logo.png';
-import logoIcon from '../../assets/AdminAssets/Images/logo-icon.png';
 
 const SideNavBar = () => {
-
-  // Sidebar Collapse Function
   const [collapsed, setCollapsed] = useState(false);
-  
+
+  // Toggle collapse for mobile
   const toggleCollapse = () => {
     setCollapsed(!collapsed);
   };
 
+  // Close sidebar on resize if screen is larger than mobile
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768 && collapsed) {
+        setCollapsed(false);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [collapsed]);
+
   return (
     <div className={`SidebarContainer ${collapsed ? 'collapsed' : ''}`}>
       <div className='LogoContainer'>
-        <img src={logo} alt='Logo' />
-        <div className="collapse-btn-container">
+        <img src={logo} alt='Logo' className="logo-img" />
+        <div className="collapse-btn-container d-md-none">
           <button className="collapse-btn" onClick={toggleCollapse}>
-            <FontAwesomeIcon icon={faBars} fixedWidth /> 
+            <FontAwesomeIcon icon={faBars} fixedWidth />
           </button>
         </div>
       </div>
-      
-      <Nav className='flex-column'>
-        {/* <NavLink 
-          to='/adminDashboard' 
-          className='nav-link' 
-          activeClassName="active"
-        >
-          <FontAwesomeIcon icon={faTachometerAlt} fixedWidth />
-          <span className="link-text">Dashboard</span>
-        </NavLink> */}
 
+      <Nav className={`flex-column ${collapsed ? 'd-none' : 'd-block d-md-block'}`}>
         <NavLink 
           to='/adminSchool' 
           className='nav-link' 
@@ -129,6 +132,15 @@ const SideNavBar = () => {
         >
           <FontAwesomeIcon icon={faDatabase} fixedWidth />
           <span className="link-text">Data</span>
+        </NavLink>
+
+        <NavLink 
+          to='/adminEnquiry' 
+          className='nav-link' 
+          activeClassName="active"
+        >
+          <FontAwesomeIcon icon={faClipboardQuestion} fixedWidth />
+          <span className="link-text">Enquiry</span>
         </NavLink>
       </Nav>
     </div>

@@ -82,6 +82,10 @@ const FeaturedCoursesContainer = () => {
     }
   };
 
+  const getSlidesPerView = () => {
+    return courses.length > 0 ? courses.length - 1 : 1;
+  };
+
   return (
     <div>
       {error && <div>Error: {error}</div>}
@@ -95,39 +99,58 @@ const FeaturedCoursesContainer = () => {
         </div></div>}
       {!loading && !error && courses.length > 0 && (
         <Container className="course-container">
+
           <Swiper
             modules={[Navigation, Pagination]}
             spaceBetween={5}
             slidesPerView={5}
             loop={true}
-            navigation
-            // style={{ padding: "0 100px" }}
+            navigation  // Helps with loop smoothness
             breakpoints={{
               // Mobile phones (portrait)
               320: {
-                slidesPerView: 20,
-                spaceBetween: 20,
-                //centeredSlides: true
+                slidesPerView: getSlidesPerView(),
+                spaceBetween: 1,
               },
               // Large phones & small tablets
               576: {
-                slidesPerView: 2,
-                spaceBetween: 15
+                slidesPerView: getSlidesPerView(),
+                spaceBetween: 1,
               },
               // Tablets & small laptops
               768: {
-                slidesPerView: 3,
-                spaceBetween: 15
+                slidesPerView: getSlidesPerView(),
+                spaceBetween: 10,
               },
               // Laptops & desktops
               992: {
-                slidesPerView: 4,
-                spaceBetween: 20
+                slidesPerView: getSlidesPerView(),
+                spaceBetween: 5,
               },
+              // Mobile phones (portrait)
+              /*320: {
+                slidesPerView: 10,
+                spaceBetween: 1,
+              },
+              // Large phones & small tablets
+              576: {
+                slidesPerView: 10,
+                spaceBetween: 1,
+              },
+              // Tablets & small laptops
+              768: {
+                slidesPerView: 10,
+                spaceBetween: 10,
+              },
+              // Laptops & desktops
+              992: {
+                slidesPerView: 10,
+                spaceBetween: 5,
+              },*/
               // Large desktops
               1200: {
                 slidesPerView: 5,
-                spaceBetween: 20
+                spaceBetween: 5,
               }
             }}
           >
@@ -150,17 +173,22 @@ const FeaturedCoursesContainer = () => {
                         {course.course_qualification}
                       </span>
                     )}
-
-                    <img
-                      src={`${baseURL}storage/${course.course_logo}`}
-                      alt={course.course_school}
-                      className="section-image"
-                      style={{
-                        height: "80px",
-                        width: "150px",
-                        objectFit: "contain",
+                    <Link
+                      to={{
+                        pathname: `/knowMoreInstitute/${course.school_id}`
                       }}
-                    />
+                    >
+                      <img
+                        src={`${baseURL}storage/${course.course_logo}`}
+                        alt={course.course_school}
+                        className="section-image"
+                        style={{
+                          height: "80px",
+                          width: "150px",
+                          objectFit: "contain",
+                        }}
+                      />
+                    </Link>
                   </div>
                   <div>
                     <p
@@ -174,7 +202,7 @@ const FeaturedCoursesContainer = () => {
                       }}
                     >
                       <Link
-                         style={{
+                        style={{
                           color: "#514E4E"
                         }}
                         to={{

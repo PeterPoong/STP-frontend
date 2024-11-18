@@ -4,12 +4,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import { MDBSwitch } from 'mdb-react-ui-kit';
+import CircleDotLoader from './CircleDotLoader';
 import '../../css/AdminStyles/AdminTableStyles.css';
 import TableWithControls from './TableWithControls';
 
 const AdminApplicantContent = () => {
     const [Applicants, setApplicants] = useState([]);
-    const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [sortColumn, setSortColumn] = useState(null);
     const [sortDirection, setSortDirection] = useState(null);
@@ -20,6 +20,7 @@ const AdminApplicantContent = () => {
     const [totalPages, setTotalPages] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`;
@@ -198,7 +199,8 @@ const AdminApplicantContent = () => {
         </tr>
     );
 
-    const tbodyContent = sortedApplicants.map((Applicant) => (
+    const tbodyContent = sortedApplicants.length > 0 ? (
+    sortedApplicants.map((Applicant) => (
         <tr key={Applicant.id}>
             <td>{Applicant.student_name}</td>
             <td>{Applicant.course_name}</td>
@@ -246,10 +248,17 @@ const AdminApplicantContent = () => {
                 </div>
             </td>
         </tr>
-    ));
-
+    ))
+) : (
+    <tr>
+    <td colSpan="6" style={{ textAlign: "center" }}>No Data Available</td>
+</tr>
+);
     return (
         <>
+        {loading ? (
+            <CircleDotLoader />
+            ) : (
             <TableWithControls
                  theadContent={theadContent}
                  tbodyContent={tbodyContent}
@@ -260,7 +269,7 @@ const AdminApplicantContent = () => {
                  onPageChange={handlePageChange}
                  onRowsPerPageChange={handleRowsPerPageChange}
             />
-
+        )}
             <Modal show={showModal} onHide={() => setShowModal(false)} centered>
                 <Modal.Header closeButton>
                     <Modal.Title>Confirm Action</Modal.Title>

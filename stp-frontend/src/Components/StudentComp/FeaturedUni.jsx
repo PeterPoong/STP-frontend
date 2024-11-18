@@ -42,7 +42,7 @@ const FeaturedUni = () => {
 
   return (
     <div className="featured-uni-carousel">
-      <Carousel style={{ width: "100%", height: "400px" }}>
+      <Carousel style={{ width: "100%", height: "29rem" }}>
         <Carousel.Item>
           <div className="carousel-image-wrapper">
             <img

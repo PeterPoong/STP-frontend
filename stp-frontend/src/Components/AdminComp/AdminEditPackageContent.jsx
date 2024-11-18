@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import { Container, Button } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import AdminFormComponent from './AdminFormComponent';
+import SkeletonLoader from './SkeletonLoader';
 import "../../css/AdminStyles/AdminFormStyle.css";
+
 
 const AdminEditPackageContent = () => {
     const { id } = useParams(); // Get package ID from URL
@@ -17,6 +19,7 @@ const AdminEditPackageContent = () => {
     const navigate = useNavigate();
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`;
+    const [loading, setLoading] = useState(true);
     const packageId = sessionStorage.getItem('packageId'); 
 
     // Fetch package details
@@ -56,6 +59,8 @@ const AdminEditPackageContent = () => {
             } catch (error) {
                 console.error('Error fetching package details:', error.message);
                 setError(error.message);
+            } finally {
+                setLoading(false);
             }
         };
         
@@ -211,6 +216,9 @@ const AdminEditPackageContent = () => {
 
     return (
         <Container fluid className="admin-add-package-container">
+            {loading ? (
+                    <SkeletonLoader />
+                ) : (
             <AdminFormComponent
                 formTitle="Package Information"
                 formFields={formFields}
@@ -221,6 +229,7 @@ const AdminEditPackageContent = () => {
                 error={error}
                 buttons={buttons}
             />
+        )}
         </Container>
     );
 };

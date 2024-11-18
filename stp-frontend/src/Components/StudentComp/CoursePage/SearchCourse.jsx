@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
-
+import "../../../css/StudentCss/course page css/SearchCourse.css";
 import {
   ButtonGroup,
   Container,
@@ -62,6 +62,14 @@ const SearchCourse = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('en-MY', {
+      style: 'decimal',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(amount);
+  };
 
   // Step 1: Fetch Countries
   const fetchCountries = async () => {
@@ -187,7 +195,7 @@ const SearchCourse = () => {
 
       // Parse the response
       const result = JSON.parse(rawResponse);
-
+      //console.log(result);
       /* console.log('Pagination info:', {
         currentPage: result.current_page,
         lastPage: result.last_page,
@@ -415,18 +423,31 @@ const SearchCourse = () => {
                       classname="coursepage-img"
                       style={{ paddingLeft: "20px" }}
                     >
-                      <img
-                        src={`${baseURL}storage/${program.logo}`}
-                        alt={program.school_name}
-                        width="100"
-                        className="coursepage-img-size"
-                      />
+                      <Link
+                        to={`/knowMoreInstitute/${program.school_id}`}
+                        style={{ color: "black" }}
+                      >
+                        <img
+                          src={`${baseURL}storage/${program.logo}`}
+                          alt={program.school_name}
+                          width="100"
+                          className="coursepage-img-size"
+                        />
+                      </Link>
                     </div>
                     <div
-                      classname="coursepage-coursename"
-                      style={{ paddingLeft: "30px" }}
+                      className="searchcourse-coursename-schoolname"
                     >
-                      <h5 className="card-text">{program.school_name}</h5>
+                      <Link
+                        to={`/knowMoreInstitute/${program.school_id}`}
+                        style={{ color: "black" }}
+                      >
+                        <h5 className="card-text">
+                          {program.school_name}
+
+                        </h5>
+                      </Link>
+
                       <i
                         className="bi bi-geo-alt"
                         style={{ marginRight: "10px", color: "#AAAAAA" }}
@@ -444,7 +465,7 @@ const SearchCourse = () => {
                     <div className=" flex-wrap coursepage-info-one">
                       <Col>
                         <div>
-                          <Row
+                          {/*<Row
                             style={{ paddingTop: "10px" }}
                             className=" coursepage-seaerchcourse-courselist-list"
                           >
@@ -485,12 +506,59 @@ const SearchCourse = () => {
                               ></i>
                               <span style={{ paddingLeft: "20px" }}>
                                 {Array.isArray(program.intake) &&
-                                program.intake.length > 0
+                                  program.intake.length > 0
                                   ? program.intake.join(", ")
                                   : "N/A"}
                               </span>
                             </div>
-                          </Row>
+
+                          </Row>*/}
+                          <div >
+                            <Row>
+                              <div className="searchcourse-dflex-center" >
+                                <i
+                                  className="bi bi-mortarboard"
+                                  style={{ marginRight: "10px" }}
+                                ></i>
+                                <p style={{ paddingLeft: "20px" }}>
+                                  {program.qualification}
+                                </p>
+                              </div>
+                              <div style={{ marginTop: "10px" }} className="searchcourse-dflex-center">
+                                <i
+                                  className="bi bi-calendar-check"
+                                  style={{ marginRight: "10px" }}
+                                ></i>
+                                <p style={{ paddingLeft: "20px" }}>
+                                  {program.mode}
+                                </p>
+                              </div>
+                              <div style={{ marginTop: "10px" }} className="searchcourse-dflex-center">
+                                <i
+                                  className="bi bi-clock"
+                                  style={{ marginRight: "10px" }}
+                                ></i>
+                                <p style={{ paddingLeft: "20px" }}>
+                                  {program.period}
+                                </p>
+                              </div>
+                              <div
+                                style={{ marginTop: "10px" }}
+                                className="searchcourse-dflex-center"
+                              >
+                                <i
+                                  className="bi bi-calendar2-week"
+                                  style={{ marginRight: "10px" }}
+                                ></i>
+                                <p style={{ paddingLeft: "20px" }}>
+                                  {Array.isArray(program.intake) &&
+                                    program.intake.length > 0
+                                    ? program.intake.join(", ")
+                                    : "N/A"}
+                                </p>
+                              </div>
+                            </Row>
+                          </div>
                         </div>
                       </Col>
                     </div>
@@ -507,17 +575,29 @@ const SearchCourse = () => {
                         estimate fee
                         <br />
                         <p style={{ fontSize: "16px" }}>
-                          <strong>RM </strong> {program.cost}
+                          {program.cost === "0" || program.cost === "RM0" ? (
+                            "N/A"
+                          ) : (
+                            <>
+                              <strong>RM </strong> {program.cost}
+                            </>
+                          )}
                         </p>
                       </p>
                     </div>
                     <div className="apply-button">
-                      <button
-                        className="featured coursepage-applybutton"
-                        onClick={() => handleApplyNow(program)}
-                      >
-                        Apply Now
-                      </button>
+                      {program.institute_category === "Local University" ? (
+                        <button
+                          onClick={() => window.location.href = `mailto:${program.email}`}
+                          className="featured coursepage-applybutton"
+                        >
+                          Contact Now
+                        </button>
+                      ) : (
+                        <button className="featured coursepage-applybutton"  onClick={() => handleApplyNow(program)}>
+                          Apply Now
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -549,7 +629,7 @@ const SearchCourse = () => {
 
       {/* Top Row - Country, University, Qualification Dropdowns */}
       <Row
-        className="align-items-center mb-2 mb-md-0"
+        className="align-items-center mb-2 mb-md-0 saerchcourse-display-none"
         style={{ marginTop: "10px" }}
       >
         {/* Country Dropdown */}
@@ -705,7 +785,7 @@ const SearchCourse = () => {
           fetchCourses();
         }}
       >
-        <InputGroup className="mb-3">
+        <InputGroup className="mb-3  saerchcourse-display-none">
           <Form.Control
             className="custom-placeholder"
             style={{ height: "45px", marginTop: "9px" }}
@@ -715,7 +795,38 @@ const SearchCourse = () => {
           />
         </InputGroup>
       </Form>
-
+      <div className="coursepage-reset-display-search">
+        <Form
+          onSubmit={(e) => {
+            e.preventDefault();
+            fetchCourses();
+          }}
+        >
+          <InputGroup >
+            <Form.Control
+              className="custom-placeholder"
+              style={{ height: "45px", marginTop: "9px" }}
+              placeholder="Search for Courses, Institutions"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </InputGroup>
+        </Form>
+        <button
+          onClick={resetFilters}
+          style={{
+            backgroundColor: "transparent",
+            border: "none",
+            color: "#B71A18",
+            fontWeight: "lighter",
+            textDecoration: "none",
+            cursor: "pointer",
+          }}
+        >
+          <i className="bi bi-funnel" style={{ marginRight: "5px" }} />
+          Reset Filters
+        </button>
+      </div>
       {/* Main Content */}
       <Container className="my-5">
         <Row>
@@ -797,9 +908,13 @@ const SearchCourse = () => {
 
               {/* Tuition Fee Filter */}
               <div className="filter-group">
-                <h5 style={{ marginTop: "25px" }}>Tuition Fee</h5>
+                <h5 style={{ marginTop: "25px" }}>
+                  Tuition Fee
+                </h5>
                 <Form.Group id="customRange1">
-                  <Form.Label className="custom-range-label">{`RM${selectedFilters.tuitionFee}`}</Form.Label>
+                  <Form.Label className="custom-range-label d-flex justify-content-between">
+                    <span>Current: RM{(selectedFilters.tuitionFee)}</span>
+                  </Form.Label>
                   <Form.Control
                     className="custom-range-input"
                     type="range"
@@ -807,10 +922,12 @@ const SearchCourse = () => {
                     max={filterData.maxAmount || 100000}
                     step="500"
                     value={selectedFilters.tuitionFee}
-                    onChange={(e) =>
-                      handleFilterChange("tuitionFee", Number(e.target.value))
-                    }
+                    onChange={(e) => handleFilterChange("tuitionFee", Number(e.target.value))}
                   />
+                  <div className="d-flex justify-content-between mt-2">
+                    <p>RM0</p>
+                    <p>RM{(filterData.maxAmount || 100000)}</p>
+                  </div>
                 </Form.Group>
               </div>
             </div>
@@ -818,11 +935,121 @@ const SearchCourse = () => {
             {/* Mobile Accordion Filters */}
             {/* Mobile Accordion Filters */}
             <Accordion
-              defaultActiveKey="0"
+              //defaultActiveKey="0"
               className="custom-accordion d-md-none"
             >
-              {/* Location Filter */}
               <Accordion.Item eventKey="0">
+                <Accordion.Header className="custom-accordion-header">
+                  {selectedCountry ? (
+                    <>
+                      <CountryFlag
+                        countryCode={selectedCountry.country_code}
+                        svg
+                        style={{
+                          width: "20px",
+                          height: "20px",
+                          marginRight: "10px",
+                        }}
+                      />
+                      {selectedCountry.country_name}
+                    </>
+                  ) : (
+                    "Select Country"
+                  )}
+                </Accordion.Header>
+                <Accordion.Body>
+                  <InputGroup className="mb-2">
+                    <Form.Control
+                      placeholder="Filter countries"
+                      onChange={(e) => setCountryFilter(e.target.value.toLowerCase())}
+                      value={countryFilter}
+                    />
+                  </InputGroup>
+                  <div className="country-list">
+                    {countries
+                      .filter((country) =>
+                        country.country_name.toLowerCase().includes(countryFilter)
+                      )
+                      .map((country, index) => (
+                        <Form.Check
+                          key={index}
+                          type="checkbox"
+                          id={`country-${country.id}`}
+                          label={
+                            <div
+                              className="d-flex align-items-center"
+                              style={{
+                                marginRight: "10px",
+                                paddingTop: "0",
+                                paddingBottom: "0"
+                              }}>
+                              <CountryFlag
+                                countryCode={country.country_code}
+                                svg
+                                style={{
+                                  width: "20px",
+                                  height: "20px",
+                                  marginRight: "10px",
+                                  paddingTop: "0",
+                                  paddingBottom: "0"
+                                }}
+                              />
+                              {country.country_name}
+                            </div>
+                          }
+                          checked={selectedCountry?.id === country.id}
+                          onChange={() => handleCountryChange(country)}
+                          className="mb-2"
+                        />
+                      ))}
+                  </div>
+                </Accordion.Body>
+              </Accordion.Item>
+
+              {/* University Accordion Item */}
+              <Accordion.Item eventKey="1">
+                <Accordion.Header className="custom-accordion-header">
+                  {selectedInstitute ? selectedInstitute.core_metaName : "Select University"}
+                </Accordion.Header>
+                <Accordion.Body>
+                  {filterData.institueList.map((institute, index) => (
+
+                    <Form.Check
+                      key={index}
+                      type="checkbox"
+                      id={`institute-${institute.id}`}
+                      label={institute.core_metaName}
+                      checked={selectedInstitute?.id === institute.id}
+                      onChange={() => setSelectedInstitute(institute)}
+                      className="mb-2"
+                    />
+                  ))}
+                </Accordion.Body>
+              </Accordion.Item>
+
+              {/* Qualification Accordion Item */}
+              <Accordion.Item eventKey="2">
+                <Accordion.Header className="custom-accordion-header">
+                  {selectedQualification ? selectedQualification.qualification_name : "Select Qualification"}
+                </Accordion.Header>
+                <Accordion.Body className="custom-accordion-body">
+                  <Form.Group>
+                    {filterData.qualificationList.map((qualification, index) => (
+                      <Form.Check
+                        key={index}
+                        type="checkbox"
+                        id={`qualification-${qualification.id}`}
+                        label={qualification.qualification_name}
+                        checked={selectedQualification?.id === qualification.id}
+                        onChange={() => setSelectedQualification(qualification)}
+                        className="mb-2"
+                      />
+                    ))}
+                  </Form.Group>
+                </Accordion.Body>
+              </Accordion.Item>
+              {/* Location Filter */}
+              <Accordion.Item eventKey="3">
                 <Accordion.Header className="custom-accordion-header">
                   Location
                 </Accordion.Header>
@@ -850,14 +1077,14 @@ const SearchCourse = () => {
               </Accordion.Item>
 
               {/* Course Category Filter */}
-              <Accordion.Item eventKey="1">
+              <Accordion.Item eventKey="4">
                 <Accordion.Header className="custom-accordion-header">
                   Category
                 </Accordion.Header>
                 <Accordion.Body className="custom-accordion-body">
                   <Form.Group>
                     {filterData.categoryList &&
-                    filterData.categoryList.length > 0 ? ( // Changed from filterData.categories to filterData.categoryList
+                      filterData.categoryList.length > 0 ? ( // Changed from filterData.categories to filterData.categoryList
                       filterData.categoryList.map((category, index) => (
                         <Form.Check
                           key={index}
@@ -879,14 +1106,14 @@ const SearchCourse = () => {
               </Accordion.Item>
 
               {/* Qualification Filter */}
-              <Accordion.Item eventKey="2">
+              <Accordion.Item eventKey="5">
                 <Accordion.Header className="custom-accordion-header">
                   Qualification
                 </Accordion.Header>
                 <Accordion.Body className="custom-accordion-body">
                   <Form.Group>
                     {filterData.qualificationList &&
-                    filterData.qualificationList.length > 0 ? (
+                      filterData.qualificationList.length > 0 ? (
                       filterData.qualificationList.map(
                         (qualification, index) => (
                           <Form.Check
@@ -913,14 +1140,14 @@ const SearchCourse = () => {
               </Accordion.Item>
 
               {/* Study Mode Filter */}
-              <Accordion.Item eventKey="3">
+              <Accordion.Item eventKey="6">
                 <Accordion.Header className="custom-accordion-header">
                   Study Mode
                 </Accordion.Header>
                 <Accordion.Body className="custom-accordion-body">
                   <Form.Group>
                     {filterData.studyModeListing &&
-                    filterData.studyModeListing.length > 0 ? (
+                      filterData.studyModeListing.length > 0 ? (
                       filterData.studyModeListing.map((mode, index) => (
                         <Form.Check
                           key={index}
@@ -940,14 +1167,14 @@ const SearchCourse = () => {
               </Accordion.Item>
 
               {/* Intake Filter */}
-              <Accordion.Item eventKey="4">
+              <Accordion.Item eventKey="7">
                 <Accordion.Header className="custom-accordion-header">
                   Intakes
                 </Accordion.Header>
                 <Accordion.Body className="custom-accordion-body">
                   <Form.Group>
                     {filterData.intakeList &&
-                    filterData.intakeList.length > 0 ? (
+                      filterData.intakeList.length > 0 ? (
                       filterData.intakeList.map((intake, index) => (
                         <Form.Check
                           key={index}
@@ -969,7 +1196,7 @@ const SearchCourse = () => {
               </Accordion.Item>
 
               {/* Tuition Fee Filter */}
-              <Accordion.Item eventKey="5">
+              <Accordion.Item eventKey="8">
                 <Accordion.Header className="custom-accordion-header">
                   Tuition Fee
                 </Accordion.Header>
@@ -1034,15 +1261,52 @@ const SearchCourse = () => {
                 <span aria-hidden="true">&laquo;</span>
               </Pagination.Prev>
 
-              {[...Array(totalPages)].map((_, index) => (
+              {/* First page */}
+              <Pagination.Item
+                active={1 === currentPage}
+                onClick={() => setCurrentPage(1)}
+              >
+                1
+              </Pagination.Item>
+
+              {/* Show dots if current page is more than 3 */}
+              {currentPage > 3 && <Pagination.Ellipsis />}
+
+              {/* Pages around current page */}
+              {[...Array(totalPages)].map((_, index) => {
+                const pageNumber = index + 1;
+                // Only show pages around current page
+                if (
+                  pageNumber !== 1 && // Skip first page as it's already shown
+                  pageNumber !== totalPages && // Skip last page as it will be shown separately
+                  pageNumber >= currentPage - 1 &&
+                  pageNumber <= currentPage + 1
+                ) {
+                  return (
+                    <Pagination.Item
+                      key={pageNumber}
+                      active={pageNumber === currentPage}
+                      onClick={() => setCurrentPage(pageNumber)}
+                    >
+                      {pageNumber}
+                    </Pagination.Item>
+                  );
+                }
+                return null;
+              }).filter(Boolean)} {/* Remove null values */}
+
+              {/* Show dots if there are more pages */}
+              {currentPage < totalPages - 2 && <Pagination.Ellipsis />}
+
+              {/* Last page */}
+              {totalPages > 1 && (
                 <Pagination.Item
-                  key={index + 1}
-                  active={index + 1 === currentPage}
-                  onClick={() => setCurrentPage(index + 1)}
+                  active={totalPages === currentPage}
+                  onClick={() => setCurrentPage(totalPages)}
                 >
-                  {index + 1}
+                  {totalPages}
                 </Pagination.Item>
-              ))}
+              )}
 
               <Pagination.Next
                 onClick={() => setCurrentPage((prev) => prev + 1)}
@@ -1051,10 +1315,11 @@ const SearchCourse = () => {
                 <span aria-hidden="true">&raquo;</span>
               </Pagination.Next>
             </Pagination>
+
           )}
         </Row>
-      </Container>
-    </Container>
+      </Container >
+    </Container >
   );
 };
 

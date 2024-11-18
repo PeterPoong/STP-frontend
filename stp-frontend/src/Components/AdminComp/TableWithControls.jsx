@@ -17,7 +17,9 @@ const TableWithControls = ({
     showAddButton,
     showSearch = true,          // New prop to toggle search visibility
     showRowsPerPage = true,     // New prop to toggle rows-per-page visibility
-    onRowsPerPageChange 
+    onRowsPerPageChange,
+    subjectList,
+    onSubjectChange
 }) => {
     const renderPaginationItems = () => {
         const items = [];
@@ -135,6 +137,20 @@ const TableWithControls = ({
                                     className="search-input"
                                 />
                                 <FontAwesomeIcon icon={faSearch} className="search-icon" />
+                            </div>
+                        )}
+                         {/* Conditionally render the subject enquiry dropdown */}
+                         {subjectList && subjectList.length > 0 && (
+                            <div className="me-1 mb-3 mt-3 ms-3 custom-dropdown">
+                                Enquiry Subject
+                                <select onChange={(e) => onSubjectChange(e.target.value)} className="subject-dropdown">
+                                    <option value="">All Subjects</option>
+                                    {subjectList.map((subject) => (
+                                        <option key={subject.id} value={subject.id}>
+                                            {subject.core_metaName}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
                         )}
                     </div>

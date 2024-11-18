@@ -103,14 +103,77 @@ const SchoolPortalLogin = () => {
       });
   };
 
+  const handleFacebookLogin = async () => {
+    try {
+      // Make an API request to your backend's Facebook authentication route
+      // const response = await axios.get(
+      //   "http://127.0.0.1:8000/api/auth/facebook"
+      // );
+
+      // const response = await fetch(`http://127.0.0.1:8000/api/auth/facebook`, {
+      //   method: "GET",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      // });
+
+      // if (!response.ok) {
+      //   const errorData = await response.json();
+      //   console.log("error", errorData);
+
+      //   throw new Error(errorData["error"] || "Internal Server Error");
+      // }
+
+      const response = await fetch(`http://127.0.0.1:8000/api/auth/facebook`, {
+        method: "GET",
+        headers: {
+          // Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        console.log("ok");
+        const errorData = await response.json();
+        console.log("Error Data:", errorData["errors"]);
+        throw new Error(errorData["errors"] || "Internal Server Error");
+      }
+
+      // Handle the response, for example, redirect to Facebook login
+      // if (response.data.redirect_url) {
+      //   window.location.href = response.data.redirect_url; // Redirect user to Facebook login page
+      // }
+    } catch (error) {
+      console.error("There was an error during the Facebook login:", error);
+    }
+  };
+
+  const handleBackClick = () => {
+    navigate('/'); // This navigates to the previous page in history
+  };
+
   return (
     <Container fluid className="h-100">
       <Row className="h-50">
+        <div className="position-absolute top-0 ">
+          <button
+            className="p-1 login-back-button rounded-circle"
+            onClick={handleBackClick}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="1.5rem"
+              height="1.25rem"
+              fill="#FFFFFFFF"
+              class="bi bi-chevron-left"
+              viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0" />
+            </svg>
+          </button>
+        </div>
         <Col md={6} className="d-flex align-items-center bg-white">
           <Container>
             <Row className="justify-content-center mt-4">
               <Col md={8} lg={6} className="px-0">
-               <div className="studypal-school-logo-div"></div>
+                <div className="studypal-school-logo-div"></div>
                 <h2 className="text-start mb-2 custom-color-title">
                   Login as School
                 </h2>
@@ -131,9 +194,9 @@ const SchoolPortalLogin = () => {
                 )} */}
                 <Form onSubmit={handleSubmit}>
                   <Form.Group controlId="formBasicPhone" className="mb-3">
-                  <p className="text-start p-0 mb-0 custom-color-title-label small ">
-                  Email
-                  </p>
+                    <p className="text-start p-0 mb-0 custom-color-title-label small ">
+                      Email
+                    </p>
                     <InputGroup>
                       <Form.Control
                         type="email"
@@ -146,8 +209,9 @@ const SchoolPortalLogin = () => {
                     </InputGroup>
                   </Form.Group>
                   <Form.Group controlId="formBasicPassword" className="mb-3">
-                  <p className="text-start p-0 mb-0 custom-color-title-label small ">
-                  Password</p>
+                    <p className="text-start p-0 mb-0 custom-color-title-label small ">
+                      Password
+                    </p>
                     <InputGroup>
                       <Form.Control
                         type={showPassword ? "text" : "password"}
@@ -202,7 +266,7 @@ const SchoolPortalLogin = () => {
                   >
                     Login
                   </Button>
-                  <Row>
+                  {/* <Row>
                     <Col>
                       <p className="text-center text-secondary small">
                         or Login/Signup using
@@ -221,6 +285,7 @@ const SchoolPortalLogin = () => {
                           justifyContent: "center",
                           alignItems: "center",
                         }}
+                        onClick={handleFacebookLogin}
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -256,7 +321,7 @@ const SchoolPortalLogin = () => {
                         </svg>
                       </button>
                     </Col>
-                  </Row>
+                  </Row> */}
                   <div className="text-center text-lg-center m-5 pt-2">
                     <p className="small pt-1 mb-0 text-secondary">
                       Not Registered Yet?{" "}
@@ -274,7 +339,7 @@ const SchoolPortalLogin = () => {
           </Container>
         </Col>
 
-        <Col md={6} className="p-0 h-100">
+        <Col md={6} className="p-0 h-100 d-md-flex d-none">
           <img
             src={schoolPortalLoginBanner}
             alt="Student Portal Login"

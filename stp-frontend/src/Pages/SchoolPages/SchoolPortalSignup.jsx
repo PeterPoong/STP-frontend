@@ -120,9 +120,30 @@ const SchoolPortalSignup = () => {
       console.log(errorData);
     }
   };
+
+  const handleBackClick = () => {
+    navigate('/'); // This navigates to the previous page in history
+  };
+
   return (
     <Container fluid className="h-100">
       <Row className="h-100">
+      <div className="position-absolute top-0 ">
+            <button
+              className="p-1 login-back-button rounded-circle"
+              onClick={handleBackClick}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="1.5rem"
+                height="1.25rem"
+                fill="#FFFFFFFF"
+                class="bi bi-chevron-left"
+                viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0" />
+              </svg>
+            </button>
+          </div>
         <Col
           md={6}
           className="d-flex align-items-center justify-content-center bg-white "
@@ -132,7 +153,7 @@ const SchoolPortalSignup = () => {
             <h3 className="text-start mb-2 custom-color-title ">
               Connect with Students Worldwide
             </h3>
-            <p className="text-start mb-4 custom-color-title small">
+            <p className="text-start mb-md-4 mb-2 custom-color-title small">
               Engage with students everywhere.
             </p>
             {signupStatus === "success" && (
@@ -240,7 +261,7 @@ const SchoolPortalSignup = () => {
               </Form.Group>
 
               <Row>
-                <Col>
+              <Col xs={12} md={6}>
                   <Form.Group className="mb-3">
                     <p className="text-start p-0 mb-0 custom-color-title-label small ">
 
@@ -256,7 +277,7 @@ const SchoolPortalSignup = () => {
                   </Form.Group>
                 </Col>
 
-                <Col>
+                <Col xs={12} md={6}>
                   <Form.Group controlId="formBasicPhone" className="mb-3">
                     <p className="text-start p-0 mb-0 custom-color-title-label small ">
 
@@ -301,7 +322,7 @@ const SchoolPortalSignup = () => {
               </Row>
 
               <Row>
-                <Col>
+              <Col xs={12} md={6}>
                   <Form.Group className="mb-3">
                     <p className="text-start p-0 mb-0 custom-color-title-label small ">
                       Password</p>
@@ -338,7 +359,7 @@ const SchoolPortalSignup = () => {
                     </InputGroup>
                   </Form.Group>
                 </Col>
-                <Col>
+                <Col xs={12} md={6}>
                   <Form.Group className="mb-3">
                   <p className="text-start p-0 mb-0 custom-color-title-label small ">
                  
@@ -456,7 +477,7 @@ const SchoolPortalSignup = () => {
           </div>
         </Col>
 
-        <Col md={6} className="p-0">
+        <Col md={6} className="p-0 d-md-flex d-none">
           <img
             src={schoolPortalLoginBanner}
             className="w-100 h-100 object-fit-cover"

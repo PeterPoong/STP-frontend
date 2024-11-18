@@ -17,7 +17,7 @@ import CountryFlag from "react-country-flag";
 import "../../../css/StudentCss/institutepage css/Institute.css";
 import StudyPal from "../../../assets/StudentAssets/institute image/StudyPal.png";
 import emptyStateImage from "../../../assets/StudentAssets/emptyStateImage/emptystate.png";
-
+import "../../../css/StudentCss/course page css/SearchCourse.css";
 const baseURL = import.meta.env.VITE_BASE_URL;
 const countriesURL = `${baseURL}api/student/countryList`;
 const filterURL = `${baseURL}api/student/listingFilterList`;
@@ -62,6 +62,15 @@ const SearchInstitute = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const itemsPerPage = 20;
+
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('en-MY', {
+      style: 'decimal',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(amount);
+  };
+
 
   // Step 1: Fetch Countries
   const fetchCountries = async () => {
@@ -391,7 +400,7 @@ const SearchInstitute = () => {
                         {institute.state}, {institute.country}
                       </span>
                       <div>
-                        <p className="card-text mt-2 searchinstitute-two-description">
+                        <p className="card-text mt-2 searchinstitute-two-description institutepage-wordbreak-all">
                           {institute.description}
                         </p>
                       </div>
@@ -409,38 +418,38 @@ const SearchInstitute = () => {
                       <Col>
                         <div>
                           <Row style={{ paddingTop: "10px" }}>
-                            <div>
+                            <div className="searchinstitute-dflex-center" >
                               <i
                                 className="bi bi-building"
                                 style={{ marginRight: "10px" }}
                               ></i>
-                              <span style={{ paddingLeft: "20px" }}>
+                              <p style={{ paddingLeft: "20px" }}>
                                 {institute.category}
-                              </span>
+                              </p>
                             </div>
-                            <div style={{ marginTop: "10px" }}>
+                            <div style={{ marginTop: "10px" }} className="searchinstitute-dflex-center">
                               <i
                                 className="bi bi-mortarboard"
                                 style={{ marginRight: "10px" }}
                               ></i>
-                              <span style={{ paddingLeft: "20px" }}>
+                              <p style={{ paddingLeft: "20px" }}>
                                 {institute.courses} courses offered
-                              </span>
+                              </p>
                             </div>
                             <div
                               style={{ marginTop: "10px" }}
-                              className="d-flex searchinstitute-institutelist-list"
+                              className="searchinstitute-dflex-center"
                             >
                               <i
                                 className="bi bi-calendar2-week"
                                 style={{ marginRight: "10px" }}
                               ></i>
-                              <span style={{ paddingLeft: "20px" }}>
+                              <p style={{ paddingLeft: "20px" }}>
                                 {Array.isArray(institute.intake) &&
-                                institute.intake.length > 0
+                                  institute.intake.length > 0
                                   ? institute.intake.join(", ")
                                   : "N/A"}
-                              </span>
+                              </p>
                             </div>
                           </Row>
                         </div>
@@ -482,7 +491,7 @@ const SearchInstitute = () => {
       </h3>
 
       {/* Top Row - Dropdowns */}
-      <Row className="align-items-center mb-2 mb-md-0">
+      <Row className="align-items-center mb-2 mb-md-0 saerchinstitute-display-none">
         {/* Country Dropdown */}
 
         <Col xs={12} sm={4} md={3} lg={2} className="mb-2 mb-sm-0">
@@ -493,7 +502,7 @@ const SearchInstitute = () => {
                 style={{
                   backgroundColor: selectedCountry ? "white" : "",
                   color: selectedCountry ? "#000" : "",
-                  border: selectedCountry ? "1px solid #B71A18" : "",
+                  border: selectedCountry ? "1px solid #B71A18" : "#B71A18",
                 }}
               >
                 {selectedCountry ? (
@@ -550,15 +559,15 @@ const SearchInstitute = () => {
         </Col>
 
         {/* University Type Dropdown */}
-        <Col xs={12} sm={4} md={3} lg={2} className="mb-2 mb-sm-0">
-          <ButtonGroup className="w-100">
+        <Col xs={12} sm={4} md={3} lg={2} className="mb-2 mb-sm-0 ">
+          <ButtonGroup className="w-100 ">
             <Dropdown as={ButtonGroup} className="w-100">
               <Dropdown.Toggle
                 className="university-dropdown-institute w-100"
                 style={{
                   backgroundColor: selectedInstitute ? "white" : "",
                   color: selectedInstitute ? "#000" : "",
-                  border: selectedInstitute ? "1px solid #B71A18" : "",
+                  border: selectedInstitute ? "1px solid #B71A18" : "#B71A18",
                 }}
               >
                 {selectedInstitute
@@ -607,6 +616,24 @@ const SearchInstitute = () => {
       >
         <InputGroup className="mb-3">
           <Form.Control
+            className="custom-placeholder saerchinstitute-display-none"
+            style={{ height: "45px", marginTop: "9px" }}
+            placeholder="Search for Institutions, Country"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </InputGroup>
+      </Form>
+
+      <div className="institute-reset-display">
+      <Form
+        onSubmit={(e) => {
+          e.preventDefault();
+          fetchInstitutes();
+        }}
+      >
+        <InputGroup >
+          <Form.Control
             className="custom-placeholder"
             style={{ height: "45px", marginTop: "9px" }}
             placeholder="Search for Institutions, Country"
@@ -615,6 +642,21 @@ const SearchInstitute = () => {
           />
         </InputGroup>
       </Form>
+        <button
+          onClick={resetFilters}
+          style={{
+            backgroundColor: "transparent",
+            border: "none",
+            color: "#B71A18",
+            fontWeight: "lighter",
+            textDecoration: "none",
+            cursor: "pointer",
+          }}
+        >
+          <i className="bi bi-funnel" style={{ marginRight: "5px" }} />
+          Reset Filters
+        </button>
+      </div>
 
       {/* Main Content */}
       <Container className="my-5">
@@ -719,7 +761,9 @@ const SearchInstitute = () => {
               <div className="filter-group">
                 <h5 style={{ marginTop: "25px" }}>Tuition Fee</h5>
                 <Form.Group id="customRange1">
-                  <Form.Label className="custom-range-label">{`RM${selectedFilters.tuitionFee}`}</Form.Label>
+                  <Form.Label className="custom-range-label d-flex justify-content-between">
+                    <span>Current: RM{(selectedFilters.tuitionFee)}</span>
+                  </Form.Label>
                   <Form.Control
                     className="custom-range-input"
                     type="range"
@@ -731,6 +775,10 @@ const SearchInstitute = () => {
                       handleFilterChange("tuitionFee", Number(e.target.value))
                     }
                   />
+                  <div className="d-flex justify-content-between mt-2">
+                    <p>RM0</p>
+                    <p>RM{(filterData.maxAmount || 100000)}</p>
+                  </div>
                 </Form.Group>
               </div>
             </div>
@@ -738,11 +786,99 @@ const SearchInstitute = () => {
             {/* Mobile Accordion Filters */}
             {/* Mobile Accordion Filters */}
             <Accordion
-              defaultActiveKey="0"
+              //defaultActiveKey="0"
               className="custom-accordion d-md-none"
             >
-              {/* Location Filter */}
+
               <Accordion.Item eventKey="0">
+                <Accordion.Header className="custom-accordion-header">
+                  {selectedCountry ? (
+                    <>
+                      <CountryFlag
+                        countryCode={selectedCountry.country_code}
+                        svg
+                        style={{
+                          width: "20px",
+                          height: "20px",
+                          marginRight: "10px",
+                        }}
+                      />
+                      {selectedCountry.country_name}
+                    </>
+                  ) : (
+                    "Select Country"
+                  )}
+                </Accordion.Header>
+                <Accordion.Body>
+                  <InputGroup className="mb-2">
+                    <Form.Control
+                      placeholder="Filter countries"
+                      onChange={(e) => setCountryFilter(e.target.value.toLowerCase())}
+                      value={countryFilter}
+                    />
+                  </InputGroup>
+                  <div className="country-list">
+                    {countries
+                      .filter((country) =>
+                        country.country_name.toLowerCase().includes(countryFilter)
+                      )
+                      .map((country, index) => (
+                        <Form.Check
+                          key={index}
+                          type="checkbox"
+                          id={`country-${country.id}`}
+                          label={
+                            <div
+                              className="d-flex align-items-center"
+                              style={{
+                                marginRight: "10px",
+                                paddingTop: "0",
+                                paddingBottom: "0"
+                              }}>
+                              <CountryFlag
+                                countryCode={country.country_code}
+                                svg
+                                style={{
+                                  width: "20px",
+                                  height: "20px",
+                                  marginRight: "10px",
+                                  paddingTop: "0",
+                                  paddingBottom: "0"
+                                }}
+                              />
+                              {country.country_name}
+                            </div>
+                          }
+                          checked={selectedCountry?.id === country.id}
+                          onChange={() => handleCountryChange(country)}
+                          className="mb-2"
+                        />
+                      ))}
+                  </div>
+                </Accordion.Body>
+              </Accordion.Item>
+
+              {/* University Type Accordion Item */}
+              <Accordion.Item eventKey="1">
+                <Accordion.Header className="custom-accordion-header">
+                  {selectedInstitute ? selectedInstitute.core_metaName : "Select University Type"}
+                </Accordion.Header>
+                <Accordion.Body>
+                  {filterData.institueList.map((institute, index) => (
+                    <Form.Check
+                      key={index}
+                      type="checkbox"
+                      id={`institute-${institute.id}`}
+                      label={institute.core_metaName}
+                      checked={selectedInstitute?.id === institute.id}
+                      onChange={() => setSelectedInstitute(institute)}
+                      className="mb-2"
+                    />
+                  ))}
+                </Accordion.Body>
+              </Accordion.Item>
+              {/* Location Filter */}
+              <Accordion.Item eventKey="2">
                 <Accordion.Header className="custom-accordion-header">
                   Location
                 </Accordion.Header>
@@ -770,7 +906,7 @@ const SearchInstitute = () => {
               </Accordion.Item>
 
               {/* Category Filter */}
-              <Accordion.Item eventKey="1">
+              <Accordion.Item eventKey="3">
                 <Accordion.Header className="custom-accordion-header">
                   Category
                 </Accordion.Header>
@@ -795,7 +931,7 @@ const SearchInstitute = () => {
               </Accordion.Item>
 
               {/* Study Level Filter */}
-              <Accordion.Item eventKey="2">
+              <Accordion.Item eventKey="4">
                 <Accordion.Header className="custom-accordion-header">
                   Study Level
                 </Accordion.Header>
@@ -820,7 +956,7 @@ const SearchInstitute = () => {
               </Accordion.Item>
 
               {/* Study Mode Filter */}
-              <Accordion.Item eventKey="3">
+              <Accordion.Item eventKey="5">
                 <Accordion.Header className="custom-accordion-header">
                   Study Mode
                 </Accordion.Header>
@@ -843,14 +979,14 @@ const SearchInstitute = () => {
               </Accordion.Item>
 
               {/* Intakes Filter */}
-              <Accordion.Item eventKey="4">
+              <Accordion.Item eventKey="6">
                 <Accordion.Header className="custom-accordion-header">
                   Intakes
                 </Accordion.Header>
                 <Accordion.Body className="custom-accordion-body">
                   <Form.Group>
                     {filterData.intakeList &&
-                    filterData.intakeList.length > 0 ? (
+                      filterData.intakeList.length > 0 ? (
                       filterData.intakeList.map((intake, index) => (
                         <Form.Check
                           key={index}
@@ -872,7 +1008,7 @@ const SearchInstitute = () => {
               </Accordion.Item>
 
               {/* Tuition Fee Filter */}
-              <Accordion.Item eventKey="5">
+              <Accordion.Item eventKey="7">
                 <Accordion.Header className="custom-accordion-header">
                   Tuition Fee
                 </Accordion.Header>

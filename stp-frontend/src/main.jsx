@@ -49,6 +49,10 @@ import AdminData from "./Pages/AdminPages/AdminData";
 import AdminBanner from "./Pages/AdminPages/AdminBanner";
 import AdminAddBanner from "./Pages/AdminPages/AdminAddBanner";
 import AdminEditBanner from "./Pages/AdminPages/AdminEditBanner";
+import AdminEnquiry from "./Pages/AdminPages/AdminEnquiry";
+import AdminReplyEnquiry from "./Pages/AdminPages/AdminReplyEnquiry";
+
+
 
 //StudentPortal Page
 import StudentPortalLogin from "./Pages/StudentPortalPages/StudentPortalLogin";
@@ -59,6 +63,7 @@ import StudentPortalBasicInformations from "./Pages/StudentPortalPages/StudentPo
 import StudentApplyCourses from "./Pages/StudentPortalPages/StudentApplyCourses";
 import StudentApplyCourse from "./Pages/StudentPortalPages/StudentApplyCourse";
 import StudentApplicationSummary from "./Pages/StudentPortalPages/StudentApplicationSummary";
+import StudentFeedback from  "./Pages/StudentPortalPages/StudentFeedback";
 
 //schoolPortal Page
 import SchoolPortalLogin from "./Pages/SchoolPages/SchoolPortalLogin";
@@ -240,7 +245,7 @@ const router = createBrowserRouter([
   },
 
   {
-    path: "/adminAddBanner",
+    path: "/adminAddbanner",
     element: <AdminAddBanner />,
   },
   {
@@ -262,6 +267,14 @@ const router = createBrowserRouter([
   {
     path: "/adminData",
     element: <AdminData />,
+  },
+  {
+    path: "/adminEnquiry",
+    element: <AdminEnquiry />,
+  },
+  {
+    path: "/adminReplyEnquiry",
+    element: <AdminReplyEnquiry />,
   },
   //Student Portal Page
   {
@@ -297,6 +310,11 @@ const router = createBrowserRouter([
   {
     path: "/FacebookSocialPageRedirectPage",
     element: <FacebookSocialPageRedirectPage />,
+  },
+
+  {
+    path: "/studentFeedback",
+    element: <StudentFeedback/>,
   },
 
   //School Portal
@@ -339,6 +357,8 @@ const router = createBrowserRouter([
     path: "/school/ApplicantDetail/:applicantID",
     element: <SchoolViewApplicantDetail />,
   },
+
+
 
   //marketing
   {
