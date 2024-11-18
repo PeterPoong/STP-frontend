@@ -170,6 +170,7 @@ const KnowMoreInstitute = () => {
       },
       body: JSON.stringify({
         type: "thirdPage", // Use the required type value
+        schoolId:id
       }),
     })
       .then((response) => response.json())
@@ -1087,7 +1088,7 @@ const KnowMoreInstitute = () => {
                         aria-controls="collapse-courses"
                         aria-expanded={expanded}
                         style={{
-                          marginTop: "20px",
+                          marginTop: "50px",
                           textDecoration: "none",
                           backgroundColor: "#B71A18",
                           borderColor: "#B71A18",
@@ -1165,7 +1166,9 @@ const KnowMoreInstitute = () => {
                 </Container>
               )}
 
-              {Array.isArray(adsImage) && adsImage.length > 0 ? (
+             
+            </Container>
+            {Array.isArray(adsImage) && adsImage.length > 0 ? (
                 <div className="advertisements-container">
                   {adsImage.map((ad, index) => (
                     <div key={ad.id} className="advertisement-item mb-3">
@@ -1189,9 +1192,8 @@ const KnowMoreInstitute = () => {
                   ))}
                 </div>
               ) : (
-                <img src={studypal11} alt="Header" className="KMI-adverstise-image" />
+                <img src={studypal11} alt="Header" className="KMI-adverstise-image mt-0" />
               )}
-            </Container>
           </div>
         ))
       }

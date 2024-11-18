@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import "../../css/StudentPortalStyles/Testing2.css"
-const Testing3 = () => {
+import "../../css/SchoolPortalStyle/SchoolPackage.css";
+const PackageRotate = ({items}) => {
     const [isDragging, setIsDragging] = useState(false);
     const [startX, setStartX] = useState(0);
     const [scrollLeft, setScrollLeft] = useState(0);
@@ -12,19 +12,16 @@ const Testing3 = () => {
 
     useEffect(() => {
         let animationFrame;
-
         const updateMomentum = () => {
             if (!isDragging && Math.abs(momentum) > 0.01) {
                 setRotation(prev => prev + momentum);
-                setMomentum(prev => prev * 0.98); // Momentum decay factor
+                setMomentum(prev => prev * 0.98); 
                 animationFrame = requestAnimationFrame(updateMomentum);
             }
         };
-
         if (momentum !== 0) {
             animationFrame = requestAnimationFrame(updateMomentum);
         }
-
         return () => {
             if (animationFrame) {
                 cancelAnimationFrame(animationFrame);
@@ -32,108 +29,11 @@ const Testing3 = () => {
         };
     }, [momentum, isDragging]);
 
-    const items = [
-        {
-            
-            title: 'Basic Package',
-            price: '250.00',
-            features: [
-                "Access to school portal",
-                "Editable school details",
-                "Access student basic information",
-                "Able to view SPM, STPM exam results",
-                "Access & Accept application details",
-                "Managing courses details"
-            ]
-        },
-        {
-          
-            title: 'Standard Package',
-            price: '500.00',
-            features: [
-                "All Basic Package features",
-                "Advanced analytics dashboard",
-                "Bulk student management",
-                "Custom report generation",
-                "Email notification system",
-                "Priority support"
-            ]
-        },
-        {
-            title: 'Premium Package',
-            price: '750.00',
-            features: [
-                "All Standard Package features",
-                "API access",
-                "White-label solution",
-                "24/7 dedicated support",
-                "Custom integration options",
-                "Advanced security features"
-            ]
-        },
-        {
-            title: 'Enterprise Package',
-            price: '1000.00',
-            features: [
-                "All Premium Package features",
-                "Multiple school management",
-                "Custom development options",
-                "Dedicated account manager",
-                "On-site training",
-                "SLA guarantees"
-            ]
-        },
-        {
-            title: 'Starter Package',
-            price: '150.00',
-            features: [
-                "Basic school portal access",
-                "Limited student records",
-                "Basic reporting",
-                "Email support",
-                "Standard security",
-                "Community forum access"
-            ]
-        },
-        {
-            title: 'Advanced Package',
-            price: '600.00',
-            features: [
-                "Enhanced analytics",
-                "Advanced reporting",
-                "Custom workflows",
-                "Priority support",
-                "API integration",
-                "Advanced security"
-            ]
-        },
-        {
-            title: 'Professional Package',
-            price: '850.00',
-            features: [
-                "Full feature access",
-                "Unlimited records",
-                "Custom development",
-                "24/7 support",
-                "White labeling",
-                "Premium integrations"
-            ]
-        },
-        {
-            title: 'Ultimate Package',
-            price: '1200.00',
-            features: [
-                "Complete solution",
-                "Enterprise support",
-                "Custom development",
-                "Dedicated hosting",
-                "Advanced security",
-                "Priority updates"
-            ]
-        }
-    ];
-
     const handleMouseDown = (e) => {
+        if (e.target.closest('.SP-Container-Quantity-Controls') ||
+            e.target.closest('.SP-Container-Features-Button')) {
+            return;
+        }
         setIsDragging(true);
         setStartX(e.pageX);
         setScrollLeft(rotation);
@@ -146,24 +46,26 @@ const Testing3 = () => {
         setIsDragging(false);
     };
 
+
     const handleMouseMove = (e) => {
         if (!isDragging) return;
         e.preventDefault();
-
+        if (e.target.closest('.SP-Container-Quantity-Controls') ||
+            e.target.closest('.SP-Container-Features-Button')) {
+            return;
+        }
         const currentTime = Date.now();
         const timeElapsed = currentTime - lastTime.current;
         const x = e.pageX;
         const deltaX = x - lastX.current;
-
         if (timeElapsed > 0) {
-            const speed = deltaX / timeElapsed * 0.15; // Adjusted momentum sensitivity
+            const speed = deltaX / timeElapsed * 0.15;
             setMomentum(speed);
         }
 
-        const walk = (x - startX) * 0.3; // Reduced direct movement sensitivity
+        const walk = (x - startX) * 0.3;
         const newRotation = scrollLeft + walk;
         setRotation(newRotation);
-
         lastX.current = x;
         lastTime.current = currentTime;
     };
@@ -179,29 +81,25 @@ const Testing3 = () => {
 
     const handleTouchMove = (e) => {
         if (!isDragging) return;
-
         const currentTime = Date.now();
         const timeElapsed = currentTime - lastTime.current;
         const x = e.touches[0].pageX;
         const deltaX = x - lastX.current;
-
         if (timeElapsed > 0) {
             const speed = deltaX / timeElapsed * 0.15;
             setMomentum(speed);
         }
-
         const walk = (x - startX) * 0.3;
         const newRotation = scrollLeft + walk;
         setRotation(newRotation);
-
         lastX.current = x;
         lastTime.current = currentTime;
     };
 
     return (
-        <div className="testing-container">
+        <div className="sp-container">
             <style>{`
-        .testing-container {
+        .sp-container {
           width: 100%;
           background-color: transparent;
           display: flex;
@@ -220,7 +118,7 @@ const Testing3 = () => {
           touch-action: none;
         }
 
-        .testing-carousel-wrapper {
+        .sp-carousel-wrapper {
           position: absolute;
           left: 50%;
           top: 50%;
@@ -236,12 +134,12 @@ const Testing3 = () => {
           will-change: transform;
         }
 
-        .testing-carousel-wrapper:active {
+        .sp-carousel-wrapper:active {
           cursor: grabbing;
           transition: none;
         }
 
-        .testing-carousel-item {
+        .sp-carousel-item {
           position: absolute;
           width: var(--item-width);
           height: var(--item-height);
@@ -257,21 +155,21 @@ const Testing3 = () => {
           justify-content: center;
         }
 
-        .testing-carousel-item:nth-child(1) { --index: 0; }
-        .testing-carousel-item:nth-child(2) { --index: 1; }
-        .testing-carousel-item:nth-child(3) { --index: 2; }
-        .testing-carousel-item:nth-child(4) { --index: 3; }
-        .testing-carousel-item:nth-child(5) { --index: 4; }
-        .testing-carousel-item:nth-child(6) { --index: 5; }
-        .testing-carousel-item:nth-child(7) { --index: 6; }
-        .testing-carousel-item:nth-child(8) { --index: 7; }
+        .sp-carousel-item:nth-child(1) { --index: 0; }
+        .sp-carousel-item:nth-child(2) { --index: 1; }
+        .sp-carousel-item:nth-child(3) { --index: 2; }
+        .sp-carousel-item:nth-child(4) { --index: 3; }
+        .sp-carousel-item:nth-child(5) { --index: 4; }
+        .sp-carousel-item:nth-child(6) { --index: 5; }
+        .sp-carousel-item:nth-child(7) { --index: 6; }
+        .sp-carousel-item:nth-child(8) { --index: 7; }
 
-        .testing-carousel-item {
+        .sp-carousel-item {
           transform: rotateY(calc(var(--a) * var(--index))) 
                      translateZ(calc(var(--r) * -1));
         }
 
-        .testing-carousel-item:hover {
+        .sp-carousel-item:hover {
           transform: rotateY(calc(var(--a) * var(--index))) 
                      translateZ(calc(var(--r) * -1))
                      scale(1.05);
@@ -283,7 +181,6 @@ const Testing3 = () => {
           font-weight: bold;
         }
       `}</style>
-
             <div
                 ref={carouselRef}
                 className="scene"
@@ -294,44 +191,51 @@ const Testing3 = () => {
                 onTouchStart={handleTouchStart}
                 onTouchEnd={handleMouseUp}
                 onTouchMove={handleTouchMove}
+            > <div
+                className="sp-carousel-wrapper"
+                style={{
+                    '--rotation': `${rotation}deg`
+                }}
             >
-                <div
-                    className="testing-carousel-wrapper"
-                    style={{
-                        '--rotation': `${rotation}deg`
-                    }}
-                >
                     {items.map((item) => (
                         <div
                             key={item.id}
-                            className="testing-carousel-item"
+                            className="sp-carousel-item"
                             style={{ backgroundColor: item.color }}
                         >
-                            <div className="item-number">{item.id}</div>
+                            <div className="SP-Container-Two">
+                                <div className="SP-Container-Card">
+                                    {item.package_type === 'package' ? (
+                                        <>
+                                            <p className="SP-Container-Current">Current Plan</p>
+                                            <p className="SP-Container-Package-Title">{item.title}</p>
+                                            <p className="SP-Container-Price-Title">
+                                                RM{item.price}<span>/month</span>
+                                            </p>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <p className="SP-Container-Current-AddOns">Add Ons</p>
+                                            <p className="SP-Container-Package-Title">{item.title}</p>
+                                            <p className="SP-Container-Price-Title">
+                                                RM{item.price}<span>/slot</span>
+                                            </p>
 
-                            <div className="Testing-Container-Two">
-                                <div className="Testing-Container-Card" >
-                                    <p className="Testing-Container-Current">Current Plan</p>
-                                    <p className="Testing-Container-Package-Title">Bacic Package</p>
-                                    <p className="Testing-Container-Price-Title">RM250.00 <span>/month</span></p>
-                                    <p className="Testing-Container-Features-Title">Features</p>
-                                    <div className="Testing-Container-Card-Features-Container">
+                                        </>
+                                    )}
+                                    <p className="SP-Container-Features-Title">Features</p>
+                                    <div className={item.package_type === 'package' ?
+                                        "SP-Container-Card-Features-Container" :
+                                        "SP-Container-Card-Features-AddOns"}>
                                         {item.features.map((feature, index) => (
-                                            <div key={index} className="Testing-Container-Card-Features">
-                                                <i className="bi bi-check-circle-fill" style={{ color: "#BA1718"}}></i>
-                                                <p>{feature}</p>
+                                            <div key={index} className="SP-Container-Card-Features">
+                                                <i className="bi bi-check-circle-fill" style={{ color: "#BA1718" }}></i>
+                                                <p className="m-0">{feature}</p>
                                             </div>
                                         ))}
                                     </div>
-
                                 </div>
                             </div>
-
-
-
-
-
-
                         </div>
                     ))}
                 </div>
@@ -340,4 +244,4 @@ const Testing3 = () => {
     );
 };
 
-export default Testing3;
+export default PackageRotate;

@@ -63,9 +63,8 @@ import StudentPortalBasicInformations from "./Pages/StudentPortalPages/StudentPo
 import StudentApplyCourses from "./Pages/StudentPortalPages/StudentApplyCourses";
 import StudentApplyCourse from "./Pages/StudentPortalPages/StudentApplyCourse";
 import StudentApplicationSummary from "./Pages/StudentPortalPages/StudentApplicationSummary";
-import StudentFeedback from  "./Pages/StudentPortalPages/StudentFeedback";
-import Testing from "./Pages/StudentPortalPages/Testing";
-import Testing2 from "./Pages/StudentPortalPages/Testing2";
+import StudentFeedback from "./Pages/StudentPortalPages/StudentFeedback";
+
 //schoolPortal Page
 import SchoolPortalLogin from "./Pages/SchoolPages/SchoolPortalLogin";
 import SchoolPortalSignup from "./Pages/SchoolPages/SchoolPortalSignup";
@@ -74,6 +73,7 @@ import SchoolPortalForgetPassword from "./Pages/SchoolPages/schoolPortalForgetPa
 import ExistSchool from "./Pages/SchoolPages/ExistSchool";
 import SchoolViewApplicantDetail from "./Pages/SchoolPages/StudentApplicantDetail";
 import SchoolBasicInformation from "./Pages/SchoolPages/SchoolBasicInformation";
+import SchoolPackage from "./Pages/SchoolPages/SchoolPackage";
 
 //marketing
 import AccountPackages from "./Pages/MarketingPages/AccountPackages";
@@ -315,17 +315,7 @@ const router = createBrowserRouter([
 
   {
     path: "/studentFeedback",
-    element: <StudentFeedback/>,
-  },
-
-  {
-    path:"/testing",
-    element:<Testing/>,
-  },
-
-  {
-    path:"/testing2",
-    element:<Testing2/>,
+    element: <StudentFeedback />,
   },
 
   //School Portal
@@ -368,7 +358,10 @@ const router = createBrowserRouter([
     path: "/school/ApplicantDetail/:applicantID",
     element: <SchoolViewApplicantDetail />,
   },
-
+  {
+    path: "/SchoolPackage",
+    element: <SchoolPackage />,
+  },
 
 
   //marketing

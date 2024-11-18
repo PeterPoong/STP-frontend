@@ -158,7 +158,7 @@ const CourseDetail = () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ type: "thirdPage" }),
+      body: JSON.stringify({ type: "thirdPage", courseId: id }),
     })
       .then((response) => response.json())
       .then((data) => {
@@ -231,7 +231,7 @@ const CourseDetail = () => {
                     alt="Program"
                     className="img-thumbnail apply-now-program-image"
                     style={{
-                      height: "100%",
+                      height: "8rem",
                       borderRadius: "8px",
                       maxWidth: "auto",
                       marginLeft: "30px",
@@ -246,16 +246,16 @@ const CourseDetail = () => {
                   style={{ paddingBottom: "25px" }}
                 >
                   <div style={{ marginLeft: "30px" }}>
-                    <h4 className="pb-5">{program.school}</h4>
+                    <h4 className="pb-0">{program.school}</h4>
                     <p>{import.meta.env.VITE_random_Var}</p>
-                      <a
-                        href={program.google_map_location}
-                        style={{ paddingLeft: "15px" }}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Click and view on map
-                      </a>
+                    <a
+                      href={program.google_map_location}
+                      style={{ paddingLeft: "0px" }}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Click and view on map
+                    </a>
                   </div>
                 </Col>
 
@@ -900,23 +900,31 @@ const CourseDetail = () => {
               {/* Featured courses */}
               {
                 featuredCourses.length > 0 && (
-                  <Container className="my-4">
+                  <Container className="university-row-carousel my-4">
                     <h4>Featured Courses</h4>
                     <Swiper
-                      spaceBetween={30}
-                      slidesPerView={5}
+                      spaceBetween={20}
+                      slidesPerView={1}
                       navigation
                       style={{ padding: "0 50px" }}
                       loop={true}
                       modules={[Pagination, Navigation]}
-                      className="featured-courses-swiper"
                       breakpoints={{
-                        640: {
+                        400: {
                           slidesPerView: 1,
+                          spaceBetween: 20,
+                        },
+                        // Large phones & small tablets
+                        576: {
+                          slidesPerView: 2,
+                          spaceBetween: 5,
+                        },
+                        640: {
+                          slidesPerView: 3,
                           spaceBetween: 10,
                         },
                         768: {
-                          slidesPerView: 2,
+                          slidesPerView: 4,
                           spaceBetween: 15,
                         },
                         1024: {
@@ -929,7 +937,7 @@ const CourseDetail = () => {
                         <SwiperSlide key={course.id}>
                           <div
                             className="featured-course-card"
-                            style={{ width: "230px", height: "245px" }}
+                            style={{ width: "230px", height: "300px" }}
                           >
                             <div style={{ position: "relative" }}>
                               {course.course_qualification && (
@@ -964,21 +972,32 @@ const CourseDetail = () => {
                                   fontSize: "16px",
                                   fontWeight: "500",
                                   marginBottom: "15px",
+                                  height: "3.5rem"
                                 }}
                               >
                                 {course.course_school}
                               </p>
-                              <p
-                                className="course-title"
-                                style={{
-                                  color: "#B71A18",
-                                  fontSize: "18px",
-                                  fontWeight: "500",
-                                  marginBottom: "15px",
+                              <Link
+                                to={{
+                                  pathname: `/courseDetails/${course.course_id}`
                                 }}
+                                target="_parent"
+                                rel="noopener noreferrer"
                               >
-                                {course.course_name}
-                              </p>
+                                <p
+                                  className="course-title"
+                                  style={{
+                                    color: "#B71A18",
+                                    fontSize: "18px",
+                                    fontWeight: "500",
+                                    marginBottom: "15px",
+                                    height: "55px",
+                                    paddingTop: "0.1rem"
+                                  }}
+                                >
+                                  {course.course_name}
+                                </p>
+                              </Link>
                               <div className="d-flex justify-content-center">
                                 <i
                                   className="bi bi-geo-alt"
