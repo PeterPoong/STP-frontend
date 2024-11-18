@@ -176,7 +176,7 @@ const SearchInstitute = () => {
 
       // Add category filters if any
       if (selectedFilters.categories?.length > 0) {
-        requestBody.category_id = [selectedFilters.categories]; // Single value
+        requestBody.category_id = selectedFilters.categories; // Single value
       }
 
 
@@ -221,7 +221,7 @@ const SearchInstitute = () => {
       }
 
       const result = await response.json();
-      //console.log("result", result);
+      console.log("result", result);
       // In your fetchInstitutes function, update the success block:
 
       if (result.success) {
