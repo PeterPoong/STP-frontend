@@ -6,6 +6,7 @@ import AdminFormComponent from './AdminFormComponent';
 import 'typeface-ubuntu';
 import "../../css/AdminStyles/AdminFormStyle.css";
 import 'react-phone-input-2/lib/style.css';
+import ErrorModal from "./Error";
 
 import { FaTrashAlt } from 'react-icons/fa';
 
@@ -15,7 +16,10 @@ const AdminEditSubjectContent = () => {
         name: "",
         category:"",
     });
-    const [error, setError] = useState(null);
+     const [error, setError] = useState(null);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
+    const [generalError, setGeneralError] = useState('');
+    const [fieldErrors, setFieldErrors] = useState({});
     const navigate = useNavigate();
     const token = sessionStorage.getItem('token');
     const [loading, setLoading] = useState(true); 
@@ -48,12 +52,12 @@ const AdminEditSubjectContent = () => {
                 console.log('Subject successfully registered:', addSubjectData);
                 navigate('/adminSubject');
             } else {
-                console.error('Validation Error:', addSubjectData.errors);
-                throw new Error(`Subject Registration failed: ${addSubjectData.message}`);
+                setError(addSubjectData.message || "Failed to edit subject.");
+                setErrorModalVisible(true);
             }
         } catch (error) {
-            setError('An error occurred during subject registration. Please try again later.');
-            console.error('Error during subject registration:', error);
+            setError(error.message || "An error occurred while editing the subject. Please try again later.");
+            setErrorModalVisible(true);
         }
     };
      
@@ -88,11 +92,12 @@ const AdminEditSubjectContent = () => {
                     });
                     
                 } else {
-                    console.error("Subject not found with ID:", courseId);
+                    setGeneralError(data.message || 'Failed to load subject details data.');
+                    setErrorModalVisible(true);
                 }
             } catch (error) {
-                console.error('Error fetching subject details:', error.message);
-                setError(error.message);
+                setGeneralError(error.message || 'An error occurred while fetching subject details.');
+                setErrorModalVisible(true);
             } finally {
                 setLoading(false);
             }
@@ -181,6 +186,12 @@ const AdminEditSubjectContent = () => {
     return (
         
         <Container fluid className="admin-add-subject-container">
+            <ErrorModal
+                errorModalVisible={errorModalVisible}
+                setErrorModalVisible={setErrorModalVisible}
+                generalError={generalError || error} // Ensure `generalError` or fallback to `error`
+                fieldErrors={fieldErrors}
+            />
              {loading ? (
                     <SkeletonLoader />
                 ) : (

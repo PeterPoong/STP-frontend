@@ -41,6 +41,9 @@ const AdminAddSchoolContent = () => {
     });
     const [selectedFeatures, setSelectedFeatures] = useState([]);
     const [error, setError] = useState(null);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
+    const [generalError, setGeneralError] = useState('');
+    const [fieldErrors, setFieldErrors] = useState({});
     const navigate = useNavigate();
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`;
@@ -57,12 +60,15 @@ const AdminAddSchoolContent = () => {
         event.preventDefault();
         // console.log("Submitting form data:", formData); // Debugging line
         const { name, email, logo, category, state, city, account, country, school_address, school_website, contact_number, person_in_charge_email, person_in_charge_name, person_in_charge_contact, country_code, confirm_password, school_shortDesc, school_fullDesc, password } = formData;
-    
+        if (!name || !email || !logo || !category || !state || !city || !account || !country || !school_address || !school_website || !contact_number || !person_in_charge_email || !person_in_charge_name || !person_in_charge_contact || !country_code || !school_shortDesc || !school_fullDesc || !password || !confirm_password) {
+            setError("Please fill in all required fields.");
+            setErrorModalVisible(true);
+            return; // Stop form submission if any required field is missing
+        }
         // console.log("Form Data being sent:", formData);
         Object.keys(formData).forEach(key => {
             // console.log(`${key}: ${formData[key]}`);
         });
-    
         const formPayload = new FormData();
         formPayload.append("school_address", formData.school_address);
         formPayload.append("name", name);
@@ -85,33 +91,48 @@ const AdminAddSchoolContent = () => {
         formPayload.append("school_shortDesc", school_shortDesc);
         formPayload.append("school_fullDesc", school_fullDesc);
         // console.log("Selected Features:", selectedFeatures);
-    
+        let fieldErrors = {};
         // Append each feature id individually to formPayload as featured[]
-        selectedFeatures.forEach(feature => {
-            formPayload.append("featured[]", feature);
+        selectedFeatures.forEach((feature) => {
+                formPayload.append("featured[]", feature);
+            
         });
-    
         if (logo) {
-            formPayload.append('logo', logo);
+            try {
+                formPayload.append('logo', logo);
+            } catch {
+                fieldErrors.logo = ["Something went wrong with the logo file."];
+            }
         }
-    
         // Append cover photo if available
         if (coverFile) {
-            formPayload.append('cover', coverFile);
+            try {
+                formPayload.append('cover', coverFile);
+            } catch {
+                fieldErrors.cover = ["Something went wrong with the cover photo."];
+            }
         }
-    
-        // Append album files if available
+        // Append album files if available, handle each file error separately
         albumFiles.forEach((file, index) => {
-            formPayload.append(`album[${index}]`, file);
+            if (file) {
+                try {
+                    formPayload.append(`album[${index}]`, file);
+                } catch {
+                    fieldErrors[`album[${index}]`] = [`Something went wrong with album file #${index + 1}.`];
+                }
+            }
         });
-    
+         // If there are any field-specific errors, display them and stop submission
+         if (Object.keys(fieldErrors).length > 0) {
+            setFieldErrors(fieldErrors);
+            setErrorModalVisible(true);
+            return; // Stop further processing
+        }
         for (let pair of formPayload.entries()) {
             // console.log(`${pair[0]}: ${pair[1]}`);
         }
-    
         try {
             // console.log("FormData before submission:", formPayload);
-    
             const addSchoolResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/addSchool`, {
                 method: 'POST',
                 headers: {
@@ -121,21 +142,18 @@ const AdminAddSchoolContent = () => {
             });
     
             const addSchoolData = await addSchoolResponse.json();
-    
             if (addSchoolResponse.ok) {
                 console.log('School successfully registered:', addSchoolData);
                 navigate('/adminSchool');
             } else {
-                console.error('Validation Error:', addSchoolData.errors); // Debugging line
-                throw new Error(`School Registration failed: ${addSchoolData.message}`);
+                setError(addSchoolData.message || "Failed to add new school.");
+                setErrorModalVisible(true);
             }
         } catch (error) {
-            // Remove the reference to `addSchoolData` here
-            setError('An error occurred during school registration. Please try again later.');
-            console.error('Error during school registration:', error);
+            setError(error.message || "An error occurred while adding the school. Please try again later.");
+            setErrorModalVisible(true);
         }
     };
-    
     
     useEffect(() => {
         const fetchFeatured = async () => {
@@ -147,13 +165,10 @@ const AdminAddSchoolContent = () => {
                         'Authorization': Authenticate,
                     },
                 });
-
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-
                 const data = await response.json();
-
                 if (data && data.data) {
                     setSchoolFeaturedList(data.data);
                 } else {
@@ -164,7 +179,6 @@ const AdminAddSchoolContent = () => {
                 setError(error.message);
             }
         };
-
         fetchFeatured();
     }, [Authenticate]);
 
@@ -179,11 +193,9 @@ const AdminAddSchoolContent = () => {
                     },
                     body: JSON.stringify({}) // Add any necessary body data
                 });
-    
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-    
                 const data = await response.json();
                 if (data && data.data) {
                     setCategoryList(data.data);  // Set the category list state
@@ -193,7 +205,6 @@ const AdminAddSchoolContent = () => {
                 setError(error.message);
             }
         };
-    
         fetchCategories();
     }, [Authenticate]);
     
@@ -212,7 +223,6 @@ const AdminAddSchoolContent = () => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-    
                 const data = await response.json();
                 if (data && data.data) {
                     setAccountList(data.data);  // Set the category list state
@@ -222,7 +232,6 @@ const AdminAddSchoolContent = () => {
                 setError(error.message);
             }
         };
-    
         fetchAccounts();
     }, [Authenticate]);
 
@@ -238,9 +247,6 @@ useEffect(() => {
       .then(data => {
         if (data.success) {
           setCountryList(data.data);
-        //   console.log("Countries fetched: ", data.data);
-  
-          // Set default country to Malaysia (ID = 132) if no country is selected
           if (!formData.country) {
             setFormData(prevFormData => ({
               ...prevFormData,
@@ -251,15 +257,12 @@ useEffect(() => {
       })
       .catch(error => console.error('Error fetching countries:', error));
   }, []);
-
-// Fetch states when country changes
 useEffect(() => {
     if (formData.country) {
       fetchStates(formData.country);
     }
 }, [formData.country]);
 
-// Fetch states (POST request)
 const fetchStates = (countryId) => {
     fetch(`${import.meta.env.VITE_BASE_URL}api/getState`, {
       method: 'POST',
@@ -272,8 +275,6 @@ const fetchStates = (countryId) => {
       .then(data => {
         if (data.success) {
           setStateList(data.data);
-          
-          // If the first state is fetched, automatically fetch cities for it
           if (data.data.length > 0) {
             const firstStateId = data.data[0].id; // Assuming the state object has an 'id' property
             setFormData(prevFormData => ({
@@ -303,8 +304,6 @@ const fetchCities = (stateId) => {
       .then(data => {
         if (data.success) {
           setCityList(data.data);
-          
-          // Set the first city as the default if cities are fetched
           if (data.data.length > 0) {
             setFormData(prevFormData => ({
               ...prevFormData,
@@ -703,7 +702,12 @@ const fetchCities = (stateId) => {
     return (
         
         <Container fluid className="admin-add-school-container">
-             <ErrorModal error={error} onClose={() => setError(null)} />
+             <ErrorModal
+                errorModalVisible={errorModalVisible}
+                setErrorModalVisible={setErrorModalVisible}
+                generalError={generalError || error} // Ensure `generalError` or fallback to `error`
+                fieldErrors={fieldErrors}
+            />
             <AdminFormComponent
            formTitle="School Information"
            checkboxTitle="School Advertising Feature"

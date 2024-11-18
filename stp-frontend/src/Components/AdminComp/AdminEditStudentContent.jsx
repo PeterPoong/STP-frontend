@@ -33,7 +33,6 @@ const AdminEditStudentContent = () => {
         password: "",
         confirm_password: "",
     });
-    const [error, setError] = useState(null);
     const navigate = useNavigate();
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`;
@@ -41,9 +40,19 @@ const AdminEditStudentContent = () => {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [passwordsMatch, setPasswordsMatch] = useState(true);
     const [loading, setLoading] = useState(true);
-    
+    const [error, setError] = useState(null);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
+    const [generalError, setGeneralError] = useState('');
+    const [fieldErrors, setFieldErrors] = useState({});
     const studentId = sessionStorage.getItem('studentId');
     const fetchStudentDetails = async () => {
+      const studentId = sessionStorage.getItem('studentId');
+            if (!studentId) {
+                setGeneralError('No student ID found in session storage.');
+                setErrorModalVisible(true);
+                setLoading(false);
+                return;
+            }
       try {
           const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/studentDetail`, {
               method: 'POST',
@@ -55,12 +64,12 @@ const AdminEditStudentContent = () => {
           });
 
           if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error(`Failed to fetch student details. HTTP status: ${response.status}`);
           }
 
           const data = await response.json();
           const studentDetails = data.data;
-
+          const newFieldErrors = {};
           if (studentDetails) {
               setFormData({
                   name: studentDetails.name,
@@ -76,17 +85,34 @@ const AdminEditStudentContent = () => {
                   state: studentDetails.state,
                   city: studentDetails.city,
                   postcode: studentDetails.postcode,
-                  
               });
-
+              if (studentDetails.country) {
+                try {
+                    await fetchStates(studentDetails.country);
+                } catch {
+                    newFieldErrors.state = 'Error fetching states based on country.';
+                }
+            }
+            if (studentDetails.state) {
+              try {
+                  await fetchCities(studentDetails.state);
+              } catch {
+                  newFieldErrors.city = 'Error fetching cities based on state.';
+              }
+          }
+          setFieldErrors(newFieldErrors);
+              if (Object.keys(newFieldErrors).length > 0) {
+                  setErrorModalVisible(true);
+              }
           } else {
-              console.error("Student not found with ID:", studentId);
+            setGeneralError(data.message || 'Failed to load student details data.');
+            setErrorModalVisible(true);
           }
       } catch (error) {
-          console.error('Error fetching student details:', error.message);
-          setError(error.message);
+        setGeneralError(error.message || 'An error occurred while fetching student details.');
+        setErrorModalVisible(true);
       }finally {
-        setLoading(false);
+      setLoading(false);
     }
   };
   useEffect(() => {
@@ -103,7 +129,11 @@ const AdminEditStudentContent = () => {
       // console.log("Submitting form data:", formData);
   
       const { name, first_name, last_name, gender, ic, postcode, email, state, city, country, address, contact_number, country_code, confirm_password, password } = formData;
-  
+      if (!name || !first_name || !last_name || !gender || !ic || !postcode || !email || !state || !city || !country || !address || !contact_number || !country_code) {
+        setError("Please fill in all required fields.");
+        setErrorModalVisible(true);
+        return; // Stop form submission if any required field is missing
+    }
       // Convert strings to integers where needed
       const cityInt = parseInt(city, 10);
       const genderInt = parseInt(gender, 10);
@@ -150,12 +180,12 @@ const AdminEditStudentContent = () => {
               console.log('Student successfully registered:', addStudentData);
               navigate('/adminStudent');
           } else {
-              console.error('Validation Error:', addStudentData.errors);
-              throw new Error(`Student Registration failed: ${addStudentData.message}`);
+            setError(addStudentData.message || "Failed to edit student details.");
+            setErrorModalVisible(true);
           }
       } catch (error) {
-          setError('An error occurred during student registration. Please try again later.');
-          console.error('Error during student registration:', error);
+        setError(error.message || "An error occurred while editing the student. Please try again later.");
+        setErrorModalVisible(true);
       }
   };
   
@@ -530,6 +560,12 @@ const fetchCities = (stateId) => {
     return (
         
         <Container fluid className="admin-add-student-container">
+             <ErrorModal
+                errorModalVisible={errorModalVisible}
+                setErrorModalVisible={setErrorModalVisible}
+                generalError={generalError}
+                fieldErrors={fieldErrors}
+            />
            {loading ? (
                     <SkeletonLoader />
                 ) : (
