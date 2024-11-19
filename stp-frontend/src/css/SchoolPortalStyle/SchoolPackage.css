@@ -426,4 +426,14 @@
     {
       margin-top:10rem;
     }
+
+    .SP-Container-One h1
+    {
+      text-align: center;
+    }
+
+    .SP-Container-Quantity-Button
+    {
+      margin:0 0.25rem;
+    }
   }

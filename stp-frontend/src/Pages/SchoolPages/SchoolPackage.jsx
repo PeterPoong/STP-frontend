@@ -154,7 +154,7 @@ const SchoolPackage = () => {
     <div className="SP-Container">
       <div className="SP-Container-Overall ">
         <div className="SP-Container-One">
-          <h1 className="">MORE PACKAGE</h1>
+          <h1 >MORE PACKAGE</h1>
           <h5
 
           >HOW TO GET STARTED:</h5>
