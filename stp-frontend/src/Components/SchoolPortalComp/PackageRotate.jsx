@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import "../../css/SchoolPortalStyle/SchoolPackage.css";
-const PackageRotate = ({items}) => {
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+const PackageRotate = ({ items, selectedPackageId }) => {
     const [isDragging, setIsDragging] = useState(false);
     const [startX, setStartX] = useState(0);
     const [scrollLeft, setScrollLeft] = useState(0);
@@ -9,13 +10,14 @@ const PackageRotate = ({items}) => {
     const carouselRef = useRef(null);
     const lastX = useRef(0);
     const lastTime = useRef(Date.now());
+    const degreesPerItem = 360 / items.length;
 
     useEffect(() => {
         let animationFrame;
         const updateMomentum = () => {
             if (!isDragging && Math.abs(momentum) > 0.01) {
                 setRotation(prev => prev + momentum);
-                setMomentum(prev => prev * 0.98); 
+                setMomentum(prev => prev * 0.98);
                 animationFrame = requestAnimationFrame(updateMomentum);
             }
         };
@@ -28,6 +30,28 @@ const PackageRotate = ({items}) => {
             }
         };
     }, [momentum, isDragging]);
+
+
+    useEffect(() => {
+        if (selectedPackageId) {
+            const selectedIndex = items.findIndex(item => item.id === selectedPackageId);
+            if (selectedIndex !== -1) {
+                const newRotation = -(selectedIndex * degreesPerItem);
+                setRotation(newRotation);
+                setMomentum(0);
+            }
+        }
+    }, [selectedPackageId, items, degreesPerItem]);
+
+    const handleNext = () => {
+        setRotation(prev => prev - degreesPerItem);
+        setMomentum(0);
+    };
+
+    const handlePrev = () => {
+        setRotation(prev => prev + degreesPerItem);
+        setMomentum(0);
+    };
 
     const handleMouseDown = (e) => {
         if (e.target.closest('.SP-Container-Quantity-Controls') ||
@@ -180,7 +204,56 @@ const PackageRotate = ({items}) => {
           font-size: 1.5rem;
           font-weight: bold;
         }
+
+         .arrow-button {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(186, 23, 24, 0.8);  /* Changed to match your theme color */
+        border: none;
+        padding:0;
+        border-radius: 0%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 100;  /* Increased z-index */
+        transition: all 0.3s ease;
+        color: white;  /* Added white color for the icons */
+    }
+
+    .arrow-button:hover {
+        background: rgba(186, 23, 24, 1);  /* Changed hover state */
+        transform: translateY(-50%) scale(1.1);  /* Added scale effect */
+    }
+
+    .arrow-button.prev {
+        left: 0;  /* Adjusted position */
+    }
+
+    .arrow-button.next {
+        right: 0;  /* Adjusted position */
+    }
+
+    /* Added to ensure the container properly shows the buttons */
+    .sp-container {
+        position: relative;
+        width: 100%;
+        background-color: transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: visible;  /* Changed from hidden to visible */
+        padding: 0 50px;  /* Added padding for the buttons */
+    }
       `}</style>
+            <button
+                className="arrow-button prev"
+                onClick={handlePrev}
+                aria-label="Previous item"
+            >
+                <ChevronLeft size={24} color={"#ffffff"} />
+            </button>
             <div
                 ref={carouselRef}
                 className="scene"
@@ -240,6 +313,13 @@ const PackageRotate = ({items}) => {
                     ))}
                 </div>
             </div>
+            <button
+                className="arrow-button next"
+                onClick={handleNext}
+                aria-label="Next item"
+            >
+                <ChevronRight size={24} />
+            </button>
         </div>
     );
 };

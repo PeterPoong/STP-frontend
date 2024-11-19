@@ -52,16 +52,17 @@ const SchoolPackage = () => {
     },
     {
       id: 4,
-      title: 'King Package',
-      price: '1250.00',
-      package_type: 'package',
+      title: 'Featured School on HomePage',
+      price: '350.00',
+      package_type: 'add_ons',
+      slots: 3,
       features: [
-        "Access to school portal",
-        "Editable school details",
-        "Access student basic information",
-        "Able to view SPM, STPM exam results",
-        "Access & Accept application details",
-        "Managing courses details"
+        "Premium school listing",
+        "Enhanced school profile",
+        "Priority in school searches",
+        "School statistics dashboard",
+        "Custom school banner",
+        "Featured school badge"
       ]
     },
     {
@@ -100,10 +101,12 @@ const SchoolPackage = () => {
       price: '750.00',
       package_type: 'package',
       features: [
-        "Access to school portal",
-        "Editable school details",
-        "Access student basic information",
-        
+        "Free featured school",
+        "Free 2 featured courses every month ",
+        "Full access to school analysis data",
+        "Able to download student transcript",
+        "Direct Whatsapp to applicant students",
+        "Editable school cover image"
       ]
     },
     {
@@ -150,6 +153,10 @@ const SchoolPackage = () => {
     }));
   };
 
+  const handlePackageChange = (e) => {
+    const newPackage = packages.find(p => p.id === parseInt(e.target.value));
+    setSelectedPackage(newPackage);
+  };
   return (
     <div className="SP-Container">
       <div className="SP-Container-Overall ">
@@ -165,7 +172,10 @@ const SchoolPackage = () => {
             <li>CONTACT OUR TEAM</li>
           </ol>
         </div>
-        <PackageRotate items={items} />
+        <PackageRotate
+          items={items}
+          selectedPackageId={selectedPackage?.id}
+        />
       </div >
       <div className="SP-Container-Overall-Pricing ">
         <div class="pricing_summary_container" >
@@ -177,7 +187,7 @@ const SchoolPackage = () => {
                 <select
                   className="package_select"
                   value={selectedPackage?.id}
-                  onChange={(e) => setSelectedPackage(packages.find(p => p.id === parseInt(e.target.value)))}
+                  onChange={handlePackageChange}
                 >
                   {packages.map(pkg => (
                     <option key={pkg.id} value={pkg.id}>
@@ -246,16 +256,16 @@ const SchoolPackage = () => {
               <div className="pricing_total_text">Total</div>
               <div className="pricing_total_amount">RM {calculateTotal().toFixed(2)}</div>
             </div>
-            <button 
-            className="pricing_contact_button"
-            onClick={handleContactClick}
-          >
-            Contact Us
-          </button>
+            <button
+              className="pricing_contact_button"
+              onClick={handleContactClick}
+            >
+              Contact Us
+            </button>
           </div>
         </div>
       </div>
-      <ContactModal 
+      <ContactModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         selectedPackage={selectedPackage}
