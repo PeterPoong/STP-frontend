@@ -953,6 +953,13 @@ const CourseDetail = () => {
                                   {course.course_qualification}
                                 </span>
                               )}
+                              <Link
+                                to={{
+                                  pathname: `/knowMoreInstitute/${course.school_id}`
+                                }}
+                                target="_parent"
+                                rel="noopener noreferrer"
+                              >
                               <img
                                 src={`${baseURL}storage/${course.course_logo}`}
                                 alt={course.course_school}
@@ -963,8 +970,16 @@ const CourseDetail = () => {
                                   objectFit: "contain",
                                 }}
                               />
+                              </Link>
                             </div>
                             <div>
+                            <Link
+                                to={{
+                                  pathname: `/knowMoreInstitute/${course.school_id}`
+                                }}
+                                target="_parent"
+                                rel="noopener noreferrer"
+                              >
                               <p
                                 className="course-school-title"
                                 style={{
@@ -977,6 +992,7 @@ const CourseDetail = () => {
                               >
                                 {course.course_school}
                               </p>
+                              </Link>
                               <Link
                                 to={{
                                   pathname: `/courseDetails/${course.course_id}`
