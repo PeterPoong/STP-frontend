@@ -134,6 +134,10 @@ const AdminEditSchoolContent = () => {
                             ? schoolDetails.schoolFeatured.map(feature => feature.featured_type)
                             : Object.values(schoolDetails.schoolFeatured).map(feature => feature.featured_type)
                     );
+                     // setCoverFile(schoolDetails.coverFile || null);
+                    // setAlbumFiles(schoolDetails.albumFiles || []);
+                    setCoverFile(coverFile);
+                    setAlbumFiles(albumFiles);
                     if (schoolDetails.country_id) {
                         try {
                             await fetchStates(schoolDetails.country_id);

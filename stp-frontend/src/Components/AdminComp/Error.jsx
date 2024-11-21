@@ -1,7 +1,7 @@
 import React from 'react';
 import { Modal } from 'react-bootstrap';
 
-const ErrorModal = ({ errorModalVisible, setErrorModalVisible, generalError, fieldErrors }) => (
+const ErrorModal = ({ errorModalVisible, setErrorModalVisible, generalError, fieldErrors, fieldLabels }) => (
     <>
         {errorModalVisible && (
             <Modal show onHide={() => setErrorModalVisible(false)} centered>
@@ -14,7 +14,7 @@ const ErrorModal = ({ errorModalVisible, setErrorModalVisible, generalError, fie
                         <ul>
                             {Object.entries(fieldErrors).map(([field, errors]) => (
                                 <li key={field}>
-                                    <strong>{field}:</strong> {errors.join(', ')}
+                                    <strong>{fieldLabels[field] || field}:</strong> {errors.join(', ')}
                                 </li>
                             ))}
                         </ul>

@@ -1,15 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Container, Col, Button, Modal, Alert } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { useDropzone } from "react-dropzone";
 import AdminFormComponent from './AdminFormComponent';
 import 'typeface-ubuntu';
 import ErrorModal from "./Error";
 import "../../css/AdminStyles/AdminFormStyle.css";
-import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
-
-import { FaTrashAlt } from 'react-icons/fa';
 
 const AdminAddStudentContent = () => {
     const [genderList, setGenderList] = useState([]); 
@@ -43,6 +39,23 @@ const AdminAddStudentContent = () => {
     const [errorModalVisible, setErrorModalVisible] = useState(false);
     const [generalError, setGeneralError] = useState('');
     const [fieldErrors, setFieldErrors] = useState({});
+    const fieldLabels = {
+      name:"Student Name",
+      first_name:"Student Firstname",
+      last_name:"Student lastname",
+      gender:"Gender",
+      ic:"New Identity Card No.",
+      postcode:"Postcode",
+      email:"Email Address",
+      state: "State", 
+      city:"City", 
+      country:"Country", 
+      address:"Full Address", 
+      contact_number: "Contact Number", 
+      country_code: "Country Code",
+      confirm_password:"Confirm Password",
+      password:"Password"
+    };
     const handleSubmit = async (event) => {
       event.preventDefault();
       // console.log("Submitting form data:", formData);
@@ -99,12 +112,18 @@ const AdminAddStudentContent = () => {
           if (addStudentResponse.ok) {
               console.log('Student successfully registered:', addStudentData);
               navigate('/adminStudent');
-          } else {
-            setError(addStudentData.message || "Failed to add new student.");
+            } else if (addStudentResponse.status === 422) {
+              // Validation errors
+              console.log('Validation Errors:', addStudentData.errors);
+              setFieldErrors(addStudentData.errors); // Pass validation errors to the modal
+              setGeneralError(addStudentData.message || "Validation Error");
+              setErrorModalVisible(true); // Show the error modal
+            } else {
+            setGeneralError(addStudentData.message || "Failed to add new student.");
             setErrorModalVisible(true);
           }
       } catch (error) {
-        setError(error.message || "An error occurred while adding the student. Please try again later.");
+        setGeneralError(error.message || "An error occurred while adding the student. Please try again later.");
         setErrorModalVisible(true);
       }
   };
@@ -494,6 +513,7 @@ const fetchCities = (stateId) => {
                 setErrorModalVisible={setErrorModalVisible}
                 generalError={generalError || error} // Ensure `generalError` or fallback to `error`
                 fieldErrors={fieldErrors}
+                fieldLabels={fieldLabels}
             />
           <AdminFormComponent
            formTitle="Student Information"

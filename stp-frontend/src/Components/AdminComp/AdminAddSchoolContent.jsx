@@ -5,10 +5,8 @@ import { useDropzone } from "react-dropzone";
 import AdminFormComponent from './AdminFormComponent';
 import 'typeface-ubuntu';
 import "../../css/AdminStyles/AdminFormStyle.css";
-import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import ErrorModal from "./Error";
-import { FaTrashAlt } from 'react-icons/fa';
 
 const AdminAddSchoolContent = () => {
     const [schoolFeaturedList, setSchoolFeaturedList] = useState([]);
@@ -55,22 +53,45 @@ const AdminAddSchoolContent = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [passwordsMatch, setPasswordsMatch] = useState(true);
-
+    const fieldLabels = {
+        school_fullDesc: "Full Description",
+        school_shortDesc: "Short Description",
+        name: "School Name",
+        email: "Email Address",
+        contact_number: "School Contact Number",
+        logo: "Logo",
+        category: "School Category",
+        state: "State",
+        country:"Country",
+        city:"City",
+        account:"School Account",
+        school_address:"School Full Address",
+        school_website:"School Website",
+        person_in_charge_email:"Person In Charge Email",
+        person_in_charge_name:"Person In Charge Name",
+        person_in_charge_contact:"Person In Charge Contact Number",
+        confirm_password:"Confirm Password",
+        password:"Password"
+    };
     const handleSubmit = async (event) => {
         event.preventDefault();
-        // console.log("Submitting form data:", formData); // Debugging line
-        const { name, email, logo, category, state, city, account, country, school_address, school_website, contact_number, person_in_charge_email, person_in_charge_name, person_in_charge_contact, country_code, confirm_password, school_shortDesc, school_fullDesc, password } = formData;
-        if (!name || !email || !logo || !category || !state || !city || !account || !country || !school_address || !school_website || !contact_number || !person_in_charge_email || !person_in_charge_name || !person_in_charge_contact || !country_code || !school_shortDesc || !school_fullDesc || !password || !confirm_password) {
-            setError("Please fill in all required fields.");
+    
+        const {
+            name, email, logo, category, state, city, account, country,
+            school_address, school_website, contact_number, person_in_charge_email,
+            person_in_charge_name, person_in_charge_contact, country_code,
+            confirm_password, school_shortDesc, school_fullDesc, password
+        } = formData;
+        if (!name || !email || !logo || !category || !state || !city || !account || !country ||
+            !school_address || !school_website || !contact_number || !person_in_charge_email ||
+            !person_in_charge_name || !person_in_charge_contact || !country_code ||
+            !school_shortDesc || !school_fullDesc || !password || !confirm_password) {
+            setGeneralError("Please fill in all required fields.");
             setErrorModalVisible(true);
-            return; // Stop form submission if any required field is missing
+            return;
         }
-        // console.log("Form Data being sent:", formData);
-        Object.keys(formData).forEach(key => {
-            // console.log(`${key}: ${formData[key]}`);
-        });
         const formPayload = new FormData();
-        formPayload.append("school_address", formData.school_address);
+        formPayload.append("school_address", school_address);
         formPayload.append("name", name);
         formPayload.append("email", email);
         formPayload.append("country_code", country_code);
@@ -79,81 +100,50 @@ const AdminAddSchoolContent = () => {
         formPayload.append("person_in_charge_name", person_in_charge_name);
         formPayload.append("person_in_charge_email", person_in_charge_email);
         formPayload.append("school_website", school_website);
-        formPayload.append("school_address", school_address);
         formPayload.append("category", category);
         formPayload.append("account", account);
         formPayload.append("country", country);
         formPayload.append("state", state);
         formPayload.append("city", city);
         formPayload.append("password", password);
-        // formPayload.append("location", location);
         formPayload.append("confirm_password", confirm_password);
         formPayload.append("school_shortDesc", school_shortDesc);
         formPayload.append("school_fullDesc", school_fullDesc);
-        // console.log("Selected Features:", selectedFeatures);
-        let fieldErrors = {};
-        // Append each feature id individually to formPayload as featured[]
-        selectedFeatures.forEach((feature) => {
-                formPayload.append("featured[]", feature);
-            
-        });
-        if (logo) {
-            try {
-                formPayload.append('logo', logo);
-            } catch {
-                fieldErrors.logo = ["Something went wrong with the logo file."];
-            }
-        }
-        // Append cover photo if available
-        if (coverFile) {
-            try {
-                formPayload.append('cover', coverFile);
-            } catch {
-                fieldErrors.cover = ["Something went wrong with the cover photo."];
-            }
-        }
-        // Append album files if available, handle each file error separately
+        // Handle features
+        selectedFeatures.forEach((feature) => formPayload.append("featured[]", feature));
+        // Handle files
+        if (logo) formPayload.append("logo", logo);
+        if (coverFile) formPayload.append("cover", coverFile);
         albumFiles.forEach((file, index) => {
-            if (file) {
-                try {
-                    formPayload.append(`album[${index}]`, file);
-                } catch {
-                    fieldErrors[`album[${index}]`] = [`Something went wrong with album file #${index + 1}.`];
-                }
-            }
+            if (file) formPayload.append(`album[${index}]`, file);
         });
-         // If there are any field-specific errors, display them and stop submission
-         if (Object.keys(fieldErrors).length > 0) {
-            setFieldErrors(fieldErrors);
-            setErrorModalVisible(true);
-            return; // Stop further processing
-        }
-        for (let pair of formPayload.entries()) {
-            // console.log(`${pair[0]}: ${pair[1]}`);
-        }
         try {
-            // console.log("FormData before submission:", formPayload);
             const addSchoolResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/addSchool`, {
                 method: 'POST',
-                headers: {
-                    'Authorization': Authenticate,
-                },
-                body: formPayload, // Using FormData directly as the body
+                headers: { 'Authorization': Authenticate },
+                body: formPayload,
             });
-    
             const addSchoolData = await addSchoolResponse.json();
             if (addSchoolResponse.ok) {
                 console.log('School successfully registered:', addSchoolData);
                 navigate('/adminSchool');
+            } else if (addSchoolResponse.status === 422) {
+                // Validation errors
+                console.log('Validation Errors:', addSchoolData.errors);
+                setFieldErrors(addSchoolData.errors); // Pass validation errors to the modal
+                setGeneralError(addSchoolData.message || "Validation Error");
+                setErrorModalVisible(true); // Show the error modal
             } else {
-                setError(addSchoolData.message || "Failed to add new school.");
+                console.error('Server error:', addSchoolData.message);
+                setGeneralError(addSchoolData.message || 'Failed to add new school.');
                 setErrorModalVisible(true);
             }
         } catch (error) {
-            setError(error.message || "An error occurred while adding the school. Please try again later.");
+            console.error('Network or unexpected error:', error);
+            setGeneralError(error.message || 'An unexpected error occurred. Please try again later.');
             setErrorModalVisible(true);
         }
-    };
+    };    
     
     useEffect(() => {
         const fetchFeatured = async () => {
@@ -707,6 +697,7 @@ const fetchCities = (stateId) => {
                 setErrorModalVisible={setErrorModalVisible}
                 generalError={generalError || error} // Ensure `generalError` or fallback to `error`
                 fieldErrors={fieldErrors}
+                fieldLabels={fieldLabels}
             />
             <AdminFormComponent
            formTitle="School Information"

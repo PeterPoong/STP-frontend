@@ -1,15 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Container, Col, Button, Modal } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { useDropzone } from "react-dropzone";
 import AdminFormComponent from './AdminFormComponent';
 import 'typeface-ubuntu';
 import "../../css/AdminStyles/AdminFormStyle.css";
-import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import ErrorModal from "./Error";
-
-import { FaTrashAlt } from 'react-icons/fa';
 
 const AdminAddSubjectContent = () => {
     const [categoryList, setCategoryList] = useState([]); 
@@ -17,7 +13,6 @@ const AdminAddSubjectContent = () => {
         name: "",
         category:"",
     });
-    
     const navigate = useNavigate();
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`;
@@ -25,7 +20,10 @@ const AdminAddSubjectContent = () => {
     const [errorModalVisible, setErrorModalVisible] = useState(false);
     const [generalError, setGeneralError] = useState('');
     const [fieldErrors, setFieldErrors] = useState({});
-
+    const fieldLabels = { 
+        name:"Subject Name",
+        category:"Transcript Category"
+    };
     const handleSubmit = async (event) => {
         event.preventDefault();
         // console.log("Submitting form data:", formData); // Debugging line
@@ -55,12 +53,18 @@ const AdminAddSubjectContent = () => {
             if (addSubjectResponse.ok) {
                 console.log('Subject successfully registered:', addSubjectData);
                 navigate('/adminSubject');
+            } else if (addSubjectResponse.status === 422) {
+                // Validation errors
+                console.log('Validation Errors:', addSubjectData.errors);
+                setFieldErrors(addSubjectData.errors); // Pass validation errors to the modal
+                setGeneralError(addSubjectData.message || "Validation Error");
+                setErrorModalVisible(true); // Show the error modal
             } else {
-                setError(addSubjectData.message || "Failed to add new subject.");
+                setGeneralError(addSubjectData.message || "Failed to add new subject.");
                 setErrorModalVisible(true);
             }
         } catch (error) {
-            setError(error.message || "An error occurred while adding the subject. Please try again later.");
+            setGeneralError(error.message || "An error occurred while adding the subject. Please try again later.");
             setErrorModalVisible(true);
         }
     };
@@ -154,6 +158,7 @@ const AdminAddSubjectContent = () => {
                 setErrorModalVisible={setErrorModalVisible}
                 generalError={generalError || error} // Ensure `generalError` or fallback to `error`
                 fieldErrors={fieldErrors}
+                fieldLabels={fieldLabels}
             />
             <AdminFormComponent
             formTitle="Subject Information"

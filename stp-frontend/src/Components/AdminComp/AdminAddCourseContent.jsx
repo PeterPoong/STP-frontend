@@ -1,15 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Container, Col, Button, Modal } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { useDropzone } from "react-dropzone";
 import AdminFormComponent from './AdminFormComponent';
 import 'typeface-ubuntu';
 import ErrorModal from "./Error";
 import "../../css/AdminStyles/AdminFormStyle.css";
-import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
-
-import { FaTrashAlt } from 'react-icons/fa';
 
 const AdminAddCourseContent = () => {
     const [courseIntakeList, setCourseIntakeList] = useState([]);
@@ -39,6 +35,20 @@ const AdminAddCourseContent = () => {
     const navigate = useNavigate();
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`
+    const fieldLabels = {
+        name:"Course Name",
+        schoolID:"School Name",
+        description:"Course Description",
+        requirement:"Course Requirements",
+        cost:"Course Fee",
+        period:"Study Period",
+        category:"Course Category",
+        qualification:"Course Qualification",
+        mode:"Study Mode",
+        logo:"Logo",
+        intake:"Intake",
+        course:"Course Featured"
+    };
     const handleSubmit = async (event) => {
         event.preventDefault();
         
@@ -66,18 +76,10 @@ const AdminAddCourseContent = () => {
         }
         // Append each selected intake value as "intake[]"
         selectedIntakes.forEach(intake => {
-            if (intake){
                 formPayload.append("intake[]", intake);
-            } else {
-                throw new Error("Invalid intakes array detected.");
-            }
         });
         selectedCourses.forEach(course => {
-            if (course) {
             formPayload.append("courseFeatured[]", course);
-            } else {
-                throw new Error("Invalid course featured array detected.");
-            }
         });
         try {
             const addCourseResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/addCourses`, {
@@ -93,12 +95,18 @@ const AdminAddCourseContent = () => {
             if (addCourseResponse.ok) {
                 console.log('Course successfully registered:', addCourseData);
                 navigate('/adminCourses');
+            } else if (addCourseResponse.status === 422) {
+                // Validation errors
+                console.log('Validation Errors:', addCourseData.errors);
+                setFieldErrors(addCourseData.errors); // Pass validation errors to the modal
+                setGeneralError(addCourseData.message || "Validation Error");
+                setErrorModalVisible(true); // Show the error modal
             } else {
-                setError(addCourseData.message || "Failed to add new course.");
+                setGeneralError(addCourseData.message || "Failed to add new course.");
                 setErrorModalVisible(true);
             }
         } catch (error) {
-            setError(error.message || "An error occurred while adding the course. Please try again later.");
+            setGeneralError(error.message || "An error occurred while adding the course. Please try again later.");
             setErrorModalVisible(true);
         }
     };    
@@ -478,6 +486,7 @@ const AdminAddCourseContent = () => {
                 setErrorModalVisible={setErrorModalVisible}
                 generalError={generalError || error} // Ensure `generalError` or fallback to `error`
                 fieldErrors={fieldErrors}
+                fieldLabels={fieldLabels}
             />
             <AdminFormComponent
            formTitle="Course Details"

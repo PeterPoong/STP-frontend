@@ -1,15 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Container, Col, Button, Modal, Card } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { useDropzone } from "react-dropzone";
 import SkeletonLoader from './SkeletonLoader';
 import AdminFormComponent from './AdminFormComponent';
 import 'typeface-ubuntu';
 import "../../css/AdminStyles/AdminFormStyle.css";
-import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
-
-import { FaTrashAlt } from 'react-icons/fa';
+import ErrorModal from "./Error";
 
 const AdminEditStudentContent = () => {
     const [genderList, setGenderList] = useState([]); 
@@ -124,6 +121,24 @@ const AdminEditStudentContent = () => {
     fetchStudentDetails();
 }, [studentId, Authenticate]);
 
+  const fieldLabels = {
+    name:"Student Name",
+    first_name:"Student Firstname",
+    last_name:"Student lastname",
+    gender:"Gender",
+    ic:"New Identity Card No.",
+    postcode:"Postcode",
+    email:"Email Address",
+    state: "State", 
+    city:"City", 
+    country:"Country", 
+    address:"Full Address", 
+    contact_number: "Contact Number", 
+    country_code: "Country Code",
+    confirm_password:"Confirm Password",
+    password:"Password"
+  };
+
     const handleSubmit = async (event) => {
       event.preventDefault();
       // console.log("Submitting form data:", formData);
@@ -179,12 +194,18 @@ const AdminEditStudentContent = () => {
           if (addStudentResponse.ok) {
               console.log('Student successfully registered:', addStudentData);
               navigate('/adminStudent');
-          } else {
-            setError(addStudentData.message || "Failed to edit student details.");
+            } else if (addStudentResponse.status === 422) {
+              // Validation errors
+              console.log('Validation Errors:', addStudentData.errors);
+              setFieldErrors(addStudentData.errors); // Pass validation errors to the modal
+              setGeneralError(addStudentData.message || "Validation Error");
+              setErrorModalVisible(true); // Show the error modal
+            } else {
+            setGeneralError(addStudentData.message || "Failed to edit student details.");
             setErrorModalVisible(true);
           }
       } catch (error) {
-        setError(error.message || "An error occurred while editing the student. Please try again later.");
+        setGeneralError(error.message || "An error occurred while editing the student. Please try again later.");
         setErrorModalVisible(true);
       }
   };
@@ -560,11 +581,12 @@ const fetchCities = (stateId) => {
     return (
         
         <Container fluid className="admin-add-student-container">
-             <ErrorModal
+                <ErrorModal
                 errorModalVisible={errorModalVisible}
                 setErrorModalVisible={setErrorModalVisible}
-                generalError={generalError}
+                generalError={generalError || error} // Ensure `generalError` or fallback to `error`
                 fieldErrors={fieldErrors}
+                fieldLabels={fieldLabels}
             />
            {loading ? (
                     <SkeletonLoader />
