@@ -1,15 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Container, Col, Button, Modal } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { useDropzone } from "react-dropzone";
 import AdminFormComponent from './AdminFormComponent';
 import 'typeface-ubuntu';
 import ErrorModal from "./Error";
 import "../../css/AdminStyles/AdminFormStyle.css";
-import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
-
-import { FaTrashAlt } from 'react-icons/fa';
 
 const AdminAddPackageContent = () => {
     const [categoryList, setCategoryList] = useState([]); 
@@ -28,13 +24,19 @@ const AdminAddPackageContent = () => {
     const [errorModalVisible, setErrorModalVisible] = useState(false);
     const [generalError, setGeneralError] = useState('');
     const [fieldErrors, setFieldErrors] = useState({});
+    const fieldLabels = {
+        package_name:"Package Name",
+        package_detail:"Package Detail",
+        package_type:"Package Type",
+        package_price:"Package Price"
+    };
     const handleSubmit = async (event) => {
         event.preventDefault();
         // console.log("Submitting form data:", formData); // Debugging line
         
         const { package_name, package_detail, package_type, package_price } = formData;
         if (!package_name || !package_detail || !package_type || !package_price) {
-            setError("Please fill in all required fields.");
+            setGeneralError("Please fill in all required fields.");
             setErrorModalVisible(true);
             return; // Stop form submission if any required field is missing
         }
@@ -63,12 +65,18 @@ const AdminAddPackageContent = () => {
             if (addPackageResponse.ok) {
                 console.log('Package successfully registered:', addPackageData);
                 navigate('/adminPackage'); // Ensure navigate function is properly defined
+            } else if (addPackageResponse.status === 422) {
+                // Validation errors
+                console.log('Validation Errors:', addPackageData.errors);
+                setFieldErrors(addPackageData.errors); // Pass validation errors to the modal
+                setGeneralError(addPackageData.message || "Validation Error");
+                setErrorModalVisible(true); // Show the error modal
             } else {
-                setError(addPackageData.message || "Failed to add new package.");
+                setGeneralError(addPackageData.message || "Failed to add new package.");
                 setErrorModalVisible(true);
             }
         } catch (error) {
-            setError(error.message || "An error occurred while adding the package. Please try again later.");
+            setGeneralError(error.message || "An error occurred while adding the package. Please try again later.");
             setErrorModalVisible(true);
         }
     };
@@ -191,6 +199,7 @@ const AdminAddPackageContent = () => {
             setErrorModalVisible={setErrorModalVisible}
             generalError={generalError || error} // Ensure `generalError` or fallback to `error`
             fieldErrors={fieldErrors}
+            fieldLabels={fieldLabels}
             />
         <AdminFormComponent
            formTitle="Package Information"

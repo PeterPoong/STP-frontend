@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import AdminFormComponent from "./AdminFormComponent";
 import SkeletonLoader from './SkeletonLoader';
 import "../../css/AdminStyles/AdminFormStyle.css";
+import ErrorModal from "./Error";
 
 const AdminEditBannerContent = () => {
   const [bannerFeaturedList, setBannerFeaturedList] = useState([]);
@@ -19,6 +20,9 @@ const AdminEditBannerContent = () => {
   const [banner_file, setBanner_file] = useState(null);
   const [newBannerFile, setNewBannerFile] = useState(null);
   const [error, setError] = useState(null);
+  const [errorModalVisible, setErrorModalVisible] = useState(false);
+  const [generalError, setGeneralError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
   const navigate = useNavigate();
   const token = sessionStorage.getItem("token");
   const Authenticate = `Bearer ${token}`;
@@ -115,6 +119,14 @@ const AdminEditBannerContent = () => {
     fetchBannerDetails();
   }, [bannerId, Authenticate]);
 
+  const fieldLabels = {
+    banner_name: "Banner Name",
+    banner_url: "Banner URL",
+    formattedStartDate: "Banner Start Date",
+    formattedEndDate: "Banner End Date",
+    banner_file: "Banner File (2MB)",
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -170,13 +182,20 @@ const AdminEditBannerContent = () => {
       const result = await response.json();
       if (response.ok) {
         navigate("/adminBanner");
+       } else if (response.status === 422) {
+          console.log("Validation Errors:", result.errors);
+          setFieldErrors(result.errors); // Pass validation errors to the modal
+          setGeneralError(result.message || "Validation Error");
+          setErrorModalVisible(true);
       } else {
-        setError(result.message || "Failed to update banner.");
+          setGeneralError(result.message || "Failed to edit banner.");
+          setErrorModalVisible(true);
       }
-    } catch (error) {
-      setError(error.message);
-    }
-  };
+  } catch (error) {
+      setGeneralError(error.message || "An error occurred while editing the banner. Please try again later.");
+      setErrorModalVisible(true);
+  }
+};
 
   useEffect(() => {
     const fetchFeatured = async () => {
@@ -277,6 +296,13 @@ const AdminEditBannerContent = () => {
 
   return (
     <Container fluid className="admin-add-banner-content">
+      <ErrorModal
+        errorModalVisible={errorModalVisible}
+        setErrorModalVisible={setErrorModalVisible}
+        generalError={generalError || error} // Ensure `generalError` or fallback to `error`
+        fieldErrors={fieldErrors}
+        fieldLabels={fieldLabels}
+    />
       {loading ? (
             <SkeletonLoader />
         ) : (

@@ -8,8 +8,6 @@ import "../../css/AdminStyles/AdminFormStyle.css";
 import 'react-phone-input-2/lib/style.css';
 import ErrorModal from "./Error";
 
-import { FaTrashAlt } from 'react-icons/fa';
-
 const AdminEditSubjectContent = () => {
     const [categoryList, setCategoryList] = useState([]); 
     const [formData, setFormData] = useState({
@@ -25,18 +23,23 @@ const AdminEditSubjectContent = () => {
     const [loading, setLoading] = useState(true); 
     const Authenticate = `Bearer ${token}`;
     const subjectId = sessionStorage.getItem('subjectId');
-
+    const fieldLabels = { 
+        name:"Subject Name",
+        category:"Transcript Category"
+    };
     const handleSubmit = async (event) => {
         event.preventDefault();
         
         const { name,category } = formData;
-        
+        if (!name || !category) {
+            setError("Please fill in all required fields.");
+            setErrorModalVisible(true);
+            return; // Stop form submission if any required field is missing
+        }
         const formPayload = new FormData();
         formPayload.append("id", subjectId)
         formPayload.append("name", name);
         formPayload.append("category", category);
-   
-    
         try {
             const addSubjectResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/editSubject`, {
                 method: 'POST',
@@ -51,12 +54,18 @@ const AdminEditSubjectContent = () => {
             if (addSubjectResponse.ok) {
                 console.log('Subject successfully registered:', addSubjectData);
                 navigate('/adminSubject');
+            } else if (addSubjectResponse.status === 422) {
+                // Validation errors
+                console.log('Validation Errors:', addSubjectData.errors);
+                setFieldErrors(addSubjectData.errors); // Pass validation errors to the modal
+                setGeneralError(addSubjectData.message || "Validation Error");
+                setErrorModalVisible(true); // Show the error modal
             } else {
-                setError(addSubjectData.message || "Failed to edit subject.");
+                setGeneralError(addSubjectData.message || "Failed to edit subject.");
                 setErrorModalVisible(true);
             }
         } catch (error) {
-            setError(error.message || "An error occurred while editing the subject. Please try again later.");
+            setGeneralError(error.message || "An error occurred while editing the subject. Please try again later.");
             setErrorModalVisible(true);
         }
     };
@@ -186,11 +195,12 @@ const AdminEditSubjectContent = () => {
     return (
         
         <Container fluid className="admin-add-subject-container">
-            <ErrorModal
+               <ErrorModal
                 errorModalVisible={errorModalVisible}
                 setErrorModalVisible={setErrorModalVisible}
                 generalError={generalError || error} // Ensure `generalError` or fallback to `error`
                 fieldErrors={fieldErrors}
+                fieldLabels={fieldLabels}
             />
              {loading ? (
                     <SkeletonLoader />
