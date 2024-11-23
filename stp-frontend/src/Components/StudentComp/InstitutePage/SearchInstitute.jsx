@@ -221,7 +221,7 @@ const SearchInstitute = () => {
       }
 
       const result = await response.json();
-      console.log("result", result);
+    //  console.log("result", result);
       // In your fetchInstitutes function, update the success block:
 
       if (result.success) {
