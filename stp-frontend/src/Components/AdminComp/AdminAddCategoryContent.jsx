@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Container, Col, Button, Modal } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { useDropzone } from "react-dropzone";
 import AdminFormComponent from './AdminFormComponent';
 import 'typeface-ubuntu';
+import ErrorModal from "./Error";
 import "../../css/AdminStyles/AdminFormStyle.css";
-import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
-
-import { FaTrashAlt } from 'react-icons/fa';
 
 const AdminAddCategoryContent = () => {
     const [categoryList, setCategoryList] = useState([]); 
@@ -21,14 +18,26 @@ const AdminAddCategoryContent = () => {
     });
     const [selectedIntakes, setSelectedIntakes] = useState([]);
     const [error, setError] = useState(null);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
+    const [generalError, setGeneralError] = useState('');
+    const [fieldErrors, setFieldErrors] = useState({});
     const navigate = useNavigate();
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`
+    const fieldLabels = {
+       name:"Category Name",
+       description:"Category Description",
+       icon:"Category Icon"
+    };
     const handleSubmit = async (event) => {
         event.preventDefault();
     
         const { name, description, icon } = formData; // Now, icon is the actual file
-    
+        if (!name || !description || !icon) {
+            setGeneralError("Please fill in all required fields.");
+            setErrorModalVisible(true);
+            return; // Stop form submission if any required field is missing
+        }
         const formPayload = new FormData();
         formPayload.append("name", name);
         formPayload.append("description", description);
@@ -52,19 +61,23 @@ const AdminAddCategoryContent = () => {
                 },
                 body: formPayload,
             });
-    
             const addCategoryData = await addCategoryResponse.json();
-    
             if (addCategoryResponse.ok) {
                 console.log('Category successfully registered:', addCategoryData);
                 navigate('/adminCategory');
+            } else if (addCategoryResponse.status === 422) {
+                // Validation errors
+                console.log('Validation Errors:', addCategoryData.errors);
+                setFieldErrors(addCategoryData.errors); // Pass validation errors to the modal
+                setGeneralError(addCategoryData.message || "Validation Error");
+                setErrorModalVisible(true); // Show the error modal
             } else {
-                console.error('Validation Error:', addCategoryData.errors);
-                throw new Error(`Category Registration failed: ${addCategoryData.message}`);
+                setGeneralError(addCategoryData.message || "Failed to add new category.");
+                setErrorModalVisible(true);
             }
         } catch (error) {
-            setError('An error occurred during category registration. Please try again later.');
-            console.error('Error during category registration:', error);
+            setGeneralError(error.message || "An error occurred while adding the category. Please try again later.");
+            setErrorModalVisible(true);
         }
     };
     
@@ -144,19 +157,26 @@ const AdminAddCategoryContent = () => {
 
     return (
         
-                <Container fluid className="admin-add-school-container">
-                    <AdminFormComponent
-           formTitle="Category Details"
-           formFields={formFields}
-           formHTML={formHTML}
-           onSubmit={handleSubmit}
-           error={error}
-           buttons={buttons}
-           newIcon={newIcon}
-           icon={icon}
-           handleIconChange={handleIconChange}
-                />
-                </Container>
+        <Container fluid className="admin-add-school-container">
+             <ErrorModal
+                errorModalVisible={errorModalVisible}
+                setErrorModalVisible={setErrorModalVisible}
+                generalError={generalError || error} // Ensure `generalError` or fallback to `error`
+                fieldErrors={fieldErrors}
+                fieldLabels={fieldLabels}
+            />
+            <AdminFormComponent
+            formTitle="Category Details"
+            formFields={formFields}
+            formHTML={formHTML}
+            onSubmit={handleSubmit}
+            error={error}
+            buttons={buttons}
+            newIcon={newIcon}
+            icon={icon}
+            handleIconChange={handleIconChange}
+            />
+        </Container>
     );
 };
 

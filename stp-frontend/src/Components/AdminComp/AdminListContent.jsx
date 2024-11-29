@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import { MDBSwitch } from 'mdb-react-ui-kit';
+import CircleDotLoader from './CircleDotLoader';
 import '../../css/AdminStyles/AdminTableStyles.css';
 import TableWithControls from './TableWithControls';
 
@@ -196,7 +197,8 @@ const AdminListContent = () => {
         </tr>
     );
 
-    const tbodyContent = sortedAdmins.map((Admin) => (
+    const tbodyContent = sortedAdmins.length > 0 ? (
+        sortedAdmins.map((Admin) => (
         <tr key={Admin.id}>
             <td>{Admin.name}</td>
             <td>{Admin.email}</td>
@@ -245,10 +247,18 @@ const AdminListContent = () => {
                 
             </td>
         </tr>
-    ));
+    ))
+) : (
+    <tr>
+        <td colSpan="6" style={{ textAlign: "center" }}>No Data Available</td>
+    </tr>
+);
 
     return (
         <>
+         {loading ? (
+            <CircleDotLoader />
+            ) : (
             <TableWithControls
                 theadContent={theadContent}
                 tbodyContent={tbodyContent}
@@ -261,6 +271,7 @@ const AdminListContent = () => {
                 // showAddButton={showAddButton}
                 onRowsPerPageChange={handleRowsPerPageChange}
             />
+        )}
             <Modal show={showModal} onHide={() => setShowModal(false)}>
                 <Modal.Header closeButton>
                     <Modal.Title>Confirm Action</Modal.Title>

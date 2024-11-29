@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Table, Button, Modal } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit } from "@fortawesome/free-solid-svg-icons";
+import { faCalendarDay, faEdit } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
+import CircleDotLoader from './CircleDotLoader';
 import { MDBSwitch } from 'mdb-react-ui-kit';
 import '../../css/AdminStyles/AdminTableStyles.css';
 import TableWithControls from './TableWithControls';
@@ -114,7 +115,10 @@ const AdminSchoolContent = () => {
         sessionStorage.setItem('schoolId', id); // Store package ID in session storage
         navigate(`/adminEditSchool`); // Navigate to the edit page
     };
-    
+    const handleFeatured = (id) => {
+        sessionStorage.setItem('schoolId', id); // Store school ID in session storage
+        navigate('/adminEditFeatured');
+    };
 
     const handleToggleSwitch = (id, currentStatus) => {
         const action = (currentStatus === 'Active' || currentStatus === 'Temporary') ? 'disable' : 'enable';
@@ -192,11 +196,14 @@ const AdminSchoolContent = () => {
             <th onClick={() => handleSort("status")}>
                 Status {sortColumn === "status" && (sortDirection === "asc" ? "↑" : "↓")}
             </th>
+            <th>Featured Settings</th>
             <th>Action</th>
+            
         </tr>
     );
 
-    const tbodyContent = sortedSchools.map((school) => (
+    const tbodyContent = sortedSchools.length > 0 ? (
+        sortedSchools.map((school) => (
         <tr key={school.id}>
             <td>{school.name}</td>
             <td>{school.email}</td>
@@ -204,6 +211,15 @@ const AdminSchoolContent = () => {
             <td>{school.category}</td>
             <td className={getStatusClass(school.status)}>
                 {school.status}
+            </td>
+            <td>
+                <FontAwesomeIcon
+                    className="icon-color-featured"
+                    title="Featured"
+                    icon={faCalendarDay}
+                    style={{ marginRight: '8px', color: '#691ED2', cursor: 'pointer' }}
+                    onClick={() => handleFeatured(school.id)}
+                />
             </td>
             <td>
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -244,11 +260,22 @@ const AdminSchoolContent = () => {
                 </div>
                 
             </td>
+           
         </tr>
-    ));
+    ))
+    ) : (
+        <tr>
+            <td colSpan="6" style={{ textAlign: "center" }}>No Data Available</td>
+        </tr>
+    );
+
+  
 
     return (
         <>
+         {loading ? (
+            <CircleDotLoader />
+            ) : (
             <TableWithControls
                 theadContent={theadContent}
                 tbodyContent={tbodyContent}
@@ -261,6 +288,7 @@ const AdminSchoolContent = () => {
                 onRowsPerPageChange={handleRowsPerPageChange}
                 showAddButton={showAddButton}
             />
+        )}
             <Modal show={showModal} onHide={() => setShowModal(false)}>
                 <Modal.Header closeButton>
                     <Modal.Title>Confirm Action</Modal.Title>

@@ -1,47 +1,53 @@
 import React, { useState, useEffect } from "react";
 import { Container, Col, Button, Modal } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { useDropzone } from "react-dropzone";
 import AdminFormComponent from './AdminFormComponent';
 import 'typeface-ubuntu';
+import SkeletonLoader from './SkeletonLoader';
 import "../../css/AdminStyles/AdminFormStyle.css";
-import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
-
-import { FaTrashAlt } from 'react-icons/fa';
+import ErrorModal from "./Error";                              
 
 const AdminReplyEnquiryContent = () => {
-    const [categoryList, setCategoryList] = useState([]); 
+    const [EnquiryList, setEnquiryList] = useState([]); 
     const [formData, setFormData] = useState({
-        name: "",
-        description:"",
+        email: "",
+        subject:"",
+        messageContent:"",
 
     });
     const [selectedIntakes, setSelectedIntakes] = useState([]);
     const [error, setError] = useState(null);
+  const [errorModalVisible, setErrorModalVisible] = useState(false);
+  const [generalError, setGeneralError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
     const navigate = useNavigate();
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`
+    const [loading, setLoading] = useState(true);
     const enquiryId = sessionStorage.getItem('enquiryId'); 
     const handleSubmit = async (event) => {
         event.preventDefault();
     
-        const { name, description } = formData; // Now, icon is the actual file
+        const { subject, email, messageContent } = formData;
     
-        const formPayload = new FormData();
-        formPayload.append("id", enquiryId);
-        formPayload.append("name", name);
-        formPayload.append("description", description);
-
-    
-        // Debugging: Log what is being sent to the backend
-        // console.log("FormData being sent:");
-        for (let [key, value] of formPayload.entries()) {
-            // console.log(`${key}:`, value);
+        if (!subject || !email || !messageContent) {
+            setError("All fields are required.");
+            setErrorModalVisible(true);
+            return;
         }
     
+        const formPayload = new FormData();
+        formPayload.append("enquiryId" , enquiryId)
+        formPayload.append("subject", subject);
+        formPayload.append("email", email);
+        formPayload.append("messageContent", messageContent);
+        console.log("FormData being sent to the backend:");
+        for (let [key, value] of formPayload.entries()) {
+            console.log(`${key}:`, value);
+        }
         try {
-            const addCategoryResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/editCategory`, {
+            const addEnquiryResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/replyEnquiry`, {
                 method: 'POST',
                 headers: {
                     'Authorization': Authenticate,
@@ -49,21 +55,21 @@ const AdminReplyEnquiryContent = () => {
                 body: formPayload,
             });
     
-            const addCategoryData = await addCategoryResponse.json();
-    
-            if (addCategoryResponse.ok) {
-                console.log('Category successfully registered:', addCategoryData);
-                navigate('/adminCategory');
+            // Check only the status if no JSON is returned
+            if (addEnquiryResponse.ok) {
+                console.log('Enquiry successfully sent.');
+                navigate('/adminEnquiry'); // Navigate to a different page on success
             } else {
-                console.error('Validation Error:', addCategoryData.errors);
-                throw new Error(`Category Registration failed: ${addCategoryData.message}`);
+                const rawResponse = await addEnquiryResponse.text(); // Get plain text
+                console.error('Error response from server:', rawResponse);
+                throw new Error(`Enquiry reply failed with status: ${addEnquiryResponse.status}`);
             }
         } catch (error) {
-            setError('An error occurred during category registration. Please try again later.');
-            console.error('Error during category registration:', error);
+            setError('An error occurred while replying to the enquiry. Please try again later.');
+            console.error('Error during Enquiry reply:', error);
         }
     };
-
+    
     useEffect(() => {
         if (!enquiryId) {
             console.error("Enquiry ID is not available in sessionStorage");
@@ -94,15 +100,18 @@ const AdminReplyEnquiryContent = () => {
                         email: enquiryDetails.email,
                         phone: enquiryDetails.phone,
                         subject: enquiryDetails.subject,
-                        message: enquiryDetails.message
+                        message: enquiryDetails.message,
+                        messageContent: enquiryDetails.messageContent
 
                     });
                 } else {
-                    console.error("Category not found with ID:", enquiryId);
+                    console.error("Enquiry not found with ID:", enquiryId);
                 }
             } catch (error) {
                 console.error('Error fetching package details:', error.message);
                 setError(error.message);
+            } finally {
+                setLoading(false);
             }
         };
         fetchEnquiryDetails();
@@ -128,7 +137,7 @@ const AdminReplyEnquiryContent = () => {
     const handleEditorChange = (content) => {
         setFormData(prevFormData => ({
             ...prevFormData,
-            description: content,
+            messageContent: content,
         }));
     };
     const formRead = [
@@ -171,19 +180,27 @@ const AdminReplyEnquiryContent = () => {
             label: "Subject",
             type: "text",
             placeholder: "Enter subject",
-            value: formData.subject,
-            onChange: handleFieldChange,
+            value: `Re: ${formData.subject || ""}`, // Add prefix here
+            onChange: (e) => {
+                const newValue = e.target.value.startsWith("Re: ") 
+                    ? e.target.value.slice(4)   // Remove "RE: " prefix from user input
+                    : e.target.value;
+        
+                handleFieldChange({ target: { id: "subject", value: newValue } });
+            },
             required: true
-        },
+        }
+        
  
     ];
-
-    const formHTML = [
+    const formTextarea = [
         {
-            id: "reply",
+            id: "messageContent",
             label: "Reply Message",
-            value: formData.reply,
-            onChange: handleEditorChange,
+            as: "textarea",
+            rows: 3,
+            value: formData.messageContent,
+            onChange: handleFieldChange,
             required: true
         }
     ];
@@ -199,18 +216,27 @@ const AdminReplyEnquiryContent = () => {
     return (
         
     <Container fluid className="admin-add-school-container">
+       <ErrorModal
+        errorModalVisible={errorModalVisible}
+        setErrorModalVisible={setErrorModalVisible}
+        generalError={generalError || error} // Ensure `generalError` or fallback to `error`
+        fieldErrors={fieldErrors}
+    />
+        {loading ? (
+                <SkeletonLoader />
+            ) : (
         <AdminFormComponent
            formTitle="Reply Enquiry"
-          
            formRead={formRead}
            shouldRenderHorizontalLine={shouldRenderHorizontalLine}
            formFields={formFields}
-           formHTML={formHTML}
+           formTextarea={formTextarea}
            onSubmit={handleSubmit}
            error={error}
            buttons={buttons}
                 />
-                </Container>
+            )}
+     </Container>
     );
 };
 

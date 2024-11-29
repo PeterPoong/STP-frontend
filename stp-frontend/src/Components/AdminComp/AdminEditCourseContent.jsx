@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Container, Col, Button, Modal } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { useDropzone } from "react-dropzone";
 import AdminFormComponent from './AdminFormComponent';
 import 'typeface-ubuntu';
+import SkeletonLoader from './SkeletonLoader';
 import "../../css/AdminStyles/AdminFormStyle.css";
-import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
-
-import { FaTrashAlt } from 'react-icons/fa';
+import ErrorModal from "./Error";
 
 const AdminEditCourseContent = () => {
     const [courseIntakeList, setCourseIntakeList] = useState([]);
@@ -20,7 +18,7 @@ const AdminEditCourseContent = () => {
     const courseId = sessionStorage.getItem('courseId');
     const [logo, setLogo] = useState(null); 
     const [newLogo, setNewLogo] = useState(null);
-    const [loading, setLoading] = useState(false); 
+    const [loading, setLoading] = useState(true); 
     const [formData, setFormData] = useState({
         
         name: "",
@@ -36,16 +34,36 @@ const AdminEditCourseContent = () => {
     });
     const [selectedIntakes, setSelectedIntakes] = useState([]);
     const [selectedCourses, setSelectedCourses] = useState([]);
-
     const [error, setError] = useState(null);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
+    const [generalError, setGeneralError] = useState('');
+    const [fieldErrors, setFieldErrors] = useState({});
     const navigate = useNavigate();
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`
+    const fieldLabels = {
+        name:"Course Name",
+        schoolID:"School Name",
+        description:"Course Description",
+        requirement:"Course Requirements",
+        cost:"Course Fee",
+        period:"Study Period",
+        category:"Course Category",
+        qualification:"Course Qualification",
+        mode:"Study Mode",
+        logo:"Logo",
+        intake:"Intake",
+        course:"Course Featured"
+    };
     const handleSubmit = async (event) => {
         event.preventDefault();
         
         const { name, schoolID, description, requirement, cost, period, category, qualification, mode } = formData;
-        
+        if (!name || !schoolID || !description || !requirement || !period || !category || !qualification || !mode) {
+            setError("Please fill in all required fields.");
+            setErrorModalVisible(true);
+            return; // Stop form submission if any required field is missing
+        }
         const formPayload = new FormData();
         formPayload.append("id", courseId)
         formPayload.append("name", name);
@@ -72,8 +90,7 @@ const AdminEditCourseContent = () => {
             formPayload.append("courseFeatured[]", course);
         });
     
-        setLoading(true);  // Set loading state to true
-    
+
         try {
             const addCourseResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/editCourse`, {
                 method: 'POST',
@@ -88,17 +105,21 @@ const AdminEditCourseContent = () => {
             if (addCourseResponse.ok) {
                 console.log('Course successfully registered:', addCourseData);
                 navigate('/adminCourses');
+            } else if (addCourseResponse.status === 422) {
+                // Validation errors
+                console.log('Validation Errors:', addCourseData.errors);
+                setFieldErrors(addCourseData.errors); // Pass validation errors to the modal
+                setGeneralError(addCourseData.message || "Validation Error");
+                setErrorModalVisible(true); // Show the error modal
             } else {
-                console.error('Validation Error:', addCourseData.errors);
-                throw new Error(`Course Registration failed: ${addCourseData.message}`);
+                setGeneralError(addCourseData.message || "Failed to edit the course.");
+                setErrorModalVisible(true);
             }
         } catch (error) {
-            setError('An error occurred during course registration. Please try again later.');
-            console.error('Error during course registration:', error);
-        } finally {
-            setLoading(false);  // Ensure loading state is set to false after completion
+            setGeneralError(error.message || "An error occurred while editing the course. Please try again later.");
+            setErrorModalVisible(true);
         }
-    };
+    };    
      
     useEffect(() => {
         if (!courseId) {
@@ -147,6 +168,8 @@ const AdminEditCourseContent = () => {
             } catch (error) {
                 console.error('Error fetching course details:', error.message);
                 setError(error.message);
+            } finally {
+                setLoading(false);
             }
         };
     
@@ -175,6 +198,8 @@ const AdminEditCourseContent = () => {
             } catch (error) {
                 console.error('Error fetching course intake list:', error.message);
                 setError(error.message);
+            }finally {
+                setLoading(false);
             }
         };
     
@@ -206,6 +231,8 @@ const AdminEditCourseContent = () => {
             } catch (error) {
                 console.error('Error fetching course featured list:', error.message);
                 setError(error.message);
+            }finally {
+                setLoading(false);
             }
         };
 
@@ -235,6 +262,8 @@ const AdminEditCourseContent = () => {
             } catch (error) {
                 console.error('Error fetching categories:', error.message);
                 setError(error.message);
+            }finally {
+                setLoading(false);
             }
         };
     
@@ -264,6 +293,8 @@ const AdminEditCourseContent = () => {
             } catch (error) {
                 console.error('Error fetching qualifications:', error.message);
                 setError(error.message);
+            }finally {
+                setLoading(false);
             }
         };
     
@@ -293,6 +324,8 @@ const AdminEditCourseContent = () => {
             } catch (error) {
                 console.error('Error fetching schools:', error.message);
                 setError(error.message);
+            }finally {
+                setLoading(false);
             }
         };
     
@@ -324,6 +357,8 @@ const AdminEditCourseContent = () => {
             } catch (error) {
                 console.error('Error fetching modes:', error.message);
                 setError(error.message);
+            }finally {
+                setLoading(false);
             }
         };
     
@@ -531,8 +566,18 @@ const formCourse = courseFeaturedList.map((course) => ({
 
     return (
         
-                <Container fluid className="admin-add-school-container">
-                    <AdminFormComponent
+        <Container fluid className="admin-add-school-container">
+            <ErrorModal
+                errorModalVisible={errorModalVisible}
+                setErrorModalVisible={setErrorModalVisible}
+                generalError={generalError || error} // Ensure `generalError` or fallback to `error`
+                fieldErrors={fieldErrors}
+                fieldLabels={fieldLabels}
+            />
+            {loading ? (
+                    <SkeletonLoader />
+                ) : (
+            <AdminFormComponent
            formTitle="Course Details"
            checkboxTitle="Intake"
            courseTitle="Course Featured"
@@ -555,7 +600,8 @@ const formCourse = courseFeaturedList.map((course) => ({
            newLogo={newLogo}
             loading={loading}
                 />
-                </Container>
+            )}
+        </Container>
     );
 };
 

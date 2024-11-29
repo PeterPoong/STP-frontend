@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Container, Col, Button, Modal } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { useDropzone } from "react-dropzone";
 import AdminFormComponent from './AdminFormComponent';
 import 'typeface-ubuntu';
+import ErrorModal from "./Error";
 import "../../css/AdminStyles/AdminFormStyle.css";
-import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
-
-import { FaTrashAlt } from 'react-icons/fa';
 
 const AdminAddPackageContent = () => {
     const [categoryList, setCategoryList] = useState([]); 
@@ -20,17 +17,29 @@ const AdminAddPackageContent = () => {
         package_price: "",
     });
 
-    const [error, setError] = useState(null);
     const navigate = useNavigate();
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`;
-
+    const [error, setError] = useState(null);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
+    const [generalError, setGeneralError] = useState('');
+    const [fieldErrors, setFieldErrors] = useState({});
+    const fieldLabels = {
+        package_name:"Package Name",
+        package_detail:"Package Detail",
+        package_type:"Package Type",
+        package_price:"Package Price"
+    };
     const handleSubmit = async (event) => {
         event.preventDefault();
         // console.log("Submitting form data:", formData); // Debugging line
         
         const { package_name, package_detail, package_type, package_price } = formData;
-        
+        if (!package_name || !package_detail || !package_type || !package_price) {
+            setGeneralError("Please fill in all required fields.");
+            setErrorModalVisible(true);
+            return; // Stop form submission if any required field is missing
+        }
         const formPayload = new FormData();
         formPayload.append("package_name", package_name);
         formPayload.append("package_detail", package_detail); // TinyMCE raw HTML
@@ -56,13 +65,19 @@ const AdminAddPackageContent = () => {
             if (addPackageResponse.ok) {
                 console.log('Package successfully registered:', addPackageData);
                 navigate('/adminPackage'); // Ensure navigate function is properly defined
+            } else if (addPackageResponse.status === 422) {
+                // Validation errors
+                console.log('Validation Errors:', addPackageData.errors);
+                setFieldErrors(addPackageData.errors); // Pass validation errors to the modal
+                setGeneralError(addPackageData.message || "Validation Error");
+                setErrorModalVisible(true); // Show the error modal
             } else {
-                console.error('Validation Error:', addPackageData.errors);
-                throw new Error(`Package Registration failed: ${addPackageData.message}`);
+                setGeneralError(addPackageData.message || "Failed to add new package.");
+                setErrorModalVisible(true);
             }
         } catch (error) {
-            setError('An error occurred during Package registration. Please try again later.');
-            console.error('Error during Package registration:', error);
+            setGeneralError(error.message || "An error occurred while adding the package. Please try again later.");
+            setErrorModalVisible(true);
         }
     };
     
@@ -178,8 +193,15 @@ const AdminAddPackageContent = () => {
 
     return (
         
-                <Container fluid className="admin-add-package-container">
-                    <AdminFormComponent
+    <Container fluid className="admin-add-package-container">
+         <ErrorModal
+            errorModalVisible={errorModalVisible}
+            setErrorModalVisible={setErrorModalVisible}
+            generalError={generalError || error} // Ensure `generalError` or fallback to `error`
+            fieldErrors={fieldErrors}
+            fieldLabels={fieldLabels}
+            />
+        <AdminFormComponent
            formTitle="Package Information"
            formFields={formFields}
            formHTML={formHTML}
@@ -188,9 +210,8 @@ const AdminAddPackageContent = () => {
            onSubmit={handleSubmit}
            error={error}
            buttons={buttons}
-
                 />
-                </Container>
+    </Container>
     );
 };
 

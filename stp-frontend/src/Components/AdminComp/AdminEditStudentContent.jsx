@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Container, Col, Button, Modal, Card } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { useDropzone } from "react-dropzone";
+import SkeletonLoader from './SkeletonLoader';
 import AdminFormComponent from './AdminFormComponent';
 import 'typeface-ubuntu';
 import "../../css/AdminStyles/AdminFormStyle.css";
-import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
-
-import { FaTrashAlt } from 'react-icons/fa';
+import ErrorModal from "./Error";
 
 const AdminEditStudentContent = () => {
     const [genderList, setGenderList] = useState([]); 
@@ -32,16 +30,26 @@ const AdminEditStudentContent = () => {
         password: "",
         confirm_password: "",
     });
-    const [error, setError] = useState(null);
     const navigate = useNavigate();
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`;
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [passwordsMatch, setPasswordsMatch] = useState(true);
-    
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
+    const [generalError, setGeneralError] = useState('');
+    const [fieldErrors, setFieldErrors] = useState({});
     const studentId = sessionStorage.getItem('studentId');
     const fetchStudentDetails = async () => {
+      const studentId = sessionStorage.getItem('studentId');
+            if (!studentId) {
+                setGeneralError('No student ID found in session storage.');
+                setErrorModalVisible(true);
+                setLoading(false);
+                return;
+            }
       try {
           const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/studentDetail`, {
               method: 'POST',
@@ -53,12 +61,12 @@ const AdminEditStudentContent = () => {
           });
 
           if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error(`Failed to fetch student details. HTTP status: ${response.status}`);
           }
 
           const data = await response.json();
           const studentDetails = data.data;
-
+          const newFieldErrors = {};
           if (studentDetails) {
               setFormData({
                   name: studentDetails.name,
@@ -74,16 +82,35 @@ const AdminEditStudentContent = () => {
                   state: studentDetails.state,
                   city: studentDetails.city,
                   postcode: studentDetails.postcode,
-                  
               });
-
+              if (studentDetails.country) {
+                try {
+                    await fetchStates(studentDetails.country);
+                } catch {
+                    newFieldErrors.state = 'Error fetching states based on country.';
+                }
+            }
+            if (studentDetails.state) {
+              try {
+                  await fetchCities(studentDetails.state);
+              } catch {
+                  newFieldErrors.city = 'Error fetching cities based on state.';
+              }
+          }
+          setFieldErrors(newFieldErrors);
+              if (Object.keys(newFieldErrors).length > 0) {
+                  setErrorModalVisible(true);
+              }
           } else {
-              console.error("Student not found with ID:", studentId);
+            setGeneralError(data.message || 'Failed to load student details data.');
+            setErrorModalVisible(true);
           }
       } catch (error) {
-          console.error('Error fetching student details:', error.message);
-          setError(error.message);
-      }
+        setGeneralError(error.message || 'An error occurred while fetching student details.');
+        setErrorModalVisible(true);
+      }finally {
+      setLoading(false);
+    }
   };
   useEffect(() => {
     if (!studentId) {
@@ -94,12 +121,34 @@ const AdminEditStudentContent = () => {
     fetchStudentDetails();
 }, [studentId, Authenticate]);
 
+  const fieldLabels = {
+    name:"Student Name",
+    first_name:"Student Firstname",
+    last_name:"Student lastname",
+    gender:"Gender",
+    ic:"New Identity Card No.",
+    postcode:"Postcode",
+    email:"Email Address",
+    state: "State", 
+    city:"City", 
+    country:"Country", 
+    address:"Full Address", 
+    contact_number: "Contact Number", 
+    country_code: "Country Code",
+    confirm_password:"Confirm Password",
+    password:"Password"
+  };
+
     const handleSubmit = async (event) => {
       event.preventDefault();
       // console.log("Submitting form data:", formData);
   
       const { name, first_name, last_name, gender, ic, postcode, email, state, city, country, address, contact_number, country_code, confirm_password, password } = formData;
-  
+      if (!name || !first_name || !last_name || !gender || !ic || !postcode || !email || !state || !city || !country || !address || !contact_number || !country_code) {
+        setError("Please fill in all required fields.");
+        setErrorModalVisible(true);
+        return; // Stop form submission if any required field is missing
+    }
       // Convert strings to integers where needed
       const cityInt = parseInt(city, 10);
       const genderInt = parseInt(gender, 10);
@@ -145,13 +194,19 @@ const AdminEditStudentContent = () => {
           if (addStudentResponse.ok) {
               console.log('Student successfully registered:', addStudentData);
               navigate('/adminStudent');
-          } else {
-              console.error('Validation Error:', addStudentData.errors);
-              throw new Error(`Student Registration failed: ${addStudentData.message}`);
+            } else if (addStudentResponse.status === 422) {
+              // Validation errors
+              console.log('Validation Errors:', addStudentData.errors);
+              setFieldErrors(addStudentData.errors); // Pass validation errors to the modal
+              setGeneralError(addStudentData.message || "Validation Error");
+              setErrorModalVisible(true); // Show the error modal
+            } else {
+            setGeneralError(addStudentData.message || "Failed to edit student details.");
+            setErrorModalVisible(true);
           }
       } catch (error) {
-          setError('An error occurred during student registration. Please try again later.');
-          console.error('Error during student registration:', error);
+        setGeneralError(error.message || "An error occurred while editing the student. Please try again later.");
+        setErrorModalVisible(true);
       }
   };
   
@@ -525,8 +580,18 @@ const fetchCities = (stateId) => {
 
     return (
         
-                <Container fluid className="admin-add-student-container">
-                    <AdminFormComponent
+        <Container fluid className="admin-add-student-container">
+                <ErrorModal
+                errorModalVisible={errorModalVisible}
+                setErrorModalVisible={setErrorModalVisible}
+                generalError={generalError || error} // Ensure `generalError` or fallback to `error`
+                fieldErrors={fieldErrors}
+                fieldLabels={fieldLabels}
+            />
+           {loading ? (
+                    <SkeletonLoader />
+                ) : (
+           <AdminFormComponent
            formTitle="Student Information"
            formFields={formFields}
            shouldRenderPasswordCard={shouldRenderPasswordCard}
@@ -544,12 +609,13 @@ const fetchCities = (stateId) => {
            handleRadioChange={handleRadioChange}
            formData={formData}
                 />
-                 {!passwordsMatch && (
-                <div className="text-danger">
-                    Passwords do not match.
-                </div>
+          )}
+            {!passwordsMatch && (
+              <div className="text-danger">
+                  Passwords do not match.
+              </div>
             )}
-                </Container>
+      </Container>
     );
 };
 

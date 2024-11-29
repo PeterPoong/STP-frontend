@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 import TableWithControls from './TableWithControls';
 import { useNavigate } from "react-router-dom";
+import CircleDotLoader from './CircleDotLoader';
 import { MDBSwitch } from 'mdb-react-ui-kit';
 
 const AdminStudentContent = () => {
@@ -206,7 +207,8 @@ const AdminStudentContent = () => {
         </tr>
     );
 
-    const tbodyContent = sortedstudents.map((student) => (
+    const tbodyContent = sortedstudents.length > 0 ? (
+        sortedstudents.map((student) => (
         <tr key={student.id}>
             <td>{student.name}</td>
             <td>{student.email}</td>
@@ -233,10 +235,17 @@ const AdminStudentContent = () => {
                 </div>
             </td>
         </tr>
-    ));
-
+    ))
+) : (
+    <tr>
+        <td colSpan="6" style={{ textAlign: "center" }}>No Data Available</td>
+    </tr>
+);
     return (
     <>
+    {loading ? (
+            <CircleDotLoader />
+            ) : (
         <TableWithControls
             theadContent={theadContent}
             tbodyContent={tbodyContent}
@@ -250,6 +259,7 @@ const AdminStudentContent = () => {
             // onSearch={(query) => console.log(query)} // Implement search functionality
             onAddButtonClick={handleAddStudent} // Implement add new student functionality
         />
+    )}
         <Modal show={showModal} onHide={() => setShowModal(false)}>
             <Modal.Header closeButton>
                 <Modal.Title>Confirm Action</Modal.Title>

@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import { Container, Button } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import AdminFormComponent from './AdminFormComponent';
+import SkeletonLoader from './SkeletonLoader';
 import "../../css/AdminStyles/AdminFormStyle.css";
+import ErrorModal from "./Error";
 
 const AdminEditPackageContent = () => {
     const { id } = useParams(); // Get package ID from URL
@@ -14,9 +16,13 @@ const AdminEditPackageContent = () => {
         package_price: "",
     });
     const [error, setError] = useState(null);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
+    const [generalError, setGeneralError] = useState('');
+    const [fieldErrors, setFieldErrors] = useState({});
     const navigate = useNavigate();
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`;
+    const [loading, setLoading] = useState(true);
     const packageId = sessionStorage.getItem('packageId'); 
 
     // Fetch package details
@@ -56,6 +62,8 @@ const AdminEditPackageContent = () => {
             } catch (error) {
                 console.error('Error fetching package details:', error.message);
                 setError(error.message);
+            } finally {
+                setLoading(false);
             }
         };
         
@@ -88,17 +96,22 @@ const AdminEditPackageContent = () => {
         fetchPackageDetails();
         fetchPackages();
     }, [packageId, Authenticate]);
-
+    const fieldLabels = {
+        package_name:"Package Name",
+        package_detail:"Package Detail",
+        package_type:"Package Type",
+        package_price:"Package Price"
+    };
     const handleSubmit = async (event) => {
         event.preventDefault();
         
         const { package_name, package_detail, package_type, package_price } = formData;
         const packageId = sessionStorage.getItem('packageId'); // Retrieve the ID from session storage
-    
         // Simple validation
         if (!package_name || !package_detail || !package_type || !package_price) {
-            setError("Please fill out all required fields.");
-            return;
+            setGeneralError("Please fill in all required fields.");
+            setErrorModalVisible(true);
+            return; // Stop form submission if any required field is missing
         }
     
         const formPayload = new FormData();
@@ -121,17 +134,22 @@ const AdminEditPackageContent = () => {
     
             if (updatePackageResponse.ok) {
                 navigate('/adminPackage');
+            } else if (updatePackageResponse.status === 422) {
+                // Validation errors
+                console.log('Validation Errors:', updatePackageData.errors);
+                setFieldErrors(updatePackageData.errors); // Pass validation errors to the modal
+                setGeneralError(updatePackageData.message || "Validation Error");
+                setErrorModalVisible(true); // Show the error modal
             } else {
-                console.error('Validation Error:', updatePackageData.errors);
-                throw new Error(`Package Update failed: ${updatePackageData.message}`);
+                setGeneralError(updatePackageData.message || "Failed to edit package.");
+                setErrorModalVisible(true);
             }
         } catch (error) {
-            setError('An error occurred during Package update. Please try again later.');
-            console.error('Error during Package update:', error);
+            setGeneralError(error.message || "An error occurred while editing the package. Please try again later.");
+            setErrorModalVisible(true);
         }
     };
     
-
     const handleFieldChange = (e) => {
         const { id, value, type, files } = e.target;
         if (type === "file") {
@@ -211,6 +229,16 @@ const AdminEditPackageContent = () => {
 
     return (
         <Container fluid className="admin-add-package-container">
+             <ErrorModal
+            errorModalVisible={errorModalVisible}
+            setErrorModalVisible={setErrorModalVisible}
+            generalError={generalError || error} // Ensure `generalError` or fallback to `error`
+            fieldErrors={fieldErrors}
+            fieldLabels={fieldLabels}
+            />
+            {loading ? (
+                    <SkeletonLoader />
+                ) : (
             <AdminFormComponent
                 formTitle="Package Information"
                 formFields={formFields}
@@ -221,6 +249,7 @@ const AdminEditPackageContent = () => {
                 error={error}
                 buttons={buttons}
             />
+        )}
         </Container>
     );
 };

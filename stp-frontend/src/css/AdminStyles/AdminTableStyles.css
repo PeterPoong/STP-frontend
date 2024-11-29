@@ -93,12 +93,16 @@
     text-align: center;
     text-indent: -9999px; /* Hide the actual content off-screen */
     position: relative;
+    font-weight: bold;
+
 }
 .status-rejected {
     color: red !important;
     padding: 5px;
     text-align: center;
     position: relative;
+    font-weight: bold;
+
 }
 .status-disable::before {
     content: "Disabled"; /* Add "Disabled" text */
@@ -106,6 +110,8 @@
     position: absolute;
     left: 0;
     right: 0;
+    font-weight: bold;
+
 }
 
 .status-active {
@@ -114,6 +120,8 @@
     text-align: center;
     text-indent: -9999px; /* Hide the actual content off-screen */
     position: relative;
+    font-weight: bold;
+
 }
 
 .status-accepted {
@@ -121,6 +129,12 @@
     padding: 5px;
     text-align: center;
     position: relative;
+    font-weight: bold;
+
+}
+.status-replied {
+    color: green !important;
+    font-weight: bold;
 }
 
 .status-active::before {
@@ -128,6 +142,7 @@
     text-indent: 0; /* Ensure the custom text is visible */
     position: absolute;
     left: 0;
+    font-weight: bold;
     right: 0;
 }
 
@@ -136,12 +151,16 @@
     color: #FFAA1D !important;
     padding: 5px;
     text-align: center;
+    font-weight: bold;
+
 }
 
 .status-temporary {
     color: #D2691E !important;
     padding: 5px;
     text-align: center;
+    font-weight: bold;
+
 }
 
 .icon-color-edit {
@@ -179,7 +198,7 @@ button.addNew{
     border-radius: 15px;
     width: 110px;
     height: 29px;
-    font-size: 12px;
+    font-size: 14px;
     line-height: 14.4px;
 }
 button.addNew:hover{
@@ -192,8 +211,7 @@ button.rejected{
     height: 29px;
     border-radius: 15px;
     line-height: 14.4px;
-    font-size: 14px;
-    
+    font-size: 12px;
 }
 button.rejected{
     background-color: #D32F2F;

@@ -5,7 +5,8 @@
 
 .SideNavContainer {
     width: 250px; /* Adjust width as needed */
-    background-color: #d9d9d9;
+    max-height: 100vh !important;
+    background-color: transparent;
     /* Ensure the sidebar is full height */
     display: flex;
     flex-direction: column;
@@ -29,7 +30,7 @@
 @media (min-width: 1920px) {   
     .SideNavContainer {
         width: 300px; /* Sidebar width */
-        height: 100vh; /* Full viewport height for the sidebar */
+        max-height: 100vh; /* Full viewport height for the sidebar */
         position: fixed; /* Fixes sidebar in place */
         top: 0;
         left: 0;

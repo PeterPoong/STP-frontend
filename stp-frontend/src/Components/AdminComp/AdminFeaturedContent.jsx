@@ -1,0 +1,390 @@
+import React, { useEffect, useState } from "react";
+import { Table, Button, Modal, Form } from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEdit, faReceipt } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
+import { MDBSwitch } from 'mdb-react-ui-kit';
+import CircleDotLoader from './CircleDotLoader';
+import '../../css/AdminStyles/AdminTableStyles.css';
+import TableWithControls from './TableWithControls';
+
+const AdminFeaturedContent = () => {
+    const [Featureds, setFeatureds] = useState([]);
+    const [error, setError] = useState(null);
+    const [sortColumn, setSortColumn] = useState(null);
+    const [sortDirection, setSortDirection] = useState(null);
+    const [showModal, setShowModal] = useState(false);
+    const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+    const [feedback, setFeedback] = useState("");  // State for feedback input
+    const [targetFeatured, setTargetFeatured] = useState(null);
+    const [totalPages, setTotalPages] = useState(1);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [loading, setLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState("");
+    const token = sessionStorage.getItem('token');
+    const Authenticate = `Bearer ${token}`;
+    const navigate = useNavigate();
+    const [showReceiptModal, setShowReceiptModal] = useState(false);
+    const [selectedReceipt, setSelectedReceipt] = useState(null);
+
+    const fetchFeatureds = async (page = 1, perPage = rowsPerPage, search = searchQuery) => {
+        try {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/featuredRequestList?page=${page}&per_page=${perPage === "All" ? Featureds.length : perPage}&search=${search}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": Authenticate,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            
+            // Check for success and data structure
+            if (result.success && result.data) {
+                setFeatureds(result.data.data); // Access the nested data array
+                setTotalPages(result.data.last_page);
+                setCurrentPage(result.data.current_page);
+                // Optionally, you might want to store other pagination info
+                // setRowsPerPage(result.data.per_page);
+            } else {
+                setFeatureds([]);
+                setTotalPages(1);
+                setCurrentPage(1);
+            }
+        } catch (error) {
+            setError(error.message);
+            console.error("Error fetching the Featured list:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchFeatureds(currentPage, rowsPerPage, searchQuery, sortColumn, sortDirection);
+    }, [currentPage, rowsPerPage, searchQuery, sortColumn, sortDirection]);
+
+    const handleRowsPerPageChange = (newRowsPerPage) => {
+        setRowsPerPage(newRowsPerPage);
+        setCurrentPage(1); 
+        fetchFeatureds(1, newRowsPerPage === "All" ? Featureds.length : newRowsPerPage, searchQuery);
+    };
+
+    const handleSearch = (query) => {
+        setSearchQuery(query);
+        setCurrentPage(1);
+        fetchFeatureds(1, rowsPerPage, query);
+    };
+
+    const handleSort = (column) => {
+        const newDirection = sortColumn === column && sortDirection === "asc" ? "desc" : "asc";
+        setSortColumn(column);
+        setSortDirection(newDirection);
+        fetchFeatureds(currentPage, rowsPerPage, searchQuery);
+    };
+
+    const sortedFeatureds = (() => {
+        if (!sortColumn || !sortDirection) return Featureds;
+    
+        return [...Featureds].sort((a, b) => {
+            const aValue = a[sortColumn] ? a[sortColumn].toString().toLowerCase() : '';
+            const bValue = b[sortColumn] ? b[sortColumn].toString().toLowerCase() : '';
+    
+            if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
+            if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
+            return 0;
+        });
+    })();
+
+    const handlePageChange = (page) => {
+        if (page <= totalPages && page > 0) {
+            setCurrentPage(page);
+        }
+    };
+
+    const handlePendingAction = (id, action) => {
+        setTargetFeatured({ id, action: action.toLowerCase() });
+        setShowModal(true);
+    };
+
+    const confirmAction = async () => {
+        if (!targetFeatured) return;
+
+        try {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/updateRequestFeatured`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': Authenticate,
+                },
+                body: JSON.stringify({
+                    request_id: targetFeatured.id,
+                    action: targetFeatured.action
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert(result.data.message); // Or use your preferred notification system
+                fetchFeatureds(currentPage, rowsPerPage, searchQuery);
+            } else {
+                alert(result.message || 'Failed to update request');
+            }
+        } catch (error) {
+            console.error('Error updating featured request:', error);
+            alert('Failed to update request. Please try again.');
+        } finally {
+            setShowModal(false);
+            setTargetFeatured(null);
+        }
+    };
+
+    const handleToggleSwitch = (id, currentStatus) => {
+        const action = (currentStatus === 'Active' || currentStatus === 'Temporary' || 
+                       currentStatus === 'Accepted' || currentStatus === 'Approved') ? 'disable' : 'enable';
+        setTargetFeatured({ id, action });
+        setShowModal(true);
+    };
+    const handleEdit = (id) => {
+        // console.log(`Edit Featured with ID: ${id}`); // Log the ID being passed
+        sessionStorage.setItem('FeaturedId', id); // Store package ID in session storage
+        navigate(`/adminEditFeatured`); // Navigate to the edit page
+    };
+
+    const submitFeedback = async () => {
+        if (!targetFeatured) return;
+
+        try {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/editFeaturedStatus`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": Authenticate,
+                },
+                body: JSON.stringify({
+                    id: targetFeatured.id,
+                    type: targetFeatured.action,
+                    feedback: feedback // Send feedback to the backend
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! request_status: ${response.request_status}`);
+            }
+
+            const result = await response.json();
+
+            if (result.success) {
+                await fetchFeatureds(currentPage, rowsPerPage, searchQuery); // Fetch updated data
+            } else {
+                console.error(result.message);
+            }
+        } catch (error) {
+            console.error("Error processing the action:", error);
+        } finally {
+            setShowFeedbackModal(false);
+            setTargetFeatured(null);
+        }
+    };
+
+    const getStatusClass = (request_status) => {
+        switch (request_status) {
+            case 'Disable':
+                return 'status-disable';
+            case 'Rejected':
+                return 'status-rejected';
+            case 'Temporary-Disable':
+                return 'status-disable';
+            case 'Approved':
+                return 'status-active';
+            case 'Pending':
+                return 'status-pending';
+            case 'Temporary':
+                return 'status-temporary';
+            default:
+                return '';
+        }
+    };
+
+    const handleReceiptClick = (receiptPath) => {
+        setSelectedReceipt(`${import.meta.env.VITE_BASE_URL}storage/${receiptPath}`);
+        setShowReceiptModal(true);
+    };
+
+    const theadContent = (
+        <tr>
+            <th onClick={() => handleSort("schoolName")}>
+                School {sortColumn === "schoolName" && (sortDirection === "asc" ? "↑" : "↓")}
+            </th>
+            <th onClick={() => handleSort("requestName")}>
+                Request {sortColumn === "requestName" && (sortDirection === "asc" ? "↑" : "↓")}
+            </th>
+            <th onClick={() => handleSort("featuredType")}>
+                Featured Type{sortColumn === "featuredType" && (sortDirection === "asc" ? "↑" : "↓")}
+            </th>
+            <th onClick={() => handleSort("requestQuantity")}>
+                Quantity {sortColumn === "requestQuantity" && (sortDirection === "asc" ? "↑" : "↓")}
+            </th>
+            <th onClick={() => handleSort("featuredDuration")}>
+                Duration (Days) {sortColumn === "featuredDuration" && (sortDirection === "asc" ? "↑" : "↓")}
+            </th>
+            <th onClick={() => handleSort("transactionProof")}>
+                Transaction Receipt {sortColumn === "transactionProof" && (sortDirection === "asc" ? "↑" : "↓")}
+            </th>
+            <th onClick={() => handleSort("featuredStatus")}>
+                Status {sortColumn === "featuredStatus" && (sortDirection === "asc" ? "↑" : "↓")}
+            </th>
+            <th>Action</th>
+        </tr>
+    );
+
+    const tbodyContent = sortedFeatureds.length > 0 ? (
+    sortedFeatureds.map((Featured) => (
+        <tr key={Featured.id}>
+            <td>{Featured.school_name}</td>
+            <td>{Featured.request_name}</td>
+            <td>{Featured.featured_type}</td>
+            <td>{Featured.request_quantity}</td>
+            <td>{Featured.featured_duration}</td>
+            <td>
+                <FontAwesomeIcon
+                    icon={faReceipt}
+                    style={{ cursor: 'pointer', color: '#691ED2' }}
+                    onClick={() => handleReceiptClick(Featured.transaction_proof)}
+                    title="View Receipt"
+                />
+            </td>
+            <td className={getStatusClass(Featured.request_status)}>
+                {Featured.request_status}
+            </td>
+            <td>
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    {Featured.request_status === 'Pending' ? (
+                        <>
+                            <Button 
+                                className="accept"
+                                variant="success"
+                                onClick={() => handlePendingAction(Featured.id, 'accept')}
+                            >
+                            Approve
+                            </Button>
+                            <Button 
+                                className="rejected"
+                                variant="danger"
+                                onClick={() => handlePendingAction(Featured.id, 'reject')}
+                            >
+                                Reject
+                            </Button>
+                        </>
+                    ) : (
+                        <>
+                            <FontAwesomeIcon
+                                className="icon-color-edit"
+                                title="Edit"
+                                icon={faEdit}
+                                style={{ marginRight: '8px', color: '#691ED2', cursor: 'pointer' }}
+                                onClick={() => handleEdit(Featured.id)}
+                            />
+                            {/* <MDBSwitch
+                                id={`switch-${Featured.id}`}
+                                checked={Featured.request_status === 'Active' || 
+                                         Featured.request_status === 'Temporary' ||
+                                         Featured.request_status === 'Accepted' ||
+                                         Featured.request_status === 'Approved'}
+                                onChange={() => handleToggleSwitch(Featured.id, Featured.request_status)}
+                                style={{
+                                    color: (Featured.request_status === 'Active' || 
+                                            Featured.request_status === 'Temporary' ||
+                                            Featured.request_status === 'Accepted' ||
+                                            Featured.request_status === 'Approved') ? 'green' : ''
+                                }}
+                            /> */}
+                        </>
+                    )}
+                </div>
+            </td>
+        </tr>
+    ))
+) : (
+    <tr>
+        <td colSpan="8" style={{ textAlign: "center" }}>No Data Available</td>
+    </tr>
+);
+    return (
+        <>
+        {loading ? (
+            <CircleDotLoader />
+            ) : (
+            <TableWithControls
+                 theadContent={theadContent}
+                 tbodyContent={tbodyContent}
+                 onSearch={handleSearch}
+                 onSort={handleSort}
+                 totalPages={totalPages}
+                 currentPage={currentPage}
+                 onPageChange={handlePageChange}
+                 onRowsPerPageChange={handleRowsPerPageChange}
+            />
+        )}
+            <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Confirm Action</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    Are you sure you want to {targetFeatured?.action} this Featured?
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowModal(false)}>
+                        Cancel
+                    </Button>
+                    <Button 
+                        variant={targetFeatured?.action === 'accept' ? 'success' : 'danger'}
+                        onClick={confirmAction}
+                    >
+                        Confirm
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
+            <Modal 
+                show={showReceiptModal} 
+                onHide={() => setShowReceiptModal(false)}
+                size="lg"
+                centered
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title>Transaction Receipt</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                        <img
+                            src={selectedReceipt}
+                            alt="Transaction Receipt"
+                            style={{ 
+                                maxWidth: '100%',
+                                maxHeight: '70vh',
+                                objectFit: 'contain'
+                            }}
+                        />
+                    </div>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowReceiptModal(false)}>
+                        Close
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+        </>
+    );
+};
+
+export default AdminFeaturedContent;
