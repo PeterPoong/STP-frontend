@@ -67,6 +67,8 @@ const SearchInstitute = () => {
   const [totalPages, setTotalPages] = useState(1);
   const itemsPerPage = 20;
 
+  //search state
+  const [tempSearch, setTempSearch] = useState("");
 
   const topRef = useRef(null);
   const scrollToTop = () => {
@@ -221,7 +223,7 @@ const SearchInstitute = () => {
       }
 
       const result = await response.json();
-    //  console.log("result", result);
+      //  console.log("result", result);
       // In your fetchInstitutes function, update the success block:
 
       if (result.success) {
@@ -765,11 +767,17 @@ const SearchInstitute = () => {
         >
           <InputGroup className="mb-3">
             <Form.Control
-              className="custom-placeholder saerchinstitute-display-none"
+              className="custom-placeholder"
               style={{ height: "45px", marginTop: "9px" }}
               placeholder="Search for Institutions, Country"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              value={tempSearch}
+              onChange={(e) => {
+                setTempSearch(e.target.value);
+                // After 500ms, update the main searchQuery which triggers API call
+                setTimeout(() => {
+                  setSearchQuery(e.target.value);
+                }, 500);
+              }}
             />
           </InputGroup>
         </Form>
@@ -786,8 +794,14 @@ const SearchInstitute = () => {
                 className="custom-placeholder"
                 style={{ height: "45px", marginTop: "9px" }}
                 placeholder="Search for Institutions, Country"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                value={tempSearch}
+                onChange={(e) => {
+                  setTempSearch(e.target.value);
+                  // After 500ms, update the main searchQuery which triggers API call
+                  setTimeout(() => {
+                    setSearchQuery(e.target.value);
+                  }, 500);
+                }}
               />
             </InputGroup>
           </Form>
