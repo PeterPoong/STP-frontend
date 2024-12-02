@@ -1,7 +1,18 @@
 /* Featured Content */
-*{
+.admin-feature {
     font-family: 'Inter', sans-serif;
 }
+
+.admin-feature .container {
+    background-color: white;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.admin-feature .row {
+    margin: 0;
+}
+
 .featured-header {
     padding: 1rem;
     background-color: #f8f9fa;
@@ -18,10 +29,6 @@
     box-shadow: none;
     border-color: rgba(0,0,0,.125);
     background-color: transparent !important;
-}
-
-.row {
-    margin: 0;
 }
 
 .filter-row {
@@ -113,9 +120,21 @@
     box-shadow: none;
 }
 
-.container {
-    background-color: white;
-    min-height: 100vh;
-    padding: 20px;
+.custom-datepicker {
+    border-radius: 15px !important;
+}
+
+/* Also target the datepicker input specifically */
+.custom-datepicker .react-datepicker__input-container input {
+    border-radius: 15px !important;
+}
+
+.react-datepicker__input-container input {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    border: 1px solid #EFF0F6 !important;
+    border-radius: 15px !important;
+    background-color: white !important;
+    /* padding: 8px 12px !important; */
 }
 
