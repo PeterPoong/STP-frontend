@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Spinner } from 'react-bootstrap';
+import { Spinner, Modal, Button } from 'react-bootstrap';
 import NavButtonsSP from "../../Components/StudentPortalComp/NavButtonsSP";
 import MyProfileWidget from "../../Components/StudentPortalComp/MyProfileWidget";
 import SpcFooter from "../../Components/StudentPortalComp/SpcFooter";
@@ -11,6 +11,22 @@ import AppliedCourseHistory from "../../Components/StudentPortalComp/AppliedCour
 import AppliedCoursePending from "../../Components/StudentPortalComp/AppliedCourse/AppliedCoursePending";
 import "aos/dist/aos.css";
 import "../../css/StudentPortalStyles/StudentPortalBasicInformation.css";
+import styled from "styled-components";
+import Term from "../../Components/StudentPortalComp/Term"
+const ScrollableModalBody = styled(Modal.Body)`
+  max-height: 70vh;
+  overflow-y: auto;
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+  }
+`;
 
 const StudentPortalBasicInformations = () => {
   const [selectedContent, setSelectedContent] = useState("basicInfo");
@@ -18,6 +34,9 @@ const StudentPortalBasicInformations = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
+  const [showTermsModal, setShowTermsModal] = useState(false);
+  const [hasReachedBottom, setHasReachedBottom] = useState(false);
+  const modalBodyRef = useRef(null);
 
   /*loading to check if have  token or not if dont have will navigaate back to studentPortalLogin Page */
   useEffect(() => {
@@ -58,12 +77,14 @@ const StudentPortalBasicInformations = () => {
       if (data && data.success === true) {
         // console.log("Token is valid");
         setIsAuthenticated(true);
+        // Add terms check after successful authentication
+        checkTermsAgreement(token);
       } else {
         //console.log("Token is invalid based on response structure");
         throw new Error("Token validation failed");
       }
     } catch (error) {
-      console.error("Error during token verification:", error);
+      // console.error("Error during token verification:", error);
       sessionStorage.removeItem("token");
       localStorage.removeItem("token");
       navigate("/studentPortalLogin");
@@ -102,6 +123,99 @@ const StudentPortalBasicInformations = () => {
   };
   /*end */
 
+  const checkTermsAgreement = async (token) => {
+    try {
+      // console.log("Checking terms agreement...");
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL}api/student/checkTermsAgreement`,
+        {
+          method: "POST",
+          headers: {
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      // console.log("Response status:", response.status);
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Error response:", errorData);
+        throw new Error(errorData.message || "Failed to check terms agreement");
+      }
+      
+      const data = await response.json();
+      // console.log("Terms agreement response:", data);
+      
+      if (!data.hasAgreed) {
+        setShowTermsModal(true);
+      }
+    } catch (error) {
+      // console.error("Error checking terms agreement:", error);
+      // Optionally show modal on error for testing
+      setShowTermsModal(true);
+    }
+  };
+
+  const handleScroll = (e) => {
+    const element = e.target;
+    const isAtBottom = Math.abs(
+      element.scrollHeight - element.scrollTop - element.clientHeight
+    ) < 1;
+    
+    if (isAtBottom) {
+      setHasReachedBottom(true);
+    }
+  };
+
+  const handleAgree = async () => {
+    try {
+      const token = sessionStorage.getItem("token") || localStorage.getItem("token");
+      // console.log("Submitting agreement...");
+      
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL}api/student/agreeTerms`,
+        {
+          method: "POST",
+          headers: {
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ agreed: true }),
+        }
+      );
+
+      // console.log("Agreement response status:", response.status);
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Error response:", errorData);
+        throw new Error(errorData.message || "Failed to update agreement");
+      }
+      
+      const data = await response.json();
+      // console.log("Agreement update response:", data);
+      
+      if (data.success) {
+        setShowTermsModal(false);
+      } else {
+        throw new Error(data.message || "Failed to update agreement");
+      }
+    } catch (error) {
+      console.error("Error updating agreement:", error);
+      // Optionally show an error message to the user
+    }
+  };
+
+  const handleDisagree = () => {
+    sessionStorage.removeItem("token");
+    localStorage.removeItem("token");
+    navigate("/studentPortalLogin");
+  };
+
   if (isLoading) {
     return <div>
       <div>
@@ -118,18 +232,56 @@ if (!isAuthenticated) {
 }
 
 return (
-  <div className="app-container">
-    <NavButtonsSP />
-    <main className="main-content mt-5">
-      <div className="content-wrapper">
-        <div className="profile-widget-container">
-          <MyProfileWidget onSelectContent={setSelectedContent} profilePic={profilePic} />
+  <>
+    <Modal
+      show={showTermsModal}
+      backdrop="static"
+      keyboard={false}
+      size="lg"
+      centered
+    >
+      <Modal.Header>
+        <Modal.Title>Terms and Conditions</Modal.Title>
+      </Modal.Header>
+
+      <ScrollableModalBody ref={modalBodyRef} onScroll={handleScroll}>
+        <Term />
+      </ScrollableModalBody>
+
+      <Modal.Footer className="d-flex justify-content-between">
+        {hasReachedBottom && (
+          <Button
+            variant="outline-secondary"
+            size="sm"
+            onClick={handleDisagree}
+          >
+            Not Agree
+          </Button>
+        )}
+        <Button
+          variant="primary"
+          disabled={!hasReachedBottom}
+          onClick={handleAgree}
+          className={hasReachedBottom ? "" : "mx-auto"}
+        >
+          {hasReachedBottom ? "Agree" : "Please read the terms"}
+        </Button>
+      </Modal.Footer>
+    </Modal>
+
+    <div className="app-container">
+      <NavButtonsSP />
+      <main className="main-content mt-5">
+        <div className="content-wrapper">
+          <div className="profile-widget-container">
+            <MyProfileWidget onSelectContent={setSelectedContent} profilePic={profilePic} />
+          </div>
+          <div className="content-area">{renderContent()}</div>
         </div>
-        <div className="content-area">{renderContent()}</div>
-      </div>
-    </main>
-    <SpcFooter />
-  </div>
+      </main>
+      <SpcFooter />
+    </div>
+  </>
 );
 };
 

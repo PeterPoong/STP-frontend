@@ -211,8 +211,7 @@ button.rejected{
     height: 29px;
     border-radius: 15px;
     line-height: 14.4px;
-    font-size: 14px;
-    
+    font-size: 12px;
 }
 button.rejected{
     background-color: #D32F2F;
