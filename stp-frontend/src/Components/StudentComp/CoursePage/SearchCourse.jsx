@@ -35,6 +35,9 @@ const SearchCourse = () => {
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [countryFilter, setCountryFilter] = useState("");
 
+  //search state
+  const [tempSearch, setTempSearch] = useState("");
+
   // Filter States
   const [filterData, setFilterData] = useState({
     categoryList: [],
@@ -260,7 +263,7 @@ const SearchCourse = () => {
     currentPage,
   ]);
 
-  useEffect(() => {
+  /*useEffect(() => {
     if (location.state?.initialSearchQuery) {
       setSearchQuery(location.state.initialSearchQuery);
       // Trigger search with the new query
@@ -269,6 +272,7 @@ const SearchCourse = () => {
       }
     }
   }, [location.state?.initialSearchQuery, location.state?.searchTrigger]);
+*/
 
   // Handle qualification and country filters from FeaturedUni
   useEffect(() => {
@@ -837,8 +841,14 @@ const SearchCourse = () => {
               className="custom-placeholder"
               style={{ height: "45px", marginTop: "9px" }}
               placeholder="Search for Courses, Institutions"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              value={tempSearch}
+              onChange={(e) => {
+                setTempSearch(e.target.value);
+                // After 500ms, update the main searchQuery which triggers API call
+                setTimeout(() => {
+                  setSearchQuery(e.target.value);
+                }, 500);
+              }}
             />
           </InputGroup>
         </Form>
@@ -854,8 +864,14 @@ const SearchCourse = () => {
                 className="custom-placeholder"
                 style={{ height: "45px", marginTop: "9px" }}
                 placeholder="Search for Courses, Institutions"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                value={tempSearch}
+                onChange={(e) => {
+                  setTempSearch(e.target.value);
+                  // After 500ms, update the main searchQuery which triggers API call
+                  setTimeout(() => {
+                    setSearchQuery(e.target.value);
+                  }, 500);
+                }}
               />
             </InputGroup>
           </Form>
