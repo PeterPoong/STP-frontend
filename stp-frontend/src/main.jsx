@@ -75,6 +75,7 @@ import SchoolPortalForgetPassword from "./Pages/SchoolPages/schoolPortalForgetPa
 import ExistSchool from "./Pages/SchoolPages/ExistSchool";
 import SchoolViewApplicantDetail from "./Pages/SchoolPages/StudentApplicantDetail";
 import SchoolBasicInformation from "./Pages/SchoolPages/SchoolBasicInformation";
+import RequestFeatured from "./Pages/SchoolPages/RequestFeatured";
 
 //marketing
 import AccountPackages from "./Pages/MarketingPages/AccountPackages";
@@ -359,7 +360,10 @@ const router = createBrowserRouter([
     path: "/schoolExistingAccount",
     element: <ExistSchool />,
   },
-
+  {
+    path: "/schoolRequestFeatured",
+    element: <RequestFeatured />,
+  },
   {
     path: "/studentApplyCourse",
     element: <StudentApplyCourse />,
