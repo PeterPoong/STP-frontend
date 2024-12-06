@@ -121,7 +121,7 @@ const KnowMoreInstitute = () => {
       });
 
       const result = await response.json();
-     // console.log(result);
+      // console.log(result);
       if (result.success) {
         setAdsImage(result.data);
       }
@@ -144,7 +144,7 @@ const KnowMoreInstitute = () => {
       })
         .then((response) => response.json())
         .then((data) => {
-         //  console.log("Fetched School Detail Data: ", data);
+          //  console.log("Fetched School Detail Data: ", data);
           if (data && data.success && data.data) {
             setInstitutes([data.data]);
             setCourses(data.data.courses);
@@ -170,7 +170,7 @@ const KnowMoreInstitute = () => {
       },
       body: JSON.stringify({
         type: "thirdPage", // Use the required type value
-        schoolId:id
+        schoolId: id
       }),
     })
       .then((response) => response.json())
@@ -1111,33 +1111,46 @@ const KnowMoreInstitute = () => {
                     <Container className="my-4">
                       <h4>Featured Institutes</h4>
                       <Swiper
-                        spaceBetween={30}
-                        slidesPerView={5}
+                        spaceBetween={1}
+                        slidesPerView={6}
                         navigation
                         style={{ padding: "0 50px" }}
                         loop={true}
                         modules={[Pagination, Navigation]}
                         className="featured-institute-swiper"
                         breakpoints={{
-                          640: {
+                          320: {
                             slidesPerView: 1,
-                            spaceBetween: 10,
+                            spaceBetween: 5,
+                          },
+                          426: {
+                            slidesPerView: 1,
+                            spaceBetween: 5,
+                          },
+                          540: {
+                            slidesPerView: 2,
+                            spaceBetween: 5,
+                          },
+                          640: {
+                            slidesPerView: 3,
+                            spaceBetween: 5,
                           },
                           768: {
-                            slidesPerView: 2,
-                            spaceBetween: 15,
+                            slidesPerView: 4,
+                            spaceBetween: 5,
                           },
                           1024: {
                             slidesPerView: 5,
-                            spaceBetween: 10,
+                            spaceBetween: 5,
                           },
                         }}
                       >
+
                         {featuredInstitutes.map((institute) => (
-                          <SwiperSlide key={institute.id}>
+                          <SwiperSlide key={institute.id} >
                             <div
                               className="featured-institute-card"
-                              style={{ width: "230px", height: "245px" }}
+                              style={{ width: "230px", height: "245px", margin: "0 50px", gap: "10rem" }}
                             >
                               {/* Wrap the image inside a Link for navigation */}
                               <Link
@@ -1166,34 +1179,34 @@ const KnowMoreInstitute = () => {
                 </Container>
               )}
 
-             
+
             </Container>
             {Array.isArray(adsImage) && adsImage.length > 0 ? (
-                <div className="advertisements-container">
-                  {adsImage.map((ad, index) => (
-                    <div key={ad.id} className="advertisement-item mb-3">
-                      <a
-                        href={ad.banner_url.startsWith('http') ? ad.banner_url : `https://${ad.banner_url}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <img
-                          src={`${baseURL}storage/${ad.banner_file}`}
-                          alt={`Advertisement ${ad.banner_name}`}
-                          className="adverstise-image"
-                          style={{
-                            height: "175px",
-                            objectFit: "fill",
-                            marginBottom: index < adsImage.length - 1 ? "20px" : "0"
-                          }}
-                        />
-                      </a>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <img src={studypal11} alt="Header" className="KMI-adverstise-image mt-0" />
-              )}
+              <div className="advertisements-container">
+                {adsImage.map((ad, index) => (
+                  <div key={ad.id} className="advertisement-item mb-3">
+                    <a
+                      href={ad.banner_url.startsWith('http') ? ad.banner_url : `https://${ad.banner_url}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <img
+                        src={`${baseURL}storage/${ad.banner_file}`}
+                        alt={`Advertisement ${ad.banner_name}`}
+                        className="adverstise-image"
+                        style={{
+                          height: "175px",
+                          objectFit: "fill",
+                          marginBottom: index < adsImage.length - 1 ? "20px" : "0"
+                        }}
+                      />
+                    </a>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <img src={studypal11} alt="Header" className="KMI-adverstise-image mt-0" />
+            )}
           </div>
         ))
       }
