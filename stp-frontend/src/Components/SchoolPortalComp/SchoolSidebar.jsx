@@ -17,6 +17,7 @@ import {
   ChevronDown,
   ChevronUp,
   ArrowReturnRight,
+  PencilSquare
 } from "react-bootstrap-icons";
 import studyPayLogo from "../../assets/SchoolPortalAssets/SchoolPortalLoginLogo.png";
 import defaultProfilePic from "../../assets/SchoolPortalAssets/profileDefaultIcon.png";
@@ -27,7 +28,7 @@ const Sidebar = ({ onDropdownItemSelect, selectTabPage }) => {
   // Destructure `detail` from props
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
-  const [selectedTab, setSelectedTab] = useState("dashboard");
+  const [selectedTab, setSelectedTab] = useState("");
   const [selectedDropdownItem, setSelectedDropdownItem] = useState("");
   // const [accountType, setAccountType] = useState(detail.data.account_type);
   const [accountType, setAccountType] = useState("");
@@ -219,6 +220,15 @@ const Sidebar = ({ onDropdownItemSelect, selectTabPage }) => {
       } catch (error) {
         console.error("Error uploading file:", error);
       }
+    }
+  };
+
+  const handleRequestFeaturedClick = () => {
+    navigate('/schoolRequestFeatured');
+    // Optional: update selected tab if needed
+    setSelectedTab("requestFeatured");
+    if (isSidebarOpen) {
+      toggleSidebar();
     }
   };
 
@@ -451,6 +461,21 @@ const Sidebar = ({ onDropdownItemSelect, selectTabPage }) => {
           >
             <Grid className="me-2" />
             Dashboard
+          </Nav.Link>
+        </Nav.Item>
+   
+      
+        {/* Dashboard Tab */}
+        <Nav.Item className="pb-1">
+          <Nav.Link
+            className={`d-flex align-items-center text-dark w-100 py-2 ${
+              selectedTab === "requestFeatured" ? "selected-tab" : ""
+            }`}
+            style={{ fontSize: "15px", cursor: "pointer" }}
+            onClick={handleRequestFeaturedClick}
+          >
+            <PencilSquare className="me-2" />
+            Request Featured
           </Nav.Link>
         </Nav.Item>
       </Nav>

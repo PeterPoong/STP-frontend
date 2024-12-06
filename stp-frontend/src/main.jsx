@@ -54,7 +54,6 @@ import AdminReplyEnquiry from "./Pages/AdminPages/AdminReplyEnquiry";
 import AdminFeatured from "./Pages/AdminPages/AdminFeatured";
 import AdminEditFeatured from "./Pages/AdminPages/AdminEditFeatured";
 
-
 //StudentPortal Page
 import StudentPortalLogin from "./Pages/StudentPortalPages/StudentPortalLogin";
 import StudentPortalForgetPassword from "./Pages/StudentPortalPages/StudentPortalForgetPassword";
@@ -74,7 +73,7 @@ import SchoolPortalForgetPassword from "./Pages/SchoolPages/schoolPortalForgetPa
 import ExistSchool from "./Pages/SchoolPages/ExistSchool";
 import SchoolViewApplicantDetail from "./Pages/SchoolPages/StudentApplicantDetail";
 import SchoolBasicInformation from "./Pages/SchoolPages/SchoolBasicInformation";
-import SchoolPackage from "./Pages/SchoolPages/SchoolPackage";
+import RequestFeatured from "./Pages/SchoolPages/RequestFeatured";
 
 //marketing
 import AccountPackages from "./Pages/MarketingPages/AccountPackages";
@@ -349,7 +348,10 @@ const router = createBrowserRouter([
     path: "/schoolExistingAccount",
     element: <ExistSchool />,
   },
-
+  {
+    path: "/schoolRequestFeatured",
+    element: <RequestFeatured />,
+  },
   {
     path: "/studentApplyCourse",
     element: <StudentApplyCourse />,
@@ -372,7 +374,6 @@ const router = createBrowserRouter([
     path: "/SchoolPackage",
     element: <SchoolPackage />,
   },
-
 
   //marketing
   {

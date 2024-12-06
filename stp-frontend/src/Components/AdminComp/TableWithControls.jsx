@@ -153,6 +153,7 @@ const TableWithControls = ({
                                 </select>
                             </div>
                         )}
+                        
                     </div>
                     <div className="col-auto">
                         {/* Conditionally render the Add New button */}

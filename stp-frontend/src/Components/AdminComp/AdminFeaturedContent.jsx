@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, Modal, Form } from "react-bootstrap";
+import { Table, Button, Modal, Form, Col } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faReceipt } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
@@ -19,7 +19,7 @@ const AdminFeaturedContent = () => {
     const [targetFeatured, setTargetFeatured] = useState(null);
     const [totalPages, setTotalPages] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [rowsPerPage, setRowsPerPage] = useState(1000);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
     const token = sessionStorage.getItem('token');
@@ -27,6 +27,9 @@ const AdminFeaturedContent = () => {
     const navigate = useNavigate();
     const [showReceiptModal, setShowReceiptModal] = useState(false);
     const [selectedReceipt, setSelectedReceipt] = useState(null);
+    const [editMode, setEditMode] = useState(null); // State to track which row is in edit mode
+    const [editedData, setEditedData] = useState({ request_name: '', featured_type: '', duration: '' }); // State for edited data
+    const [selectedFeaturedType, setSelectedFeaturedType] = useState('');
 
     const fetchFeatureds = async (page = 1, perPage = rowsPerPage, search = searchQuery) => {
         try {
@@ -154,61 +157,88 @@ const AdminFeaturedContent = () => {
         setTargetFeatured({ id, action });
         setShowModal(true);
     };
-    const handleEdit = (id) => {
-        // console.log(`Edit Featured with ID: ${id}`); // Log the ID being passed
-        sessionStorage.setItem('FeaturedId', id); // Store package ID in session storage
-        navigate(`/adminEditFeatured`); // Navigate to the edit page
+    const handleEdit = (Featured) => {
+        setEditMode(Featured.id); // Set the row to edit mode
+        setEditedData({
+            request_name: Featured.request_name,
+            featured_type: Featured.featured_type?.featured_id || undefined,
+            duration: Featured.duration,
+        });
+        console.log('Edited Data:', {
+            request_name: Featured.request_name,
+            featured_type: Featured.featured_type?.featured_id || undefined,
+            duration: Featured.duration,
+        });
     };
 
-    const submitFeedback = async () => {
-        if (!targetFeatured) return;
+    const handleSave = async (id) => {
+        const { request_name, featured_type, duration } = editedData;
+
+        console.log('Edited Data before sending:', editedData); // Log the entire editedData
+
+        const featuredTypeToSend = (featured_type && !isNaN(Number(featured_type))) ? Number(featured_type) : undefined;
+
+        console.log('Data being sent to backend:', {
+            request_id: id,
+            request_name,
+            featured_type: featuredTypeToSend,
+            duration: duration ? Number(duration) : undefined,
+        });
+
+        // Check if featured_type is NaN
+        if (featuredTypeToSend === undefined) {
+            alert("Please verify the Featured Type. The 'Homepage University' Featured Type can only be active for one school at a time.");
+            return; // Exit the function to prevent further execution
+        }
 
         try {
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/editFeaturedStatus`, {
-                method: "POST",
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/editRequest`, {
+                method: 'POST',
                 headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": Authenticate,
+                    'Content-Type': 'application/json',
+                    'Authorization': Authenticate,
                 },
                 body: JSON.stringify({
-                    id: targetFeatured.id,
-                    type: targetFeatured.action,
-                    feedback: feedback // Send feedback to the backend
+                    request_id: id,
+                    request_name,
+                    featured_type: featuredTypeToSend, // Send the correct featured_type
+                    duration: duration ? Number(duration) : undefined,
                 }),
             });
 
             if (!response.ok) {
-                throw new Error(`HTTP error! request_status: ${response.request_status}`);
+                const text = await response.text(); // Get the response as text
+                throw new Error(`HTTP error! status: ${response.status}, response: ${text}`);
             }
 
             const result = await response.json();
-
             if (result.success) {
-                await fetchFeatureds(currentPage, rowsPerPage, searchQuery); // Fetch updated data
+                alert('Request updated successfully!');
+                fetchFeatureds(currentPage, rowsPerPage, searchQuery);
             } else {
-                console.error(result.message);
+                alert(result.message || 'Failed to update request');
             }
         } catch (error) {
-            console.error("Error processing the action:", error);
+            console.error('Error updating request:', error);
+            alert('Failed to update request. Please try again. Error: ' + error.message);
         } finally {
-            setShowFeedbackModal(false);
-            setTargetFeatured(null);
+            setEditMode(null);
         }
     };
 
     const getStatusClass = (request_status) => {
         switch (request_status) {
-            case 'Disable':
+            case 0:
                 return 'status-disable';
-            case 'Rejected':
+            case 3:
                 return 'status-rejected';
-            case 'Temporary-Disable':
+            case 3:
                 return 'status-disable';
-            case 'Approved':
+            case 1:
                 return 'status-active';
-            case 'Pending':
+            case 2:
                 return 'status-pending';
-            case 'Temporary':
+            case 2:
                 return 'status-temporary';
             default:
                 return '';
@@ -219,6 +249,10 @@ const AdminFeaturedContent = () => {
         setSelectedReceipt(`${import.meta.env.VITE_BASE_URL}storage/${receiptPath}`);
         setShowReceiptModal(true);
     };
+
+    const filteredFeatureds = selectedFeaturedType && selectedFeaturedType !== "" 
+        ? sortedFeatureds.filter(featured => featured.featured_type?.featured_id === Number(selectedFeaturedType))
+        : sortedFeatureds; // Show all if "All Featured Types" is selected
 
     const theadContent = (
         <tr>
@@ -246,95 +280,139 @@ const AdminFeaturedContent = () => {
             <th>Action</th>
         </tr>
     );
+        
+    const tbodyContent = filteredFeatureds.length > 0 ? (
+        filteredFeatureds.map((Featured) => {
+            // Log the values for debugging
+            console.log('Featured:', Featured);
+            console.log('Featured Type:', Featured.featured_type);
+            console.log('Featured ID:', Featured.featured_type?.featured_id);
 
-    const tbodyContent = sortedFeatureds.length > 0 ? (
-    sortedFeatureds.map((Featured) => (
-        <tr key={Featured.id}>
-            <td>{Featured.school_name}</td>
-            <td>{Featured.request_name}</td>
-            <td>{Featured.featured_type}</td>
-            <td>{Featured.request_quantity}</td>
-            <td>{Featured.featured_duration}</td>
-            <td>
-                <FontAwesomeIcon
-                    icon={faReceipt}
-                    style={{ cursor: 'pointer', color: '#691ED2' }}
-                    onClick={() => handleReceiptClick(Featured.transaction_proof)}
-                    title="View Receipt"
-                />
-            </td>
-            <td className={getStatusClass(Featured.request_status)}>
-                {Featured.request_status}
-            </td>
-            <td>
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    {Featured.request_status === 'Pending' ? (
-                        <>
-                            <Button 
-                                className="accept"
-                                variant="success"
-                                onClick={() => handlePendingAction(Featured.id, 'accept')}
-                            >
-                            Approve
-                            </Button>
-                            <Button 
-                                className="rejected"
-                                variant="danger"
-                                onClick={() => handlePendingAction(Featured.id, 'reject')}
-                            >
-                                Reject
-                            </Button>
-                        </>
-                    ) : (
-                        <>
-                            <FontAwesomeIcon
-                                className="icon-color-edit"
-                                title="Edit"
-                                icon={faEdit}
-                                style={{ marginRight: '8px', color: '#691ED2', cursor: 'pointer' }}
-                                onClick={() => handleEdit(Featured.id)}
+            return (
+                <tr key={Featured.id}>
+                    <td>{Featured.school?.school_name || 'N/A'}</td>
+                    <td>
+                        {editMode === Featured.id ? (
+                            <input
+                                type="text"
+                                value={editedData.request_name}
+                                onChange={(e) => setEditedData({ ...editedData, request_name: e.target.value })}
                             />
-                            {/* <MDBSwitch
-                                id={`switch-${Featured.id}`}
-                                checked={Featured.request_status === 'Active' || 
-                                         Featured.request_status === 'Temporary' ||
-                                         Featured.request_status === 'Accepted' ||
-                                         Featured.request_status === 'Approved'}
-                                onChange={() => handleToggleSwitch(Featured.id, Featured.request_status)}
-                                style={{
-                                    color: (Featured.request_status === 'Active' || 
-                                            Featured.request_status === 'Temporary' ||
-                                            Featured.request_status === 'Accepted' ||
-                                            Featured.request_status === 'Approved') ? 'green' : ''
+                        ) : (
+                            Featured.request_name || 'N/A'
+                        )}
+                    </td>
+                    <td>
+                        {editMode === Featured.id ? (
+                            <select
+                                value={editedData.featured_type}
+                                onChange={(e) => {
+                                    const selectedValue = e.target.value;
+                                    console.log("Selected featured_type:", selectedValue);
+                                    setEditedData({ ...editedData, featured_type: selectedValue ? Number(selectedValue) : undefined });
                                 }}
-                            /> */}
-                        </>
-                    )}
-                </div>
-            </td>
+                            >
+                                <option value="" disabled>Select Featured Type</option>
+                                <option value={Featured.featured_type?.featured_id || ''}>
+                                    {Featured.featured_type?.featured_type || 'N/A'}
+                                </option>
+                                <option value="28">Homepage University</option>
+                                <option value="29">Homepage Courses</option>
+                                <option value="30">Second Page</option>
+                                <option value="31">Third Page</option>
+                                {/* Add more options as needed */}
+                            </select>
+                        ) : (
+                            Featured.featured_type?.featured_type || 'N/A'
+                        )}
+                    </td>
+                    <td>
+                    {Featured.total_quantity || 'N/A'}
+                    </td>
+                    <td>
+                        {editMode === Featured.id ? (
+                            <input
+                                type="number"
+                                value={editedData.duration}
+                                onChange={(e) => setEditedData({ ...editedData, duration: e.target.value })}
+                            />
+                        ) : (
+                            Featured.duration || 'N/A'
+                        )}
+                    </td>
+                    <td>
+                        <FontAwesomeIcon
+                            icon={faReceipt}
+                            style={{ cursor: 'pointer', color: '#691ED2' }}
+                            onClick={() => handleReceiptClick(Featured.transaction_proof)}
+                            title="View Receipt"
+                        />
+                    </td>
+                    <td className={getStatusClass(Featured.request_status)}>
+                        {Featured.request_status === 1 ? 'Active' : 'Inactive'}
+                    </td>
+                    <td>
+                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                            {editMode === Featured.id ? (
+                                <Button
+                                    variant="primary"
+                                    onClick={() => handleSave(Featured.id)}
+                                >
+                                    Save
+                                </Button>
+                            ) : (
+                                <FontAwesomeIcon
+                                    className="icon-color-edit"
+                                    title="Edit"
+                                    icon={faEdit}
+                                    style={{ marginRight: '8px', color: '#691ED2', cursor: 'pointer' }}
+                                    onClick={() => handleEdit(Featured)}
+                                />
+                            )}
+                        </div>
+                    </td>
+                </tr>
+            );
+        })
+    ) : (
+        <tr>
+            <td colSpan="8" style={{ textAlign: "center" }}>No Data Available</td>
         </tr>
-    ))
-) : (
-    <tr>
-        <td colSpan="8" style={{ textAlign: "center" }}>No Data Available</td>
-    </tr>
-);
+    );
     return (
         <>
-        {loading ? (
-            <CircleDotLoader />
+            <Col md={4} style={{marginLeft:'75px'}}>
+                <Form.Group className="d-flex">
+                    <Col md={2}>
+                    <Form.Label className="fw-light" style={{ lineHeight: '3' }}>Sort By:</Form.Label>
+                    </Col>
+                    <Form.Select
+                        value={selectedFeaturedType}
+                        onChange={(e) => setSelectedFeaturedType(e.target.value)}
+                        className='ps-0 bg-white py-2 ps-2'
+                    >
+                        <option value="">All Featured Types</option> {/* Option to show all */}
+                        <option value="28">Homepage University</option>
+                        <option value="29">Homepage Courses</option>
+                        <option value="30">Second Page</option>
+                        <option value="31">Third Page</option>
+                    </Form.Select>
+                </Form.Group>
+            </Col>
+            {loading ? (
+                <CircleDotLoader />
             ) : (
-            <TableWithControls
-                 theadContent={theadContent}
-                 tbodyContent={tbodyContent}
-                 onSearch={handleSearch}
-                 onSort={handleSort}
-                 totalPages={totalPages}
-                 currentPage={currentPage}
-                 onPageChange={handlePageChange}
-                 onRowsPerPageChange={handleRowsPerPageChange}
-            />
-        )}
+                <TableWithControls
+                    theadContent={theadContent}
+                    tbodyContent={tbodyContent}
+                    onSearch={handleSearch}
+                    onSort={handleSort}
+                    totalPages={totalPages}
+                    currentPage={currentPage}
+                    onPageChange={handlePageChange}
+                    onRowsPerPageChange={handleRowsPerPageChange}
+                />
+            )}
             <Modal show={showModal} onHide={() => setShowModal(false)} centered>
                 <Modal.Header closeButton>
                     <Modal.Title>Confirm Action</Modal.Title>

@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Tab, Tabs, Accordion, Form, Button, InputGroup, Modal } from 'react-bootstrap';
 import "react-datepicker/dist/react-datepicker.css";
-import '../../css/AdminStyles/AdminFeature.css';
+import '../../../css/AdminStyles/AdminFeature.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import DatePicker from "react-datepicker";
 import moment from 'moment';
-import CreateNewCourseRequest from './CreateNewCourseFeatured';
-import CreateNewSchoolRequest from './CreateNewSchoolFeatured';
 
 const statusOptions = [
     { value: '', label: 'Featured Status' },
@@ -47,172 +45,109 @@ const getStatusColor = (status) => {
     }
 };
 
-const getRequestStatusLabel = (status) => {
-    if (!status) return 'Unknown';
-    
-    switch(status.toLowerCase()) {
-        case 'pending':
-            return 'Pending';
-        case 'approved':
-        case 'active':
-            return 'Approved';
-        case 'rejected':
-            return 'Rejected';
-        case 'disable':
-            return 'Disable';
-        case 'expired':
-            return 'Expired';
-        default:
-            return 'Unknown';
-    }
-};
-
-const AdminEditFeaturedContent = () => {
-    const schoolId = sessionStorage.getItem('schoolId');
-    const token = sessionStorage.getItem('token');
-    const Authenticate = `Bearer ${token}`;
-
+const FeaturedRequest = ({ authToken }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [courseFeatured, setCourseFeatured] = useState([]);
     const [schoolFeatured, setSchoolFeatured] = useState([]);
     const [activeTab, setActiveTab] = useState('course');
-    
+    const [selectedStatus, setSelectedStatus] = useState('');
+    const [availableCourses, setAvailableCourses] = useState({});
+
     // Filter states
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedFeaturedType, setSelectedFeaturedType] = useState('');
-    const [selectedStatus, setSelectedStatus] = useState('');
-    const [featuredList, setFeaturedList] = useState([]);
-    const [featuredListData, setFeaturedListData] = useState({
-        courses: [],
-        schools: []
-    });
 
     // Add new state for course options
     const [courseOptions, setCourseOptions] = useState([]);
-
-    // Add new state for modals and error handling
+    const [showAddCourse, setShowAddCourse] = useState({});
+    const [searchCourse, setSearchCourse] = useState('');
+    const [selectedCourse, setSelectedCourse] = useState('');
+    const [startDate, setStartDate] = useState(null);
     const [showErrorModal, setShowErrorModal] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+
+    // Add new state for confirmation modal
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [pendingCourseChange, setPendingCourseChange] = useState(null);
 
-    // Add these states at the top of your component
-    const [selectedDates, setSelectedDates] = useState({});
-    const [pendingStartDateChange, setPendingStartDateChange] = useState(null);
-// Add new course states
-const [availableCourses, setAvailableCourses] = useState({});
-const [showAddCourse, setShowAddCourse] = useState({});
-const [selectedCourse, setSelectedCourse] = useState('');
-const [startDate, setStartDate] = useState(null);
+    const fetchFeaturedRequests = async () => {
+        try {
+            const Authenticate = `Bearer ${authToken}`;
+            console.log('Using token:', authToken);
 
-const [showCreateRequestModal, setShowCreateRequestModal] = useState(false);
-const [showCreateSchoolRequestModal, setShowCreateSchoolRequestModal] = useState(false);
+            const requestBody = {
+                status: selectedStatus !== '' ? parseInt(selectedStatus) : undefined,
+                request_type: activeTab
+            };
 
-const [currentPage, setCurrentPage] = useState(1); // Add state for current page
-const [totalPages, setTotalPages] = useState(1); // Add state for total pages
+            // Update API endpoint to the new combined endpoint
+            const apiEndpoint = 'api/school/schoolFeaturedRequestLists';
 
-const fetchFeaturedRequests = async () => {
-    try {
-        const requestBody = {
-            school_id: parseInt(schoolId),
-            requestType: activeTab === 'course' ? 'courses' : 'school',
-            status: selectedStatus !== '' ? parseInt(selectedStatus) : undefined,
-            page: currentPage // Include current page in the request
-        };
-
-        console.log('Request Body:', requestBody); // Log the request body
-
-        const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/schoolFeaturedSchoolCourseRequestList`, {
-            method: 'POST',
-            headers: {
+            console.log('Making request to:', `${import.meta.env.VITE_BASE_URL}${apiEndpoint}`);
+            console.log('With headers:', {
                 'Content-Type': 'application/json',
-                'Authorization': Authenticate,
-            },
-            body: JSON.stringify(requestBody)
-        });
+                'Authorization': Authenticate
+            });
+            console.log('With body:', requestBody);
 
-        const result = await response.json();
-        console.log('API Response:', result); // Log the API response
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}${apiEndpoint}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': Authenticate,
+                },
+                body: JSON.stringify(requestBody)
+            });
 
-        if (result.success && result.data?.data) {
-            // Set total pages from the API response
-            setTotalPages(result.data.last_page);
-
-            if (activeTab === 'course') {
-                // Transform course data
-                const transformedData = result.data.data.map(item => ({
-                    id: item.id,
-                    request_name: item.name,
-                    featured_type: item.featured_type.featured_type,
-                    featured_id: item.featured_type.featured_id,
-                    featured_duration: item.duration,
-                    request_quantity: item.total_quantity,
-                    quantity_used: item.quantity_used,
-                    request_status: (() => {
-                        switch(item.request_status) {
-                            case 0: return 'Disable';
-                            case 1: return 'Approved';
-                            case 2: return 'Pending';
-                            case 3: return 'Rejected';
-                            default: return 'Unknown';
-                        }
-                    })(),
-                    featured: item.featured.map(feat => ({
-                        id: feat.id,
-                        course_id: feat.course_id,
-                        course_name: feat.course_name,
-                        start_date: feat.start_date,
-                        end_date: feat.end_date,
-                        status: feat.status,
-                        day_left:feat.day_left
-                        
-                    })),
-                    courseAvailable: item.courseAvailable || []
-                }));
-                setCourseFeatured(transformedData);
-            } else {
-                // Transform school data
-                const transformedData = result.data.data.map(item => ({
-                    id: item.id,
-                    request_name: item.name,
-                    featured_type: item.featured_type.featured_type,
-                    featured_duration: item.duration,
-                    request_quantity: item.total_quantity,
-                    quantity_used: item.quantity_used,
-                    school_name: item.school_name,
-                    request_status: (() => {
-                        switch(item.request_status) {
-                            case 0: return 'Disable';
-                            case 1: return 'Approved';
-                            case 2: return 'Pending';
-                            case 3: return 'Rejected';
-                            default: return 'Unknown';
-                        }
-                    })(),
-                    featured: item.featured.map(feat => ({
-                        id: feat.id,
-                        school_id: feat.school_id,
-                        school_name: feat.school_name,
-                        start_date: feat.start_date,
-                        end_date: feat.end_date,
-                        status: feat.status,
-                        day_left: feat.day_left
-                    })),
-                    courseAvailable: item.courseAvailable || []
-                }));
-                setSchoolFeatured(transformedData);
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('Response not OK:', response.status, errorText);
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
-        } else {
-            console.log('No data found or success is false'); // Log if no data found
+
+            const result = await response.json();
+            console.log('API Response:', result);
+
+            if (result.success && Array.isArray(result.data.data)) { // Access the nested data array
+                const transformedData = result.data.data.map(item => ({
+                    id: item.id,
+                    request_name: item.name,
+                    featured_type: item.featured_type.featured_type,
+                    featured_duration: item.duration,
+                    request_quantity: item.total_quantity,
+                    quantity_used: item.quantity_used,
+                    request_status: (() => {
+                        switch(item.request_status) {
+                            case 0: return 'Disable';
+                            case 1: return 'Approved';
+                            case 2: return 'Pending';
+                            case 3: return 'Rejected';
+                            default: return 'Unknown';
+                        }
+                    })(),
+                    featured: item.featured || [],
+                    courseAvailable: item.courseAvailable || []
+                }));
+
+                if (activeTab === 'course') {
+                    setCourseFeatured(transformedData);
+                } else {
+                    setSchoolFeatured(transformedData);
+                }
+                console.log('Transformed data:', transformedData);
+            } else {
+                console.error('Unexpected response structure:', result); // Log unexpected structure
+                console.log('Full API Response:', JSON.stringify(result, null, 2)); // Log the full response for debugging
+                setError('Unexpected response structure');
+            }
+        } catch (error) {
+            console.error('Error in fetchFeaturedRequests:', error);
+            setError(error.message);
+        } finally {
+            setLoading(false);
         }
-    } catch (error) {
-        console.error('Error fetching featured requests:', error);
-        setError(error.message);
-    } finally {
-        setLoading(false);
-    }
-};
+    };
 
     const getFeaturedDetails = (requestType, requestId) => {
         const featured = activeTab === 'course' ? courseFeatured : schoolFeatured;
@@ -319,10 +254,11 @@ const fetchFeaturedRequests = async () => {
     };
 
     useEffect(() => {
-        if (schoolId) {
+        console.log('Component mounted, token:', authToken); // Debug log
+        if (authToken) {
             fetchFeaturedRequests();
         }
-    }, [schoolId, activeTab, selectedStatus, currentPage]);
+    }, [authToken, activeTab, selectedStatus]);
 
     const handleReset = () => {
         setSearchTerm('');
@@ -349,116 +285,24 @@ const fetchFeaturedRequests = async () => {
         return parsedDate.isValid() ? parsedDate.toDate() : null;
     };
 
-    // Add handleCourseChange function
-    const handleCourseChange = (featuredId, courseId, endDate, existingStartDate) => {
-        // Check if end date is before current date
-        if (moment(endDate).isBefore(moment())) {
-            setErrorMessage("Changes to the course are not allowed while its featured status is Expired.");
-            setShowErrorModal(true);
+    const handleAddCourse = async (requestId) => {
+        if (!selectedCourse || !startDate) {
+            alert('Please select both course and start date');
             return;
         }
-        
-        // Use existing start date if it's in the future, otherwise use current time plus 1 minute
-        const startDate = existingStartDate && moment(existingStartDate).isAfter(moment()) 
-            ? moment(existingStartDate).format('YYYY-MM-DD HH:mm:ss')
-            : moment().add(1, 'minutes').format('YYYY-MM-DD HH:mm:ss');
-        
-        // Log the values being set
-        console.log('Setting pending course change:', {
-            featured_id: featuredId,
-            course_id: courseId,
-            start_date: startDate
-        });
-        
-        // Store the pending change with the correct field names
-        setPendingCourseChange({
-            featured_id: parseInt(featuredId),
-            course_id: parseInt(courseId),
-            start_date: startDate
-        });
-        setShowConfirmModal(true);
-    };
 
-    // Add handleConfirmedCourseChange function
-    const handleConfirmedCourseChange = async () => {
         try {
-            console.log('Current State:', {
-                pendingStartDateChange,
-                pendingCourseChange
-            });
-
-            let requestBody;
-
-            if (pendingStartDateChange) {
-                const featured_id = pendingStartDateChange.featured_id;
-
-                if (!featured_id) {
-                    throw new Error('Featured ID is required');
-                }
-
-                requestBody = {
-                    featured_id: parseInt(featured_id),
-                    course_id: parseInt(pendingStartDateChange.course_id),
-                    start_date: pendingStartDateChange.start_date
-                };
-            } else if (pendingCourseChange) {
-                if (!pendingCourseChange.featured_id) {
-                    throw new Error('Featured ID is required for course change');
-                }
-
-                requestBody = {
-                    featured_id: parseInt(pendingCourseChange.featured_id),
-                    course_id: parseInt(pendingCourseChange.course_id),
-                    start_date: pendingCourseChange.start_date
-                };
-            } else {
-                throw new Error('No changes to process');
-            }
-
-            console.log('Sending request body:', requestBody);
-
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/editFeaturedCourse`, {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/school/applyFeaturedCourse`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': Authenticate,
+                    'Authorization': `Bearer ${authToken}`,
                 },
-                body: JSON.stringify(requestBody)
-            });
-
-            const result = await response.json();
-            console.log('Server response:', result);
-
-            if (!response.ok) {
-                throw new Error(`Server error: ${result.message || response.statusText}`);
-            }
-
-            if (result.success) {
-                await fetchFeaturedRequests();
-            } else {
-                throw new Error(result.message || 'Failed to update');
-            }
-        } catch (error) {
-            console.error('Error details:', error);
-            setErrorMessage(error.message || 'An unexpected error occurred');
-            setShowErrorModal(true);
-        } finally {
-            setShowConfirmModal(false);
-            setPendingStartDateChange(null);
-            setPendingCourseChange(null);
-        }
-    };
-
-    // Add these functions
-    const fetchAvailableCourses = async (requestId) => {
-        try {
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/adminFeaturedCourseAvailable`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': Authenticate,
-                },
-                body: JSON.stringify({ request_id: requestId })
+                body: JSON.stringify({
+                    course_id: selectedCourse,
+                    request_id: requestId,
+                    startDatetime: moment(startDate).format('YYYY-MM-DD HH:mm:ss')
+                })
             });
 
             if (!response.ok) {
@@ -466,51 +310,12 @@ const fetchFeaturedRequests = async () => {
             }
 
             const result = await response.json();
-            if (result.success && result.data) {
-                setAvailableCourses(prev => ({
-                    ...prev,
-                    [requestId]: result.data
-                }));
-            }
-        } catch (error) {
-            console.error('Error fetching available courses:', error);
-        }
-    };
-
-    const handleShowAddCourse = (requestId) => {
-        setShowAddCourse(prev => ({
-            ...prev, 
-            [requestId]: !prev[requestId]
-        }));
-        
-        // Fetch available courses when opening the form
-        if (!availableCourses[requestId]) {
-            fetchAvailableCourses(requestId);
-        }
-    };
-
-    const handleAddCourse = async (requestId) => {
-        try {
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/addNewCourse`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': Authenticate,
-                },
-                body: JSON.stringify({
-                    request_id: requestId,
-                    course_id: selectedCourse,
-                    start_date: moment(startDate).format('YYYY-MM-DD HH:mm:ss')
-                })
-            });
-
-            const result = await response.json();
-
             if (result.success) {
                 // Reset form and hide it
                 setSelectedCourse('');
                 setStartDate(null);
                 setShowAddCourse({}); // Reset entire showAddCourse state to hide all forms
+                setSearchCourse(''); // Reset search if you have it
                 
                 // Update local state immediately
                 const selectedCourseData = availableCourses[requestId]?.find(course => course.id === parseInt(selectedCourse));
@@ -542,89 +347,132 @@ const fetchFeaturedRequests = async () => {
                 // Refetch data to ensure sync with server
                 await fetchFeaturedRequests();
             } else {
-                setErrorMessage(result.message || 'Failed to add course');
-                setShowErrorModal(true);
+                alert(result.message || 'Failed to add course');
             }
         } catch (error) {
             console.error('Error adding course:', error);
-            setErrorMessage('Failed to add course. Please try again.');
-            setShowErrorModal(true);
+            alert('Failed to add course. Please try again.');
         }
     };
 
-    // Add useEffect for fetching available courses
+    // Add this function to fetch available courses for a specific request
+    const fetchAvailableCourses = async (requestId) => {
+        try {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/school/featuredCourseAvailable`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authToken}`,
+                },
+                body: JSON.stringify({ request_id: requestId })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            if (result.success && result.data) {
+                setAvailableCourses(prev => ({
+                    ...prev,
+                    [requestId]: result.data
+                }));
+            }
+        } catch (error) {
+            console.error('Error fetching available courses:', error);
+        }
+    };
+
+    // Add useEffect to fetch available courses when component mounts
     useEffect(() => {
-        if (courseFeatured.length > 0) {
+        if (authToken && courseFeatured.length > 0) {
             // Fetch available courses for each featured request
             courseFeatured.forEach(featured => {
                 fetchAvailableCourses(featured.id);
             });
         }
-    }, [courseFeatured]); // Add dependencies
+    }, [authToken, courseFeatured]); // Add dependencies
 
-    const handleConfirmedSchoolChange = async () => {
-        try {
-            console.log('Current State:', {
-                pendingStartDateChange,
-                pendingCourseChange
-            });
-
-            let requestBody;
-
-            // Ensure we have a pendingStartDateChange
-            if (pendingStartDateChange) {
-                const featured_id = pendingStartDateChange.featured_id; // This should be set from the selected featured item
-
-                if (!featured_id) {
-                    throw new Error('Featured ID is required');
-                }
-
-                requestBody = {
-                    featured_id: parseInt(featured_id), // Use the correct featured_id
-                    start_date: pendingStartDateChange.start_date // Only send start_date
-                };
-            } else {
-                throw new Error('No changes to process');
-            }
-
-            console.log('Sending request body:', requestBody);
-
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/editFeaturedSchool`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': Authenticate,
-                },
-                body: JSON.stringify(requestBody)
-            });
-
-            const result = await response.json();
-            console.log('Server response:', result);
-
-            if (!response.ok) {
-                throw new Error(`Server error: ${result.message || response.statusText}`);
-            }
-
-            if (result.success) {
-                await fetchFeaturedRequests();
-            } else {
-                throw new Error(result.message || 'Failed to update');
-            }
-        } catch (error) {
-            console.error('Error details:', error);
-            setErrorMessage(error.message || 'An unexpected error occurred');
-            setShowErrorModal(true);
-        } finally {
-            setShowConfirmModal(false);
-            setPendingStartDateChange(null);
-            setPendingCourseChange(null);
+    // Modify the existing code where you show/hide the Add Course form
+    const handleShowAddCourse = (requestId) => {
+        setShowAddCourse(prev => ({
+            ...prev, 
+            [requestId]: !prev[requestId]
+        }));
+        
+        // Fetch available courses when opening the form
+        if (!availableCourses[requestId]) {
+            fetchAvailableCourses(requestId);
         }
     };
 
-    // Add pagination controls
-    const handlePageChange = (page) => {
-        setCurrentPage(page);
-        fetchFeaturedRequests(); // Fetch data for the new page
+    const handleCourseChange = (featuredId, newCourseId, endDate) => {
+        // Check if end date is before current date
+        if (moment(endDate).isBefore(moment())) {
+            setErrorMessage("Changes to the course are not allowed while its featured status is Expired.");
+            setShowErrorModal(true);
+            return;
+        }
+        
+        // Store the pending change with the correct data structure
+        setPendingCourseChange({
+            featured_id: parseInt(featuredId), // Ensure it's a number
+            newCourse_id: parseInt(newCourseId),  // Use new_course_id as expected by the API
+            startDatetime: moment().format('YYYY-MM-DD HH:mm:ss') // Current datetime as start
+        });
+        setShowConfirmModal(true);
+    };
+
+    // Update handleConfirmedCourseChange to log the request details
+    const handleConfirmedCourseChange = async () => {
+        try {
+            // Log the request details for debugging
+            console.log('Sending request to editFeaturedCourseSetting:', {
+                url: `${import.meta.env.VITE_BASE_URL}api/school/editFeaturedCourseSetting`,
+                body: pendingCourseChange,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authToken}`,
+                }
+            });
+
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/school/editFeaturedCourseSetting`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authToken}`,
+                },
+                body: JSON.stringify(pendingCourseChange)
+            });
+
+            // Log the response for debugging
+            const responseText = await response.text();
+            console.log('Response:', responseText);
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}, message: ${responseText}`);
+            }
+
+            const result = JSON.parse(responseText);
+            
+            if (result.success) {
+                // Refetch data to update the UI
+                await fetchFeaturedRequests();
+                // Refetch available courses
+                await fetchAvailableCourses(pendingCourseChange.featured_id);
+            } else {
+                setErrorMessage(result.message || 'Failed to change course');
+                setShowErrorModal(true);
+            }
+        } catch (error) {
+            console.error('Error changing course:', error);
+            setErrorMessage('Failed to change course. Please try again.');
+            setShowErrorModal(true);
+        } finally {
+            // Close confirmation modal and clear pending change
+            setShowConfirmModal(false);
+            setPendingCourseChange(null);
+        }
     };
 
     return (
@@ -636,42 +484,23 @@ const fetchFeaturedRequests = async () => {
                     onSelect={(k) => setActiveTab(k)}
                     className="mb-0"
                 >
-                    <Tab eventKey="course" title="Course Featured" />
-                    <Tab eventKey="school" title="School Featured" />
+                    <Tab eventKey="course" title="Request Featured Courses" />
+                    <Tab eventKey="school" title="Request Featured School" />
                 </Tabs>
-                <Button 
-                    variant="primary" 
-                    className='py-2 border-0 px-3' 
-                    style={{ borderRadius:'30px', backgroundColor:'#B71A18', fontSize:'13px', color:'white'}}
-                    onClick={() => {
-                        if (activeTab === 'course') {
-                            setShowCreateRequestModal(true); // Open course modal
-                        } else {
-                            setShowCreateSchoolRequestModal(true); // Open school modal
-                        }
-                    }} // Open modal on click
-                >
-                    Create New Featured
-                </Button>
             </div>
-                {/* Create New Course Request Modal */}
-                <CreateNewCourseRequest 
-                show={showCreateRequestModal} 
-                handleClose={() => {
-                    setShowCreateRequestModal(false);
-                    fetchFeaturedRequests(); // Fetch data after closing the modal
-                }} 
-                activeTab={activeTab} 
-            />
-                {/* Create New School Request Modal */}
-                <CreateNewSchoolRequest 
-                show={showCreateSchoolRequestModal} 
-                handleClose={() => {
-                    setShowCreateSchoolRequestModal(false);
-                    fetchFeaturedRequests(); // Fetch data after closing the modal
-                }} 
-                activeTab={activeTab} 
-            />
+            <Row>
+                <Col md={6}>
+                    <div className='fw-medium' style={{ fontSize:'20px', color:'#000000'}}>
+                    Request Featured Course List
+                    </div>
+                </Col>
+                <Col md={6} className="d-flex justify-content-end">
+                    <Button variant="primary" className='py-2 border-0 px-3' style={{ borderRadius:'30px', backgroundColor:'#B71A18', fontSize:'13px', color:'white'}}>
+                        Request Featured
+                    </Button>
+                </Col>
+            </Row>
+
             {/* Filter Row */}
             <Row className="mb-3">
                 <Col md={4}>
@@ -735,7 +564,7 @@ const fetchFeaturedRequests = async () => {
                         </Form.Select>
                     </Form.Group>
                 </Col>
-                <Col md={2} className="d-flex align-items-end ">
+                <Col md={2} className="d-flex align-items-end">
                     <Button 
                         variant="secondary" 
                         onClick={handleReset}
@@ -816,14 +645,14 @@ const fetchFeaturedRequests = async () => {
                                                     fontSize:'14px',
                                                     fontWeight:'600'
                                                 }}>
-                                                    {featured.request_status} {/* Ensure this is correctly set in the data */}
+                                                    {featured.request_status}
                                                 </div>
                                             </Col>
                                         </Row>
                                     </Accordion.Header>
                                     <Accordion.Body>
                                         {activeTab === 'course' && featured.quantity_used < featured.request_quantity && (
-                                            <Row>
+                                            <Row className="mb-3">
                                                 <Col md={12}>
                                                     <Button 
                                                         variant="primary" 
@@ -843,6 +672,7 @@ const fetchFeaturedRequests = async () => {
                                                 </Col>
                                             </Row>
                                         )}
+                                        
                                         {showAddCourse[featured.id] && (
                                             <Row className="mb-3 p-3 d-flex" style={{ backgroundColor: '#f8f9fa', borderRadius: '15px' }}>
                                                 <Col md={4}>
@@ -874,7 +704,7 @@ const fetchFeaturedRequests = async () => {
                                                         </div>
                                                     </Form.Group>
                                                 </Col>
-                                                <Col md={4}>
+                                                <Col md={2}>
                                                     <Form.Group style={{ marginBottom: 0 }}>
                                                         <div className='text-center'>
                                                             <Form.Label className='fw-light mb-2' style={{fontSize: '12px', color: '#6c757d'}}>
@@ -884,16 +714,20 @@ const fetchFeaturedRequests = async () => {
                                                         <DatePicker
                                                             selected={startDate}
                                                             onChange={(date) => setStartDate(date)}
-                                                            showTimeSelect
                                                             dateFormat="yyyy-MM-dd HH:mm:ss"
+                                                            minDate={new Date()}
                                                             className="form-control"
-                                                            placeholderText="Select start date"
                                                             style={{ 
                                                                 fontSize: '14px', 
                                                                 fontWeight: '500',
                                                                 border: '1px solid #EFF0F6', 
                                                                 borderRadius: '15px'
                                                             }}
+                                                            placeholderText="Select date"
+                                                            showTimeSelect
+                                                            timeFormat="HH:mm:ss"
+                                                            timeIntervals={15}
+                                                            timeCaption="Time"
                                                         />
                                                     </Form.Group>
                                                 </Col>
@@ -923,6 +757,7 @@ const fetchFeaturedRequests = async () => {
                                                 </Col>
                                             </Row>
                                         )}
+                                        
                                         {Array.isArray(featured.featured) && featured.featured.map((featuredItem, itemIndex) => (
                                             <Row key={itemIndex} style={getStatusStyling(featuredItem.status).rowStyle}>
                                                 <Col md={3}>
@@ -935,7 +770,7 @@ const fetchFeaturedRequests = async () => {
                                                             onChange={(e) => {
                                                                 if (e.target.value) {
                                                                     handleCourseChange(
-                                                                        featuredItem.id,
+                                                                        featuredItem.id,  // Make sure this is the correct featured_id
                                                                         parseInt(e.target.value),
                                                                         featuredItem.end_date
                                                                     );
@@ -949,33 +784,35 @@ const fetchFeaturedRequests = async () => {
                                                                 border: '1px solid #EFF0F6', 
                                                                 borderRadius: '15px'
                                                             }}
+                                                            onFocus={() => {
+                                                                // Refresh available courses when dropdown is focused
+                                                                fetchAvailableCourses(featured.id);
+                                                            }}
                                                         >
                                                             <option value="">Select Course</option>
                                                             
-                                                            {/* Current Course Group */}
-                                                            {featured?.featured && featured.featured.length > 0 && (
+                                                            {/* Current Course Group - Always show */}
+                                                            {Array.isArray(featured?.featured) && featured.featured.length > 0 && (
                                                                 <optgroup label="Current Course">
                                                                     {featured.featured.map(feat => (
-                                                                        <option key={feat.id} value={feat.course_id}>
-                                                                            {feat.course_name}
+                                                                        <option 
+                                                                            key={feat.id} 
+                                                                            value={feat.course_id}
+                                                                        >
+                                                                            {feat.course_name || 'Unnamed Course'}
                                                                         </option>
                                                                     ))}
                                                                 </optgroup>
                                                             )}
                                                             
-                                                            {/* Display available courses */}
-                                                            {featured.courseAvailable && featured.courseAvailable.length > 0 && (
+                                                            {/* Available Courses Group - Always show */}
+                                                            {availableCourses[featured.id]?.length > 0 && (
                                                                 <optgroup label="Available Courses">
-                                                                    {featured.courseAvailable
-                                                                        .filter(course => 
-                                                                            !featured.featured.some(feat => feat.course_id === course.id)
-                                                                        )
-                                                                        .map(course => (
-                                                                            <option key={course.id} value={course.id}>
-                                                                                {course.course_name.trim()}
-                                                                            </option>
-                                                                        ))
-                                                                    }
+                                                                    {availableCourses[featured.id].map(course => (
+                                                                        <option key={course.id} value={course.id}>
+                                                                            {course.course_name}
+                                                                        </option>
+                                                                    ))}
                                                                 </optgroup>
                                                             )}
                                                         </Form.Select>
@@ -987,45 +824,13 @@ const fetchFeaturedRequests = async () => {
                                                     </div>
                                                     <div className='text-center mt-2' style={{ fontSize:'14px', fontWeight:'600'}}>
                                                         <DatePicker
-                                                            selected={selectedDates[featuredItem.id] || parseDate(featuredItem.start_date)}
-                                                            onChange={(date) => {
-                                                                if (date) {
-                                                                    setSelectedDates(prev => ({
-                                                                        ...prev,
-                                                                        [featuredItem.id]: date
-                                                                    }));
-                                                                }
-                                                            }}
-                                                            onSelect={(date) => {
-                                                                if (date && moment(date).isValid()) {
-                                                                    // Add detailed logging
-                                                                    console.log('Full Featured Item:', featuredItem);
-                                                                    console.log('Parent Featured Object:', featured);
-                                                                    console.log('Featured Type:', featured.featured_type);
-                                                                    
-                                                                    // The featured_id should come from the featuredItem object
-                                                                    const featured_id = featuredItem.id; // Use the id from the featuredItem
-                                                                    
-                                                                    console.log('Selected featured_id:', featured_id);
-                                                                    
-                                                                    setPendingStartDateChange({
-                                                                        featured_id: featured_id, // Using the correct featured_id from featuredItem
-                                                                        course_id: featuredItem.course_id,
-                                                                        newStartDate: date,
-                                                                        start_date: moment(date).format('YYYY-MM-DD HH:mm:ss')
-                                                                    });
-                                                                    
-                                                                    // Log the final object being set
-                                                                    console.log('Setting pendingStartDateChange:', {
-                                                                        featured_id: featured_id,
-                                                                        course_id: featuredItem.course_id,
-                                                                        newStartDate: date,
-                                                                        start_date: moment(date).format('YYYY-MM-DD HH:mm:ss')
-                                                                    });
-                                                                    
-                                                                    setShowConfirmModal(true);
-                                                                }
-                                                            }}
+                                                            selected={parseDate(featuredItem.start_date)}
+                                                            onChange={(date) => handleStartDateChange(
+                                                                date,
+                                                                'course',
+                                                                featured.id,
+                                                                featured.featured_duration
+                                                            )}
                                                             dateFormat="yyyy-MM-dd HH:mm:ss"
                                                             className="form-control text-center border-0"
                                                             style={{ 
@@ -1034,18 +839,12 @@ const fetchFeaturedRequests = async () => {
                                                                 border: '1px solid #EFF0F6', 
                                                                 borderRadius: '15px'
                                                             }}
-                                                            placeholderText="Select date and time"
+                                                            placeholderText="Select date"
                                                             showTimeSelect
-                                                            timeFormat="HH:mm"
+                                                            timeFormat="HH:mm:ss"
                                                             timeIntervals={15}
                                                             timeCaption="Time"
-                                                            minDate={moment().toDate()}
-                                                            minTime={moment().hours(0).minutes(0).toDate()}
-                                                            maxTime={moment().hours(23).minutes(59).toDate()}
-                                                            disabled={
-                                                                moment(featuredItem.start_date).isBefore(moment()) || 
-                                                                moment(featuredItem.end_date).isBefore(moment())
-                                                            }
+                                                            disabled={moment(featuredItem.start_date).isBefore(moment())}
                                                         />
                                                     </div>
                                                 </Col>
@@ -1076,11 +875,7 @@ const fetchFeaturedRequests = async () => {
                                                         padding: '6px 8px',
                                                         backgroundColor: 'white'
                                                     }}>
-                                                        {moment(featuredItem.end_date).isBefore(moment()) 
-                                                            ? "Ended" 
-                                                            : (moment(featuredItem.start_date).isAfter(moment()) || !featuredItem.day_left 
-                                                                ? "To be calculated" 
-                                                                : featuredItem.day_left)} {/* Displaying the day_left value, "To be calculated", or "Ended" */}
+                                                        {calculateDaysLeft(featuredItem.start_date, featuredItem.end_date)}
                                                     </div>
                                                 </Col>
                                                 <Col md={1}>
@@ -1122,206 +917,172 @@ const fetchFeaturedRequests = async () => {
                         <div>Error: {error}</div>
                     ) : (
                         <Accordion>
-                            {Array.isArray(schoolFeatured) && schoolFeatured.length > 0 ? (
-                                schoolFeatured.map((featured, index) => (
-                                    <Accordion.Item key={index} eventKey={index.toString()}>
-                                        <Accordion.Header>
-                                            <Row className="w-100">
-                                                <Col md={2}>
-                                                    <div className='fw-light text-center' style={{fontSize: '10px'}}>
-                                                        Request Name: 
-                                                    </div>
-                                                    <div className='text-center' style={{ fontSize:'14px', fontWeight:'600'}}>
-                                                        {featured.request_name || 'No Data Available'}
-                                                    </div>
-                                                </Col>
-                                                <Col md={2}>
-                                                    <div className='fw-light text-center' style={{fontSize: '10px'}}>
-                                                        Featured Type: 
-                                                    </div>
-                                                    <div className='text-center' style={{ color: getFeaturedTypeColor(featured.featured_type), fontSize:'14px', fontWeight:'600'}}>
-                                                        {featured.featured_type}
-                                                    </div>
-                                                </Col>
-                                                <Col md={2}>
-                                                    <div className='fw-light text-center' style={{fontSize: '10px'}}>
-                                                        Duration: 
-                                                    </div>
-                                                    <div className='text-center' style={{ fontSize:'14px', fontWeight:'600'}}>
-                                                        {featured.featured_duration} Days
-                                                    </div>
-                                                </Col>
-                                                <Col md={2}>
-                                                    <div className='fw-light text-center' style={{fontSize: '10px'}}>
-                                                        Total Quantity: 
-                                                    </div>
-                                                    <div className='text-center' style={{ fontSize:'14px', fontWeight:'600'}}>
-                                                        {featured.request_quantity || 0} Slots
-                                                    </div>
-                                                </Col>
-                                                <Col md={2}>
-                                                    <div className='fw-light text-center' style={{fontSize: '10px'}}>
-                                                        Quantity Used: 
-                                                    </div>
-                                                    <div className='text-center' style={{ fontSize:'14px', fontWeight:'600'}}>
-                                                        {featured.quantity_used} / {featured.request_quantity}
-                                                    </div>
-                                                </Col>
-                                                <Col md={2}>
-                                                    <div className='fw-light text-center' style={{fontSize: '10px'}}>
-                                                        Request Status: 
-                                                    </div>
-                                                    <div className='text-center' style={{ 
-                                                        color: getStatusColor(featured.request_status),
-                                                        fontWeight: '500',
-                                                        fontSize:'14px',
-                                                        fontWeight:'600'
-                                                    }}>
-                                                        {featured.request_status}
-                                                    </div>
-                                                </Col>
-                                            </Row>
-                                        </Accordion.Header>
-                                        <Accordion.Body>
-                                            {/* Render featured items if they exist */}
-                                            {featured.featured.length > 0 ? (
-                                                featured.featured.map((featuredItem, itemIndex) => (
-                                                    <Row key={itemIndex}>
-                                                        <Col md={3}>
-                                                            <div className='fw-light text-center' style={{fontSize: '10px'}}>
-                                                                School Name:
-                                                            </div>
-                                                            <div className='text-center mt-2' style={{ 
-                                                                    fontSize: '14px', 
-                                                                    fontWeight: '600',
-                                                                    border: '1px solid #EFF0F6', 
-                                                                    borderRadius: '15px',
-                                                                    padding: '8px 12px',
-                                                                    backgroundColor: 'white'
-                                                                }}>
-                                                                    {featuredItem.school_name || 'Not set'}
-                                                                </div>
-                                                        </Col>
-                                                        <Col md={3}>
-                                                            <div className='fw-light text-center' style={{fontSize: '10px'}}>
-                                                                Start Date:
-                                                            </div>
-                                                            <div className='text-center mt-2'>
-                                                                <DatePicker
-                                                                    selected={selectedDates[featuredItem.id] || parseDate(featuredItem.start_date)}
-                                                                    onChange={(date) => {
-                                                                        if (date) {
-                                                                            setSelectedDates(prev => ({
-                                                                                ...prev,
-                                                                                [featuredItem.id]: date
-                                                                            }));
-                                                                        }
-                                                                    }}
-                                                                    onSelect={(date) => {
-                                                                        if (date && moment(date).isValid()) {
-                                                                            const featured_id = featuredItem.id; // Get the featured_id from the current featured item
-
-                                                                            setPendingStartDateChange({
-                                                                                featured_id: featured_id, // Set the correct featured_id
-                                                                                start_date: moment(date).format('YYYY-MM-DD HH:mm:ss') // Format the date
-                                                                            });
-
-                                                                            setShowConfirmModal(true); // Show the confirmation modal
-                                                                        }
-                                                                    }}
-                                                                    dateFormat="yyyy-MM-dd HH:mm:ss"
-                                                                    className="form-control text-center border-0"
-                                                                    style={{ 
-                                                                        fontSize: '14px', 
-                                                                        fontWeight: '600',
-                                                                        border: '1px solid #EFF0F6', 
-                                                                        borderRadius: '15px'
-                                                                    }}
-                                                                    placeholderText="Select date and time"
-                                                                    showTimeSelect
-                                                                    timeFormat="HH:mm"
-                                                                    timeIntervals={15}
-                                                                    timeCaption="Time"
-                                                                    minDate={moment().toDate()} // Only allow future dates
-                                                                    minTime={moment().hours(0).minutes(0).toDate()}
-                                                                    maxTime={moment().hours(23).minutes(59).toDate()}
-                                                                    disabled={
-                                                                        moment(featuredItem.start_date).isBefore(moment()) || 
-                                                                        moment(featuredItem.end_date).isBefore(moment())
-                                                                    }
-                                                                />
-                                                            </div>
-                                                        </Col>
-                                                        <Col md={3}>
-                                                            <div className='fw-light text-center' style={{fontSize: '10px'}}>
-                                                                End Date:
-                                                            </div>
-                                                            <div className='text-center mt-2' style={{ 
-                                                                fontSize: '14px', 
-                                                                fontWeight: '600',
-                                                                border: '1px solid #EFF0F6', 
-                                                                borderRadius: '15px',
-                                                                padding: '6px 10px',
-                                                                backgroundColor: 'white'
-                                                            }}>
-                                                                {featuredItem.end_date || 'Not set'}
-                                                            </div>
-                                                        </Col>
-                                                        <Col md={2}>
-                                                            <div className='fw-light text-center' style={{fontSize: '10px'}}>
-                                                                Day Left:
-                                                            </div>
-                                                            <div className='text-center mt-2' style={{ 
-                                                                fontSize: '14px', 
-                                                                fontWeight: '600',
-                                                                border: '1px solid #EFF0F6', 
-                                                                borderRadius: '15px',
-                                                                padding: '6px 8px',
-                                                                backgroundColor: 'white'
-                                                            }}>
-                                                                {calculateDaysLeft(featuredItem.start_date, featuredItem.end_date)}
-                                                            </div>
-                                                        </Col>
-                                                        <Col md={1}>
-                                                            <div className='fw-light text-center' style={{fontSize: '10px'}}>
-                                                                Status:
-                                                            </div>
-                                                            <div className='text-center mt-2' style={{ 
-                                                        fontSize:'12px', 
-                                                        fontWeight:'500',
+                            {getFilteredData(schoolFeatured).map((featured, index) => (
+                                <Accordion.Item key={index} eventKey={index.toString()}>
+                                    <Accordion.Header>
+                                        <Row className="w-100">
+                                            <Col md={2}>
+                                                <div className='fw-light text-center' style={{fontSize: '10px'}}>
+                                                    Request Name: 
+                                                </div>
+                                                <div className='text-center' style={{ fontSize:'14px', fontWeight:'600'}}>
+                                                    {featured.request_name || 'No Data Available'}
+                                                </div>
+                                            </Col>
+                                            <Col md={2}>
+                                                <div className='fw-light text-center' style={{fontSize: '10px'}}>
+                                                    Featured Type: 
+                                                </div>
+                                                <div className='text-center' style={{ color: getFeaturedTypeColor(featured.featured_type), fontSize:'14px', fontWeight:'600'}}>
+                                                    {featured.featured_type}
+                                                </div>
+                                            </Col>
+                                            <Col md={2}>
+                                                <div className='fw-light text-center' style={{fontSize: '10px'}}>
+                                                    Duration: 
+                                                </div>
+                                                <div className='text-center' style={{ fontSize:'14px', fontWeight:'600'}}>
+                                                    {featured.featured_duration} Days
+                                                </div>
+                                            </Col>
+                                            <Col md={2}>
+                                                <div className='fw-light text-center' style={{fontSize: '10px'}}>
+                                                    Total Quantity: 
+                                                </div>
+                                                <div className='text-center' style={{ fontSize:'14px', fontWeight:'600'}}>
+                                                    {featured.request_quantity || 0} Slots
+                                                </div>
+                                            </Col>
+                                            <Col md={2}>
+                                                <div className='fw-light text-center' style={{fontSize: '10px'}}>
+                                                    Quantity Used: 
+                                                </div>
+                                                <div className='text-center' style={{ fontSize:'14px', fontWeight:'600'}}>
+                                                    {featured.quantity_used} / {featured.request_quantity}
+                                                </div>
+                                            </Col>
+                                            <Col md={2}>
+                                                <div className='fw-light text-center' style={{fontSize: '10px'}}>
+                                                    Request Status: 
+                                                </div>
+                                                <div className='text-center' style={{ 
+                                                    color: getStatusColor(featured.request_status),
+                                                    fontWeight: '500',
+                                                    fontSize:'14px',
+                                                    fontWeight:'600'
+                                                }}>
+                                                    {featured.request_status}
+                                                </div>
+                                            </Col>
+                                        </Row>
+                                    </Accordion.Header>
+                                    <Accordion.Body>
+                                        <Row style={getStatusStyling(featured.status).rowStyle}>
+                                            <Col md={3}>
+                                                <div className='fw-light text-center' style={{fontSize: '10px'}}>
+                                                    School Name:
+                                                </div>
+                                                <div className='text-center mt-2' style={{ 
+                                                    fontSize: '14px', 
+                                                    fontWeight: '600',
+                                                    border: '1px solid #EFF0F6', 
+                                                    borderRadius: '15px',
+                                                    padding: '8px 12px',
+                                                    backgroundColor: 'white'
+                                                }}>
+                                                    {featured.school_name || 'Not set'}
+                                                </div>
+                                            </Col>
+                                            <Col md={3}>
+                                                <div className='fw-light text-center' style={{fontSize: '10px'}}>
+                                                    Start Date:
+                                                </div>
+                                                <DatePicker
+                                                    selected={parseDate(featured.start_date)}
+                                                    onChange={(date) => handleStartDateChange(
+                                                        date,
+                                                        'school',
+                                                        featured.id,
+                                                        featured.featured_duration
+                                                    )}
+                                                    dateFormat="yyyy-MM-dd HH:mm:ss"
+                                                    className="form-control text-center border-0 mt-2"
+                                                    style={{ 
+                                                        fontSize: '14px', 
+                                                        fontWeight: '600',
                                                         border: '1px solid #EFF0F6', 
-                                                        borderRadius: '15px',
-                                                        padding: '4px 6px',
-                                                        color: 'white',
-                                                        backgroundColor:(() => {
-                                                            switch(featuredItem.status?.toLowerCase()) {
-                                                                case 'expired': return '#525E6F';
-                                                                case 'ongoing': return '#1AB11F';
-                                                                case 'schedule': return '#FFAE4C';
-                                                                default: return '#FFAE4C';
-                                                                }
-                                                            })()
-                                                        }}>
-                                                                {featuredItem.status || 'Schedule'}
-                                                            </div>
-                                                        </Col>
-                                                    </Row>
-                                                ))
-                                            ) : (
-                                                <div className='text-center'>No featured items available.</div>
-                                            )}
-                                        </Accordion.Body>
-                                    </Accordion.Item>
-                                ))
-                            ) : (
-                                <div className='text-center'>No featured items available.</div>
-                            )}
+                                                        borderRadius: '15px'
+                                                    }}
+                                                    placeholderText="Select date"
+                                                    showTimeSelect
+                                                    timeFormat="HH:mm:ss"
+                                                    timeIntervals={15}
+                                                    timeCaption="Time"
+                                                    disabled={moment(featured.start_date).isBefore(moment())}
+                                                />
+                                            </Col>
+                                            <Col md={3}>
+                                                <div className='fw-light text-center' style={{fontSize: '10px'}}>
+                                                    End Date:
+                                                </div>
+                                                <div className='text-center mt-2' style={{ 
+                                                    fontSize: '14px', 
+                                                    fontWeight: '600',
+                                                    border: '1px solid #EFF0F6', 
+                                                    borderRadius: '15px',
+                                                    padding: '8px 12px',
+                                                    backgroundColor: 'white'
+                                                }}>
+                                                    {featured.end_date || 'Not set'}
+                                                </div>
+                                            </Col>
+                                            <Col md={2}>
+                                                <div className='fw-light text-center' style={{fontSize: '10px'}}>
+                                                    Day Left:
+                                                </div>
+                                                <div className='text-center mt-2' style={{ 
+                                                    fontSize: '14px', 
+                                                    fontWeight: '600',
+                                                    border: '1px solid #EFF0F6', 
+                                                    borderRadius: '15px',
+                                                    padding: '8px 12px',
+                                                    backgroundColor: 'white'
+                                                }}>
+                                                    {calculateDaysLeft(featured.start_date, featured.end_date)}
+                                                </div>
+                                            </Col>
+                                            <Col md={1}>
+                                                <div className='fw-light text-center' style={{fontSize: '10px'}}>
+                                                    Status:
+                                                </div>
+                                                <div className='text-center mt-2' style={{ 
+                                                    fontSize: '12px', 
+                                                    fontWeight: '500',
+                                                    borderRadius: '15px',
+                                                    padding: '4px 6px',
+                                                    color: 'white',
+                                                    backgroundColor:(() => {
+                                                        switch(featured.status?.toLowerCase()) {
+                                                            case 'expired': return '#525E6F';
+                                                            case 'ongoing': return '#1AB11F';
+                                                            case 'schedule': return '#FFAE4C';
+                                                            default: return '#FFAE4C';
+                                                        }
+                                                    })()
+                                                }}>
+                                                    {featured.status || 'Schedule'}
+                                                </div>
+                                            </Col>
+                                        </Row>
+                                    </Accordion.Body>
+                                </Accordion.Item>
+                            ))}
                         </Accordion>
                     )}
                 </Tab.Pane>
             </Tab.Content>
 
-            {/* Add these modals at the end of your return statement */}
+            {/* Confirmation Modal */}
             <Modal 
                 show={showConfirmModal} 
                 onHide={() => {
@@ -1348,19 +1109,14 @@ const fetchFeaturedRequests = async () => {
                     </Button>
                     <Button 
                         variant="primary" 
-                        onClick={() => {
-                            if (activeTab === 'course') {
-                                handleConfirmedCourseChange();
-                            } else {
-                                handleConfirmedSchoolChange();
-                            }
-                        }}
+                        onClick={handleConfirmedCourseChange}
                     >
                         Yes
                     </Button>
                 </Modal.Footer>
             </Modal>
 
+            {/* Error Modal */}
             <Modal 
                 show={showErrorModal} 
                 onHide={() => setShowErrorModal(false)}
@@ -1379,21 +1135,8 @@ const fetchFeaturedRequests = async () => {
                     </Button>
                 </Modal.Footer>
             </Modal>
-
-            {/* Add this in your return statement to render pagination buttons */}
-            <div className="pagination-controls">
-                {Array.from({ length: totalPages }, (_, index) => (
-                    <Button 
-                        key={index + 1} 
-                        onClick={() => handlePageChange(index + 1)} 
-                        disabled={currentPage === index + 1}
-                    >
-                        {index + 1}
-                    </Button>
-                ))}
-            </div>
         </Container>
     );
 };
 
-export default AdminEditFeaturedContent;
+export default FeaturedRequest;
