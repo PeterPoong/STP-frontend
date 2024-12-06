@@ -73,6 +73,7 @@ import SchoolPortalForgetPassword from "./Pages/SchoolPages/schoolPortalForgetPa
 import ExistSchool from "./Pages/SchoolPages/ExistSchool";
 import SchoolViewApplicantDetail from "./Pages/SchoolPages/StudentApplicantDetail";
 import SchoolBasicInformation from "./Pages/SchoolPages/SchoolBasicInformation";
+import SchoolPackage from "./Pages/SchoolPages/SchoolPackage";
 import RequestFeatured from "./Pages/SchoolPages/RequestFeatured";
 
 //marketing
