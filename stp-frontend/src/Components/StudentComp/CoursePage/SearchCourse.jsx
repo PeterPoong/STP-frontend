@@ -847,7 +847,7 @@ const SearchCourse = () => {
                 // After 500ms, update the main searchQuery which triggers API call
                 setTimeout(() => {
                   setSearchQuery(e.target.value);
-                }, 500);
+                },1500);
               }}
             />
           </InputGroup>
@@ -870,7 +870,7 @@ const SearchCourse = () => {
                   // After 500ms, update the main searchQuery which triggers API call
                   setTimeout(() => {
                     setSearchQuery(e.target.value);
-                  }, 500);
+                  }, 1500);
                 }}
               />
             </InputGroup>
