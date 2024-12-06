@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, Modal, Form } from "react-bootstrap";
+import { Table, Button, Modal, Form, Col } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faReceipt } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
@@ -19,7 +19,7 @@ const AdminFeaturedContent = () => {
     const [targetFeatured, setTargetFeatured] = useState(null);
     const [totalPages, setTotalPages] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [rowsPerPage, setRowsPerPage] = useState(1000);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
     const token = sessionStorage.getItem('token');
@@ -29,6 +29,7 @@ const AdminFeaturedContent = () => {
     const [selectedReceipt, setSelectedReceipt] = useState(null);
     const [editMode, setEditMode] = useState(null); // State to track which row is in edit mode
     const [editedData, setEditedData] = useState({ request_name: '', featured_type: '', duration: '' }); // State for edited data
+    const [selectedFeaturedType, setSelectedFeaturedType] = useState('');
 
     const fetchFeatureds = async (page = 1, perPage = rowsPerPage, search = searchQuery) => {
         try {
@@ -249,6 +250,10 @@ const AdminFeaturedContent = () => {
         setShowReceiptModal(true);
     };
 
+    const filteredFeatureds = selectedFeaturedType && selectedFeaturedType !== "" 
+        ? sortedFeatureds.filter(featured => featured.featured_type?.featured_id === Number(selectedFeaturedType))
+        : sortedFeatureds; // Show all if "All Featured Types" is selected
+
     const theadContent = (
         <tr>
             <th onClick={() => handleSort("schoolName")}>
@@ -275,9 +280,9 @@ const AdminFeaturedContent = () => {
             <th>Action</th>
         </tr>
     );
-
-    const tbodyContent = sortedFeatureds.length > 0 ? (
-        sortedFeatureds.map((Featured) => {
+        
+    const tbodyContent = filteredFeatureds.length > 0 ? (
+        filteredFeatureds.map((Featured) => {
             // Log the values for debugging
             console.log('Featured:', Featured);
             console.log('Featured Type:', Featured.featured_type);
@@ -376,20 +381,38 @@ const AdminFeaturedContent = () => {
     );
     return (
         <>
-        {loading ? (
-            <CircleDotLoader />
+            <Col md={4} style={{marginLeft:'75px'}}>
+                <Form.Group className="d-flex">
+                    <Col md={2}>
+                    <Form.Label className="fw-light" style={{ lineHeight: '3' }}>Sort By:</Form.Label>
+                    </Col>
+                    <Form.Select
+                        value={selectedFeaturedType}
+                        onChange={(e) => setSelectedFeaturedType(e.target.value)}
+                        className='ps-0 bg-white py-2 ps-2'
+                    >
+                        <option value="">All Featured Types</option> {/* Option to show all */}
+                        <option value="28">Homepage University</option>
+                        <option value="29">Homepage Courses</option>
+                        <option value="30">Second Page</option>
+                        <option value="31">Third Page</option>
+                    </Form.Select>
+                </Form.Group>
+            </Col>
+            {loading ? (
+                <CircleDotLoader />
             ) : (
-            <TableWithControls
-                 theadContent={theadContent}
-                 tbodyContent={tbodyContent}
-                 onSearch={handleSearch}
-                 onSort={handleSort}
-                 totalPages={totalPages}
-                 currentPage={currentPage}
-                 onPageChange={handlePageChange}
-                 onRowsPerPageChange={handleRowsPerPageChange}
-            />
-        )}
+                <TableWithControls
+                    theadContent={theadContent}
+                    tbodyContent={tbodyContent}
+                    onSearch={handleSearch}
+                    onSort={handleSort}
+                    totalPages={totalPages}
+                    currentPage={currentPage}
+                    onPageChange={handlePageChange}
+                    onRowsPerPageChange={handleRowsPerPageChange}
+                />
+            )}
             <Modal show={showModal} onHide={() => setShowModal(false)} centered>
                 <Modal.Header closeButton>
                     <Modal.Title>Confirm Action</Modal.Title>

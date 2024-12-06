@@ -52,36 +52,18 @@ const FeaturedRequest = ({ authToken }) => {
     const [schoolFeatured, setSchoolFeatured] = useState([]);
     const [activeTab, setActiveTab] = useState('course');
     const [selectedStatus, setSelectedStatus] = useState('');
-    
+    const [availableCourses, setAvailableCourses] = useState({});
+
     // Filter states
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedFeaturedType, setSelectedFeaturedType] = useState('');
 
     // Add new state for course options
     const [courseOptions, setCourseOptions] = useState([]);
-
     const [showAddCourse, setShowAddCourse] = useState({});
     const [searchCourse, setSearchCourse] = useState('');
     const [selectedCourse, setSelectedCourse] = useState('');
     const [startDate, setStartDate] = useState(null);
-
-    // Temporary hardcoded course options
-    const tempCourseOptions = [
-        { id: 1, name: "Introduction to Programming" },
-        { id: 2, name: "Web Development Basics" },
-        { id: 3, name: "Advanced JavaScript" },
-        { id: 4, name: "React Fundamentals" },
-        { id: 5, name: "Node.js Essentials" },
-        { id: 6, name: "Python Programming" },
-        { id: 7, name: "Data Structures" },
-        { id: 8, name: "Machine Learning Basics" },
-        { id: 9, name: "Database Management" },
-        { id: 10, name: "Cloud Computing" }
-    ];
-
-    // Add new state for available courses
-    const [availableCourses, setAvailableCourses] = useState({});
-
     const [showErrorModal, setShowErrorModal] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
 
@@ -95,13 +77,12 @@ const FeaturedRequest = ({ authToken }) => {
             console.log('Using token:', authToken);
 
             const requestBody = {
-                status: selectedStatus !== '' ? parseInt(selectedStatus) : undefined
+                status: selectedStatus !== '' ? parseInt(selectedStatus) : undefined,
+                request_type: activeTab
             };
 
-            // Select API endpoint based on active tab
-            const apiEndpoint = activeTab === 'course' 
-                ? 'api/school/courseRequestFeaturedList'
-                : 'api/school/schoolRequestFeaturedList';
+            // Update API endpoint to the new combined endpoint
+            const apiEndpoint = 'api/school/schoolFeaturedRequestLists';
 
             console.log('Making request to:', `${import.meta.env.VITE_BASE_URL}${apiEndpoint}`);
             console.log('With headers:', {
@@ -128,8 +109,8 @@ const FeaturedRequest = ({ authToken }) => {
             const result = await response.json();
             console.log('API Response:', result);
 
-            if (result.success && result.data) {
-                const transformedData = result.data.map(item => ({
+            if (result.success && Array.isArray(result.data.data)) { // Access the nested data array
+                const transformedData = result.data.data.map(item => ({
                     id: item.id,
                     request_name: item.name,
                     featured_type: item.featured_type.featured_type,
@@ -145,23 +126,8 @@ const FeaturedRequest = ({ authToken }) => {
                             default: return 'Unknown';
                         }
                     })(),
-                    featured: activeTab === 'course' 
-                        ? item.featured_courses.map(feat => ({
-                            id: feat.id,
-                            course_id: feat.id,
-                            course_name: feat.course_name,
-                            end_date: feat.end_date,
-                            status: feat.day_left <= 0 ? 'Expired' : 
-                                   feat.end_date ? 'Ongoing' : 'Schedule'
-                        }))
-                        : item.featured_schools?.map(feat => ({
-                            id: feat.id,
-                            school_id: feat.id,
-                            school_name: feat.school_name,
-                            end_date: feat.end_date,
-                            status: feat.day_left <= 0 ? 'Expired' : 
-                                   feat.end_date ? 'Ongoing' : 'Schedule'
-                        })) || []
+                    featured: item.featured || [],
+                    courseAvailable: item.courseAvailable || []
                 }));
 
                 if (activeTab === 'course') {
@@ -170,6 +136,10 @@ const FeaturedRequest = ({ authToken }) => {
                     setSchoolFeatured(transformedData);
                 }
                 console.log('Transformed data:', transformedData);
+            } else {
+                console.error('Unexpected response structure:', result); // Log unexpected structure
+                console.log('Full API Response:', JSON.stringify(result, null, 2)); // Log the full response for debugging
+                setError('Unexpected response structure');
             }
         } catch (error) {
             console.error('Error in fetchFeaturedRequests:', error);
