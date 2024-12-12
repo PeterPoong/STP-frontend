@@ -95,7 +95,6 @@ const AdminEditFeaturedContent = () => {
     const [showErrorModal, setShowErrorModal] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [showConfirmModal, setShowConfirmModal] = useState(false);
-    const [pendingCourseChange, setPendingCourseChange] = useState(null);
 
     // Add these states at the top of your component
     const [selectedDates, setSelectedDates] = useState({});
@@ -374,7 +373,6 @@ const fetchFeaturedRequests = async () => {
         setPendingCourseChange({
             featured_id: parseInt(featuredId),
             course_id: parseInt(courseId),
-            start_date: startDate
         });
         setShowConfirmModal(true);
     };

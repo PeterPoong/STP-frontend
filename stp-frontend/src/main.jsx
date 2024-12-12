@@ -76,6 +76,10 @@ import ExistSchool from "./Pages/SchoolPages/ExistSchool";
 import SchoolViewApplicantDetail from "./Pages/SchoolPages/StudentApplicantDetail";
 import SchoolBasicInformation from "./Pages/SchoolPages/SchoolBasicInformation";
 import RequestFeatured from "./Pages/SchoolPages/RequestFeatured";
+import CourseRequestFeatured from "./Pages/SchoolPages/CourseRequestFeatured"
+import SchoolRequestFeatured from "./Pages/SchoolPages/SchoolRequestFeatured"
+import Checkout from "./Pages/SchoolPages/Checkout"
+
 
 //marketing
 import AccountPackages from "./Pages/MarketingPages/AccountPackages";
@@ -363,6 +367,18 @@ const router = createBrowserRouter([
   {
     path: "/schoolRequestFeatured",
     element: <RequestFeatured />,
+  },
+  {
+    path: "/CourseRequestFeatured",
+    element: <CourseRequestFeatured />,
+  },
+  {
+    path: "/SchoolRequestFeatured",
+    element: <SchoolRequestFeatured />,
+  },
+  {
+    path: "/Checkout",
+    element: <Checkout />,
   },
   {
     path: "/studentApplyCourse",
