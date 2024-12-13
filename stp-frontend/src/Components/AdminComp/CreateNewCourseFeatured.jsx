@@ -172,7 +172,16 @@ const CreateNewCourseRequest = ({ show, handleClose, activeTab }) => {
                                 <Button
                                     key={type.id}
                                     variant={featuredType === type.id ? 'primary' : 'secondary'} // Change color based on selection
-                                    onClick={() => setFeaturedType(type.id)}
+                                    onClick={() => {
+                                        setFeaturedType(type.id);
+                                        // Set quantity to 1 if the selected type is id: 29
+                                        if (type.id === 29) {
+                                            setQuantity(1);
+                                            setCourseSelections([{ course_id: '', start_date: '' }]); // Reset selections to match quantity
+                                        } else {
+                                            setQuantity(''); // Reset quantity for other types
+                                        }
+                                    }}
                                     style={{ flex: 1 }} // Equal width for buttons
                                 >
                                     {type.featured_type}
@@ -195,10 +204,14 @@ const CreateNewCourseRequest = ({ show, handleClose, activeTab }) => {
                             type="number"
                             value={quantity}
                             onChange={(e) => {
-                                setQuantity(e.target.value);
-                                setCourseSelections(Array.from({ length: e.target.value }, () => ({ course_id: '', start_date: '' }))); // Reset selections
+                                // Allow changing quantity only if it's not set to 1 for id: 29
+                                if (featuredType !== 29) {
+                                    setQuantity(e.target.value);
+                                    setCourseSelections(Array.from({ length: e.target.value }, () => ({ course_id: '', start_date: '' }))); // Reset selections
+                                }
                             }}
                             required
+                            disabled={featuredType === 29 && quantity === 1}
                         />
                     </Form.Group>
 

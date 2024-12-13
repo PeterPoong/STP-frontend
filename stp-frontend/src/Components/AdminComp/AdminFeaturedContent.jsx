@@ -19,7 +19,7 @@ const AdminFeaturedContent = () => {
     const [targetFeatured, setTargetFeatured] = useState(null);
     const [totalPages, setTotalPages] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
-    const [rowsPerPage, setRowsPerPage] = useState(1000);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
     const token = sessionStorage.getItem('token');
@@ -30,10 +30,12 @@ const AdminFeaturedContent = () => {
     const [editMode, setEditMode] = useState(null); // State to track which row is in edit mode
     const [editedData, setEditedData] = useState({ request_name: '', featured_type: '', duration: '' }); // State for edited data
     const [selectedFeaturedType, setSelectedFeaturedType] = useState('');
+    const [isSearchResults, setIsSearchResults] = useState(false);
 
     const fetchFeatureds = async (page = 1, perPage = rowsPerPage, search = searchQuery) => {
         try {
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/featuredRequestList?page=${page}&per_page=${perPage === "All" ? Featureds.length : perPage}&search=${search}`, {
+            console.log(`Fetching page: ${page}, perPage: ${perPage}, search: ${search}`); // Log the parameters
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/featuredRequestList?page=${page}&per_page=${perPage}&search=${search}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -46,14 +48,13 @@ const AdminFeaturedContent = () => {
             }
 
             const result = await response.json();
-            
+            console.log("API Response:", result); // Log the API response
+
             // Check for success and data structure
             if (result.success && result.data) {
-                setFeatureds(result.data.data); // Access the nested data array
+                setFeatureds(result.data.data);
                 setTotalPages(result.data.last_page);
                 setCurrentPage(result.data.current_page);
-                // Optionally, you might want to store other pagination info
-                // setRowsPerPage(result.data.per_page);
             } else {
                 setFeatureds([]);
                 setTotalPages(1);
@@ -68,13 +69,13 @@ const AdminFeaturedContent = () => {
     };
 
     useEffect(() => {
-        fetchFeatureds(currentPage, rowsPerPage, searchQuery, sortColumn, sortDirection);
-    }, [currentPage, rowsPerPage, searchQuery, sortColumn, sortDirection]);
+        fetchFeatureds(currentPage, rowsPerPage, searchQuery);
+    }, [currentPage, rowsPerPage, searchQuery]);
 
     const handleRowsPerPageChange = (newRowsPerPage) => {
         setRowsPerPage(newRowsPerPage);
         setCurrentPage(1); 
-        fetchFeatureds(1, newRowsPerPage === "All" ? Featureds.length : newRowsPerPage, searchQuery);
+        fetchFeatureds(1, newRowsPerPage, searchQuery);
     };
 
     const handleSearch = (query) => {
@@ -349,7 +350,8 @@ const AdminFeaturedContent = () => {
                         />
                     </td>
                     <td className={getStatusClass(Featured.request_status)}>
-                        {Featured.request_status === 1 ? 'Active' : 'Inactive'}
+                        {Featured.request_status === 1 ? 'Active' : 
+                         Featured.request_status === 3 ? 'Rejected' : 'Pending'}
                     </td>
                     <td>
                         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -361,13 +363,30 @@ const AdminFeaturedContent = () => {
                                     Save
                                 </Button>
                             ) : (
-                                <FontAwesomeIcon
-                                    className="icon-color-edit"
-                                    title="Edit"
-                                    icon={faEdit}
-                                    style={{ marginRight: '8px', color: '#691ED2', cursor: 'pointer' }}
-                                    onClick={() => handleEdit(Featured)}
-                                />
+                                Featured.request_status === 2 ? (
+                                    <>
+                                        <Button className="accept"
+                                            variant="success"
+                                            onClick={() => handlePendingAction(Featured.id, 'Accept')}
+                                        >
+                                            Accept
+                                        </Button>
+                                        <Button className="rejected"
+                                            variant="danger"
+                                            onClick={() => handlePendingAction(Featured.id, 'Reject')}
+                                        >
+                                            Reject
+                                        </Button>
+                                    </>
+                                ) : (
+                                    <FontAwesomeIcon
+                                        className="icon-color-edit"
+                                        title="Edit"
+                                        icon={faEdit}
+                                        style={{ marginRight: '8px', color: '#691ED2', cursor: 'pointer' }}
+                                        onClick={() => handleEdit(Featured)}
+                                    />
+                                )
                             )}
                         </div>
                     </td>
