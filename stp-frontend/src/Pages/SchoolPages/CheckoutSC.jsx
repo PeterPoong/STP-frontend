@@ -1,32 +1,32 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../../Components/SchoolPortalComp/SchoolSidebar";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { Container } from "react-bootstrap";
 import "../../css/SchoolPortalStyle/MyProfile/SchoolPortalBasicInformation.css";
-import FeaturedRequest from "../../Components/SchoolPortalComp/Featured/FeaturedRequest";
-import RequestSchoolFeature from "../../Components/SchoolPortalComp/Featured/RequestSchoolFeature"
+import CheckoutSchool from "../../Components/SchoolPortalComp/Featured/CheckoutSchool";
+
 import "typeface-ubuntu";
 
-function SchoolRequestFeatured() {
+function Checkoutsc() {
+  const location = useLocation();
+  const { state } = location;
+  const token = sessionStorage.getItem("token");
   const [schoolDetail, setSchoolDetail] = useState();
   const [selectedDropdownItem, setSelectedDropdownItem] = useState("");
   const [selectedTab, setSelectedTab] = useState("requestFeatured");
-  const [show, setShow] = useState(true);
-  const token = sessionStorage.getItem("token");
 
   useEffect(() => {
-    setSelectedTab("requestFeatured");
-    console.log("Token in RequestFeatured:", token);
-  }, []);
+    console.log("Checkout Data:", state);
+  }, [state]);
 
   if (!token) {
     return <Navigate to="/schoolPortalLogin" />;
   }
 
-  const handleClose = () => setShow(false);
+  const featuredPrice = state.featuredTypes.find((type) => type.featured_id === state.featuredType)?.price || 'None';
 
   return (
-    <div style={{ display: "flex", height: "100vh" }}>
+      <div style={{ display: "flex", height: "100vh" }}>
       <Sidebar
         detail={schoolDetail}
         onDropdownItemSelect={setSelectedDropdownItem}
@@ -35,13 +35,19 @@ function SchoolRequestFeatured() {
       />
       <div style={{ flex: 1, overflowY: "auto" }}>
         <Container fluid className="profile-container">
-          {show && (
-            <RequestSchoolFeature show={show} handleClose={handleClose} authToken={token} />
-          )}
+          <CheckoutSchool 
+            requestName={state.requestName} 
+            featuredType={state.featuredType} 
+            start_date={state.start_date} 
+            duration={state.duration} 
+            calculatedPrice={state.calculatedPrice} 
+            featuredTypes={state.featuredTypes}
+            authToken={token} 
+          />
         </Container>
       </div>
     </div>
   );
 }
 
-export default SchoolRequestFeatured;
+export default Checkoutsc;

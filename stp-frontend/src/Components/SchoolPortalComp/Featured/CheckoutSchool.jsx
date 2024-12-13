@@ -3,7 +3,7 @@ import { Modal, Form, Button, Card } from 'react-bootstrap';
 import { useDropzone } from "react-dropzone";
 import { FaFileImage, FaTrashAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-const CheckoutFeatured = ({ requestName, featuredType, quantity, duration, calculatedPrice, featuredTypes, authToken }) => {
+const CheckoutSchool = ({ requestName, featuredType, start_date, duration, calculatedPrice, featuredTypes, authToken }) => {
     const schoolId = sessionStorage.getItem('schoolId');
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`;
@@ -41,10 +41,10 @@ const CheckoutFeatured = ({ requestName, featuredType, quantity, duration, calcu
             return;
         }
 
-        const url = `${import.meta.env.VITE_BASE_URL}api/school/requestCoursesFeatured`;
+        const url = `${import.meta.env.VITE_BASE_URL}api/school/requestFeaturedSchool`;
         const formData = new FormData();
         formData.append("featured_type", featuredType);
-        formData.append("quantity", quantity);
+        formData.append("start_date", start_date);
         formData.append("duration", duration);
         formData.append("transaction_proof", transactionProof);
         formData.append("request_name", requestName);
@@ -93,13 +93,11 @@ const CheckoutFeatured = ({ requestName, featuredType, quantity, duration, calcu
                         <h6 className='mb-3 fw-bold'>
                             RM {featuredTypes.find((type) => type.featured_id === featuredType)?.price || 'None'}
                         </h6>
-                        <h6>Quantity:</h6>
-                        <h6 className='mb-3 fw-bold'>{quantity} Slot(s)</h6>
                         <h6 className='mt-2'>Duration:</h6>
                         <h6 className='mb-3 fw-bold'>{duration} Days</h6>
                         <h6>Calculation:</h6>
                         <h6 className='mb-3 fw-bold'>
-                            RM {featuredTypes.find((type) => type.featured_id === featuredType)?.price || 'None'} x {quantity} Slot(s) x [{duration}/30 days]= RM {calculatedPrice || '0.00'}
+                            RM {featuredTypes.find((type) => type.featured_id === featuredType)?.price || 'None'} x [{duration}/30 days]= RM {calculatedPrice || '0.00'}
                         </h6>
                         <h6>Amount Need to Pay:</h6>
                         <h5 className='mb-5 fw-bold'>
@@ -162,4 +160,4 @@ const CheckoutFeatured = ({ requestName, featuredType, quantity, duration, calcu
     );
 };
 
-export default CheckoutFeatured;
+export default CheckoutSchool;

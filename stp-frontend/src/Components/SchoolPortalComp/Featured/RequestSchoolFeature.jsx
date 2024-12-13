@@ -1,28 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Form, Button } from 'react-bootstrap';
+import { Form, Button, Card } from 'react-bootstrap';
+import { Underline } from 'react-feather';
+import { useNavigate } from 'react-router-dom';
 
-const RequestSchoolFeatured = ({ show, handleClose, activeTab }) => {
-    const schoolId = sessionStorage.getItem('schoolId');
+const RequestSchoolFeature = ({ show, handleClose }) => {
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`;
     const [requestName, setRequestName] = useState('');
-    const [featuredType, setFeaturedType] = useState('');
-    const [duration, setDuration] = useState('');
-    const [quantity, setQuantity] = useState('');
+    const [featuredType, setFeaturedType] = useState(null);
+    const [start_date, setStart_date]= useState('');
+    const [duration, setDuration] = useState(30);
     const [featuredTypes, setFeaturedTypes] = useState([]);
-    const [courseSelections, setCourseSelections] = useState([]);
-    const [startDate, setStartDate] = useState('');
-    const [courseOptions, setCourseOptions] = useState([]);
-    const [availableCourseOptions, setAvailableCourseOptions] = useState([]);
     const [calculatedPrice, setCalculatedPrice] = useState(0);
-    const [featuredId, setFeaturedId] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchFeaturedTypes = async () => {
+            console.log('Fetching featured types...');
             const url = `${import.meta.env.VITE_BASE_URL}api/school/schoolFeaturedPriceList`;
-            const requestBody = {
-                request_type: "school",
-            };
+            const requestBody = { featured_type: "school" };
+
+            console.log('Request Body:', requestBody);
 
             try {
                 const response = await fetch(url, {
@@ -35,8 +33,15 @@ const RequestSchoolFeatured = ({ show, handleClose, activeTab }) => {
                 });
 
                 console.log('Response Status:', response.status);
+                console.log('Response Headers:', response.headers);
+
+                if (!response.ok) {
+                    console.error('Network response was not ok:', response.statusText);
+                    return;
+                }
+
                 const result = await response.json();
-                console.log('API Response:', result);
+                console.log('Response from backend:', result);
 
                 if (result.success) {
                     setFeaturedTypes(result.data);
@@ -50,155 +55,59 @@ const RequestSchoolFeatured = ({ show, handleClose, activeTab }) => {
 
         if (show) {
             fetchFeaturedTypes();
+        } else {
+            console.log('Component not visible, fetch not triggered.');
         }
     }, [show, Authenticate]);
 
-    useEffect(() => {
-        const fetchCourseOptions = async () => {
-            const url = `${import.meta.env.VITE_BASE_URL}api/admin/adminFeaturedCourseList`;
-            const requestBody = {
-                school_id: parseInt(schoolId),
-            };
-
-            try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': Authenticate,
-                    },
-                    body: JSON.stringify(requestBody),
-                });
-
-                const result = await response.json();
-                if (result.success) {
-                    setCourseOptions(result.data);
-                    setAvailableCourseOptions(result.data);
-                } else {
-                    console.error('Error fetching course options:', result.message);
-                }
-            } catch (error) {
-                console.error('Error fetching course options:', error);
-            }
-        };
-
-        if (show) {
-            fetchCourseOptions();
-        }
-    }, [show, Authenticate, schoolId]);
-
-    useEffect(() => {
-        const filteredOptions = courseOptions.filter(option => 
-            !courseSelections.some(selection => selection.course_id === option.id)
-        );
-        setAvailableCourseOptions(filteredOptions);
-    }, [courseSelections, courseOptions]);
-
-    useEffect(() => {
-        console.log('Current Course Selections:', courseSelections);
-        console.log('Available Course Options:', availableCourseOptions);
-    }, [courseSelections, availableCourseOptions]);
-
-    const handleAddCourse = (index, courseId, startDate) => {
-        const updatedSelections = [...courseSelections];
-        updatedSelections[index] = { course_id: courseId, start_date: startDate };
-        setCourseSelections(updatedSelections);
-        console.log('Updated Course Selections:', updatedSelections);
-    };
-
     const handleFeaturedTypeChange = (type) => {
-        setFeaturedType(type.id);
-        setFeaturedId(type.id);
-        if (type.id === 29) {
-            setQuantity(1);
-            setCourseSelections([{ course_id: '', start_date: '' }]);
-        } else {
-            setQuantity('');
-        }
-    };
-
+            setFeaturedType(type.featured_id);
+            setCalculatedPrice(pricePerSlot * months);
+        };
+    
     useEffect(() => {
-        const fetchPrice = async () => {
-            if (featuredId && quantity) {
-                const url = `${import.meta.env.VITE_BASE_URL}api/getPrice`;
-                const requestBody = { featured_id: featuredId, quantity };
-
-                try {
-                    const response = await fetch(url, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': Authenticate,
-                        },
-                        body: JSON.stringify(requestBody),
-                    });
-
-                    const result = await response.json();
-                    if (result.success) {
-                        setCalculatedPrice(result.price);
-                    } else {
-                        console.error('Error fetching price:', result.message);
-                    }
-                } catch (error) {
-                    console.error('Error fetching price:', error);
-                }
-            }
-        };
-
-        fetchPrice();
-    }, [featuredId, quantity]);
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        
-        // Validate featured_courses
-        const validCourses = courseSelections.filter(course => course.course_id && course.start_date);
-        
-        const url = `${import.meta.env.VITE_BASE_URL}api/admin/adminApplyFeaturedCourseRequest`;
-
-        const requestBody = {
-            request_name: requestName,
-            school_id: parseInt(schoolId),
-            featured_type: featuredType,
-            quantity: parseInt(quantity),
-            duration: parseInt(duration),
-            featured_courses: validCourses.length > 0 ? validCourses : [], // Send empty array if no valid courses
-        };
-
-        console.log('Request Body:', requestBody);
-        console.log('Submitting to URL:', url);
-
-        try {
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': Authenticate,
-                },
-                body: JSON.stringify(requestBody),
+        if (featuredType) {
+            const pricePerSlot = featuredTypes.find((type) => type.featured_id === featuredType)?.price || 0;
+            const months = Math.floor(duration / 30); // Calculate the number of months
+            setCalculatedPrice(pricePerSlot * months); // Calculate total price
+        }
+    }, [duration, featuredType, featuredTypes]);
+    
+    const handleStartDate = (selectedDate) => {
+        // Format the date as "2023-1-5"
+        const formattedDate = new Date(selectedDate)
+            .toLocaleDateString('en-CA', {
+                year: 'numeric',
+                month: 'numeric',
+                day: 'numeric',
             });
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
+        // Update the state with the formatted date
+        setStart_date(formattedDate);
 
-            const result = await response.json();
-            if (result.success) {
-                handleClose();
-            } else {
-                console.error('Error in response:', result.message);
-            }
-        } catch (error) {
-            console.error('Error submitting request:', error);
-        }
+        console.log('Formatted Date:', formattedDate);
+    };
+    const handleGoToCheckout = () => {
+        navigate('/checkoutsc', {
+            state: {
+                requestName,
+                featuredType,
+                start_date,
+                duration,
+                calculatedPrice,
+                featuredTypes,
+            },
+        });
     };
 
     return (
-        <div className="container text-center">
-            <h1>Feature Setting</h1>
-            <Form onSubmit={handleSubmit}>
-                <Form.Group controlId="requestName">
-                    <Form.Label>Request Name<span className="text-danger">*</span></Form.Label>
+        <div className="container col-md-9">
+            <h3 className='text-decoration-underline text-center'>Feature Setting</h3>
+            <Form>
+                <Form.Group className="mb-5"controlId="requestName">
+                    <Form.Label>
+                        Request Name <span className="text-danger">*</span>
+                    </Form.Label>
                     <Form.Control
                         type="text"
                         value={requestName}
@@ -206,99 +115,162 @@ const RequestSchoolFeatured = ({ show, handleClose, activeTab }) => {
                         required
                     />
                 </Form.Group>
-                <Form.Group controlId="featuredType">
-                    <Form.Label>Featured Type<span className="text-danger">*</span></Form.Label>
+                <Form.Group className='mb-5' controlId="featuredType">
+                    <Form.Label>
+                        Featured Type <span className="text-danger">*</span>
+                    </Form.Label>
                     <div style={{ display: 'flex', gap: '10px' }}>
                         {featuredTypes.map((type) => (
                             <Button
-                                key={type.id}
-                                variant={featuredType === type.id ? 'primary' : 'secondary'}
+                                key={type.featured_id}
+                                variant={featuredType === type.featured_id ? 'primary' : 'secondary'}
                                 onClick={() => handleFeaturedTypeChange(type)}
                                 style={{ flex: 1 }}
                             >
-                                {type.featured_type}
+                                {type.featured_name}
                             </Button>
                         ))}
                     </div>
                 </Form.Group>
-                <Form.Group controlId="duration">
-                    <Form.Label>Duration<span className="text-danger">*</span> (Days)</Form.Label>
-                    <Form.Control
-                        type="number"
-                        value={duration}
-                        onChange={(e) => setDuration(e.target.value)}
-                        required
-                    />
-                </Form.Group>
-                <Form.Group controlId="quantity">
-                    <Form.Label>Quantity<span className="text-danger">*</span> (Slots)</Form.Label>
-                    <Form.Control
-                        type="number"
-                        value={quantity}
-                        onChange={(e) => {
-                            if (featuredType !== 29) {
-                                setQuantity(e.target.value);
-                                setCourseSelections(Array.from({ length: e.target.value }, () => ({ course_id: '', start_date: '' })));
-                            }
-                        }}
-                        required
-                        disabled={featuredType === 29 && quantity === 1}
-                    />
-                </Form.Group>
-
-                {quantity > 0 && <div className='mt-5 mb-2'>This Part is Optional</div>}
-
-                {Array.from({ length: quantity }).map((_, index) => (
-                    <Form.Group key={index} controlId={`courseSelection${index}`}>
-                        <Form.Label>Select Course {index + 1}*</Form.Label>
-                        <Form.Control as="select" 
-                            value={courseSelections[index]?.course_id || ''}
-                            onChange={(e) => handleAddCourse(index, e.target.value, courseSelections[index]?.start_date)}
-                        >
-                            <option value="">Select a course</option>
-                            {courseOptions.map((type) => {
-                                const isSelected = courseSelections[index]?.course_id === String(type.id);
-                                return (
-                                    <option key={type.id} value={type.id} disabled={courseSelections.some(selection => selection.course_id === String(type.id)) && !isSelected}>
-                                        {type.course_name}
-                                    </option>
-                                );
-                            })}
-                        </Form.Control>
+                <div className='d-flex mb-5' style={{lineHeight:'2.5'}}>
+                <Form.Group className='d-flex me-5 fw-bold' controlId="duration">
+                    <Form.Label className='col-md-5'>
+                        Duration <span className="text-danger">*</span>
+                    </Form.Label>
+                    <div className="position-relative">
+                        <i className="fas fa-chevron-down position-absolute" style={{ right: '10px', top: '50%', transform: 'translateY(-50%)' }}></i>
                         <Form.Control
-                            type="date"
-                            value={courseSelections[index]?.start_date || ''}
-                            onChange={(e) => handleAddCourse(index, courseSelections[index]?.course_id, e.target.value)}
-                            required={courseSelections[index]?.course_id !== ''}
-                            onFocus={(e) => e.target.showPicker()}
-                        />
-                    </Form.Group>
-                ))}
-                <Button variant="primary" type="submit">
-                    Submit
-                </Button>
-            </Form>
+                            as="select"
+                            value={duration}
+                            onChange={(e) => {
+                                const selectedDuration = parseInt(e.target.value, 10); // Ensure the value is parsed as a number
+                                setDuration(selectedDuration); // Update the duration
+                            }}
+                            required
+                        >
+                            <option value={30}>1 Month</option>
+                            <option value={90}>3 Months</option>
+                            <option value={365}>12 Months</option>
+                        </Form.Control>
+                    </div>
+                </Form.Group>
 
-            <div className="row mt-4">
-                <div className="col-md-6">
-                    <h4>Calculated Price: ${calculatedPrice}</h4>
+                <Form.Group className='d-flex fw-bold' controlId="start_date">
+                    <Form.Label className='col-md-4'>
+                        Start Date <span className="text-danger">*</span>
+                    </Form.Label>
+                    <Form.Control
+                        type="date"
+                        value={start_date || ''} 
+                        onChange={(e) => handleStartDate(e.target.value)} 
+                        required
+                        onFocus={(e) => e.target.showPicker()} 
+                    />
+                </Form.Group>
                 </div>
-                <div className="col-md-6">
-                    <h4>Price Listing</h4>
-                    <Button variant="secondary" onClick={() => {/* Navigate to checkout page */}}>
-                        Go to Checkout
-                    </Button>
+                
+                <div className='d-flex justify-content-end'>
+                    <h6 className='me-2'>Total Amount:</h6>
+                    <div className='fw-bold' style={{fontSize:'20px', lineHeight:'1'}}>
+                        RM {calculatedPrice || '0.00'}
+                    </div>
                 </div>
+            </Form>
+            <p className='text-center mt-5 mb-5 text-decoration-underline
+            ' style={{fontWeight:600}}>
+                Pricing Summary
+            </p>
+            
+            <div className='d-flex col-md-12'>
+              
+            <Card className='col-md-6 text-center'>
+        
+            <p className='text-center mt-5 mb-5 text-decoration-underline
+            ' style={{fontWeight:600, fontSize:'20px'}}>
+                Price Calculator
+            </p>
+            <div>
+                <p>
+                    Selected Featured: 
+                </p>
+                <div className='mb-5 fw-bolder text-capitalize' style={{ color: 'rgba(0, 0, 0, 0.7)', fontSize:'20px' }}>
+                    {featuredTypes.find(type => type.featured_id === featuredType)?.featured_name || 'None'}
+                </div> 
+            </div>
+           
+            <p className='fw-bolder text-capitalize m-0' style={{ fontSize:'20px' }}>
+                Calculation
+            </p>
+            <p className='m-0 fw-bold' style={{ fontSize:'12px' }}>
+                Price per Slot and Month:
+            </p>
+            <div className='mb-2 fw-bold'style={{ fontSize:'15px' }}>
+                RM {featuredTypes.find((type) => type.featured_id === featuredType)?.price || 'None'}
             </div>
 
-            <div className="mt-4">
-                <h4>Upload Receipt</h4>
-                <Button variant="success" onClick={() => {/* Submit receipt and navigate back */}}>
-                    Submit
+            <p className='m-0 fw-bold'style={{ fontSize:'12px' }}>
+                Calculation:
+            </p>
+            <div className='mb-5 fw-bold' style={{ fontSize:'15px' }}>
+            RM {featuredTypes.find((type) => type.featured_id === featuredType)?.price || 'None'} x [{duration}/30 days]= RM {calculatedPrice || '0.00'}
+            </div>
+            <p className='m-0 fw-bold' style={{ fontSize:'12px' }}>
+                Amount Need to Pay:
+            </p>
+            <div className='fw-bold' style={{ fontSize:'20px' }}>
+               RM {calculatedPrice || '0.00'}
+            </div>
+            </Card>
+            <Card className='col-md-6 text-center'>
+        
+            <p className='text-center mt-5 mb-0 text-decoration-underline
+            ' style={{fontWeight:600, fontSize:'20px'}}>
+                Pricing
+            </p>
+            <p className='fw-bold m-0' style={{fontSize:'12px'}}>
+                Take Note
+            </p>
+            <p className='fw-bold m-0 mb-5' style={{fontSize:'12px'}}>
+                Each price is for a single slot.
+            </p>
+
+            <div>
+                {featuredTypes.map((type) => (
+                    <div className='mb-5' key={type.featured_id}>
+                        <p className='text-capitalize fw-bold m-0' style={{ color: 'rgba(0, 0, 0, 0.7)', fontSize:'16px' }}>
+                            {type.featured_name}
+                        </p>
+                        {type.featured_id === 29 && (
+                            <p className='text-capitalize fw-bold mb-1'style={{ color: 'rgba(0, 0, 0, 0.7)', fontSize:'10px' }} >
+                                Limited to <span style={{color:'red'}}>1</span> slot only.
+                            </p>
+                        )}
+                        <div className='d-flex justify-content-center'>
+                            <p className='fw-bold text-center me-2' style={{ color: 'rgba(0, 0, 0, 0.7)', fontSize:'16px', lineHeight: '1.5' }}>
+                                RM {type.price}
+                            </p>
+                            <p style={{ color: 'rgba(0, 0, 0, 0.7)', fontSize:'10px', lineHeight: '2.5' }}>
+                                per Month
+                            </p>
+                        </div>
+                      
+                
+                    </div>
+                ))}
+            </div>
+            </Card>
+            </div>
+            
+            <div className="mt-4 text-end">
+                <Button 
+                className={`btn btn-outline-danger px-5  mb-3 rounded-pill`}
+                 onClick={handleGoToCheckout}
+                 style={{color:'white'}}>
+                    Go to Checkout
                 </Button>
             </div>
         </div>
     );
 };
 
-export default RequestSchoolFeatured;
+export default RequestSchoolFeature;

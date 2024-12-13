@@ -79,7 +79,7 @@ import RequestFeatured from "./Pages/SchoolPages/RequestFeatured";
 import CourseRequestFeatured from "./Pages/SchoolPages/CourseRequestFeatured"
 import SchoolRequestFeatured from "./Pages/SchoolPages/SchoolRequestFeatured"
 import Checkout from "./Pages/SchoolPages/Checkout"
-
+import Checkoutsc from"./Pages/SchoolPages/CheckoutSC"
 
 //marketing
 import AccountPackages from "./Pages/MarketingPages/AccountPackages";
@@ -365,7 +365,7 @@ const router = createBrowserRouter([
     element: <ExistSchool />,
   },
   {
-    path: "/schoolRequestFeatured",
+    path: "/RequestFeatured",
     element: <RequestFeatured />,
   },
   {
@@ -379,6 +379,10 @@ const router = createBrowserRouter([
   {
     path: "/Checkout",
     element: <Checkout />,
+  },
+  {
+    path: "/Checkoutsc",
+    element: <Checkoutsc />,
   },
   {
     path: "/studentApplyCourse",

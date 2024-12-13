@@ -77,41 +77,6 @@ const RequestCourseFeatured = ({ show, handleClose }) => {
         }
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        const url = `${import.meta.env.VITE_BASE_URL}api/school/applyFeaturedCourse`;
-
-        const requestBody = {
-            request_name: requestName,
-            featured_type: featuredType,
-            quantity: parseInt(quantity, 10),
-            duration: parseInt(duration, 10),
-        };
-
-        console.log('Submitting Request Body:', requestBody);
-
-        try {
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': Authenticate,
-                },
-                body: JSON.stringify(requestBody),
-            });
-
-            const result = await response.json();
-            console.log('Response from backend on submit:', result);
-
-            if (result.success) {
-                handleClose();
-            } else {
-                console.error('Error in response:', result.message);
-            }
-        } catch (error) {
-            console.error('Error submitting request:', error);
-        }
-    };
 
     const handleGoToCheckout = () => {
         navigate('/checkout', {
@@ -128,8 +93,8 @@ const RequestCourseFeatured = ({ show, handleClose }) => {
 
     return (
         <div className="container col-md-9">
-            <h1 className='text-decoration-underline text-center'>Feature Setting</h1>
-            <Form onSubmit={handleSubmit}>
+            <h3 className='text-decoration-underline text-center'>Feature Setting</h3>
+            <Form>
                 <Form.Group className="mb-5"controlId="requestName">
                     <Form.Label>
                         Request Name <span className="text-danger">*</span>
@@ -204,7 +169,7 @@ const RequestCourseFeatured = ({ show, handleClose }) => {
                 
                 <div className='d-flex justify-content-end'>
                     <h6 className='me-2'>Total Amount:</h6>
-                    <div className='fw-bold' style={{fontSize:'30px', lineHeight:'0.5'}}>
+                    <div className='fw-bold' style={{fontSize:'20px', lineHeight:'1'}}>
                         RM {calculatedPrice || '0.00'}
                     </div>
                 </div>
@@ -250,7 +215,7 @@ const RequestCourseFeatured = ({ show, handleClose }) => {
                 Calculation:
             </p>
             <div className='mb-5 fw-bold' style={{ fontSize:'15px' }}>
-                RM {featuredTypes.find((type) => type.featured_id === featuredType)?.price || 'None'} x {quantity} Slot(s) = RM {calculatedPrice || '0.00'}
+            RM {featuredTypes.find((type) => type.featured_id === featuredType)?.price || 'None'} x {quantity} Slot(s) x [{duration}/30 days]= RM {calculatedPrice || '0.00'}
             </div>
             <p className='m-0 fw-bold' style={{ fontSize:'12px' }}>
                 Amount Need to Pay:
@@ -299,8 +264,11 @@ const RequestCourseFeatured = ({ show, handleClose }) => {
             </Card>
             </div>
             
-            <div className="mt-4">
-                <Button variant="secondary" onClick={handleGoToCheckout}>
+            <div className="mt-4 text-end">
+                <Button 
+                className={`btn btn-outline-danger px-5  mb-3 rounded-pill`}
+                 onClick={handleGoToCheckout}
+                 style={{color:'white'}}>
                     Go to Checkout
                 </Button>
             </div>
