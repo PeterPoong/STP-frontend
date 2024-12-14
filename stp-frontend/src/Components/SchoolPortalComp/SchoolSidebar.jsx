@@ -112,8 +112,8 @@ const Sidebar = ({ onDropdownItemSelect, selectTabPage }) => {
       setSchoolLogo(
         `${import.meta.env.VITE_BASE_URL}storage/${detail["school_logo"]}`
       );
-     // console.log("All keys have values.");
-      handleTabClick("dashboard");
+    //  // console.log("All keys have values.");
+    //   handleTabClick("dashboard");
     };
 
     setAccountType(detail.account_type);
@@ -223,14 +223,23 @@ const Sidebar = ({ onDropdownItemSelect, selectTabPage }) => {
     }
   };
 
-  const handleRequestFeaturedClick = () => {
-    navigate('/schoolRequestFeatured');
-    // Optional: update selected tab if needed
-    setSelectedTab("requestFeatured");
-    if (isSidebarOpen) {
-      toggleSidebar();
+const handleRequestFeaturedClick = () => {
+  setSelectedTab("featured");
+  navigate("/RequestFeatured", { replace: true }); // Avoids creating a new history entry
+  if (isSidebarOpen) {
+    toggleSidebar();
+  }
+  
+  // Refresh the page after navigation
+  window.location.reload();
+};
+
+  useEffect(() => {
+    if (location.pathname === "/RequestFeatured") {
+      setSelectedTab("featured");
     }
-  };
+  }, [location]);
+  
 
   return (
     
@@ -465,11 +474,10 @@ const Sidebar = ({ onDropdownItemSelect, selectTabPage }) => {
         </Nav.Item>
    
       
-        {/* Dashboard Tab */}
         <Nav.Item className="pb-1">
           <Nav.Link
             className={`d-flex align-items-center text-dark w-100 py-2 ${
-              selectedTab === "requestFeatured" ? "selected-tab" : ""
+              selectedTab === "featured" ? "selected-tab" : ""
             }`}
             style={{ fontSize: "15px", cursor: "pointer" }}
             onClick={handleRequestFeaturedClick}

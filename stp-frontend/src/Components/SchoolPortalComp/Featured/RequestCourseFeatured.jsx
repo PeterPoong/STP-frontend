@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Form, Button, Card } from 'react-bootstrap';
 import { Underline } from 'react-feather';
 import { useNavigate } from 'react-router-dom';
+import { Arrow90degLeft,} from "react-bootstrap-icons";
 
 const RequestCourseFeatured = ({ show, handleClose }) => {
     const token = sessionStorage.getItem('token');
@@ -91,9 +92,25 @@ const RequestCourseFeatured = ({ show, handleClose }) => {
         });
     };
 
+    const handleBack = () => {
+        navigate('/RequestFeatured');
+    };
     return (
-        <div className="container col-md-9">
-            <h3 className='text-decoration-underline text-center'>Feature Setting</h3>
+        <div className="container col-md-12">
+            <h5 className="mb-4 mt-5">
+                {/* Make the icon clickable */}
+                <span
+                onClick={handleBack} // Add your click handler here
+                style={{
+                    cursor: "pointer",
+                    display: "inline-flex",
+                    alignItems: "center",
+                }} // Optional: styling for cursor and alignment
+                >
+                <Arrow90degLeft style={{ color: "#B71A18" }} className="mx-3" />
+                </span>
+                Feature Setting
+            </h5>
             <Form>
                 <Form.Group className="mb-5"controlId="requestName">
                     <Form.Label>

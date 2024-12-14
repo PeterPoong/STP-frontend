@@ -3,6 +3,7 @@ import { Modal, Form, Button, Card } from 'react-bootstrap';
 import { useDropzone } from "react-dropzone";
 import { FaFileImage, FaTrashAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { Arrow90degLeft,} from "react-bootstrap-icons";
 const CheckoutSchool = ({ requestName, featuredType, start_date, duration, calculatedPrice, featuredTypes, authToken }) => {
     const schoolId = sessionStorage.getItem('schoolId');
     const token = sessionStorage.getItem('token');
@@ -34,7 +35,9 @@ const CheckoutSchool = ({ requestName, featuredType, start_date, duration, calcu
         multiple: false
     });
 
-    
+    const handleBack = () => {
+        navigate('/CourseRequestFeatured');
+    };
     const handleSubmit = async () => {
         if (!transactionProof) {
             alert("Please upload a receipt.");
@@ -61,7 +64,7 @@ const CheckoutSchool = ({ requestName, featuredType, start_date, duration, calcu
             const result = await response.json();
             if (result.success) {
                 alert("Request submitted successfully.");
-                navigate('/schoolRequestFeatured');
+                navigate('/RequestFeatured');
             } else {
                 alert(`Error: ${result.message}`);
             }
@@ -71,9 +74,22 @@ const CheckoutSchool = ({ requestName, featuredType, start_date, duration, calcu
     };
 
     return (
-        <div className="container text-center">
-            <h4 className='text-decoration-underline'>Checkout</h4>
-            <div className='d-flex' style={{ height: '100%' }}>
+        <div className="container">
+            <h5 className="mb-4 mt-5">
+                {/* Make the icon clickable */}
+                <span
+                onClick={handleBack} // Add your click handler here
+                style={{
+                    cursor: "pointer",
+                    display: "inline-flex",
+                    alignItems: "center",
+                }} // Optional: styling for cursor and alignment
+                >
+                <Arrow90degLeft style={{ color: "#B71A18" }} className="mx-3" />
+                </span>
+                Checkout
+            </h5>
+            <div className='d-flex text-center' style={{ height: '100%' }}>
                 <div className='col-md-6'>
                     <h4 className='text-decoration-underline fw-bold mb-3'> Summary</h4>
                     <Card className='mb-3'>
