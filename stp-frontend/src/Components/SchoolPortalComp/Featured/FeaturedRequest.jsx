@@ -6,6 +6,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import DatePicker from "react-datepicker";
 import moment from 'moment';
+import SkeletonLoader from '../../AdminComp/SkeletonLoader';
+
 
 const statusOptions = [
     { value: '', label: 'Featured Status' },
@@ -589,8 +591,12 @@ const fetchFeaturedRequests = async () => {
     };
 
     return (
-        <Container className="admin-feature mt-4" style={{ backgroundColor: 'white', minHeight: '100vh', padding: '20px' }}>
+        <Container className="admin-feature mt-4" style={{backgroundColor:"#f8f9fa", minHeight: '100vh', padding: '20px' }}>
             {/* Tabs and Create Button */}
+            {loading ? (
+                    <SkeletonLoader />
+                ) : (
+        <div>
             <div className="d-flex justify-content-between align-items-center mb-3">
                 <Tabs
                     activeKey={activeTab}
@@ -1346,6 +1352,8 @@ const fetchFeaturedRequests = async () => {
                     </Button>
                 ))}
             </div>
+            </div>
+            )}
         </Container>
     );
 };

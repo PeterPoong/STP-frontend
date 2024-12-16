@@ -13,9 +13,9 @@ import ManageAccount from "../../Components/SchoolPortalComp/MyProfile/ManageAcc
 import Applicant from "../../Components/SchoolPortalComp/Application/Applicant";
 // import Dashboard from "../../Components/SchoolPortalComp/Dashboard";
 import Dashboard from "../../Components/SchoolPortalComp/Dashboard/Dashboard";
-
+import FeaturedRequest from "../../Components/SchoolPortalComp/Featured/FeaturedRequest";
 import Courses from "../../Components/SchoolPortalComp/Courses/Courses";
-
+import CourseRequestFeatured from "../../Components/SchoolPortalComp/Featured/RequestCourseFeatured";
 const SchoolDashboard = () => {
   const [schoolDetail, setSchoolDetail] = useState();
   const [selectedDropdownItem, setSelectedDropdownItem] = useState("");
@@ -93,6 +93,8 @@ const SchoolDashboard = () => {
             return <Dashboard />;
           case "courses":
             return <Courses />;
+          case"featured":
+            return <FeaturedRequest authToken={token} />
           default:
             return <Dashboard />;
         }
