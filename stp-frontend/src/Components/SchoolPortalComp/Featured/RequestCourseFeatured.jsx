@@ -3,7 +3,7 @@ import { Form, Button, Card } from 'react-bootstrap';
 import { Underline } from 'react-feather';
 import { useNavigate } from 'react-router-dom';
 import { Arrow90degLeft,} from "react-bootstrap-icons";
-
+import styles from "../../../css/SchoolPortalStyle/Courses.module.css";
 const RequestCourseFeatured = ({ show, handleClose }) => {
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`;
@@ -123,40 +123,24 @@ const RequestCourseFeatured = ({ show, handleClose }) => {
                         required
                     />
                 </Form.Group>
-                <Form.Group className="mb-5" controlId="featuredType">
+                <Form.Group className='mb-5' controlId="featuredType">
                     <Form.Label>
                         Featured Type <span className="text-danger">*</span>
                     </Form.Label>
                     <div style={{ display: 'flex', gap: '10px' }}>
-                        {featuredTypes.map((type) => {
-                            const isActive = featuredType === type.featured_id;
-
-                            const buttonStyles = {
-                                flex: 1,
-                                backgroundColor: isActive ? 'rgba(183, 26, 24, 0.2)' : 'white',
-                                borderColor: '#EFF0F6',
-                                color: isActive ? 'rgba(183, 26, 24, 1)' : 'rgba(0, 0, 0, 0.7)',
-                                borderWidth: '1px',
-                                borderStyle: 'solid',
-                                fontWeight: 'bold',
-                                borderRadius:'20px'
-                            };
-
-                            return (
-                                <Button
-                                className='text-capitalize'
-                                    key={type.featured_id}
-                                    variant="light"
-                                    onClick={() => handleFeaturedTypeChange(type)}
-                                    style={buttonStyles}
-                                >
-                                    {type.featured_name}
-                                </Button>
-                            );
-                        })}
+                        {featuredTypes.map((type) => (
+                            <Button
+                            className={`${styles.submitButton}`}
+                                key={type.featured_id}
+                                variant={featuredType === type.featured_id ? 'primary' : 'secondary'}
+                                onClick={() => handleFeaturedTypeChange(type)}
+                                style={{ flex: 1, textTransform: 'capitalize' }}
+                            >
+                                {type.featured_name}
+                            </Button>
+                        ))}
                     </div>
                 </Form.Group>
-
                 <div className='d-flex mb-5' style={{lineHeight:'2.5'}}>
                 <Form.Group className='d-flex me-5 fw-bold' controlId="duration">
                     <Form.Label className='col-md-5'>

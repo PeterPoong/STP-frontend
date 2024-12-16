@@ -7,7 +7,7 @@ import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import DatePicker from "react-datepicker";
 import moment from 'moment';
 import SkeletonLoader from '../../AdminComp/SkeletonLoader';
-
+import styles from "../../../css/SchoolPortalStyle/Courses.module.css";
 
 const statusOptions = [
     { value: '', label: 'Featured Status' },
@@ -616,8 +616,8 @@ const fetchFeaturedRequests = async () => {
                 <Col md={6} className="d-flex justify-content-end">
                     <Button 
                         variant="primary" 
-                        className='py-2 border-0 px-3' 
-                        style={{ borderRadius:'30px', backgroundColor:'#B71A18', fontSize:'13px', color:'white'}}
+                        className={`${styles.submitButton} py-2 px-3`} 
+                        // style={{ borderRadius:'30px', backgroundColor:'#B71A18', fontSize:'13px', color:'white'}}
                         onClick={() => {
                             if (activeTab === 'course') {
                                 // Navigate to CourseRequestFeatured
