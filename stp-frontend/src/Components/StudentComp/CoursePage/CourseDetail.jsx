@@ -920,14 +920,26 @@ const CourseDetail = () => {
                           spaceBetween: 5,
                         },
                         640: {
-                          slidesPerView: 3,
-                          spaceBetween: 10,
+                          slidesPerView: 1,
+                          spaceBetween: 5,
                         },
                         768: {
-                          slidesPerView: 4,
-                          spaceBetween: 15,
+                          slidesPerView: 2,
+                          spaceBetween: 5,
                         },
                         1024: {
+                          slidesPerView: 3,
+                          spaceBetween: 5,
+                        },
+                        1254: {
+                          slidesPerView: 3,
+                          spaceBetween: 1,
+                        },
+                        1324: {
+                          slidesPerView: 3,
+                          spaceBetween: 1,
+                        },
+                        1488: {
                           slidesPerView: 5,
                           spaceBetween: 10,
                         },
