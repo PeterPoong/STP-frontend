@@ -122,6 +122,19 @@ const NavigationBar = () => {
             <Button
               variant="link"
               as={Link}
+              to="/studentStudyPath"
+              className={`nav-link-custom ${location.pathname === "/studentStudyPath" ||
+                location.pathname.startsWith("/studentStudyPath")
+                ? "active"
+                : ""
+              }`}
+              style={{ marginLeft: "10px" }}
+            >
+              Study Path
+            </Button>
+            <Button
+              variant="link"
+              as={Link}
               to="/studentFeedback"
               className={`nav-link-custom ${location.pathname === "/studentFeedback" ||
                 location.pathname.startsWith("/studentFeedback")

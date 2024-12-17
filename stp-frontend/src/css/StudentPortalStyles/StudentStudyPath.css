@@ -1,0 +1,581 @@
+.SSP-wrapper {
+    width: 100%;
+    min-height: 100vh;
+    position: relative;
+}
+
+
+/*Overall Container for Intro and other section*/
+.SSP-Intro-Overall-Container,
+.SSP-Question-Overall-Container {
+    margin-top: 5.825rem;
+    background-color: #f8f9fa;
+    margin-bottom: 0;
+    width: 100%;
+    height: fit-content;
+    padding: 2rem 0;
+}
+
+.SSP-Question-Overall-Container {
+    display: flex;
+}
+
+.SSP-Inner-Container {
+    max-width: 1200px;
+    margin: 1rem auto;
+    padding: 6rem;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    justify-content: center;
+}
+
+/* Header Styles */
+.SSP-Header {
+    margin-bottom: 0.5rem;
+}
+
+.SSP-Title {
+    color: #2A2A2A;
+    font-size: 48px;
+    font-weight: bold;
+}
+
+.SSP-Quote {
+    font-style: italic;
+    font-size: 36px;
+    color: #4E4E4E;
+}
+
+.SSP-Description-Text {
+    font-size: 20px;
+    color: #818181;
+}
+
+.SSP-Assessment-Info {
+    margin-bottom: 2.5rem;
+}
+
+.SSP-Info-Item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+
+.SSP-Info-Text {
+    font-size: 12px;
+    color: #BA1718;
+    margin-bottom: 0;
+}
+
+/*Button for SSP*/
+.SSP-Start-Button {
+    background-color: #BA1718;
+    color: white;
+    border: none;
+    border-radius: 2rem;
+    padding: 0.5rem 3rem;
+    font-size: 16px;
+    font-weight: normal;
+    cursor: pointer;
+    margin: 0;
+    width: max-content;
+}
+
+.SSP-Start-Button:hover {
+    background-color: transparent;
+    border: 2px #BA1718 solid;
+}
+
+.SSP-Start-Button:disabled {
+    background-color: #E5E7EB;
+    border-color: transparent;
+    color: #9CA3AF;
+    cursor: not-allowed;
+}
+
+.SSP-Start-Button:disabled {
+    background-color: #E5E7EB;
+    border-color: transparent;
+    color: #9CA3AF;
+    cursor: not-allowed;
+}
+
+
+
+/*Progress Bar (Side)*/
+.SSP-Progress-Sidebar {
+    width: 15rem;
+    align-content: center;
+    justify-items: center;
+}
+
+
+/*Progress Bar */
+.SSP-Content-Area {
+    width: 100%;
+}
+
+/*Name input Section*/
+/* Components/StudentComp/StudyPath/NameInputSection.css */
+.NIS-Section-Container {
+    max-width: 1200px;
+    padding: 10rem 6rem;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    width: 100%;
+
+}
+
+.NIS-Section-Subtitle {
+    font-size: 24px;
+    color: #4E4E4E;
+    margin-bottom: 2.5rem;
+    font-style: italic;
+}
+
+.NIS-Section-Form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    max-width: 400px;
+}
+
+.NIS-Input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 16px;
+    color: black;
+    border-bottom: 1px solid #D1D5DB;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    background: none;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.NIS-Input::placeholder {
+    color: #C9C9C9;
+}
+
+.NIS-Input:focus {
+    border-color: #BA1718;
+
+}
+
+/*Question Section*/
+.QS-Carousel-List-Wrapper {
+    max-width: 50rem;
+    margin: 0 auto;
+    position: relative;
+    padding: 0 40px;
+
+    background-image:
+        auto linear-gradient(to left, white, white),
+        auto linear-gradient(to right, white, white);
+    /* Right to left gradient */
+    background-size: 50% 100%;
+    /* Each gradient takes 50% of the width */
+    background-repeat: no-repeat;
+    z-index: 2;
+}
+
+.QS-Carousel-List {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 16px;
+    overflow-x: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+
+}
+
+.QS-Carousel-Item {
+    flex: 0 0 320px;
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+}
+
+.QS-Carousel-Content {
+    background: white;
+    padding: 24px;
+    width: 27rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    height: max-content;
+    display: flex;
+    flex-direction: column;
+}
+
+.QS-Carousel-Title {
+    font-size: 36px;
+    font-weight: bold;
+    margin: 0 0 16px 0;
+    color: #BA1718;
+}
+
+.QS-Carousel-Question {
+    font-size: 15px;
+    color: #BA1718;
+    margin: 0 0 20px 0;
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+.QS-Carousel-Options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: auto;
+}
+
+.QS-Carousel-Options-Button {
+    padding: 12px 16px;
+    border-radius: 8px;
+    background: #FFC9C9;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 12px;
+    font-weight:300;
+    color: #BA1718;
+}
+
+.QS-Carousel-Options-Button:hover {
+    background: #BA1718;
+    color:white;
+    transform: translateY(-1px);
+}
+
+.QS-Carousel-Button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+
+    border: none;
+    background: #BA1718;
+    box-shadow: 0 2px 6pxx rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+}
+
+.QS-Carousel-Button:hover {
+    background: #f8f9fa;
+}
+
+.QS-Carousel-Button--previous {
+    left: 0;
+}
+
+.QS-Carousel-Button--next {
+    right: 0;
+}
+
+.QS-Container {
+    padding: 0 1rem;
+    height: min-content;
+}
+
+.QS-Assessment-Container {
+    /*max-width: 74rem;*/
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    height: min-content;
+}
+
+.QS-Title-Container,
+.QS-Header-Container {
+    width: 35%;
+    margin: 0 auto;
+}
+
+.QS-Title-Container {
+    justify-items: start;
+}
+
+.QS-Title {
+    font-size: 32px;
+    font-weight: bold;
+    text-align: center;
+    margin: 1rem 0 0 0;
+    color: black;
+}
+
+.QS-Subtitle {
+    font-size: 16px;
+    text-align: center;
+    color: #4e4e4e;
+    margin: 10px 0 20px 0;
+}
+
+.QS-Header {
+    display: flex;
+    /*justify-content: space-between;*/
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.QS-Question-Progress {
+    position: relative;
+}
+
+.QS-Current-Question {
+    display: flex;
+    align-items: center;
+    /*gap: 8px;*/
+    font-weight: 300;
+    font-size: 16px;
+    margin-right: 2rem;
+}
+
+.QS-Check-Icon {
+    color: #4CAF50;
+}
+
+.QS-Progress-Indicator {
+    display: none;
+    /*display: flex;*/
+    gap: 4px;
+    cursor: pointer;
+}
+
+.QS-Progress-Dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ddd;
+}
+
+.QS-Progress-Dot.active {
+    background: #BA171a;
+}
+
+.QS-Progress-Dot.answered {
+    background: #4CAF50;
+}
+
+.QS-Question-List {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 200px;
+    max-height: 300px;
+    overflow-y: auto;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+}
+
+.QS-Question-Item {
+    padding: 8px 16px;
+    cursor: pointer;
+}
+
+.QS-Question-Item:hover {
+    background: #f5f5f5;
+}
+
+.QS-Question-Item.current {
+    background: #BA1718;
+    color: white;
+}
+
+.QS-Motivation-Quote {
+    color: #DC143C;
+    font-weight: 500;
+    border-radius: 1rem;
+    padding: 0 1rem;
+    border: 1.75px #BA1718 dashed;
+}
+
+
+
+/* progress bar*/
+.PB-Stepper-Container {
+    position: relative;
+    /*min-height: 300px;*/
+    /* width: 100%;*/
+    /* max-width:max-content;*/
+    /*margin: 0 1rem;*/
+    padding: 4rem 0;
+}
+
+.PB-Vertical-Line {
+    position: absolute;
+    left: 12px;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background-color: #E2B9BA;
+}
+
+.PB-Steps-Container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.PB-Step-Item {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.PB-Indicator-Container {
+    position: relative;
+    width: 28px;
+    height: 28px;
+}
+
+.PB-Step-Circle {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.PB-Step-Circle.current {
+    border-color: #BA1718;
+    background-color: white;
+}
+
+.PB-Step-Circle.completed {
+    border-color: #BA1718;
+    background-color: #BA1718;
+}
+
+.PB-Step-Circle.pending {
+    border-color: #E2B9BA;
+    background-color: white;
+}
+
+.PB-Pulse-Dot {
+    width: 12px;
+    height: 12px;
+    background-color: #BA1718;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+.PB-Checkmark {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: white;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.PB-Step-Label {
+    margin-left: 16px;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.PB-Step-Label.current {
+    color: #BA1718;
+}
+
+.PB-Step-Label.completed {
+    color: #BA1718;
+}
+
+.PB-Step-Label.pending {
+    color: #E2B9BA;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(0.95);
+        opacity: 0.9;
+    }
+
+    50% {
+        transform: scale(1.05);
+        opacity: 0.5;
+    }
+
+    100% {
+        transform: scale(0.95);
+        opacity: 0.9;
+    }
+}
+
+
+@media screen and (max-width: 768px) {
+    .PB-Stepper-Container {
+        min-height: unset;
+        max-width: 100%;
+        padding: 0 16px;
+        margin-top: 16px;
+    }
+
+    .PB-Vertical-Line {
+        position: absolute;
+        left: 0;
+        right: 0;
+        /* Center the line exactly in the middle of the container */
+        top: 14px;
+        /* Half of circle height */
+        width: 100%;
+        height: 2px;
+        background-color: #FED3D4;
+    }
+
+    .PB-Steps-Container {
+        flex-direction: row;
+        justify-content: space-between;
+        position: relative;
+        padding: 0 24px;
+    }
+
+    .PB-Step-Item {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        position: relative;
+    }
+
+    .PB-Indicator-Container {
+        position: relative;
+        /* This ensures the circle is centered on the line */
+        transform: translateY(-50%);
+        top: 14px;
+        /* Half of circle height */
+        background-color: white;
+        border-radius: 50%;
+    }
+
+    .PB-Step-Label {
+        margin-left: 0;
+        padding-top: 24px;
+        /* Space from circle to text */
+        font-size: 12px;
+        color: #9ca3af;
+        width: 80px;
+        text-align: center;
+    }
+
+    .PB-Step-Circle {
+        background-color: white;
+        /* Ensure circle covers the line */
+    }
+}
