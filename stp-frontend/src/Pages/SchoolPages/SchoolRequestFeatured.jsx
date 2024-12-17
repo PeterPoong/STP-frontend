@@ -18,7 +18,6 @@ function SchoolRequestFeatured() {
 
   useEffect(() => {
     setSelectedTab("featured");
-    console.log("Token in RequestFeatured:", token);
   }, []);
 
   if (!token) {

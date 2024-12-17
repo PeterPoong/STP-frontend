@@ -34,7 +34,6 @@ const AdminFeaturedContent = () => {
 
     const fetchFeatureds = async (page = 1, perPage = rowsPerPage, search = searchQuery) => {
         try {
-            console.log(`Fetching page: ${page}, perPage: ${perPage}, search: ${search}`); // Log the parameters
             const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/featuredRequestList?page=${page}&per_page=${perPage}&search=${search}`, {
                 method: "POST",
                 headers: {
@@ -175,8 +174,6 @@ const AdminFeaturedContent = () => {
     const handleSave = async (id) => {
         const { request_name, featured_type, duration } = editedData;
 
-        console.log('Edited Data before sending:', editedData); // Log the entire editedData
-
         const featuredTypeToSend = (featured_type && !isNaN(Number(featured_type))) ? Number(featured_type) : undefined;
 
         console.log('Data being sent to backend:', {
@@ -284,11 +281,7 @@ const AdminFeaturedContent = () => {
         
     const tbodyContent = filteredFeatureds.length > 0 ? (
         filteredFeatureds.map((Featured) => {
-            // Log the values for debugging
-            console.log('Featured:', Featured);
-            console.log('Featured Type:', Featured.featured_type);
-            console.log('Featured ID:', Featured.featured_type?.featured_id);
-
+           
             return (
                 <tr key={Featured.id}>
                     <td>{Featured.school?.school_name || 'N/A'}</td>
@@ -309,7 +302,6 @@ const AdminFeaturedContent = () => {
                                 value={editedData.featured_type}
                                 onChange={(e) => {
                                     const selectedValue = e.target.value;
-                                    console.log("Selected featured_type:", selectedValue);
                                     setEditedData({ ...editedData, featured_type: selectedValue ? Number(selectedValue) : undefined });
                                 }}
                             >

@@ -18,7 +18,6 @@ function Checkout() {
   const navigate = useNavigate(); // useNavigate hook
 
   useEffect(() => {
-    console.log("Checkout Data:", state);
   }, [state]);
 
   if (!token) {

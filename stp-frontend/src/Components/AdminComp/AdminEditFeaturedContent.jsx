@@ -120,8 +120,6 @@ const fetchFeaturedRequests = async () => {
             page: currentPage // Include current page in the request
         };
 
-        console.log('Request Body:', requestBody); // Log the request body
-
         const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/schoolFeaturedSchoolCourseRequestList`, {
             method: 'POST',
             headers: {
@@ -412,8 +410,6 @@ const fetchFeaturedRequests = async () => {
             } else {
                 throw new Error('No changes to process');
             }
-
-            console.log('Sending request body:', requestBody);
 
             const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/editFeaturedCourse`, {
                 method: 'POST',
@@ -820,7 +816,7 @@ const fetchFeaturedRequests = async () => {
                                         </Row>
                                     </Accordion.Header>
                                     <Accordion.Body>
-                                        {activeTab === 'course' && featured.quantity_used < featured.request_quantity && (
+                                        {activeTab === 'course' && featured.quantity_used < featured.request_quantity && featured.request_status === 1 &&(
                                             <Row>
                                                 <Col md={12}>
                                                     <Button 
@@ -996,15 +992,9 @@ const fetchFeaturedRequests = async () => {
                                                             }}
                                                             onSelect={(date) => {
                                                                 if (date && moment(date).isValid()) {
-                                                                    // Add detailed logging
-                                                                    console.log('Full Featured Item:', featuredItem);
-                                                                    console.log('Parent Featured Object:', featured);
-                                                                    console.log('Featured Type:', featured.featured_type);
-                                                                    
+                                                             
                                                                     // The featured_id should come from the featuredItem object
                                                                     const featured_id = featuredItem.id; // Use the id from the featuredItem
-                                                                    
-                                                                    console.log('Selected featured_id:', featured_id);
                                                                     
                                                                     setPendingStartDateChange({
                                                                         featured_id: featured_id, // Using the correct featured_id from featuredItem

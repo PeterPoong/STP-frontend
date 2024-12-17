@@ -87,8 +87,6 @@ const fetchFeaturedRequests = async () => {
             page: currentPage // Include current page in the request
         };
 
-        console.log('Request Body:', requestBody); // Log the request body
-
         const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/school/schoolFeaturedRequestLists`, {
             method: 'POST',
             headers: {
@@ -283,7 +281,6 @@ const fetchFeaturedRequests = async () => {
     };
 
     useEffect(() => {
-        console.log('Component mounted, token:', authToken); // Debug log
         if (authToken) {
             fetchFeaturedRequests();
         }
@@ -498,8 +495,6 @@ const fetchFeaturedRequests = async () => {
             } else {
                 throw new Error('No changes to process');
             }
-
-            console.log('Sending request body:', requestBody);
             const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/school/editFeaturedCourseSetting`, {
                 method: 'POST',
                 headers: {
@@ -555,9 +550,6 @@ const fetchFeaturedRequests = async () => {
             } else {
                 throw new Error('No changes to process');
             }
-
-            console.log('Sending request body:', requestBody);
-
             const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/school/editSchoolFeaturedSetting`, {
                 method: 'POST',
                 headers: {
@@ -783,7 +775,7 @@ const fetchFeaturedRequests = async () => {
                                         </Row>
                                     </Accordion.Header>
                                     <Accordion.Body>
-                                        {activeTab === 'course' && featured.quantity_used < featured.request_quantity && (
+                                        {activeTab === 'course' && featured.quantity_used < featured.request_quantity &&  featured.request_status === 1 && (
                                             <Row className="mb-3">
                                                 <Col md={12}>
                                                     <Button 
@@ -804,7 +796,7 @@ const fetchFeaturedRequests = async () => {
                                                 </Col>
                                             </Row>
                                         )}
-                                        
+                    
                                         {showAddCourse[featured.id] && (
                                             <Row className="mb-3 p-3 d-flex" style={{ backgroundColor: '#f8f9fa', borderRadius: '15px' }}>
                                                 <Col md={4}>
@@ -967,16 +959,10 @@ const fetchFeaturedRequests = async () => {
                                                             }}
                                                             onSelect={(date) => {
                                                                 if (date && moment(date).isValid()) {
-                                                                    // Add detailed logging
-                                                                    console.log('Full Featured Item:', featuredItem);
-                                                                    console.log('Parent Featured Object:', featured);
-                                                                    console.log('Featured Type:', featured.featured_type);
-                                                                    
+
                                                                     // The featured_id should come from the featuredItem object
                                                                     const featured_id = featuredItem.id; // Use the id from the featuredItem
-                                                                    
-                                                                    console.log('Selected featured_id:', featured_id);
-                                                                    
+    
                                                                     setPendingStartDateChange({
                                                                         featured_id: featured_id, // Using the correct featured_id from featuredItem
                                                                         newCourse_id: featuredItem.course_id,

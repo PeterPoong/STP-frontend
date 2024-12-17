@@ -17,11 +17,8 @@ const RequestSchoolFeature = ({ show, handleClose }) => {
 
     useEffect(() => {
         const fetchFeaturedTypes = async () => {
-            console.log('Fetching featured types...');
             const url = `${import.meta.env.VITE_BASE_URL}api/school/schoolFeaturedPriceList`;
             const requestBody = { featured_type: "school" };
-
-            console.log('Request Body:', requestBody);
 
             try {
                 const response = await fetch(url, {
@@ -33,16 +30,12 @@ const RequestSchoolFeature = ({ show, handleClose }) => {
                     body: JSON.stringify(requestBody),
                 });
 
-                console.log('Response Status:', response.status);
-                console.log('Response Headers:', response.headers);
-
                 if (!response.ok) {
                     console.error('Network response was not ok:', response.statusText);
                     return;
                 }
 
                 const result = await response.json();
-                console.log('Response from backend:', result);
 
                 if (result.success) {
                     setFeaturedTypes(result.data);
@@ -85,8 +78,6 @@ const RequestSchoolFeature = ({ show, handleClose }) => {
 
         // Update the state with the formatted date
         setStart_date(formattedDate);
-
-        console.log('Formatted Date:', formattedDate);
     };
     const handleGoToCheckout = () => {
         navigate('/checkoutsc', {
