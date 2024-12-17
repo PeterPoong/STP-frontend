@@ -97,7 +97,6 @@ const fetchFeaturedRequests = async () => {
         });
 
         const result = await response.json();
-        console.log('API Response:', result); // Log the API response
 
         if (result.success && result.data?.data) {
             // Set total pages from the API response

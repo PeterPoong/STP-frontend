@@ -47,7 +47,7 @@ const AdminFeaturedContent = () => {
             }
 
             const result = await response.json();
-            console.log("API Response:", result); // Log the API response
+ 
 
             // Check for success and data structure
             if (result.success && result.data) {

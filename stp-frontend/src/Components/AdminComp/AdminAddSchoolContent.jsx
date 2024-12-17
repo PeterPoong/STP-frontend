@@ -441,7 +441,7 @@ const fetchCities = (stateId) => {
                 }
                 
                 const data = await response.json();
-                // console.log('API response:', data);
+       
     
                 if (data.success) {
                     setAlbumFiles(prevFiles => prevFiles.filter(file => file.id !== fileToRemove.id));
