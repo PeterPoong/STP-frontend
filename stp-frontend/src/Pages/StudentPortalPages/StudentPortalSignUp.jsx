@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Form, Button, Container, Row, Col, Alert, Modal, InputGroup } from "react-bootstrap";
+import {
+  Form,
+  Button,
+  Container,
+  Row,
+  Col,
+  Alert,
+  Modal,
+  InputGroup,
+} from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../css/StudentPortalStyles/StudentPortalLoginForm.css";
 import studentPortalLogin from "../../assets/StudentPortalAssets/studentPortalLogin.png";
@@ -58,7 +67,6 @@ const StudentPortalSignUp = () => {
     } else {
       setPhoneError("");
     }
-
 
     // Revalidate IC when country changes
     if (country.dialCode === "60" && identityCard) {
@@ -146,9 +154,8 @@ const StudentPortalSignUp = () => {
           } else if (error.errors.contact_no) {
             setSignupStatus("phone_exists");
           } else if (error.errors.ic) {
-            setSignupStatus("ic_exists")
-          }
-          else {
+            setSignupStatus("ic_exists");
+          } else {
             setSignupStatus("validation_error");
           }
         } else {
@@ -162,17 +169,17 @@ const StudentPortalSignUp = () => {
     return /^\d{12}$/.test(ic);
   };
 
-
   const handleNameChange = (e) => {
-    const value = e.target.value.replace(/[^a-zA-Z0-9]/g, '');
+    const value = e.target.value.replace(/[^a-zA-Z0-9]/g, "");
     setName(value);
   };
 
   const handleIdentityCardChange = (e) => {
-    const value = e.target.value.replace(/[^a-zA-Z0-9]/g, '');
+    const value = e.target.value.replace(/[^a-zA-Z0-9]/g, "");
     setIdentityCard(value);
 
-    if (countryCode === "60") { // Check if the country is Malaysia
+    if (countryCode === "60") {
+      // Check if the country is Malaysia
       if (!validateMalaysianIC(value)) {
         setIcError("Malaysian IC must be 12 digits");
       } else {
@@ -185,9 +192,13 @@ const StudentPortalSignUp = () => {
   /*end */
 
   const handleBackClick = () => {
-    navigate('/'); // This navigates to the previous page in history
+    navigate("/"); // This navigates to the previous page in history
   };
-  
+
+  const handleGoogleLogin = (e) => {
+    window.location.href = `${import.meta.env.VITE_BASE_URL}api/auth/google`;
+  };
+
   return (
     <Container fluid className="h-100">
       <Row className="h-100">
@@ -203,8 +214,12 @@ const StudentPortalSignUp = () => {
                 height="1.25rem"
                 fill="#FFFFFFFF"
                 class="bi bi-chevron-left"
-                viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0" />
+                viewBox="0 0 16 16"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"
+                />
               </svg>
             </button>
           </div>
@@ -219,15 +234,12 @@ const StudentPortalSignUp = () => {
           className="d-flex align-items-center justify-content-center bg-white"
         >
           <div className="w-100" style={{ maxWidth: "600px" }}>
-
             <div className="studypal-logo-div">
-
               {/*<img
               src={studentPortalLoginLogo}
               className="img-fluid mb-4"
               alt="StudyPal Logo"
             />*/}
-
             </div>
             <h2 className="text-start mb-2 custom-color-title ">
               Start your journey here.
@@ -265,8 +277,8 @@ const StudentPortalSignUp = () => {
 
             {signupStatus === "ic_exists" && (
               <Alert variant="warning">
-                This ic is already registered. Please use a different email
-                or try logging in.
+                This ic is already registered. Please use a different email or
+                try logging in.
               </Alert>
             )}
             {signupStatus === "phone_exists" && (
@@ -277,7 +289,9 @@ const StudentPortalSignUp = () => {
             )}
             <Form onSubmit={handleSubmit} className="pt-4">
               <Form.Group className="mb-3 ">
-                <p className="text-start p-0 mb-0 custom-color-title-label small ">Username</p>
+                <p className="text-start p-0 mb-0 custom-color-title-label small ">
+                  Username
+                </p>
                 <Form.Control
                   type="text"
                   placeholder="Your Name "
@@ -289,7 +303,7 @@ const StudentPortalSignUp = () => {
                   className="std-input-placeholder"
                 />
               </Form.Group>
-              <Row classname="std-fix-align " >
+              <Row classname="std-fix-align ">
                 <Col xs={12} md={6}>
                   <Form.Group controlId="formBasicPhone" className="mb-3">
                     <p className="text-start p-0 mb-0 custom-color-title-label small ">
@@ -305,7 +319,9 @@ const StudentPortalSignUp = () => {
                         required: true,
                         placeholder: "Enter phone number",
                       }}
-                      inputClass={`form-control ${phoneError ? 'is-invalid' : ''}`}
+                      inputClass={`form-control ${
+                        phoneError ? "is-invalid" : ""
+                      }`}
                       containerClass="phone-input-container"
                       buttonClass="btn btn-outline-secondary"
                       dropdownClass="country-dropdown custom-dropdown"
@@ -317,7 +333,10 @@ const StudentPortalSignUp = () => {
                       inputStyle={{ fontSize: "16px" }}
                     />
                     {phoneError && (
-                      <Form.Control.Feedback type="invalid" style={{ display: 'block' }}>
+                      <Form.Control.Feedback
+                        type="invalid"
+                        style={{ display: "block" }}
+                      >
                         {phoneError}
                       </Form.Control.Feedback>
                     )}
@@ -339,7 +358,10 @@ const StudentPortalSignUp = () => {
                       className="std-input-placeholder"
                     />
                     {icError && (
-                      <Form.Control.Feedback type="invalid" style={{ display: 'block' }}>
+                      <Form.Control.Feedback
+                        type="invalid"
+                        style={{ display: "block" }}
+                      >
                         {icError}
                       </Form.Control.Feedback>
                     )}
@@ -348,7 +370,8 @@ const StudentPortalSignUp = () => {
               </Row>
               <Form.Group className="mb-3">
                 <p className="text-start p-0 mb-0 custom-color-title-label small ">
-                  Email Address</p>
+                  Email Address
+                </p>
                 <Form.Control
                   type="email"
                   placeholder="mail123@gmail.com"
@@ -362,7 +385,8 @@ const StudentPortalSignUp = () => {
                 <Col>
                   <Form.Group className="mb-3 login-password-input">
                     <p className="text-start p-0 mb-0 custom-color-title-label small ">
-                      Password</p>
+                      Password
+                    </p>
                     <InputGroup hasValidation>
                       <Form.Control
                         type={showPassword ? "text" : "password"}
@@ -416,25 +440,25 @@ const StudentPortalSignUp = () => {
                       {(confirmPassword.length === 0 ||
                         (confirmPassword === password &&
                           password.length >= 8)) && (
-                          <div
-                            className="position-absolute top-50 end-0 translate-middle-y pe-3"
-                            style={{ zIndex: 10 }}
+                        <div
+                          className="position-absolute top-50 end-0 translate-middle-y pe-3"
+                          style={{ zIndex: 10 }}
+                        >
+                          <span
+                            className="password-toggle"
+                            onClick={() =>
+                              setShowConfirmPassword(!showConfirmPassword)
+                            }
+                            style={{ cursor: "pointer" }}
                           >
-                            <span
-                              className="password-toggle"
-                              onClick={() =>
-                                setShowConfirmPassword(!showConfirmPassword)
-                              }
-                              style={{ cursor: "pointer" }}
-                            >
-                              {showConfirmPassword ? (
-                                <Eye size={18} />
-                              ) : (
-                                <EyeOff size={18} />
-                              )}
-                            </span>
-                          </div>
-                        )}
+                            {showConfirmPassword ? (
+                              <Eye size={18} />
+                            ) : (
+                              <EyeOff size={18} />
+                            )}
+                          </span>
+                        </div>
+                      )}
                       <Form.Control.Feedback type="invalid">
                         Passwords do not match.
                       </Form.Control.Feedback>
@@ -454,30 +478,7 @@ const StudentPortalSignUp = () => {
               <p className="text-center text-muted small">
                 or Login/Sign Up using
               </p>
-              {/* <Row className="justify-content-center">
-                <Col xs="auto">
-                  <button
-                    type="button"
-                    className="btn btn-outline-primary rounded-circle p-0 social-btn facebook-btn"
-                    style={{
-                      width: "40px",
-                      height: "40px",
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                    >
-                      <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z" />
-                    </svg>
-                  </button>
-                </Col>
+              <Row className="justify-content-center">
                 <Col xs="auto">
                   <button
                     type="button"
@@ -489,6 +490,7 @@ const StudentPortalSignUp = () => {
                       justifyContent: "center",
                       alignItems: "center",
                     }}
+                    onClick={handleGoogleLogin}
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -501,7 +503,7 @@ const StudentPortalSignUp = () => {
                     </svg>
                   </button>
                 </Col>
-              </Row>*/}
+              </Row>
 
               <p className="text-center small mb-0 mt-5">
                 Already have an account?{" "}
