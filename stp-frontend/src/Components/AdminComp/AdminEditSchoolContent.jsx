@@ -888,7 +888,7 @@ const handleShowCoverPreview = () => {
                    phone={formData.contact_number} 
                    personPhone={formData.person_in_charge_contact}  
                    country_code={formData.country_code}
-
+                   Star="*"
                    handleShowCoverPreview={handleShowCoverPreview}
                    showUploadFeature={true}
                    coverUploadProps={getCoverRootProps()}

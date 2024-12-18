@@ -508,6 +508,7 @@ const AdminAddCourseContent = () => {
            buttons={buttons}
            logo={formData.logo ? URL.createObjectURL(formData.logo) : null}
            handleLogoChange={handleLogoChange}
+            Star="*"
                 />
                 </Container>
     );

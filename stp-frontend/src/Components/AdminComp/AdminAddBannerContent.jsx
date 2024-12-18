@@ -204,7 +204,8 @@ const handleSubmit = async (event) => {
         formCheckboxes={formCheckboxes}
         formPeriod={true}
         onSubmit={handleSubmit}
-          helperStar="*"
+        helperStar="*"
+        Star="*"
         error={error}
         buttons={buttons}
         selectedStartDate={selectedStartDate}

@@ -168,6 +168,7 @@ const AdminAddSubjectContent = () => {
             onSubmit={handleSubmit}
             error={error}
             buttons={buttons}
+            Star="*"
                 />
                 </Container>
     );

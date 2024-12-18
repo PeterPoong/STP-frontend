@@ -715,6 +715,7 @@ const fetchCities = (stateId) => {
            onSubmit={handleSubmit}
            formCheckboxes={formCheckboxes}
            formPersonInCharge={formPersonInCharge}
+            Star="*"
            error={error}
            buttons={buttons}
            logo={formData.logo ? URL.createObjectURL(formData.logo) : null}

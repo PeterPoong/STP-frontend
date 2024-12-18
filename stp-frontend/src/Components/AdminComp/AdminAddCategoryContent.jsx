@@ -171,6 +171,7 @@ const AdminAddCategoryContent = () => {
             formHTML={formHTML}
             onSubmit={handleSubmit}
             error={error}
+            Star="*"
             buttons={buttons}
             newIcon={newIcon}
             icon={icon}

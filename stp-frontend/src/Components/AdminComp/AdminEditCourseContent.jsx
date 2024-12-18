@@ -599,6 +599,7 @@ const formCourse = courseFeaturedList.map((course) => ({
            handleLogoChange={handleLogoChange}
            newLogo={newLogo}
             loading={loading}
+            Star="*"
                 />
             )}
         </Container>

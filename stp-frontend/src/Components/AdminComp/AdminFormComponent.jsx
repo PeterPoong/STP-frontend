@@ -40,6 +40,7 @@ const AdminFormComponent = ({
   checkboxTitle,
   checkboxDetail,
   helperStar,
+  Star,
   courseTitle,
   formPeriod,
   formUrl,
@@ -277,7 +278,7 @@ const AdminFormComponent = ({
               formFields.map((field, index) => (
                 <Form.Group key={index} controlId={field.id} className="mb-5">
                   <Form.Label>{field.label}</Form.Label>{" "}
-                  <span class="text-danger">*</span>
+                  <span class="text-danger">{Star}</span>
                   <Form.Control
                     as={field.as || "input"}
                     type={field.type || "text"}
@@ -406,7 +407,7 @@ const AdminFormComponent = ({
             {handlePhoneChange && phone !== undefined && (
               <Form.Group controlId="contact_number" className="mb-5">
                 <Form.Label>Contact Number</Form.Label>{" "}
-                <span class="text-danger">*</span>
+                <span class="text-danger">{Star}</span>
                 <PhoneInput
                   country="my"
                   value={`${country_code}${phone}`}
@@ -529,7 +530,7 @@ const AdminFormComponent = ({
               formGender.map((gender, index) => (
                 <Form.Group key={index} controlId={gender.id} className="mb-5">
                   <Form.Label>{gender.label}</Form.Label>{" "}
-                  <span class="text-danger">*</span>
+                  <span class="text-danger">{Star}</span>
                   <Form.Control
                     as="select"
                     value={gender.value}
@@ -730,7 +731,7 @@ const AdminFormComponent = ({
             {handlePhoneChange && personPhone !== undefined && (
               <Form.Group controlId="person_in_charge_contact" className="mb-5">
                 <Form.Label>Person in Charge's Contact</Form.Label>{" "}
-                <span class="text-danger">*</span>
+                <span class="text-danger">{helperStar}</span>
                 <PhoneInput
                   country="my"
                   value={personPhone}
@@ -757,7 +758,7 @@ const AdminFormComponent = ({
                   className="mb-5"
                 >
                   <Form.Label>{PersonInCharge.label}</Form.Label>{" "}
-                  <span class="text-danger">*</span>
+                  <span class="text-danger">{Star}</span>
                   <Form.Control
                     as={PersonInCharge.as || "input"}
                     type={PersonInCharge.type || "text"}
@@ -807,7 +808,7 @@ const AdminFormComponent = ({
         formAddress.map((Address, index) => (
           <Form.Group key={index} controlId={Address.id} className="mb-5 ms-2">
             <Form.Label>{Address.label}</Form.Label>{" "}
-            <span class="text-danger">*</span>
+            <span class="text-danger">{Star}</span>
             <Form.Control
               as={Address.as || "input"}
               type={Address.type || "text"}
@@ -825,7 +826,7 @@ const AdminFormComponent = ({
               <Col md={4} key={index}>
                 <Form.Group controlId={field.id} className="mb-5 ms-2">
                   <Form.Label>{field.label}</Form.Label>{" "}
-                  <span class="text-danger">*</span>
+                  <span class="text-danger">{Star}</span>
                   <Form.Control
                     as="select"
                     value={field.value}

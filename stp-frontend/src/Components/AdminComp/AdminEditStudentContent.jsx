@@ -422,7 +422,6 @@ const fetchCities = (stateId) => {
             placeholder: "Enter username",
             value: formData.name,
             onChange: handleFieldChange,
-            required: true
         },
         {
           id: "first_name",
@@ -431,7 +430,6 @@ const fetchCities = (stateId) => {
           placeholder: "Enter firstname",
           value: formData.first_name,
           onChange: handleFieldChange,
-          required: true
       },
     
       
@@ -442,7 +440,6 @@ const fetchCities = (stateId) => {
           label: "Gender",
           value: formData.gender,
           onChange: handleFieldChange,
-          required: true,
           options: genderList.map(gender => ({
               label: gender.core_metaName,
               value: gender.id
@@ -457,7 +454,6 @@ const fetchCities = (stateId) => {
         placeholder: "Enter lastname",
         value: formData.last_name,
         onChange: handleFieldChange,
-        required: true
     },
           {
             id: "ic",
@@ -466,7 +462,6 @@ const fetchCities = (stateId) => {
             placeholder: "Enter New IC number",
             value: formData.ic,
             onChange: handleICChange,
-            required: true
         },
         {
           id: "email",
@@ -475,7 +470,6 @@ const fetchCities = (stateId) => {
           placeholder: "Enter email address",
           value: formData.email,
           onChange: handleFieldChange,
-          required: true,
           autoComplete: "off"
       },
       {
@@ -485,7 +479,6 @@ const fetchCities = (stateId) => {
         placeholder: "Enter postcode",
         value: formData.postcode,
         onChange: handleFieldChange,
-        required: true,
         autoComplete: "off"
     },
     ];
@@ -498,7 +491,6 @@ const fetchCities = (stateId) => {
             placeholder: "Enter Address",
             value: formData.address,
             onChange: handleFieldChange,
-            required: true
         },
     ];
     
@@ -536,7 +528,6 @@ const fetchCities = (stateId) => {
       label: "Country",
       value: formData.country,  // Existing country value
       onChange: handleCountryChange,
-      required: true,
       options: countryList.map(country => ({
         label: country.country_name,
         value: country.id
@@ -548,7 +539,6 @@ const fetchCities = (stateId) => {
       label: "State",
       value: formData.state,  // Existing state value
       onChange: handleStateChange,
-      required: true,
       options: stateList.map(state => ({
         label: state.state_name,
         value: state.id
@@ -561,7 +551,6 @@ const fetchCities = (stateId) => {
       label: "City",
       value: formData.city,  // Existing city value
       onChange: handleCityChange,
-      required: true,
       options: cityList.map(city => ({
         label: city.city_name,
         value: city.id
