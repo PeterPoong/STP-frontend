@@ -22,6 +22,7 @@ const AdminSchoolContent = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchQuery, setSearchQuery] = useState("");
   const [showAddButton, setShowAddButton] = useState(true); // Set true if you want the button to always show
+  const [total, setTotal] = useState(0);
 
   // To track if there are search results
   const token = sessionStorage.getItem("token");
@@ -54,6 +55,7 @@ const AdminSchoolContent = () => {
       const result = await response.json();
       if (result && result.data) {
         setSchools(result.data);
+        setTotal(result.total);
         setTotalPages(result.last_page);
         setCurrentPage(result.current_page);
         setIsSearchResults(result.total > rowsPerPage);
@@ -199,28 +201,43 @@ const AdminSchoolContent = () => {
   };
 
   const theadContent = (
-    <tr>
-      <th onClick={() => handleSort("name")}>
-        Name {sortColumn === "name" && (sortDirection === "asc" ? "↑" : "↓")}
-      </th>
-      <th onClick={() => handleSort("email")}>
-        Email {sortColumn === "email" && (sortDirection === "asc" ? "↑" : "↓")}
-      </th>
-      <th onClick={() => handleSort("contact")}>
-        Contact No.{" "}
-        {sortColumn === "contact" && (sortDirection === "asc" ? "↑" : "↓")}
-      </th>
-      <th onClick={() => handleSort("category")}>
-        Category{" "}
-        {sortColumn === "category" && (sortDirection === "asc" ? "↑" : "↓")}
-      </th>
-      <th onClick={() => handleSort("status")}>
-        Status{" "}
-        {sortColumn === "status" && (sortDirection === "asc" ? "↑" : "↓")}
-      </th>
-      <th>Featured Settings</th>
-      <th>Action</th>
-    </tr>
+    <>
+      <tr>
+        <th
+          colSpan={6}
+          style={{
+            textAlign: "left",
+            fontWeight: "bold",
+            backgroundColor: "#f5f5f5",
+          }}
+        >
+          Total Students: {total}
+        </th>
+      </tr>
+      <tr>
+        <th onClick={() => handleSort("name")}>
+          Name {sortColumn === "name" && (sortDirection === "asc" ? "↑" : "↓")}
+        </th>
+        <th onClick={() => handleSort("email")}>
+          Email{" "}
+          {sortColumn === "email" && (sortDirection === "asc" ? "↑" : "↓")}
+        </th>
+        <th onClick={() => handleSort("contact")}>
+          Contact No.{" "}
+          {sortColumn === "contact" && (sortDirection === "asc" ? "↑" : "↓")}
+        </th>
+        <th onClick={() => handleSort("category")}>
+          Category{" "}
+          {sortColumn === "category" && (sortDirection === "asc" ? "↑" : "↓")}
+        </th>
+        <th onClick={() => handleSort("status")}>
+          Status{" "}
+          {sortColumn === "status" && (sortDirection === "asc" ? "↑" : "↓")}
+        </th>
+        <th>Featured Settings</th>
+        <th>Action</th>
+      </tr>
+    </>
   );
 
   const tbodyContent =

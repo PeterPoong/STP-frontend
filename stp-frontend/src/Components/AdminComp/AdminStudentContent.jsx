@@ -24,6 +24,7 @@ const AdminStudentContent = () => {
   const navigate = useNavigate();
   const token = sessionStorage.getItem("token");
   const Authenticate = `Bearer ${token}`;
+  const [total, settotal] = useState(0);
 
   // useEffect(() => {
   //     const fetchStudents = async () => {
@@ -81,11 +82,13 @@ const AdminStudentContent = () => {
       }
 
       const result = await response.json();
+
       if (result && result.data) {
         setstudents(result.data);
         setTotalPages(result.last_page);
         setCurrentPage(result.current_page);
         setIsSearchResults(result.total > rowsPerPage);
+        settotal(result.total);
       } else {
         setstudents([]);
       }
@@ -213,24 +216,42 @@ const AdminStudentContent = () => {
   })();
 
   const theadContent = (
-    <tr>
-      <th onClick={() => handleSort("name")}>
-        Name{sortColumn === "name" && (sortDirection === "asc" ? "↑" : "↓")}
-      </th>
-      <th onClick={() => handleSort("email")}>
-        Email {sortColumn === "email" && (sortDirection === "asc" ? "↑" : "↓")}
-      </th>
-      <th>Contact</th>
-      <th onClick={() => handleSort("created_at")}>
-        created_at{" "}
-        {sortColumn === "created_at" && (sortDirection === "asc" ? "↑" : "↓")}
-      </th>
-      <th onClick={() => handleSort("status")}>
-        Status{" "}
-        {sortColumn === "status" && (sortDirection === "asc" ? "↑" : "↓")}
-      </th>
-      <th>Action</th>
-    </tr>
+    <>
+      {/* Row for the Total Count */}
+      <tr>
+        <th
+          colSpan={6}
+          style={{
+            textAlign: "left",
+            fontWeight: "bold",
+            backgroundColor: "#f5f5f5",
+          }}
+        >
+          Total Students: {total}
+        </th>
+      </tr>
+
+      {/* Regular Table Headers */}
+      <tr>
+        <th onClick={() => handleSort("name")}>
+          Name{sortColumn === "name" && (sortDirection === "asc" ? "↑" : "↓")}
+        </th>
+        <th onClick={() => handleSort("email")}>
+          Email{" "}
+          {sortColumn === "email" && (sortDirection === "asc" ? "↑" : "↓")}
+        </th>
+        <th>Contact</th>
+        <th onClick={() => handleSort("created_at")}>
+          created_at{" "}
+          {sortColumn === "created_at" && (sortDirection === "asc" ? "↑" : "↓")}
+        </th>
+        <th onClick={() => handleSort("status")}>
+          Status{" "}
+          {sortColumn === "status" && (sortDirection === "asc" ? "↑" : "↓")}
+        </th>
+        <th>Action</th>
+      </tr>
+    </>
   );
 
   const tbodyContent =
@@ -291,19 +312,22 @@ const AdminStudentContent = () => {
       {loading ? (
         <CircleDotLoader />
       ) : (
-        <TableWithControls
-          theadContent={theadContent}
-          tbodyContent={tbodyContent}
-          currentPage={currentPage}
-          onSearch={handleSearch}
-          onSort={handleSort}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-          onRowsPerPageChange={handleRowsPerPageChange}
-          showAddButton={showAddButton}
-          // onSearch={(query) => console.log(query)} // Implement search functionality
-          onAddButtonClick={handleAddStudent} // Implement add new student functionality
-        />
+        <div>
+          {/* Display the total count at the top left */}
+
+          <TableWithControls
+            theadContent={theadContent}
+            tbodyContent={tbodyContent}
+            currentPage={currentPage}
+            onSearch={handleSearch}
+            onSort={handleSort}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            onRowsPerPageChange={handleRowsPerPageChange}
+            showAddButton={showAddButton}
+            onAddButtonClick={handleAddStudent}
+          />
+        </div>
       )}
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
