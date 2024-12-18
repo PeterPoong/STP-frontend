@@ -1,9 +1,19 @@
-// Components/StudentPortalComp/StudyPath/ResultSection.jsx
-import React from 'react';
+import React, { useState } from 'react';
+import "../../../css/StudentPortalStyles/StudentStudyPath.css";
+import { GraduationCap, Calendar, Clock, CalendarDays, MapPin } from 'lucide-react';
+import RealisticBackground from "../../../assets/StudentPortalAssets/realisticBackground.png"
+import RealisticGradientBackground from "../../../assets/StudentPortalAssets/realisticGradientBackground.png"
+import StudyPalLogoYPNG from "../../../assets/StudentPortalAssets/studypalLogoYPNG.png"
+import StudyPalLogoYPNGWhite from "../../../assets/StudentPortalAssets/studypalLogoYPNGWhite.png"
+import testingSchool from '../../../assets/StudentPortalAssets/testingSchool.jpg';
+import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend } from 'recharts';
+import WMYSpecialLogo from "../../../assets/StudentPortalAssets/wmyspecialLogo.svg"
+import StrengthIcon from "../../../assets/StudentPortalAssets/strengthIcon.svg"
+import StrengthIconFill from "../../../assets/StudentPortalAssets/strengthIconFill.svg"
 
-
-const ResultSection = ({ userData }) => {
-    // Sample data structure (replace with actual computed results)
+const CareerProfile = ({ userData = { username: "David Lim" } }) => {
+    const [selectedDesign, setSelectedDesign] = useState(0);
+    const [selectedCourse, setSelectedCourse] = useState(null);
     const results = {
         topTypes: [
             { type: 'Realistic', percentage: 90 },
@@ -17,136 +27,298 @@ const ResultSection = ({ userData }) => {
             'Problem-solving Skills'
         ],
         recommendedCourses: [
-            { title: 'Strategic Consultant' },
-            { title: 'Computer Science' },
-            { title: 'Software Developer' },
-            { title: 'Research Scientist' },
-            { title: 'Data Analyst' },
-            { title: 'University Professor' }
+            'Strategic Consultant',
+            'Computer Science',
+            'Software Developer',
+            'Research Scientist',
+            'Data Analyst',
+            'University Professor'
         ],
         universities: [
             {
                 name: 'Swinburne University (Sarawak)',
+                image: testingSchool,
                 location: 'Sarawak',
                 course: 'Diploma in Digital Game Art',
+                courseType: "Diploma",
+                coursePeriod: "Full Time",
+                fee: 'RM 55,000',
+                duration: '2.3 Years',
+                intake: 'January, May, September'
+            }, {
+                name: 'Swinburne University (Sarawak)',
+                image: testingSchool,
+                location: 'Sarawak',
+                course: 'Diploma in Digital Game Art',
+                courseType: "Diploma",
+                coursePeriod: "Full Time",
+                fee: 'RM 55,000',
+                duration: '2.3 Years',
+                intake: 'January, May, September'
+            },
+            {
+                name: 'Swinburne University (Sarawak)',
+                image: testingSchool,
+                location: 'Sarawak',
+                course: 'Diploma in Digital Game Art',
+                courseType: "Diploma",
+                coursePeriod: "Full Time",
                 fee: 'RM 55,000',
                 duration: '2.3 Years',
                 intake: 'January, May, September'
             }
-            // Add more universities as needed
         ]
     };
 
-    const downloadResult = () => {
-        // Implement download functionality
-        console.log('Downloading result...');
+    const handleDownload = () => {
+        console.log('Downloading...');
     };
 
-    const shareResult = () => {
-        // Implement share functionality
-        console.log('Sharing result...');
+    const handleShare = () => {
+        console.log('Sharing...');
     };
 
     return (
-        <div className="result-section">
-            <div className="result-header">
-                <h1 className="result-title">Your Career Profile Results</h1>
-                <p className="result-subtitle">{userData.username}, Here's Your Personalized Career Analysis</p>
-                <button className="share-button" onClick={shareResult}>SHARE RESULT</button>
+        <div className="RS-Career-Profile-Container">
+            {/* Header Section */}
+            <div className="RS-Header-Section">
+                <div>
+                    <h1>Your Career Profile Results</h1>
+                    <p>{userData.username}, Here's Your Personalized Career Analysis</p>
+                </div>
+                <button className="SSP-Start-Button" onClick={handleShare}>SHARE RESULT</button>
             </div>
 
             {/* Main Result Card with Mascot */}
-            <div className="result-main-card">
-                <div className="mascot-container">
-                    <img src="/mascot.png" alt="RIASEC Mascot" className="mascot-image" />
-                </div>
-                <div className="main-result-info">
-                    <h2 className="result-type-title">Your top 1 type of RIASEC test are</h2>
-                    <h3 className="primary-result">REALISTIC</h3>
-                </div>
+            <div className="RS-Result-Card">
+                <img
+                    src={RealisticBackground}
+                    alt="RIASEC Mascot"
+                    className="RS-Mascot-Image"
+                />
+                <h2 className="RS-Result-Subtitle">Your top 1 type of RIASEC test are</h2>
+                <h3 className="RS-Result-Type">REALISTIC</h3>
             </div>
-
-            {/* RIASEC Types Graph */}
-            <div className="riasec-graph-section">
-                <h3 className="section-title">Your Top 3 RIASEC Types:</h3>
-                <div className="riasec-types">
-                    {results.topTypes.map((type, index) => (
-                        <div key={type.type} className="riasec-type-item">
-                            <div className="type-number">{index + 1}</div>
-                            <div className="type-info">
-                                <span className="type-name">{type.type}</span>
-                                <span className="type-percentage">{type.percentage}%</span>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            {/* Strengths Section */}
-            <div className="strengths-section">
-                <h3 className="section-title">Your Strength</h3>
-                <div className="strengths-grid">
-                    {results.strengths.map((strength, index) => (
-                        <div key={index} className="strength-item">
-                            {strength}
-                        </div>
-                    ))}
-                </div>
-                <p className="strength-description">
-                    Your curious and analytical mind drives you to understand how and why things work. You 
-                    excel at solving complex problems and uncovering new insights.
-                </p>
-            </div>
-
             {/* Recommended Courses */}
-            <div className="recommended-courses">
-                <h3 className="section-title">Recommended Course</h3>
-                <div className="courses-grid">
-                    {results.recommendedCourses.map((course, index) => (
-                        <div key={index} className="course-item">
-                            <span className="course-icon">📚</span>
-                            <span className="course-title">{course.title}</span>
-                        </div>
-                    ))}
+            <div className="RS-Recommended-Course-Container">
+                <div className="RS-Section-Card">
+                    <h3 className="RS-Section-Title">Recommended Course</h3>
+                    <p className="RS-Section-Subtitle">Based on your Realistic type, here are your top career mathces</p>
+                    <div className="RS-Courses-Grid">
+                        {results.recommendedCourses.map((course, index) => (
+                            <div
+                                key={index}
+                                className={`RS-Course-Item ${selectedCourse === index ? 'selected' : ''}`}
+                                onClick={() => setSelectedCourse(index)}
+                            >
+                                <span>
+                                    <img
+                                        src={selectedCourse === index ? StudyPalLogoYPNGWhite : StudyPalLogoYPNG}
+                                        style={{
+                                            width: "15px",
+                                            height: "25px"
+                                        }}
+                                        className="course-logo"
+                                    />
+                                </span>
+                                <span>{course}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Universities Section */}
+                <div className="RS-Section-Card">
+                    <h3 className="RS-Section-Title">Featured University Based On Recommended Course</h3>
+                    <div className="RS-Universities-Grid">
+                        {results.universities.map((uni, index) => (
+                            <div key={index} className="RS-University-Card">
+                                <span className="RS-Featured-Tag">FEATURED</span>
+                                <div className="RS-Uni-Header">
+                                    <h4 className="RS-Course-Name">{uni.course}</h4>
+                                    <img src={uni.image} style={{ width: "80px", height: "38.5px" }}
+                                    />
+                                    <h4 className="RS-Uni-Name">{uni.name}</h4>
+                                    <p className="RS-Uni-Location"><span className="me-2"><MapPin size={15} /></span> {uni.location}</p>
+
+                                </div>
+                                <div className="RS-Uni-Details">
+                                    <div >
+                                        <GraduationCap size={15} />
+                                        <span className="text-sm">{uni.courseType}</span>
+                                    </div>
+
+                                    <div>
+                                        <Calendar size={15} />
+                                        <span className="text-sm">{uni.coursePeriod}</span>
+                                    </div>
+
+                                    <div >
+                                        <Clock size={15} />
+                                        <span className="text-sm">{uni.duration}</span>
+                                    </div>
+
+                                    <div >
+                                        <CalendarDays size={15} />
+                                        <span style={{ width: "30px" }}>{uni.intake}</span>
+                                    </div>
+                                </div>
+                                <div className="RS-Apply-Container">
+                                    <p>Estimated Fee<br /><strong>RM</strong> {uni.fee}</p>
+                                    <button>Apply Now</button>
+                                </div>
+
+                            </div>
+                        ))}
+                    </div>
+                    <div className='text-end my-2'>
+                        <a className="RS-Course-SeeMore">See More</a>
+                    </div>
                 </div>
             </div>
 
-            {/* Featured Universities */}
-            <div className="universities-section">
-                <h3 className="section-title">Featured University Based On Recommended Course</h3>
-                <div className="universities-grid">
-                    {results.universities.map((uni, index) => (
-                        <div key={index} className="university-card">
-                            <div className="uni-header">
-                                <h4 className="uni-name">{uni.name}</h4>
-                                <span className="featured-tag">FEATURED</span>
-                            </div>
-                            <div className="uni-details">
-                                <p>Location: {uni.location}</p>
-                                <p>Course: {uni.course}</p>
-                                <p>Estimated Fee: {uni.fee}</p>
-                                <p>Duration: {uni.duration}</p>
-                                <p>Intake: {uni.intake}</p>
-                            </div>
-                            <button className="apply-button">Apply Now</button>
+
+            {/* RIASEC Types */}
+            <div className="RS-Chart-Overall-Container">
+                <h3 className="RS-Section-Title">Your RIASEC Profile Visualization</h3>
+                <div className="RS-Chart-Section">
+                    <div className="RS-Chart-Section-RadarChart">
+                        <RadarChart
+                            width={400}
+                            height={300}
+                            data={[
+                                { subject: 'Realistic', A: 90 },
+                                { subject: 'Investigative', A: 84 },
+                                { subject: 'Artistic', A: 74 },
+                                { subject: 'Social', A: 45 },
+                                { subject: 'Enterprising', A: 50 },
+                                { subject: 'Conventional', A: 40 }
+                            ]}
+                        >
+                            <PolarGrid
+                                stroke="#BA1718"
+                                strokeWidth={2}
+                                radialLines={false}
+                            />
+                            <PolarAngleAxis
+                                dataKey="subject"
+                                stroke="#666"
+                                fontSize={14}
+                                fontWeight={500}
+                                tick={{ fill: '#BA1718' }}
+                                tickLine={false}  // This removes the tick marks
+                                axisLine={false}
+                            />
+                            <PolarRadiusAxis
+                                angle={30}
+                                domain={[0, 100]}
+                                tick={false}
+                                tickCount={5}
+
+                            />
+                            <Radar
+                                name="RIASEC Profile"
+                                dataKey="A"
+                                stroke="#BA1718"
+                                fill="#BA1718"
+                                fillOpacity={0.5}
+                                strokeWidth={3}
+                                dot={(props) => {
+                                    const { cx, cy } = props;
+                                    return (
+                                        <circle
+                                            cx={cx}
+                                            cy={cy}
+                                            r={4}
+                                            fill="#BA1718"
+                                            stroke="#BA1718"
+                                            strokeWidth={2}
+                                        />
+                                    );
+                                }}
+
+                            />
+
+                        </RadarChart>
+                    </div>
+                    <div >
+                        <h3 className="RS-Section-Title" style={{ fontSize: "24px" }}>Your Top 3 RIASEC Types:</h3>
+                        <div >
+                            {results.topTypes.map((type, index) => (
+                                <div key={index} className="RS-Type-Container">
+                                    <div className="RS-Type-Number">{index + 1}</div>
+                                    <div className="RS-Type-Details">
+                                        <span className="RS-Type-Name">{type.type}</span>
+                                        <span className="RS-Type-Percentage">{type.percentage}%</span>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
-                    ))}
+                    </div>
                 </div>
             </div>
 
-            {/* Share/Download Options */}
-            <div className="result-actions">
-                <div className="design-options">
-                    <h3>Choose one of the design you like to SHARE or DOWNLOAD</h3>
-                    {/* Add design options/templates here */}
+            <div className="RS-Strength-Suggestion-Container">
+                {/* Strengths Section */}
+                <div className="RS-Strength-Inner-Container">
+                    <h3 className="RS-Section-Title">What Makes You Unique</h3>
+                    <div className="d-flex pt-2">
+                        <img src={WMYSpecialLogo} style={{ width: '15px', height: "15px", marginTop: "5px", marginRight: "10px" }} />
+                        <p>Your Dedication to finding answers and understanding complex system makes you an excellent researcher and problem solver.</p>
+                    </div>
+                </div>
+                {/* Strengths Section */}
+                <div className="RS-Strength-Inner-Container">
+                    <h3 className="RS-Section-Title">Your Strength</h3>
+                    <div className="RS-Strengths-Four-Type">
+                        {results.strengths.map((strength, index) => (
+                            <div key={index} className="RS-Strength-Item">
+                                <img src={StrengthIcon} style={{ width: "15px", height: "15px" }} />
+                                {strength}
+
+                            </div>
+                        ))}
+                    </div>
+                    <div className="d-flex mt-4">
+                        <img src={StrengthIconFill} style={{ width: "15px", height: "15px", marginTop: "5px" }} />
+                        <p className="RS-Strength-Description">
+                            Your curious and analytical mind drives you to understand how and why things work. You
+                            excel at solving complex problems and uncovering new insights.
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+
+
+
+            {/* Share/Download Section */}
+            <div className="RS-Share-Section-Container">
+                <h3 className="RS-Share-Section-Title">Choose one of the design you like to <strong>SHARE</strong> or <strong>DOWNLOAD</strong></h3>
+                <div className="RS-Share-Design-Container">
+                    {[0, 1, 2].map((design) => (
+                        <div
+                            key={0}
+                            className={`RS-Design-Option-Div ${selectedDesign === design ? 'selected' : ''}`}
+                            onClick={() => setSelectedDesign(design)}
+                        >
+                            <div className="RS-Design-Header-Container">
+                                <img src={StudyPalLogoYPNGWhite} style={{ width: "20px", heigth: "20px" }} />
+                                <p>RIASEC TEST</p>
+                            </div>
+                            <div>
+                            </div>
+
+                        </div>
+                    ))}
                 </div>
                 <div className="action-buttons">
-                    <button className="download-button" onClick={downloadResult}>DOWNLOAD</button>
-                    <button className="share-button" onClick={shareResult}>SHARE</button>
+                    <button className="download-button" onClick={handleDownload}>DOWNLOAD</button>
+                    <button className="share-button" onClick={handleShare}>SHARE</button>
                 </div>
             </div>
         </div>
     );
 };
 
-export default ResultSection;
+export default CareerProfile;
