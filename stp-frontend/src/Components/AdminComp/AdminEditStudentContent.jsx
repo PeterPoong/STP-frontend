@@ -139,76 +139,102 @@ const AdminEditStudentContent = () => {
     password:"Password"
   };
 
-    const handleSubmit = async (event) => {
-      event.preventDefault();
-      // console.log("Submitting form data:", formData);
+  const handleSubmit = async (event) => {
+    event.preventDefault();
   
-      const { name, first_name, last_name, gender, ic, postcode, email, state, city, country, address, contact_number, country_code, confirm_password, password } = formData;
-      if (!name || !first_name || !last_name || !gender || !ic || !postcode || !email || !state || !city || !country || !address || !contact_number || !country_code) {
-        setError("Please fill in all required fields.");
-        setErrorModalVisible(true);
-        return; // Stop form submission if any required field is missing
+    const {
+      name,
+      first_name,
+      last_name,
+      gender,
+      ic,
+      postcode,
+      email,
+      state,
+      city,
+      country,
+      address,
+      contact_number,
+      country_code,
+      confirm_password,
+      password,
+    } = formData;
+  
+    if (!name || !email) {
+      setError("Please fill in all required fields.");
+      setErrorModalVisible(true);
+      return; // Stop form submission if any required field is missing
     }
-      // Convert strings to integers where needed
-      const cityInt = parseInt(city, 10);
-      const genderInt = parseInt(gender, 10);
-      const stateInt = parseInt(state, 10);
-      const countryInt = parseInt(country, 10);
   
-      if ( isNaN(cityInt) || isNaN(genderInt) || isNaN(stateInt) || isNaN(countryInt)) {
-          setError("Some fields must be valid integers.");
-          return;
+    // Convert strings to integers where needed
+    const cityInt = city ? parseInt(city, 10) : null;
+    const genderInt = gender ? parseInt(gender, 10) : null;
+    const stateInt = state ? parseInt(state, 10) : null;
+    const countryInt = country ? parseInt(country, 10) : null;
+  
+    const formPayload = new FormData();
+  
+    // Append non-empty fields dynamically
+    const fields = {
+      id: studentId,
+      name,
+      first_name,
+      last_name,
+      ic,
+      postcode,
+      gender: genderInt,
+      email,
+      country_code,
+      contact_number,
+      country: countryInt,
+      state: stateInt,
+      city: cityInt,
+      address,
+      password,
+      confirm_password,
+    };
+  
+    Object.entries(fields).forEach(([key, value]) => {
+      if (value !== null && value !== undefined && value !== "") {
+        formPayload.append(key, value);
       }
+    });
   
-      const formPayload = new FormData();
-      formPayload.append("id", studentId);
-      formPayload.append("address", address);
-      formPayload.append("name", name);
-      formPayload.append("first_name", first_name);
-      formPayload.append("last_name", last_name);
-      formPayload.append("ic", ic);
-      formPayload.append("postcode", postcode);
-      formPayload.append("gender", genderInt);
-      formPayload.append("email", email);
-      formPayload.append("country_code", country_code);
-      formPayload.append("contact_number", contact_number);
-      formPayload.append("country", countryInt);
-      formPayload.append("state", stateInt);
-      formPayload.append("city", cityInt);
-      formPayload.append("password", password);
-      formPayload.append("confirm_password", confirm_password);
+    try {
+      const addStudentResponse = await fetch(
+        `${import.meta.env.VITE_BASE_URL}api/admin/editStudent`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: Authenticate,
+          },
+          body: formPayload,
+        }
+      );
   
-      try {
-          // console.log("FormData before submission:", formPayload);
+      const addStudentData = await addStudentResponse.json();
   
-          const addStudentResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/editStudent`, {
-              method: 'POST',
-              headers: {
-                  'Authorization': Authenticate,
-              },
-              body: formPayload,
-          });
-  
-          const addStudentData = await addStudentResponse.json();
-  
-          if (addStudentResponse.ok) {
-              console.log('Student successfully registered:', addStudentData);
-              navigate('/adminStudent');
-            } else if (addStudentResponse.status === 422) {
-              // Validation errors
-              console.log('Validation Errors:', addStudentData.errors);
-              setFieldErrors(addStudentData.errors); // Pass validation errors to the modal
-              setGeneralError(addStudentData.message || "Validation Error");
-              setErrorModalVisible(true); // Show the error modal
-            } else {
-            setGeneralError(addStudentData.message || "Failed to edit student details.");
-            setErrorModalVisible(true);
-          }
-      } catch (error) {
-        setGeneralError(error.message || "An error occurred while editing the student. Please try again later.");
+      if (addStudentResponse.ok) {
+        console.log("Student successfully registered:", addStudentData);
+        navigate("/adminStudent");
+      } else if (addStudentResponse.status === 422) {
+        // Validation errors
+        console.log("Validation Errors:", addStudentData.errors);
+        setFieldErrors(addStudentData.errors); // Pass validation errors to the modal
+        setGeneralError(addStudentData.message || "Validation Error");
+        setErrorModalVisible(true); // Show the error modal
+      } else {
+        setGeneralError(addStudentData.message || "Failed to edit student details.");
         setErrorModalVisible(true);
       }
+    } catch (error) {
+      setGeneralError(
+        error.message || "An error occurred while editing the student. Please try again later."
+      );
+      setErrorModalVisible(true);
+    }
   };
+  
   
     useEffect(() => {
       const fetchGenders = async () => {

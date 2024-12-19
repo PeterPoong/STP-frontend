@@ -487,7 +487,7 @@ const SearchInstitute = () => {
                           loading="lazy"
                           src={`${baseURL}storage/${institute.logo}`}
                           alt={institute.name}
-                          width="120"
+                          width="100"
                           className="searchinstitute-one-image"
                         />
                       </Link>
@@ -506,16 +506,17 @@ const SearchInstitute = () => {
                       <span>
                         {institute.state}, {institute.country}
                       </span>
-                      <a
+                      <div>
+                        <a
                         href={institute.google_map_location}
-                        style={{ paddingLeft: "15px" }}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
                         Click and view on map
                       </a>
+                      </div>
                       <div>
-                        <p className="card-text mt-2 searchinstitute-two-description institutepage-wordbreak-all">
+                        <p className="card-text m-0 searchinstitute-two-description institutepage-wordbreak-all">
                           {institute.description}
                         </p>
                       </div>
@@ -826,7 +827,7 @@ const SearchInstitute = () => {
           <Row>
             {/* Left Sidebar - Filters */}
             <Col
-              md={3}
+              md={2}
               className="location-container"
               style={{ backgroundColor: "white", padding: "10px" }}
             >
@@ -1196,7 +1197,7 @@ const SearchInstitute = () => {
             </Col>
 
             {/* Right Content - Institute Listings */}
-            <Col xs={12} md={9} className="degreeinstitutes-division">
+            <Col xs={12} md={10} className="degreeinstitutes-division">
               {Array.isArray(adsImageA) && adsImageA.length > 0 ? (
                 <div >
                   {adsImageA.map((ad, index) => (

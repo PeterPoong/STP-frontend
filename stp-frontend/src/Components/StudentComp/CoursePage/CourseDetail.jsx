@@ -900,7 +900,7 @@ const CourseDetail = () => {
               {/* Featured courses */}
               {
                 featuredCourses.length > 0 && (
-                  <Container className="university-row-carousel my-4">
+                  <Container className="university-row-carousel">
                     <h4>Featured Courses</h4>
                     <Swiper
                       spaceBetween={20}
@@ -930,6 +930,10 @@ const CourseDetail = () => {
                         1024: {
                           slidesPerView: 5,
                           spaceBetween: 10,
+                        },
+                        1025: { // Custom breakpoint for specific screen height
+                          slidesPerView: 3, // Adjust as needed
+                          spaceBetween: 3, // Adjust as needed
                         },
                       }}
                     >
