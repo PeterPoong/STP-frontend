@@ -300,9 +300,11 @@ const QuestionSection = ({onAnswer}) => {
                         <ChevronRight size={30} />
                     </button>
 
-                    <div className="QS-Submit-Container" style={{
+                </div>
+                
+                <div className="QS-Submit-Container" style={{
                         display: 'flex',
-                        justifyContent: 'flexend',
+                        justifyContent: 'flex-end',
                         marginTop: '20px',
                         marginBottom: '20px'
                     }}>
@@ -314,7 +316,6 @@ const QuestionSection = ({onAnswer}) => {
                             Submit Answers
                         </button>
                     </div>
-                </div>
             </div>
         </div>
     );

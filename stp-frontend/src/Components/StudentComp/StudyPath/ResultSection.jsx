@@ -2,15 +2,20 @@ import React, { useState } from 'react';
 import "../../../css/StudentPortalStyles/StudentStudyPath.css";
 import { GraduationCap, Calendar, Clock, CalendarDays, MapPin } from 'lucide-react';
 import RealisticBackground from "../../../assets/StudentPortalAssets/realisticBackground.png"
+import RealisticBackground2 from "../../../assets/StudentPortalAssets/realisticBackground2.png"
+import RealisticBackground3 from "../../../assets/StudentPortalAssets/realisticBackground3.png"
+import RealisticBackground4 from "../../../assets/StudentPortalAssets/realisticBackground4.png"
 import RealisticGradientBackground from "../../../assets/StudentPortalAssets/realisticGradientBackground.png"
 import StudyPalLogoYPNG from "../../../assets/StudentPortalAssets/studypalLogoYPNG.png"
 import StudyPalLogoYPNGWhite from "../../../assets/StudentPortalAssets/studypalLogoYPNGWhite.png"
+import StudyPalLogoYPNGBlack from "../../../assets/StudentPortalAssets/studypalLogoYPNGBlack.png"
 import testingSchool from '../../../assets/StudentPortalAssets/testingSchool.jpg';
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend } from 'recharts';
 import WMYSpecialLogo from "../../../assets/StudentPortalAssets/wmyspecialLogo.svg"
 import StrengthIcon from "../../../assets/StudentPortalAssets/strengthIcon.svg"
 import StrengthIconFill from "../../../assets/StudentPortalAssets/strengthIconFill.svg"
-
+import { HeartPulse } from 'react-bootstrap-icons';
+import QRCode from "../../../assets/StudentPortalAssets/qrCode.png"
 const CareerProfile = ({ userData = { username: "David Lim" } }) => {
     const [selectedDesign, setSelectedDesign] = useState(0);
     const [selectedCourse, setSelectedCourse] = useState(null);
@@ -296,25 +301,220 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
             <div className="RS-Share-Section-Container">
                 <h3 className="RS-Share-Section-Title">Choose one of the design you like to <strong>SHARE</strong> or <strong>DOWNLOAD</strong></h3>
                 <div className="RS-Share-Design-Container">
-                    {[0, 1, 2].map((design) => (
-                        <div
-                            key={0}
-                            className={`RS-Design-Option-Div ${selectedDesign === design ? 'selected' : ''}`}
-                            onClick={() => setSelectedDesign(design)}
-                        >
-                            <div className="RS-Design-Header-Container">
-                                <img src={StudyPalLogoYPNGWhite} style={{ width: "20px", heigth: "20px" }} />
-                                <p>RIASEC TEST</p>
-                            </div>
-                            <div>
-                            </div>
-
-                        </div>
-                    ))}
+                    {[0, 1, 2].map((design) => {
+                        if (design === 0) {
+                            // Original vertical design
+                            return (
+                                <div
+                                    key={design}
+                                    className={`RS-Design-Option-Div ${selectedDesign === design ? 'selected' : ''}`}
+                                    onClick={() => setSelectedDesign(design)}
+                                >
+                                    <div className="RS-Design-Header-Container">
+                                        <img src={StudyPalLogoYPNGWhite} style={{ width: "15px", height: "20px" }} />
+                                        <p>RIASEC RESULT</p>
+                                    </div>
+                                    <div className="RS-Design-Result-Container">
+                                        <img
+                                            src={RealisticBackground4}
+                                            alt="RIASEC Mascot"
+                                            className="RS-Design-Mascot-Image"
+                                        />
+                                        <div className="ms-1 d-flex row justify-content-between">
+                                            <div>
+                                                <p>{userData.username}, Your TOP 1 RIASEC test result are</p>
+                                                <h1>REALISTIC</h1>
+                                            </div>
+                                            <div className="text-end">
+                                                <HeartPulse size={15} color="#ffffff" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="RS-Design-Superpower-Container">
+                                        <p className="mb-1">Your Learning Superpower:</p>
+                                        <div>
+                                            {results.strengths.map((strength, index) => (
+                                                <div key={index} className="RS-Design-Superpower-List">
+                                                    {strength}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div className="RS-Design-Category-Container">
+                                        <p className="mb-1">Recommended Courses:</p>
+                                        <div className="RS-Design-Category-Course">
+                                            {results.recommendedCourses.map((course, index) => (
+                                                <span key={index}>{course}</span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div className="RS-Unique-QR-Container">
+                                        <div className="RS-Unique-Container">
+                                            <p className="mb-0">What Makes You Unique</p>
+                                            <div className="RS-Unique-Inner-Container">
+                                                <img src={WMYSpecialLogo} style={{ width: '12.5px', height: "12.5px", marginTop: "5px", marginRight: "10px" }} />
+                                                <p>Your dedication to finding answers and understanding complex systems makes you an excellent researcher and problem solver.</p>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <p style={{ marginBottom: "0", fontSize: "10px", fontWeight: "bold" }}>Share to your friends</p>
+                                            <div style={{ height: "110px", width: "110px", background: "#ffffff", border: "2px #000000 solid" }}>
+                                                <img src={QRCode} style={{ height: "100px", width: "100px" }} className="m-1" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        } else if (design === 1) {
+                            // Horizontal layout design
+                            return (
+                                <div
+                                    key={design}
+                                    className={`RS-Design-Option-Div-SecondDesign ${selectedDesign === design ? 'selected' : ''}`}
+                                    onClick={() => setSelectedDesign(design)}
+                                >
+                                    <div className="RS-Design-Header-Container">
+                                        <img src={StudyPalLogoYPNG} style={{ width: "15px", height: "20px" }} />
+                                        <p style={{ color: "#BA1718" }}>RIASEC RESULT</p>
+                                    </div>
+                                    <div className="RS-Design-Result-Container">
+                                        <img
+                                            src={RealisticBackground2}
+                                            alt="RIASEC Mascot"
+                                            className="RS-Design-Mascot-Image"
+                                        />
+                                        <div className="ms-1 d-flex row justify-content-between">
+                                            <div>
+                                                <p style={{ color: "#BA1718" }}>{userData.username}, Your TOP 1 RIASEC test result are</p>
+                                                <h1 style={{ color: "#BA1718" }}>REALISTIC</h1>
+                                            </div>
+                                            <div className="text-end">
+                                                <HeartPulse size={15} color="#BA1718" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="RS-Design-Superpower-Container">
+                                        <p className="mb-1">Your Learning Superpower:</p>
+                                        <div>
+                                            {results.strengths.map((strength, index) => (
+                                                <div key={index} className="RS-Design-Superpower-List">
+                                                    {strength}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div className="RS-Design-Category-Container">
+                                        <p className="mb-1">Recommended Courses:</p>
+                                        <div className="RS-Design-Category-Course" >
+                                            {results.recommendedCourses.map((course, index) => (
+                                                <span key={index} style={{ color: "#BA1718", border: "1px #BA1718 dashed" }}>{course}</span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div className="RS-Unique-QR-Container">
+                                        <div className="RS-Unique-Container">
+                                            <p className="mb-0">What Makes You Unique</p>
+                                            <div className="RS-Unique-Inner-Container">
+                                                <img src={WMYSpecialLogo} style={{ width: '12.5px', height: "12.5px", marginTop: "5px", marginRight: "10px" }} />
+                                                <p>Your dedication to finding answers and understanding complex systems makes you an excellent researcher and problem solver.</p>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <p style={{ marginBottom: "0", fontSize: "10px", fontWeight: "bold" }}>Share to your friends</p>
+                                            <div style={{ height: "110px", width: "110px", background: "#ffffff", border: "2px #000000 solid" }}>
+                                                <img src={QRCode} style={{ height: "100px", width: "100px" }} className="m-1" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        } else {
+                            // Modern card design
+                            return (
+                                <div
+                                    key={design}
+                                    className={`RS-Design-Option-Div-ThirdDesign ${selectedDesign === design ? 'selected' : ''}`}
+                                    onClick={() => setSelectedDesign(design)}
+                                >
+                                    <div className="RS-Design-Header-Container">
+                                        <img src={StudyPalLogoYPNGBlack} style={{ width: "20px", height: "20px" }} />
+                                        <p className="RS-Design-Header-Thrid-Title" >RIASEC RESULT</p>
+                                    </div>
+                                    <div className="RS-Design-Result-Container">
+                                        <img
+                                            src={RealisticBackground3}
+                                            alt="RIASEC Mascot"
+                                            className="RS-Design-Mascot-Image"
+                                        />
+                                        <div className="ms-1 d-flex row justify-content-between">
+                                            <div>
+                                                <p style={{ color: "#000000" }}>{userData.username}, Your TOP 1 RIASEC test result are</p>
+                                                <svg viewBox="0 0 300 80">
+                                                    <text
+                                                        x="0%"
+                                                        y="70%"
+                                                        text-anchor=""
+                                                        fill="white"
+                                                        font-size="55px"
+                                                        font-weight="bold"
+                                                        stroke="black"
+                                                        stroke-width="1"
+                                                        stroke-dasharray="10,5"
+                                                        filter="drop-shadow(2px 2px 2px rgba(0,0,0,0.5))"
+                                                    >
+                                                        REALISTIC
+                                                    </text>
+                                                </svg>
+                                            </div>
+                                            <div className="text-end">
+                                                <HeartPulse size={15} color="#black" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="RS-Design-Superpower-Container">
+                                        <p className="mb-1">Your Learning Superpower:</p>
+                                        <div>
+                                            {results.strengths.map((strength, index) => (
+                                                <div key={index} className="RS-Design-Superpower-List">
+                                                    {strength}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div className="RS-Design-Category-Container">
+                                        <p className="mb-1">Recommended Courses:</p>
+                                        <div className="RS-Design-Category-Course">
+                                            {results.recommendedCourses.map((course, index) => (
+                                                <span 
+                                                key={index}
+                                                style={{ color: "#000000", border: "1px #000000 dashed" }}
+                                                >{course}</span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div className="RS-Unique-QR-Container">
+                                        <div className="RS-Unique-Container">
+                                            <p className="mb-0">What Makes You Unique</p>
+                                            <div className="RS-Unique-Inner-Container">
+                                                <img src={WMYSpecialLogo} style={{ width: '12.5px', height: "12.5px", marginTop: "5px", marginRight: "10px" }} />
+                                                <p>Your dedication to finding answers and understanding complex systems makes you an excellent researcher and problem solver.</p>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <p style={{ marginBottom: "0", fontSize: "10px", fontWeight: "bold" }}>Share to your friends</p>
+                                            <div style={{ height: "110px", width: "110px", background: "#ffffff", border: "2px #000000 solid" }}>
+                                                <img src={QRCode} style={{ height: "100px", width: "100px" }} className="m-1" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        }
+                    })}
                 </div>
-                <div className="action-buttons">
-                    <button className="download-button" onClick={handleDownload}>DOWNLOAD</button>
-                    <button className="share-button" onClick={handleShare}>SHARE</button>
+                <div className="RS-Download-Share-Buttons">
+                    <button onClick={handleDownload}>DOWNLOAD</button>
+                    <button onClick={handleShare}>SHARE</button>
                 </div>
             </div>
         </div>
