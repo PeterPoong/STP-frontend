@@ -78,18 +78,27 @@
   border-color: #B71A18;
   color: #B71A18;
 }
-.button-know-more, .button-apply-now {
+.button-apply-now {
   width: 110px;
   margin: 5px;
   border-radius: 16px;
   font-size: 13px;
   font-weight: 400;
+  color: #fff !important;
 
+}
+
+.button-know-more{
+width: 110px;
+margin: 5px;
+border-radius: 16px;
+font-size: 13px;
+font-weight: 400;
 }
 
 .button-apply-now:hover{
   background-color: #e86464;
-  color: #fff;
+  color: #fff !important;
   border: #e86464;
 }
 
