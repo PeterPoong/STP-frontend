@@ -636,7 +636,6 @@ const handleShowCoverPreview = () => {
             placeholder: "Enter school name",
             value: formData.name,
             onChange: handleFieldChange,
-            required: true
         },
         {
             id: "email",
@@ -645,7 +644,6 @@ const handleShowCoverPreview = () => {
             placeholder: "Enter email address",
             value: formData.email,
             onChange: handleFieldChange,
-            required: true,
             autoComplete: "off"
         },
     ];
@@ -658,7 +656,6 @@ const handleShowCoverPreview = () => {
             placeholder: "Enter name",
             value: formData.person_in_charge_name,
             onChange: handleFieldChange,
-            required: true
         },
         {
             id: "person_in_charge_email",
@@ -667,7 +664,6 @@ const handleShowCoverPreview = () => {
             placeholder: "Enter email address",
             value: formData.person_in_charge_email,
             onChange: handleFieldChange,
-            required: true,
             autoComplete: "off"
         },
     ];
@@ -680,7 +676,6 @@ const handleShowCoverPreview = () => {
             placeholder: "Enter Website URL",
             value: formData.school_website,
             onChange: handleFieldChange,
-            required: true
         },
     ];
 
@@ -692,7 +687,6 @@ const handleShowCoverPreview = () => {
             placeholder: "Enter School Location",
             value: formData.school_location,
             onChange: handleFieldChange,
-            required: true
         },
         {
             id:"school_google_map_location",
@@ -701,7 +695,6 @@ const handleShowCoverPreview = () => {
             placeholder: "Enter School Location",
             value: formData.school_google_map_location,
             onChange: handleFieldChange,
-            required: true
         },
         {
             id: "school_address",
@@ -710,7 +703,6 @@ const handleShowCoverPreview = () => {
             placeholder: "Enter School Address",
             value: formData.school_address,
             onChange: handleFieldChange,
-            required: true
         },
     ];
     
@@ -724,7 +716,6 @@ const handleShowCoverPreview = () => {
             placeholder: "Enter new password",
             value: formData.password,
             onChange: handleFieldChange,
-            required: true,
             autoComplete: "new-password",
             toggleVisibility: togglePasswordVisibility,
             showVisibility: showPassword,
@@ -737,7 +728,6 @@ const handleShowCoverPreview = () => {
             placeholder: "Enter password again",
             value: formData.confirm_password,
             onChange: handleFieldChange,
-            required: true,
             toggleVisibility: toggleConfirmPasswordVisibility,
             showVisibility: showConfirmPassword
         }
@@ -754,7 +744,6 @@ const handleShowCoverPreview = () => {
             placeholder: "Enter short description",
             value: formData.school_shortDesc,
             onChange: handleFieldChange,
-            required: true
         },
     ];
 
@@ -764,7 +753,6 @@ const handleShowCoverPreview = () => {
             label: "Institute Category",
             value: formData.category,
             onChange: handleFieldChange,
-            required: true,
             options: categoryList.map(category => ({
                 label: category.name,
                 value: category.id
@@ -804,7 +792,6 @@ const handleShowCoverPreview = () => {
           label: "State",
           value: formData.state,  // Existing state value
           onChange: handleStateChange,
-          required: true,
           options: stateList.map(state => ({
             label: state.state_name,
             value: state.id
@@ -817,7 +804,6 @@ const handleShowCoverPreview = () => {
           label: "City",
           value: formData.city,  // Existing city value
           onChange: handleCityChange,
-          required: true,
           options: cityList.map(city => ({
             label: city.city_name,
             value: city.id
@@ -834,17 +820,16 @@ const handleShowCoverPreview = () => {
             label: "Full Description",
             value: formData.school_fullDesc,
             onChange: handleEditorChange,
-            required: true
         }
     ];
 
-    const formCheckboxes = schoolFeaturedList.map((feature) => ({
-        id: `feature-${feature.id}`,
-        label: feature.name,
-        value: feature.id,
-        checked: selectedFeatures.includes(feature.id),
-        onChange: handleFeatureChange,
-    }));
+    // const formCheckboxes = schoolFeaturedList.map((feature) => ({
+    //     id: `feature-${feature.id}`,
+    //     label: feature.name,
+    //     value: feature.id,
+    //     checked: selectedFeatures.includes(feature.id),
+    //     onChange: handleFeatureChange,
+    // }));
 
     const buttons = [
         {
@@ -877,18 +862,18 @@ const handleShowCoverPreview = () => {
                    formAddress={formAddress}
                    shouldRenderPasswordCard={shouldRenderPasswordCard}
                    onSubmit={handleSubmit}
-                   formCheckboxes={formCheckboxes}
+                //    formCheckboxes={formCheckboxes}
                    formPersonInCharge={formPersonInCharge}
                    error={error}
                    buttons={buttons}
                    logo={logo}
+                   StarAccount="*"
                    handleLogoChange={handleLogoChange}
                    newLogo={newLogo}
                    handlePhoneChange={handlePhoneChange}  
                    phone={formData.contact_number} 
                    personPhone={formData.person_in_charge_contact}  
                    country_code={formData.country_code}
-                   Star="*"
                    handleShowCoverPreview={handleShowCoverPreview}
                    showUploadFeature={true}
                    coverUploadProps={getCoverRootProps()}

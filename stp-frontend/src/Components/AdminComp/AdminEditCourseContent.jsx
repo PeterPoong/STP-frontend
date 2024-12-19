@@ -435,7 +435,6 @@ const AdminEditCourseContent = () => {
             placeholder: "Enter course name",
             value: formData.name,
             onChange: handleFieldChange,
-            required: true
         },
     
  
@@ -450,7 +449,6 @@ const AdminEditCourseContent = () => {
             placeholder: "Enter course period",
             value: formData.period,
             onChange: handleFieldChange,
-            required: true,
         },
         {
             id: "cost",
@@ -459,7 +457,6 @@ const AdminEditCourseContent = () => {
             placeholder: "Enter the cost",
             value: formData.cost,
             onChange: handleFieldChange,
-            required: true,
         },
     ];
 
@@ -469,7 +466,6 @@ const AdminEditCourseContent = () => {
             label: "Course Category",
             value: formData.category,
             onChange: handleFieldChange,
-            required: true,
             options: categoryList.map(category => ({
                 label: category.category_name,
                 value: category.id
@@ -483,7 +479,6 @@ const AdminEditCourseContent = () => {
             label: "Course Qualification",
             value: formData.qualification,
             onChange: handleFieldChange,
-            required: true,
             options: qualificationList.map(account => ({
                 label: account.qualification_name,
                 value: account.id
@@ -496,7 +491,6 @@ const AdminEditCourseContent = () => {
             label: "Study Mode",
             value: formData.mode,
             onChange: handleFieldChange,
-            required: true,
             options: modeList.map(mode => ({
                 label: mode.studyMode_name,
                 value: mode.id
@@ -511,7 +505,6 @@ const AdminEditCourseContent = () => {
             placeholder: "Enter course requirement",
             value: formData.requirement,
             onChange: handleFieldChange,
-            required: true,
         },
     ];
 
@@ -521,7 +514,6 @@ const AdminEditCourseContent = () => {
             label: "School Name",
             value: formData.schoolID,
             onChange: handleFieldChange,
-            required: true,
             options: schoolList.map(drop => ({
                 label: drop.name,
                 value: drop.id
@@ -535,7 +527,6 @@ const AdminEditCourseContent = () => {
             label: "Course Description",
             value: formData.description,
             onChange: handleEditorChange,
-            required: true
         }
     ];
 
@@ -548,13 +539,13 @@ const formCheckboxes = courseIntakeList.map((intake) => ({
     onChange: handleIntakeChange,
 }));
 
-const formCourse = courseFeaturedList.map((course) => ({
-    id: `course-${course.id}`,
-    label: course.name,
-    value: course.id,
-    checked: selectedCourses.includes(course.id),
-    onChange: handleCourseChange,
-}));
+// const formCourse = courseFeaturedList.map((course) => ({
+//     id: `course-${course.id}`,
+//     label: course.name,
+//     value: course.id,
+//     checked: selectedCourses.includes(course.id),
+//     onChange: handleCourseChange,
+// }));
 
 
     const buttons = [
@@ -581,7 +572,6 @@ const formCourse = courseFeaturedList.map((course) => ({
            formTitle="Course Details"
            checkboxTitle="Intake"
            courseTitle="Course Featured"
-            helperStar="*"
            formFields={formFields}
            formPersonInCharge={formPersonInCharge}
            formTextarea={formTextarea}
@@ -592,14 +582,14 @@ const formCourse = courseFeaturedList.map((course) => ({
            formMode={formMode}
            onSubmit={handleSubmit}
            formCheckboxes={formCheckboxes}
-           formCourse={formCourse}
+        //    formCourse={formCourse}
            error={error}
            buttons={buttons}
            logo={logo}
            handleLogoChange={handleLogoChange}
            newLogo={newLogo}
             loading={loading}
-            Star="*"
+   
                 />
             )}
         </Container>

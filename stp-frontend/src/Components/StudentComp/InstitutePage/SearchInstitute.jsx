@@ -826,9 +826,9 @@ const SearchInstitute = () => {
           <Row>
             {/* Left Sidebar - Filters */}
             <Col
-              md={4}
+              md={3}
               className="location-container"
-              style={{ backgroundColor: "white", padding: "20px" }}
+              style={{ backgroundColor: "white", padding: "10px" }}
             >
               {/* Desktop Filters */}
               <div className="filters-container">
@@ -1196,7 +1196,7 @@ const SearchInstitute = () => {
             </Col>
 
             {/* Right Content - Institute Listings */}
-            <Col xs={12} md={8} className="degreeinstitutes-division">
+            <Col xs={12} md={9} className="degreeinstitutes-division">
               {Array.isArray(adsImageA) && adsImageA.length > 0 ? (
                 <div >
                   {adsImageA.map((ad, index) => (

@@ -462,13 +462,13 @@ const AdminAddCourseContent = () => {
         onChange: handleIntakeChange,
     }));
 
-    const formCourse = courseFeaturedList.map((course) => ({
-        id: `course-${course.id}`,
-        label: course.name,
-        value: course.id,
-        checked: selectedCourses.includes(course.id),
-        onChange: handleCourseChange,
-    }));
+    // const formCourse = courseFeaturedList.map((course) => ({
+    //     id: `course-${course.id}`,
+    //     label: course.name,
+    //     value: course.id,
+    //     checked: selectedCourses.includes(course.id),
+    //     onChange: handleCourseChange,
+    // }));
 
 
     const buttons = [
@@ -503,7 +503,7 @@ const AdminAddCourseContent = () => {
            formMode={formMode}
            onSubmit={handleSubmit}
            formCheckboxes={formCheckboxes}
-           formCourse={formCourse}
+        //    formCourse={formCourse}
            error={error}
            buttons={buttons}
            logo={formData.logo ? URL.createObjectURL(formData.logo) : null}

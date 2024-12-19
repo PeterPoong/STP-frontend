@@ -41,6 +41,7 @@ const AdminFormComponent = ({
   checkboxDetail,
   helperStar,
   Star,
+  StarAccount,
   courseTitle,
   formPeriod,
   formUrl,
@@ -294,7 +295,7 @@ const AdminFormComponent = ({
               formDrop.map((drop, index) => (
                 <Form.Group key={index} controlId={drop.id} className="mb-5">
                   <Form.Label>{drop.label}</Form.Label>{" "}
-                  <span class="text-danger">*</span>
+                  <span class="text-danger">{Star}</span>
                   <Form.Control
                     as="select"
                     value={drop.value}
@@ -469,7 +470,7 @@ const AdminFormComponent = ({
               formAccount.map((account, index) => (
                 <Form.Group key={index} controlId={account.id} className="mb-5">
                   <Form.Label>{account.label}</Form.Label>{" "}
-                  <span class="text-danger">*</span>
+                  <span class="text-danger">{StarAccount}</span>
                   <Form.Control
                     as="select"
                     value={account.value}
@@ -489,7 +490,7 @@ const AdminFormComponent = ({
               formMode.map((mode, index) => (
                 <Form.Group key={index} controlId={mode.id} className="mb-5">
                   <Form.Label>{mode.label}</Form.Label>{" "}
-                  <span class="text-danger">*</span>
+                  <span class="text-danger">{Star}</span>
                   <Form.Control
                     as="select"
                     value={mode.value}
@@ -551,7 +552,7 @@ const AdminFormComponent = ({
             {handleLogoChange && (
               <Form.Group controlId="logo" className="mb-5">
                 <Form.Label>Logo (2MB)</Form.Label>{" "}
-                <span class="text-danger">*</span>
+                <span class="text-danger">{Star}</span>
                 <Form.Control
                   type="file"
                   accept="image/*"
@@ -630,7 +631,7 @@ const AdminFormComponent = ({
                   className="mb-5"
                 >
                   <Form.Label>{category.label}</Form.Label>{" "}
-                  <span class="text-danger">*</span>
+                  <span class="text-danger">{Star}</span>
                   <Form.Control
                     as="select"
                     value={category.value}
@@ -744,7 +745,6 @@ const AdminFormComponent = ({
                   }
                   inputProps={{
                     name: "person_in_charge_contact",
-                    required: true,
                     autoFocus: true,
                   }}
                 />
@@ -790,14 +790,14 @@ const AdminFormComponent = ({
               formWebsite.map((Website, index) => (
                 <Form.Group key={index} controlId={Website.id} className="mb-5">
                   <Form.Label>{Website.label}</Form.Label>{" "}
-                  <span class="text-danger">*</span>
+                  <span class="text-danger">{Star}</span>
                   <Form.Control
                     as={Website.as || "input"}
                     type={Website.type || "text"}
                     placeholder={Website.placeholder || ""}
                     value={Website.value}
                     onChange={Website.onChange}
-                    required={Website.required || false}
+                    // required={Website.required || false}
                   />
                 </Form.Group>
               ))}
@@ -854,7 +854,7 @@ const AdminFormComponent = ({
             className="mb-5 ms-2"
           >
             <Form.Label>{Textarea.label}</Form.Label>{" "}
-            <span class="text-danger">*</span>
+            <span class="text-danger">{Star}</span>
             <Form.Control
               as={Textarea.as}
               rows={Textarea.rows}
@@ -1008,7 +1008,7 @@ const AdminFormComponent = ({
           <Form.Group key={field.id} controlId={field.id} className="ms-2">
             <Form.Label>
               {field.label}{" "}
-              {field.required && <span className="text-danger">*</span>}
+              {field.required && <span class="text-danger">{Star}</span>}
             </Form.Label>
             <ReactQuill
               value={field.value} // Bind the value from formHTML

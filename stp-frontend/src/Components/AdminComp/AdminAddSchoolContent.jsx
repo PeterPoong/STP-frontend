@@ -674,13 +674,13 @@ const fetchCities = (stateId) => {
           required: true,
         },
       ];
-    const formCheckboxes = schoolFeaturedList.map((feature) => ({
-        id: `feature-${feature.id}`,
-        label: feature.name,
-        value: feature.id,
-        checked: selectedFeatures.includes(feature.id),
-        onChange: handleFeatureChange,
-    }));
+    // const formCheckboxes = schoolFeaturedList.map((feature) => ({
+    //     id: `feature-${feature.id}`,
+    //     label: feature.name,
+    //     value: feature.id,
+    //     checked: selectedFeatures.includes(feature.id),
+    //     onChange: handleFeatureChange,
+    // }));
 
     const buttons = [
         {
@@ -713,7 +713,7 @@ const fetchCities = (stateId) => {
            formWebsite={formWebsite}
            formAddress={formAddress}
            onSubmit={handleSubmit}
-           formCheckboxes={formCheckboxes}
+        //    formCheckboxes={formCheckboxes}
            formPersonInCharge={formPersonInCharge}
             Star="*"
            error={error}
