@@ -10,7 +10,7 @@ import StudyPalLogoYPNG from "../../../assets/StudentPortalAssets/studypalLogoYP
 import StudyPalLogoYPNGWhite from "../../../assets/StudentPortalAssets/studypalLogoYPNGWhite.png"
 import StudyPalLogoYPNGBlack from "../../../assets/StudentPortalAssets/studypalLogoYPNGBlack.png"
 import testingSchool from '../../../assets/StudentPortalAssets/testingSchool.jpg';
-import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend } from 'recharts';
+import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend, ResponsiveContainer } from 'recharts';
 import WMYSpecialLogo from "../../../assets/StudentPortalAssets/wmyspecialLogo.svg"
 import StrengthIcon from "../../../assets/StudentPortalAssets/strengthIcon.svg"
 import StrengthIconFill from "../../../assets/StudentPortalAssets/strengthIconFill.svg"
@@ -188,63 +188,64 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                 <h3 className="RS-Section-Title">Your RIASEC Profile Visualization</h3>
                 <div className="RS-Chart-Section">
                     <div className="RS-Chart-Section-RadarChart">
-                        <RadarChart
-                            width={400}
-                            height={300}
-                            data={[
-                                { subject: 'Realistic', A: 90 },
-                                { subject: 'Investigative', A: 84 },
-                                { subject: 'Artistic', A: 74 },
-                                { subject: 'Social', A: 45 },
-                                { subject: 'Enterprising', A: 50 },
-                                { subject: 'Conventional', A: 40 }
-                            ]}
-                        >
-                            <PolarGrid
-                                stroke="#BA1718"
-                                strokeWidth={2}
-                                radialLines={false}
-                            />
-                            <PolarAngleAxis
-                                dataKey="subject"
-                                stroke="#666"
-                                fontSize={14}
-                                fontWeight={500}
-                                tick={{ fill: '#BA1718' }}
-                                tickLine={false}  // This removes the tick marks
-                                axisLine={false}
-                            />
-                            <PolarRadiusAxis
-                                angle={30}
-                                domain={[0, 100]}
-                                tick={false}
-                                tickCount={5}
+                        <ResponsiveContainer width="100%" height="100%" >
+                            <RadarChart
 
-                            />
-                            <Radar
-                                name="RIASEC Profile"
-                                dataKey="A"
-                                stroke="#BA1718"
-                                fill="#BA1718"
-                                fillOpacity={0.5}
-                                strokeWidth={3}
-                                dot={(props) => {
-                                    const { cx, cy } = props;
-                                    return (
-                                        <circle
-                                            cx={cx}
-                                            cy={cy}
-                                            r={4}
-                                            fill="#BA1718"
-                                            stroke="#BA1718"
-                                            strokeWidth={2}
-                                        />
-                                    );
-                                }}
+                                data={[
+                                    { subject: 'Realistic', A: 90 },
+                                    { subject: 'Investigative', A: 84 },
+                                    { subject: 'Artistic', A: 74 },
+                                    { subject: 'Social', A: 45 },
+                                    { subject: 'Enterprising', A: 50 },
+                                    { subject: 'Conventional', A: 40 }
+                                ]}
+                            >
+                                <PolarGrid
+                                    stroke="#BA1718"
+                                    strokeWidth={2}
+                                    radialLines={false}
+                                />
+                                <PolarAngleAxis
+                                    dataKey="subject"
+                                    stroke="#666"
+                                    fontSize={14}
+                                    fontWeight={500}
+                                    tick={{ fill: '#BA1718' }}
+                                    tickLine={false}  // This removes the tick marks
+                                    axisLine={false}
+                                />
+                                <PolarRadiusAxis
+                                    angle={30}
+                                    domain={[0, 100]}
+                                    tick={false}
+                                    tickCount={5}
 
-                            />
+                                />
+                                <Radar
+                                    name="RIASEC Profile"
+                                    dataKey="A"
+                                    stroke="#BA1718"
+                                    fill="#BA1718"
+                                    fillOpacity={0.5}
+                                    strokeWidth={3}
+                                    dot={(props) => {
+                                        const { cx, cy } = props;
+                                        return (
+                                            <circle
+                                                cx={cx}
+                                                cy={cy}
+                                                r={4}
+                                                fill="#BA1718"
+                                                stroke="#BA1718"
+                                                strokeWidth={2}
+                                            />
+                                        );
+                                    }}
 
-                        </RadarChart>
+                                />
+
+                            </RadarChart>
+                        </ResponsiveContainer>
                     </div>
                     <div >
                         <h3 className="RS-Section-Title" style={{ fontSize: "24px" }}>Your Top 3 RIASEC Types:</h3>
@@ -485,9 +486,9 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                                         <p className="mb-1">Recommended Courses:</p>
                                         <div className="RS-Design-Category-Course">
                                             {results.recommendedCourses.map((course, index) => (
-                                                <span 
-                                                key={index}
-                                                style={{ color: "#000000", border: "1px #000000 dashed" }}
+                                                <span
+                                                    key={index}
+                                                    style={{ color: "#000000", border: "1px #000000 dashed" }}
                                                 >{course}</span>
                                             ))}
                                         </div>

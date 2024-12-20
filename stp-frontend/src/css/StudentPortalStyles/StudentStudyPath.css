@@ -743,6 +743,8 @@
 .RS-Chart-Section-RadarChart {
     border-right: 2px #C0C0C0 solid;
     padding-right: 3rem;
+    width: 400px;
+    height: 300px;
 }
 
 .RS-Type-Number {
@@ -1112,24 +1114,6 @@
     }
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-
-    .strengths-grid,
-    .courses-grid,
-    .design-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .action-buttons {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 0.5rem;
-    }
-}
-
-
-
 /* progress bar*/
 .PB-Stepper-Container {
     position: relative;
@@ -1248,7 +1232,8 @@
 }
 
 
-@media screen and (max-width: 768px) {
+
+@media screen and (max-width:1024px) {
     .PB-Stepper-Container {
         min-height: unset;
         max-width: 100%;
@@ -1305,6 +1290,63 @@
     .PB-Step-Circle {
         background-color: white;
         /* Ensure circle covers the line */
+    }
+
+    .SSP-Question-Overall-Container {
+        flex-direction: column;
+    }
+
+    .SSP-Progress-Sidebar {
+        width: 100%;
+        margin: 1rem 0;
+    }
+
+    .PB-Steps-Container {
+        flex-direction: row;
+
+    }
+
+    .RS-Share-Design-Container {
+        overflow: auto;
+
+        /* For Webkit browsers (Chrome, Safari) */
+        &::-webkit-scrollbar {
+            width: 10px;
+            /* width of vertical scrollbar */
+            height: 10px;
+            /* height of horizontal scrollbar */
+        }
+
+        &::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            /* light grey track */
+            border-radius: 15px;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background: #888;
+            /* grey scrollbar handle */
+            border-radius: 15px;
+        }
+
+        &::-webkit-scrollbar-thumb:hover {
+            background: #555;
+            /* darker grey on hover */
+        }
+
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+
+    .RS-Recommended-Course-Container {
+        grid-template-columns: 1fr;
+    }
+    
+    .RS-Strength-Suggestion-Container
+    {
+        grid-template-columns: 1fr;
     }
 }
 
@@ -1410,23 +1452,59 @@
         margin-top: 2rem;
     }
 
-    .RS-Result-Subtitle
-    {
-        font-size:12px;
-        margin-bottom:0.5rem;
+    .RS-Result-Subtitle {
+        font-size: 12px;
+        margin-bottom: 0.5rem;
     }
 
-    .RS-Recommended-Course-Container
-    {
+    .RS-Recommended-Course-Container {
         grid-template-columns: 1fr;
     }
 
-.RS-Courses-Grid
-{
-    justify-items: center;
-}
-    .RS-Universities-Grid
-    {
+    .RS-Courses-Grid {
+        justify-items: center;
+    }
+
+    .RS-Universities-Grid {
         grid-template-columns: 1fr;
+    }
+
+    .RS-Chart-Section {
+        flex-direction: column;
+    }
+
+    .RS-Chart-Section-RadarChart {
+        border-right: none;
+        width: 400px;
+        height: 200px;
+        margin: 2rem 0;
+    }
+
+    .RS-Strength-Suggestion-Container {
+        grid-template-columns: 1fr;
+    }
+
+    .RS-Strengths-Four-Type {
+        width: max-content;
+        flex-direction: column;
+        justify-self: center;
+        margin: 1rem 0;
+    }
+
+    .RS-Share-Design-Container {
+        flex-direction: column;
+    }
+
+    .RS-Design-Superpower-Container div {
+        flex-wrap: wrap;
+    }
+
+    .RS-Design-Result-Container h1 {
+        font-size: 24px;
+        overflow-wrap: anywhere;
+    }
+
+    .RS-Design-Result-Container p {
+        font-size: 10px;
     }
 }
