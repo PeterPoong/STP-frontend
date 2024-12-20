@@ -236,9 +236,7 @@ const AdminEditSchoolContent = () => {
             person_in_charge_contact, country_code, confirm_password, school_shortDesc, school_fullDesc, password
         } = formData;
     
-        if (!name || !email || !logo || !category || !state || !city || !account || !country || !school_address ||
-            !school_website || !contact_number || !person_in_charge_email || !person_in_charge_name ||
-            !person_in_charge_contact || !country_code || !school_shortDesc || !school_fullDesc) {
+        if (!name || !email || !account) {
             setError("Please fill in all required fields.");
             setErrorModalVisible(true);
             return; // Stop form submission if any required field is missing

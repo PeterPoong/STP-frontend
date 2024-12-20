@@ -59,7 +59,7 @@ const AdminEditCourseContent = () => {
         event.preventDefault();
         
         const { name, schoolID, description, requirement, cost, period, category, qualification, mode } = formData;
-        if (!name || !schoolID || !description || !requirement || !period || !category || !qualification || !mode) {
+        if (!name || !schoolID  || !category || !qualification) {
             setError("Please fill in all required fields.");
             setErrorModalVisible(true);
             return; // Stop form submission if any required field is missing
