@@ -322,6 +322,7 @@
     margin: 10px 0 20px 0;
     font-weight: 500;
     line-height: 1.5;
+    height: 2rem;
 }
 
 .QS-Carousel-Options {
@@ -840,9 +841,84 @@
 }
 
 .RS-Share-Design-Container {
+    overflow: auto;
     display: flex;
     flex-direction: row;
     gap: 1rem;
+}
+
+.RS-Share-Design-Container::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+.RS-Share-Design-Container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 15px;
+}
+
+.RS-Share-Design-Container::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 15px;
+}
+
+.RS-Share-Design-Container::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+
+.RS-Share-Design-Container {
+    scrollbar-width: thin;
+    scrollbar-color: #888 #f1f1f1;
+}
+
+
+.RS-Share-Design-Container {
+    -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+
+
+.RS-Radio-Container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 16px;
+    gap: 8px;
+}
+
+.RS-Radio-Button {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid #BA1718;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.RS-Radio-Inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: #BA1718;
+}
+
+.RS-Radio-Label {
+    font-size: 14px;
+    color: #666666;
+}
+
+.RS-Design-Option-Div.selected,
+.RS-Design-Option-Div-SecondDesign.selected,
+.RS-Design-Option-Div-ThirdDesign.selected {
+    border: 2px solid #BA1718;
+}
+
+.RS-Design-Wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .RS-Design-Option-Div {
@@ -1056,6 +1132,7 @@
     display: flex;
     justify-content: end;
     gap: 1rem;
+    margin:2rem 0 1rem 0;
 }
 
 .RS-Download-Share-Buttons button {
@@ -1306,35 +1383,7 @@
 
     }
 
-    .RS-Share-Design-Container {
-        overflow: auto;
 
-        /* For Webkit browsers (Chrome, Safari) */
-        &::-webkit-scrollbar {
-            width: 10px;
-            /* width of vertical scrollbar */
-            height: 10px;
-            /* height of horizontal scrollbar */
-        }
-
-        &::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            /* light grey track */
-            border-radius: 15px;
-        }
-
-        &::-webkit-scrollbar-thumb {
-            background: #888;
-            /* grey scrollbar handle */
-            border-radius: 15px;
-        }
-
-        &::-webkit-scrollbar-thumb:hover {
-            background: #555;
-            /* darker grey on hover */
-        }
-
-    }
 }
 
 /* Responsive Design */
@@ -1343,9 +1392,8 @@
     .RS-Recommended-Course-Container {
         grid-template-columns: 1fr;
     }
-    
-    .RS-Strength-Suggestion-Container
-    {
+
+    .RS-Strength-Suggestion-Container {
         grid-template-columns: 1fr;
     }
 }
