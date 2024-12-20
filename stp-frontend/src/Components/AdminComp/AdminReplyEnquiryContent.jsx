@@ -234,6 +234,7 @@ const AdminReplyEnquiryContent = () => {
            onSubmit={handleSubmit}
            error={error}
            buttons={buttons}
+            Star="*"
                 />
             )}
      </Container>

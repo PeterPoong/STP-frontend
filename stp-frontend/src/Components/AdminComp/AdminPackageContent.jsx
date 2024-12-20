@@ -150,7 +150,7 @@ const AdminPackageContent = () => {
             }
     
             const result = await response.json();
-            // console.log('API Response Data:', result);
+
     
             if (result.success) {
                 // Action was successful, fetch the updated package data

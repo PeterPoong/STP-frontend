@@ -310,6 +310,7 @@ const AdminEditBannerContent = () => {
         formTitle="Edit Banner"
         checkboxDetail="Featured Type(s)"
         star="*"
+        Star="*"
         formFields={formFields}
         formUrl={formUrl}
         formAccount={formAccount}

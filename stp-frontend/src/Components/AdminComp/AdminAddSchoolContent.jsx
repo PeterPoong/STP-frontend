@@ -441,7 +441,7 @@ const fetchCities = (stateId) => {
                 }
                 
                 const data = await response.json();
-                // console.log('API response:', data);
+       
     
                 if (data.success) {
                     setAlbumFiles(prevFiles => prevFiles.filter(file => file.id !== fileToRemove.id));
@@ -674,13 +674,13 @@ const fetchCities = (stateId) => {
           required: true,
         },
       ];
-    const formCheckboxes = schoolFeaturedList.map((feature) => ({
-        id: `feature-${feature.id}`,
-        label: feature.name,
-        value: feature.id,
-        checked: selectedFeatures.includes(feature.id),
-        onChange: handleFeatureChange,
-    }));
+    // const formCheckboxes = schoolFeaturedList.map((feature) => ({
+    //     id: `feature-${feature.id}`,
+    //     label: feature.name,
+    //     value: feature.id,
+    //     checked: selectedFeatures.includes(feature.id),
+    //     onChange: handleFeatureChange,
+    // }));
 
     const buttons = [
         {
@@ -713,8 +713,9 @@ const fetchCities = (stateId) => {
            formWebsite={formWebsite}
            formAddress={formAddress}
            onSubmit={handleSubmit}
-           formCheckboxes={formCheckboxes}
+        //    formCheckboxes={formCheckboxes}
            formPersonInCharge={formPersonInCharge}
+            Star="*"
            error={error}
            buttons={buttons}
            logo={formData.logo ? URL.createObjectURL(formData.logo) : null}

@@ -32,26 +32,37 @@ const AdminFeaturedContent = () => {
     const [selectedFeaturedType, setSelectedFeaturedType] = useState('');
     const [isSearchResults, setIsSearchResults] = useState(false);
 
-    const fetchFeatureds = async (page = 1, perPage = rowsPerPage, search = searchQuery) => {
+    const fetchFeatureds = async (page = 1, perPage = rowsPerPage, search = searchQuery, featuredType = "") => {
         try {
-            console.log(`Fetching page: ${page}, perPage: ${perPage}, search: ${search}`); // Log the parameters
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/featuredRequestList?page=${page}&per_page=${perPage}&search=${search}`, {
+            setLoading(true);
+    
+            // Construct request payload
+            const payload = {
+                ...(featuredType && { featured_type: Number(featuredType) }), // Include filter only if featuredType is not empty
+            };
+    
+            // If a filter is applied (i.e., featuredType is selected), send "All" for per_page
+            const requestPerPage = featuredType ? "All" : perPage;
+    
+            console.log("Payload sent to API:", payload);
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/featuredRequestList?page=${page}&per_page=${requestPerPage}&search=${search}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": Authenticate,
                 },
+                body: JSON.stringify(payload), // Send the payload
             });
-
+    
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-
+    
             const result = await response.json();
-            console.log("API Response:", result); // Log the API response
-
-            // Check for success and data structure
+            console.log("API Response:", result);
+    
             if (result.success && result.data) {
+                console.log("Filtered Data:", result.data.data);
                 setFeatureds(result.data.data);
                 setTotalPages(result.data.last_page);
                 setCurrentPage(result.data.current_page);
@@ -67,21 +78,23 @@ const AdminFeaturedContent = () => {
             setLoading(false);
         }
     };
+    
 
     useEffect(() => {
-        fetchFeatureds(currentPage, rowsPerPage, searchQuery);
-    }, [currentPage, rowsPerPage, searchQuery]);
+        fetchFeatureds(currentPage, rowsPerPage, searchQuery, selectedFeaturedType);
+    }, [currentPage, rowsPerPage, searchQuery, selectedFeaturedType]); // Include selectedFeaturedType in dependencies
 
     const handleRowsPerPageChange = (newRowsPerPage) => {
         setRowsPerPage(newRowsPerPage);
         setCurrentPage(1); 
-        fetchFeatureds(1, newRowsPerPage, searchQuery);
+        fetchFeatureds(1, newRowsPerPage, searchQuery, selectedFeaturedType); // Pass selectedFeaturedType as argument
     };
+    
 
     const handleSearch = (query) => {
         setSearchQuery(query);
         setCurrentPage(1);
-        fetchFeatureds(1, rowsPerPage, query);
+        fetchFeatureds(1, rowsPerPage, query, selectedFeaturedType); // Pass selectedFeaturedType as argument
     };
 
     const handleSort = (column) => {
@@ -175,8 +188,6 @@ const AdminFeaturedContent = () => {
     const handleSave = async (id) => {
         const { request_name, featured_type, duration } = editedData;
 
-        console.log('Edited Data before sending:', editedData); // Log the entire editedData
-
         const featuredTypeToSend = (featured_type && !isNaN(Number(featured_type))) ? Number(featured_type) : undefined;
 
         console.log('Data being sent to backend:', {
@@ -251,9 +262,13 @@ const AdminFeaturedContent = () => {
         setShowReceiptModal(true);
     };
 
-    const filteredFeatureds = selectedFeaturedType && selectedFeaturedType !== "" 
-        ? sortedFeatureds.filter(featured => featured.featured_type?.featured_id === Number(selectedFeaturedType))
-        : sortedFeatureds; // Show all if "All Featured Types" is selected
+    const filteredFeatureds = selectedFeaturedType
+    ? Featureds.filter(featured => Number(featured.featured_type?.featured_id) === Number(selectedFeaturedType))
+    : Featureds;
+    const handleFeaturedTypeFilter = (selectedType) => {
+        setSelectedFeaturedType(selectedType); // Update the selected featured type
+        fetchFeatureds(1, rowsPerPage, searchQuery, selectedType); // Re-fetch with new filter
+    };
 
     const theadContent = (
         <tr>
@@ -284,11 +299,8 @@ const AdminFeaturedContent = () => {
         
     const tbodyContent = filteredFeatureds.length > 0 ? (
         filteredFeatureds.map((Featured) => {
-            // Log the values for debugging
-            console.log('Featured:', Featured);
-            console.log('Featured Type:', Featured.featured_type);
-            console.log('Featured ID:', Featured.featured_type?.featured_id);
-
+            // console.log("Featured Data:", Featured); // Log each featured item
+           
             return (
                 <tr key={Featured.id}>
                     <td>{Featured.school?.school_name || 'N/A'}</td>
@@ -309,7 +321,6 @@ const AdminFeaturedContent = () => {
                                 value={editedData.featured_type}
                                 onChange={(e) => {
                                     const selectedValue = e.target.value;
-                                    console.log("Selected featured_type:", selectedValue);
                                     setEditedData({ ...editedData, featured_type: selectedValue ? Number(selectedValue) : undefined });
                                 }}
                             >
@@ -407,10 +418,10 @@ const AdminFeaturedContent = () => {
                     </Col>
                     <Form.Select
                         value={selectedFeaturedType}
-                        onChange={(e) => setSelectedFeaturedType(e.target.value)}
-                        className='ps-0 bg-white py-2 ps-2'
+                        onChange={(e) => handleFeaturedTypeFilter(e.target.value)}
+                        className="ps-0 bg-white py-2 ps-2"
                     >
-                        <option value="">All Featured Types</option> {/* Option to show all */}
+                        <option value="">All Featured Types</option>
                         <option value="28">Homepage University</option>
                         <option value="29">Homepage Courses</option>
                         <option value="30">Second Page</option>

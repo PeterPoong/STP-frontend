@@ -22,7 +22,7 @@
 }
 
 .university-row-carousel {
-  width: 100%;
+  width: 100% !important;
   overflow: hidden;
 }
 
@@ -100,4 +100,10 @@ justify-content: center;
   /* Adjust arrow icon size */
   color: gray;
   /* Customize icon color */
+}
+@media only screen and (min-width: 1024px) and (max-height: 768px) {
+  .swiper-container {
+   width: 100%;
+  
+  }
 }

@@ -230,6 +230,7 @@ const AdminEditCategoryContent = () => {
                 buttons={buttons}
                 newIcon={newIcon}
                 icon={icon}
+                Star="*"
                 handleIconChange={handleIconChange}
                 />
             )}

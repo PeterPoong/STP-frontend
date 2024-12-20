@@ -17,11 +17,8 @@ const RequestCourseFeatured = ({ show, handleClose }) => {
 
     useEffect(() => {
         const fetchFeaturedTypes = async () => {
-            console.log('Fetching featured types...');
             const url = `${import.meta.env.VITE_BASE_URL}api/school/schoolFeaturedPriceList`;
             const requestBody = { featured_type: "course" };
-
-            console.log('Request Body:', requestBody);
 
             try {
                 const response = await fetch(url, {
@@ -33,8 +30,6 @@ const RequestCourseFeatured = ({ show, handleClose }) => {
                     body: JSON.stringify(requestBody),
                 });
 
-                console.log('Response Status:', response.status);
-                console.log('Response Headers:', response.headers);
 
                 if (!response.ok) {
                     console.error('Network response was not ok:', response.statusText);
@@ -42,7 +37,6 @@ const RequestCourseFeatured = ({ show, handleClose }) => {
                 }
 
                 const result = await response.json();
-                console.log('Response from backend:', result);
 
                 if (result.success) {
                     setFeaturedTypes(result.data);

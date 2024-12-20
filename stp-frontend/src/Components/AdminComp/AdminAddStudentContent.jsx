@@ -532,6 +532,7 @@ const fetchCities = (stateId) => {
            country_code={formData.country_code}
            handleRadioChange={handleRadioChange}
            formData={formData}
+           Star="*"
                 />
                  {!passwordsMatch && (
                 <div className="text-danger">

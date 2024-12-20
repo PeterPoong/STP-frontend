@@ -444,41 +444,43 @@ const SearchCourse = () => {
                     <div
                       className="searchcourse-coursename-schoolname"
                     >
-                      <Link
-                        rel="preload"
-                        to={`/knowMoreInstitute/${program.school_id}`}
-                        style={{ color: "black" }}
-                      >
-                        <h5 className="card-text">
-                          {program.school_name}
+                      <div>
+                        <Link
+                            rel="preload"
+                            to={`/knowMoreInstitute/${program.school_id}`}
+                            style={{ color: "black" }}
+                          >
+                            <h5 className="card-text">
+                              {program.school_name}
 
-                        </h5>
-                      </Link>
+                            </h5>
+                          </Link>
 
-                      <i
-                        className="bi bi-geo-alt"
-                        style={{ marginRight: "10px", color: "#AAAAAA" }}
-                      ></i>
-                      <span style={{ paddingLeft: "10px" }}>
-                        {program.state || "N/A"}, {program.country || "N/A"}
-                      </span>
-                      <a
-                        href={program.school_location}
-                        style={{ paddingLeft: "15px" }}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Click and view on map
-                      </a>
-
+                          <i
+                            className="bi bi-geo-alt"
+                            style={{ marginRight: "10px", color: "#AAAAAA" }}
+                          ></i>
+                          <span >
+                            {program.state || "N/A"}, {program.country || "N/A"}
+                          </span>
+                      </div>
+                      <div>
+                        <a
+                          href={program.school_location}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Click and view on map
+                        </a>
+                      </div>
                     </div>
                   </div>
                 </div>
               </Col>
               <Col md={6} lg={6}>
-                <div className="d-flex flex-grow-1 justify-content-between coursepage-searchcourse-courselist-second ">
+              <div className="d-flex flex-grow-1 coursepage-searchcourse-courselist-second">
                   <div className="details-div">
-                    <div className=" flex-wrap coursepage-info-one">
+                    <div className="flex-wrap coursepage-info-one">
                       <Col>
                         <div>
                           {/*<Row
@@ -529,7 +531,7 @@ const SearchCourse = () => {
                             </div>
 
                           </Row>*/}
-                          <div >
+                           <div> {/* Align to bottom on iPad */}
                             <Row>
                               <div className="searchcourse-dflex-center" >
                                 <i
@@ -895,9 +897,9 @@ const SearchCourse = () => {
           <Row>
             {/* Left Sidebar - Filters */}
             <Col
-              md={4}
+              md={2}
               className="location-container"
-              style={{ backgroundColor: "white", padding: "20px" }}
+              style={{ backgroundColor: "white", padding: "10px" }}
             >
               {/* Desktop Filters */}
               <div className="filters-container">
@@ -1290,7 +1292,7 @@ const SearchCourse = () => {
             </Col>
 
             {/* Right Content - Course Listings */}
-            <Col xs={12} md={8} className="degreeprograms-division">
+            <Col xs={12} md={10} className="degreeprograms-division">
               <div>
                 {Array.isArray(adsImageA) && adsImageA.length > 0 ? (
                   <div >

@@ -34,7 +34,6 @@ const CreateNewCourseRequest = ({ show, handleClose, activeTab }) => {
 
                 console.log('Response Status:', response.status);
                 const result = await response.json();
-                console.log('API Response:', result);
 
                 if (result.success) {
                     setFeaturedTypes(result.data);

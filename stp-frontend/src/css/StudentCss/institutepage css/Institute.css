@@ -143,7 +143,7 @@
 .institute-card {
   display: flex;
   flex-direction: column;
-  width: 1180px;
+  width: 100%;
   height: auto;
   border-color: #B71A18;
   border-radius: 10px;
@@ -680,5 +680,48 @@
   .institute-reset-display {
     display: flex;
     flex-direction: column;
+  }
+}
+
+@media only screen and (max-width: 1024px) {
+  .institute-card{
+      width: 100% !important;
+      height: auto;
+      border-color: #B71A18;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      /* Add spacing between cards */
+    
+  }
+
+  .knowmore-button .featured-institute-button{
+    margin-left: 0 !important;
+  }
+}
+@media only screen and (min-width: 1024px) and (max-height: 768px) {
+  .featured-institute-button{
+    margin-left: 0 !important;
+    
+  }
+  .institute-card .card-image {
+    flex-shrink: 0;
+    margin-right: 10px;
+    margin-bottom: 5px;
+    /* Adjusted for smaller screens */
+  }
+  .searchinstitute-two-description {
+    padding: 0.825rem;
+    padding-top: 10px;
+    padding-left: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    /* Show only 2 lines of text */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-wrap: break-word;
+    word-break: normal;
+    white-space: normal;
+    max-height: 5rem;
   }
 }
