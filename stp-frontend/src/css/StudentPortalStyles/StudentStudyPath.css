@@ -1081,7 +1081,7 @@
     border-radius: 0.25rem;
     font-weight: 400;
     height: min-content;
-    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.45);
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
 }
 
 .RS-Design-Category-Course {
@@ -1555,4 +1555,5 @@
     .RS-Design-Result-Container p {
         font-size: 10px;
     }
+
 }

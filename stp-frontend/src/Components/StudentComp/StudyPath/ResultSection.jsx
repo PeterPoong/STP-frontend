@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+import html2canvas from 'html2canvas';
 import "../../../css/StudentPortalStyles/StudentStudyPath.css";
 import { GraduationCap, Calendar, Clock, CalendarDays, MapPin } from 'lucide-react';
 import StudyPalLogoYPNG from "../../../assets/StudentPortalAssets/studypalLogoYPNG.png"
@@ -123,6 +124,12 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
     const [selectedCourse, setSelectedCourse] = useState(null);
     const { username = "User", results = null } = userData;
 
+    // Add refs for each design
+    const designRef0 = useRef(null);
+    const designRef1 = useRef(null);
+    const designRef2 = useRef(null);
+
+
     const topType = results.topTypes[0]?.type || 'Realistic';
 
     const gradientBackgroundStyle = {
@@ -155,10 +162,196 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
 
     const radarData = formatRadarData();
 
+    const [isDownloading, setIsDownloading] = useState(false);
 
+    const waitForImageLoad = (imgElement) => {
+        return new Promise((resolve) => {
+            if (imgElement.complete) {
+                resolve();
+            } else {
+                imgElement.onload = resolve;
+            }
+        });
+    };
 
-    const handleDownload = () => {
-        console.log('Downloading...');
+    // Add this function right after your existing state declarations:
+    const convertImageToBase64 = (imgElement) => {
+        return new Promise((resolve) => {
+            try {
+                const canvas = document.createElement('canvas');
+                canvas.width = imgElement.naturalWidth || imgElement.width || 100;
+                canvas.height = imgElement.naturalHeight || imgElement.height || 100;
+                const ctx = canvas.getContext('2d');
+
+                // Set background to white first
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Then draw the image
+                ctx.drawImage(imgElement, 0, 0, canvas.width, canvas.height);
+                resolve(canvas.toDataURL('image/png'));
+            } catch (error) {
+                console.error('Error converting image:', error);
+                resolve(imgElement.src); // Return original source if conversion fails
+            }
+        });
+    };
+
+    const ensureQRCodeLoaded = async (element) => {
+        const qrCodeImg = element.querySelector('img[src*="qrCode"]');
+        if (qrCodeImg) {
+            return new Promise((resolve) => {
+                if (qrCodeImg.complete) {
+                    resolve();
+                } else {
+                    qrCodeImg.onload = resolve;
+                }
+            });
+        }
+        return Promise.resolve();
+    };
+
+    // Then modify your handleDownload function to include image conversion:
+    // Modify the handleDownload function
+    const handleDownload = async () => {
+        try {
+            setIsDownloading(true);
+
+            let targetRef;
+            switch (selectedDesign) {
+                case 0:
+                    targetRef = designRef0;
+                    break;
+                case 1:
+                    targetRef = designRef1;
+                    break;
+                case 2:
+                    targetRef = designRef2;
+                    break;
+                default:
+                    return;
+            }
+
+            if (!targetRef.current) {
+                console.log('No design selected');
+                return;
+            }
+
+            // Wait for all images including QR code to load
+            const images = targetRef.current.getElementsByTagName('img');
+            await Promise.all([
+                ...images].map(img => waitForImageLoad(img)),
+                ensureQRCodeLoaded(targetRef.current)
+            );
+
+            // Clone the element and apply computed styles
+            const clone = targetRef.current.cloneNode(true);
+
+            // Fix title wrapping by ensuring container width
+            const titleElement = clone.querySelector('.RS-Design-Header-Container p');
+            if (titleElement) {
+                titleElement.style.whiteSpace = 'nowrap';
+                titleElement.style.width = 'auto';
+            }
+
+            // Convert all images in clone to base64
+            const cloneImages = clone.getElementsByTagName('img');
+            for (let img of cloneImages) {
+                const originalImage = [...images].find(origImg =>
+                    origImg.src === img.src ||
+                    origImg.getAttribute('src') === img.getAttribute('src')
+                );
+                if (originalImage && originalImage.complete) {
+                    try {
+                        const base64 = await convertImageToBase64(originalImage);
+                        img.src = base64;
+
+                        // Ensure proper sizing for different image types
+                        if (img.closest('.RS-Unique-QR-Container')) {
+                            if (img.closest('.RS-Unique-Inner-Container')) {
+                                // Fix for "What Makes You Unique" icon
+                                img.style.width = '12.5px';
+                                img.style.height = '12.5px';
+                                img.style.marginTop = '5px';
+                                img.style.marginRight = '10px';
+                            } else {
+                                // QR Code sizing
+                                img.style.width = '100px';
+                                img.style.height = '100px';
+                                img.style.display = 'block';
+                            }
+                        }
+                    } catch (e) {
+                        console.error('Error converting image:', e);
+                    }
+                }
+            }
+
+            // Apply fixed dimensions and styles
+            clone.style.width = getComputedStyle(targetRef.current).width;
+            clone.style.height = getComputedStyle(targetRef.current).height;
+            clone.style.position = 'fixed';
+            clone.style.top = '0';
+            clone.style.left = '0';
+            clone.style.zIndex = '-9999';
+            //clone.style.backgroundColor = '#FFFFFF';
+
+            // Ensure QR code container maintains its structure
+            const qrContainer = clone.querySelector('.RS-Unique-QR-Container');
+            if (qrContainer) {
+                qrContainer.style.display = 'flex';
+                qrContainer.style.justifyContent = 'space-between';
+                qrContainer.style.alignItems = 'center';
+            }
+
+            document.body.appendChild(clone);
+
+            const options = {
+                scale: 2,
+                useCORS: true,
+                allowTaint: true,
+                backgroundColor: '#FFFFFF',
+                height: targetRef.current.offsetHeight,
+                width: targetRef.current.offsetWidth,
+                scrollX: 0,
+                scrollY: 0,
+                windowWidth: document.documentElement.offsetWidth,
+                windowHeight: document.documentElement.offsetHeight,
+                foreignObjectRendering: true,
+                removeContainer: false,
+                logging: true
+            };
+
+            // Add slight delay to ensure styles are applied
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            const canvas = await html2canvas(clone, options);
+            document.body.removeChild(clone);
+
+            canvas.toBlob((blob) => {
+                if (!blob) {
+                    console.error('Failed to generate image');
+                    return;
+                }
+
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `RIASEC-Result-${userData.username}-Design${selectedDesign + 1}.png`;
+
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                URL.revokeObjectURL(url);
+                console.log('Download complete!');
+            }, 'image/png', 1.0);
+
+        } catch (error) {
+            console.error('Download error:', error);
+        } finally {
+            setIsDownloading(false);
+        }
     };
 
     const handleShare = () => {
@@ -377,8 +570,12 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                         if (design === 0) {
                             // Original vertical design
                             return (
-                                <div className="RS-Design-Wrapper">
-                                    <div className="RS-Design-Option-Div" onClick={() => setSelectedDesign(design)}>
+                                <div className="RS-Design-Wrapper" key={design}>
+                                    <div
+                                        ref={designRef0}
+                                        className="RS-Design-Option-Div"
+                                        onClick={() => setSelectedDesign(design)}
+                                    >
                                         <div className="RS-Design-Header-Container">
                                             <img src={StudyPalLogoYPNGWhite} style={{ width: "15px", height: "20px" }} />
                                             <p>RIASEC RESULT</p>
@@ -446,8 +643,12 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                         } else if (design === 1) {
                             // Horizontal layout design
                             return (
-                                <div className="RS-Design-Wrapper">
-                                    <div className="RS-Design-Option-Div-SecondDesign"  onClick={() => setSelectedDesign(design)}>
+                                <div className="RS-Design-Wrapper" key={design}>
+                                    <div
+                                        ref={designRef1}
+                                        className="RS-Design-Option-Div-SecondDesign"
+                                        onClick={() => setSelectedDesign(design)}
+                                    >
                                         <div className="RS-Design-Header-Container">
                                             <img src={StudyPalLogoYPNG} style={{ width: "15px", height: "20px" }} />
                                             <p style={{ color: "#BA1718" }}>RIASEC RESULT</p>
@@ -503,20 +704,24 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                                         </div>
                                     </div>
                                     <div className="RS-Radio-Container">
-                                            <div
-                                                className={`RS-Radio-Button ${selectedDesign === design ? 'selected' : ''}`}
-                                                onClick={() => setSelectedDesign(design)}
-                                            >
-                                                {selectedDesign === design && <div className="RS-Radio-Inner" />}
-                                            </div>
+                                        <div
+                                            className={`RS-Radio-Button ${selectedDesign === design ? 'selected' : ''}`}
+                                            onClick={() => setSelectedDesign(design)}
+                                        >
+                                            {selectedDesign === design && <div className="RS-Radio-Inner" />}
                                         </div>
+                                    </div>
                                 </div>
                             );
                         } else {
                             // Modern card design
                             return (
-                                <div className="RS-Design-Wrapper">
-                                    <div className="RS-Design-Option-Div-ThirdDesign" onClick={() => setSelectedDesign(design)}>
+                                <div className="RS-Design-Wrapper" key={design}>
+                                    <div
+                                        ref={designRef2}
+                                        className="RS-Design-Option-Div-ThirdDesign"
+                                        onClick={() => setSelectedDesign(design)}
+                                    >
                                         <div className="RS-Design-Header-Container">
                                             <img src={StudyPalLogoYPNGBlack} style={{ width: "20px", height: "20px" }} />
                                             <p className="RS-Design-Header-Thrid-Title" >RIASEC RESULT</p>
@@ -604,7 +809,13 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                     })}
                 </div>
                 <div className="RS-Download-Share-Buttons">
-                    <button onClick={handleDownload}>DOWNLOAD</button>
+                    <button
+                        onClick={handleDownload}
+                        className="RS-Download-Button"
+                        disabled={selectedDesign === null || selectedDesign === undefined}
+                    >
+                        DOWNLOAD
+                    </button>
                     <button onClick={handleShare}>SHARE</button>
                 </div>
             </div>
