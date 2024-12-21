@@ -903,6 +903,7 @@ const CourseDetail = () => {
                   <Container className="university-row-carousel">
                     <h4>Featured Courses</h4>
                     <Swiper
+                   
                       spaceBetween={20}
                       slidesPerView={1}
                       navigation
@@ -924,7 +925,7 @@ const CourseDetail = () => {
                           spaceBetween: 10,
                         },
                         768: {
-                          slidesPerView: 4,
+                          slidesPerView: 2,
                           spaceBetween: 15,
                         },
                         1024: {

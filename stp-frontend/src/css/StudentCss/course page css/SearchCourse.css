@@ -83,28 +83,62 @@
 
 }
 
+/* iPad Landscape Styles */
 @media only screen and (min-width: 1024px) and (max-height: 768px) {
     .bottom-align-ipad {
-      display: flex !important; /* Flexbox layout */
-      
-      justify-content: flex-end !important; /* Align content to the bottom */
-      height: 100% !important; /* Ensure container takes full height */
+      display: flex !important;
+      justify-content: flex-end !important;
+      height: 100% !important;
     }
     
     .coursepage-searchcourse-courselist-second {
-        display: flex;
-        /* flex-direction: column; */
+      display: flex;
+      justify-content: space-between;
+      height: 100%;
+    }
+    
+    .details-div {
+      margin-top: auto;
+    }
+    
+    .fee-apply {
+      margin-top: auto;
+    }
+  }
+  
+  /* iPad Portrait Styles */
+  @media only screen and (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+    .coursepage-searchcourse-courselist-second {
+        display: block !important;
         justify-content: space-between;
-        height: 100%; /* Ensure the container spans the full height */
+        height: 100%;
       }
       
-      .details-div {
-        margin-top: auto; /* Push this section upwards */
-      }
       
       .fee-apply {
-        margin-top: auto; /* Push this section to the bottom */
+        margin-top: auto !important;
+        width: 50%;
+      }
+
+      .degree-card, .coursepage-row{
+        display: block !important;
+        
+      }
+      .coursepage-searchcourse-courselist-first {
+        display: block !important;
       }
       
+      .coursepage-img {
+        padding: 0 !important;
+        display: flex !important; /* Use flexbox for centering */
+        justify-content: center !important; /* Horizontally center */
+        align-items: center !important; /* Vertically center */
+        margin-bottom: 20px;
+      }
+      
+      .course-card-ipad, .course-card-fee-ipad{
+        width: 100% !important;
+      }
+    
   }
   

@@ -725,3 +725,139 @@
     max-height: 5rem;
   }
 }
+@media only screen and (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  /* General styles for all divs inside .institute-card */
+  .institute-card div {
+    display: block !important;
+    width: 100%;
+    text-align: center;
+  }
+
+
+  /* Ensure the description is centered and fits within the container */
+  .searchinstitute-two-description {
+    padding: 0.825rem;
+    padding-top: 10px;
+    padding-left: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* Show only 3 lines of text */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-wrap: break-word;
+    word-break: normal;
+    white-space: normal;
+    max-height: 5rem;
+    margin: 0 auto; /* Center-align within the container */
+  }
+
+  /* Center content inside details-div-institute */
+  .details-div-institute {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important; /* Center content horizontally */
+    justify-content: flex-start !important;
+    width: 100% !important;
+    margin: 0 auto !important; /* Ensure the container is centered */
+    padding: 0 !important;
+  }
+  
+  .searchinstitute-three-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  /* Center other sections and ensure full width */
+  .searchinstitute-three {
+    display: flex !important;
+    justify-content: center; /* Center contents horizontally */
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .searchinstitute-one {
+    display: block !important;
+    width: 100%; /* Take full width */
+    margin: 0 auto; /* Center align */
+  }
+
+  /* Center the "Know More" button */
+  .knowmore-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 !important;
+    width: 100%;
+  }
+
+  .searchinstitute-one-linkimage {
+    display: flex !important; /* Use flexbox for centering */
+    justify-content: center !important; /* Center horizontally */
+    align-items: center !important; /* Center vertically */
+    padding-left: 0 !important; /* Remove any left padding */
+    width: 100% !important; /* Take full width */
+    margin: 0 auto !important; /* Center within parent container */
+    padding-top: 20px;
+    padding-bottom: 20px;
+  }
+
+  /* Ensure the image inside the link is also centered */
+  .searchinstitute-one-image {
+    display: block !important; /* Ensure the image is treated as a block element */
+    margin: 0 auto !important; /* Center the image horizontally */
+  }
+
+  .featured-institute-button {
+    width: auto;
+    padding: 10px 20px;
+    text-align: center;
+    margin-top: 30px;
+  }
+  .featured-badge {
+    position: absolute !important;
+    top: 0 !important;
+    right: 20px !important;
+    width: 100px !important;
+    height: 40px !important;
+  }
+  .display-potrait-school, .display-potrait-school-two{
+    width: 100% !important;
+  }
+  .display-potrait-school-two {
+    display: flex !important;
+    justify-content: center; /* Center content horizontally */
+    padding: 0 !important;
+    width: 100%;
+    margin: 0 !important;
+  }
+  .searchinstitute-dflex-center {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    /* gap: 5px !important; */
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+  }
+
+  .searchinstitute-dflex-center p {
+    margin: 0 !important; /* Remove any margins */
+    padding: 0 !important; /* Remove padding to avoid alignment issues */
+    text-align: left !important; /* Left-align the text */
+    line-height: 1.5 !important; /* Adjust for better vertical spacing */
+    display: inline-block !important; /* Ensure inline alignment */
+    flex-grow: 1 !important; /* Allow the text to grow naturally */
+  }
+  
+  
+  .searchinstitute-dflex-center i {
+    font-size: 1.2rem !important; /* Adjust icon size */
+  }
+  
+  
+}

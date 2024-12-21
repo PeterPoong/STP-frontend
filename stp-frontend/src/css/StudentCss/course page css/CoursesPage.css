@@ -101,7 +101,7 @@
   flex-direction: column;
   width: 100%; /* Use full width */
   max-width: 100%; /* Adjust for larger screens */
-  max-height: 300px;
+  max-height: 500px;
   border-color: #B71A18;
   border-radius: 10px;
   margin: 0 auto 20px; /* Center and add spacing */
@@ -736,24 +736,3 @@ margin-left:0;
 }
 }
 
-@media only screen and (max-width: 1024px) {
-  .fee-apply {
-    margin-left: 0 !important;
-    width: 50%;
-  }
-  .coursepage-searchcourse-courselist-second {
-    display: flex;
-    /* flex-direction: column; */
-    justify-content: space-between;
-    height: 100%; /* Ensure the container spans the full height */
-  }
-  
-  .details-div {
-    margin-top: auto; /* Push this section upwards */
-  }
-  
-  .fee-apply {
-    margin-top: auto; /* Push this section to the bottom */
-  }
-
-}

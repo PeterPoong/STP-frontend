@@ -472,7 +472,7 @@ const SearchInstitute = () => {
           {institute.featured && <div className="featured-badge">Featured</div>}
           <div className="card-body d-flex flex-column flex-md-row align-items-start">
             <Row>
-              <Col md={6} lg={6}>
+              <Col md={6} lg={6} className="display-potrait-school">
                 <div className="card-image mb-3 mb-md-0">
                   <div
                     className="d-flex searchinstitute-one"
@@ -524,7 +524,7 @@ const SearchInstitute = () => {
                   </div>
                 </div>
               </Col>
-              <Col md={6} lg={6}>
+              <Col md={6} lg={6} className="display-potrait-school-two">
                 <div className="d-flex flex-grow-1 justify-content-between searchinstitute-three">
                   <div
                     className="details-div-institute"
@@ -827,7 +827,7 @@ const SearchInstitute = () => {
           <Row>
             {/* Left Sidebar - Filters */}
             <Col
-              md={2}
+              md={3}
               className="location-container"
               style={{ backgroundColor: "white", padding: "10px" }}
             >
@@ -1197,7 +1197,7 @@ const SearchInstitute = () => {
             </Col>
 
             {/* Right Content - Institute Listings */}
-            <Col xs={12} md={10} className="degreeinstitutes-division">
+            <Col xs={12} md={9} className="degreeinstitutes-division">
               {Array.isArray(adsImageA) && adsImageA.length > 0 ? (
                 <div >
                   {adsImageA.map((ad, index) => (

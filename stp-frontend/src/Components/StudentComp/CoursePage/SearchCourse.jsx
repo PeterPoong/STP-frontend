@@ -411,7 +411,7 @@ const SearchCourse = () => {
           {/* Program card content - same as your original design */}
           <div className="card-body d-flex flex-column flex-md-row align-items-start">
             <Row className="coursepage-row">
-              <Col md={6} lg={6}>
+              <Col md={6} lg={6} className="course-card-ipad">
                 <div className="card-image mb-3 mb-md-0">
                   <h5 className="card-title">
                     <Link
@@ -477,7 +477,7 @@ const SearchCourse = () => {
                   </div>
                 </div>
               </Col>
-              <Col md={6} lg={6}>
+              <Col md={6} lg={6} className="course-card-fee-ipad">
               <div className="d-flex flex-grow-1 coursepage-searchcourse-courselist-second">
                   <div className="details-div">
                     <div className="flex-wrap coursepage-info-one">
@@ -897,7 +897,7 @@ const SearchCourse = () => {
           <Row>
             {/* Left Sidebar - Filters */}
             <Col
-              md={2}
+              md={3}
               className="location-container"
               style={{ backgroundColor: "white", padding: "10px" }}
             >
@@ -1292,7 +1292,7 @@ const SearchCourse = () => {
             </Col>
 
             {/* Right Content - Course Listings */}
-            <Col xs={12} md={10} className="degreeprograms-division">
+            <Col xs={12} md={9}  className="degreeprograms-division">
               <div>
                 {Array.isArray(adsImageA) && adsImageA.length > 0 ? (
                   <div >

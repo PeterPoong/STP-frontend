@@ -22,7 +22,7 @@
 .accordion-button,
 .accordion-button:not(.collapsed) {
     background-color: transparent !important;
-    color: inherit;
+    color: rgb(183, 26, 24);
 }
 
 .accordion-button:focus {
