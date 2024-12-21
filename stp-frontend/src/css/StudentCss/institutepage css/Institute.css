@@ -700,8 +700,12 @@
 }
 @media only screen and (min-width: 1024px) and (max-height: 768px) {
   .featured-institute-button{
-    margin-left: 0 !important;
-    
+    margin-left: 10px !important;
+  }
+  .searchinstitute-three{
+    display: block !important;
+    padding: 0 !important;
+   
   }
   .institute-card .card-image {
     flex-shrink: 0;
