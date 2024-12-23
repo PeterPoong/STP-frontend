@@ -879,7 +879,7 @@ const fetchFeaturedRequests = async () => {
                                                             onChange={(date) => setStartDate(date)}
                                                             showTimeSelect
                                                             dateFormat="yyyy-MM-dd HH:mm:ss"
-                                                            className="form-control"
+                                                            className="form-control start_date_feature"
                                                             placeholderText="Select start date"
                                                             style={{ 
                                                                 fontSize: '14px', 
@@ -1015,6 +1015,7 @@ const fetchFeaturedRequests = async () => {
                                                             }}
                                                             dateFormat="yyyy-MM-dd HH:mm:ss"
                                                             className="form-control text-center border-0"
+                                                            inputClassName="start_date_feature"
                                                             style={{ 
                                                                 fontSize: '14px', 
                                                                 fontWeight: '600',
@@ -1218,6 +1219,7 @@ const fetchFeaturedRequests = async () => {
                                                                     }}
                                                                     dateFormat="yyyy-MM-dd HH:mm:ss"
                                                                     className="form-control text-center border-0"
+                                                                    inputClassName="start_date_feature"
                                                                     style={{ 
                                                                         fontSize: '14px', 
                                                                         fontWeight: '600',

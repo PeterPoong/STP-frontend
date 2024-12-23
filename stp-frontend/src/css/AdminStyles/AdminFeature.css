@@ -129,12 +129,10 @@
     border-radius: 15px !important;
 }
 
-.react-datepicker__input-container input {
-    font-size: 14px !important; 
+.start_date_feature.react-datepicker__input-container input {
+    font-size: 14px !important;
     font-weight: 600 !important;
-    /* border: 1px solid #EFF0F6 ; */
     border-radius: 15px !important;
     background-color: white !important;
-    /* padding: 8px 12px !important; */
 }
 
