@@ -763,7 +763,7 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                                                 {results.strengths.map((strength, index) => (
                                                     <div key={index} className="RS-Design-Superpower-List">
                                                         {strength}
-                                                    </div>
+                                                    </div> 
                                                 ))}
                                             </div>
                                         </div>

@@ -8,7 +8,7 @@ import NameInputSection from '../../Components/StudentComp/StudyPath/NameInputSe
 import QuestionSection from '../../Components/StudentComp/StudyPath/QuestionSection';
 import ResultSection from '../../Components/StudentComp/StudyPath/ResultSection';
 import ProgressBar from '../../Components/StudentComp/StudyPath/ProgressBar';
-
+import testingSchool from '../../assets/StudentPortalAssets/testingSchool.jpg';
 const StudentStudyPath = () => {
     const [currentStep, setCurrentStep] = useState(1);
     const [userData, setUserData] = useState({
@@ -170,7 +170,29 @@ const StudentStudyPath = () => {
             universities: [
                 {
                     name: 'Swinburne University (Sarawak)',
-                    image: '/path/to/university/image.jpg',
+                    image: testingSchool,
+                    location: 'Sarawak',
+                    course: typeAttributes[topType].courses[0],
+                    courseType: "Diploma",
+                    coursePeriod: "Full Time",
+                    fee: 'RM 55,000',
+                    duration: '2.3 Years',
+                    intake: 'January, May, September'
+                },
+                {
+                    name: 'Swinburne University (Sarawak)',
+                    image: testingSchool,
+                    location: 'Sarawak',
+                    course: typeAttributes[topType].courses[0],
+                    courseType: "Diploma",
+                    coursePeriod: "Full Time",
+                    fee: 'RM 55,000',
+                    duration: '2.3 Years',
+                    intake: 'January, May, September'
+                },
+                {
+                    name: 'Swinburne University (Sarawak)',
+                    image: testingSchool,
                     location: 'Sarawak',
                     course: typeAttributes[topType].courses[0],
                     courseType: "Diploma",
