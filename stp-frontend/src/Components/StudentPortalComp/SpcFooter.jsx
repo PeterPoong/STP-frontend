@@ -22,9 +22,9 @@ const SpcFooter = () => {
         }}
       >
         <div style={{ marginBottom: "5px", marginTop: "5px" }}>
-        <Row className="gap-3">
+          <Row className="gap-3">
             <a
-              href="https://www.facebook.com/imediamyy"
+              href="https://www.facebook.com/profile.php?id=61567875925810"
               target="_blank"
               rel="noopener noreferrer"
               className="btn btn-outline-primary rounded-circle p-0 social-btn facebook-btn"
@@ -70,7 +70,7 @@ const SpcFooter = () => {
               </svg>
             </a>
             <a
-              href="mailto:imediamyy@gmail.com"
+              href="mailto:	admin@studypal.my"
               className="btn btn-outline-danger rounded-circle p-0 social-btn email-btn"
               style={{
                 width: "40px",
@@ -96,7 +96,7 @@ const SpcFooter = () => {
           Lot 3493, No.13 2nd Floor, Jalan Piasau, Piasau Commercial, 98000
           Miri, Sarawak
         </p>
-        <p style={{ fontsize: "12px" }}>
+        <p style={{ fontsize: "12px",marginBottom:"0" }}>
           Copyright © 2024 iMedia Enterprise. Designed by{" "}
           <Link
             to="https://imedia.my"

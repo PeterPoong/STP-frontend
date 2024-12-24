@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Container, Col, Button, Modal, Alert } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { useDropzone } from "react-dropzone";
 import AdminFormComponent from './AdminFormComponent';
 import 'typeface-ubuntu';
+import ErrorModal from "./Error";
 import "../../css/AdminStyles/AdminFormStyle.css";
-import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
-
-import { FaTrashAlt } from 'react-icons/fa';
 
 const AdminAddStudentContent = () => {
     const [genderList, setGenderList] = useState([]); 
@@ -39,12 +36,36 @@ const AdminAddStudentContent = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [passwordsMatch, setPasswordsMatch] = useState(true);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
+    const [generalError, setGeneralError] = useState('');
+    const [fieldErrors, setFieldErrors] = useState({});
+    const fieldLabels = {
+      name:"Student Name",
+      first_name:"Student Firstname",
+      last_name:"Student lastname",
+      gender:"Gender",
+      ic:"New Identity Card No.",
+      postcode:"Postcode",
+      email:"Email Address",
+      state: "State", 
+      city:"City", 
+      country:"Country", 
+      address:"Full Address", 
+      contact_number: "Contact Number", 
+      country_code: "Country Code",
+      confirm_password:"Confirm Password",
+      password:"Password"
+    };
     const handleSubmit = async (event) => {
       event.preventDefault();
       // console.log("Submitting form data:", formData);
   
       const { name, first_name, last_name, gender, ic, postcode, email, state, city, country, address, contact_number, country_code, confirm_password, password } = formData;
-  
+      if (!name || !first_name || !last_name || !gender || !ic || !postcode || !email || !state || !city || !country || !address || !contact_number || !country_code || !confirm_password || !password ) {
+        setError("Please fill in all required fields.");
+        setErrorModalVisible(true);
+        return; // Stop form submission if any required field is missing
+    }
       // Convert strings to integers where needed
       const icInt = parseInt(ic, 10);
       const cityInt = parseInt(city, 10);
@@ -54,6 +75,7 @@ const AdminAddStudentContent = () => {
   
       if ( isNaN(cityInt) || isNaN(genderInt) || isNaN(stateInt) || isNaN(countryInt)) {
           setError("Some fields must be valid integers.");
+          setErrorModalVisible(true);
           return;
       }
   
@@ -90,13 +112,19 @@ const AdminAddStudentContent = () => {
           if (addStudentResponse.ok) {
               console.log('Student successfully registered:', addStudentData);
               navigate('/adminStudent');
-          } else {
-              console.error('Validation Error:', addStudentData.errors);
-              throw new Error(`Student Registration failed: ${addStudentData.message}`);
+            } else if (addStudentResponse.status === 422) {
+              // Validation errors
+              console.log('Validation Errors:', addStudentData.errors);
+              setFieldErrors(addStudentData.errors); // Pass validation errors to the modal
+              setGeneralError(addStudentData.message || "Validation Error");
+              setErrorModalVisible(true); // Show the error modal
+            } else {
+            setGeneralError(addStudentData.message || "Failed to add new student.");
+            setErrorModalVisible(true);
           }
       } catch (error) {
-          setError('An error occurred during student registration. Please try again later.');
-          console.error('Error during student registration:', error);
+        setGeneralError(error.message || "An error occurred while adding the student. Please try again later.");
+        setErrorModalVisible(true);
       }
   };
   
@@ -479,8 +507,15 @@ const fetchCities = (stateId) => {
 
     return (
         
-                <Container fluid className="admin-add-student-container">
-                    <AdminFormComponent
+        <Container fluid className="admin-add-student-container">
+           <ErrorModal
+                errorModalVisible={errorModalVisible}
+                setErrorModalVisible={setErrorModalVisible}
+                generalError={generalError || error} // Ensure `generalError` or fallback to `error`
+                fieldErrors={fieldErrors}
+                fieldLabels={fieldLabels}
+            />
+          <AdminFormComponent
            formTitle="Student Information"
            formFields={formFields}
            formPassword={formPassword}
@@ -497,6 +532,7 @@ const fetchCities = (stateId) => {
            country_code={formData.country_code}
            handleRadioChange={handleRadioChange}
            formData={formData}
+           Star="*"
                 />
                  {!passwordsMatch && (
                 <div className="text-danger">

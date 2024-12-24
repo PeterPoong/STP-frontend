@@ -312,10 +312,10 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
   const presetSPMSubjects = () => {
     return [
       { id: 1, name: "Bahasa Melayu", grade: "", isEditing: true },
-      { id: 2, name: "English", grade: "", isEditing: true },
-      { id: 3, name: "Mathematics", grade: "", isEditing: true },
-      { id: 4, name: "Science", grade: "", isEditing: true },
-      { id: 5, name: "History", grade: "", isEditing: true }
+      { id: 2, name: "Bahasa Inggeris", grade: "", isEditing: true },
+      { id: 3, name: "Pendidikan Moral", grade: "", isEditing: true },
+      { id: 4, name: "Matematik", grade: "", isEditing: true },
+      { id: 5, name: "Sains", grade: "", isEditing: true }
     ];
   };
   const fetchAvailableSubjects = useCallback(async (categoryId, transcriptIndex) => {
@@ -1111,10 +1111,10 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
           {transcript.subjects.length > 0 ? (
             <div className="px-4">
               {transcript.subjects.map((subject, subIndex) => (
-                <div key={subIndex} className="justify-content-between subject-item d-flex align-items-center mb-2 bg-white p-1 rounded-3">
+                <div key={subIndex} className="justify-content-between subject-item  mb-2 bg-white p-1 rounded-3 applycourse-overflow">
                   {subject.isEditing ? (
                     <>
-                      <div className="d-flex align-items-center flex-grow-1">
+                      <div className="applycourse-academictranscript-dflex align-items-center flex-grow-1">
                         <AlignJustify className="mx-2" size={15} color="grey" />
                         {transcript.id === 32 ? (
                           (() => {
@@ -1132,7 +1132,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                                 options={subjectOptions}
                                 value={subject.id && subject.name ? { value: subject.id, label: subject.name } : null}
                                 onChange={(selected) => handleSubjectSelectChange(index, subIndex, selected)}
-                                className="me-2 w-25 "
+                                className="me-2 applycourse-academictranscript-select-width"
                                 placeholder="Select Subject"
                               />
                             );
@@ -1142,7 +1142,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                             type="text"
                             value={subject.name}
                             onChange={(e) => handleSubjectChange(index, subIndex, 'name', e.target.value)}
-                            className="me-2 w-25"
+                            className="me-2 applycourse-academictranscript-select-width"
                             placeholder="Enter Subject Name"
                             style={{ fontSize: '0.9rem', fontWeight: "500" }}
                             required
@@ -1196,7 +1196,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                     </>
                   ) : (
                     <>
-                      <div className="d-flex align-items-center flex-grow-1">
+                      <div className="applycourse-academictranscript-dflex align-items-center flex-grow-1">
                         <AlignJustify size={15} className="me-2 ms-2" style={{ alignSelf: 'center' }} />
                         <span className="me-2"
                           style={{
@@ -1273,10 +1273,10 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
 
             {transcript.documents.map((doc, docIndex) => (
               <div key={docIndex} className="px-4">
-                <div className="document-item d-flex align-items-center mb-2 bg-white p-1 gap-1 justify-content-between rounded-3">
+                <div className="overflow-scroll document-item d-flex align-items-center mb-2 bg-white p-1 gap-1 justify-content-between rounded-3">
                   {doc.isEditing ? (
                     <>
-                      <div className="d-flex flex-grow-1 align-items-center">
+                      <div className="d-flex flex-grow-1 align-items-center document-item-mobile">
                         <div className="me-3 border-end px-3">
                           {doc.file ? (
                             <>
@@ -1322,9 +1322,9 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                           />
                         </div>
                       </div>
-                      <div>
+                      <div className="applycourwse-academictranscript-documentedit">
                         <Button variant="link" className="p-0 me-2" onClick={() => handleSaveDocument(index, docIndex)}>
-                          <Save size={15} color="grey" />
+                          <Save size={15} color="green" />
                         </Button>
                         <Button variant="link" className="p-0" onClick={() => handleRemoveDocument(index, docIndex)}>
                           <Trash2 size={15} color="grey" />

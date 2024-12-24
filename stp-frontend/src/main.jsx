@@ -49,6 +49,10 @@ import AdminData from "./Pages/AdminPages/AdminData";
 import AdminBanner from "./Pages/AdminPages/AdminBanner";
 import AdminAddBanner from "./Pages/AdminPages/AdminAddBanner";
 import AdminEditBanner from "./Pages/AdminPages/AdminEditBanner";
+import AdminEnquiry from "./Pages/AdminPages/AdminEnquiry";
+import AdminReplyEnquiry from "./Pages/AdminPages/AdminReplyEnquiry";
+import AdminFeatured from "./Pages/AdminPages/AdminFeatured";
+import AdminEditFeatured from "./Pages/AdminPages/AdminEditFeatured";
 
 //StudentPortal Page
 import StudentPortalLogin from "./Pages/StudentPortalPages/StudentPortalLogin";
@@ -59,6 +63,7 @@ import StudentPortalBasicInformations from "./Pages/StudentPortalPages/StudentPo
 import StudentApplyCourses from "./Pages/StudentPortalPages/StudentApplyCourses";
 import StudentApplyCourse from "./Pages/StudentPortalPages/StudentApplyCourse";
 import StudentApplicationSummary from "./Pages/StudentPortalPages/StudentApplicationSummary";
+import StudentFeedback from "./Pages/StudentPortalPages/StudentFeedback";
 
 //schoolPortal Page
 import SchoolPortalLogin from "./Pages/SchoolPages/SchoolPortalLogin";
@@ -68,6 +73,12 @@ import SchoolPortalForgetPassword from "./Pages/SchoolPages/schoolPortalForgetPa
 import ExistSchool from "./Pages/SchoolPages/ExistSchool";
 import SchoolViewApplicantDetail from "./Pages/SchoolPages/StudentApplicantDetail";
 import SchoolBasicInformation from "./Pages/SchoolPages/SchoolBasicInformation";
+import SchoolPackage from "./Pages/SchoolPages/SchoolPackage";
+import RequestFeatured from "./Pages/SchoolPages/RequestFeatured";
+import CourseRequestFeatured from "./Pages/SchoolPages/CourseRequestFeatured"
+import SchoolRequestFeatured from "./Pages/SchoolPages/SchoolRequestFeatured"
+import Checkout from "./Pages/SchoolPages/Checkout"
+import Checkoutsc from"./Pages/SchoolPages/CheckoutSC"
 
 //marketing
 import AccountPackages from "./Pages/MarketingPages/AccountPackages";
@@ -240,7 +251,7 @@ const router = createBrowserRouter([
   },
 
   {
-    path: "/adminAddBanner",
+    path: "/adminAddbanner",
     element: <AdminAddBanner />,
   },
   {
@@ -263,6 +274,23 @@ const router = createBrowserRouter([
     path: "/adminData",
     element: <AdminData />,
   },
+  {
+    path: "/adminEnquiry",
+    element: <AdminEnquiry />,
+  },
+  {
+    path: "/adminReplyEnquiry",
+    element: <AdminReplyEnquiry />,
+  },
+  {
+    path: "/adminFeatured",
+    element: <AdminFeatured />,
+  },
+  {
+    path: "/adminEditFeatured",
+    element: <AdminEditFeatured />,
+  },
+
   //Student Portal Page
   {
     path: "/studentPortalLogin",
@@ -299,6 +327,11 @@ const router = createBrowserRouter([
     element: <FacebookSocialPageRedirectPage />,
   },
 
+  {
+    path: "/studentFeedback",
+    element: <StudentFeedback />,
+  },
+
   //School Portal
   {
     path: "/schoolPortalLogin",
@@ -320,7 +353,26 @@ const router = createBrowserRouter([
     path: "/schoolExistingAccount",
     element: <ExistSchool />,
   },
-
+  {
+    path: "/RequestFeatured",
+    element: <RequestFeatured />,
+  },
+  {
+    path: "/CourseRequestFeatured",
+    element: <CourseRequestFeatured />,
+  },
+  {
+    path: "/SchoolRequestFeatured",
+    element: <SchoolRequestFeatured />,
+  },
+  {
+    path: "/Checkout",
+    element: <Checkout />,
+  },
+  {
+    path: "/Checkoutsc",
+    element: <Checkoutsc />,
+  },
   {
     path: "/studentApplyCourse",
     element: <StudentApplyCourse />,
@@ -338,6 +390,10 @@ const router = createBrowserRouter([
   {
     path: "/school/ApplicantDetail/:applicantID",
     element: <SchoolViewApplicantDetail />,
+  },
+  {
+    path: "/SchoolPackage",
+    element: <SchoolPackage />,
   },
 
   //marketing

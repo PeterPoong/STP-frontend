@@ -76,13 +76,19 @@ const NavigationBar = () => {
             src={logo} 
             alt="Logo" 
             className="logo"
+            loading="lazy"
+          />
+           {/*<img 
+            src={logo} 
+            alt="Logo" 
+            className="logo"
             loading="eager"
-            fetchPriority="high"
+            fetchpriority="high"
             decoding="async"
             onLoad={(e) => {
               e.target.previousSibling?.remove();
             }}
-          />
+          />*/}
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
@@ -112,6 +118,19 @@ const NavigationBar = () => {
               style={{ marginLeft: "10px" }}
             >
               Schools
+            </Button>
+            <Button
+              variant="link"
+              as={Link}
+              to="/studentFeedback"
+              className={`nav-link-custom ${location.pathname === "/studentFeedback" ||
+                location.pathname.startsWith("/studentFeedback")
+                ? "active"
+                : ""
+              }`}
+              style={{ marginLeft: "10px" }}
+            >
+             Contact Us
             </Button>
           </Nav>
 
@@ -161,7 +180,7 @@ const NavigationBar = () => {
                     <Dropdown.Item as={Link} to="/studentPortalSignUp">
                       Register as Student
                     </Dropdown.Item>
-                    <Dropdown.Item as={Link} to="/register-school">
+                    <Dropdown.Item as={Link} to="/schoolPortalSignUp">
                       Register as School
                     </Dropdown.Item>
                   </Dropdown.Menu>

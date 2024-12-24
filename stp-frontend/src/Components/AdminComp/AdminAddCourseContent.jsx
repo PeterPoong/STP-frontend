@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Container, Col, Button, Modal } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { useDropzone } from "react-dropzone";
 import AdminFormComponent from './AdminFormComponent';
 import 'typeface-ubuntu';
+import ErrorModal from "./Error";
 import "../../css/AdminStyles/AdminFormStyle.css";
-import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
-
-import { FaTrashAlt } from 'react-icons/fa';
 
 const AdminAddCourseContent = () => {
     const [courseIntakeList, setCourseIntakeList] = useState([]);
@@ -31,16 +28,37 @@ const AdminAddCourseContent = () => {
     });
     const [selectedIntakes, setSelectedIntakes] = useState([]);
     const [selectedCourses, setSelectedCourses] = useState([]);
-
     const [error, setError] = useState(null);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
+    const [generalError, setGeneralError] = useState('');
+    const [fieldErrors, setFieldErrors] = useState({});
     const navigate = useNavigate();
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`
+    const fieldLabels = {
+        name:"Course Name",
+        schoolID:"School Name",
+        description:"Course Description",
+        requirement:"Course Requirements",
+        cost:"Course Fee",
+        period:"Study Period",
+        category:"Course Category",
+        qualification:"Course Qualification",
+        mode:"Study Mode",
+        logo:"Logo",
+        intake:"Intake",
+        course:"Course Featured"
+    };
     const handleSubmit = async (event) => {
         event.preventDefault();
         
         const { name, schoolID, logo, description, requirement, cost, period, category, qualification, mode } = formData;
-        
+         // Check if all required fields are filled
+         if (!name || !schoolID || !description || !requirement || !period || !category || !qualification || !mode) {
+            setError("Please fill in all required fields.");
+            setErrorModalVisible(true);
+            return; // Stop form submission if any required field is missing
+        }
         const formPayload = new FormData();
         formPayload.append("name", name);
         formPayload.append("schoolID", schoolID);
@@ -58,7 +76,7 @@ const AdminAddCourseContent = () => {
         }
         // Append each selected intake value as "intake[]"
         selectedIntakes.forEach(intake => {
-            formPayload.append("intake[]", intake);
+                formPayload.append("intake[]", intake);
         });
         selectedCourses.forEach(course => {
             formPayload.append("courseFeatured[]", course);
@@ -77,13 +95,19 @@ const AdminAddCourseContent = () => {
             if (addCourseResponse.ok) {
                 console.log('Course successfully registered:', addCourseData);
                 navigate('/adminCourses');
+            } else if (addCourseResponse.status === 422) {
+                // Validation errors
+                console.log('Validation Errors:', addCourseData.errors);
+                setFieldErrors(addCourseData.errors); // Pass validation errors to the modal
+                setGeneralError(addCourseData.message || "Validation Error");
+                setErrorModalVisible(true); // Show the error modal
             } else {
-                console.error('Validation Error:', addCourseData.errors);
-                throw new Error(`Course Registration failed: ${addCourseData.message}`);
+                setGeneralError(addCourseData.message || "Failed to add new course.");
+                setErrorModalVisible(true);
             }
         } catch (error) {
-            setError('An error occurred during course registration. Please try again later.');
-            console.error('Error during course registration:', error);
+            setGeneralError(error.message || "An error occurred while adding the course. Please try again later.");
+            setErrorModalVisible(true);
         }
     };    
     useEffect(() => {
@@ -438,13 +462,13 @@ const AdminAddCourseContent = () => {
         onChange: handleIntakeChange,
     }));
 
-    const formCourse = courseFeaturedList.map((course) => ({
-        id: `course-${course.id}`,
-        label: course.name,
-        value: course.id,
-        checked: selectedCourses.includes(course.id),
-        onChange: handleCourseChange,
-    }));
+    // const formCourse = courseFeaturedList.map((course) => ({
+    //     id: `course-${course.id}`,
+    //     label: course.name,
+    //     value: course.id,
+    //     checked: selectedCourses.includes(course.id),
+    //     onChange: handleCourseChange,
+    // }));
 
 
     const buttons = [
@@ -456,8 +480,15 @@ const AdminAddCourseContent = () => {
 
     return (
         
-                <Container fluid className="admin-add-school-container">
-                    <AdminFormComponent
+        <Container fluid className="admin-add-school-container">
+             <ErrorModal
+                errorModalVisible={errorModalVisible}
+                setErrorModalVisible={setErrorModalVisible}
+                generalError={generalError || error} // Ensure `generalError` or fallback to `error`
+                fieldErrors={fieldErrors}
+                fieldLabels={fieldLabels}
+            />
+            <AdminFormComponent
            formTitle="Course Details"
            checkboxTitle="Intake"
            helperStar="*"
@@ -472,11 +503,12 @@ const AdminAddCourseContent = () => {
            formMode={formMode}
            onSubmit={handleSubmit}
            formCheckboxes={formCheckboxes}
-           formCourse={formCourse}
+        //    formCourse={formCourse}
            error={error}
            buttons={buttons}
            logo={formData.logo ? URL.createObjectURL(formData.logo) : null}
            handleLogoChange={handleLogoChange}
+            Star="*"
                 />
                 </Container>
     );

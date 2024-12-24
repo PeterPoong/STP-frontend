@@ -29,7 +29,7 @@ const CoursesPage = () => {
     <div style={{ backgroundColor: "#F5F4F4" }}>
       <NavButtonsSP />
       <header className="masthead">
-        <img src={headerImage} alt="Header" className="header-image" />
+        <img src={headerImage} alt="Header" className="header-image" loading="lazy" />
       </header>
       <SearchCourse />
       <div></div>

@@ -1,18 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { Container } from "react-bootstrap";
+import SkeletonLoader from './SkeletonLoader';
 import AdminFormComponent from './AdminFormComponent';
 import "../../css/AdminStyles/AdminFormStyle.css";
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { format, parseISO } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
+import ErrorModal from "./Error";
 
 
 const AdminEditApplicantContent = () => {
     const [courseList, setCourseList] = useState([]); 
     const [schoolList, setSchoolList] = useState([]); 
-    const [loading, setLoading] = useState(false); 
-
+    const [loading, setLoading] = useState(true);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
+    const [generalError, setGeneralError] = useState('');
+    const [fieldErrors, setFieldErrors] = useState({});
     const [formData, setFormData] = useState({
         courses_id: "",
         school_id: "",
@@ -99,6 +103,8 @@ const AdminEditApplicantContent = () => {
         } catch (error) {
             console.error('Error fetching applicant details:', error.message);
             setError(error.message);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -126,11 +132,22 @@ const AdminEditApplicantContent = () => {
             setError(error.message);
         }
     };
+    const fieldLabels = {
+        courses_id:"Course Applied",
+        status:"Application Status",
+        school_id:"University Applied",
+        created_at:"Date Applied",
+        feedback:"University Feedback"
+    };
     const handleSubmit = async (event) => {
         event.preventDefault();
         
         const { courses_id, status, school_id, created_at, feedback } = formData;
-    
+        if (!courses_id || !status || !school_id || !created_at) {
+            setGeneralError("Please fill in all required fields.");
+            setErrorModalVisible(true);
+            return; // Stop form submission if any required field is missing
+        }
         const formPayload = new FormData();
         formPayload.append("id", applicantId);
         formPayload.append("courses_id", courses_id);
@@ -159,13 +176,21 @@ const AdminEditApplicantContent = () => {
             if (addApplicantResponse.ok) {
                 // console.log('Applicant successfully registered:', addApplicantData);
                 navigate('/adminApplicant');
+            } else if (addApplicantResponse.status === 422) {
+                // Validation errors
+                console.log('Validation Errors:', addApplicantData.errors);
+                setFieldErrors(addApplicantData.errors); // Pass validation errors to the modal
+                setGeneralError(addApplicantData.message || "Validation Error");
+                setErrorModalVisible(true); // Show the error modal
             } else {
-                console.error('Validation Error:', addApplicantData.errors);
-                throw new Error(`Applicant Registration failed: ${addApplicantData.message}`);
+                console.error('Server error:', addApplicantData.message);
+                setGeneralError(addApplicantData.message || 'Failed to edit application details.');
+                setErrorModalVisible(true);
             }
         } catch (error) {
-            setError('An error occurred during applicant registration. Please try again later.');
-            console.error('Error during applicant registration:', error);
+            console.error('Network or unexpected error:', error);
+            setGeneralError(error.message || 'An unexpected error occurred. Please try again later.');
+            setErrorModalVisible(true);
         } finally {
             setLoading(false);  // Ensure loading state is set to false after completion
         }
@@ -318,6 +343,17 @@ const AdminEditApplicantContent = () => {
 
     return (
         <Container fluid className="admin-add-subject-container">
+           <ErrorModal
+                errorModalVisible={errorModalVisible}
+                setErrorModalVisible={setErrorModalVisible}
+                generalError={generalError || error} // Ensure `generalError` or fallback to `error`
+                fieldErrors={fieldErrors}
+                fieldLabels={fieldLabels}
+            />
+            {error && <div className="alert alert-danger">{error}</div>}
+            {loading ? (
+                    <SkeletonLoader />
+                ) : (
             <AdminFormComponent
                 formTitle="Applicant Information"
                 formRead={formRead}
@@ -329,7 +365,9 @@ const AdminEditApplicantContent = () => {
                 onSubmit={handleSubmit}
                 error={error}
                 buttons={buttons}
+                Star="*"
             />
+        )}
         </Container>
     );
 };

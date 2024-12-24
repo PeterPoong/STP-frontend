@@ -195,7 +195,7 @@ const EditCourse = ({ courseId, handleGoBack }) => {
           );
           if (!response.ok) {
             const errorData = await response.json();
-            console.log("Error Data:", errorData["errors"]);
+            //console.log("Error Data:", errorData["errors"]);
             throw new Error(errorData["errors"] || "Internal Server Error");
           }
           const data = await response.json();
@@ -248,7 +248,7 @@ const EditCourse = ({ courseId, handleGoBack }) => {
           );
           if (!response.ok) {
             const errorData = await response.json();
-            console.log("Error Data:", errorData["errors"]);
+            // console.log("Error Data:", errorData["errors"]);
             throw new Error(errorData["errors"] || "Internal Server Error");
           }
           const data = await response.json();
@@ -274,7 +274,7 @@ const EditCourse = ({ courseId, handleGoBack }) => {
           );
           if (!response.ok) {
             const errorData = await response.json();
-            console.log("Error Data:", errorData["errors"]);
+            // console.log("Error Data:", errorData["errors"]);
             throw new Error(errorData["errors"] || "Internal Server Error");
           }
           const data = await response.json();
@@ -289,8 +289,7 @@ const EditCourse = ({ courseId, handleGoBack }) => {
       const getQualification = async () => {
         try {
           const response = await fetch(
-            `${
-              import.meta.env.VITE_BASE_URL
+            `${import.meta.env.VITE_BASE_URL
             }api/student/qualificationFilterList`,
             {
               method: "GET",
@@ -301,7 +300,7 @@ const EditCourse = ({ courseId, handleGoBack }) => {
           );
           if (!response.ok) {
             const errorData = await response.json();
-            console.log("Error Data:", errorData["errors"]);
+            // console.log("Error Data:", errorData["errors"]);
             throw new Error(errorData["errors"] || "Internal Server Error");
           }
           const data = await response.json();
@@ -324,7 +323,7 @@ const EditCourse = ({ courseId, handleGoBack }) => {
           );
           if (!response.ok) {
             const errorData = await response.json();
-            console.log("Error Data:", errorData["errors"]);
+            // console.log("Error Data:", errorData["errors"]);
             throw new Error(errorData["errors"] || "Internal Server Error");
           }
           const data = await response.json();
@@ -348,7 +347,7 @@ const EditCourse = ({ courseId, handleGoBack }) => {
           );
           if (!response.ok) {
             const errorData = await response.json();
-            console.log("Error Data:", errorData["errors"]);
+            //console.log("Error Data:", errorData["errors"]);
             throw new Error(errorData["errors"] || "Internal Server Error");
           }
           const data = await response.json();
@@ -376,7 +375,7 @@ const EditCourse = ({ courseId, handleGoBack }) => {
         );
         if (!response.ok) {
           const errorData = await response.json();
-          console.log("Error Data:", errorData);
+          // console.log("Error Data:", errorData);
           throw new Error(errorData["errors"] || "Internal Server Error");
         }
         const data = await response.json();

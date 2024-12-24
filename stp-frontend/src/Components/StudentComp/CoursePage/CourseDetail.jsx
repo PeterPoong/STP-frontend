@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams, useLocation, Link, useNavigate } from "react-router-dom";
 import NavButtons from "../NavButtons";
 import NavButtonsSP from "../../../Components/StudentPortalComp/NavButtonsSP";
@@ -9,16 +9,16 @@ import studypal11 from "../../../assets/StudentAssets/coursepage image/StudyPal1
 import studypal12 from "../../../assets/StudentAssets/coursepage image/StudyPal12.jpg";
 import Footer from "../Footer";
 import SpcFooter from "../../../Components/StudentPortalComp/SpcFooter";
-
+import ImageSlider from "../../../Components/StudentComp/ImageSlider";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { Pagination, Navigation } from "swiper/modules";
-
+import "../../../css/StudentCss/course page css/ApplyPage.css"
 const baseURL = import.meta.env.VITE_BASE_URL;
 const courseDetailAPI = `${baseURL}api/student/courseDetail`;
-
+const adsAURL = `${baseURL}api/student/advertisementList`;
 const CourseDetail = () => {
   const [contentHeight, setContentHeight] = useState(0);
   const contentRef = useRef(null);
@@ -27,6 +27,8 @@ const CourseDetail = () => {
   const [openAboutInstitute, setOpenAboutInstitute] = useState(false);
   const [openAbout, setOpenAbout] = useState(false);
 
+  const [enlargedImageIndex, setEnlargedImageIndex] = useState(null);
+
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [showAllPhotosModal, setShowAllPhotosModal] = useState(false);
   const [selectedPhotos, setSelectedPhotos] = useState([]);
@@ -34,6 +36,8 @@ const CourseDetail = () => {
 
   const [showSwiperModal, setShowSwiperModal] = useState(false);
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
+
+  const [adsImage, setAdsImage] = useState(null);
 
   const handleContentHeight = () => {
     if (contentRef.current) {
@@ -97,8 +101,27 @@ const CourseDetail = () => {
     }
   };
 
-  useEffect(() => {
-    //console.log("Program ID:", id);
+  //Fecth Ads Image 
+  const fetchAddsImage = async () => {
+    try {
+
+      const response = await fetch(adsAURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ advertisement_type: 74 }),
+      });
+
+      const result = await response.json();
+      //console.log(result);
+      if (result.success) {
+        setAdsImage(result.data);
+      }
+    } catch (error) {
+      console.error("Error fetching advertisements:", error);
+    }
+  };
+
+  const fetchProgram = async () => {
 
     if (!programs || programs.length === 0) {
       fetch(courseDetailAPI, {
@@ -135,7 +158,7 @@ const CourseDetail = () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ type: "thirdPage" }),
+      body: JSON.stringify({ type: "thirdPage", courseId: id }),
     })
       .then((response) => response.json())
       .then((data) => {
@@ -152,6 +175,12 @@ const CourseDetail = () => {
         console.error("Error fetching featured courses:", error);
         setFeaturedCourses([]);
       });
+  };
+  useEffect(() => {
+    //console.log("Program ID:", id);
+    fetchProgram();
+    fetchAddsImage();
+
   }, [id]);
 
   if (!programs || programs.length === 0) {
@@ -162,8 +191,8 @@ const CourseDetail = () => {
     );
   }
 
-   // Function to handle displaying more courses
-   const handleViewMore = () => {
+  // Function to handle displaying more courses
+  const handleViewMore = () => {
     setExpanded(!expanded); // Toggle collapse state
     if (!expanded) {
       setVisibleCourses(courses.length); // Show all courses when expanded
@@ -202,7 +231,7 @@ const CourseDetail = () => {
                     alt="Program"
                     className="img-thumbnail apply-now-program-image"
                     style={{
-                      height: "100%",
+                      height: "8rem",
                       borderRadius: "8px",
                       maxWidth: "auto",
                       marginLeft: "30px",
@@ -217,25 +246,16 @@ const CourseDetail = () => {
                   style={{ paddingBottom: "25px" }}
                 >
                   <div style={{ marginLeft: "30px" }}>
-                    <h4>{program.school}</h4>
+                    <h4 className="pb-0">{program.school}</h4>
                     <p>{import.meta.env.VITE_random_Var}</p>
-                    <p>
-                      <i
-                        className="bi bi-geo-alt"
-                        style={{ marginRight: "10px", color: "#AAAAAA" }}
-                      ></i>
-                      <span style={{ paddingLeft: "10px" }}>
-                        {program.location}
-                      </span>
-                      <a
-                        href="https://www.google.com/maps/place/Curtin+University+Malaysia/@4.5143003,114.0152549,17z/data=!3m1!4b1!4m6!3m5!1s0x321f4826b4a6b637:0xe688be6fc8cd1d35!8m2!3d4.5143003!4d114.0178298!16s%2Fm%2F02qj2fj?entry=ttu&g_ep=EgoyMDI0MDgyMS4wIKXMDSoASAFQAw%3D%3D"
-                        style={{ paddingLeft: "15px" }}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Click and view on map
-                      </a>
-                    </p>
+                    <a
+                      href={program.google_map_location}
+                      style={{ paddingLeft: "0px" }}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Click and view on map
+                    </a>
                   </div>
                 </Col>
 
@@ -261,7 +281,7 @@ const CourseDetail = () => {
 
               <div
                 className="card mt-3 apply-now-card"
-                style={{ paddingLeft: "25px" }}
+                style={{ paddingLeft: "25px", paddingTop: "1rem", paddingBottom: "1rem" }}
               >
                 <div className="row">
                   <div className="col-md-12">
@@ -272,9 +292,9 @@ const CourseDetail = () => {
               <div className="card mt-4 apply-now-card">
                 <div className="card-body">
                   <h5 className="card-title">Summary</h5>
-                  <Row style={{ paddingLeft: "50px" }}>
+                  <Row /*style={{ paddingLeft: "50px"}}*/ className="coursedetail-summary-content">
                     <Col md={4}>
-                      <div style={{ marginBottom: "10px" }}>
+                      <div style={{ marginBottom: "25px", marginTop: "10px" }}>
                         <i
                           className="bi bi-mortarboard"
                           style={{ marginRight: "10px" }}
@@ -294,7 +314,7 @@ const CourseDetail = () => {
                       </div>
                     </Col>
                     <Col md={4}>
-                      <div style={{ marginBottom: "10px" }}>
+                      <div style={{ marginBottom: "25px", marginTop: "10px" }}>
                         <i
                           className="bi bi-clock"
                           style={{ marginRight: "10px" }}
@@ -322,7 +342,7 @@ const CourseDetail = () => {
               <div className="card mt-4 apply-now-card">
                 <div className="card-body">
                   <Row>
-                    <Col md={10} className="d-flex align-items-center">
+                    <Col md={10} className="">
                       <div>
                         <h5 className="card-title">Estimate Fee</h5>
                       </div>
@@ -333,8 +353,13 @@ const CourseDetail = () => {
                     >
                       <div>
                         <p className="mb-0">
-                          <strong>RM </strong>
-                          {program.cost}/year
+                          {program.cost === "0" || program.cost === "RM0" ? (
+                            <p className="mb-0"><strong>RM</strong> N/A</p>
+                          ) : (
+                            <>
+                              <strong>RM </strong> {program.cost}/year
+                            </>
+                          )}
                         </p>
                       </div>
                     </Col>
@@ -344,7 +369,7 @@ const CourseDetail = () => {
               <div className="card mt-4 apply-now-card">
                 <div className="card-body">
                   <Row>
-                    <Col md={10} className="d-flex align-items-center">
+                    <Col md={10} className="">
                       <div>
                         <h5 className="card-title">Course Overview</h5>
                       </div>
@@ -390,7 +415,7 @@ const CourseDetail = () => {
               <div className="card mt-4 apply-now-card">
                 <div className="card-body">
                   <Row>
-                    <Col md={10} className="d-flex align-items-center">
+                    <Col md={10} className="d-flex align-items-center coursedetail-entryrequirement-title">
                       <div>
                         <h5 className="card-title">Entry Requirement</h5>
                       </div>
@@ -456,12 +481,12 @@ const CourseDetail = () => {
                     zIndex: 0,
                     borderRadius: '1rem',
                     width: "100%",
-                    height: openAboutInstitute ? `${contentHeight + 500}px` : "25rem", 
+                    height: openAboutInstitute ? `${contentHeight + 500}px` : "25rem",
                     overflow: "hidden",
                     transition: "height 0.5s ease",
                   }}
                 >
-                   <div style={{
+                  <div style={{
                     position: "absolute",
                     top: 0,
                     left: 0,
@@ -470,7 +495,7 @@ const CourseDetail = () => {
                     transition: "height 0.5s ease",
                   }}>
                     <img
-                       src={
+                      src={
                         program.coverPhoto
                           ? `${baseURL}storage/${program.coverPhoto}`
                           : headerImage
@@ -486,7 +511,7 @@ const CourseDetail = () => {
                       }}
                     />
                   </div>
-                 
+
 
                   {/* Card */}
                   <div
@@ -512,7 +537,7 @@ const CourseDetail = () => {
                           </div>
                         </Col>
                         <Col md={12}>
-                        <div
+                          <div
                             ref={contentRef}
                             style={{
                               zIndex: 1,
@@ -664,11 +689,12 @@ const CourseDetail = () => {
                         <SwiperSlide key={index}>
                           <img
                             src={`${baseURL}storage/${photoPath}`}
-                            className="w-100"
+                            /*className="w-100"*/
                             alt={`Slide ${index + 1}`}
                             style={{
                               objectFit: "contain",
                               maxHeight: "70vh",
+                              marginBottom: "2rem"
                             }}
                             onError={(e) => {
                               //   console.log('Modal image failed to load:', e.target.src);
@@ -720,17 +746,12 @@ const CourseDetail = () => {
                   >
                     <div
                       className="image-gallery-course-modal"
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
-                        gridGap: "10px",
-                      }}
                     >
                       {selectedPhotos.map((photoPath, index) => (
                         <img
                           key={index}
                           src={`${baseURL}storage/${photoPath}`}
-                          className="gallery-image"
+
                           alt={`School Photo ${index + 1}`}
                           style={{
                             width: "100%",
@@ -740,7 +761,7 @@ const CourseDetail = () => {
                             cursor: "pointer",
                             boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
                           }}
-                          onClick={() => openSwiperModal(index)}
+                          onClick={() => setEnlargedImageIndex(index)}
                           onError={(e) => {
                             // console.log('Modal image failed to load:', e.target.src);
                             e.target.src = studypal12;
@@ -748,6 +769,14 @@ const CourseDetail = () => {
                         />
                       ))}
                     </div>
+                    {enlargedImageIndex !== null && (
+                      <ImageSlider
+                        selectedPhotos={selectedPhotos}
+                        enlargedImageIndex={enlargedImageIndex}
+                        baseURL={baseURL}
+                        onClose={() => setEnlargedImageIndex(null)}
+                      />
+                    )}
                   </Modal.Body>
                   <Modal.Footer
                     style={{
@@ -841,14 +870,14 @@ const CourseDetail = () => {
               </div>
               {/* End of Image Swiper */}
 
-              <div className="d-flex justify-content-center">
+              < div className="d-flex justify-content-center" >
                 <Button
                   style={{
                     backgroundColor: "#B71A18",
                     border: "none",
                     width: "180px",
                     height: "50px",
-                    marginTop: "20px",
+                    marginTop: "2rem",
                   }}
                   onClick={() => handleApplyNow(program)} // Ensure you pass the correct course or program ID
                 >
@@ -869,137 +898,204 @@ const CourseDetail = () => {
               </div>
 
               {/* Featured courses */}
-              {featuredCourses.length > 0 && (
-                <Container className="my-4">
-                  <h4>Featured Courses</h4>
-                  <Swiper
-                    spaceBetween={30}
-                    slidesPerView={5}
-                    navigation
-                    style={{ padding: "0 50px" }}
-                    loop={true}
-                    modules={[Pagination, Navigation]}
-                    className="featured-courses-swiper"
-                    breakpoints={{
-                      640: {
-                        slidesPerView: 1,
-                        spaceBetween: 10,
-                      },
-                      768: {
-                        slidesPerView: 2,
-                        spaceBetween: 15,
-                      },
-                      1024: {
-                        slidesPerView: 5,
-                        spaceBetween: 10,
-                      },
-                    }}
-                  >
-                    {featuredCourses.map((course) => (
-                      <SwiperSlide key={course.id}>
-                        <div
-                          className="featured-course-card"
-                          style={{ width: "230px", height: "245px" }}
-                        >
-                          <div style={{ position: "relative" }}>
-                            {course.course_qualification && (
-                              <span
-                                className="badge"
+              {
+                featuredCourses.length > 0 && (
+                  <Container className="university-row-carousel">
+                    <h4>Featured Courses</h4>
+                    <Swiper
+                   
+                      spaceBetween={20}
+                      slidesPerView={1}
+                      navigation
+                      style={{ padding: "0 50px" }}
+                      loop={true}
+                      modules={[Pagination, Navigation]}
+                      breakpoints={{
+                        400: {
+                          slidesPerView: 1,
+                          spaceBetween: 20,
+                        },
+                        // Large phones & small tablets
+                        576: {
+                          slidesPerView: 2,
+                          spaceBetween: 5,
+                        },
+                        640: {
+                          slidesPerView: 3,
+                          spaceBetween: 10,
+                        },
+                        768: {
+                          slidesPerView: 2,
+                          spaceBetween: 15,
+                        },
+                        1024: {
+                          slidesPerView: 5,
+                          spaceBetween: 10,
+                        },
+                        1025: { // Custom breakpoint for specific screen height
+                          slidesPerView: 3, // Adjust as needed
+                          spaceBetween: 3, // Adjust as needed
+                        },
+                      }}
+                    >
+                      {featuredCourses.map((course) => (
+                        <SwiperSlide key={course.id}>
+                          <div
+                            className="featured-course-card"
+                            style={{ width: "230px", height: "300px" }}
+                          >
+                            <div style={{ position: "relative" }}>
+                              {course.course_qualification && (
+                                <span
+                                  className="badge"
+                                  style={{
+                                    fontSize: "16px",
+                                    fontWeight: "normal",
+                                    backgroundColor:
+                                      course.course_qualification_color, // Dynamically set background color from API
+                                  }}
+                                >
+                                  {course.course_qualification}
+                                </span>
+                              )}
+                              <Link
+                                to={{
+                                  pathname: `/knowMoreInstitute/${course.school_id}`
+                                }}
+                                target="_parent"
+                                rel="noopener noreferrer"
+                              >
+                              <img
+                                src={`${baseURL}storage/${course.course_logo}`}
+                                alt={course.course_school}
+                                className="section-image"
                                 style={{
+                                  height: "80px",
+                                  width: "150px",
+                                  objectFit: "contain",
+                                }}
+                              />
+                              </Link>
+                            </div>
+                            <div>
+                            <Link
+                                to={{
+                                  pathname: `/knowMoreInstitute/${course.school_id}`
+                                }}
+                                target="_parent"
+                                rel="noopener noreferrer"
+                              >
+                              <p
+                                className="course-school-title"
+                                style={{
+                                  color: "#514E4E",
                                   fontSize: "16px",
-                                  fontWeight: "normal",
-                                  backgroundColor:
-                                    course.course_qualification_color, // Dynamically set background color from API
+                                  fontWeight: "500",
+                                  marginBottom: "15px",
+                                  height: "3.5rem"
                                 }}
                               >
-                                {course.course_qualification}
-                              </span>
-                            )}
-                            <img
-                              src={`${baseURL}storage/${course.course_logo}`}
-                              alt={course.course_school}
-                              className="section-image"
-                              style={{
-                                height: "80px",
-                                width: "150px",
-                                objectFit: "contain",
-                              }}
-                            />
-                          </div>
-                          <div>
-                            <p
-                              className="course-school-title"
-                              style={{
-                                color: "#514E4E",
-                                fontSize: "16px",
-                                fontWeight: "500",
-                                marginBottom: "15px",
-                              }}
-                            >
-                              {course.course_school}
-                            </p>
-                            <p
-                              className="course-title"
-                              style={{
-                                color: "#B71A18",
-                                fontSize: "18px",
-                                fontWeight: "500",
-                                marginBottom: "15px",
-                              }}
-                            >
-                              {course.course_name}
-                            </p>
-                            <div className="d-flex justify-content-center">
-                              <i
-                                className="bi bi-geo-alt"
-                                style={{
-                                  marginRight: "10px",
-                                  color: "#AAAAAA",
+                                {course.course_school}
+                              </p>
+                              </Link>
+                              <Link
+                                to={{
+                                  pathname: `/courseDetails/${course.course_id}`
                                 }}
-                              ></i>
-                              <span style={{ color: "#AAAAAA" }}>
-                                {course.state},{course.country}
-                              </span>
+                                target="_parent"
+                                rel="noopener noreferrer"
+                              >
+                                <p
+                                  className="course-title"
+                                  style={{
+                                    color: "#B71A18",
+                                    fontSize: "18px",
+                                    fontWeight: "500",
+                                    marginBottom: "15px",
+                                    height: "55px",
+                                    paddingTop: "0.1rem"
+                                  }}
+                                >
+                                  {course.course_name}
+                                </p>
+                              </Link>
+                              <div className="d-flex justify-content-center">
+                                <i
+                                  className="bi bi-geo-alt"
+                                  style={{
+                                    marginRight: "10px",
+                                    color: "#AAAAAA",
+                                  }}
+                                ></i>
+                                <span style={{ color: "#AAAAAA" }}>
+                                  {course.state},{course.country}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="d-flex justify-content-center">
+                              <button
+                                className="button-know-more"
+                                onClick={() =>
+                                  handleKnowMoreClick(
+                                    course.id || course.course_id
+                                  )
+                                } // Ensure correct ID is used
+                              >
+                                {course.knowMoreText || "Know More"}
+                              </button>
+                              <button
+                                className="button-apply-now"
+                                onClick={() => handleApplyNow({
+                                  id: course.id || course.course_id,
+                                  logo: course.course_logo,
+                                  school: course.course_school,
+                                  course: course.course_name
+                                })}
+                              >
+                                {course.applyNowText || "Apply Now"}
+                              </button>
                             </div>
                           </div>
-                          <div className="d-flex justify-content-center">
-                            <button
-                              className="button-know-more"
-                              onClick={() =>
-                                handleKnowMoreClick(
-                                  course.id || course.course_id
-                                )
-                              } // Ensure correct ID is used
-                            >
-                              {course.knowMoreText || "Know More"}
-                            </button>
-                            <button
-                              className="button-apply-now"
-                              onClick={() => handleApplyNow({
-                                id: course.id || course.course_id,
-                                logo: course.course_logo,
-                                school: course.course_school,
-                                course: course.course_name
-                              })}
-                            >
-                              {course.applyNowText || "Apply Now"}
-                            </button>
-                          </div>
-                        </div>
-                      </SwiperSlide>
-                    ))}
-                  </Swiper>
-                </Container>
-              )}
+                        </SwiperSlide>
+                      ))}
+                    </Swiper>
+                  </Container>
+                )
+              }
               {/* End of Featured courses */}
-            </Container>
-          </div>
+            </Container >
+          </div >
         ))}
-      <img src={studypal11} alt="Header" className="adverstise-image" />
+      {Array.isArray(adsImage) && adsImage.length > 0 ? (
+        <div className="advertisements-container">
+          {adsImage.map((ad, index) => (
+            <div key={ad.id} className="advertisement-item mb-3">
+              <a
+                href={ad.banner_url.startsWith('http') ? ad.banner_url : `https://${ad.banner_url}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img
+                  src={`${baseURL}storage/${ad.banner_file}`}
+                  alt={`Advertisement ${ad.banner_name}`}
+                  className="adverstise-image"
+                  style={{
+                    height: "175px",
+                    objectFit: "fill",
+                    marginBottom: index < adsImage.length - 1 ? "20px" : "0"
+                  }}
+                />
+              </a>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <img src={studypal11} alt="Header" className="adverstise-image" />
+      )}
       <div>
         <SpcFooter />
       </div>
-    </div>
+    </div >
   );
 };
 

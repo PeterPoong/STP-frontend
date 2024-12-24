@@ -1,0 +1,143 @@
+.searchcourse-coursename-schoolname {
+    padding-left: 30px;
+}
+
+.searchinstitute-dflex-center {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.searchinstitute-dflex-center p {
+    margin-bottom: 0;
+    width: 10rem;
+
+}
+
+.searchcourse-display-none {
+    display: none;
+}
+
+
+.searchcourse-dflex-center {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.searchcourse-dflex-center p {
+    margin-bottom: 0;
+}
+
+.knowmoreinstitute-dflex-center {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.knowmoreinstitute-dflex-center p {
+    margin-bottom: 0;
+}
+
+
+@media (max-width: 426px) {
+    .searchcourse-dflex-center {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .searchcourse-dflex-center p {
+        width: 10rem;
+        text-align: justify;
+    }
+
+    .knowmoreinstitute-dflex-center 
+    {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-left: 1.75rem;
+    }
+
+    .knowmoreinstitute-dflex-center p 
+    {
+        width: 10rem;
+        text-align: justify;
+    }
+
+    .searchcourse-coursename-schoolname {
+        padding-left: 0;
+        margin-top: 1rem;
+    }
+
+    .searchinstitute-dflex-center {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .searchinstitute-dflex-center p {
+        width: 10rem;
+        text-align: justify;
+    }
+
+    ;
+
+}
+
+/* iPad Landscape Styles */
+@media only screen and (min-width: 1024px) and (max-height: 768px) {
+    .bottom-align-ipad {
+      display: flex !important;
+      justify-content: flex-end !important;
+      height: 100% !important;
+    }
+    
+    .coursepage-searchcourse-courselist-second {
+      display: flex;
+      justify-content: space-between;
+      height: 100%;
+    }
+    
+    .details-div {
+      margin-top: auto;
+    }
+    
+    .fee-apply {
+      margin-top: auto;
+    }
+  }
+  
+  /* iPad Portrait Styles */
+  @media only screen and (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+    .coursepage-searchcourse-courselist-second {
+        display: block !important;
+        justify-content: space-between;
+        height: 100%;
+      }
+      
+      .fee-apply {
+        margin-top: auto !important;
+        width: 50%;
+      }
+
+      .degree-card, .coursepage-row{
+        display: block !important;
+        
+      }
+      .coursepage-searchcourse-courselist-first {
+        display: block !important;
+      }
+      
+      .coursepage-img {
+        padding: 0 !important;
+        display: flex !important; /* Use flexbox for centering */
+        justify-content: center !important; /* Horizontally center */
+        align-items: center !important; /* Vertically center */
+        margin-bottom: 20px;
+      }
+      
+      .course-card-ipad, .course-card-fee-ipad{
+        width: 100% !important;
+      }
+    
+  }
+  

@@ -5,6 +5,7 @@ import {
   faCheck,
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
+import { Spinner } from "react-bootstrap";
 import styles from "../../../css/SchoolPortalStyle/Applicant.module.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -12,7 +13,7 @@ import defaultProfilePic from "../../../assets/SchoolPortalAssets/student1.png";
 import WarningPopup from "./WarningPopUp";
 import StudentDetailView from "./StudentDetailView";
 
-const Applicant = ( {onActionUpgrade}) => {
+const Applicant = ({ onActionUpgrade }) => {
   const token = sessionStorage.getItem("token");
   const [courses, setCourses] = useState([]);
   const [courseQualification, setCourseQualification] = useState([]);
@@ -54,7 +55,7 @@ const Applicant = ( {onActionUpgrade}) => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-    // console.log("data", data.data);
+      // console.log("data", data.data);
 
       setApplicants(data.data);
     } catch (error) {
@@ -235,9 +236,8 @@ const Applicant = ( {onActionUpgrade}) => {
     const isAccepted = status === "Accepted";
     return (
       <div
-        className={`${styles["status-message"]} ${
-          isAccepted ? styles["accepted"] : styles["rejected"]
-        }`}
+        className={`${styles["status-message"]} ${isAccepted ? styles["accepted"] : styles["rejected"]
+          }`}
       >
         <FontAwesomeIcon
           icon={isAccepted ? faCheck : faTimes}
@@ -292,7 +292,13 @@ const Applicant = ( {onActionUpgrade}) => {
     handleBackToList();
   };
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <div>
+    <div className="w-100 h-100 align-items-center justify-content-center">
+      <Spinner animation="border" role="status">
+        <span className="visually-hidden">Loading...</span>
+      </Spinner>
+    </div>
+  </div>;
   if (error) return <div>Error: {error}</div>;
 
   if (selectedStudent) {
@@ -304,8 +310,8 @@ const Applicant = ( {onActionUpgrade}) => {
         acceptRejectAction={warningType} // 'accept' or 'reject'
         onBack={handleBackToList}
         onActionSuccess={handleActionSuccess}
-        onActionUpgrade={onActionUpgrade} 
-         // Pass the callback
+        onActionUpgrade={onActionUpgrade}
+      // Pass the callback
       />
     );
   }
@@ -417,9 +423,8 @@ const Applicant = ( {onActionUpgrade}) => {
                   <img
                     src={
                       applicant.profile_pic
-                        ? `${import.meta.env.VITE_BASE_URL}storage/${
-                            applicant.profile_pic
-                          }`
+                        ? `${import.meta.env.VITE_BASE_URL}storage/${applicant.profile_pic
+                        }`
                         : defaultProfilePic
                     }
                     alt={`${applicant.student_name}'s profile`}
@@ -464,9 +469,8 @@ const Applicant = ( {onActionUpgrade}) => {
                         {`${applicant.student_name}`}
                       </h2>
                       <div
-                        className={`${
-                          styles["application-status"]
-                        } ${getStatusClassName(applicant.form_status)}`}
+                        className={`${styles["application-status"]
+                          } ${getStatusClassName(applicant.form_status)}`}
                       >
                         <p>{applicant.form_status}</p>
                       </div>

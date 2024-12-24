@@ -22,7 +22,7 @@
 }
 
 .university-row-carousel {
-  width: 100%;
+  width: 100% !important;
   overflow: hidden;
 }
 
@@ -43,13 +43,19 @@
   justify-content: center;
   align-items: center;
   /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
-  border: none;
+  border: none !important;
   transition: transform 0.3s;
   overflow: hidden;
+  
+}
+
+.university-card-border
+{
+  border:none 
 }
 
 .uni-image {
-  width: auto;
+  width: 10rem;
   height: 67px;
   object-fit: contain;
   background-color: transparent;
@@ -94,4 +100,10 @@ justify-content: center;
   /* Adjust arrow icon size */
   color: gray;
   /* Customize icon color */
+}
+@media only screen and (min-width: 1024px) and (max-height: 768px) {
+  .swiper-container {
+   width: 100%;
+  
+  }
 }

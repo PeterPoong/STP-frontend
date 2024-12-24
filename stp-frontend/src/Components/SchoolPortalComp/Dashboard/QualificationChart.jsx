@@ -4,7 +4,7 @@ import Box from "@mui/material/Box";
 import { Row, Col } from "react-bootstrap";
 import Typography from "@mui/material/Typography";
 import Skeleton from "@mui/material/Skeleton";
-
+import "../../../css/SchoolPortalStyle/SchoolDashboard.css";
 // Define your chart options for pie chart
 const options = {
   pieHole: 0.4,
@@ -65,8 +65,7 @@ const QualificationChart = ({ typeOfFilter }) => {
       try {
         const formData = { filterDuration: typeOfFilter };
         const response = await fetch(
-          `${
-            import.meta.env.VITE_BASE_URL
+          `${import.meta.env.VITE_BASE_URL
           }api/school/qualificationStatisticPieChart`,
           {
             method: "POST",
@@ -103,8 +102,7 @@ const QualificationChart = ({ typeOfFilter }) => {
       try {
         const formData = { filterDuration: typeOfFilter };
         const response = await fetch(
-          `${
-            import.meta.env.VITE_BASE_URL
+          `${import.meta.env.VITE_BASE_URL
           }api/school/qualificationStatisticBarChart`,
           {
             method: "POST",
@@ -146,13 +144,18 @@ const QualificationChart = ({ typeOfFilter }) => {
     <>
       <Row className="mt-5">
         <Col md={6}>
-          <Typography variant="h8" gutterBottom>
+          {/*  <Typography variant="h8" gutterBottom>
             <b>
               Number of Applications by{" "}
               <span style={{ color: "#B71A18" }}>Qualification</span>
             </b>
-          </Typography>
-
+          </Typography>*/}
+          <div style={{ fontSize: "1.25rem" }}>
+            <b>
+              Number of Applications by{" "}
+              <span style={{ color: "#B71A18" }}>QUALIFICATION</span>
+            </b>
+          </div>
           <Box
             sx={{
               width: "100%",
@@ -181,36 +184,43 @@ const QualificationChart = ({ typeOfFilter }) => {
         </Col>
 
         <Col md={6}>
-          <Typography variant="h8" gutterBottom>
+
+          {/*<Typography variant="h8" gutterBottom>
             <b>
               Number of Applications by{" "}
               <span style={{ color: "#B71A18" }}>Qualification</span>
             </b>
-          </Typography>
-          <Box
-            sx={{
-              width: "100%",
-              height: "400px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              backgroundColor: "grey.200",
-            }}
-          >
-            {loading ? (
-              <Skeleton />
-            ) : barChartData.length === 0 ? (
-              <Typography>No data available</Typography>
-            ) : (
-              <Chart
-                chartType="ComboChart"
-                width="100%"
-                height="400px"
-                data={modifiedBarData}
-                options={barOptions}
-              />
-            )}
-          </Box>
+          </Typography>*/}
+          <div style={{ fontSize: "1.25rem" }}>
+            <b>
+              Number of Applications by{" "}
+              <span style={{ color: "#B71A18" }}>QUALIFICATION</span>
+            </b>
+          </div>
+            <Box
+              sx={{
+                width: "100%",
+                height: "400px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: "grey.200",
+              }}
+            >
+              {loading ? (
+                <Skeleton />
+              ) : barChartData.length === 0 ? (
+                <Typography>No data available</Typography>
+              ) : (
+                <Chart
+                  chartType="ComboChart"
+                  width="100%"
+                  height="400px"
+                  data={modifiedBarData}
+                  options={barOptions}
+                />
+              )}
+            </Box>
         </Col>
       </Row>
     </>

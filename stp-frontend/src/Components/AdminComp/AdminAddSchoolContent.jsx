@@ -5,10 +5,8 @@ import { useDropzone } from "react-dropzone";
 import AdminFormComponent from './AdminFormComponent';
 import 'typeface-ubuntu';
 import "../../css/AdminStyles/AdminFormStyle.css";
-import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
-
-import { FaTrashAlt } from 'react-icons/fa';
+import ErrorModal from "./Error";
 
 const AdminAddSchoolContent = () => {
     const [schoolFeaturedList, setSchoolFeaturedList] = useState([]);
@@ -36,11 +34,14 @@ const AdminAddSchoolContent = () => {
         confirm_password: "",
         school_shortDesc: "",
         school_fullDesc: "",
-        location:"",
+        // location:"",
         logo: null
     });
     const [selectedFeatures, setSelectedFeatures] = useState([]);
     const [error, setError] = useState(null);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
+    const [generalError, setGeneralError] = useState('');
+    const [fieldErrors, setFieldErrors] = useState({});
     const navigate = useNavigate();
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`;
@@ -52,19 +53,45 @@ const AdminAddSchoolContent = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [passwordsMatch, setPasswordsMatch] = useState(true);
-
+    const fieldLabels = {
+        school_fullDesc: "Full Description",
+        school_shortDesc: "Short Description",
+        name: "School Name",
+        email: "Email Address",
+        contact_number: "School Contact Number",
+        logo: "Logo",
+        category: "School Category",
+        state: "State",
+        country:"Country",
+        city:"City",
+        account:"School Account",
+        school_address:"School Full Address",
+        school_website:"School Website",
+        person_in_charge_email:"Person In Charge Email",
+        person_in_charge_name:"Person In Charge Name",
+        person_in_charge_contact:"Person In Charge Contact Number",
+        confirm_password:"Confirm Password",
+        password:"Password"
+    };
     const handleSubmit = async (event) => {
         event.preventDefault();
-        // console.log("Submitting form data:", formData); // Debugging line
-        const { name, email, logo, location, category, state, city, account, country, school_address, school_website, contact_number, person_in_charge_email, person_in_charge_name, person_in_charge_contact, country_code, confirm_password, school_shortDesc, school_fullDesc, password } = formData;
     
-        // console.log("Form Data being sent:", formData);
-        Object.keys(formData).forEach(key => {
-            // console.log(`${key}: ${formData[key]}`);
-        });
-    
+        const {
+            name, email, logo, category, state, city, account, country,
+            school_address, school_website, contact_number, person_in_charge_email,
+            person_in_charge_name, person_in_charge_contact, country_code,
+            confirm_password, school_shortDesc, school_fullDesc, password
+        } = formData;
+        if (!name || !email || !logo || !category || !state || !city || !account || !country ||
+            !school_address || !school_website || !contact_number || !person_in_charge_email ||
+            !person_in_charge_name || !person_in_charge_contact || !country_code ||
+            !school_shortDesc || !school_fullDesc || !password || !confirm_password) {
+            setGeneralError("Please fill in all required fields.");
+            setErrorModalVisible(true);
+            return;
+        }
         const formPayload = new FormData();
-        formPayload.append("school_address", formData.school_address);
+        formPayload.append("school_address", school_address);
         formPayload.append("name", name);
         formPayload.append("email", email);
         formPayload.append("country_code", country_code);
@@ -73,69 +100,50 @@ const AdminAddSchoolContent = () => {
         formPayload.append("person_in_charge_name", person_in_charge_name);
         formPayload.append("person_in_charge_email", person_in_charge_email);
         formPayload.append("school_website", school_website);
-        formPayload.append("school_address", school_address);
         formPayload.append("category", category);
         formPayload.append("account", account);
         formPayload.append("country", country);
         formPayload.append("state", state);
         formPayload.append("city", city);
         formPayload.append("password", password);
-        formPayload.append("location", location);
         formPayload.append("confirm_password", confirm_password);
         formPayload.append("school_shortDesc", school_shortDesc);
         formPayload.append("school_fullDesc", school_fullDesc);
-        // console.log("Selected Features:", selectedFeatures);
-    
-        // Append each feature id individually to formPayload as featured[]
-        selectedFeatures.forEach(feature => {
-            formPayload.append("featured[]", feature);
-        });
-    
-        if (logo) {
-            formPayload.append('logo', logo);
-        }
-    
-        // Append cover photo if available
-        if (coverFile) {
-            formPayload.append('cover', coverFile);
-        }
-    
-        // Append album files if available
+        // Handle features
+        selectedFeatures.forEach((feature) => formPayload.append("featured[]", feature));
+        // Handle files
+        if (logo) formPayload.append("logo", logo);
+        if (coverFile) formPayload.append("cover", coverFile);
         albumFiles.forEach((file, index) => {
-            formPayload.append(`album[${index}]`, file);
+            if (file) formPayload.append(`album[${index}]`, file);
         });
-    
-        for (let pair of formPayload.entries()) {
-            // console.log(`${pair[0]}: ${pair[1]}`);
-        }
-    
         try {
-            // console.log("FormData before submission:", formPayload);
-    
             const addSchoolResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/addSchool`, {
                 method: 'POST',
-                headers: {
-                    'Authorization': Authenticate,
-                },
-                body: formPayload, // Using FormData directly as the body
+                headers: { 'Authorization': Authenticate },
+                body: formPayload,
             });
-    
             const addSchoolData = await addSchoolResponse.json();
-    
             if (addSchoolResponse.ok) {
                 console.log('School successfully registered:', addSchoolData);
                 navigate('/adminSchool');
+            } else if (addSchoolResponse.status === 422) {
+                // Validation errors
+                console.log('Validation Errors:', addSchoolData.errors);
+                setFieldErrors(addSchoolData.errors); // Pass validation errors to the modal
+                setGeneralError(addSchoolData.message || "Validation Error");
+                setErrorModalVisible(true); // Show the error modal
             } else {
-                console.error('Validation Error:', addSchoolData.errors); // Debugging line
-                throw new Error(`School Registration failed: ${addSchoolData.message}`);
+                console.error('Server error:', addSchoolData.message);
+                setGeneralError(addSchoolData.message || 'Failed to add new school.');
+                setErrorModalVisible(true);
             }
         } catch (error) {
-            // Remove the reference to `addSchoolData` here
-            setError('An error occurred during school registration. Please try again later.');
-            console.error('Error during school registration:', error);
+            console.error('Network or unexpected error:', error);
+            setGeneralError(error.message || 'An unexpected error occurred. Please try again later.');
+            setErrorModalVisible(true);
         }
-    };
-    
+    };    
     
     useEffect(() => {
         const fetchFeatured = async () => {
@@ -147,13 +155,10 @@ const AdminAddSchoolContent = () => {
                         'Authorization': Authenticate,
                     },
                 });
-
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-
                 const data = await response.json();
-
                 if (data && data.data) {
                     setSchoolFeaturedList(data.data);
                 } else {
@@ -164,7 +169,6 @@ const AdminAddSchoolContent = () => {
                 setError(error.message);
             }
         };
-
         fetchFeatured();
     }, [Authenticate]);
 
@@ -179,11 +183,9 @@ const AdminAddSchoolContent = () => {
                     },
                     body: JSON.stringify({}) // Add any necessary body data
                 });
-    
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-    
                 const data = await response.json();
                 if (data && data.data) {
                     setCategoryList(data.data);  // Set the category list state
@@ -193,7 +195,6 @@ const AdminAddSchoolContent = () => {
                 setError(error.message);
             }
         };
-    
         fetchCategories();
     }, [Authenticate]);
     
@@ -212,7 +213,6 @@ const AdminAddSchoolContent = () => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-    
                 const data = await response.json();
                 if (data && data.data) {
                     setAccountList(data.data);  // Set the category list state
@@ -222,7 +222,6 @@ const AdminAddSchoolContent = () => {
                 setError(error.message);
             }
         };
-    
         fetchAccounts();
     }, [Authenticate]);
 
@@ -238,9 +237,6 @@ useEffect(() => {
       .then(data => {
         if (data.success) {
           setCountryList(data.data);
-        //   console.log("Countries fetched: ", data.data);
-  
-          // Set default country to Malaysia (ID = 132) if no country is selected
           if (!formData.country) {
             setFormData(prevFormData => ({
               ...prevFormData,
@@ -251,15 +247,12 @@ useEffect(() => {
       })
       .catch(error => console.error('Error fetching countries:', error));
   }, []);
-
-// Fetch states when country changes
 useEffect(() => {
     if (formData.country) {
       fetchStates(formData.country);
     }
 }, [formData.country]);
 
-// Fetch states (POST request)
 const fetchStates = (countryId) => {
     fetch(`${import.meta.env.VITE_BASE_URL}api/getState`, {
       method: 'POST',
@@ -272,8 +265,6 @@ const fetchStates = (countryId) => {
       .then(data => {
         if (data.success) {
           setStateList(data.data);
-          
-          // If the first state is fetched, automatically fetch cities for it
           if (data.data.length > 0) {
             const firstStateId = data.data[0].id; // Assuming the state object has an 'id' property
             setFormData(prevFormData => ({
@@ -303,8 +294,6 @@ const fetchCities = (stateId) => {
       .then(data => {
         if (data.success) {
           setCityList(data.data);
-          
-          // Set the first city as the default if cities are fetched
           if (data.data.length > 0) {
             setFormData(prevFormData => ({
               ...prevFormData,
@@ -452,7 +441,7 @@ const fetchCities = (stateId) => {
                 }
                 
                 const data = await response.json();
-                // console.log('API response:', data);
+       
     
                 if (data.success) {
                     setAlbumFiles(prevFiles => prevFiles.filter(file => file.id !== fileToRemove.id));
@@ -542,15 +531,15 @@ const fetchCities = (stateId) => {
     ];
 
     const formAddress = [
-        {
-            id: "location",
-            label: "School Location (Google Map URL)",
-            type: "text",
-            placeholder: "Enter School Location",
-            value: formData.location,
-            onChange: handleFieldChange,
-            required: true
-        },
+        // {
+        //     id: "location",
+        //     label: "School Location (Google Map URL)",
+        //     type: "text",
+        //     placeholder: "Enter School Location",
+        //     value: formData.location,
+        //     onChange: handleFieldChange,
+        //     required: true
+        // },
         {
             id: "school_address",
             label: "School Full Address",
@@ -685,13 +674,13 @@ const fetchCities = (stateId) => {
           required: true,
         },
       ];
-    const formCheckboxes = schoolFeaturedList.map((feature) => ({
-        id: `feature-${feature.id}`,
-        label: feature.name,
-        value: feature.id,
-        checked: selectedFeatures.includes(feature.id),
-        onChange: handleFeatureChange,
-    }));
+    // const formCheckboxes = schoolFeaturedList.map((feature) => ({
+    //     id: `feature-${feature.id}`,
+    //     label: feature.name,
+    //     value: feature.id,
+    //     checked: selectedFeatures.includes(feature.id),
+    //     onChange: handleFeatureChange,
+    // }));
 
     const buttons = [
         {
@@ -702,8 +691,15 @@ const fetchCities = (stateId) => {
 
     return (
         
-                <Container fluid className="admin-add-school-container">
-                    <AdminFormComponent
+        <Container fluid className="admin-add-school-container">
+             <ErrorModal
+                errorModalVisible={errorModalVisible}
+                setErrorModalVisible={setErrorModalVisible}
+                generalError={generalError || error} // Ensure `generalError` or fallback to `error`
+                fieldErrors={fieldErrors}
+                fieldLabels={fieldLabels}
+            />
+            <AdminFormComponent
            formTitle="School Information"
            checkboxTitle="School Advertising Feature"
            formFields={formFields}
@@ -717,8 +713,9 @@ const fetchCities = (stateId) => {
            formWebsite={formWebsite}
            formAddress={formAddress}
            onSubmit={handleSubmit}
-           formCheckboxes={formCheckboxes}
+        //    formCheckboxes={formCheckboxes}
            formPersonInCharge={formPersonInCharge}
+            Star="*"
            error={error}
            buttons={buttons}
            logo={formData.logo ? URL.createObjectURL(formData.logo) : null}

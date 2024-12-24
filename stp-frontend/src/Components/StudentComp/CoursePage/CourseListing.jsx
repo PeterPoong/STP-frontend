@@ -12,7 +12,7 @@ import {
   Spinner,
 } from "react-bootstrap";
 import "../../../css/StudentCss/course page css/CoursesPage.css";
-import StudyPal from "../../../assets/StudentAssets/coursepage image/StudyPal.png";
+import StudyPal from "../../../assets/StudentAssets/coursepage image/StudyPal.webp";
 import { useNavigate } from "react-router-dom";
 import SearchCourse from "./SearchCourse";
 import emptyStateImage from "../../../assets/StudentAssets/emptyStateImage/emptystate.png";

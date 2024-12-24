@@ -78,13 +78,23 @@
   border-color: #B71A18;
   color: #B71A18;
 }
-.button-know-more, .button-apply-now {
+.button-apply-now {
   width: 110px;
   margin: 5px;
   border-radius: 16px;
   font-size: 13px;
   font-weight: 400;
+  background-color: #B71A18;
+  color: #fff;
 
+}
+
+.button-know-more{
+width: 110px;
+margin: 5px;
+border-radius: 16px;
+font-size: 13px;
+font-weight: 400;
 }
 
 .button-apply-now:hover{
@@ -114,5 +124,25 @@
 @media (max-width: 576px) {
   .featured-course-card {
     width: calc(100% - 20px);
+  }
+}
+@media only screen and (min-width: 1024px) and (max-height: 768px) {
+  .button-apply-now{
+    color: #fff;
+  }
+  .button-apply-now:hover{
+    background-color: #e86464;
+    color: #fff;
+    border: #e86464;
+  }
+}
+@media only screen and (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  .button-apply-now{
+    color: #fff ;
+  }
+  .button-apply-now:hover{
+    background-color: #e86464;
+    color: #fff;
+    border: #e86464;
   }
 }

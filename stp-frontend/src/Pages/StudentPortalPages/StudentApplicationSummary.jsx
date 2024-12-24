@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button ,Spinner} from "react-bootstrap";
+import { Button, Spinner } from "react-bootstrap";
 import defaultProfilePic from "../../assets/StudentPortalAssets/sampleprofile.png";
 import defaultSchoolPic from "../../assets/StudentPortalAssets/defaulschool.png";
 import {
@@ -170,6 +170,29 @@ const StudentApplicationSummary = ({ }) => {
     const pageHeight = doc.internal.pageSize.getHeight();
     let yOffset = 30; // Start yOffset below the header
 
+    const stripHTMLAndFormat = (html) => {
+      if (!html) return 'N/A';
+
+      // First decode HTML entities
+      const decodeEntities = (text) => {
+        const textarea = document.createElement('textarea');
+        textarea.innerHTML = text;
+        return textarea.value;
+      };
+
+      // Remove HTML tags and decode entities with improved formatting
+      const strippedText = html
+        .replace(/<br\s*\/?>/gi, '\n') // Replace <br> with newlines
+        .replace(/<p\s*\/?>/gi, '') // Remove opening <p> tags
+        .replace(/<\/p>/gi, '\n') // Replace closing </p> tags with newlines
+        .replace(/<[^>]*>/g, '') // Remove remaining HTML tags
+        .replace(/&nbsp;/g, ' ') // Replace &nbsp; with space
+        .replace(/\n{3,}/g, '\n\n') // Replace multiple newlines with max two
+        .replace(/\s+/g, ' ') // Replace multiple spaces with single space
+        .trim(); // Remove leading/trailing spaces
+
+      return decodeEntities(strippedText);
+    };
     const token =
       sessionStorage.getItem("token") || localStorage.getItem("token");
     if (!token) {
@@ -377,8 +400,8 @@ const StudentApplicationSummary = ({ }) => {
           key: "Estimate Fee",
           value: `RM ${courseInfo?.cost?.toLocaleString() || "0.00"} / year`,
         },
-        { key: "Summary", value: courseInfo?.description || "N/A" },
-        { key: "Entry Requirements", value: courseInfo?.requirement || "N/A" },
+        { key: "Summary", value: stripHTMLAndFormat(courseInfo?.description) || "N/A" },
+        { key: "Entry Requirements", value: stripHTMLAndFormat(courseInfo?.requirement) || "N/A" },
       ];
 
       // Create a table for course information with background color for the first column
@@ -625,94 +648,94 @@ const StudentApplicationSummary = ({ }) => {
       forcePageBreak();
 
       // 6. Documents
-      addSectionTitle("Documents");
-
-      const allDocuments = [
-        ...academicTranscripts.map((doc) => ({
-          type: "Academic Transcript",
-          name: doc.studentMedia_name,
-          file: doc.studentMedia_location,
-        })),
-        ...achievements.map((doc) => ({
-          type: "Achievement",
-          name: doc.achievement_name,
-          file: doc.achievement_media,
-        })),
-        ...otherDocuments.map((doc) => ({
-          type: "Other Document",
-          name: doc.name,
-          file: doc.media,
-        })),
-      ];
-
-      if (allDocuments.length > 0) {
-        for (const document of allDocuments) {
-          checkPageBreak(20);
-          doc.setFontSize(12);
-          doc.setFont("helvetica", "bold");
-          doc.text(`${document.type}: ${document.name}`, 20, yOffset);
-          yOffset += 6;
-
-          if (document.file) {
-            try {
-              const response = await fetch(
-                `${import.meta.env.VITE_BASE_URL}${document.file}`
-              );
-              const blob = await response.blob();
-              const fileType = blob.type;
-
-              if (fileType.startsWith("image/")) {
-                // Handle image files (PNG, JPEG)
-                const img = new Image();
-                img.src = URL.createObjectURL(blob);
-                await new Promise((resolve) => {
-                  img.onload = resolve;
-                });
-                const imgWidth = pageWidth - 40;
-                const imgHeight = (img.height * imgWidth) / img.width;
-                checkPageBreak(imgHeight + 10);
-                doc.addImage(
-                  img,
-                  fileType.split("/")[1].toUpperCase(),
-                  20,
-                  yOffset,
-                  imgWidth,
-                  imgHeight
-                );
-                yOffset += imgHeight + 10;
-              } else {
-                checkPageBreak(6);
-                doc.setFontSize(12);
-                doc.setFont("helvetica", "normal");
-                doc.text("Cannot display this file type in PDF.", 25, yOffset);
-                yOffset += 6;
-              }
-            } catch (error) {
-              console.error(
-                `Error processing document: ${document.name}`,
-                error
-              );
-              checkPageBreak(6);
-              doc.setFontSize(12);
-              doc.setFont("helvetica", "normal");
-              doc.text("Error loading document.", 25, yOffset);
-              yOffset += 6;
-            }
-          } else {
-            checkPageBreak(6);
-            doc.setFontSize(12);
-            doc.setFont("helvetica", "normal");
-            doc.text("No file available.", 25, yOffset);
-            yOffset += 6;
-          }
-        }
-      } else {
-        checkPageBreak(6);
-        doc.setFontSize(12);
-        doc.setFont("helvetica", "normal");
-        doc.text("No documents available.", 25, yOffset);
-        yOffset += 6;
-      }
+      /* addSectionTitle("Documents");
+ 
+       const allDocuments = [
+         ...academicTranscripts.map((doc) => ({
+           type: "Academic Transcript",
+           name: doc.studentMedia_name,
+           file: doc.studentMedia_location,
+         })),
+         ...achievements.map((doc) => ({
+           type: "Achievement",
+           name: doc.achievement_name,
+           file: doc.achievement_media,
+         })),
+         ...otherDocuments.map((doc) => ({
+           type: "Other Document",
+           name: doc.name,
+           file: doc.media,
+         })),
+       ];
+ 
+       if (allDocuments.length > 0) {
+         for (const document of allDocuments) {
+           checkPageBreak(20);
+           doc.setFontSize(12);
+           doc.setFont("helvetica", "bold");
+           doc.text(`${document.type}: ${document.name}`, 20, yOffset);
+           yOffset += 6;
+ 
+           if (document.file) {
+             try {
+               const response = await fetch(
+                 `${import.meta.env.VITE_BASE_URL}${document.file}`
+               );
+               const blob = await response.blob();
+               const fileType = blob.type;
+ 
+               if (fileType.startsWith("image/")) {
+                 // Handle image files (PNG, JPEG)
+                 const img = new Image();
+                 img.src = URL.createObjectURL(blob);
+                 await new Promise((resolve) => {
+                   img.onload = resolve;
+                 });
+                 const imgWidth = pageWidth - 40;
+                 const imgHeight = (img.height * imgWidth) / img.width;
+                 checkPageBreak(imgHeight + 10);
+                 doc.addImage(
+                   img,
+                   fileType.split("/")[1].toUpperCase(),
+                   20,
+                   yOffset,
+                   imgWidth,
+                   imgHeight
+                 );
+                 yOffset += imgHeight + 10;
+               } else {
+                 checkPageBreak(6);
+                 doc.setFontSize(12);
+                 doc.setFont("helvetica", "normal");
+                 doc.text("Cannot display this file type in PDF.", 25, yOffset);
+                 yOffset += 6;
+               }
+             } catch (error) {
+               console.error(
+                 `Error processing document: ${document.name}`,
+                 error
+               );
+               checkPageBreak(6);
+               doc.setFontSize(12);
+               doc.setFont("helvetica", "normal");
+               doc.text("Error loading document.", 25, yOffset);
+               yOffset += 6;
+             }
+           } else {
+             checkPageBreak(6);
+             doc.setFontSize(12);
+             doc.setFont("helvetica", "normal");
+             doc.text("No file available.", 25, yOffset);
+             yOffset += 6;
+           }
+         }
+       } else {
+         checkPageBreak(6);
+         doc.setFontSize(12);
+         doc.setFont("helvetica", "normal");
+         doc.text("No documents available.", 25, yOffset);
+         yOffset += 6;
+       }*/
 
       // Save the PDF
       doc.save("application_summary.pdf");
@@ -1569,12 +1592,12 @@ const StudentApplicationSummary = ({ }) => {
   };
   const renderCourseInformation = () => {
     if (!courseInfo) {
-      return <div> 
+      return <div>
         <div className="d-flex justify-content-center align-items-center m-5 p-5 " >
-        <Spinner animation="border" role="status">
-          <span className="visually-hidden">Loading...</span>
-        </Spinner>
-      </div>
+          <Spinner animation="border" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </Spinner>
+        </div>
       </div>;
     }
     const parseHTML = (html) => {
@@ -1614,7 +1637,6 @@ const StudentApplicationSummary = ({ }) => {
                 );
               }
             }}
-            disabled={isFetchingSchoolId || !schoolId}
           >
             {isFetchingSchoolId ? "Loading..." : "Know More"}
           </Button>
@@ -1663,7 +1685,14 @@ const StudentApplicationSummary = ({ }) => {
           <h5 className="fw-bold">Estimate Fee</h5>
           <span className="lead">
             {" "}
-            <strong>RM</strong> {courseInfo.cost.toLocaleString()} / year
+            {courseInfo.cost === "0" || courseInfo.cost === "RM0.00" ? (
+              "N/A"
+            ) : (
+              <>
+                <strong>RM</strong> {courseInfo.cost.toLocaleString()} / year
+              </>
+            )}
+
           </span>
         </div>
 

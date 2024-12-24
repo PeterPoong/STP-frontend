@@ -70,7 +70,7 @@
 
 .featured:hover {
     background-color: inherit; /* Ensures background color doesn't change */
-    border: solid 1px #D6D5D5; /* Ensures border color remains the same */
+    /*border: solid 1px #D6D5D5;  Ensures border color remains the same */
 }
 
 /* Styles for the search input and icon */

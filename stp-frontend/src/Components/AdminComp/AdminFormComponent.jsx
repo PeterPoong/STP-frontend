@@ -29,6 +29,7 @@ const AdminFormComponent = ({
   formTextarea,
   formPassword,
   shouldRenderPasswordCard,
+  shouldRenderHorizontalLine,
   formCheckboxes,
   formPersonInCharge,
   formCategory,
@@ -39,6 +40,8 @@ const AdminFormComponent = ({
   checkboxTitle,
   checkboxDetail,
   helperStar,
+  Star,
+  StarAccount,
   courseTitle,
   formPeriod,
   formUrl,
@@ -265,12 +268,18 @@ const AdminFormComponent = ({
                 </div>
               </Form.Group>
             ))}
+          {shouldRenderHorizontalLine && (
+                <div className="mt-5 mb-2">
+                  <hr></hr>
+                  </div>
+          )}
           <Col md={6}>
+         
             {formFields &&
               formFields.map((field, index) => (
                 <Form.Group key={index} controlId={field.id} className="mb-5">
                   <Form.Label>{field.label}</Form.Label>{" "}
-                  <span class="text-danger">*</span>
+                  <span class="text-danger">{Star}</span>
                   <Form.Control
                     as={field.as || "input"}
                     type={field.type || "text"}
@@ -286,7 +295,7 @@ const AdminFormComponent = ({
               formDrop.map((drop, index) => (
                 <Form.Group key={index} controlId={drop.id} className="mb-5">
                   <Form.Label>{drop.label}</Form.Label>{" "}
-                  <span class="text-danger">*</span>
+                  <span class="text-danger">{Star}</span>
                   <Form.Control
                     as="select"
                     value={drop.value}
@@ -399,7 +408,7 @@ const AdminFormComponent = ({
             {handlePhoneChange && phone !== undefined && (
               <Form.Group controlId="contact_number" className="mb-5">
                 <Form.Label>Contact Number</Form.Label>{" "}
-                <span class="text-danger">*</span>
+                <span class="text-danger">{Star}</span>
                 <PhoneInput
                   country="my"
                   value={`${country_code}${phone}`}
@@ -461,7 +470,7 @@ const AdminFormComponent = ({
               formAccount.map((account, index) => (
                 <Form.Group key={index} controlId={account.id} className="mb-5">
                   <Form.Label>{account.label}</Form.Label>{" "}
-                  <span class="text-danger">*</span>
+                  <span class="text-danger">{StarAccount}</span>
                   <Form.Control
                     as="select"
                     value={account.value}
@@ -481,7 +490,7 @@ const AdminFormComponent = ({
               formMode.map((mode, index) => (
                 <Form.Group key={index} controlId={mode.id} className="mb-5">
                   <Form.Label>{mode.label}</Form.Label>{" "}
-                  <span class="text-danger">*</span>
+                  <span class="text-danger">{Star}</span>
                   <Form.Control
                     as="select"
                     value={mode.value}
@@ -522,7 +531,7 @@ const AdminFormComponent = ({
               formGender.map((gender, index) => (
                 <Form.Group key={index} controlId={gender.id} className="mb-5">
                   <Form.Label>{gender.label}</Form.Label>{" "}
-                  <span class="text-danger">*</span>
+                  <span class="text-danger">{Star}</span>
                   <Form.Control
                     as="select"
                     value={gender.value}
@@ -543,7 +552,7 @@ const AdminFormComponent = ({
             {handleLogoChange && (
               <Form.Group controlId="logo" className="mb-5">
                 <Form.Label>Logo (2MB)</Form.Label>{" "}
-                <span class="text-danger">*</span>
+                <span class="text-danger">{Star}</span>
                 <Form.Control
                   type="file"
                   accept="image/*"
@@ -622,7 +631,7 @@ const AdminFormComponent = ({
                   className="mb-5"
                 >
                   <Form.Label>{category.label}</Form.Label>{" "}
-                  <span class="text-danger">*</span>
+                  <span class="text-danger">{Star}</span>
                   <Form.Control
                     as="select"
                     value={category.value}
@@ -723,7 +732,7 @@ const AdminFormComponent = ({
             {handlePhoneChange && personPhone !== undefined && (
               <Form.Group controlId="person_in_charge_contact" className="mb-5">
                 <Form.Label>Person in Charge's Contact</Form.Label>{" "}
-                <span class="text-danger">*</span>
+                <span class="text-danger">{helperStar}</span>
                 <PhoneInput
                   country="my"
                   value={personPhone}
@@ -736,7 +745,6 @@ const AdminFormComponent = ({
                   }
                   inputProps={{
                     name: "person_in_charge_contact",
-                    required: true,
                     autoFocus: true,
                   }}
                 />
@@ -750,7 +758,7 @@ const AdminFormComponent = ({
                   className="mb-5"
                 >
                   <Form.Label>{PersonInCharge.label}</Form.Label>{" "}
-                  <span class="text-danger">*</span>
+                  <span class="text-danger">{Star}</span>
                   <Form.Control
                     as={PersonInCharge.as || "input"}
                     type={PersonInCharge.type || "text"}
@@ -782,14 +790,14 @@ const AdminFormComponent = ({
               formWebsite.map((Website, index) => (
                 <Form.Group key={index} controlId={Website.id} className="mb-5">
                   <Form.Label>{Website.label}</Form.Label>{" "}
-                  <span class="text-danger">*</span>
+                  <span class="text-danger">{Star}</span>
                   <Form.Control
                     as={Website.as || "input"}
                     type={Website.type || "text"}
                     placeholder={Website.placeholder || ""}
                     value={Website.value}
                     onChange={Website.onChange}
-                    required={Website.required || false}
+                    // required={Website.required || false}
                   />
                 </Form.Group>
               ))}
@@ -800,7 +808,7 @@ const AdminFormComponent = ({
         formAddress.map((Address, index) => (
           <Form.Group key={index} controlId={Address.id} className="mb-5 ms-2">
             <Form.Label>{Address.label}</Form.Label>{" "}
-            <span class="text-danger">*</span>
+            <span class="text-danger">{Star}</span>
             <Form.Control
               as={Address.as || "input"}
               type={Address.type || "text"}
@@ -818,7 +826,7 @@ const AdminFormComponent = ({
               <Col md={4} key={index}>
                 <Form.Group controlId={field.id} className="mb-5 ms-2">
                   <Form.Label>{field.label}</Form.Label>{" "}
-                  <span class="text-danger">*</span>
+                  <span class="text-danger">{Star}</span>
                   <Form.Control
                     as="select"
                     value={field.value}
@@ -846,7 +854,7 @@ const AdminFormComponent = ({
             className="mb-5 ms-2"
           >
             <Form.Label>{Textarea.label}</Form.Label>{" "}
-            <span class="text-danger">*</span>
+            <span class="text-danger">{Star}</span>
             <Form.Control
               as={Textarea.as}
               rows={Textarea.rows}
@@ -936,7 +944,7 @@ const AdminFormComponent = ({
           {showCoverPreview && (
             <Modal
               show={showCoverPreview}
-              onHide={() => setShowCoverPreview(false)}
+              onHide={handleCloseCoverPreview}
               centered
               size="lg"
               dialogClassName="modal-preview"
@@ -967,7 +975,7 @@ const AdminFormComponent = ({
           {showPreview && (
             <Modal
               show={showPreview}
-              onHide={() => setShowPreview(false)}
+              onHide={handleClosePreview}
               centered
               size="lg"
               dialogClassName="modal-preview"
@@ -1000,7 +1008,7 @@ const AdminFormComponent = ({
           <Form.Group key={field.id} controlId={field.id} className="ms-2">
             <Form.Label>
               {field.label}{" "}
-              {field.required && <span className="text-danger">*</span>}
+              {field.required && <span class="text-danger">{Star}</span>}
             </Form.Label>
             <ReactQuill
               value={field.value} // Bind the value from formHTML
@@ -1050,6 +1058,11 @@ const AdminFormComponent = ({
             />
           </Form.Group>
         ))}
+      {shouldRenderHorizontalLine && (
+                    <div className="mt-5 mb-2">
+                      <hr></hr>
+                      </div>
+              )}
       {/* Render checkboxes conditionally */}
       {formCheckboxes && formCheckboxes.length > 0 && (
         <div className="check">

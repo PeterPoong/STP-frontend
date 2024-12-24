@@ -1,18 +1,24 @@
+
+
 /*word break*/
 .student-coursedetil-wordbreak
 {
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  word-break: break-all;
-  white-space-collapse: break-spaces;
-  text-wrap: wrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: auto;
-  width: auto;
-  height:3rem;
+  white-space: normal; 
 }
 
+
+/*App Photo*/
+.image-gallery-course-modal
+{
+  display: grid;
+  grid-template-columns: repeat(auto-fill,minmax(150px,1fr));
+  gap:10px;
+}
 
 /* General Styles */
 .image-gallery-course {
@@ -23,7 +29,7 @@
 }
 
 .gallery-image-courses {
-  max-width: 290px;
+  width: 290px;
   height: 140px;
   object-fit: cover;
   cursor: pointer;
@@ -127,7 +133,6 @@
   height: 200px;
   display: block;
   object-fit: cover;
-  margin-top: 50px;
 }
 
 .about-institute-container {
@@ -170,7 +175,6 @@
 /* Responsive Styles */
 @media (max-width: 1200px) {
   .gallery-image-courses {
-    max-width: 250px;
     height: 120px;
     object-fit: cover;
 
@@ -185,7 +189,6 @@
   }
 
   .gallery-image-courses {
-    max-width: 200px;
     height: 100px;
     object-fit: cover;
 
@@ -231,7 +234,6 @@
   }
 
   .gallery-image-courses {
-    max-width: 150px;
     height: 80px;
     object-fit: cover;
 
@@ -283,7 +285,6 @@
   }
 
   .gallery-image-courses {
-    max-width: 120px;
     height: 60px;
     object-fit: cover;
   }
@@ -300,5 +301,41 @@
     max-width: 100px;
     max-height: 100px;
 
+  }
+}
+
+@media(max-width: 426px)
+{
+  .image-gallery-course-modal
+  {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+  }
+
+  .image-gallery-course {
+    flex-direction: column;
+    gap:1rem;
+    align-content:center;
+    margin:1rem;
+  }
+
+  .gallery-image-courses {
+    width: 20rem;
+    height: 10rem;
+    border-radius: 0.25rem;
+    object-fit: cover;
+  }
+
+  .coursedetail-entryrequirement-title
+  {
+    justify-content: center;
+  }
+
+  .coursedetail-summary-content
+  {
+    justify-self: center !important;
+    padding:2rem 0;
+    gap:1rem;
   }
 }

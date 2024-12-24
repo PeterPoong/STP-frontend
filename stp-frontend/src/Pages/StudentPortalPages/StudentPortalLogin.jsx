@@ -9,6 +9,7 @@ import {
   Alert,
   InputGroup,
 } from "react-bootstrap";
+import { ChevronLeft, Arrow90degLeft } from "react-bootstrap-icons";
 import "bootstrap/dist/css/bootstrap.min.css";
 import studentPortalLogin from "../../assets/StudentPortalAssets/studentPortalLogin.png";
 import studentPortalLoginLogo from "../../assets/StudentPortalAssets/studentPortalLoginLogo.png";
@@ -189,6 +190,10 @@ const StudentPortalLogin = () => {
         setLoginStatus("error");
       });
   };
+
+  const handleGoogleLogin = (e) => {
+    window.location.href = `${import.meta.env.VITE_BASE_URL}api/auth/google`;
+  };
   /*end*/
 
   const handleFacebookLogin = () => {
@@ -198,10 +203,34 @@ const StudentPortalLogin = () => {
       `${import.meta.env.VITE_BASE_URL}api/auth/facebook/`;
   };
 
+  const handleBackClick = () => {
+    navigate("/"); // This navigates to the previous page in history
+  };
+
   return (
     <Container fluid className="h-100">
       <Row className="h-50">
         <Col md={6} className="p-0 h-100">
+          <div className="position-absolute top-0 ">
+            <button
+              className="p-1 login-back-button rounded-circle"
+              onClick={handleBackClick}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="1.5rem"
+                height="1.25rem"
+                fill="#FFFFFFFF"
+                class="bi bi-chevron-left"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"
+                />
+              </svg>
+            </button>
+          </div>
           <img
             src={studentPortalLogin}
             alt="Student Portal Login"
@@ -331,7 +360,7 @@ const StudentPortalLogin = () => {
                     </Col>
                   </Row>
                   <Row className="justify-content-center">
-                    <Col xs="auto">
+                    {/* <Col xs="auto">
                       <button
                         type="button"
                         className="btn btn-outline-primary rounded-circle p-0 social-btn facebook-btn"
@@ -354,8 +383,8 @@ const StudentPortalLogin = () => {
                           <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z" />
                         </svg>
                       </button>
-                    </Col>
-                    {/* <Col xs="auto">
+                    </Col> */}
+                    <Col xs="auto">
                       <button
                         type="button"
                         className="btn btn-outline-danger rounded-circle p-0 mb-5 social-btn google-btn"
@@ -366,6 +395,7 @@ const StudentPortalLogin = () => {
                           justifyContent: "center",
                           alignItems: "center",
                         }}
+                        onClick={handleGoogleLogin}
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -377,7 +407,7 @@ const StudentPortalLogin = () => {
                           <path d="M7 11v2.4h3.97c-.16 1.029-1.2 3.02-3.97 3.02-2.39 0-4.34-1.979-4.34-4.42 0-2.44 1.95-4.42 4.34-4.42 1.36 0 2.27.58 2.79 1.08l1.9-1.83c-1.22-1.14-2.8-1.83-4.69-1.83-3.87 0-7 3.13-7 7s3.13 7 7 7c4.04 0 6.721-2.84 6.721-6.84 0-.46-.051-.81-.111-1.16h-6.61zm0 0 17 2h-3v3h-2v-3h-3v-2h3v-3h2v3h3v2z" />
                         </svg>
                       </button>
-                    </Col> */}
+                    </Col>
                   </Row>
 
                   <div className="text-center text-lg-center m-5 pt-2">

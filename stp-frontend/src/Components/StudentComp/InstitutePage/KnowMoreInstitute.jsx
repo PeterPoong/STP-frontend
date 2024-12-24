@@ -6,7 +6,7 @@ import NavButtonsSP from "../../../Components/StudentPortalComp/NavButtonsSP";
 import headerImage from "../../../assets/StudentAssets/institute image/StudyPal10.png";
 import studypal12 from "../../../assets/StudentAssets/coursepage image/StudyPal12.jpg";
 import SpcFooter from "../../../Components/StudentPortalComp/SpcFooter";
-
+import ImageSlider from "../../../Components/StudentComp/ImageSlider";
 import "../../../css/StudentCss/institutepage css/KnowMoreInstitute.css";
 import {
   Container,
@@ -17,7 +17,7 @@ import {
   Card,
   Modal,
 } from "react-bootstrap";
-
+import "../../../css/StudentCss/course page css/SearchCourse.css"
 import studypal11 from "../../../assets/StudentAssets/institute image/StudyPal11.png";
 import Footer from "../../../Components/StudentComp/Footer";
 
@@ -29,7 +29,7 @@ import { Pagination, Navigation } from "swiper/modules";
 
 const baseURL = import.meta.env.VITE_BASE_URL;
 const schoolDetailAPIURL = `${baseURL}api/student/schoolDetail`;
-
+const adsAURL = `${baseURL}api/student/advertisementList`;
 const KnowMoreInstitute = () => {
   const [contentHeight, setContentHeight] = useState(0);
   const contentRef = useRef(null);
@@ -38,12 +38,17 @@ const KnowMoreInstitute = () => {
   const [selectedPhotos, setSelectedPhotos] = useState([]);
   const [startIndex, setStartIndex] = useState(0);
 
+  const [enlargedImageIndex, setEnlargedImageIndex] = useState(null);
+
+
   const [showSwiperModal, setShowSwiperModal] = useState(false);
   const [activePhotoIndex, setActivePhotoIndex] = useState(0); // To track the clicked photo
 
   // State to track the number of displayed courses
   const [visibleCourses, setVisibleCourses] = useState(5);
   const [expanded, setExpanded] = useState(false); // Track if the list is expanded
+
+  const [adsImage, setAdsImage] = useState(null);
 
   // Function to handle displaying more courses
   const handleViewMore = () => {
@@ -104,9 +109,28 @@ const KnowMoreInstitute = () => {
       setContentHeight(contentRef.current.scrollHeight);
     }
   };
-  useEffect(() => {
-    // console.log("Institute ID: ", id);
 
+  //Fecth Ads Image 
+  const fetchAddsImage = async () => {
+    try {
+
+      const response = await fetch(adsAURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ advertisement_type: 73 }),
+      });
+
+      const result = await response.json();
+      // console.log(result);
+      if (result.success) {
+        setAdsImage(result.data);
+      }
+    } catch (error) {
+      console.error("Error fetching advertisements:", error);
+    }
+  };
+
+  const fetchSchool = async () => {
     // Fetch school detail if institutes are not loaded
     if (!institutes || institutes.length === 0) {
       fetch(`${baseURL}api/student/schoolDetail`, {
@@ -120,7 +144,7 @@ const KnowMoreInstitute = () => {
       })
         .then((response) => response.json())
         .then((data) => {
-          //console.log("Fetched School Detail Data: ", data);
+          //  console.log("Fetched School Detail Data: ", data);
           if (data && data.success && data.data) {
             setInstitutes([data.data]);
             setCourses(data.data.courses);
@@ -146,6 +170,7 @@ const KnowMoreInstitute = () => {
       },
       body: JSON.stringify({
         type: "thirdPage", // Use the required type value
+        schoolId: id
       }),
     })
       .then((response) => response.json())
@@ -165,6 +190,13 @@ const KnowMoreInstitute = () => {
         console.error("Error fetching featured institutes data: ", error);
         setFeaturedInstitutes([]);
       });
+  };
+
+
+  useEffect(() => {
+    // console.log("Institute ID: ", id);
+    fetchSchool();
+    fetchAddsImage();
   }, [id]);
 
 
@@ -378,6 +410,7 @@ const KnowMoreInstitute = () => {
                       modules={[Navigation, Pagination]}
                       style={{
                         padding: "20px 0", // Padding to add spacing around the Swiper content
+
                       }}
                     >
                       {selectedPhotos.map((photo) => (
@@ -388,11 +421,12 @@ const KnowMoreInstitute = () => {
                                 ? `${baseURL}storage/${photo.schoolMedia_location}`
                                 : studypal12 // Use studypal12 as the default image if schoolMedia_location is not available
                             }
-                            className="w-100"
+                            className=""
                             alt={`Slide ${photo.id}`}
                             style={{
                               objectFit: "contain", // Ensure the image maintains its aspect ratio
                               maxHeight: "70vh", // Limit the height for better viewing on small screens
+                              marginBottom: "2rem"
                             }}
                           />
                         </SwiperSlide>
@@ -441,13 +475,6 @@ const KnowMoreInstitute = () => {
                   >
                     <div
                       className="image-gallery-institute-modal"
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns:
-                          "repeat(auto-fill, minmax(150px, 1fr))",
-                        gridGap: "10px",
-                        justifyItems: "center",
-                      }}
                     >
                       {selectedPhotos.map((photo, index) => (
                         <img
@@ -457,20 +484,27 @@ const KnowMoreInstitute = () => {
                               ? `${baseURL}storage/${photo.schoolMedia_location}`
                               : studypal12 // Use studypal12 as the default image if schoolMedia_location is not available
                           }
-                          className="gallery-image"
                           alt={photo.schoolMedia_name}
                           style={{
                             width: "100%",
-                            height: "100%",
+                            height: "150px",
                             objectFit: "cover",
                             borderRadius: "4px",
                             boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
                             cursor: "pointer", // Add a pointer cursor to indicate it's clickable
                           }}
-                          onClick={() => openSwiperModal(index)} // On click, open Swiper modal
+                          onClick={() => setEnlargedImageIndex(index)}
                         />
                       ))}
                     </div>
+                    {enlargedImageIndex !== null && (
+                      <ImageSlider
+                        selectedPhotos={selectedPhotos.map(photo => photo.schoolMedia_location)}
+                        enlargedImageIndex={enlargedImageIndex}
+                        baseURL={baseURL}
+                        onClose={() => setEnlargedImageIndex(null)}
+                      />
+                    )}
                   </Modal.Body>
                   <Modal.Footer
                     style={{
@@ -569,8 +603,8 @@ const KnowMoreInstitute = () => {
                 <div className="card-body">
                   <Row>
                     <Col md={10} className="d-flex align-items-center">
-                      <div>
-                        <h5 className="card-title">School Overview</h5>
+                      <div className="knowmoreinstitute-cardtitle">
+                        <h5 className="card-title ">School Overview</h5>
                       </div>
                     </Col>
                     <Col md={12}>
@@ -688,7 +722,7 @@ const KnowMoreInstitute = () => {
                               color: "#514E4E",
                             }}
                           >
-                            {institute.category}
+                            {/*{institute.category}*/} {institute.number_courses} Courses
                           </h5>
                         </div>
                       </Row>
@@ -710,14 +744,15 @@ const KnowMoreInstitute = () => {
                               flexDirection: "column",
                               alignItems: "center",
                               justifyContent: "center",
-                              height: "100%", // Adjust as per your container height
+                              height: "100%",
+                              alignSelf: "center" // Adjust as per your container height
                             }}
                           >
                             <h6
                               style={{
                                 color: "#514E4E",
                               }}
-                              className="card-title"
+                              className="card-title "
                             >
                               Intake Period
                             </h6>
@@ -875,7 +910,7 @@ const KnowMoreInstitute = () => {
               {/* --------- End of About School --------- */}
 
               {/* Contact School Button */}
-              <div className="d-flex justify-content-center">
+              <div className="d-flex justify-content-center mt-3">
                 <Button
                   onClick={() => handleContactSchool(institute.school_email)}
                   style={{
@@ -906,13 +941,8 @@ const KnowMoreInstitute = () => {
                           <Col md={6} lg={6}>
                             <div className="card-image mb-3 mb-md-0">
                               <h5
-                                className="card-title"
-                                style={{
-                                  paddingLeft: "30px",
-                                  backgroundColor: "#F2F2F2",
-                                  marginLeft: "-15px",
-                                  height: "fit-content",
-                                }}
+                                className="card-title knowmoreinstitute-cardtitle-courselist"
+
                               >
                                 <a
                                   style={{ color: "black" }}
@@ -921,8 +951,8 @@ const KnowMoreInstitute = () => {
                                   {course.course_name}
                                 </a>
                               </h5>
-                              <div className="d-flex align-items-center">
-                                <div style={{ paddingLeft: "20px" }}>
+                              <div className="d-flex align-items-center knowmoreinstitute-cardtitle-courselist-name">
+                                <div className="knowmoreinstitute-cardtitle-courselist-img">
                                   <img
                                     src={`${baseURL}storage/${course.course_logo || institute.logo
                                       }`}
@@ -930,7 +960,7 @@ const KnowMoreInstitute = () => {
                                     width="100"
                                   />
                                 </div>
-                                <div style={{ paddingLeft: "30px" }}>
+                                <div className="knowmoreinstitute-cardtitle-courselist-institutecity">
                                   <h5 className="card-text">
                                     {institute.name}
                                   </h5>
@@ -939,7 +969,7 @@ const KnowMoreInstitute = () => {
                                     {institute.city}, {institute.state}
                                   </span>
                                   <a
-                                    href="#"
+                                    href={institute.google_map_location}
                                     className="map-link"
                                     style={{ paddingLeft: "5px" }}
                                   >
@@ -950,61 +980,62 @@ const KnowMoreInstitute = () => {
                             </div>
                           </Col>
                           <Col md={6} lg={6}>
-                            <div className="d-flex flex-grow-1 justify-content-between">
+                            <div className="d-flex flex-grow-1 justify-content-between knowmoreinstitute-cardtitle-courselist-list" >
                               <div className="details-div">
                                 <div className="d-flex align-items-center flex-wrap">
                                   <Col>
                                     <div>
                                       <Row style={{ paddingTop: "20px" }}>
-                                        <div>
+                                        <div className="knowmoreinstitute-dflex-center" >
                                           <i
                                             className="bi bi-mortarboard"
                                             style={{ marginRight: "10px" }}
                                           ></i>
-                                          <span style={{ paddingLeft: "20px" }}>
+                                          <p style={{ paddingLeft: "20px" }}>
                                             {course.qualification}
-                                          </span>
+                                          </p>
                                         </div>
-                                        <div style={{ marginTop: "10px" }}>
+                                        <div style={{ marginTop: "10px" }} className="knowmoreinstitute-dflex-center">
                                           <i
                                             className="bi bi-calendar-check"
                                             style={{ marginRight: "10px" }}
                                           ></i>
-                                          <span style={{ paddingLeft: "20px" }}>
+                                          <p style={{ paddingLeft: "20px" }} >
                                             {course.study_mode}
-                                          </span>
+                                          </p>
                                         </div>
-                                        <div style={{ marginTop: "10px" }}>
+                                        <div style={{ marginTop: "10px" }} className="knowmoreinstitute-dflex-center">
                                           <i
                                             className="bi bi-clock"
                                             style={{ marginRight: "10px" }}
                                           ></i>{" "}
-                                          <span style={{ paddingLeft: "10px" }}>
+                                          <p style={{ paddingLeft: "20px" }} >
                                             {course.course_period}
-                                          </span>
+                                          </p>
                                         </div>
                                         <div
                                           style={{
                                             marginTop: "10px",
                                             display: "flex",
                                           }}
+                                          className="knowmoreinstitute-dflex-center"
                                         >
                                           <i
                                             className="bi bi-calendar2-week"
                                             style={{ marginRight: "10px" }}
                                           ></i>
-                                          <span style={{ paddingLeft: "20px" }}>
+                                          <p style={{ paddingLeft: "20px" }}>
                                             {Array.isArray(course.course_intake)
                                               ? course.course_intake.join(", ")
                                               : course.course_intake}
-                                          </span>
+                                          </p>
                                         </div>
                                       </Row>
                                     </div>
                                   </Col>
                                 </div>
                               </div>
-                              <div className="fee-apply">
+                              <div className="fee-apply knowmoreinstitute-cardtitle-courselist-feeapply">
                                 <div
                                   className="fee-info text-right"
                                   style={{
@@ -1021,7 +1052,13 @@ const KnowMoreInstitute = () => {
                                   >
                                     estimate fee<br></br>
                                     <p style={{ fontSize: "16px" }}>
-                                      <strong>RM </strong> {course.course_cost}
+                                      {course.course_cost === "0" || course.course_cost === "RM0.00" ? (
+                                        "N/A"
+                                      ) : (
+                                        <>
+                                          <strong>RM </strong> {course.course_cost}
+                                        </>
+                                      )}
                                     </p>
                                   </p>
                                 </div>
@@ -1051,7 +1088,7 @@ const KnowMoreInstitute = () => {
                         aria-controls="collapse-courses"
                         aria-expanded={expanded}
                         style={{
-                          marginTop: "20px",
+                          marginTop: "50px",
                           textDecoration: "none",
                           backgroundColor: "#B71A18",
                           borderColor: "#B71A18",
@@ -1074,33 +1111,46 @@ const KnowMoreInstitute = () => {
                     <Container className="my-4">
                       <h4>Featured Institutes</h4>
                       <Swiper
-                        spaceBetween={30}
-                        slidesPerView={5}
+                        spaceBetween={1}
+                        slidesPerView={6}
                         navigation
                         style={{ padding: "0 50px" }}
                         loop={true}
                         modules={[Pagination, Navigation]}
                         className="featured-institute-swiper"
                         breakpoints={{
-                          640: {
+                          320: {
                             slidesPerView: 1,
-                            spaceBetween: 10,
+                            spaceBetween: 5,
+                          },
+                          426: {
+                            slidesPerView: 1,
+                            spaceBetween: 5,
+                          },
+                          540: {
+                            slidesPerView: 2,
+                            spaceBetween: 5,
+                          },
+                          640: {
+                            slidesPerView: 3,
+                            spaceBetween: 5,
                           },
                           768: {
-                            slidesPerView: 2,
-                            spaceBetween: 15,
+                            slidesPerView: 4,
+                            spaceBetween: 5,
                           },
                           1024: {
                             slidesPerView: 5,
-                            spaceBetween: 10,
+                            spaceBetween: 5,
                           },
                         }}
                       >
+
                         {featuredInstitutes.map((institute) => (
-                          <SwiperSlide key={institute.id}>
+                          <SwiperSlide key={institute.id} >
                             <div
                               className="featured-institute-card"
-                              style={{ width: "230px", height: "245px" }}
+                              style={{ width: "230px", height: "245px", margin: "0 50px", gap: "10rem" }}
                             >
                               {/* Wrap the image inside a Link for navigation */}
                               <Link
@@ -1128,8 +1178,35 @@ const KnowMoreInstitute = () => {
                   {/* End of Featured institutes */}
                 </Container>
               )}
-              <img src={studypal11} alt="Header" className="adverstise-image" />
+
+
             </Container>
+            {Array.isArray(adsImage) && adsImage.length > 0 ? (
+              <div className="advertisements-container">
+                {adsImage.map((ad, index) => (
+                  <div key={ad.id} className="advertisement-item mb-3">
+                    <a
+                      href={ad.banner_url.startsWith('http') ? ad.banner_url : `https://${ad.banner_url}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <img
+                        src={`${baseURL}storage/${ad.banner_file}`}
+                        alt={`Advertisement ${ad.banner_name}`}
+                        className="adverstise-image"
+                        style={{
+                          height: "175px",
+                          objectFit: "fill",
+                          marginBottom: index < adsImage.length - 1 ? "20px" : "0"
+                        }}
+                      />
+                    </a>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <img src={studypal11} alt="Header" className="KMI-adverstise-image mt-0" />
+            )}
           </div>
         ))
       }

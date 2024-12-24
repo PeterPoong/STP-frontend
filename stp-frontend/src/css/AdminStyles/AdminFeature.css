@@ -1,0 +1,138 @@
+/* Featured Content */
+.admin-feature {
+    font-family: 'Inter', sans-serif;
+}
+
+.admin-feature .container {
+    background-color: white;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.admin-feature .row {
+    margin: 0;
+}
+
+.featured-header {
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.accordion-button,
+.accordion-button:not(.collapsed) {
+    background-color: transparent !important;
+    color: rgb(183, 26, 24);
+}
+
+.accordion-button:focus {
+    box-shadow: none;
+    border-color: rgba(0,0,0,.125);
+    background-color: transparent !important;
+}
+
+.filter-row {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    margin-bottom: 1rem;
+}
+
+.form-group {
+    margin-bottom: 0;
+}
+
+.form-label {
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+}
+
+/* Style for the tabs and button container */
+.tabs-with-button {
+    border-bottom: 1px solid #dee2e6;
+}
+
+/* Ensure tabs don't have bottom margin */
+.nav-tabs {
+    margin-bottom: 0;
+}
+
+/* Style for the create button */
+.create-button {
+    margin-bottom: 0.5rem; /* Align with tabs */
+}
+
+.accordion-header {
+    background-color: transparent !important;
+}
+
+/* Remove background color from nav tabs */
+.nav-tabs .nav-link {
+    background-color: transparent !important;
+    border: none;
+    border-bottom: 2px solid transparent;
+}
+
+.nav-tabs .nav-link.active {
+    background-color: transparent !important;
+    border: none;
+    border-bottom: 2px solid #0d6efd;
+    color: #0d6efd;
+}
+
+.nav-tabs .nav-link:hover {
+    border: none;
+    border-bottom: 2px solid #0d6efd;
+    isolation: isolate;
+}
+
+/* Remove focus outline */
+.nav-tabs .nav-link:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.accordion-item {
+    border: 1px solid #dee2e6 !important;
+    border-radius: 20px !important;
+    margin-bottom: 20px !important;
+}
+
+/* Remove the background color when expanded */
+.accordion-button::after {
+    background-color: transparent;
+}
+
+/* Style for search input group */
+.input-group .input-group-text {
+    background-color: transparent !important;
+    border: none;
+    padding-right: 0;
+}
+
+.input-group .form-control {
+    border-left: none;
+    padding-left: 0;
+}
+
+.input-group .form-control:focus {
+    border-left: none;
+    box-shadow: none;
+}
+
+.custom-datepicker {
+    border-radius: 15px !important;
+}
+
+/* Also target the datepicker input specifically */
+.custom-datepicker .react-datepicker__input-container input {
+    border-radius: 15px !important;
+}
+
+.start-date-course-feature {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    border-radius: 15px !important;
+    background-color: white !important;
+}
+

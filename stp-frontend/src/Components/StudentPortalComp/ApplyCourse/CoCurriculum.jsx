@@ -247,13 +247,13 @@ const CoCurriculum = ({ onNext, onBack }) => {
                   placeholder="Name of Co-curriculum..."
                   value={activity.club_name || ''} // Ensure it's always a string
                   onChange={(e) => handleActivityChange(index, 'club_name', e.target.value)}
-                  className="mb-2 border p-0 fw-bold w-25 ps-2 ac-input-placeholder"
+                  className="mb-2 border p-0 fw-bold ps-2 ac-input-placeholder applycourse-cocurriculum-clubname-input"
                   style={{ fontSize: '1.1rem' }}
                 />
                 <div className="d-flex justify-content-between ps-0">
                   <div className="d-flex flex-grow-1 px-0 ">
                     <div className="d-flex align-items-center me-3 flex-shrink-0">
-                      <Clock size={18} className="me-2" />
+                      <Clock size={18} className="me-2 applycourse-cocurriculum-icon" />
                       <DatePicker
                         selected={new Date(activity.year, 0)}
                         onChange={(date) => handleActivityChange(index, 'year', date.getFullYear())}
@@ -265,7 +265,7 @@ const CoCurriculum = ({ onNext, onBack }) => {
                       />
                     </div>
                     <div className="d-flex align-items-center me-3 flex-shrink-0">
-                      <User size={18} className="me-2" />
+                      <User size={18} className="me-2 applycourse-cocurriculum-icon" />
                       <Form.Control
                         type="text"
                         placeholder="Position"
@@ -275,7 +275,7 @@ const CoCurriculum = ({ onNext, onBack }) => {
                       />
                     </div>
                     <div className="d-flex align-items-center flex-shrink-0">
-                      <Building size={18} className="me-2" />
+                      <Building size={18} className="me-2 applycourse-cocurriculum-icon" />
                       <Form.Control
                         type="text"
                         placeholder="Institution"
@@ -285,8 +285,8 @@ const CoCurriculum = ({ onNext, onBack }) => {
                       />
                     </div>
                   </div>
-                  <div>
-                    <Button variant="link" onClick={() => handleSaveActivity(index)} className="me-2">
+                  <div className="applycourse-cocurriculum-content applycourse-cocurriculum-content-flexend">
+                    <Button  variant="link" onClick={() => handleSaveActivity(index)} className="me-2">
                       <Save size={18} color="green" />
                     </Button>
                     <Button variant="link" onClick={() => handleDeleteActivity(index)}>
@@ -297,7 +297,7 @@ const CoCurriculum = ({ onNext, onBack }) => {
               </>
             ) : (
               <>
-                <div className="fw-bold mb-2 "
+                <div className="fw-bold mb-2 applycourse-cocurriculum-content-clubname "
                   style={{
                     fontSize: '1.1rem',
                     wordWrap: 'break-word',
@@ -308,7 +308,7 @@ const CoCurriculum = ({ onNext, onBack }) => {
                     textOverflow: 'ellipsis',
                     maxWidth: '500px'
                   }}>{activity.club_name}</div>
-                <div className="d-flex justify-content-between align-items-center">
+                <div className="d-flex justify-content-between align-items-center applycourse-cocurriculum-content-card">
                   <div className="d-flex flex-grow-1 applycourse-cocurriculum-content">
                     <div className="me-3 " style={{width:'200px'}} >
                       <Clock size={18} className="me-2" />
@@ -327,7 +327,7 @@ const CoCurriculum = ({ onNext, onBack }) => {
                     </div>
 
                   </div>
-                  <div>
+                  <div className="applycourse-cocurriculum-content-button">
                     <Button variant="link" onClick={() => {
                       handleActivityChange(index, 'isEditing', true); // Set isEditing to true
                       // No need to set id again, it should already be present

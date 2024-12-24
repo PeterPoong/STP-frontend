@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Button, Modal } from 'react-bootstrap';
+import { Button, Modal, Spinner } from 'react-bootstrap';
 import { FileText, Search, Eye, ChevronDown, ChevronUp, Clock, Copy, Check, X, Download } from 'react-feather';
 import { GraduationCap, CalendarCheck, BookOpenText } from 'lucide-react';
 import "../../../css/StudentPortalStyles/StudentApplyCourse.css";
@@ -13,7 +13,7 @@ import { BsWhatsapp, BsCaretDownFill } from 'react-icons/bs';
 import Lock from "../../../assets/StudentPortalAssets/lock.svg";
 import { Arrow90degLeft, ChevronLeft } from "react-bootstrap-icons"
 import defaultProfilePic from "../../../assets/StudentPortalAssets/sampleprofile.png";
-const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, onActionSuccess,onActionUpgrade }) => {
+const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, onActionSuccess, onActionUpgrade }) => {
   const [accountType, setAccountType] = useState(null);
   const [copiedFields, setCopiedFields] = useState({
     name: false,
@@ -775,7 +775,13 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
     }
     return overallGrade.trim() || 'N/A';
   };
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <div>
+    <div className="w-100 h-100 align-items-center justify-content-center">
+      <Spinner animation="border" role="status">
+        <span className="visually-hidden">Loading...</span>
+      </Spinner>
+    </div>
+  </div>;
   if (error) return <div>Error: {error}</div>;
 
   const renderAcademicResults = () => {
@@ -785,12 +791,12 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
           <div className=" d-flex  sas-pointer-div px-0 ">
             <select
               className="sac-form-select mb-1 px-0"
-              value={selectedCategory ||""}
+              value={selectedCategory || ""}
               onChange={handleCategoryChange}
             >
               {transcriptCategories.map((category) => (
-                <option key={category.id ||""} value={category.id ||""}>
-                  {category.transcript_category ||""}
+                <option key={category.id || ""} value={category.id || ""}>
+                  {category.transcript_category || ""}
                 </option>
               ))}
 
@@ -839,9 +845,9 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
                     textOverflow: 'ellipsis',
                     maxWidth: '350px'
                   }}>
-                  <strong>{subject.subject_name || subject.highTranscript_name ||""}</strong>
+                  <strong>{subject.subject_name || subject.highTranscript_name || ""}</strong>
                 </p>
-                <p className="mb-0"><strong>{subject.subject_grade || subject.higherTranscript_grade ||""}</strong></p>
+                <p className="mb-0"><strong>{subject.subject_grade || subject.higherTranscript_grade || ""}</strong></p>
               </div>
             ))
           ) : (
@@ -853,7 +859,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
         <div className="grade-summary d-flex justify-content-between align-items-stretch border-top">
           <div className="overall-grade text-white w-75 d-flex justify-content-start py-3">
             <h3 className="align-self-center px-5">
-              Grade: {calculateOverallGrade(transcriptSubjects) ||""}
+              Grade: {calculateOverallGrade(transcriptSubjects) || ""}
             </h3>
           </div>
           <Button
@@ -987,12 +993,12 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
                           <div className="d-flex align-items-center">
                             <FileText className="file-icon me-2" />
                             <div>
-                              <div className="file-title name-restrict">{doc.studentMedia_name ||""}</div>
-                              <div className="file-date">{doc.created_at ||""}</div>
+                              <div className="file-title name-restrict">{doc.studentMedia_name || ""}</div>
+                              <div className="file-date">{doc.created_at || ""}</div>
                             </div>
                           </div>
                         </td>
-                        <td className="border-bottom p-2" data-label="File Name">{doc.studentMedia_location ||""}</td>
+                        <td className="border-bottom p-2" data-label="File Name">{doc.studentMedia_location || ""}</td>
                       </>
                     )}
                     {activeDocumentTab === 'achievements' && (
@@ -1001,12 +1007,12 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
                           <div className="d-flex align-items-center">
                             <FileText className="file-icon me-2" />
                             <div>
-                              <div className="file-title name-restrict">{doc.achievement_name ||""}</div>
-                              <div className="file-date">{doc.date ||""}</div>
+                              <div className="file-title name-restrict">{doc.achievement_name || ""}</div>
+                              <div className="file-date">{doc.date || ""}</div>
                             </div>
                           </div>
                         </td>
-                        <td className="border-bottom p-2 " data-label="File Name">{doc.achievement_media ||""}</td>
+                        <td className="border-bottom p-2 " data-label="File Name">{doc.achievement_media || ""}</td>
                       </>
                     )}
                     {activeDocumentTab === 'other' && (
@@ -1015,12 +1021,12 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
                           <div className="d-flex align-items-center">
                             <FileText className="file-icon me-2" />
                             <div>
-                              <div className="file-title name-restrict">{doc.name ||""}</div>
-                              <div className="file-date">{doc.created_at ||""}</div>
+                              <div className="file-title name-restrict">{doc.name || ""}</div>
+                              <div className="file-date">{doc.created_at || ""}</div>
                             </div>
                           </div>
                         </td>
-                        <td className="border-bottom p-2" data-label="File Name">{doc.media ||""}</td>
+                        <td className="border-bottom p-2" data-label="File Name">{doc.media || ""}</td>
                       </>
                     )}
                     <td className="border-bottom p-2" data-label="Actions">
@@ -1224,7 +1230,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
             <div className="application-summary-container-inside rounded">
               <div className="applicant-summary-header border border-bottom">
                 <div className="applicant-info">
-                  <img src={`${import.meta.env.VITE_BASE_URL}storage/${basicInfo?.student_profilePic ||""}`}
+                  <img src={`${import.meta.env.VITE_BASE_URL}storage/${basicInfo?.student_profilePic || ""}`}
                     onError={(e) => {
                       e.target.onerror = null; // prevents looping
                       e.target.src = defaultProfilePic;
@@ -1232,8 +1238,8 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
                     className="applicant-photo me-4 ms-2 "
                     alt="Student" />
                   <div>
-                    <p className="my-0 school-fontsize-1 ">{`${basicInfo?.first_name ||""} ${basicInfo?.last_name ||""}`}</p>
-                    <p className="my-0 text-secondary mt-2"><small>Applied For:</small> <span className="text-black ms-2">{applicantDetails.course_name ||""}</span></p>
+                    <p className="my-0 school-fontsize-1 ">{`${basicInfo?.first_name || ""} ${basicInfo?.last_name || ""}`}</p>
+                    <p className="my-0 text-secondary mt-2"><small>Applied For:</small> <span className="text-black ms-2">{applicantDetails.course_name || ""}</span></p>
                   </div>
                 </div>
                 <span
@@ -1253,33 +1259,33 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
                 </Button>
               </div>
               <div className="summary-tabs d-flex flex-wrap px-2 py-2 justify-content-center">
-  <Button
-    variant="link"
-    className={`tab-button ${activeTab === 'info' ? 'active' : ''}`}
-    onClick={() => setActiveTab('info')}
-  >
-    Student Info
-  </Button>
-  <Button
-    variant="link"
-    className={`tab-button ${activeTab === 'documents' ? 'active' : ''}`}
-    onClick={() => setActiveTab('documents')}
-    disabled={accountType !== 65}
-    style={{
-      pointerEvents: accountType !== 65 ? 'none' : 'auto',
-      opacity: accountType !== 65 ? 0.6 : 1,
-    }}
-  >
-    Related Documents
-  </Button>
-  <Button
-    variant="link"
-    className={`tab-button ${activeTab === 'accept-reject' ? 'active' : ''}`}
-    onClick={() => setActiveTab('accept-reject')}
-  >
-    Accept/Reject Application
-  </Button>
-</div>
+                <Button
+                  variant="link"
+                  className={`tab-button ${activeTab === 'info' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('info')}
+                >
+                  Student Info
+                </Button>
+                <Button
+                  variant="link"
+                  className={`tab-button ${activeTab === 'documents' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('documents')}
+                  disabled={accountType !== 65}
+                  style={{
+                    pointerEvents: accountType !== 65 ? 'none' : 'auto',
+                    opacity: accountType !== 65 ? 0.6 : 1,
+                  }}
+                >
+                  Related Documents
+                </Button>
+                <Button
+                  variant="link"
+                  className={`tab-button ${activeTab === 'accept-reject' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('accept-reject')}
+                >
+                  Accept/Reject Application
+                </Button>
+              </div>
 
               {activeTab === 'info' && (
                 <div className="summary-content">
@@ -1308,7 +1314,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
                         <div className="col-md-6 mb-3">
                           <p><strong>Identity Card Number</strong></p>
                           <p className="d-flex align-items-center">
-                            <span className="me-2">{basicInfo?.student_icNumber ||""}</span>
+                            <span className="me-2">{basicInfo?.student_icNumber || ""}</span>
                             <span
                               className="copy-icon-wrapper"
                               onClick={() => copyToClipboard(basicInfo?.student_icNumber, 'icNumber')}
@@ -1347,7 +1353,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
                             overflowWrap: 'break-word',
                             wordBreak: 'break-all'
                           }}>
-                            <span className="me-2">{basicInfo?.student_email ||""}</span>
+                            <span className="me-2">{basicInfo?.student_email || ""}</span>
                             <span
                               className="copy-icon-wrapper"
                               onClick={() => copyToClipboard(basicInfo?.student_email, 'email')}
@@ -1365,7 +1371,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
                         <div className="col-12">
                           <p><strong>Address</strong></p>
                           <p className="d-flex align-items-center">
-                            <span className="me-2">{basicInfo?.address ||""}</span>
+                            <span className="me-2">{basicInfo?.address || ""}</span>
                             <span
                               className="copy-icon-wrapper"
                               onClick={() => copyToClipboard(basicInfo?.address || '', 'address')}
@@ -1386,64 +1392,64 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
 
                   {accountType === 65 ? ( // Premium: Show Co-Curriculum and Achievements
                     <>
-        
-        <div className="row">
-  <div className="col-12 col-md-6 mb-3">
-    <div className="co-curriculum m-3 shadow-lg p-4 rounded-5">
-      <p className="text-secondary fw-bold border-bottom border-2 pb-3">Co-curriculum</p>
-      <div className="activities-grid" style={{ maxHeight: '15rem', overflowY: 'auto' }}>
-        {coCurriculum.length > 0 ? (
-          coCurriculum.map((activity, index) => (
-            <div key={index} className="activity-item d-flex flex-wrap justify-content-between align-items-start py-2">
-              <div className="col-12 col-sm-3">
-                <p className="mb-0 name-restrict"><strong>{activity.club_name || ""}</strong></p>
-                <p className="mb-0 text-muted name-restrict">{activity.location || ""}</p>
-              </div>
-              <div className="col-6 col-sm-3 text-start text-sm-center">
-                <p className="mb-0">{activity.year || ""}</p>
-              </div>
-              <div className="col-6 col-sm-3 text-end name-restrict">
-                <span className={`position py-1 px-2 rounded-pill`} style={getPositionStyle(activity.student_position)}>
-                  {activity.student_position}
-                </span>
-              </div>
-            </div>
-          ))
-        ) : (
-          <p className="text-center text-muted">No co-curricular activities added yet.</p>
-        )}
-      </div>
-    </div>
-  </div>
 
-  <div className="col-12 col-md-6 mb-3">
-    <div className="achievements m-3 shadow-lg p-4 rounded-5">
-      <p className="text-secondary fw-bold border-bottom border-2 pb-3">Achievements</p>
-      <div className="achievements-grid" style={{ maxHeight: '15rem', overflowY: 'auto' }}>
-        {achievements.length > 0 ? (
-          achievements.map((achievement, index) => (
-            <div key={index} className="achievement-item d-flex flex-wrap justify-content-between align-items-start py-2">
-              <div className="col-12 col-sm-4">
-                <p className="mb-0 name-restrict"><strong>{achievement.achievement_name || ""}</strong></p>
-                <p className="mb-0 name-restrict text-muted">{achievement.awarded_by || ""}</p>
-              </div>
-              <div className="col-6 col-sm-3 text-start text-sm-center">
-                <p className="mb-0">{achievement.date || ""}</p>
-              </div>
-              <div className="col-6 col-sm-5 mx-auto text-end">
-                <span className={`position ${(achievement.title?.core_metaName?.toLowerCase() ?? '').replace(/\s+/g, '-')} py-1 px-2 rounded-pill`}>
-                  {achievement.title?.core_metaName || 'No Title'}
-                </span>
-              </div>
-            </div>
-          ))
-        ) : (
-          <p className="text-center text-muted">No achievements added yet.</p>
-        )}
-      </div>
-    </div>
-  </div>
-</div>
+                      <div className="row">
+                        <div className="col-12 col-md-6 mb-3">
+                          <div className="co-curriculum m-3 shadow-lg p-4 rounded-5">
+                            <p className="text-secondary fw-bold border-bottom border-2 pb-3">Co-curriculum</p>
+                            <div className="activities-grid" style={{ maxHeight: '15rem', overflowY: 'auto' }}>
+                              {coCurriculum.length > 0 ? (
+                                coCurriculum.map((activity, index) => (
+                                  <div key={index} className="activity-item d-flex flex-wrap justify-content-between align-items-start py-2">
+                                    <div className="col-12 col-sm-3">
+                                      <p className="mb-0 name-restrict"><strong>{activity.club_name || ""}</strong></p>
+                                      <p className="mb-0 text-muted name-restrict">{activity.location || ""}</p>
+                                    </div>
+                                    <div className="col-6 col-sm-3 text-start text-sm-center">
+                                      <p className="mb-0">{activity.year || ""}</p>
+                                    </div>
+                                    <div className="col-6 col-sm-3 text-end name-restrict">
+                                      <span className={`position py-1 px-2 rounded-pill`} style={getPositionStyle(activity.student_position)}>
+                                        {activity.student_position}
+                                      </span>
+                                    </div>
+                                  </div>
+                                ))
+                              ) : (
+                                <p className="text-center text-muted">No co-curricular activities added yet.</p>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="col-12 col-md-6 mb-3">
+                          <div className="achievements m-3 shadow-lg p-4 rounded-5">
+                            <p className="text-secondary fw-bold border-bottom border-2 pb-3">Achievements</p>
+                            <div className="achievements-grid" style={{ maxHeight: '15rem', overflowY: 'auto' }}>
+                              {achievements.length > 0 ? (
+                                achievements.map((achievement, index) => (
+                                  <div key={index} className="achievement-item d-flex flex-wrap justify-content-between align-items-start py-2">
+                                    <div className="col-12 col-sm-4">
+                                      <p className="mb-0 name-restrict"><strong>{achievement.achievement_name || ""}</strong></p>
+                                      <p className="mb-0 name-restrict text-muted">{achievement.awarded_by || ""}</p>
+                                    </div>
+                                    <div className="col-6 col-sm-3 text-start text-sm-center">
+                                      <p className="mb-0">{achievement.date || ""}</p>
+                                    </div>
+                                    <div className="col-6 col-sm-5 mx-auto text-end">
+                                      <span className={`position ${(achievement.title?.core_metaName?.toLowerCase() ?? '').replace(/\s+/g, '-')} py-1 px-2 rounded-pill`}>
+                                        {achievement.title?.core_metaName || 'No Title'}
+                                      </span>
+                                    </div>
+                                  </div>
+                                ))
+                              ) : (
+                                <p className="text-center text-muted">No achievements added yet.</p>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
 
                     </>
 
@@ -1454,7 +1460,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
                         <p className="text-center text-white mt-3 px-5">This feature is locked and available
                           only with a premium account.</p>
                         <div className="sdv-div-plan-button rounded-pill mt-3">
-                          <button className="plan-button rounded-pill" onClick={ handleUpgradePage}>Upgrade Now</button>
+                          <button className="plan-button rounded-pill" onClick={handleUpgradePage}>Upgrade Now</button>
                         </div>
                       </div>
                       <div className="sdv-achievements m-3 shadow-lg p-4 rounded-5  d-flex align-items-center justify-content-center flex-column ">
@@ -1462,7 +1468,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
                         <p className="text-center text-white mt-3 px-5">This feature is locked and available
                           only with a premium account.</p>
                         <div className="sdv-div-plan-button rounded-pill mt-3">
-                          <button className="plan-button rounded-pill"  onClick={ handleUpgradePage}>Upgrade Now</button>
+                          <button className="plan-button rounded-pill" onClick={handleUpgradePage}>Upgrade Now</button>
                         </div></div>
                     </>
                   )}

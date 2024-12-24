@@ -1,0 +1,439 @@
+
+  
+  .SP-Container {
+    width: 100%;
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    display:flex;
+  }
+  
+  .SP-Container-Overall,.SP-Container-Overall-Pricing {
+    background: linear-gradient(#BA1718 50%, transparent 50%);
+    width: 50%;
+    height: 100vh;
+    flex-shrink: 0;
+    scroll-snap-align: start;
+  }
+
+  .SP-Container-Overall-One {
+    background-color: white;
+    width: 50%;
+    height: 100vh;
+    flex-shrink: 0;
+    scroll-snap-align: start;
+  }
+  
+  .SP-Container-Overall-Two {
+    width: 50%;
+    height: 100vh;
+    flex-shrink: 0;
+    scroll-snap-align: start;
+  }
+  
+  .SP-Container {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .SP-Container-One {
+    color: white;
+    padding: 1rem 0 0 0;
+    justify-items: center;
+  }
+  
+  .SP-Container-One h1 {
+    font-size: 3.5rem;
+    font-weight: bolder;
+  }
+  
+  .SP-Container-One h5 {
+    font-size: 1.15rem;
+    font-weight: bolder;
+  }
+  
+  .SP-Container-One ol {
+    font-weight: 700;
+  }
+  
+  .SP-Container-Two {
+    padding: 0.5rem 0.5rem;
+    height: 20rem;
+    width: 100%;
+  
+  }
+  
+  .SP-Container-Card {
+    background-color: white;
+    height: 19rem;
+    width: 15rem;
+    padding: 0 1rem 0 1rem;
+    box-shadow: 0px 3px 4px rgb(139, 139, 139);
+    position: relative;
+  }
+  
+  .SP-Container-One
+  { 
+    font-weight: bolder;
+    color: white;
+  }
+  
+  
+  .SP-Container-Current {
+    margin-bottom: 0;
+    background-color: #BA1718;
+    color: white;
+    font-size: 0.625rem;
+    padding: 0.25rem 0.725rem;
+    border-radius: 0.25rem;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    box-shadow: inset 0px 9px 10px -9px rgba(0, 0, 0, 0.2),
+      2px 2px 2px rgb(139, 139, 139);
+    ;
+    width: max-content;
+    position: absolute;
+    right: 10px;
+  }
+  
+  .SP-Container-Current-AddOns {
+    margin-bottom: 0;
+    background-color: #BA1718;
+    color: white;
+    font-size: 0.625rem;
+    padding: 0.25rem 1rem;
+    border-radius: 0.25rem;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    box-shadow: inset 0px 9px 10px -9px rgba(0, 0, 0, 0.2),
+      2px 2px 2px rgb(139, 139, 139);
+    ;
+    width: max-content;
+    position: absolute;
+    right: 10px;
+  }
+  
+  .SP-Container-Package-Title {
+    font-weight: 800;
+    font-size: 0.725rem;
+    margin-bottom: 0;
+    width:50%;
+    padding-top: 0.725rem;
+  }
+  
+  .SP-Container-Price-Title {
+    font-weight: bolder;
+    font-size: 1.25rem;
+    color: #BA1718;
+    margin-bottom: 0.5rem;
+  }
+  
+  
+  .SP-Container-Price-Title span {
+    font-size: 0.725rem;
+  }
+  
+  .SP-Container-Features-Title {
+    background-color: #BA1718;
+    color: white;
+    padding: 0.25rem 0.825rem;
+    width: max-content;
+    border-radius: 5px;
+    font-weight: 1000;
+    font-size: 0.625rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  
+  .SP-Container-Card-Features-Container {
+    height: 15rem;
+    overflow-y: auto;
+  }
+  
+  .SP-Container-Card-Features-AddOns {
+    height: 8rem;
+    overflow-y: auto;
+  }
+  
+  
+  .SP-Container-Card-Features-Container::-webkit-scrollbar,
+  .SP-Container-Card-Features-AddOns::-webkit-scrollbar {
+    width: 8px;
+    background-color: #F5F5F5;
+  }
+  
+  .SP-Container-Card-Features-Container::-webkit-scrollbar-thumb,
+  .SP-Container-Card-Features-AddOns::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background-color: #C6C6C6;
+  }
+  
+  .SP-Container-Card-Features-Container::-webkit-scrollbar-thumb:hover,
+  .SP-Container-Card-Features-AddOns::-webkit-scrollbar-thumb:hover {
+    background-color: #A8A8A8;
+  }
+  
+  
+  .SP-Container-Card-Features-Container .SP-Container-Card-Features {
+    display: flex;
+    gap: 0.725rem;
+    align-items: center;
+  }
+  
+  .SP-Container-Card-Features
+  {
+    display:flex;
+    gap:1rem;
+  }
+  
+  .SP-Container-Card-Features p {
+    margin-bottom: 0;
+    font-size: 0.625rem;
+  }
+  
+  .SP-Container-Card-Features i {
+    height: 1rem;
+    font-size:0.75rem;
+  }
+  
+  .SP-Container-Features-Button {
+    background-color: #BA1718;
+    color: white;
+    padding: 0.25rem 1.5rem;
+    width: max-content;
+    border-radius: 5px;
+    height:2rem;
+    font-weight: 1000;
+    margin: auto 0 0 0 ;
+    font-size:0.625rem;
+    text-align-last:end;
+    margin-left:auto;
+  }
+  
+  .SP-Container-Last {
+   display: flex;
+  }
+  
+  .SP-Container-Quantity {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 0rem 0;
+  }
+  
+  .SP-Container-Slots
+  {
+    font-size:0.625rem;
+  }
+  
+  .SP-Container-Quantity-Label {
+    font-weight: 600;
+    margin: 0;
+    font-size:0.625rem;
+  }
+  
+  .SP-Container-Quantity-Controls {
+    display: flex;
+    align-items: center;
+    border-radius: 4px;
+    padding: 0;
+  }
+  
+  .SP-Container-Quantity-Button {
+    border: none;
+    background: none;
+    padding: 0rem 0rem;
+    font-size: 1rem;
+    cursor: pointer;
+    color: #BA1718;
+    margin: 0;
+    z-index:20;
+    margin:0 0.5rem;
+    pointer-events: auto;
+  }
+  
+  .SP-Container-Quantity-Value {
+    padding:0 0.5rem;
+    min-width: 1rem;
+    text-align: center;
+    font-size:0.625rem;
+  }
+  
+  .pricing_summary_container {
+    max-width: 36rem;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    position: relative;
+    background: rgb(0, 0, 0,0);
+    border-radius: 8px;
+  }
+  
+  .pricing_summary_container::before {
+    transform: rotate(-1deg);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.9);
+  }
+  
+  .pricing_summary_container::after {
+    transform: rotate(1deg);
+    bottom: -7px;
+    left: 7px;
+    right: 7px;
+    box-shadow: 0 3px 4px rgba(0,0,0,0.5);
+  }
+  
+  /* Enhance the inside section */
+  .pricing_summary-section_inside {
+    position: relative;
+    background: white;
+    border-radius: 6px;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.9);
+  }
+  
+  .package_select
+  {
+    color:black;
+    border:1px solid #000;
+    background-color: transparent;
+  }
+  .pricing_summary_title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+  }
+  
+  .pricing_summary_section {
+    margin-bottom: 1.5rem;
+  }
+  
+  .pricing_summary_section_header {
+    font-size: 1.125rem;
+    margin-bottom: 0.5rem;
+    font-weight: normal;
+  }
+  
+  .pricing_plan_item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.25rem;
+  }
+  
+  .pricing_plan_name {
+    font-weight: 500;
+  }
+  
+  .pricing_plan_name::before {
+    content: "•";
+    margin-right: 0.25rem;
+  }
+  
+  .pricing_subscription_text {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin-left: 0.75rem;
+  }
+  
+  .pricing_addons_table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 1rem;
+  }
+  
+  .pricing_addons_table thead th {
+    font-weight: normal;
+    color: #6b7280;
+    font-size: 0.875rem;
+    padding-bottom: 0.5rem;
+  }
+  
+  .pricing_addons_table th:not(:first-child),
+  .pricing_addons_table td:not(:first-child) {
+    text-align: right;
+  }
+  
+  .pricing_addons_table th:nth-child(3),
+  .pricing_addons_table td:nth-child(3) {
+    text-align: center;
+  }
+  
+  .pricing_addons_table td {
+    font-weight: 500;
+    padding: 0.25rem 0;
+    vertical-align: top;
+  }
+  
+  .pricing_addons_table td:first-child {
+    width: 50%;
+  }
+  
+  .pricing_addons_table td:not(:first-child) {
+    width: 16.66%;
+  }
+  
+  .pricing_addon_details {
+    margin-bottom: 0.25rem;
+  }
+  
+  .pricing_summary_total {
+    border-top: 1px solid #e5e5e5;
+    padding-top: 1rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .pricing_total_text {
+    font-weight: 500;
+  }
+  
+  .pricing_total_amount {
+    font-weight: 700;
+  }
+  
+  .pricing_contact_button {
+    width: 100%;
+    background-color: #BA1718;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 0.25rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.15s ease;
+  }
+  
+  .pricing_contact_button:hover {
+    opacity: 0.9;
+  }
+  
+
+  @media (max-width:426px)
+  {
+    .SP-Container
+    {
+      flex-direction: column;
+    }
+
+    .SP-Container-Overall,.SP-Container-Overall-Pricing
+    {
+      width:100%;
+    }
+    .SP-Container-Overall-Pricing
+    {
+      margin-top:10rem;
+    }
+
+    .SP-Container-One h1
+    {
+      text-align: center;
+    }
+
+    .SP-Container-Quantity-Button
+    {
+      margin:0 0.25rem;
+    }
+  }

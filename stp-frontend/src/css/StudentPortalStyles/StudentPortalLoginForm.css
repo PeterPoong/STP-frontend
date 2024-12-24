@@ -7,8 +7,14 @@
     border-radius: 10px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
   } */
-  
-
+  .login-back-button:hover
+  {
+    background-color: #7a1311;
+    border:1px solid #7a1311;
+  }
+  .google-btn {
+    margin: 0 auto;  /* Centers the button horizontally */
+  }
   .custom-color-title
   {
     color:#525252;

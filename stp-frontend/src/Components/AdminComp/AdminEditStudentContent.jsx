@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Container, Col, Button, Modal, Card } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { useDropzone } from "react-dropzone";
+import SkeletonLoader from './SkeletonLoader';
 import AdminFormComponent from './AdminFormComponent';
 import 'typeface-ubuntu';
 import "../../css/AdminStyles/AdminFormStyle.css";
-import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
-
-import { FaTrashAlt } from 'react-icons/fa';
+import ErrorModal from "./Error";
 
 const AdminEditStudentContent = () => {
     const [genderList, setGenderList] = useState([]); 
@@ -32,16 +30,26 @@ const AdminEditStudentContent = () => {
         password: "",
         confirm_password: "",
     });
-    const [error, setError] = useState(null);
     const navigate = useNavigate();
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`;
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [passwordsMatch, setPasswordsMatch] = useState(true);
-    
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
+    const [generalError, setGeneralError] = useState('');
+    const [fieldErrors, setFieldErrors] = useState({});
     const studentId = sessionStorage.getItem('studentId');
     const fetchStudentDetails = async () => {
+      const studentId = sessionStorage.getItem('studentId');
+            if (!studentId) {
+                setGeneralError('No student ID found in session storage.');
+                setErrorModalVisible(true);
+                setLoading(false);
+                return;
+            }
       try {
           const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/studentDetail`, {
               method: 'POST',
@@ -53,12 +61,12 @@ const AdminEditStudentContent = () => {
           });
 
           if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error(`Failed to fetch student details. HTTP status: ${response.status}`);
           }
 
           const data = await response.json();
           const studentDetails = data.data;
-
+          const newFieldErrors = {};
           if (studentDetails) {
               setFormData({
                   name: studentDetails.name,
@@ -74,16 +82,35 @@ const AdminEditStudentContent = () => {
                   state: studentDetails.state,
                   city: studentDetails.city,
                   postcode: studentDetails.postcode,
-                  
               });
-
+              if (studentDetails.country) {
+                try {
+                    await fetchStates(studentDetails.country);
+                } catch {
+                    newFieldErrors.state = 'Error fetching states based on country.';
+                }
+            }
+            if (studentDetails.state) {
+              try {
+                  await fetchCities(studentDetails.state);
+              } catch {
+                  newFieldErrors.city = 'Error fetching cities based on state.';
+              }
+          }
+          setFieldErrors(newFieldErrors);
+              if (Object.keys(newFieldErrors).length > 0) {
+                  setErrorModalVisible(true);
+              }
           } else {
-              console.error("Student not found with ID:", studentId);
+            setGeneralError(data.message || 'Failed to load student details data.');
+            setErrorModalVisible(true);
           }
       } catch (error) {
-          console.error('Error fetching student details:', error.message);
-          setError(error.message);
-      }
+        setGeneralError(error.message || 'An error occurred while fetching student details.');
+        setErrorModalVisible(true);
+      }finally {
+      setLoading(false);
+    }
   };
   useEffect(() => {
     if (!studentId) {
@@ -94,66 +121,120 @@ const AdminEditStudentContent = () => {
     fetchStudentDetails();
 }, [studentId, Authenticate]);
 
-    const handleSubmit = async (event) => {
-      event.preventDefault();
-      // console.log("Submitting form data:", formData);
-  
-      const { name, first_name, last_name, gender, ic, postcode, email, state, city, country, address, contact_number, country_code, confirm_password, password } = formData;
-  
-      // Convert strings to integers where needed
-      const cityInt = parseInt(city, 10);
-      const genderInt = parseInt(gender, 10);
-      const stateInt = parseInt(state, 10);
-      const countryInt = parseInt(country, 10);
-  
-      if ( isNaN(cityInt) || isNaN(genderInt) || isNaN(stateInt) || isNaN(countryInt)) {
-          setError("Some fields must be valid integers.");
-          return;
-      }
-  
-      const formPayload = new FormData();
-      formPayload.append("id", studentId);
-      formPayload.append("address", address);
-      formPayload.append("name", name);
-      formPayload.append("first_name", first_name);
-      formPayload.append("last_name", last_name);
-      formPayload.append("ic", ic);
-      formPayload.append("postcode", postcode);
-      formPayload.append("gender", genderInt);
-      formPayload.append("email", email);
-      formPayload.append("country_code", country_code);
-      formPayload.append("contact_number", contact_number);
-      formPayload.append("country", countryInt);
-      formPayload.append("state", stateInt);
-      formPayload.append("city", cityInt);
-      formPayload.append("password", password);
-      formPayload.append("confirm_password", confirm_password);
-  
-      try {
-          // console.log("FormData before submission:", formPayload);
-  
-          const addStudentResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/editStudent`, {
-              method: 'POST',
-              headers: {
-                  'Authorization': Authenticate,
-              },
-              body: formPayload,
-          });
-  
-          const addStudentData = await addStudentResponse.json();
-  
-          if (addStudentResponse.ok) {
-              console.log('Student successfully registered:', addStudentData);
-              navigate('/adminStudent');
-          } else {
-              console.error('Validation Error:', addStudentData.errors);
-              throw new Error(`Student Registration failed: ${addStudentData.message}`);
-          }
-      } catch (error) {
-          setError('An error occurred during student registration. Please try again later.');
-          console.error('Error during student registration:', error);
-      }
+  const fieldLabels = {
+    name:"Student Name",
+    first_name:"Student Firstname",
+    last_name:"Student lastname",
+    gender:"Gender",
+    ic:"New Identity Card No.",
+    postcode:"Postcode",
+    email:"Email Address",
+    state: "State", 
+    city:"City", 
+    country:"Country", 
+    address:"Full Address", 
+    contact_number: "Contact Number", 
+    country_code: "Country Code",
+    confirm_password:"Confirm Password",
+    password:"Password"
   };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+  
+    const {
+      name,
+      first_name,
+      last_name,
+      gender,
+      ic,
+      postcode,
+      email,
+      state,
+      city,
+      country,
+      address,
+      contact_number,
+      country_code,
+      confirm_password,
+      password,
+    } = formData;
+  
+    if (!name || !email) {
+      setError("Please fill in all required fields.");
+      setErrorModalVisible(true);
+      return; // Stop form submission if any required field is missing
+    }
+  
+    // Convert strings to integers where needed
+    const cityInt = city ? parseInt(city, 10) : null;
+    const genderInt = gender ? parseInt(gender, 10) : null;
+    const stateInt = state ? parseInt(state, 10) : null;
+    const countryInt = country ? parseInt(country, 10) : null;
+  
+    const formPayload = new FormData();
+  
+    // Append non-empty fields dynamically
+    const fields = {
+      id: studentId,
+      name,
+      first_name,
+      last_name,
+      ic,
+      postcode,
+      gender: genderInt,
+      email,
+      country_code,
+      contact_number,
+      country: countryInt,
+      state: stateInt,
+      city: cityInt,
+      address,
+      password,
+      confirm_password,
+    };
+  
+    Object.entries(fields).forEach(([key, value]) => {
+      if (value !== null && value !== undefined && value !== "") {
+        formPayload.append(key, value);
+      }
+    });
+  
+    try {
+      const addStudentResponse = await fetch(
+        `${import.meta.env.VITE_BASE_URL}api/admin/editStudent`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: Authenticate,
+          },
+          body: formPayload,
+        }
+      );
+  
+      const addStudentData = await addStudentResponse.json();
+  
+      if (addStudentResponse.ok) {
+        console.log("Student successfully registered:", addStudentData);
+        navigate("/adminStudent");
+      } else if (addStudentResponse.status === 422) {
+        // Validation errors
+        console.log("Validation Errors:", addStudentData.errors);
+        setFieldErrors(addStudentData.errors); // Pass validation errors to the modal
+        setGeneralError(addStudentData.message || "Validation Error");
+        setErrorModalVisible(true); // Show the error modal
+      } else {
+        setGeneralError(addStudentData.message || "Failed to edit student details.");
+        setErrorModalVisible(true);
+      }
+    } catch (error) {
+      setGeneralError(
+        error.message || "An error occurred while editing the student. Please try again later."
+      );
+      setErrorModalVisible(true);
+    }
+  };
+  
   
     useEffect(() => {
       const fetchGenders = async () => {
@@ -367,7 +448,6 @@ const fetchCities = (stateId) => {
             placeholder: "Enter username",
             value: formData.name,
             onChange: handleFieldChange,
-            required: true
         },
         {
           id: "first_name",
@@ -376,7 +456,6 @@ const fetchCities = (stateId) => {
           placeholder: "Enter firstname",
           value: formData.first_name,
           onChange: handleFieldChange,
-          required: true
       },
     
       
@@ -387,7 +466,6 @@ const fetchCities = (stateId) => {
           label: "Gender",
           value: formData.gender,
           onChange: handleFieldChange,
-          required: true,
           options: genderList.map(gender => ({
               label: gender.core_metaName,
               value: gender.id
@@ -402,7 +480,6 @@ const fetchCities = (stateId) => {
         placeholder: "Enter lastname",
         value: formData.last_name,
         onChange: handleFieldChange,
-        required: true
     },
           {
             id: "ic",
@@ -411,7 +488,6 @@ const fetchCities = (stateId) => {
             placeholder: "Enter New IC number",
             value: formData.ic,
             onChange: handleICChange,
-            required: true
         },
         {
           id: "email",
@@ -420,7 +496,6 @@ const fetchCities = (stateId) => {
           placeholder: "Enter email address",
           value: formData.email,
           onChange: handleFieldChange,
-          required: true,
           autoComplete: "off"
       },
       {
@@ -430,7 +505,6 @@ const fetchCities = (stateId) => {
         placeholder: "Enter postcode",
         value: formData.postcode,
         onChange: handleFieldChange,
-        required: true,
         autoComplete: "off"
     },
     ];
@@ -443,7 +517,6 @@ const fetchCities = (stateId) => {
             placeholder: "Enter Address",
             value: formData.address,
             onChange: handleFieldChange,
-            required: true
         },
     ];
     
@@ -481,7 +554,6 @@ const fetchCities = (stateId) => {
       label: "Country",
       value: formData.country,  // Existing country value
       onChange: handleCountryChange,
-      required: true,
       options: countryList.map(country => ({
         label: country.country_name,
         value: country.id
@@ -493,7 +565,6 @@ const fetchCities = (stateId) => {
       label: "State",
       value: formData.state,  // Existing state value
       onChange: handleStateChange,
-      required: true,
       options: stateList.map(state => ({
         label: state.state_name,
         value: state.id
@@ -506,7 +577,6 @@ const fetchCities = (stateId) => {
       label: "City",
       value: formData.city,  // Existing city value
       onChange: handleCityChange,
-      required: true,
       options: cityList.map(city => ({
         label: city.city_name,
         value: city.id
@@ -525,8 +595,18 @@ const fetchCities = (stateId) => {
 
     return (
         
-                <Container fluid className="admin-add-student-container">
-                    <AdminFormComponent
+        <Container fluid className="admin-add-student-container">
+                <ErrorModal
+                errorModalVisible={errorModalVisible}
+                setErrorModalVisible={setErrorModalVisible}
+                generalError={generalError || error} // Ensure `generalError` or fallback to `error`
+                fieldErrors={fieldErrors}
+                fieldLabels={fieldLabels}
+            />
+           {loading ? (
+                    <SkeletonLoader />
+                ) : (
+           <AdminFormComponent
            formTitle="Student Information"
            formFields={formFields}
            shouldRenderPasswordCard={shouldRenderPasswordCard}
@@ -544,12 +624,13 @@ const fetchCities = (stateId) => {
            handleRadioChange={handleRadioChange}
            formData={formData}
                 />
-                 {!passwordsMatch && (
-                <div className="text-danger">
-                    Passwords do not match.
-                </div>
+          )}
+            {!passwordsMatch && (
+              <div className="text-danger">
+                  Passwords do not match.
+              </div>
             )}
-                </Container>
+      </Container>
     );
 };
 

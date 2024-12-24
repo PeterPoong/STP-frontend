@@ -3,7 +3,7 @@ import { Container } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import AdminFormComponent from './AdminFormComponent';
 import "../../css/AdminStyles/AdminFormStyle.css";
-
+import ErrorModal from "./Error";
 const AdminAddBannerContent = () => {
   const [bannerFeaturedList, setBannerFeaturedList] = useState([]);
   const [formData, setFormData] = useState({
@@ -16,6 +16,9 @@ const AdminAddBannerContent = () => {
   const [selectedStartDate, setSelectedStartDate] = useState('');
   const [selectedEndDate, setSelectedEndDate] = useState('');
   const [error, setError] = useState(null);
+  const [errorModalVisible, setErrorModalVisible] = useState(false);
+  const [generalError, setGeneralError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
   const navigate = useNavigate();
   const token = sessionStorage.getItem('token');
   const Authenticate = `Bearer ${token}`;
@@ -39,63 +42,73 @@ const AdminAddBannerContent = () => {
       
     }
   };
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-  
-   // Formatting dates for submission
-   const formattedStartDate = selectedStartDate
-   ? formatDateForSubmission(selectedStartDate)
-   : null;
- const formattedEndDate = selectedEndDate
-   ? formatDateForSubmission(selectedEndDate)
-   : null;
-  
-    // Check if all required fields are filled
-    if (!formData.banner_name || !formData.banner_url || !formattedStartDate || !formattedEndDate || !formData.banner_file) {
-      setError("Please fill out all required fields.");
+  const fieldLabels = {
+    banner_name: "Banner Name",
+    banner_url: "Banner URL",
+    formattedStartDate: "Banner Start Date",
+    formattedEndDate: "Banner End Date",
+    banner_file: "Banner File (2MB)",
+};
+const handleSubmit = async (event) => {
+  event.preventDefault();
+
+  const formattedStartDate = selectedStartDate
+      ? formatDateForSubmission(selectedStartDate)
+      : null;
+  const formattedEndDate = selectedEndDate
+      ? formatDateForSubmission(selectedEndDate)
+      : null;
+
+  if (!formData.banner_name || !formData.banner_url || !formattedStartDate || !formattedEndDate || !formData.banner_file) {
+      setGeneralError("Please fill out all required fields.");
+      setErrorModalVisible(true);
       return;
-    }
-  
-    // Create FormData object
-    const submissionData = new FormData();
-    submissionData.append("banner_name", formData.banner_name);
-    submissionData.append("banner_url", formData.banner_url);
-    submissionData.append("banner_start", formattedStartDate);
-    submissionData.append("banner_end", formattedEndDate);
-    submissionData.append("banner_file", formData.banner_file);
-  
-    // Add selected features
-    selectedFeatures.forEach((featureId) => {
+  }
+
+  if (!Array.isArray(selectedFeatures) || selectedFeatures.length === 0) {
+      setGeneralError("Please select at least one feature.");
+      setErrorModalVisible(true);
+      return;
+  }
+
+  const submissionData = new FormData();
+  submissionData.append("banner_name", formData.banner_name);
+  submissionData.append("banner_url", formData.banner_url);
+  submissionData.append("banner_start", formattedStartDate);
+  submissionData.append("banner_end", formattedEndDate);
+  submissionData.append("banner_file", formData.banner_file);
+
+  selectedFeatures.forEach((featureId) => {
       submissionData.append("featured_id[]", featureId);
-    });
-  
-    // Log the data being submitted
-    // console.log("FormData being submitted:");
-    for (const pair of submissionData.entries()) {
-      // console.log(`${pair[0]}: ${pair[1]}`);
-    }
-  
-    try {
+  });
+
+  try {
       const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/addBanner`, {
-        method: "POST",
-        headers: {
-          Authorization: Authenticate,
-        },
-        body: submissionData,
+          method: "POST",
+          headers: { Authorization: Authenticate },
+          body: submissionData,
       });
-  
+
       const result = await response.json();
+
       if (response.ok) {
-        console.log("Banner added successfully!", result);
-        navigate("/adminBanner");
+          console.log("Banner added successfully!", result);
+          navigate("/adminBanner");
+      } else if (response.status === 422) {
+          console.log("Validation Errors:", result.errors);
+          setFieldErrors(result.errors); // Pass validation errors to the modal
+          setGeneralError(result.message || "Validation Error");
+          setErrorModalVisible(true);
       } else {
-        setError(result.message || "Failed to add banner.");
+          setGeneralError(result.message || "Failed to add banner.");
+          setErrorModalVisible(true);
       }
-    } catch (error) {
-      setError(error.message);
-    }
-  };
-  
+  } catch (error) {
+      setGeneralError(error.message || "An error occurred while adding the banner. Please try again later.");
+      setErrorModalVisible(true);
+  }
+};
+
   useEffect(() => {
     const fetchFeatured = async () => {
       try {
@@ -175,6 +188,14 @@ const AdminAddBannerContent = () => {
 
   return (
     <Container fluid className="admin-add-banner-content">
+      <ErrorModal
+        errorModalVisible={errorModalVisible}
+        setErrorModalVisible={setErrorModalVisible}
+        generalError={generalError || error} // Ensure `generalError` or fallback to `error`
+        fieldErrors={fieldErrors}
+        fieldLabels={fieldLabels}
+    />
+
       <AdminFormComponent
         formTitle="Add Banner"
         checkboxDetail="Featured Type(s)"
@@ -183,7 +204,8 @@ const AdminAddBannerContent = () => {
         formCheckboxes={formCheckboxes}
         formPeriod={true}
         onSubmit={handleSubmit}
-          helperStar="*"
+        helperStar="*"
+        Star="*"
         error={error}
         buttons={buttons}
         selectedStartDate={selectedStartDate}

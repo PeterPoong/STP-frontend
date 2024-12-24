@@ -17,6 +17,7 @@ import {
   ChevronDown,
   ChevronUp,
   ArrowReturnRight,
+  PencilSquare
 } from "react-bootstrap-icons";
 import studyPayLogo from "../../assets/SchoolPortalAssets/SchoolPortalLoginLogo.png";
 import defaultProfilePic from "../../assets/SchoolPortalAssets/profileDefaultIcon.png";
@@ -27,7 +28,7 @@ const Sidebar = ({ onDropdownItemSelect, selectTabPage }) => {
   // Destructure `detail` from props
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
-  const [selectedTab, setSelectedTab] = useState("dashboard");
+  const [selectedTab, setSelectedTab] = useState("");
   const [selectedDropdownItem, setSelectedDropdownItem] = useState("");
   // const [accountType, setAccountType] = useState(detail.data.account_type);
   const [accountType, setAccountType] = useState("");
@@ -98,7 +99,7 @@ const Sidebar = ({ onDropdownItemSelect, selectTabPage }) => {
       // console.log("detail", data);
       for (const key in data) {
         if (!excludeKeys.includes(key) && data[key] === null) {
-          console.log("not gull", key);
+          //console.log("not gull", key);
           setIsProfileDropdownOpen(true);
           setSelectedTab("myProfile");
           setSelectedDropdownItem("basicInfo");
@@ -111,8 +112,8 @@ const Sidebar = ({ onDropdownItemSelect, selectTabPage }) => {
       setSchoolLogo(
         `${import.meta.env.VITE_BASE_URL}storage/${detail["school_logo"]}`
       );
-      console.log("All keys have values.");
-      handleTabClick("dashboard");
+    //  // console.log("All keys have values.");
+    //   handleTabClick("dashboard");
     };
 
     setAccountType(detail.account_type);
@@ -182,7 +183,7 @@ const Sidebar = ({ onDropdownItemSelect, selectTabPage }) => {
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     setSelectedFile(file);
-    console.log("Selected file:", file);
+   // console.log("Selected file:", file);
   };
 
   const handleUpload = async () => {
@@ -209,11 +210,11 @@ const Sidebar = ({ onDropdownItemSelect, selectTabPage }) => {
         if (!response.ok) {
           const errorData = await response.json();
           setErrorUploadMessage("Image must be either: jpeg,png or jpg");
-          console.log("errorTest:", errorData);
+         // console.log("errorTest:", errorData);
           throw new Error("error:".response);
         }
         const data = await response.json();
-        console.log("File uploaded successfully:", data.data);
+        //console.log("File uploaded successfully:", data.data);
         setShowModal(false); // Close the modal after successful upload
         setSchoolLogo(`${import.meta.env.VITE_BASE_URL}storage/${data.data}`);
       } catch (error) {
@@ -221,6 +222,24 @@ const Sidebar = ({ onDropdownItemSelect, selectTabPage }) => {
       }
     }
   };
+
+const handleRequestFeaturedClick = () => {
+  setSelectedTab("featured");
+  navigate("/RequestFeatured", { replace: true }); // Avoids creating a new history entry
+  if (isSidebarOpen) {
+    toggleSidebar();
+  }
+  
+  // Refresh the page after navigation
+  window.location.reload();
+};
+
+  useEffect(() => {
+    if (location.pathname === "/RequestFeatured") {
+      setSelectedTab("featured");
+    }
+  }, [location]);
+  
 
   return (
     
@@ -451,6 +470,20 @@ const Sidebar = ({ onDropdownItemSelect, selectTabPage }) => {
           >
             <Grid className="me-2" />
             Dashboard
+          </Nav.Link>
+        </Nav.Item>
+   
+      
+        <Nav.Item className="pb-1">
+          <Nav.Link
+            className={`d-flex align-items-center text-dark w-100 py-2 ${
+              selectedTab === "featured" ? "selected-tab" : ""
+            }`}
+            style={{ fontSize: "15px", cursor: "pointer" }}
+            onClick={handleRequestFeaturedClick}
+          >
+            <PencilSquare className="me-2" />
+            Request Featured
           </Nav.Link>
         </Nav.Item>
       </Nav>
