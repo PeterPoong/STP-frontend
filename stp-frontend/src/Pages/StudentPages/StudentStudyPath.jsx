@@ -1,5 +1,5 @@
 // Pages/StudentPortal/StudentStudyPath.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import "../../css/StudentPortalStyles/StudentStudyPath.css"
 import SpcFooter from "../../Components/StudentPortalComp/SpcFooter";
 import NavButtonsSP from "../../Components/StudentPortalComp/NavButtonsSP";
@@ -11,28 +11,56 @@ import ProgressBar from '../../Components/StudentComp/StudyPath/ProgressBar';
 import testingSchool from '../../assets/StudentPortalAssets/testingSchool.jpg';
 const StudentStudyPath = () => {
     const [currentStep, setCurrentStep] = useState(1);
+    const [categories, setCategories] = useState([]); // Add this
     const [userData, setUserData] = useState({
         username: '',
         answers: null,
         results: null
     });
 
+    // Add this useEffect to fetch categories when component mounts
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/categoryFilterList`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${sessionStorage.getItem('token') || localStorage.getItem('token')}`
+                    }
+                });
+                const data = await response.json();
+                console.log('Fetched categories:', data);
+                if (data.success && Array.isArray(data.data)) {
+                    setCategories(data.data);
+                    console.log('Categories set in state:', data.data);
+                }
+            } catch (error) {
+                console.error('Error fetching categories:', error);
+            }
+        };
+
+        fetchCategories();
+    }, []);
+
+
     // RIASEC type attributes - defines strengths and courses for each type
     const typeAttributes = {
         Realistic: {
             strengths: [
-                'Practical Problem-solving',
-                'Technical Aptitude',
-                'Physical Coordination',
-                'Mechanical Skills'
+                'Analytics Thinking',
+                'Scientific Mindset',
+                'Research Abilities',
+                'Problem-solving Skills'
             ],
             courses: [
+                'Agriculture & Plantation',
+                'Aviation',
                 'Engineering',
-                'Construction Management',
-                'Technical Training',
-                'Agriculture Science',
-                'Automotive Technology',
-                'Architecture'
+                'Manufacturing & Processing',
+                'Marine',
+                'Oil and Gas',
+                'Technology',
             ]
         },
         Investigative: {
@@ -43,60 +71,61 @@ const StudentStudyPath = () => {
                 'Problem-solving Skills'
             ],
             courses: [
-                'Computer Science',
-                'Research Scientist',
-                'Data Analyst',
-                'Laboratory Technician',
-                'Medical Studies',
-                'Mathematics'
+                'Computing & IT',
+                'Dentistry',
+                'Environmental Protection',
+                'Mathematics & Statistics',
+                'Medicine & Healthcare',
+                'Pharmacy',
+                'Science'
             ]
         },
         Artistic: {
             strengths: [
                 'Creative Expression',
                 'Innovative Thinking',
-                'Visual Arts Skills',
-                'Design Capabilities'
+                'Aesthetic Awareness',
+                'Original Ideas'
             ],
             courses: [
-                'Fine Arts',
-                'Graphic Design',
-                'Music Production',
-                'Creative Writing',
-                'Fashion Design',
-                'Interior Design'
+                'Architecture',
+                'Arts, Design & Multimedia',
+                'Audio-visual Techniques & Media Production',
+                'Culinary Arts',
+                'Humanities',
+                'Language Studies',
+                'Media & Communication',
             ]
         },
         Social: {
             strengths: [
-                'Communication Skills',
-                'Teaching Abilities',
-                'Counseling Aptitude',
-                'Interpersonal Skills'
+                'People Skills',
+                'Emotional Intelligence',
+                'Communication Ability',
+                'Teaching Aptitude'
             ],
             courses: [
-                'Education',
+                'Allied Health Sciences',
+                'Early Childhood Education & Education',
+                'Hospitality & Tourism',
+                'Human Resource',
+                'Social Sciences',
                 'Psychology',
-                'Social Work',
-                'Human Resources',
-                'Healthcare Services',
-                'Counseling'
             ]
         },
         Enterprising: {
             strengths: [
                 'Leadership Skills',
-                'Persuasion Abilities',
-                'Business Acumen',
-                'Decision Making'
+                'Persuasion Ability',
+                'Goal-oriented Drive',
+                'Strategic Thinking'
             ],
             courses: [
-                'Business Administration',
-                'Marketing',
-                'Sales Management',
-                'Entrepreneurship',
-                'Public Relations',
-                'Project Management'
+                'Banking & Finance',
+                'Business & Marketing',
+                'Economy',
+                'Law',
+                'Pre University'
             ]
         },
         Conventional: {
@@ -104,54 +133,58 @@ const StudentStudyPath = () => {
                 'Organizational Skills',
                 'Attention to Detail',
                 'Data Management',
-                'Systematic Thinking'
+                'System Development'
             ],
             courses: [
                 'Accounting',
-                'Office Administration',
-                'Finance',
-                'Information Management',
-                'Banking',
-                'Quality Control'
+                'Security Services'
             ]
         }
     };
 
     const typeDescriptions = {
         Realistic: {
-            unique: "Your practical nature and hands-on approach make you an excellent problem solver in real-world situations. You excel at working with tools, machines, and physical objects.",
-            strength: "Your technical mindset and ability to work with concrete solutions makes you naturally adept at handling practical challenges and implementing tangible solutions."
+            unique: "Your natural ability to understand how things work and your hands-on approach makes you the go-to person for turning ideas into reality.",
+            strength: "Your practical mindset and hands-on capabilities allow you to tackle real-world challenges with confidence and precision."
         },
         Investigative: {
             unique: "Your dedication to finding answers and understanding complex systems makes you an excellent researcher and problem solver.",
             strength: "Your curious and analytical mind drives you to understand how and why things work. You excel at solving complex problems and uncovering new insights."
         },
         Artistic: {
-            unique: "Your creative vision and innovative thinking allow you to see the world in unique ways and express ideas through various forms of art and design.",
-            strength: "Your imaginative mind and creative abilities enable you to think outside the box and find innovative solutions to challenges."
+            unique: " Your creative vision and ability to think outside the box allows you to see possibilities where others see limitations.",
+            strength: "Your imaginative mind and creative instincts enable you to see the world differently and create unique solutions that others might never consider."
         },
         Social: {
-            unique: "Your natural ability to understand and connect with others makes you an excellent mentor and facilitator of personal growth.",
-            strength: "Your empathetic nature and communication skills help you excel in situations that involve helping, teaching, or counseling others."
+            unique: "Your genuine interest in people and natural ability to understand others makes you an inspiring force for positive change.",
+            strength: "Your natural empathy and people-focused mindset help you build meaningful connections and make a positive impact in others' lives."
         },
         Enterprising: {
-            unique: "Your leadership qualities and persuasive abilities make you excellent at taking charge and influencing others toward achieving goals.",
-            strength: "Your natural business sense and decision-making abilities help you excel in competitive environments and leadership roles."
+            unique: "Your natural leadership and ability to inspire others makes you the perfect person to turn visions into successful ventures.",
+            strength: "Your dynamic personality and leadership instincts make you naturally effective at motivating teams and driving initiatives to success."
         },
         Conventional: {
-            unique: "Your attention to detail and organizational skills make you excellent at creating and maintaining efficient systems and processes.",
-            strength: "Your methodical approach and ability to work with data and systems help you excel in structured environments requiring precision and accuracy."
+            unique: "Your exceptional attention to detail and organizational skills make you the master of creating order from chaos.",
+            strength: "Your systematic approach and precise attention to detail make you exceptional at creating and maintaining efficient, well-organized systems."
         }
     };
 
     const handleQuestionSubmit = (answers) => {
-        // Extract the ranking and scores from the answers
         const { ranking, scores } = answers;
-        
-        // Get the top RIASEC type (ranked #1)
         const topType = ranking[1].type;
-        
-        // Format the top 3 types as expected by ResultSection
+        console.log('Available categories:', categories);
+
+        // Map the recommended courses to their category IDs
+        const recommendedCategories = typeAttributes[topType].courses
+            .map(courseName => {
+                const category = categories.find(cat => cat.category_name === courseName);
+                console.log('Mapping course:', courseName, 'to category:', category);
+                return {
+                    name: courseName,
+                    id: category?.id
+                };
+            });
+
         const topTypes = Object.entries(ranking)
             .slice(0, 3)
             .map(([, data]) => ({
@@ -159,53 +192,16 @@ const StudentStudyPath = () => {
                 percentage: data.score
             }));
 
-        // Create the processed results
         const processedResults = {
             topTypes,
             scores,
             strengths: typeAttributes[topType].strengths,
             strengthsDesc: typeDescriptions[topType].strength,
-            unique:typeDescriptions[topType].unique,
-            recommendedCourses: typeAttributes[topType].courses,
-            universities: [
-                {
-                    name: 'Swinburne University (Sarawak)',
-                    image: testingSchool,
-                    location: 'Sarawak',
-                    course: typeAttributes[topType].courses[0],
-                    courseType: "Diploma",
-                    coursePeriod: "Full Time",
-                    fee: 'RM 55,000',
-                    duration: '2.3 Years',
-                    intake: 'January, May, September'
-                },
-                {
-                    name: 'Swinburne University (Sarawak)',
-                    image: testingSchool,
-                    location: 'Sarawak',
-                    course: typeAttributes[topType].courses[0],
-                    courseType: "Diploma",
-                    coursePeriod: "Full Time",
-                    fee: 'RM 55,000',
-                    duration: '2.3 Years',
-                    intake: 'January, May, September'
-                },
-                {
-                    name: 'Swinburne University (Sarawak)',
-                    image: testingSchool,
-                    location: 'Sarawak',
-                    course: typeAttributes[topType].courses[0],
-                    courseType: "Diploma",
-                    coursePeriod: "Full Time",
-                    fee: 'RM 55,000',
-                    duration: '2.3 Years',
-                    intake: 'January, May, September'
-                }
-                // Add more universities as needed
-            ]
+            unique: typeDescriptions[topType].unique,
+            recommendedCourses: recommendedCategories, // Now includes IDs
+            universities: [] // We'll fetch these in ResultSection
         };
 
-        // Update state with both raw answers and processed results
         setUserData(prev => ({
             ...prev,
             answers: answers,
@@ -233,7 +229,10 @@ const StudentStudyPath = () => {
                     />
                 );
             case 4:
-                return <ResultSection userData={{ ...userData, results: userData.results }} />;
+                return <ResultSection
+                    userData={{ ...userData, results: userData.results }}
+                    categories={categories}
+                />;
             default:
                 return null;
         }

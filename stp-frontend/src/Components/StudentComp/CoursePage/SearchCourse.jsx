@@ -263,7 +263,7 @@ const SearchCourse = () => {
     currentPage,
   ]);
 
-  /*useEffect(() => {
+  useEffect(() => {
     if (location.state?.initialSearchQuery) {
       setSearchQuery(location.state.initialSearchQuery);
       // Trigger search with the new query
@@ -272,7 +272,25 @@ const SearchCourse = () => {
       }
     }
   }, [location.state?.initialSearchQuery, location.state?.searchTrigger]);
-*/
+
+  useEffect(() => {
+    if (location.state?.initialSearchQuery) {
+      const query = location.state.initialSearchQuery;
+      setTempSearch(query); // Set the displayed search term
+      setSearchQuery(query); // Set the search query for API
+    }
+  }, []);
+
+  // In SearchCourse component:
+useEffect(() => {
+  if (location.state?.initialCategory) {
+      setSelectedFilters(prev => ({
+          ...prev,
+          categories: [location.state.initialCategory]
+      }));
+      setCurrentPage(1);
+  }
+}, [location.state?.initialCategory, location.state?.categoryTrigger]);
 
   // Handle qualification and country filters from FeaturedUni
   useEffect(() => {
@@ -847,7 +865,7 @@ const SearchCourse = () => {
                 // After 500ms, update the main searchQuery which triggers API call
                 setTimeout(() => {
                   setSearchQuery(e.target.value);
-                },1500);
+                }, 1500);
               }}
             />
           </InputGroup>

@@ -1,8 +1,20 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from "react-router-dom";
 import "../../../css/StudentPortalStyles/StudentStudyPath.css"
 
 const NameInputSection = ({ username, onSubmit }) => {
     const [inputValue, setInputValue] = useState(username || '');
+    const navigate = useNavigate();
+    useEffect(() => {
+        const token =
+            sessionStorage.getItem("token") || localStorage.getItem("token");
+        //console.log("Token found:", token ? "Yes" : "No");
+        if (!token) {
+            //console.log("No token found, redirecting to login");
+            navigate("/studentPortalLogin");
+        } 
+    }, [navigate]);
+    /*end */
 
     useEffect(() => {
         // Get username from session storage when component mounts
@@ -27,7 +39,7 @@ const NameInputSection = ({ username, onSubmit }) => {
                 <p className="NIS-Section-Subtitle">
                     May i know your name?
                 </p>
-                
+
                 <div className="NIS-Section-Form">
                     <input
                         type="text"
@@ -36,7 +48,7 @@ const NameInputSection = ({ username, onSubmit }) => {
                         placeholder="Username"
                         className="NIS-Input"
                     />
-                    
+
                     <button
                         onClick={handleNext}
                         className="SSP-Start-Button m-0"

@@ -1,4 +1,5 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import html2canvas from 'html2canvas';
 import "../../../css/StudentPortalStyles/StudentStudyPath.css";
 import { GraduationCap, Calendar, Clock, CalendarDays, MapPin } from 'lucide-react';
@@ -8,9 +9,11 @@ import StudyPalLogoYPNGBlack from "../../../assets/StudentPortalAssets/studypalL
 import testingSchool from '../../../assets/StudentPortalAssets/testingSchool.jpg';
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend, ResponsiveContainer } from 'recharts';
 import WMYSpecialLogo from "../../../assets/StudentPortalAssets/wmyspecialLogo.svg"
+import WMYSpecialLogoWhite from "../../../assets/StudentPortalAssets/wmyspecialLogoWhite.png"
 import StrengthIcon from "../../../assets/StudentPortalAssets/strengthIcon.svg"
 import StrengthIconFill from "../../../assets/StudentPortalAssets/strengthIconFill.svg"
-import { HeartPulse } from 'react-bootstrap-icons';
+import { HeartPulse, Whatsapp, Tiktok, Twitter, Instagram, TwitterX } from 'react-bootstrap-icons';
+import { Spinner } from 'react-bootstrap';
 import QRCode from "../../../assets/StudentPortalAssets/qrCode.png"
 // Realistic type imports
 import realisticMain from "../../../assets/StudentPortalAssets/realisticmain.png";
@@ -54,6 +57,7 @@ import conventionalBg3 from "../../../assets/StudentPortalAssets/conventionalbg3
 import conventionalBg4 from "../../../assets/StudentPortalAssets/conventionalbg4.png";
 import conventionalGradient from "../../../assets/StudentPortalAssets/conventionalgradient.png";
 
+const baseURL = import.meta.env.VITE_BASE_URL;
 const RIASEC_BACKGROUNDS = {
     Realistic: {
         main: realisticMain,
@@ -120,24 +124,33 @@ const RiasecBackground = ({ type, variant }) => {
 };
 
 const CareerProfile = ({ userData = { username: "David Lim" } }) => {
+    const navigate = useNavigate();
+    const [isOpen, setIsOpen] = useState(false);
+    const shareButtonRef = useRef(null);
     const [selectedDesign, setSelectedDesign] = useState(0);
     const [selectedCourse, setSelectedCourse] = useState(null);
+    const [recommendedCourses, setRecommendedCourses] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
     const { username = "User", results = null } = userData;
-
-    // Add refs for each design
     const designRef0 = useRef(null);
     const designRef1 = useRef(null);
     const designRef2 = useRef(null);
-
-
     const topType = results.topTypes[0]?.type || 'Realistic';
-
     const gradientBackgroundStyle = {
         backgroundImage: `url(${RiasecBackground({ type: topType, variant: 'gradient' })})`,
         backgroundSize: 'auto 140%',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat'
     };
+
+
+    
+    //share button social media
+    const handleToggle = () => {
+        setIsOpen(!isOpen);
+    };
+
+
     if (!results) {
         return <div>Loading results...</div>;
     }
@@ -174,7 +187,6 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
         });
     };
 
-    // Add this function right after your existing state declarations:
     const convertImageToBase64 = (imgElement) => {
         return new Promise((resolve) => {
             try {
@@ -183,16 +195,16 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                 canvas.height = imgElement.naturalHeight || imgElement.height || 100;
                 const ctx = canvas.getContext('2d');
 
-                // Set background to white first
+
                 ctx.fillStyle = '#FFFFFF';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                // Then draw the image
+
                 ctx.drawImage(imgElement, 0, 0, canvas.width, canvas.height);
                 resolve(canvas.toDataURL('image/png'));
             } catch (error) {
                 console.error('Error converting image:', error);
-                resolve(imgElement.src); // Return original source if conversion fails
+                resolve(imgElement.src);
             }
         });
     };
@@ -211,12 +223,8 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
         return Promise.resolve();
     };
 
-    // Then modify your handleDownload function to include image conversion:
-    // Modify the handleDownload function
-    const handleDownload = async () => {
+    const generateDesignImage = async () => {
         try {
-            setIsDownloading(true);
-
             let targetRef;
             switch (selectedDesign) {
                 case 0:
@@ -229,32 +237,27 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                     targetRef = designRef2;
                     break;
                 default:
-                    return;
+                    return null;
             }
 
             if (!targetRef.current) {
-                console.log('No design selected');
-                return;
+               // console.log('No design selected');
+                return null;
             }
 
-            // Wait for all images including QR code to load
             const images = targetRef.current.getElementsByTagName('img');
             await Promise.all([
                 ...images].map(img => waitForImageLoad(img)),
                 ensureQRCodeLoaded(targetRef.current)
             );
 
-            // Clone the element and apply computed styles
             const clone = targetRef.current.cloneNode(true);
-
-            // Fix title wrapping by ensuring container width
             const titleElement = clone.querySelector('.RS-Design-Header-Container p');
             if (titleElement) {
                 titleElement.style.whiteSpace = 'nowrap';
                 titleElement.style.width = 'auto';
             }
 
-            // Convert all images in clone to base64
             const cloneImages = clone.getElementsByTagName('img');
             for (let img of cloneImages) {
                 const originalImage = [...images].find(origImg =>
@@ -265,17 +268,13 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                     try {
                         const base64 = await convertImageToBase64(originalImage);
                         img.src = base64;
-
-                        // Ensure proper sizing for different image types
                         if (img.closest('.RS-Unique-QR-Container')) {
                             if (img.closest('.RS-Unique-Inner-Container')) {
-                                // Fix for "What Makes You Unique" icon
                                 img.style.width = '12.5px';
                                 img.style.height = '12.5px';
                                 img.style.marginTop = '5px';
                                 img.style.marginRight = '10px';
                             } else {
-                                // QR Code sizing
                                 img.style.width = '100px';
                                 img.style.height = '100px';
                                 img.style.display = 'block';
@@ -287,16 +286,13 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                 }
             }
 
-            // Apply fixed dimensions and styles
             clone.style.width = getComputedStyle(targetRef.current).width;
             clone.style.height = getComputedStyle(targetRef.current).height;
             clone.style.position = 'fixed';
             clone.style.top = '0';
             clone.style.left = '0';
             clone.style.zIndex = '-9999';
-            //clone.style.backgroundColor = '#FFFFFF';
 
-            // Ensure QR code container maintains its structure
             const qrContainer = clone.querySelector('.RS-Unique-QR-Container');
             if (qrContainer) {
                 qrContainer.style.display = 'flex';
@@ -322,11 +318,21 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                 logging: true
             };
 
-            // Add slight delay to ensure styles are applied
             await new Promise(resolve => setTimeout(resolve, 100));
-
             const canvas = await html2canvas(clone, options);
             document.body.removeChild(clone);
+
+            return canvas;
+        } catch (error) {
+            console.error('Error generating image:', error);
+            return null;
+        }
+    };
+    const handleDownload = async () => {
+        setIsDownloading(true);
+        try {
+            const canvas = await generateDesignImage();
+            if (!canvas) return;
 
             canvas.toBlob((blob) => {
                 if (!blob) {
@@ -344,9 +350,8 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                 document.body.removeChild(link);
 
                 URL.revokeObjectURL(url);
-                console.log('Download complete!');
+               // console.log('Download complete!');
             }, 'image/png', 1.0);
-
         } catch (error) {
             console.error('Download error:', error);
         } finally {
@@ -354,8 +359,138 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
         }
     };
 
-    const handleShare = () => {
-        console.log('Sharing...');
+    const handleSocialShare = async (platform) => {
+        try {
+            const canvas = await generateDesignImage();
+            if (!canvas) return;
+
+            canvas.toBlob(async (blob) => {
+                if (!blob) {
+                    console.error('Failed to generate image');
+                    return;
+                }
+
+                const shareText = `Check out my RIASEC test result! My top type is ${topType}!`;
+
+                // Download image function
+                const downloadImage = () => {
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `RIASEC-Result-${userData.username}.png`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                };
+
+                // Download the image first
+                downloadImage();
+
+                // Wait a brief moment to ensure download starts before redirecting
+                setTimeout(() => {
+                    switch (platform) {
+                        case 'whatsapp':
+                            // Detect mobile or desktop
+                            if (/Android|iPhone/i.test(navigator.userAgent)) {
+                                window.open(`whatsapp://send?text=${encodeURIComponent(shareText)}`);
+                            } else {
+                                window.open(`https://web.whatsapp.com`);
+                            }
+                            alert('Image downloaded! You can now share it on WhatsApp along with the message.');
+                            break;
+
+                        case 'twitter':
+                            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`);
+                            alert('Image downloaded! You can now share it on Twitter along with the message.');
+                            break;
+
+                        case 'tiktok':
+                            if (/Android|iPhone/i.test(navigator.userAgent)) {
+                                window.open('tiktok://');
+                            } else {
+                                window.open('https://www.tiktok.com/upload');
+                            }
+                            alert('Image downloaded! You can now share it on TikTok along with the message.');
+                            break;
+
+                        case 'instagram':
+                            if (/Android|iPhone/i.test(navigator.userAgent)) {
+                                window.open('instagram://');
+                            } else {
+                                navigator.clipboard.writeText(shareText).then(() => {
+                                    window.open('https://www.instagram.com');
+                                    alert('Image downloaded and message copied to clipboard! You can now share it on Instagram.');
+                                });
+                            }
+                            break;
+                    }
+                }, 100);
+            }, 'image/png', 1.0);
+        } catch (error) {
+            console.error('Share error:', error);
+        }
+    };
+
+    const handleShareResult = () => {
+        shareButtonRef.current?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+        });
+    };
+
+    const fetchCoursesByCategory = async (categoryId) => {
+        setIsLoading(true);
+        try {
+           // console.log('categoryid', categoryId);
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/courseList`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${sessionStorage.getItem('token') || localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({
+                    category: [categoryId]
+                })
+            });
+
+            const result = await response.json();
+
+            if (result && result.data && Array.isArray(result.data)) {
+                setRecommendedCourses(result.data.slice(0, 3));
+            }
+        } catch (error) {
+            console.error('Error fetching courses:', error);
+        } finally {
+            setTimeout(() => setIsLoading(false), 1000);
+        }
+    };
+
+    useEffect(() => {
+        if (results?.recommendedCourses?.length > 0) {
+            setSelectedCourse(0);
+            const firstCategory = results.recommendedCourses[0];
+            fetchCoursesByCategory(firstCategory.id);
+        }
+    }, []);
+
+    const handleCategorySelect = (index, categoryName) => {
+        setSelectedCourse(index);
+        fetchCoursesByCategory(categoryName);
+    };
+
+    const handleSeeMore = () => {
+        if (selectedCourse !== null) {
+            const selectedCategory = results.recommendedCourses[selectedCourse];
+            if (selectedCategory && selectedCategory.id) {
+                navigate('/courses', {
+                    state: {
+                        initialCategory: selectedCategory.id,
+                        categoryTrigger: Date.now()
+                    }
+                });
+            }
+        }
     };
 
     return (
@@ -366,7 +501,9 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                     <h1>Your Career Profile Results</h1>
                     <p>{userData.username}, Here's Your Personalized Career Analysis</p>
                 </div>
-                <button className="SSP-Start-Button" onClick={handleShare}>SHARE RESULT</button>
+                <button className="SSP-Start-Button" onClick={handleShareResult}>
+                    SHARE RESULT
+                </button>
             </div>
 
             {/* Main Result Card with Mascot */}
@@ -384,12 +521,13 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                 <div className="RS-Section-Card">
                     <h3 className="RS-Section-Title">Recommended Course</h3>
                     <p className="RS-Section-Subtitle">Based on your {topType} type, here are your top career mathces</p>
+                    {/* In ResultSection.jsx, update the course grid section */}
                     <div className="RS-Courses-Grid">
                         {results.recommendedCourses.map((course, index) => (
                             <div
                                 key={index}
                                 className={`RS-Course-Item ${selectedCourse === index ? 'selected' : ''}`}
-                                onClick={() => setSelectedCourse(index)}
+                                onClick={() => handleCategorySelect(index, course.id)} // Pass the ID instead of the whole object
                             >
                                 <span>
                                     <img
@@ -401,7 +539,7 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                                         className="course-logo"
                                     />
                                 </span>
-                                <span>{course}</span>
+                                <span>{course.name}</span> {/* Use course.name instead of course */}
                             </div>
                         ))}
                     </div>
@@ -411,48 +549,89 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                 <div className="RS-Section-Card">
                     <h3 className="RS-Section-Title">Featured University Based On Recommended Course</h3>
                     <div className="RS-Universities-Grid">
-                        {results.universities.map((uni, index) => (
-                            <div key={index} className="RS-University-Card">
-                                <span className="RS-Featured-Tag">FEATURED</span>
-                                <div className="RS-Uni-Header">
-                                    <h4 className="RS-Course-Name">{uni.course}</h4>
-                                    <img src={uni.image} style={{ width: "80px", height: "38.5px" }}
-                                    />
-                                    <h4 className="RS-Uni-Name">{uni.name}</h4>
-                                    <p className="RS-Uni-Location"><span className="me-2"><MapPin size={15} /></span> {uni.location}</p>
-
+                        {isLoading ? (
+                            <div className="RS-Universities-Grid-Spinner">
+                                <div className="" >
+                                    <Spinner animation="border" role="status">
+                                        <span className="visually-hidden">Loading...</span>
+                                    </Spinner>
                                 </div>
-                                <div className="RS-Uni-Details">
-                                    <div >
-                                        <GraduationCap size={15} />
-                                        <span className="text-sm">{uni.courseType}</span>
-                                    </div>
-
-                                    <div>
-                                        <Calendar size={15} />
-                                        <span className="text-sm">{uni.coursePeriod}</span>
-                                    </div>
-
-                                    <div >
-                                        <Clock size={15} />
-                                        <span className="text-sm">{uni.duration}</span>
-                                    </div>
-
-                                    <div >
-                                        <CalendarDays size={15} />
-                                        <span style={{ width: "30px" }}>{uni.intake}</span>
-                                    </div>
-                                </div>
-                                <div className="RS-Apply-Container">
-                                    <p>Estimated Fee<br /><strong>RM</strong> {uni.fee}</p>
-                                    <button>Apply Now</button>
-                                </div>
-
                             </div>
-                        ))}
+                        ) : (
+                            recommendedCourses.map((course, index) => (
+                                <div key={index} className="RS-University-Card">
+                                    {course.featured && <span className="RS-Featured-Tag">FEATURED</span>}
+                                    <div className="RS-Uni-Header">
+                                        <Link
+                                            rel="preload"
+                                            to={`/courseDetails/${course.id}`}
+                                            style={{ color: "#000000" }}
+                                        >
+                                            <h4 className="RS-Course-Name">{course.name}</h4>
+                                        </Link>
+                                        <Link
+                                            rel="preload"
+                                            to={`/knowMoreInstitute/${course.school_id}`}
+                                        >
+                                            <img
+                                                src={`${baseURL}storage/${course.logo}`}
+                                                style={{ width: "10rem", height: "5rem" }}
+                                            />
+                                        </Link>
+                                        <Link
+                                            rel="preload"
+                                            to={`/knowMoreInstitute/${course.school_id}`}
+                                            style={{ color: "black" }}
+                                        >
+                                            <h4 className="RS-Uni-Name">{course.school_name}</h4>
+                                        </Link>
+                                        <p className="RS-Uni-Location">
+                                            <span className="me-2"><MapPin size={15} /></span>
+                                            {course.state}
+                                        </p>
+                                    </div>
+                                    <div className="RS-Uni-Details">
+                                        <div>
+                                            <GraduationCap size={15} />
+                                            <span className="text-sm">{course.qualification}</span>
+                                        </div>
+                                        <div>
+                                            <Calendar size={15} />
+                                            <span className="text-sm">{course.mode}</span>
+                                        </div>
+                                        <div>
+                                            <Clock size={15} />
+                                            <span className="text-sm">{course.period}</span>
+                                        </div>
+                                        <div>
+                                            <CalendarDays size={15} />
+                                            <span style={{ width: "40px", height: "30px", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                                {Array.isArray(course.intake) ? course.intake.join(", ") : course.intake}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div className="RS-Apply-Container">
+                                        <p>Estimated Fee<br />
+                                            {course.cost === "0" ? (
+                                                <span>N/A</span>
+                                            ) : (
+                                                <span><strong>RM</strong> {course.cost}</span>
+                                            )}
+                                        </p>
+                                        <button>Apply Now</button>
+                                    </div>
+                                </div>
+                            ))
+                        )}
                     </div>
                     <div className='text-end my-2'>
-                        <a className="RS-Course-SeeMore">See More</a>
+                        <a
+                            className="RS-Course-SeeMore"
+                            onClick={handleSeeMore}
+                            style={{ cursor: selectedCourse !== null ? 'pointer' : 'default' }}
+                        >
+                            See More
+                        </a>
                     </div>
                 </div>
             </div>
@@ -597,7 +776,7 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                                             </div>
                                         </div>
                                         <div className="RS-Design-Superpower-Container">
-                                            <p className="mb-1">Your Learning Superpower:</p>
+                                            <p className="mb-1 text-white">Your Learning Superpower:</p>
                                             <div>
                                                 {results.strengths.map((strength, index) => (
                                                     <div key={index} className="RS-Design-Superpower-List">
@@ -607,23 +786,23 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                                             </div>
                                         </div>
                                         <div className="RS-Design-Category-Container">
-                                            <p className="mb-1">Recommended Courses:</p>
+                                            <p className="mb-1 text-white">Recommended Courses:</p>
                                             <div className="RS-Design-Category-Course">
                                                 {results.recommendedCourses.map((course, index) => (
-                                                    <span key={index}>{course}</span>
+                                                    <span key={index}>{course.name}</span>
                                                 ))}
                                             </div>
                                         </div>
                                         <div className="RS-Unique-QR-Container">
                                             <div className="RS-Unique-Container">
-                                                <p className="mb-0">What Makes You Unique</p>
+                                                <p className="mb-0 text-white">What Makes You Unique</p>
                                                 <div className="RS-Unique-Inner-Container">
-                                                    <img src={WMYSpecialLogo} style={{ width: '12.5px', height: "12.5px", marginTop: "5px", marginRight: "10px" }} />
-                                                    <p>{results.unique}</p>
+                                                    <img src={WMYSpecialLogoWhite} style={{ width: '12.5px', height: "12.5px", marginTop: "5px", marginRight: "10px" }} />
+                                                    <p className="text-white">{results.unique}</p>
                                                 </div>
                                             </div>
                                             <div>
-                                                <p style={{ marginBottom: "0", fontSize: "10px", fontWeight: "bold" }}>Share to your friends</p>
+                                                <p style={{ marginBottom: "0", fontSize: "10px", fontWeight: "bold", color: "#ffffff" }}>Share to your friends</p>
                                                 <div style={{ height: "110px", width: "110px", background: "#ffffff", border: "2px #000000 solid" }}>
                                                     <img src={QRCode} style={{ height: "100px", width: "100px" }} className="m-1" />
                                                 </div>
@@ -683,7 +862,7 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                                             <p className="mb-1">Recommended Courses:</p>
                                             <div className="RS-Design-Category-Course" >
                                                 {results.recommendedCourses.map((course, index) => (
-                                                    <span key={index} style={{ color: "#BA1718", border: "1px #BA1718 dashed" }}>{course}</span>
+                                                    <span key={index} style={{ color: "#BA1718", border: "1px #BA1718 dashed" }}>{course.name}</span>
                                                 ))}
                                             </div>
                                         </div>
@@ -763,7 +942,7 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                                                 {results.strengths.map((strength, index) => (
                                                     <div key={index} className="RS-Design-Superpower-List">
                                                         {strength}
-                                                    </div> 
+                                                    </div>
                                                 ))}
                                             </div>
                                         </div>
@@ -774,7 +953,7 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                                                     <span
                                                         key={index}
                                                         style={{ color: "#000000", border: "1px #000000 dashed" }}
-                                                    >{course}</span>
+                                                    >{course.name}</span>
                                                 ))}
                                             </div>
                                         </div>
@@ -816,7 +995,47 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                     >
                         DOWNLOAD
                     </button>
-                    <button onClick={handleShare}>SHARE</button>
+                    <button
+                        ref={shareButtonRef}
+                        onClick={handleToggle}
+                        onMouseEnter={() => setIsOpen(true)}
+                    >
+                        SHARE
+                    </button>
+                    <div
+                        className={`RS-Share-Menu ${isOpen ? 'RS-Share-Menu-Open' : ''}`}
+                        onMouseLeave={() => setIsOpen(false)}
+                    >
+                        <div className="RS-Share-Icons-Container">
+                            <button
+                                className="RS-Share-Icon RS-Share-Whatsapp"
+                                onClick={() => handleSocialShare('whatsapp')}
+                            >
+                                <Whatsapp size={20} />
+                            </button>
+
+                            {/*} <button
+                                className="RS-Share-Icon RS-Share-Tiktok"
+                                onClick={() => handleSocialShare('tiktok')}
+                            >
+                                <Tiktok size={20} />
+                            </button>
+
+                            <button
+                                className="RS-Share-Icon RS-Share-Twitter"
+                                onClick={() => handleSocialShare('twitter')}
+                            >
+                                <TwitterX size={20} />
+                            </button>
+
+                            <button
+                                className="RS-Share-Icon RS-Share-Instagram"
+                                onClick={() => handleSocialShare('instagram')}
+                            >
+                                <Instagram size={20} />
+                            </button>*/}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

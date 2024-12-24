@@ -27,7 +27,7 @@ const IntroSection = ({ onStart }) => {
                 </p>
                 <div className="SSP-Assessment-Info">
                     <div className="SSP-Info-Item">
-                        <img src={InformationIcon} color="BA1718" height="10px" width="10px" />
+                        <img src={InformationIcon} color="BA1718" height="15px" width="15px" />
                         <span className="SSP-Info-Text">
                             40 questions total, Approximate 15 seconds per question
                         </span>

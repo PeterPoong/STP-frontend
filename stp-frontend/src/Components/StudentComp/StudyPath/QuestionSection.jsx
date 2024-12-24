@@ -294,8 +294,8 @@ const QuestionSection = ({ onAnswer }) => {
             return;
         }
 
-        console.log("--- RIASEC Test Results ---");
-        console.log("Raw Answers:", selectedOptions);
+       // console.log("--- RIASEC Test Results ---");
+       // console.log("Raw Answers:", selectedOptions);
 
         // Calculate scores for each RIASEC type
         const typeScores = Object.entries(selectedOptions).reduce((acc, [questionId, answer]) => {
@@ -311,7 +311,7 @@ const QuestionSection = ({ onAnswer }) => {
             return acc;
         }, {});
 
-        console.log("\nDetailed Scores by Type:", typeScores);
+       // console.log("\nDetailed Scores by Type:", typeScores);
 
         // Calculate percentages for each type
         const finalScores = Object.entries(typeScores).reduce((acc, [type, scores]) => {
@@ -321,7 +321,7 @@ const QuestionSection = ({ onAnswer }) => {
             return acc;
         }, {});
 
-        console.log("\nFinal RIASEC Percentages:", finalScores);
+        //console.log("\nFinal RIASEC Percentages:", finalScores);
 
         // Calculate average scores per type
         const averageScores = Object.entries(typeScores).reduce((acc, [type, scores]) => {
@@ -334,12 +334,12 @@ const QuestionSection = ({ onAnswer }) => {
             return acc;
         }, {});
 
-        console.log("\nDetailed Analysis per Type:");
+      // console.log("\nDetailed Analysis per Type:");
         Object.entries(averageScores).forEach(([type, data]) => {
-            console.log(`${type}:`);
-            console.log(`  - Average Score per Question: ${data.average} out of 6`);
-            console.log(`  - Total Score: ${data.total} out of ${data.maxPossible}`);
-            console.log(`  - Number of Questions: ${data.numberOfQuestions}`);
+          //  console.log(`${type}:`);
+           // console.log(`  - Average Score per Question: ${data.average} out of 6`);
+           // console.log(`  - Total Score: ${data.total} out of ${data.maxPossible}`);
+            //console.log(`  - Number of Questions: ${data.numberOfQuestions}`);
         });
 
         // Sort types by percentage to get ranking
@@ -350,10 +350,10 @@ const QuestionSection = ({ onAnswer }) => {
                 return acc;
             }, {});
 
-        console.log("\nRIASEC Type Ranking:");
-        Object.entries(typeRanking).forEach(([rank, data]) => {
-            console.log(`${rank}. ${data.type}: ${data.score}%`);
-        });
+        //console.log("\nRIASEC Type Ranking:");
+       // Object.entries(typeRanking).forEach(([rank, data]) => {
+       //     console.log(`${rank}. ${data.type}: ${data.score}%`);
+      //  });
 
         // Format answers with both individual responses and calculated scores
         const formattedAnswers = {
@@ -395,10 +395,17 @@ const QuestionSection = ({ onAnswer }) => {
             }, 500);
         }
     };
+
     const getCurrentQuote = () => {
-        const quote = motivationalQuotes
-            .find(q => currentQuestion <= q.threshold);
-        return quote ? quote.text : "";
+        const answeredCount = answeredQuestions.size;
+        const specificQuotes = {
+            10: "You're Doing Great!",
+            20: "Halfway There! Keep Going!",
+            30: "Almost Done! You're Amazing!",
+            39: "Last One! You Can Do It!"
+        };
+
+        return specificQuotes[answeredCount] || null;
     };
 
     const handleOptionSelect = (questionId, optionIndex) => {
@@ -447,15 +454,15 @@ const QuestionSection = ({ onAnswer }) => {
             }
         }
 
-        console.log('Debug info:', {
-            questionNumber,
-            actualItemWidth,
-            containerWidth,
-            totalWidth,
-            rawPosition: (questionNumber - 1) * actualItemWidth,
-            adjustedPosition: targetPosition,
-            currentScroll: listRef.current?.scrollLeft
-        });
+        //console.log('Debug info:', {
+        //    questionNumber,
+        //    actualItemWidth,
+        //    containerWidth,
+        //    totalWidth,
+        //   rawPosition: (questionNumber - 1) * actualItemWidth,
+        //    adjustedPosition: targetPosition,
+        //    currentScroll: listRef.current?.scrollLeft
+        //});
 
         setCurrentQuestion(questionNumber);
 
@@ -471,12 +478,12 @@ const QuestionSection = ({ onAnswer }) => {
                 const finalPosition = listRef.current?.scrollLeft;
                 const difference = Math.abs(targetPosition - finalPosition);
 
-                console.log('Position check:', {
-                    expected: targetPosition,
-                    actual: finalPosition,
-                    difference,
-                    questionNumber
-                });
+                //console.log('Position check:', {
+                //    expected: targetPosition,
+                //    actual: finalPosition,
+                //    difference,
+                //   questionNumber
+                //});
 
                 // Only correct if significantly off
                 if (difference > 50) {
@@ -573,7 +580,11 @@ const QuestionSection = ({ onAnswer }) => {
                                 ))}
                             </div>
                         </div>
-                        <div className="QS-Motivation-Quote">{getCurrentQuote()}</div>
+                        {getCurrentQuote() && (
+                            <div key={currentQuestion} className="QS-Motivation-Quote">
+                                {getCurrentQuote()}
+                            </div>
+                        )}
                     </div>
                 </div>
                 <div className="QS-Carousel-List-Wrapper">

@@ -121,7 +121,7 @@ return (
   <div className="app-container">
     <NavButtonsSP />
     <main className="main-content mt-5">
-      <div className="content-wrapper">
+      <div className="SPBI-Content-Wrapper">
         <div className="profile-widget-container">
           <MyProfileWidget onSelectContent={setSelectedContent} profilePic={profilePic} />
         </div>
