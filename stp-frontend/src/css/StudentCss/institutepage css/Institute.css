@@ -452,7 +452,7 @@
   .institute-card .fee-apply {
     width: 100%;
     /* Full width for fee-apply */
-    text-align: left;
+    text-align: center;
     /* Left align text */
     margin-top: 15px;
     /* Space above fee-apply */

@@ -101,7 +101,7 @@
   flex-direction: column;
   width: 100%; /* Use full width */
   max-width: 100%; /* Adjust for larger screens */
-  max-height: 500px;
+  max-height: 700px;
   border-color: #B71A18;
   border-radius: 10px;
   margin: 0 auto 20px; /* Center and add spacing */
@@ -303,6 +303,7 @@
   .degree-card .fee-apply {
     margin-left:0 !important; /* Pushes the fee-apply div to the right side */
   }
+  
 }
 
 @media (max-width: 576px) {
@@ -528,7 +529,7 @@
   .degree-card .fee-apply {
     margin-left: 0 !important;
     margin-top: 10px;
-    align-items: center;
+    align-items: center !important;
   }
 
    /* Adjust featured badge for smaller screens */

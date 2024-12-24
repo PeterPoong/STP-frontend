@@ -1014,7 +1014,7 @@ const fetchFeaturedRequests = async () => {
                                                                 }
                                                             }}
                                                             dateFormat="yyyy-MM-dd HH:mm:ss"
-                                                            className="form-control text-center border-0"
+                                                            className="form-control text-center border-0 start-date-course-feature"
                                                             inputClassName="start_date_feature"
                                                             style={{ 
                                                                 fontSize: '14px', 
