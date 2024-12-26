@@ -188,7 +188,7 @@
 .QS-Carousel-List {
     list-style: none;
     margin: 0;
-    padding: 0;
+    padding: 0.25rem;
     display: flex;
     gap: 16px;
     overflow-x: hidden;
@@ -197,11 +197,6 @@
 
 }
 
-.QS-Carousel-Item {
-    flex: 0 0 320px;
-    scroll-snap-align: center;
-    scroll-snap-stop: always;
-}
 
 .QS-Carousel-Content {
     background: white;
@@ -214,33 +209,12 @@
     flex-direction: column;
 }
 
-.QS-Carousel-List {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    gap: 16px;
-    overflow-x: hidden;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
 
-}
 
 .QS-Carousel-Item {
     flex: 0 0 320px;
     scroll-snap-align: center;
     scroll-snap-stop: always;
-}
-
-.QS-Carousel-Content {
-    background: white;
-    padding: 24px;
-    width: 27rem;
-    border-radius: 16px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    height: max-content;
-    display: flex;
-    flex-direction: column;
 }
 
 .QS-Carousel-Title {
@@ -434,6 +408,7 @@
     font-weight: 300;
     font-size: 16px;
     margin-right: 1rem;
+    cursor: pointer;
 }
 
 .QS-Check-Icon {
@@ -1550,6 +1525,63 @@
 
     }
 
+    .QS-Carousel-List {
+        overflow-x: auto;
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+        padding: 0.25rem 0;
+    }
+
+    .QS-Carousel-Item {
+        width: 15rem;
+        /* Mobile width */
+        scroll-snap-align: center;
+        justify-items: center;
+    }
+
+    .QS-Carousel-List-Wrapper {
+        max-width: 100%;
+        padding: 0 1rem;
+        width:28rem
+    }
+
+    /* Hide scrollbar but keep functionality */
+    .QS-Carousel-List::-webkit-scrollbar {
+        display: none;
+    }
+
+    .QS-Carousel-Content {
+        width: 100%;
+        padding: 1rem;
+    }
+
+    /* Add visual indicator for swipe */
+    .QS-Carousel-List::after {
+        content: '';
+        position: absolute;
+        bottom: -20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 50px;
+        height: 4px;
+        background: rgba(186, 23, 24, 0.3);
+        border-radius: 2px;
+        animation: swipeHint 2s infinite;
+    }
+
+    @keyframes swipeHint {
+
+        0%,
+        100% {
+            transform: translateX(-70%);
+            opacity: 0;
+        }
+
+        50% {
+            transform: translateX(-30%);
+            opacity: 1;
+        }
+    }
 
 }
 
@@ -1756,6 +1788,10 @@
 
     .RS-Design-Result-Container p {
         font-size: 10px;
+    }
+
+    .QS-Carousel-Item {
+        flex:0 0 0;
     }
 
 

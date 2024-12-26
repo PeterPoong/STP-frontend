@@ -294,8 +294,8 @@ const QuestionSection = ({ onAnswer }) => {
             return;
         }
 
-       // console.log("--- RIASEC Test Results ---");
-       // console.log("Raw Answers:", selectedOptions);
+        // console.log("--- RIASEC Test Results ---");
+        // console.log("Raw Answers:", selectedOptions);
 
         // Calculate scores for each RIASEC type
         const typeScores = Object.entries(selectedOptions).reduce((acc, [questionId, answer]) => {
@@ -311,7 +311,7 @@ const QuestionSection = ({ onAnswer }) => {
             return acc;
         }, {});
 
-       // console.log("\nDetailed Scores by Type:", typeScores);
+        // console.log("\nDetailed Scores by Type:", typeScores);
 
         // Calculate percentages for each type
         const finalScores = Object.entries(typeScores).reduce((acc, [type, scores]) => {
@@ -334,11 +334,11 @@ const QuestionSection = ({ onAnswer }) => {
             return acc;
         }, {});
 
-      // console.log("\nDetailed Analysis per Type:");
+        // console.log("\nDetailed Analysis per Type:");
         Object.entries(averageScores).forEach(([type, data]) => {
-          //  console.log(`${type}:`);
-           // console.log(`  - Average Score per Question: ${data.average} out of 6`);
-           // console.log(`  - Total Score: ${data.total} out of ${data.maxPossible}`);
+            //  console.log(`${type}:`);
+            // console.log(`  - Average Score per Question: ${data.average} out of 6`);
+            // console.log(`  - Total Score: ${data.total} out of ${data.maxPossible}`);
             //console.log(`  - Number of Questions: ${data.numberOfQuestions}`);
         });
 
@@ -351,9 +351,9 @@ const QuestionSection = ({ onAnswer }) => {
             }, {});
 
         //console.log("\nRIASEC Type Ranking:");
-       // Object.entries(typeRanking).forEach(([rank, data]) => {
-       //     console.log(`${rank}. ${data.type}: ${data.score}%`);
-      //  });
+        // Object.entries(typeRanking).forEach(([rank, data]) => {
+        //     console.log(`${rank}. ${data.type}: ${data.score}%`);
+        //  });
 
         // Format answers with both individual responses and calculated scores
         const formattedAnswers = {
@@ -421,83 +421,55 @@ const QuestionSection = ({ onAnswer }) => {
     };
 
     const jumpToQuestion = (questionNumber) => {
-        // Get the first carousel item to check its actual width including margins
         const firstItem = listRef.current?.querySelector('.QS-Carousel-Item');
-        const itemStyle = firstItem ? window.getComputedStyle(firstItem) : null;
-        const actualItemWidth = itemStyle ?
-            firstItem.offsetWidth +
-            parseInt(itemStyle.marginLeft) +
-            parseInt(itemStyle.marginRight) : 800;
-
-        // Get container dimensions
-        const containerWidth = listRef.current?.offsetWidth;
-        const totalWidth = listRef.current?.scrollWidth;
-        const totalQuestions = 40;
-
-        // Calculate the position without offset first
-        let targetPosition = (questionNumber - 1) * actualItemWidth;
-
-        // Special handling for edge cases
-        if (questionNumber === 1) {
-            targetPosition = 0;  // Always start at 0 for first question
-        } else if (questionNumber === totalQuestions) {
-            targetPosition = totalWidth - containerWidth;  // Align to end for last question
-        } else {
-            // For questions 2 through 39, adjust position to center the current question
-            targetPosition = targetPosition - (containerWidth - actualItemWidth) / 2;
-
-            // Ensure we don't scroll past the bounds
-            if (targetPosition < 0) {
-                targetPosition = 0;
-            } else if (targetPosition > totalWidth - containerWidth) {
-                targetPosition = totalWidth - containerWidth;
-            }
+        if (!firstItem || !listRef.current) return;
+    
+        // Get accurate fixed width - since we know we have 40 questions
+        const totalItems = 40;
+        const totalWidth = listRef.current.scrollWidth;
+        const itemWidth = totalWidth / totalItems; // This ensures exact width per item
+    
+        // Calculate the exact position without any adjustments first
+        let targetPosition = (questionNumber - 1) * itemWidth;
+    
+        // Get container width for centering calculation
+        const containerWidth = listRef.current.offsetWidth;
+    
+        // Only apply centering if we have space
+        if (containerWidth > itemWidth) {
+            const centerOffset = (containerWidth - itemWidth) / 2;
+            targetPosition = Math.max(0, targetPosition - centerOffset);
         }
-
-        //console.log('Debug info:', {
-        //    questionNumber,
-        //    actualItemWidth,
-        //    containerWidth,
-        //    totalWidth,
-        //   rawPosition: (questionNumber - 1) * actualItemWidth,
-        //    adjustedPosition: targetPosition,
-        //    currentScroll: listRef.current?.scrollLeft
-        //});
-
+    
+        // Ensure we don't scroll past the maximum possible scroll position
+        const maxScroll = totalWidth - containerWidth;
+        targetPosition = Math.max(0, Math.min(targetPosition, maxScroll));
+    
+        // Update current question first
         setCurrentQuestion(questionNumber);
-
+    
         // Use requestAnimationFrame for smoother scrolling
         requestAnimationFrame(() => {
+            // Scroll to position
             listRef.current?.scrollTo({
                 left: targetPosition,
                 behavior: 'smooth'
             });
-
-            // Verify final position after animation
+    
+            // Add a verification check after scrolling
             setTimeout(() => {
-                const finalPosition = listRef.current?.scrollLeft;
-                const difference = Math.abs(targetPosition - finalPosition);
-
-                //console.log('Position check:', {
-                //    expected: targetPosition,
-                //    actual: finalPosition,
-                //    difference,
-                //   questionNumber
-                //});
-
-                // Only correct if significantly off
-                if (difference > 50) {
+                const actualQuestion = Math.round(listRef.current.scrollLeft / itemWidth) + 1;
+                if (actualQuestion !== questionNumber) {
+                    // If we ended up at the wrong question, force correct position
                     listRef.current?.scrollTo({
                         left: targetPosition,
                         behavior: 'auto'
                     });
                 }
-            }, 1000);
+            }, 500); // Check after scroll animation should be complete
         });
-
-        setShowQuestionList(false);
-        setShowDropdown(null);
     };
+
     return (
         <div className="QS-Container">
             <div className="QS-Assessment-Container">
@@ -558,6 +530,7 @@ const QuestionSection = ({ onAnswer }) => {
                                                         }`}
                                                     onClick={(e) => {
                                                         e.stopPropagation();
+                                                        e.preventDefault(); // Prevent any default handling
                                                         jumpToQuestion(i + 1);
                                                         setIsDropdownClicked(false);
                                                         setShowDropdown(null);
