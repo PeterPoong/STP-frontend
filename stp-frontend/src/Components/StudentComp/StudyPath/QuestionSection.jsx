@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState,useEffect } from 'react';
 import { Check } from 'lucide-react';
 import { ChevronLeft, ChevronRight } from 'react-bootstrap-icons';
 import "../../../css/StudentPortalStyles/StudentStudyPath.css";
@@ -285,7 +285,8 @@ const QuestionSection = ({ onAnswer }) => {
     const [answeredQuestions, setAnsweredQuestions] = useState(new Set());
     const [selectedOptions, setSelectedOptions] = useState({});
     const [isNavigating, setIsNavigating] = useState(false);
-
+    const [isMobile, setIsMobile] = useState(false);
+    const [isScrolling, setIsScrolling] = useState(false);
 
     const handleSubmit = () => {
         // Check if all questions are answered
@@ -470,6 +471,55 @@ const QuestionSection = ({ onAnswer }) => {
         });
     };
 
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth <= 1024); // Tablet and below
+        };
+        
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+    
+    // Add this function to handle scroll events
+    const handleScroll = () => {
+        if (!listRef.current || isScrolling) return;
+        
+        // Only handle scroll events on mobile
+        if (!isMobile) return;
+    
+        setIsScrolling(true);
+    
+        requestAnimationFrame(() => {
+            const container = listRef.current;
+            const containerWidth = container.offsetWidth;
+            const scrollPosition = container.scrollLeft;
+            
+            const items = container.querySelectorAll('.QS-Carousel-Item');
+            let minDistance = Infinity;
+            let centerQuestion = currentQuestion;
+            
+            items.forEach((item, index) => {
+                const itemLeft = item.offsetLeft - container.offsetLeft;
+                const itemCenter = itemLeft + (item.offsetWidth / 2);
+                const distanceToCenter = Math.abs(scrollPosition + (containerWidth / 2) - itemCenter);
+                
+                if (distanceToCenter < minDistance) {
+                    minDistance = distanceToCenter;
+                    centerQuestion = index + 1;
+                }
+            });
+    
+            if (centerQuestion !== currentQuestion) {
+                setCurrentQuestion(centerQuestion);
+            }
+    
+            setTimeout(() => setIsScrolling(false), 150);
+        });
+    };
+    
+
     return (
         <div className="QS-Container">
             <div className="QS-Assessment-Container">
@@ -561,7 +611,7 @@ const QuestionSection = ({ onAnswer }) => {
                     </div>
                 </div>
                 <div className="QS-Carousel-List-Wrapper">
-                    <ul className="QS-Carousel-List" ref={listRef}>
+                    <ul className="QS-Carousel-List" ref={listRef}     onScroll={isMobile ? handleScroll : undefined} >
                         {questions.map((question) => (
                             <li key={question.id} className="QS-Carousel-Item">
                                 <div className="QS-Carousel-Content">
