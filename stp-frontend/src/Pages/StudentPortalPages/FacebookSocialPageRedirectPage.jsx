@@ -30,17 +30,25 @@ const FacebookSocialPageRedirectPage = () => {
 
         if (result.success) {
           const parsedData = JSON.parse(result.data);
-          const { token, user_name, id } = parsedData;
+          const { token, user_name, id, contact } = parsedData;
 
           localStorage.setItem("token", token);
           localStorage.setItem("userName", user_name);
           localStorage.setItem("id", id);
 
           // Add a slight delay before navigating
-          setTimeout(() => {
-            setLoading(false); // Stop loading before redirect
-            navigate("/studentPortalBasicInformations");
-          }, 500);
+          if (contact == false) {
+            setTimeout(() => {
+              setLoading(false); // Stop loading before redirect
+              navigate("/SocialContactPage");
+            }, 500);
+          } else {
+            setTimeout(() => {
+              setLoading(false); // Stop loading before redirect
+              navigate("/studentPortalBasicInformations");
+              // navigate("/SocialContactPage");
+            }, 500);
+          }
         } else {
           setError(result.message);
           setLoading(false); // Stop loading on error
