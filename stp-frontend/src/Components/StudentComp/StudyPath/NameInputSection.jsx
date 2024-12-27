@@ -12,7 +12,7 @@ const NameInputSection = ({ username, onSubmit }) => {
         if (!token) {
             //console.log("No token found, redirecting to login");
             navigate("/studentPortalLogin");
-        } 
+        }
     }, [navigate]);
     /*end */
 

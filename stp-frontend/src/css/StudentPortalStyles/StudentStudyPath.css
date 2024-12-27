@@ -1157,20 +1157,13 @@
 }
 
 .RS-Design-Category-Course span {
-    border: 2px white dashed;
-    color: white;
-    padding: 0.5rem 1rem;
-    font-size: 14px;
-    border-radius: 20px;
-    /* makes the edges rounded */
-}
-
-.RS-Design-Category-Course span {
     border: 1px white dashed;
     color: white;
     padding: 0.1rem 1rem;
+    border-radius: 20px;
     font-size: 10px;
     width: max-content;
+    white-space: nowrap;
 }
 
 .RS-Unique-QR-Container {

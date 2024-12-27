@@ -196,7 +196,11 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                 const ctx = canvas.getContext('2d');
 
 
-                ctx.fillStyle = '#FFFFFF';
+                if (selectedDesign === 0) {
+                    ctx.fillStyle = '#BA1718';  // Red background for first design
+                } else {
+                    ctx.fillStyle = '#FFFFFF';  // White background for other designs
+                }
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
 
@@ -303,7 +307,7 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
             document.body.appendChild(clone);
 
             const options = {
-                scale: 2,
+                scale: 3,
                 useCORS: true,
                 allowTaint: true,
                 backgroundColor: '#FFFFFF',
@@ -699,7 +703,7 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                                     <div className="RS-Type-Number">{index + 1}</div>
                                     <div className="RS-Type-Details">
                                         <span className="RS-Type-Name">{type.type}</span>
-                                        <span className="RS-Type-Percentage">{type.percentage}%</span>
+                                        <span className="RS-Type-Percentage" style={{color:"#E31D1E"}}>{type.percentage}%</span>
                                     </div>
                                 </div>
                             ))}
