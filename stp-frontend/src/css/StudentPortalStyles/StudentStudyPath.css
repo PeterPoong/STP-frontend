@@ -546,6 +546,26 @@
     animation: quoteBounceInOut 4s cubic-bezier(0.36, 0, 0.66, -0.56) forwards;
 }
 
+.QS-TieBreaker-Container {
+    padding: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.QS-TieBreaker-Question {
+    margin: 2rem 0;
+    padding: 1rem;
+    border-radius: 8px;
+    background: white;
+}
+
+.QS-TieBreaker-Options {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
 /*Result Section Component*/
 .RS-Career-Profile-Container {
     max-width: 1200px;
@@ -808,7 +828,7 @@
 .RS-Chart-Section-RadarChart {
     border-right: 2px #C0C0C0 solid;
     padding-right: 3rem;
-    width: 400px;
+    width: 445px;
     height: 300px;
 }
 

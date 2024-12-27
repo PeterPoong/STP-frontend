@@ -1,4 +1,4 @@
-import React, { useRef, useState,useEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Check } from 'lucide-react';
 import { ChevronLeft, ChevronRight } from 'react-bootstrap-icons';
 import "../../../css/StudentPortalStyles/StudentStudyPath.css";
@@ -287,18 +287,52 @@ const QuestionSection = ({ onAnswer }) => {
     const [isNavigating, setIsNavigating] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
     const [isScrolling, setIsScrolling] = useState(false);
+    const [showTieBreaker, setShowTieBreaker] = useState(false);
+    const [tiedTypes, setTiedTypes] = useState([]);
+    const [tieBreakAnswers, setTieBreakAnswers] = useState({});
 
+    // Add these helper functions
+    const getPriorityText = (type) => {
+        const activities = {
+            Realistic: "Working with tools and machinery",
+            Investigative: "Analyzing data and solving complex problems",
+            Artistic: "Creating and designing original works",
+            Social: "Teaching and helping others develop",
+            Enterprising: "Leading teams and making business decisions",
+            Conventional: "Organizing information and maintaining systems"
+        };
+        return activities[type];
+    };
+
+    const getEnvironmentText = (type) => {
+        const environments = {
+            Realistic: "Workshop or construction site",
+            Investigative: "Research laboratory or technical facility",
+            Artistic: "Design studio or creative space",
+            Social: "Educational or counseling environment",
+            Enterprising: "Business office or entrepreneurial setting",
+            Conventional: "Structured office or administrative environment"
+        };
+        return environments[type];
+    };
+
+    const checkForTies = (typeRanking) => {
+        const firstScore = typeRanking[1].score;
+        const tiedTypes = Object.entries(typeRanking)
+            .filter(([, data]) => data.score === firstScore)
+            .map(([, data]) => data.type);
+
+        return tiedTypes.length > 1 ? tiedTypes : null;
+    };
+
+    // Modify your existing handleSubmit to include tie-break check
     const handleSubmit = () => {
-        // Check if all questions are answered
         if (answeredQuestions.size < 40) {
             alert("Please answer all questions before submitting!");
             return;
         }
 
-        // console.log("--- RIASEC Test Results ---");
-        // console.log("Raw Answers:", selectedOptions);
-
-        // Calculate scores for each RIASEC type
+        // Your existing calculation code remains exactly the same until the typeRanking is created
         const typeScores = Object.entries(selectedOptions).reduce((acc, [questionId, answer]) => {
             const type = answer.type;
             if (!acc[type]) {
@@ -312,19 +346,13 @@ const QuestionSection = ({ onAnswer }) => {
             return acc;
         }, {});
 
-        // console.log("\nDetailed Scores by Type:", typeScores);
-
-        // Calculate percentages for each type
         const finalScores = Object.entries(typeScores).reduce((acc, [type, scores]) => {
-            const maxPossibleScore = scores.count * 6; // 6 is max score per question
+            const maxPossibleScore = scores.count * 6;
             const percentage = (scores.total / maxPossibleScore) * 100;
             acc[type] = Math.round(percentage);
             return acc;
         }, {});
 
-        //console.log("\nFinal RIASEC Percentages:", finalScores);
-
-        // Calculate average scores per type
         const averageScores = Object.entries(typeScores).reduce((acc, [type, scores]) => {
             acc[type] = {
                 average: (scores.total / scores.count).toFixed(2),
@@ -335,15 +363,6 @@ const QuestionSection = ({ onAnswer }) => {
             return acc;
         }, {});
 
-        // console.log("\nDetailed Analysis per Type:");
-        Object.entries(averageScores).forEach(([type, data]) => {
-            //  console.log(`${type}:`);
-            // console.log(`  - Average Score per Question: ${data.average} out of 6`);
-            // console.log(`  - Total Score: ${data.total} out of ${data.maxPossible}`);
-            //console.log(`  - Number of Questions: ${data.numberOfQuestions}`);
-        });
-
-        // Sort types by percentage to get ranking
         const typeRanking = Object.entries(finalScores)
             .sort(([, a], [, b]) => b - a)
             .reduce((acc, [type, score], index) => {
@@ -351,12 +370,15 @@ const QuestionSection = ({ onAnswer }) => {
                 return acc;
             }, {});
 
-        //console.log("\nRIASEC Type Ranking:");
-        // Object.entries(typeRanking).forEach(([rank, data]) => {
-        //     console.log(`${rank}. ${data.type}: ${data.score}%`);
-        //  });
+        // Check for ties after creating typeRanking
+        const ties = checkForTies(typeRanking);
+        if (ties) {
+            setTiedTypes(ties);
+            setShowTieBreaker(true);
+            return;
+        }
 
-        // Format answers with both individual responses and calculated scores
+        // If no ties, proceed with your existing formattedAnswers creation
         const formattedAnswers = {
             responses: Object.entries(selectedOptions).reduce((acc, [questionId, answer]) => {
                 acc[questionId] = {
@@ -371,10 +393,144 @@ const QuestionSection = ({ onAnswer }) => {
             ranking: typeRanking
         };
 
-        // Call the parent component's onAnswer function with the formatted answers
         onAnswer(formattedAnswers);
     };
 
+    // Add tie-break handling functions
+    const handleTieBreakAnswer = (questionIndex, selectedType) => {
+        setTieBreakAnswers(prev => ({
+            ...prev,
+            [questionIndex]: selectedType
+        }));
+    };
+
+    const handleTieBreakSubmit = () => {
+        if (Object.keys(tieBreakAnswers).length < 2) {
+            alert("Please answer both tie-break questions!");
+            return;
+        }
+
+        // First calculate original scores
+        const typeScores = Object.entries(selectedOptions).reduce((acc, [questionId, answer]) => {
+            const type = answer.type;
+            if (!acc[type]) {
+                acc[type] = {
+                    total: 0,
+                    count: 0,
+                    maxPossible: 0
+                };
+            }
+            acc[type].total += answer.score;
+            acc[type].count += 1;
+            acc[type].maxPossible += 6; // Max score per question
+            return acc;
+        }, {});
+
+        // Count tie-break selections for each type
+        const tieBreakPoints = {};
+        tiedTypes.forEach(type => {
+            tieBreakPoints[type] = 0;
+        });
+
+        // Add 1 point for each tie-break selection
+        Object.values(tieBreakAnswers).forEach(type => {
+            tieBreakPoints[type]++;
+        });
+
+        // Calculate final scores including tie-break points
+        const finalScores = {};
+        Object.entries(typeScores).reduce((acc, [type, scores]) => {
+            if (tiedTypes.includes(type)) {
+                // For tied types, include tie-break points in calculation
+                const totalPoints = scores.total + tieBreakPoints[type];
+                const maxPossible = scores.maxPossible + 2; // Original max + 2 tie-break questions
+                finalScores[type] = Math.round((totalPoints / maxPossible) * 100);
+            } else {
+                // For non-tied types, calculate normally
+                finalScores[type] = Math.round((scores.total / scores.maxPossible) * 100);
+            }
+            return acc;
+        }, {});
+
+        // Create final formatted answers with adjusted scores
+        const formattedAnswers = {
+            responses: Object.entries(selectedOptions).reduce((acc, [questionId, answer]) => {
+                acc[questionId] = {
+                    questionId: parseInt(questionId),
+                    type: answer.type,
+                    answer: questions[parseInt(questionId) - 1].options[answer.optionIndex].text,
+                    score: answer.score
+                };
+                return acc;
+            }, {}),
+            scores: finalScores,
+            ranking: Object.entries(finalScores)
+                .sort(([, a], [, b]) => b - a)
+                .reduce((acc, [type, score], index) => {
+                    acc[index + 1] = { type, score };
+                    return acc;
+                }, {})
+        };
+
+        onAnswer(formattedAnswers);
+    };
+
+    const renderTieBreaker = () => {
+        if (!showTieBreaker) return null;
+
+        const tieBreakQuestions = [
+            {
+                question: "From these activities, which do you enjoy the most?",
+                options: tiedTypes.map(type => ({
+                    text: getPriorityText(type),
+                    type: type
+                }))
+            },
+            {
+                question: "Which work environment would you prefer?",
+                options: tiedTypes.map(type => ({
+                    text: getEnvironmentText(type),
+                    type: type
+                }))
+            }
+        ];
+
+        return (
+            <div className="QS-TieBreaker-Container">
+                <h2 className="QS-Title">Additional Questions</h2>
+                <p className="QS-Subtitle">Please help us understand your preferences better:</p>
+                {tieBreakQuestions.map((q, index) => (
+                    <div key={index} className="QS-TieBreaker-Question">
+                        <p className="QS-Carousel-Question">{q.question}</p>
+                        <div className="QS-Carousel-Options">
+                            {q.options.map((option, optIndex) => (
+                                <button
+                                    key={optIndex}
+                                    className="QS-Carousel-Options-Button"
+                                    onClick={() => handleTieBreakAnswer(index, option.type)}
+                                    style={{
+                                        backgroundColor: tieBreakAnswers[index] === option.type ? '#BA1718' : '#FFC9C9',
+                                        color: tieBreakAnswers[index] === option.type ? 'white' : '#BA1718'
+                                    }}
+                                >
+                                    {option.text}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                ))}
+                <div className="w-100 text-end">
+                    <button
+                        className="SSP-Start-Button"
+                        onClick={handleTieBreakSubmit}
+                        disabled={Object.keys(tieBreakAnswers).length < 2}
+                    >
+                        Submit Final Results
+                    </button>
+                </div>
+            </div>
+        );
+    };
 
     const handleClick = (direction) => {
         if (listRef.current && !isNavigating) {
@@ -424,31 +580,31 @@ const QuestionSection = ({ onAnswer }) => {
     const jumpToQuestion = (questionNumber) => {
         const firstItem = listRef.current?.querySelector('.QS-Carousel-Item');
         if (!firstItem || !listRef.current) return;
-    
+
         // Get accurate fixed width - since we know we have 40 questions
         const totalItems = 40;
         const totalWidth = listRef.current.scrollWidth;
         const itemWidth = totalWidth / totalItems; // This ensures exact width per item
-    
+
         // Calculate the exact position without any adjustments first
         let targetPosition = (questionNumber - 1) * itemWidth;
-    
+
         // Get container width for centering calculation
         const containerWidth = listRef.current.offsetWidth;
-    
+
         // Only apply centering if we have space
         if (containerWidth > itemWidth) {
             const centerOffset = (containerWidth - itemWidth) / 2;
             targetPosition = Math.max(0, targetPosition - centerOffset);
         }
-    
+
         // Ensure we don't scroll past the maximum possible scroll position
         const maxScroll = totalWidth - containerWidth;
         targetPosition = Math.max(0, Math.min(targetPosition, maxScroll));
-    
+
         // Update current question first
         setCurrentQuestion(questionNumber);
-    
+
         // Use requestAnimationFrame for smoother scrolling
         requestAnimationFrame(() => {
             // Scroll to position
@@ -456,7 +612,7 @@ const QuestionSection = ({ onAnswer }) => {
                 left: targetPosition,
                 behavior: 'smooth'
             });
-    
+
             // Add a verification check after scrolling
             setTimeout(() => {
                 const actualQuestion = Math.round(listRef.current.scrollLeft / itemWidth) + 1;
@@ -475,204 +631,210 @@ const QuestionSection = ({ onAnswer }) => {
         const checkMobile = () => {
             setIsMobile(window.innerWidth <= 1024); // Tablet and below
         };
-        
+
         checkMobile();
         window.addEventListener('resize', checkMobile);
-        
+
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
-    
+
     // Add this function to handle scroll events
     const handleScroll = () => {
         if (!listRef.current || isScrolling) return;
-        
+
         // Only handle scroll events on mobile
         if (!isMobile) return;
-    
+
         setIsScrolling(true);
-    
+
         requestAnimationFrame(() => {
             const container = listRef.current;
             const containerWidth = container.offsetWidth;
             const scrollPosition = container.scrollLeft;
-            
+
             const items = container.querySelectorAll('.QS-Carousel-Item');
             let minDistance = Infinity;
             let centerQuestion = currentQuestion;
-            
+
             items.forEach((item, index) => {
                 const itemLeft = item.offsetLeft - container.offsetLeft;
                 const itemCenter = itemLeft + (item.offsetWidth / 2);
                 const distanceToCenter = Math.abs(scrollPosition + (containerWidth / 2) - itemCenter);
-                
+
                 if (distanceToCenter < minDistance) {
                     minDistance = distanceToCenter;
                     centerQuestion = index + 1;
                 }
             });
-    
+
             if (centerQuestion !== currentQuestion) {
                 setCurrentQuestion(centerQuestion);
             }
-    
+
             setTimeout(() => setIsScrolling(false), 150);
         });
     };
-    
+
 
     return (
         <div className="QS-Container">
             <div className="QS-Assessment-Container">
-                <div className="QS-Title-Container">
-                    <h1 className="QS-Title">Career Interest Assessment</h1>
-                    <p className="QS-Subtitle">"Rate how well each statement describes you"</p>
-                </div>
-                <div className="QS-Header-Container">
-                    <div className="QS-Header">
-                        <div className="QS-Question-Progress">
-                            <div className="QS-Current-Question-Container">
-                                <div className="d-flex me-3">
-                                    <span
-                                        className="QS-Current-Question"
-                                        onMouseEnter={() => setShowDropdown('counter')}
-                                        onMouseLeave={() => {
-                                            if (!isDropdownClicked) {
-                                                setShowDropdown(null);
-                                            }
-                                        }}
-                                        onClick={() => {
-                                            setIsDropdownClicked(!isDropdownClicked);
-                                            setShowDropdown('counter');
-                                            if (!isDropdownClicked) {
-                                                // Set timeout to close dropdown after 3 seconds
-                                                setTimeout(() => {
-                                                    setIsDropdownClicked(false);
-                                                    setShowDropdown(null);
-                                                }, 3000);
-                                            }
-                                        }}
-                                    >
-                                        Question {currentQuestion}/40
-
-                                    </span>
-                                    <span>
-                                        {answeredQuestions.has(currentQuestion) && (
-                                            <Check size={20} className="QS-Check-Icon" />
-                                        )}
-                                    </span>
-                                </div>
-                                {showDropdown === 'counter' && (
-                                    <div
-                                        className="QS-Question-Dropdown"
-                                        onMouseEnter={() => setShowDropdown('counter')}
-                                        onMouseLeave={() => {
-                                            if (!isDropdownClicked) {
-                                                setShowDropdown(null);
-                                            }
-                                        }}
-                                    >
-                                        <div className="QS-Question-Grid">
-                                            {Array.from({ length: 40 }, (_, i) => (
-                                                <div
-                                                    key={i}
-                                                    className={`QS-Question-Number ${i + 1 === currentQuestion ? 'current' : ''
-                                                        } ${answeredQuestions.has(i + 1) ? 'answered' : ''
-                                                        }`}
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        e.preventDefault(); // Prevent any default handling
-                                                        jumpToQuestion(i + 1);
-                                                        setIsDropdownClicked(false);
-                                                        setShowDropdown(null);
-                                                    }}
-                                                >
-                                                    {i + 1}
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                            <div className="QS-Progress-Indicator">
-                                {Array.from({ length: 40 }, (_, i) => (
-                                    <div
-                                        key={i}
-                                        className={`QS-Progress-Dot ${i + 1 === currentQuestion ? 'active' : ''} 
-                                        ${answeredQuestions.has(i + 1) ? 'answered' : ''}`}
-                                    />
-                                ))}
-                            </div>
+                {!showTieBreaker ? (
+                    <>
+                        <div className="QS-Title-Container">
+                            <h1 className="QS-Title">RIASEC Career Assessment</h1>
+                            <p className="QS-Subtitle">"Rate how well each statement describes you"</p>
                         </div>
-                        {getCurrentQuote() && (
-                            <div key={currentQuestion} className="QS-Motivation-Quote">
-                                {getCurrentQuote()}
-                            </div>
-                        )}
-                    </div>
-                </div>
-                <div className="QS-Carousel-List-Wrapper">
-                    <ul className="QS-Carousel-List" ref={listRef}     onScroll={isMobile ? handleScroll : undefined} >
-                        {questions.map((question) => (
-                            <li key={question.id} className="QS-Carousel-Item">
-                                <div className="QS-Carousel-Content">
-                                    <h2 className="QS-Carousel-Title">
-                                        Question {question.id}
-                                    </h2>
-                                    <span className="QS-Logo-Text-Wrapper">
-                                        <img src={StudyPalLogoYPNG} style={{ width: "15px", height: "30px" }} />
-                                        <p className="QS-Carousel-Question">{question.question}</p>
-                                    </span>
-                                    <div className="QS-Carousel-Options">
-                                        {question.options.map((option, optionIndex) => (
-                                            <button
-                                                key={optionIndex}
-                                                className="QS-Carousel-Options-Button"
-                                                onClick={() => handleOptionSelect(question.id, optionIndex)}
-                                                style={{
-                                                    backgroundColor: selectedOptions[question.id]?.optionIndex === optionIndex ? '#BA1718' : '#FFC9C9',
-                                                    color: selectedOptions[question.id]?.optionIndex === optionIndex ? 'white' : '#BA1718'
+                        <div className="QS-Header-Container">
+                            <div className="QS-Header">
+                                <div className="QS-Question-Progress">
+                                    <div className="QS-Current-Question-Container">
+                                        <div className="d-flex me-3">
+                                            <span
+                                                className="QS-Current-Question"
+                                                onMouseEnter={() => setShowDropdown('counter')}
+                                                onMouseLeave={() => {
+                                                    if (!isDropdownClicked) {
+                                                        setShowDropdown(null);
+                                                    }
+                                                }}
+                                                onClick={() => {
+                                                    setIsDropdownClicked(!isDropdownClicked);
+                                                    setShowDropdown('counter');
+                                                    if (!isDropdownClicked) {
+                                                        // Set timeout to close dropdown after 3 seconds
+                                                        setTimeout(() => {
+                                                            setIsDropdownClicked(false);
+                                                            setShowDropdown(null);
+                                                        }, 3000);
+                                                    }
                                                 }}
                                             >
-                                                {option.text}
-                                            </button>
+                                                Question {currentQuestion}/40
+
+                                            </span>
+                                            <span>
+                                                {answeredQuestions.has(currentQuestion) && (
+                                                    <Check size={20} className="QS-Check-Icon" />
+                                                )}
+                                            </span>
+                                        </div>
+                                        {showDropdown === 'counter' && (
+                                            <div
+                                                className="QS-Question-Dropdown"
+                                                onMouseEnter={() => setShowDropdown('counter')}
+                                                onMouseLeave={() => {
+                                                    if (!isDropdownClicked) {
+                                                        setShowDropdown(null);
+                                                    }
+                                                }}
+                                            >
+                                                <div className="QS-Question-Grid">
+                                                    {Array.from({ length: 40 }, (_, i) => (
+                                                        <div
+                                                            key={i}
+                                                            className={`QS-Question-Number ${i + 1 === currentQuestion ? 'current' : ''
+                                                                } ${answeredQuestions.has(i + 1) ? 'answered' : ''
+                                                                }`}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                e.preventDefault(); // Prevent any default handling
+                                                                jumpToQuestion(i + 1);
+                                                                setIsDropdownClicked(false);
+                                                                setShowDropdown(null);
+                                                            }}
+                                                        >
+                                                            {i + 1}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="QS-Progress-Indicator">
+                                        {Array.from({ length: 40 }, (_, i) => (
+                                            <div
+                                                key={i}
+                                                className={`QS-Progress-Dot ${i + 1 === currentQuestion ? 'active' : ''} 
+                                        ${answeredQuestions.has(i + 1) ? 'answered' : ''}`}
+                                            />
                                         ))}
                                     </div>
                                 </div>
-                            </li>
-                        ))}
-                    </ul>
+                                {getCurrentQuote() && (
+                                    <div key={currentQuestion} className="QS-Motivation-Quote">
+                                        {getCurrentQuote()}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                        <div className="QS-Carousel-List-Wrapper">
+                            <ul className="QS-Carousel-List" ref={listRef} onScroll={isMobile ? handleScroll : undefined} >
+                                {questions.map((question) => (
+                                    <li key={question.id} className="QS-Carousel-Item">
+                                        <div className="QS-Carousel-Content">
+                                            <h2 className="QS-Carousel-Title">
+                                                Question {question.id}
+                                            </h2>
+                                            <span className="QS-Logo-Text-Wrapper">
+                                                <img src={StudyPalLogoYPNG} style={{ width: "15px", height: "30px" }} />
+                                                <p className="QS-Carousel-Question">{question.question}</p>
+                                            </span>
+                                            <div className="QS-Carousel-Options">
+                                                {question.options.map((option, optionIndex) => (
+                                                    <button
+                                                        key={optionIndex}
+                                                        className="QS-Carousel-Options-Button"
+                                                        onClick={() => handleOptionSelect(question.id, optionIndex)}
+                                                        style={{
+                                                            backgroundColor: selectedOptions[question.id]?.optionIndex === optionIndex ? '#BA1718' : '#FFC9C9',
+                                                            color: selectedOptions[question.id]?.optionIndex === optionIndex ? 'white' : '#BA1718'
+                                                        }}
+                                                    >
+                                                        {option.text}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
 
-                    <button
-                        className="QS-Carousel-Button QS-Carousel-Button--previous"
-                        onClick={() => handleClick('previous')}
-                        disabled={isNavigating || currentQuestion === 1}
-                    >
-                        <ChevronLeft size={30} />
-                    </button>
-                    <button
-                        className="QS-Carousel-Button QS-Carousel-Button--next"
-                        onClick={() => handleClick('next')}
-                        disabled={isNavigating || currentQuestion === 40}
-                    >
-                        <ChevronRight size={30} />
-                    </button>
+                            <button
+                                className="QS-Carousel-Button QS-Carousel-Button--previous"
+                                onClick={() => handleClick('previous')}
+                                disabled={isNavigating || currentQuestion === 1}
+                            >
+                                <ChevronLeft size={30} />
+                            </button>
+                            <button
+                                className="QS-Carousel-Button QS-Carousel-Button--next"
+                                onClick={() => handleClick('next')}
+                                disabled={isNavigating || currentQuestion === 40}
+                            >
+                                <ChevronRight size={30} />
+                            </button>
 
-                </div>
+                        </div>
 
-                <div className="QS-Submit-Container" style={{
-                    display: 'flex',
-                    justifyContent: 'flex-end',
-                    marginTop: '20px',
-                    marginBottom: '20px'
-                }}>
-                    <button
-                        className="SSP-Start-Button"
-                        onClick={handleSubmit}
+                        <div className="QS-Submit-Container" style={{
+                            display: 'flex',
+                            justifyContent: 'flex-end',
+                            marginTop: '20px',
+                            marginBottom: '20px'
+                        }}>
+                            <button
+                                className="SSP-Start-Button"
+                                onClick={handleSubmit}
 
-                    >
-                        Submit Answers
-                    </button>
-                </div>
+                            >
+                                Submit Answers
+                            </button>
+                        </div>
+                    </>
+                ) : (
+                    renderTieBreaker()
+                )}
             </div>
         </div>
     );

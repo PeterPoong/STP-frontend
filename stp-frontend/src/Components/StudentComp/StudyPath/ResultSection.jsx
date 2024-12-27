@@ -502,8 +502,8 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
             {/* Header Section */}
             <div className="RS-Header-Section">
                 <div>
-                    <h1>Your Career Profile Results</h1>
-                    <p>{userData.username}, Here's Your Personalized Career Analysis</p>
+                    <h1>Your RIASEC Assessment Results</h1>
+                    <p>{userData.username}, Here's Your Study Path Analysis</p>
                 </div>
                 <button className="SSP-Start-Button" onClick={handleShareResult}>
                     SHARE RESULT
@@ -523,8 +523,8 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
             {/* Recommended Courses */}
             <div className="RS-Recommended-Course-Container">
                 <div className="RS-Section-Card">
-                    <h3 className="RS-Section-Title">Recommended Course</h3>
-                    <p className="RS-Section-Subtitle">Based on your {topType} type, here are your top career mathces</p>
+                    <h3 className="RS-Section-Title">Recommended Study Paths</h3>
+                    <p className="RS-Section-Subtitle">Based on your {topType} type,here are your recommended courses category</p>
                     {/* In ResultSection.jsx, update the course grid section */}
                     <div className="RS-Courses-Grid">
                         {results.recommendedCourses.map((course, index) => (
@@ -551,7 +551,7 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
 
                 {/* Universities Section */}
                 <div className="RS-Section-Card">
-                    <h3 className="RS-Section-Title">Featured University Based On Recommended Course</h3>
+                    <h3 className="RS-Section-Title">Featured Courses for Your Study Path</h3>
                     <div className="RS-Universities-Grid">
                         {isLoading ? (
                             <div className="RS-Universities-Grid-Spinner">

@@ -10,11 +10,11 @@ const IntroSection = ({ onStart }) => {
                 {/* Header Section */}
                 <div className="SSP-Header">
                     <h1 className="SSP-Title">
-                        Discover Your Career Path:<br />
-                        The RIASEC Career Assessment
+                        RIASEC Career Assessment:<br />
+                        Find Your Study Path
                     </h1>
                     <p className="SSP-Quote mb-0">
-                        "Find your perfect career match in just 10 minutes"
+                        "Discover your ideal study direction in 10 minutes"
                     </p>
                 </div>
 
