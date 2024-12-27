@@ -7,22 +7,21 @@ import blurbg from "../../assets/StudentAssets/background image/blurbg.webp";
 import "../../css/StudentCss/homePageStudent/FeaturedUni.css";
 
 const FeaturedUni = () => {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [tempSearch, setTempSearch] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSearch = () => {
-    const trimmedQuery = searchQuery.trim().toLowerCase();
+  const handleSearch = (searchTerm) => {
+    // Ensure we're using the final, complete search term
+    const finalSearchTerm = searchTerm || tempSearch;
+    
+    if (!finalSearchTerm.trim()) return;
 
-    if (!trimmedQuery) {
-      console.warn("Search query is empty!");
-      return;
-    }
-
-    navigate(`/courses`, {
+    navigate('/courses', {
       state: {
-        initialSearchQuery: trimmedQuery,
-        searchTrigger: Date.now() // Add a timestamp to force update
-      },
+        initialSearchQuery: finalSearchTerm.trim(),
+        searchTrigger: Date.now(),
+      }
     });
   };
 
@@ -70,7 +69,7 @@ const FeaturedUni = () => {
           className="d-flex mt-3 align-items-center justify-content-center"
           onSubmit={(e) => {
             e.preventDefault();
-            handleSearch();
+            handleSearch(tempSearch);
           }}
         >
           <InputGroup
@@ -81,8 +80,19 @@ const FeaturedUni = () => {
               type="search"
               placeholder="Find your best Schools or Courses"
               aria-label="Search"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              value={tempSearch}
+              onChange={(e) => {
+                const newValue = e.target.value;
+                setTempSearch(newValue);
+                
+                // Only use debounce for auto-search, not for enter key
+                if (newValue.trim()) {
+                  clearTimeout(window.searchTimeout);
+                  window.searchTimeout = setTimeout(() => {
+                    handleSearch(newValue);
+                  }, 1500);
+                }
+              }}
               style={{
                 textAlign: "center",
                 paddingLeft: "20px",

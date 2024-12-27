@@ -263,16 +263,20 @@ const SearchCourse = () => {
     currentPage,
   ]);
 
-  /*useEffect(() => {
+  // Uncomment and modify this useEffect to handle incoming search
+  useEffect(() => {
     if (location.state?.initialSearchQuery) {
+      setTempSearch(location.state.initialSearchQuery);
       setSearchQuery(location.state.initialSearchQuery);
-      // Trigger search with the new query
-      if (selectedCountry) {
-        fetchCourses();
-      }
     }
   }, [location.state?.initialSearchQuery, location.state?.searchTrigger]);
-*/
+
+  // Add this new useEffect to trigger the search
+  useEffect(() => {
+    if (searchQuery && selectedCountry) {
+      fetchCourses();
+    }
+  }, [searchQuery, selectedCountry]);
 
   // Handle qualification and country filters from FeaturedUni
   useEffect(() => {
@@ -670,6 +674,48 @@ const SearchCourse = () => {
       </React.Fragment>
     ));
   };
+
+  // Add these useEffects after your state declarations
+  useEffect(() => {
+    // Initial fetch of countries when component mounts
+    fetchCountries();
+  }, []);
+
+  useEffect(() => {
+    // When selectedCountry changes, fetch filters
+    if (selectedCountry) {
+      fetchFilters(selectedCountry.id);
+    }
+  }, [selectedCountry]);
+
+  // Handle the incoming search query from FeaturedUni
+  useEffect(() => {
+    if (location.state?.initialSearchQuery) {
+      setTempSearch(location.state.initialSearchQuery);
+      setSearchQuery(location.state.initialSearchQuery);
+    }
+  }, [location.state]);
+
+  // Trigger search when searchQuery or selectedCountry changes
+  useEffect(() => {
+    if (searchQuery && selectedCountry) {
+      fetchCourses();
+    }
+  }, [searchQuery, selectedCountry, currentPage]);
+
+  // Add this useEffect to handle initial data loading
+  useEffect(() => {
+    const initializeData = async () => {
+      await fetchCountries();
+      if (location.state?.initialSearchQuery && selectedCountry) {
+        setTempSearch(location.state.initialSearchQuery);
+        setSearchQuery(location.state.initialSearchQuery);
+        fetchCourses();
+      }
+    };
+
+    initializeData();
+  }, []);
 
   return (
     <div ref={topRef}>
