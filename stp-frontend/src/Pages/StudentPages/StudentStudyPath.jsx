@@ -30,10 +30,10 @@ const StudentStudyPath = () => {
                     }
                 });
                 const data = await response.json();
-                console.log('Fetched categories:', data);
+                //console.log('Fetched categories:', data);
                 if (data.success && Array.isArray(data.data)) {
                     setCategories(data.data);
-                    console.log('Categories set in state:', data.data);
+                    //console.log('Categories set in state:', data.data);
                 }
             } catch (error) {
                 console.error('Error fetching categories:', error);
@@ -172,13 +172,13 @@ const StudentStudyPath = () => {
     const handleQuestionSubmit = (answers) => {
         const { ranking, scores } = answers;
         const topType = ranking[1].type;
-        console.log('Available categories:', categories);
+      //  console.log('Available categories:', categories);
 
         // Map the recommended courses to their category IDs
         const recommendedCategories = typeAttributes[topType].courses
             .map(courseName => {
                 const category = categories.find(cat => cat.category_name === courseName);
-                console.log('Mapping course:', courseName, 'to category:', category);
+                //console.log('Mapping course:', courseName, 'to category:', category);
                 return {
                     name: courseName,
                     id: category?.id
