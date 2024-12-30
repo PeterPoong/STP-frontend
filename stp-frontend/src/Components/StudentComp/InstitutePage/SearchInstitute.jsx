@@ -582,24 +582,28 @@ const SearchInstitute = () => {
       ? filterData.state
           .filter(loc => selectedFilters.locations.includes(loc.id))
           .map(loc => loc.state_name)
-          .join(", ")
+          .reduce((text, location, index, array) => {
+            if (index === 0) return location;
+            if (index === array.length - 1) return `${text} and ${location}`;
+            return `${text}, ${location}`;
+          }, "")
       : selectedCountry?.country_name || "Malaysia";
 
     const instituteTypeText = selectedInstitute 
       ? `${selectedInstitute.core_metaName} ` 
-      : "";
+      : "Universities";
 
-    const title = `${instituteTypeText}Universities in ${locationText} | StudyPal Malaysia`;
-    const description = `Find and compare ${resultCount > 0 ? resultCount : ''} ${instituteTypeText}universities in ${locationText}. Get detailed information about courses, fees, scholarships and more.`;
+    const title = `Top ${resultCount} ${instituteTypeText} in ${locationText} | StudyPal Malaysia`;
+    const description = `Find and compare ${resultCount} ${instituteTypeText} in ${locationText}. Get detailed information about courses, fees, scholarships, and more.`;
 
     return (
       <Helmet>
         <title>{title}</title>
         <meta name="description" content={description} />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-        <meta name="keywords" content={`universities, ${locationText.toLowerCase()}, higher education, colleges, ${instituteTypeText.toLowerCase()}malaysia universities, study in ${locationText.toLowerCase()}`} />
-        <link rel="canonical" href={window.location.href} />
+        <meta name="keywords" content={`universities, ${locationText.toLowerCase()}, higher education, ${instituteTypeText.toLowerCase()}`} />
+        <script type="application/ld+json">
+          {JSON.stringify(generateStructuredData(institutes))}
+        </script>
       </Helmet>
     );
   };

@@ -754,21 +754,29 @@ const SearchCourse = () => {
 
   // Add SEO-friendly headings and meta descriptions
   const generateSEOMetadata = () => {
-    const qualificationText = selectedQualification 
-      ? `${selectedQualification.qualification_name} ` 
-      : "";
     const locationText = selectedFilters.locations.length > 0
       ? filterData.state
           .filter(loc => selectedFilters.locations.includes(loc.id))
           .map(loc => loc.state_name)
-          .join(", ")
+          .reduce((text, location, index, array) => {
+            if (index === 0) return location;
+            if (index === array.length - 1) return `${text} and ${location}`;
+            return `${text}, ${location}`;
+          }, "")
       : selectedCountry?.country_name || "Malaysia";
+
+    const qualificationText = selectedQualification 
+      ? `${selectedQualification.qualification_name} ` 
+      : "";
+
+    const title = `Top ${resultCount} ${qualificationText}Courses in ${locationText} | StudyPal Malaysia`;
+    const description = `Find and compare ${resultCount} ${qualificationText}courses in ${locationText}. Get information about fees, intake dates, and apply online.`;
 
     return (
       <Helmet>
-        <title>{`${qualificationText}Courses in ${locationText} | Study in Malaysia`}</title>
-        <meta name="description" content={`Find and compare ${resultCount} ${qualificationText}courses in ${locationText}. Get information about fees, intake dates, and apply online.`} />
-        <meta name="keywords" content={`${qualificationText.toLowerCase()}, courses in ${locationText.toLowerCase()}, study in malaysia, ${selectedFilters.categories.join(", ")}, ${selectedFilters.studyModes.join(", ")}`} />
+        <title>{title}</title>
+        <meta name="description" content={description} />
+        <meta name="keywords" content={`courses, ${qualificationText.toLowerCase()}, study in ${locationText.toLowerCase()}`} />
         <script type="application/ld+json">
           {JSON.stringify(generateCourseStructuredData(programs))}
         </script>

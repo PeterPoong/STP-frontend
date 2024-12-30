@@ -51,7 +51,8 @@ const Home = () => {
       <Helmet>
         <title>StudyPal Malaysia | Find Your Perfect University & Course</title>
         <meta name="description" content="Discover top universities and courses in Malaysia. Compare programs, fees, and admission requirements. Get expert guidance for your education journey." />
-        <meta name="keywords" content="malaysia universities, study in malaysia, university courses, higher education malaysia, college admission, scholarship malaysia, diploma programs, degree courses" />
+        <meta name="keywords" content="malaysia universities, study in malaysia, university courses, higher education malaysia, college admission, scholarship malaysia, diploma programs, degree courses, 
+        top universities in malaysia, top courses in malaysia, best universities in malaysia, best courses in malaysia, best universities in malaysia, best courses in malaysia" />
         
         {/* Open Graph tags for social sharing */}
         <meta property="og:title" content="StudyPal Malaysia | Find Your Perfect University & Course" />
