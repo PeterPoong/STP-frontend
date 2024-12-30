@@ -1235,7 +1235,7 @@ const SearchCourse = () => {
                   {/* Qualification Accordion Item */}
                   <Accordion.Item eventKey="2">
                     <Accordion.Header className="custom-accordion-header">
-                      {selectedQualification ? selectedQualification.qualification_name : "Select Qualification"}
+                      {selectedQualification ? selectedQualification.qualification_name : "Qualification"}
                     </Accordion.Header>
                     <Accordion.Body className="custom-accordion-body">
                       <Form.Group>
@@ -1310,7 +1310,7 @@ const SearchCourse = () => {
                     </Accordion.Body>
                   </Accordion.Item>
 
-                  {/* Qualification Filter */}
+                  {/* Qualification Filter
                   <Accordion.Item eventKey="5">
                     <Accordion.Header className="custom-accordion-header">
                       Qualification
@@ -1342,7 +1342,7 @@ const SearchCourse = () => {
                         )}
                       </Form.Group>
                     </Accordion.Body>
-                  </Accordion.Item>
+                  </Accordion.Item> */}
 
                   {/* Study Mode Filter */}
                   <Accordion.Item eventKey="6">
