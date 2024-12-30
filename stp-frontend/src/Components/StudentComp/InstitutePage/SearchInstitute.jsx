@@ -18,6 +18,7 @@ import "../../../css/StudentCss/institutepage css/Institute.css";
 import StudyPal from "../../../assets/StudentAssets/institute image/StudyPal.png";
 import emptyStateImage from "../../../assets/StudentAssets/emptyStateImage/emptystate.png";
 import "../../../css/StudentCss/course page css/SearchCourse.css";
+import { Helmet } from "react-helmet";
 const baseURL = import.meta.env.VITE_BASE_URL;
 const countriesURL = `${baseURL}api/student/countryList`;
 const filterURL = `${baseURL}api/student/listingFilterList`;
@@ -69,6 +70,9 @@ const SearchInstitute = () => {
 
   //search state
   const [tempSearch, setTempSearch] = useState("");
+
+  // Add this with your other state declarations at the top
+  const [resultCount, setResultCount] = useState(0);
 
   const topRef = useRef(null);
   const scrollToTop = () => {
@@ -148,112 +152,50 @@ const SearchInstitute = () => {
 
     setLoading(true);
     try {
-      // Build the request body according to backend expectations
       const requestBody = {
         country: selectedCountry.id,
-        page: currentPage, // Send current page
-        per_page: 10, // Single country ID as required
-        // seed: currentPage
+        page: currentPage,
+        ...(searchQuery && { search: searchQuery }),
+        ...(selectedInstitute?.id && { institute: selectedInstitute.id }),
+        ...(selectedFilters.locations?.length > 0 && { 
+          location: selectedFilters.locations 
+        }),
+        ...(selectedFilters.categories?.length > 0 && {
+          category_id: selectedFilters.categories
+        }),
+        ...(selectedFilters.studyLevels?.length > 0 && {
+          qualification_id: selectedFilters.studyLevels[0]
+        }),
+        ...(selectedFilters.studyModes?.length > 0 && {
+          study_mode: selectedFilters.studyModes
+        }),
+        ...(selectedFilters.tuitionFee > 0 && {
+          tuition_fee: selectedFilters.tuitionFee
+        })
       };
-
-      // Add university/institute category if selected
-      if (selectedInstitute?.id) {
-        requestBody.institute = selectedInstitute.id; // As array
-      }
-
-      // Add location filters
-      if (selectedFilters.locations?.length > 0) {
-        requestBody.location = selectedFilters.locations; // Already an array
-      }
-
-      // Add study level filters
-      if (selectedFilters.studyLevels?.length > 0) {
-        requestBody.qualification_id = selectedFilters.studyLevels[0]; // Changed from qualification to qualification_id
-      }
-
-      // Add study mode filters
-      if (selectedFilters.studyModes?.length > 0) {
-        requestBody.study_mode = selectedFilters.studyModes; // Already an array
-      }
-
-      // Add category filters if any
-      if (selectedFilters.categories?.length > 0) {
-        requestBody.category_id = selectedFilters.categories; // Single value
-      }
-
-
-      if (selectedFilters.intakes?.length > 0) {
-        // Find matching intake IDs from the filter data
-        const intakeIds = filterData.intakeList
-          .filter(intake => selectedFilters.intakes.includes(intake.month))
-          .map(intake => intake.id);
-
-        requestBody.intake_month = intakeIds; // Now sending array of IDs
-      }
-
-      if (selectedFilters.tuitionFee > 0) {
-        requestBody.tuition_fee = selectedFilters.tuitionFee;
-      }
-
-      // Add search if present
-      if (searchQuery) {
-        requestBody.search = searchQuery.trim(); // As string, not array
-      }
-
-      // Add pagination
-      if (currentPage) {
-        requestBody.page = currentPage;
-      }
-
-      //console.log('Request body:', requestBody);
-      //  console.log("Request body:", requestBody);
-
 
       const response = await fetch(schoolListURL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          // Add any other headers if needed
         },
         body: JSON.stringify(requestBody),
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
       const result = await response.json();
-      //  console.log("result", result);
-      // In your fetchInstitutes function, update the success block:
 
       if (result.success) {
-        // Handle both array and object data formats
-        let data;
-        if (Array.isArray(result.data)) {
-          data = result.data;
-        } else if (typeof result.data === 'object' && result.data !== null) {
-          // Convert object to array if it's an object
-          data = Object.values(result.data);
-        } else {
-          data = [];
-        }
-
-        //console.log("Processed data:", data); // Debug log
-
-        // Sort the data only if we have items
+        let data = Array.isArray(result.data) ? result.data : Object.values(result.data);
         const sortedData = data.length > 0 ? data.sort((a, b) => {
-          // First sort by featured status
           if (a.featured && !b.featured) return -1;
           if (!a.featured && b.featured) return 1;
-          // Then by id for consistent ordering
           return a.id - b.id;
         }) : [];
 
         setInstitutes(sortedData);
         setCurrentPage(result.current_page);
         setTotalPages(result.last_page);
-      } else {
-        throw new Error(result.message || "Failed to fetch institutes");
+        setResultCount(result.total || 0);
       }
     } catch (error) {
       console.error("Error fetching institutes:", error);
@@ -634,8 +576,138 @@ const SearchInstitute = () => {
     ));
   };
 
+  // Add this function to generate SEO-friendly title and description
+  const generateSEOMetadata = () => {
+    const locationText = selectedFilters.locations.length > 0
+      ? filterData.state
+          .filter(loc => selectedFilters.locations.includes(loc.id))
+          .map(loc => loc.state_name)
+          .join(", ")
+      : selectedCountry?.country_name || "Malaysia";
+
+    const instituteTypeText = selectedInstitute 
+      ? `${selectedInstitute.core_metaName} ` 
+      : "";
+
+    const title = `${instituteTypeText}Universities in ${locationText} | StudyPal Malaysia`;
+    const description = `Find and compare ${resultCount > 0 ? resultCount : ''} ${instituteTypeText}universities in ${locationText}. Get detailed information about courses, fees, scholarships and more.`;
+
+    return (
+      <Helmet>
+        <title>{title}</title>
+        <meta name="description" content={description} />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta name="keywords" content={`universities, ${locationText.toLowerCase()}, higher education, colleges, ${instituteTypeText.toLowerCase()}malaysia universities, study in ${locationText.toLowerCase()}`} />
+        <link rel="canonical" href={window.location.href} />
+      </Helmet>
+    );
+  };
+
+  // Add the SEO heading generator function
+  const generateSEOHeading = () => {
+    const locationText = selectedFilters.locations.length > 0
+      ? filterData.state
+          .filter(loc => selectedFilters.locations.includes(loc.id))
+          .map(loc => loc.state_name)
+          .reduce((text, location, index, array) => {
+            if (index === 0) return location;
+            if (index === array.length - 1) return `${text} and ${location}`;
+            return `${text}, ${location}`;
+          }, "")
+      : selectedCountry?.country_name || "Malaysia";
+
+    const instituteTypeText = selectedInstitute 
+      ? selectedInstitute.core_metaName
+      : 'Universities';
+    
+    return (
+      <div className="seo-heading mt-4 mb-4">
+        <h1 style={{ 
+          fontSize: '1.5rem', 
+          color: '#333', 
+          marginBottom: '1rem',
+          fontWeight: '600'
+        }}>
+          {resultCount > 0 ? `${resultCount} ` : ''}
+          {instituteTypeText} in {locationText}
+        </h1>
+        {searchQuery && (
+          <p className="text-muted">
+            Showing results for "{searchQuery}"
+          </p>
+        )}
+      </div>
+    );
+  };
+
+  const generateStructuredData = (institutes) => {
+    const locationText = selectedFilters.locations.length > 0
+      ? filterData.state
+          .filter(loc => selectedFilters.locations.includes(loc.id))
+          .map(loc => loc.state_name)
+          .join(", ")
+      : selectedCountry?.country_name || "Malaysia";
+
+    const instituteTypeText = selectedInstitute 
+      ? selectedInstitute.core_metaName
+      : 'Universities';
+
+    return {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "itemListElement": institutes.map((institute, index) => ({
+        "@type": "EducationalOrganization",
+        "position": index + 1,
+        "name": institute.name,
+        "description": institute.description,
+        "address": {
+          "@type": "PostalAddress",
+          "addressRegion": institute.state,
+          "addressCountry": institute.country
+        },
+        "url": `${window.location.origin}/knowMoreInstitute/${institute.id}`,
+        "offers": {
+          "@type": "Offer",
+          "category": institute.category,
+          "availabilityStarts": institute.intake?.join(", ")
+        }
+      }))
+    };
+  };
+
   return (
     <Container>
+      <Helmet>
+        <title>
+          {`${selectedInstitute ? selectedInstitute.core_metaName + ' ' : ''}Universities in ${
+            selectedFilters.locations.length > 0
+              ? filterData.state
+                  .filter(loc => selectedFilters.locations.includes(loc.id))
+                  .map(loc => loc.state_name)
+                  .reduce((text, location, index, array) => {
+                    if (index === 0) return location;
+                    if (index === array.length - 1) return `${text} and ${location}`;
+                    return `${text}, ${location}`;
+                  }, "")
+              : selectedCountry?.country_name || "Malaysia"
+          } | StudyPal Malaysia`}
+        </title>
+        <meta name="description" content={`Find and compare ${resultCount || ''} universities in ${
+          selectedFilters.locations.length > 0
+            ? filterData.state
+                .filter(loc => selectedFilters.locations.includes(loc.id))
+                .map(loc => loc.state_name)
+                .join(", ")
+            : selectedCountry?.country_name || "Malaysia"
+        }. Get detailed information about courses, fees, scholarships and more.`} />
+        <script type="application/ld+json">
+          {JSON.stringify(generateStructuredData(institutes))}
+        </script>
+        <meta name="robots" content="index, follow" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="canonical" href={window.location.href} />
+      </Helmet>
       <div ref={topRef}>
         <h3 style={{ textAlign: "left", paddingTop: "15px" }}>
           Institute in{" "}
@@ -821,6 +893,9 @@ const SearchInstitute = () => {
             Reset Filters
           </button>
         </div>
+
+        {/* SEO-friendly heading below search bar */}
+        {generateSEOHeading()}
 
         {/* Main Content */}
         <Container className="my-5">
