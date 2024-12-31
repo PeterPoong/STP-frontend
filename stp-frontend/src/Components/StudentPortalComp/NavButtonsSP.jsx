@@ -8,17 +8,56 @@ import Dropdown from "react-bootstrap/Dropdown";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import logo from "../../assets/StudentAssets/nav logo/logo.png";
 import "../../css/StudentPortalStyles/StudentNavBar.css";
+import { useTranslation } from "../../Context/TranslationContext";
 
 const NavigationBar = () => {
   const [hasToken, setHasToken] = useState(null);
   const [userName, setUserName] = useState("");
   const navigate = useNavigate();
+  const { currentLanguage, changeLanguage } = useTranslation();
+  const [displayLanguage, setDisplayLanguage] = useState(currentLanguage);
+
+  const languages = [
+    { code: 'en', label: 'English', nativeLabel: 'English' },
+    { code: 'ms', label: 'Bahasa Melayu', nativeLabel: 'Bahasa Melayu' },
+    { code: 'zh-CN', label: '中文', nativeLabel: '中文' }
+  ];
+
+  useEffect(() => {
+    const syncLanguageDisplay = () => {
+      // Get the current Google Translate language
+      const translateElement = document.querySelector('.goog-te-combo');
+      if (translateElement) {
+        const currentValue = translateElement.value;
+        setDisplayLanguage(currentValue || 'en');
+      } else {
+        // If element not found, check localStorage
+        const savedLang = localStorage.getItem('preferredLanguage');
+        if (savedLang) {
+          setDisplayLanguage(savedLang);
+        }
+      }
+    };
+
+    // Initial sync
+    syncLanguageDisplay();
+
+    // Set up a mutation observer to watch for Google Translate changes
+    const observer = new MutationObserver(syncLanguageDisplay);
+    const targetNode = document.body;
+    observer.observe(targetNode, {
+      childList: true,
+      subtree: true
+    });
+
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const checkAuth = () => {
       const token = sessionStorage.getItem("token") || localStorage.getItem("token");
       const storedUserName = sessionStorage.getItem("userName") || localStorage.getItem("userName");
-      
+
       setHasToken(!!token);
       if (storedUserName) {
         setUserName(storedUserName);
@@ -40,7 +79,7 @@ const NavigationBar = () => {
       "lastAppliedCourseId",
       "id"
     ];
-    
+
     itemsToRemove.forEach(item => {
       sessionStorage.removeItem(item);
       localStorage.removeItem(item);
@@ -72,13 +111,13 @@ const NavigationBar = () => {
     >
       <Container>
         <Navbar.Brand as={Link} to="/">
-          <img 
-            src={logo} 
-            alt="Logo" 
+          <img
+            src={logo}
+            alt="Logo"
             className="logo"
             loading="lazy"
           />
-           {/*<img 
+          {/*<img 
             src={logo} 
             alt="Logo" 
             className="logo"
@@ -101,7 +140,7 @@ const NavigationBar = () => {
                 location.pathname.startsWith("/courses")
                 ? "active"
                 : ""
-              }`}
+                }`}
               style={{ marginLeft: "10px" }}
             >
               Courses
@@ -114,7 +153,7 @@ const NavigationBar = () => {
                 location.pathname.startsWith("/institute")
                 ? "active"
                 : ""
-              }`}
+                }`}
               style={{ marginLeft: "10px" }}
             >
               Schools
@@ -127,10 +166,10 @@ const NavigationBar = () => {
                 location.pathname.startsWith("/studentStudyPath")
                 ? "active"
                 : ""
-              }`}
+                }`}
               style={{ marginLeft: "10px" }}
             >
-              Study Path
+              Find Your Path
             </Button>
             <Button
               variant="link"
@@ -140,13 +179,41 @@ const NavigationBar = () => {
                 location.pathname.startsWith("/studentFeedback")
                 ? "active"
                 : ""
-              }`}
+                }`}
               style={{ marginLeft: "10px" }}
             >
-             Contact Us
+              Contact Us
             </Button>
           </Nav>
-
+          <ButtonGroup className="me-2">
+            <Dropdown as={ButtonGroup}>
+              <Dropdown.Toggle
+                variant="outline-secondary"
+                className="nav-button"
+                id="language-dropdown"
+              >
+                <span className="notranslate">
+                  {languages.find(lang => lang.code === displayLanguage)?.nativeLabel || 'English'}
+                </span>
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                {languages.map((lang) => (
+                  <Dropdown.Item
+                    key={lang.code}
+                    onClick={() => {
+                      changeLanguage(lang.code);
+                      setDisplayLanguage(lang.code);
+                    }}
+                    active={displayLanguage === lang.code}
+                  >
+                    <span className="notranslate">
+                      {lang.nativeLabel}
+                    </span>
+                  </Dropdown.Item>
+                ))}
+              </Dropdown.Menu>
+            </Dropdown>
+          </ButtonGroup>
           {hasToken ? (
             <div className="m-10 navbutton-section-afterlogin">
               <Button className="m-0 btnfirst">Hi !</Button>

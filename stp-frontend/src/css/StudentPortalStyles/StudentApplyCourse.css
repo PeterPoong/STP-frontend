@@ -1,6 +1,47 @@
-.applycourse-academictranscript-select-width
-{
-  width:25%;
+.ACAT-ProgramName-CGPA-Input {
+  width: 50%;
+}
+
+.ACAT-DocumentUpload-Container {
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  background-color: white;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding: 0.25rem;
+}
+
+.ACAT-DocumentUpload-InnerContainer {
+  display: flex;
+  flex-grow: 1;
+  align-items: center;
+}
+
+.ACAT-DocumentUpload-EditContainer {
+  margin-right: 1.5rem;
+  border-right: 1px #e6e6e6 solid;
+  padding: 0 1.5rem;
+}
+
+.ACAT-DocumentUpload-DisplayContainer {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+}
+
+.ACAT-DocumentUpload-DisplayContainer div {
+  align-items: center;
+}
+
+.ACAT-DocumentUpload-DisplayContainer-InnerOne {
+  border-right: 1px #e6e6e6 solid;
+  padding: 0 1rem;
+  margin-right: 2rem;
+}
+
+.applycourse-academictranscript-select-width {
+  width: 25%;
 }
 
 
@@ -853,6 +894,14 @@ ul {
 }
 
 /*responsive*/
+@media(max-width:1025px) {
+  .ACAT-ProgramName-CGPA-Input {
+    width: 100%;
+  }
+
+
+}
+
 
 @media (max-width: 768px) {
 
@@ -943,16 +992,14 @@ ul {
     padding: 0.5rem;
   }
 
-  .document-item {
+  .ACAT-DocumentUpload-Container {
     flex-direction: row;
-    align-items: flex-start;
-
+    align-items: center;
     padding: 0.5rem;
   }
 
-  .document-item>div {
+  .ACAT-DocumentUpload-Container>div {
     display: flex;
-    flex-direction: row;
     margin-bottom: 0.5rem;
   }
 
@@ -969,10 +1016,9 @@ ul {
 
 
   /*case2*/
-.applycourse-cocurriculum-content-flexend
-{
-  justify-content: flex-end;
-}
+  .applycourse-cocurriculum-content-flexend {
+    justify-content: flex-end;
+  }
 
   .step-content {
     padding: 1.5rem 1.5rem 0 1.5rem;
@@ -1228,7 +1274,7 @@ ul {
   }
 
   .subject-item,
-  .document-item {
+  .ACAT-DocumentUpload-Container {
     font-size: 0.9rem;
   }
 
@@ -1302,7 +1348,7 @@ ul {
   .applycourse-cocurriculum-content {
     flex-wrap: wrap;
     gap: 0.75rem;
-    text-align-last:start;
+    text-align-last: start;
   }
 
   .applycourse-cocurriculum-content-button {
@@ -1548,7 +1594,7 @@ ul {
   }
 
   .subject-item,
-  .document-item {
+  .ACAT-DocumentUpload-Container {
     font-size: 0.8rem;
   }
 
@@ -1874,32 +1920,31 @@ ul {
   .applycourse-cocurriculum-content-card {
     justify-self: center;
     text-align-last: center;
-    width:-webkit-fill-available;
-    padding:0.75rem 0 !important;
+    width: -webkit-fill-available;
+    padding: 0.75rem 0 !important;
   }
 
 
-  .document-item 
-  {
-    flex-wrap:wrap;
+  .ACAT-DocumentUpload-Container {
+    flex-wrap: wrap;
     overflow: scroll;
   }
 
-  .document-item-mobile
-  {
-    flex-wrap:wrap;
+  .ACAT-DocumentUpload-InnerContainer {
+    flex-wrap: wrap;
     justify-content: center;
-    gap:1rem;
+    gap: 1rem;
   }
+
+
 
   .applycourse-cocurriculum-icon {
     align-self: center;
     margin-bottom: 1rem;
   }
 
-  .applycourwse-academictranscript-documentedit
-  {
-    width:-webkit-fill-available;
+  .applycourwse-academictranscript-documentedit {
+    width: -webkit-fill-available;
     flex-direction: row-reverse;
   }
 
@@ -1920,10 +1965,23 @@ ul {
     overflow: scroll;
   }
 
-  .applycourse-academictranscript-select-width
-  {
-    width:10rem;
+  .applycourse-academictranscript-select-width {
+    width: 10rem;
   }
 
-  
+  .ACAT-DocumentUpload-Container {
+    flex-direction: column-reverse;
+  }
+
+  .ACAT-DocumentUpload-DisplayContainer {
+    margin-top: 2rem;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .ACAT-Display-DocumentButton {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
 }
