@@ -1241,7 +1241,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                     value={transcript.programName || ''}
                     onChange={(e) => handleProgramNameChange(index, e.target.value)}
                     placeholder="Enter Program Name"
-                    className="w-50"
+                    className="ACAT-ProgramName-CGPA-Input"
                   />
                 </Col>
               </Form.Group>
@@ -1256,7 +1256,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                     value={transcript.cgpa || ''}
                     onChange={(e) => handleCGPAChange(index, e.target.value)}
                     placeholder="Enter CGPA"
-                    className="w-50"
+                    className="ACAT-ProgramName-CGPA-Input"
                   />
                 </Col>
               </Form.Group>
@@ -1273,11 +1273,11 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
 
             {transcript.documents.map((doc, docIndex) => (
               <div key={docIndex} className="px-4">
-                <div className="overflow-scroll document-item d-flex align-items-center mb-2 bg-white p-1 gap-1 justify-content-between rounded-3">
+                <div className="ACAT-DocumentUpload-Container rounded-3">
                   {doc.isEditing ? (
                     <>
-                      <div className="d-flex flex-grow-1 align-items-center document-item-mobile">
-                        <div className="me-3 border-end px-3">
+                      <div className="ACAT-DocumentUpload-InnerContainer">
+                        <div className="ACAT-DocumentUpload-EditContainer">
                           {doc.file ? (
                             <>
                               <div className="sac-file-info">
@@ -1311,7 +1311,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                             </>
                           )}
                         </div>
-                        <div className="align-items-center flex-grow-1">
+                        <div className="align-items-center flex-grow-1 ">
                           <Form.Control
                             type="text"
                             value={doc.name}
@@ -1333,8 +1333,8 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                     </>
                   ) : (
                     <>
-                      <div className="d-flex flex-grow-1">
-                        <div className="border-end me-4 px-1 align-items-center">
+                      <div className="ACAT-DocumentUpload-DisplayContainer">
+                        <div className="ACAT-DocumentUpload-DisplayContainer-InnerOne">
                           <FileText size={15} className="me-2 ms-2" style={{ alignSelf: 'center' }} />
                           <span className="me-2"
                             style={{
@@ -1351,11 +1351,11 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                               maxWidth: '112.5px'
                             }}>{doc.name}</span>
                         </div>
-                        <div className="align-items-center">
+                        <div>
                           <span style={{ fontSize: '0.825rem' }}>{doc.mediaName || doc.file || 'No file uploaded'}</span>
                         </div>
                       </div>
-                      <div>
+                      <div className="ACAT-Display-DocumentButton">
                         <Button variant="link" className="p-0 me-2" onClick={() => handleDocumentChange(index, docIndex, 'isEditing', true)}>
                           <Edit size={15} color="grey" />
                         </Button>

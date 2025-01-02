@@ -17,7 +17,7 @@
 
 /*Overall Container*/
 .SF-container {
-    margin-top: max(3rem, calc(5.8rem * var(--SF-padding-scale)));
+    margin-top: max(3rem, calc(3.125rem * var(--SF-padding-scale)));
     background-color: rgb(255, 255, 255);
     height: auto;
     width: var(--SF-container-width);

@@ -248,6 +248,12 @@ body, html {
   height: 100%;
 }
 
+.VIpgJd-ZVi9od-ORHb-OEVmcd
+{
+  display:none !important;
+  z-index:-1;
+}
+
 @media (max-width: 767px) {
   .h-50 {
     min-height: auto;
