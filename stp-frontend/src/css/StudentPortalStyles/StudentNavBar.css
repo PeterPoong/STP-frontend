@@ -118,9 +118,9 @@
     
   }
 
-  .VIpgJd-ZVi9od-ORHb-OEVmcd
+  .VIpgJd-ZVi9od-ORHb-OEVmcd,.VIpgJd-ZVi9od-aZ2wEe-OiiCO,.VIpgJd-ZVi9od-aZ2wEe-wOHMyf,.VIpgJd-ZVi9od-aZ2wEe
   {
-    z-index: 0 !important;
+    z-index:-1 !important;
   }
 
   .google_translate_element
