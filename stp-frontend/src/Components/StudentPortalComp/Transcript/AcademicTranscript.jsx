@@ -1395,7 +1395,7 @@ const AcademicTranscript = () => {
   };
 
   return (
-    <div className='p-0'>
+    <div className='p-0 notranslate'>
       <ExamSelector
         exams={categories}
         selectedExam={selectedExam}

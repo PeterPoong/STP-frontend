@@ -111,6 +111,44 @@
   .logo {
     width: 150px; /* Adjust the logo size */
   }
+
+  .NBSP-Language-Button
+  {
+    background-color: #BA1718;
+    
+  }
+
+  .VIpgJd-ZVi9od-ORHb-OEVmcd
+  {
+    z-index: 0 !important;
+  }
+
+  .google_translate_element
+  {
+    display:0;
+  }
+
+  .goog-te-gadget {
+    font-family: inherit !important;
+    font-size: 14px !important;
+  }
+  
+  .goog-te-gadget-simple {
+    background-color: transparent !important;
+    border: none !important;
+    padding: 8px !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+  }
+  
+  .goog-te-gadget img {
+    display: none !important;
+  }
+  
+  .goog-te-menu-value {
+    color: #333 !important;
+    text-decoration: none !important;
+  }
   
   @media (max-width: 768px) {
     .navbar-collapse {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Spinner, Modal, Button } from 'react-bootstrap';
+import { Spinner, Modal, Button } from "react-bootstrap";
 import NavButtonsSP from "../../Components/StudentPortalComp/NavButtonsSP";
 import MyProfileWidget from "../../Components/StudentPortalComp/MyProfileWidget";
 import SpcFooter from "../../Components/StudentPortalComp/SpcFooter";
@@ -12,7 +12,7 @@ import AppliedCoursePending from "../../Components/StudentPortalComp/AppliedCour
 import "aos/dist/aos.css";
 import "../../css/StudentPortalStyles/StudentPortalBasicInformation.css";
 import styled from "styled-components";
-import Term from "../../Components/StudentPortalComp/Term"
+import Term from "../../Components/StudentPortalComp/Term";
 const ScrollableModalBody = styled(Modal.Body)`
   max-height: 70vh;
   overflow-y: auto;
@@ -89,7 +89,7 @@ const StudentPortalBasicInformations = () => {
       localStorage.removeItem("token");
       navigate("/studentPortalLogin");
     } finally {
-        setIsLoading(false); 
+      setIsLoading(false);
     }
   };
   /*end */
@@ -106,7 +106,9 @@ const StudentPortalBasicInformations = () => {
       case "basicInfo":
         return (
           <div>
-            <BasicInformationWidget onProfilePicUpdate={handleProfilePicUpdate} />
+            <BasicInformationWidget
+              onProfilePicUpdate={handleProfilePicUpdate}
+            />
           </div>
         );
       case "managePassword":
@@ -131,24 +133,24 @@ const StudentPortalBasicInformations = () => {
         {
           method: "POST",
           headers: {
-            'Accept': 'application/json',
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
         }
       );
 
       // console.log("Response status:", response.status);
-      
+
       if (!response.ok) {
         const errorData = await response.json();
         console.error("Error response:", errorData);
         throw new Error(errorData.message || "Failed to check terms agreement");
       }
-      
+
       const data = await response.json();
       // console.log("Terms agreement response:", data);
-      
+
       if (!data.hasAgreed) {
         setShowTermsModal(true);
       }
@@ -161,10 +163,11 @@ const StudentPortalBasicInformations = () => {
 
   const handleScroll = (e) => {
     const element = e.target;
-    const isAtBottom = Math.abs(
-      element.scrollHeight - element.scrollTop - element.clientHeight
-    ) < 1;
-    
+    const isAtBottom =
+      Math.abs(
+        element.scrollHeight - element.scrollTop - element.clientHeight
+      ) < 1;
+
     if (isAtBottom) {
       setHasReachedBottom(true);
     }
@@ -172,17 +175,18 @@ const StudentPortalBasicInformations = () => {
 
   const handleAgree = async () => {
     try {
-      const token = sessionStorage.getItem("token") || localStorage.getItem("token");
+      const token =
+        sessionStorage.getItem("token") || localStorage.getItem("token");
       // console.log("Submitting agreement...");
-      
+
       const response = await fetch(
         `${import.meta.env.VITE_BASE_URL}api/student/agreeTerms`,
         {
           method: "POST",
           headers: {
-            'Accept': 'application/json',
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({ agreed: true }),
         }
@@ -195,10 +199,10 @@ const StudentPortalBasicInformations = () => {
         console.error("Error response:", errorData);
         throw new Error(errorData.message || "Failed to update agreement");
       }
-      
+
       const data = await response.json();
       // console.log("Agreement update response:", data);
-      
+
       if (data.success) {
         setShowTermsModal(false);
       } else {
@@ -217,72 +221,39 @@ const StudentPortalBasicInformations = () => {
   };
 
   if (isLoading) {
-    return <div>
+    return (
       <div>
-        <div className="d-flex justify-content-center align-items-center m-5 h-100 w-100" >
-          <Spinner animation="border" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </Spinner>
+        <div>
+          <div className="d-flex justify-content-center align-items-center m-5 h-100 w-100">
+            <Spinner animation="border" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </Spinner>
+          </div>
         </div>
       </div>
-    </div >;
+    );
   }
-if (!isAuthenticated) {
-  return null; // Or you could render a "Not Authorized" message
-}
+  if (!isAuthenticated) {
+    return null; // Or you could render a "Not Authorized" message
+  }
 
-return (
-  <>
-    <Modal
-      show={showTermsModal}
-      backdrop="static"
-      keyboard={false}
-      size="lg"
-      centered
-    >
-      <Modal.Header>
-        <Modal.Title>Terms and Conditions</Modal.Title>
-      </Modal.Header>
-
-      <ScrollableModalBody ref={modalBodyRef} onScroll={handleScroll}>
-        <Term />
-      </ScrollableModalBody>
-
-      <Modal.Footer className="d-flex justify-content-between">
-        {hasReachedBottom && (
-          <Button
-            variant="outline-secondary"
-            size="sm"
-            onClick={handleDisagree}
-          >
-            Not Agree
-          </Button>
-        )}
-        <Button
-          variant="primary"
-          disabled={!hasReachedBottom}
-          onClick={handleAgree}
-          className={hasReachedBottom ? "" : "mx-auto"}
-        >
-          {hasReachedBottom ? "Agree" : "Please read the terms"}
-        </Button>
-      </Modal.Footer>
-    </Modal>
-
+  return (
     <div className="app-container">
       <NavButtonsSP />
       <main className="main-content mt-5">
-        <div className="content-wrapper">
+        <div className="SPBI-Content-Wrapper">
           <div className="profile-widget-container">
-            <MyProfileWidget onSelectContent={setSelectedContent} profilePic={profilePic} />
+            <MyProfileWidget
+              onSelectContent={setSelectedContent}
+              profilePic={profilePic}
+            />
           </div>
           <div className="content-area">{renderContent()}</div>
         </div>
       </main>
       <SpcFooter />
     </div>
-  </>
-);
+  );
 };
 
 export default StudentPortalBasicInformations;

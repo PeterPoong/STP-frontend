@@ -281,6 +281,13 @@ body, html {
   height: 5.5rem;
 }
 
+
+.VIpgJd-ZVi9od-ORHb-OEVmcd
+{
+  display:none !important;
+  z-index:-1;
+}
+
 @media (max-width: 767px) {
   .h-50 {
     min-height: auto;

@@ -190,6 +190,21 @@ button:focus-visible {
   border-radius: 20px;
 }
 
+.nav-button-language {
+  background-color: white !important;
+  color: #BA1718;
+  border: none;
+  border-radius: 0 !important;
+  text-align: center;
+  transition: background-color 0.3s ease;
+  border-radius: 20px;
+}
+
+.nav-button-language:hover,.nav-button-language:focus
+{
+  color:#BA1718;
+}
+
 .nav-reg-button{
   height: 100%;
   background-color: #B71A18;

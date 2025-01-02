@@ -267,20 +267,31 @@ const SearchCourse = () => {
     currentPage,
   ]);
 
-  // Uncomment and modify this useEffect to handle incoming search
-  useEffect(() => {
+  /*useEffect(() => {
     if (location.state?.initialSearchQuery) {
       setTempSearch(location.state.initialSearchQuery);
       setSearchQuery(location.state.initialSearchQuery);
     }
   }, [location.state?.initialSearchQuery, location.state?.searchTrigger]);
 
-  // Add this new useEffect to trigger the search
   useEffect(() => {
-    if (searchQuery && selectedCountry) {
-      fetchCourses();
+    if (location.state?.initialSearchQuery) {
+      const query = location.state.initialSearchQuery;
+      setTempSearch(query); // Set the displayed search term
+      setSearchQuery(query); // Set the search query for API
     }
-  }, [searchQuery, selectedCountry]);
+  }, []);
+
+  // In SearchCourse component:
+useEffect(() => {
+  if (location.state?.initialCategory) {
+      setSelectedFilters(prev => ({
+          ...prev,
+          categories: [location.state.initialCategory]
+      }));
+      setCurrentPage(1);
+  }
+}, [location.state?.initialCategory, location.state?.categoryTrigger]);
 
   // Handle qualification and country filters from FeaturedUni
   useEffect(() => {
@@ -979,14 +990,37 @@ const SearchCourse = () => {
             </Col>
           </Row>
 
-          {/* Search Bar */}
+        {/* Search Bar */}
+        <Form
+          onSubmit={(e) => {
+            e.preventDefault();
+            fetchCourses();
+          }}
+        >
+          <InputGroup className="mb-3  saerchcourse-display-none">
+            <Form.Control
+              className="custom-placeholder"
+              style={{ height: "45px", marginTop: "9px" }}
+              placeholder="Search for Courses, Institutions"
+              value={tempSearch}
+              onChange={(e) => {
+                setTempSearch(e.target.value);
+                // After 500ms, update the main searchQuery which triggers API call
+                setTimeout(() => {
+                  setSearchQuery(e.target.value);
+                }, 1500);
+              }}
+            />
+          </InputGroup>
+        </Form>
+        <div className="coursepage-reset-display-search">
           <Form
             onSubmit={(e) => {
               e.preventDefault();
               fetchCourses();
             }}
           >
-            <InputGroup className="mb-3  saerchcourse-display-none">
+            <InputGroup >
               <Form.Control
                 className="custom-placeholder"
                 style={{ height: "45px", marginTop: "9px" }}
@@ -997,77 +1031,54 @@ const SearchCourse = () => {
                   // After 500ms, update the main searchQuery which triggers API call
                   setTimeout(() => {
                     setSearchQuery(e.target.value);
-                  },1500);
+                  }, 1500);
                 }}
               />
             </InputGroup>
           </Form>
-          <div className="coursepage-reset-display-search">
-            <Form
-              onSubmit={(e) => {
-                e.preventDefault();
-                fetchCourses();
-              }}
+          <button
+            onClick={resetFilters}
+            style={{
+              backgroundColor: "transparent",
+              border: "none",
+              color: "#B71A18",
+              fontWeight: "lighter",
+              textDecoration: "none",
+              cursor: "pointer",
+            }}
+          >
+            <i className="bi bi-funnel" style={{ marginRight: "5px" }} />
+            Reset Filters
+          </button>
+        </div>
+        {/* Main Content */}
+        <Container className="my-5">
+          <Row>
+            {/* Left Sidebar - Filters */}
+            <Col
+              md={4}
+              className="location-container"
+              style={{ backgroundColor: "white", padding: "20px" }}
             >
-              <InputGroup >
-                <Form.Control
-                  className="custom-placeholder"
-                  style={{ height: "45px", marginTop: "9px" }}
-                  placeholder="Search for Courses, Institutions"
-                  value={tempSearch}
-                  onChange={(e) => {
-                    setTempSearch(e.target.value);
-                    // After 500ms, update the main searchQuery which triggers API call
-                    setTimeout(() => {
-                      setSearchQuery(e.target.value);
-                    }, 1500);
-                  }}
-                />
-              </InputGroup>
-            </Form>
-            <button
-              onClick={resetFilters}
-              style={{
-                backgroundColor: "transparent",
-                border: "none",
-                color: "#B71A18",
-                fontWeight: "lighter",
-                textDecoration: "none",
-                cursor: "pointer",
-              }}
-            >
-              <i className="bi bi-funnel" style={{ marginRight: "5px" }} />
-              Reset Filters
-            </button>
-          </div>
-          {/* Main Content */}
-          <Container className="my-5">
-            <Row>
-              {/* Left Sidebar - Filters */}
-              <Col
-                md={3}
-                className="location-container"
-                style={{ backgroundColor: "white", padding: "10px" }}
-              >
-                {/* Desktop Filters */}
-                <div className="filters-container">
-                  {/* Location Filter */}
-                  <div className="filter-group">
-                    <h5 style={{ marginTop: "10px" }}>Location</h5>
-                    <Form.Group>
-                      {filterData.state.map((location, index) => (
-                        <Form.Check
-                          key={index}
-                          type="checkbox"
-                          label={location.state_name}
-                          checked={selectedFilters.locations.includes(location.id)}
-                          onChange={() =>
-                            handleFilterChange("locations", location.id)
-                          }
-                        />
-                      ))}
-                    </Form.Group>
-                  </div>
+              {/* Desktop Filters */}
+              <div className="filters-container">
+                {/* Location Filter */}
+                <div className="filter-group">
+                  <h5 style={{ marginTop: "10px" }}>Location</h5>
+                  <Form.Group>
+                    {filterData.state.map((location, index) => (
+                      <Form.Check
+                        key={index}
+                        type="checkbox"
+                        label={location.state_name}
+                        checked={selectedFilters.locations.includes(location.id)}
+                        onChange={() =>
+                          handleFilterChange("locations", location.id)
+                        }
+                      />
+                    ))}
+                  </Form.Group>
+                </div>
 
                   {/* Category Filter */}
                   <div className="filter-group">

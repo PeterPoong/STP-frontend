@@ -245,7 +245,7 @@ const handleRequestFeaturedClick = () => {
     
     <div>
       <div
-    className="d-flex flex-column vh-100"
+    className="d-flex flex-column vh-100 notranslate"
     style={{
       width: "100%",
       maxWidth: "200px",
