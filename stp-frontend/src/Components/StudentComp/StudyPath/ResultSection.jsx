@@ -579,7 +579,7 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                                         >
                                             <img
                                                 src={`${baseURL}storage/${course.logo}`}
-                                                style={{ width: "10rem", height: "5rem" }}
+                                                style={{ width: "150px", height: "100px", objectFit:"contain" }}
                                             />
                                         </Link>
                                         <Link

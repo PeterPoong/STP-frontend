@@ -112,9 +112,20 @@
     width: 150px; /* Adjust the logo size */
   }
 
+  .NBSP-Language-Button
+  {
+    background-color: #BA1718;
+    
+  }
+
   .VIpgJd-ZVi9od-ORHb-OEVmcd
   {
     z-index: 0 !important;
+  }
+
+  .google_translate_element
+  {
+    display:0;
   }
 
   .goog-te-gadget {

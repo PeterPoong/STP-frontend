@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Translate } from "react-bootstrap-icons";
 import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
 import Container from "react-bootstrap/Container";
@@ -188,11 +189,11 @@ const NavigationBar = () => {
           <ButtonGroup className="me-2">
             <Dropdown as={ButtonGroup}>
               <Dropdown.Toggle
-                variant="outline-secondary"
-                className="nav-button"
-                id="language-dropdown"
+                className="nav-button-language"
+                id="dropdown-custom-1"
               >
-                <span className="notranslate">
+                <span className="notranslate" style={{fontSize:"12px"}}>
+                  <Translate size={20} color="#BA1718"  className="me-2"/>
                   {languages.find(lang => lang.code === displayLanguage)?.nativeLabel || 'English'}
                 </span>
               </Dropdown.Toggle>
@@ -204,6 +205,7 @@ const NavigationBar = () => {
                       changeLanguage(lang.code);
                       setDisplayLanguage(lang.code);
                     }}
+                    className="dropdown"
                     active={displayLanguage === lang.code}
                   >
                     <span className="notranslate">

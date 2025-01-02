@@ -67,6 +67,7 @@ const useLocalTranslation = () => {
       translateDiv.id = 'google_translate_element';
       translateDiv.style.visibility = 'hidden';
       translateDiv.style.position = 'absolute';
+      translateDiv.style.display = 'none';
       document.body.appendChild(translateDiv);
 
       window.googleTranslateElementInit = () => {
