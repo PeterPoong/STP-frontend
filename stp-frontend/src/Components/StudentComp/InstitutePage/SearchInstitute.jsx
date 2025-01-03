@@ -597,7 +597,7 @@ const SearchInstitute = () => {
     const description = `Find and compare ${resultCount} ${instituteTypeText} in ${locationText}. Get detailed information about courses, fees, scholarships, and more.`;
 
     return (
-      <Helmet className="notranslate">
+      <Helmet>
         <title>{title}</title>
         <meta name="description" content={description} />
         <meta name="keywords" content={`universities, ${locationText.toLowerCase()}, higher education, ${instituteTypeText.toLowerCase()}`} />
@@ -626,7 +626,7 @@ const SearchInstitute = () => {
       : 'Universities';
     
     return (
-      <div className="seo-heading mt-4 mb-4 notranslate">
+      <div className="seo-heading mt-4 mb-4">
         <h1 style={{ 
           fontSize: '1.5rem', 
           color: '#333', 
