@@ -535,21 +535,59 @@ const QuestionSection = ({ onAnswer }) => {
     const handleClick = (direction) => {
         if (listRef.current && !isNavigating) {
             setIsNavigating(true);
-            const itemWidth = 800;
+
+            // Get the container and all items
+            const container = listRef.current;
+            const items = container.querySelectorAll('.QS-Carousel-Item');
+
+            // Calculate the precise item width based on the container
+            const totalWidth = container.scrollWidth;
+            const itemWidth = totalWidth / items.length;
+
             const newQuestion = direction === 'previous'
                 ? Math.max(1, currentQuestion - 1)
                 : Math.min(40, currentQuestion + 1);
 
-            setCurrentQuestion(newQuestion);
-            listRef.current.scrollBy({
-                left: direction === 'previous' ? -itemWidth : itemWidth,
-                behavior: 'smooth'
-            });
+            // Calculate the exact target position
+            const containerWidth = container.offsetWidth;
+            let targetPosition = (newQuestion - 1) * itemWidth;
 
-            // Reset navigation lock after animation completes
-            setTimeout(() => {
-                setIsNavigating(false);
-            }, 500);
+            // Adjust for centering if container is wider than item
+            if (containerWidth > itemWidth) {
+                const centerOffset = (containerWidth - itemWidth) / 2;
+                targetPosition = Math.max(0, targetPosition - centerOffset);
+            }
+
+            // Ensure we don't scroll past the maximum
+            const maxScroll = totalWidth - containerWidth;
+            targetPosition = Math.min(targetPosition, maxScroll);
+
+            setCurrentQuestion(newQuestion);
+
+            // Use requestAnimationFrame for smoother scrolling
+            requestAnimationFrame(() => {
+                container.scrollTo({
+                    left: targetPosition,
+                    behavior: 'smooth'
+                });
+
+                // Verify position after animation
+                const checkPosition = () => {
+                    const currentPosition = container.scrollLeft;
+                    const expectedPosition = targetPosition;
+
+                    if (Math.abs(currentPosition - expectedPosition) > 5) {
+                        container.scrollTo({
+                            left: expectedPosition,
+                            behavior: 'auto'
+                        });
+                    }
+                    setIsNavigating(false);
+                };
+
+                // Wait for scroll animation to complete
+                setTimeout(checkPosition, 500);
+            });
         }
     };
 

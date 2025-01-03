@@ -186,7 +186,7 @@ const NavigationBar = () => {
               Contact Us
             </Button>
           </Nav>
-          <ButtonGroup className="me-2">
+          <ButtonGroup className="me-2 nav-button-language-container">
             <Dropdown as={ButtonGroup}>
               <Dropdown.Toggle
                 className="nav-button-language"
