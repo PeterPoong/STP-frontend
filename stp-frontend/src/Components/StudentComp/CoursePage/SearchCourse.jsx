@@ -267,31 +267,20 @@ const SearchCourse = () => {
     currentPage,
   ]);
 
-  /*useEffect(() => {
+  // Uncomment and modify this useEffect to handle incoming search
+  useEffect(() => {
     if (location.state?.initialSearchQuery) {
       setTempSearch(location.state.initialSearchQuery);
       setSearchQuery(location.state.initialSearchQuery);
     }
   }, [location.state?.initialSearchQuery, location.state?.searchTrigger]);
 
+  // Add this new useEffect to trigger the search
   useEffect(() => {
-    if (location.state?.initialSearchQuery) {
-      const query = location.state.initialSearchQuery;
-      setTempSearch(query); // Set the displayed search term
-      setSearchQuery(query); // Set the search query for API
+    if (searchQuery && selectedCountry) {
+      fetchCourses();
     }
-  }, []);
-
-  // In SearchCourse component:
-useEffect(() => {
-  if (location.state?.initialCategory) {
-      setSelectedFilters(prev => ({
-          ...prev,
-          categories: [location.state.initialCategory]
-      }));
-      setCurrentPage(1);
-  }
-}, [location.state?.initialCategory, location.state?.categoryTrigger]);
+  }, [searchQuery, selectedCountry]);
 
   // Handle qualification and country filters from FeaturedUni
   useEffect(() => {
@@ -784,7 +773,7 @@ useEffect(() => {
     const description = `Find and compare ${resultCount} ${qualificationText}courses in ${locationText}. Get information about fees, intake dates, and apply online.`;
 
     return (
-      <Helmet>
+      <Helmet className="notranslate">
         <title>{title}</title>
         <meta name="description" content={description} />
         <meta name="keywords" content={`courses, ${qualificationText.toLowerCase()}, study in ${locationText.toLowerCase()}`} />
@@ -813,7 +802,7 @@ useEffect(() => {
       : "";
     
     return (
-      <div className="seo-heading mt-4 mb-4">
+      <div className="seo-heading mt-4 mb-4 notranslate">
         <h1 style={{ fontSize: '1.5rem', color: '#333', marginBottom: '0' }}>
           {resultCount > 0 ? `${resultCount} ` : ''}{qualificationText}Courses {searchTerms}
           in {locationText}
