@@ -318,9 +318,8 @@ const SearchInstitute = () => {
   };
 
   const handleKnowMoreInstitute = (institute) => {
-    navigate(`/knowMoreInstitute/${institute.id}`, {
-      state: { institute: institute },
-    });
+    sessionStorage.setItem("schoolId", institute.id);
+    navigate(`/university-details/${institute.name.replace(/\s+/g, '-').toLowerCase()}`);
   };
 
   // Update the pagination handling functions
@@ -424,7 +423,11 @@ const SearchInstitute = () => {
                       style={{ paddingLeft: "10px" }}
                       className="searchinstitute-one-linkimage"
                     >
-                      <Link to={`/knowMoreInstitute/${institute.id}`}>
+                      <Link
+                        to={`/university-details/${institute.name.replace(/\s+/g, '-').toLowerCase()}`}
+                        style={{ textDecoration: "none", color: "black" }}
+                        onClick={() => sessionStorage.setItem("schoolId", institute.id)}
+                      >
                         <img
                           loading="lazy"
                           src={`${baseURL}storage/${institute.logo}`}
@@ -436,8 +439,9 @@ const SearchInstitute = () => {
                     </div>
                     <div className="searchinstitute-two">
                       <Link
-                        to={`/knowMoreInstitute/${institute.id}`}
+                        to={`/university-details/${institute.name.replace(/\s+/g, '-').toLowerCase()}`}
                         style={{ textDecoration: "none", color: "black" }}
+                        onClick={() => sessionStorage.setItem("schoolId", institute.id)}
                       >
                         <h5 className="card-text">{institute.name}</h5>
                       </Link>
@@ -678,6 +682,14 @@ const SearchInstitute = () => {
         }
       }))
     };
+  };
+
+  const handleKnowMoreClick = (id) => {
+    const schoolName = institutes.find(institute => institute.id === id)?.school_name; // Get the school name
+    if (schoolName) {
+        sessionStorage.setItem("schoolId", id); // Store schoolId in session
+        navigate(`/university-details/${schoolName.replace(/\s+/g, '-').toLowerCase()}`); // Navigate to the new URL
+    }
   };
 
   return (

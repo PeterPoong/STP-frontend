@@ -568,14 +568,20 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                                     <div className="RS-Uni-Header">
                                         <Link
                                             rel="preload"
-                                            to={`/courseDetails/${course.id}`}
+                                            onClick={() => {
+                                                sessionStorage.setItem('selectedCourseId', course.id); // Store course ID in session
+                                            }}
+                                            to={`/course-details/${course.school_name.replace(/\s+/g, '-').toLowerCase()}/${course.name.replace(/\s+/g, '-').toLowerCase()}`}
                                             style={{ color: "#000000" }}
                                         >
                                             <h4 className="RS-Course-Name">{course.name}</h4>
                                         </Link>
                                         <Link
                                             rel="preload"
-                                            to={`/knowMoreInstitute/${course.school_id}`}
+                                            to={`/university-details/${course.school_name.replace(/\s+/g, '-').toLowerCase()}`}
+                                            onClick={() => {
+                                                sessionStorage.setItem('selectedSchoolId', course.school_id);
+                                            }}
                                         >
                                             <img
                                                 src={`${baseURL}storage/${course.logo}`}
@@ -584,7 +590,10 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                                         </Link>
                                         <Link
                                             rel="preload"
-                                            to={`/knowMoreInstitute/${course.school_id}`}
+                                            to={`/university-details/${course.school_name.replace(/\s+/g, '-').toLowerCase()}`}
+                                            onClick={() => {
+                                                sessionStorage.setItem('selectedSchoolId', course.school_id);
+                                            }}
                                             style={{ color: "black" }}
                                         >
                                             <h4 className="RS-Uni-Name">{course.school_name}</h4>

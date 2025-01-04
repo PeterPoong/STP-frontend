@@ -42,6 +42,7 @@ function App() {
               <Route path="/knowMoreInstitute/:id" element={<KnowMore />} />
               <Route path="/applynow" element={<ApplyNow />} />
               <Route path="/courseDetails/:id" element={<courseDetails />} />
+              <Route path="/course/:school_name/:course_name" element={<CourseDetailsPage />} />
               <Route path="/login" element={<div>Login Page</div>} />
               <Route path="/school" element={<div>School Page</div>} />
               <Route path="/student" element={<div>Student Page</div>} />

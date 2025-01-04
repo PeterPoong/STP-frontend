@@ -98,9 +98,10 @@ const UniversityRow = () => {
                   <Col xs={12} className="mb-3 ">
                     <Card className="university-card">
                       <Link
-                        to={`/knowMoreInstitute/${school.schoolID}`}
+                        to={`/university-details/${school.schoolName.replace(/\s+/g, '-').toLowerCase()}`}
                         target="_parent"
                         rel="noopener noreferrer"
+                        onClick={() => sessionStorage.setItem('schoolId', school.schoolID)}
                       >
                         <img
                           className="uni-image"

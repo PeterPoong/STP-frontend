@@ -104,6 +104,7 @@ const KnowMoreInstitute = () => {
   const [institutes, setInstitutes] = useState([]);
   const [featuredInstitutes, setFeaturedInstitutes] = useState([]);
   const navigate = useNavigate();
+  const storedSchoolId = sessionStorage.getItem("schoolId"); // Retrieve school_id from session
 
   const handleContentHeight = () => {
     if (contentRef.current) {
@@ -132,35 +133,27 @@ const KnowMoreInstitute = () => {
   };
 
   const fetchSchool = async () => {
-    // Fetch school detail if institutes are not loaded
-    if (!institutes || institutes.length === 0) {
-      fetch(`${baseURL}api/student/schoolDetail`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          id: id,
-        }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          //  console.log("Fetched School Detail Data: ", data);
-          if (data && data.success && data.data) {
-            setInstitutes([data.data]);
-            setCourses(data.data.courses);
-          } else {
-            console.error(
-              "Invalid data structure for school detail: ",
-              data.data
-            );
-            setInstitutes([]);
-          }
-        })
-        .catch((error) => {
-          console.error("Error fetching school detail data: ", error);
-          setInstitutes([]);
+    if (storedSchoolId) { // Check if school_id exists
+      try {
+        const response = await fetch(`${baseURL}api/student/schoolDetail`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ id: storedSchoolId }), // Use the stored school_id
         });
+        const data = await response.json();
+        if (data && data.success && data.data) {
+          setInstitutes([data.data]);
+          setCourses(data.data.courses);
+        } else {
+          console.error("Invalid data structure for school detail: ", data.data);
+          setInstitutes([]);
+        }
+      } catch (error) {
+        console.error("Error fetching school detail data: ", error);
+        setInstitutes([]);
+      }
     }
 
     // Fetch featured institutes with type "thirdPage"
@@ -171,12 +164,11 @@ const KnowMoreInstitute = () => {
       },
       body: JSON.stringify({
         type: "thirdPage", // Use the required type value
-        schoolId: id
+        schoolId: storedSchoolId // Use storedSchoolId instead of id
       }),
     })
       .then((response) => response.json())
       .then((data) => {
-        //    console.log("Fetched Featured Institutes Data: ", data);
         if (data && data.success && Array.isArray(data.data)) {
           setFeaturedInstitutes(data.data);
         } else {
@@ -198,7 +190,7 @@ const KnowMoreInstitute = () => {
     // console.log("Institute ID: ", id);
     fetchSchool();
     fetchAddsImage();
-  }, [id]);
+  }, []);
 
 
   if (!institutes || institutes.length === 0) {
@@ -210,7 +202,7 @@ const KnowMoreInstitute = () => {
   }
 
   const handleKnowMoreClick = (id) => {
-    navigate(`/knowMoreInstitute/${id}`); // Navigate to CourseDetail with the courseID
+    navigate(`/knowMoreInstitute/${id}`); 
   };
 
   const handleApplyNow = (program, institute) => {
@@ -995,12 +987,17 @@ const KnowMoreInstitute = () => {
                               className="card-title knowmoreinstitute-cardtitle-courselist"
 
                             >
-                              <a
-                                style={{ color: "black" }}
-                                href={`/courseDetails/${course.id}`}
-                              >
-                                {course.course_name}
-                              </a>
+                           <a
+                              style={{ color: "black", textDecoration: "none" }}
+                              href={`/course-details/${institute.name.replace(/\s+/g, '-').toLowerCase()}/${course.course_name.replace(/\s+/g, '-').toLowerCase()}`}
+                              onClick={(e) => {
+                                e.preventDefault(); // Prevent the default anchor behavior
+                                sessionStorage.setItem('courseId', course.id); // Store course ID in session
+                                navigate(`/course-details/${institute.name.replace(/\s+/g, '-').toLowerCase()}/${course.course_name.replace(/\s+/g, '-').toLowerCase()}`); // Navigate to course details
+                              }}
+                            >
+                              {course.course_name}
+                            </a>
                             </h5>
                             <div className="d-flex align-items-center knowmoreinstitute-cardtitle-courselist-name">
                               <div className="knowmoreinstitute-cardtitle-courselist-img">
@@ -1205,9 +1202,10 @@ const KnowMoreInstitute = () => {
                           >
                             {/* Wrap the image inside a Link for navigation */}
                             <Link
-                              to={`/knowMoreInstitute/${institute.school_id}`}
+                              to={`/university-details/${institute.school_name.replace(/\s+/g, '-').toLowerCase()}`}
                               target="_parent"
                               rel="noopener noreferrer"
+                              onClick={() => sessionStorage.setItem('schoolId', institute.school_id)}
                             >
                               <img
                                 src={`${baseURL}storage/${institute.school_logo}`}

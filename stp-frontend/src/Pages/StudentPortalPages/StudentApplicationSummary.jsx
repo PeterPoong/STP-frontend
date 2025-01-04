@@ -1625,20 +1625,15 @@ const StudentApplicationSummary = ({ }) => {
             className="mx-auto mt-5 w-25 as-knowmore-button"
             style={{ padding: "0.5rem 1.5rem", fontSize: "1rem" }}
             onClick={() => {
-              if (isFetchingSchoolId) {
-                alert("Fetching school details, please wait...");
-                return;
-              }
               if (schoolId) {
-                navigate(`/knowMoreInstitute/${schoolId}`);
+                sessionStorage.setItem("schoolId", schoolId);
+                navigate(`/university-details/${courseInfo.school.replace(/\s+/g, '-').toLowerCase()}`);
               } else {
-                alert(
-                  schoolIdError || "School ID not available. Please try again."
-                );
+                alert("School ID not available. Please try again.");
               }
             }}
           >
-            {isFetchingSchoolId ? "Loading..." : "Know More"}
+            Know More
           </Button>
         </div>
 

@@ -62,8 +62,11 @@ const FeaturedCoursesContainer = () => {
     }
   };
 
-  const handleKnowMoreClick = (courseID) => {
-    navigate(`/courseDetails/${courseID}`); // Navigate to CourseDetail with the courseID
+  const handleKnowMoreClick = (course) => {
+    sessionStorage.setItem('courseId', course.id); // Store the course ID
+    const schoolName = course.course_school.replace(/\s+/g, '-').toLowerCase(); // Use course_school for school name
+    const courseName = course.course_name.replace(/\s+/g, '-').toLowerCase(); // Use course_name for course name
+    navigate(`/course-details/${schoolName}/${courseName}`); // Navigate to CourseDetail with the courseID
   };
 
   const handleApplyNow = (course) => {
@@ -225,10 +228,7 @@ const FeaturedCoursesContainer = () => {
                     >
                       <Link
                         style={{ color: "#BA1718" }}
-                        to={{
-                          pathname: `/courseDetails/${course.id}`,
-                          state: { course: course },
-                        }}
+                        onClick={() => handleKnowMoreClick(course)} 
                       >
                         {course.course_name}
                       </Link>
@@ -246,7 +246,7 @@ const FeaturedCoursesContainer = () => {
                   <div className="d-flex justify-content-center ">
                     <button
                       className="button-know-more"
-                      onClick={() => handleKnowMoreClick(course.id)} // Add onClick event
+                      onClick={() => handleKnowMoreClick(course)} // Pass the entire course object
                     >
                       {course.knowMoreText || "Know More"}
                     </button>

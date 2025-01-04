@@ -731,6 +731,20 @@ const CourseListing = ({
     setSelectedInstitute(institute);
   };
 
+  const handleCourseClick = (course) => {
+    if (course) {
+      // Store the courseID in session storage
+      sessionStorage.setItem('courseId', course.id);
+      // Format the school and course names for the URL
+      const formattedSchoolName = formatUrlString(course.school_name);
+      const formattedCourseName = formatUrlString(course.name);
+      // Navigate to the new URL format
+      navigate(`/course-details/${formattedSchoolName}/${formattedCourseName}`);
+    } else {
+      console.error("Course is undefined");
+    }
+  };
+
   // if (!filteredPrograms || filteredPrograms.length === 0) {
   //   return (
   //     <div className="spinner-container">
@@ -754,10 +768,7 @@ const CourseListing = ({
                 <h5 className="card-title">
                   <Link
                     style={{ color: "black" }}
-                    to={{
-                      pathname: `/courseDetails/${program.id}`,
-                      state: { program: program },
-                    }}
+                    onClick={() => handleCourseClick(course)}
                   >
                     {program.name}
                   </Link>

@@ -19,6 +19,14 @@ import "../../../css/StudentCss/course page css/ApplyPage.css";
 const baseURL = import.meta.env.VITE_BASE_URL;
 const courseDetailAPI = `${baseURL}api/student/courseDetail`;
 const adsAURL = `${baseURL}api/student/advertisementList`;
+const formatUrlString = (str) => {
+  return str
+    .toLowerCase() // Convert to lowercase
+    .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
+    .trim() // Trim whitespace
+    .replace(/\s+/g, '-') // Replace spaces with hyphens
+    .replace(/-+/g, '-'); // Replace multiple hyphens with a single hyphen
+};
 const CourseDetail = () => {
   const [contentHeight, setContentHeight] = useState(0);
   const contentRef = useRef(null);
@@ -39,6 +47,8 @@ const CourseDetail = () => {
 
   const [adsImage, setAdsImage] = useState(null);
 
+  const { schoolName, courseName } = useParams();
+ 
   const handleContentHeight = () => {
     if (contentRef.current) {
       setContentHeight(contentRef.current.scrollHeight);
@@ -78,11 +88,19 @@ const CourseDetail = () => {
   const [featuredCourses, setFeaturedCourses] = useState([]);
   const navigate = useNavigate();
 
-  const handleKnowMoreClick = (courseID) => {
-    if (courseID) {
-      navigate(`/courseDetails/${courseID}`);
+  const handleKnowMoreClick = (course) => {
+    if (course) {
+      // Store the courseID in session storage
+      sessionStorage.setItem('courseId', course.course_id);
+      // Format the school and course names for the URL
+      const formattedSchoolName = formatUrlString(course.course_school);
+      const formattedCourseName = formatUrlString(course.course_name);
+      // Navigate to the new URL format
+      navigate(`/course-details/${formattedSchoolName}/${formattedCourseName}`, { replace: true });
+      // Refresh the page to fetch new data
+      window.location.reload(); // This will refresh the page
     } else {
-      console.error("Course ID is undefined");
+      console.error("Course is undefined");
     }
   };
   const handleApplyNow = (program) => {
@@ -122,7 +140,7 @@ const CourseDetail = () => {
     }
   };
 
-  const fetchProgram = async () => {
+  const fetchProgram = async (courseID) => {
     if (!programs || programs.length === 0) {
       fetch(courseDetailAPI, {
         method: "POST",
@@ -130,7 +148,7 @@ const CourseDetail = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          courseID: id,
+          courseID: courseID,
         }),
       })
         .then((response) => response.json())
@@ -138,7 +156,7 @@ const CourseDetail = () => {
           // console.log("Fetched Course Data:", data);
           if (data && data.data && Array.isArray(data.data)) {
             const selectedProgram = data.find(
-              (item) => item.id === parseInt(id)
+              (item) => item.id === parseInt(courseID)
             );
             // console.log("Selected Program:", selectedProgram);
             setPrograms(selectedProgram ? [selectedProgram] : []);
@@ -158,7 +176,7 @@ const CourseDetail = () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ type: "thirdPage", courseId: id }),
+      body: JSON.stringify({ type: "thirdPage", courseId: courseID }),
     })
       .then((response) => response.json())
       .then((data) => {
@@ -176,9 +194,12 @@ const CourseDetail = () => {
         setFeaturedCourses([]);
       });
   };
+
   useEffect(() => {
-    //console.log("Program ID:", id);
-    fetchProgram();
+    const storedCourseId = sessionStorage.getItem('courseId');
+    const courseID = storedCourseId || id;
+
+    fetchProgram(courseID);
     fetchAddsImage();
   }, [id]);
 
@@ -985,9 +1006,8 @@ const CourseDetail = () => {
                               </span>
                             )}
                             <Link
-                              to={{
-                                pathname: `/knowMoreInstitute/${course.school_id}`,
-                              }}
+                              to={`/university-details/${formatUrlString(course.course_school)}`}
+                              onClick={() => sessionStorage.setItem('schoolId', course.school_id)}
                               target="_parent"
                               rel="noopener noreferrer"
                             >
@@ -1005,9 +1025,8 @@ const CourseDetail = () => {
                           </div>
                           <div>
                             <Link
-                              to={{
-                                pathname: `/knowMoreInstitute/${course.school_id}`,
-                              }}
+                              to={`/university-details/${formatUrlString(course.course_school)}`}
+                              onClick={() => sessionStorage.setItem('schoolId', course.school_id)}
                               target="_parent"
                               rel="noopener noreferrer"
                             >
@@ -1025,9 +1044,7 @@ const CourseDetail = () => {
                               </p>
                             </Link>
                             <Link
-                              to={{
-                                pathname: `/courseDetails/${course.course_id}`,
-                              }}
+                              onClick={() => handleKnowMoreClick(course)}
                               target="_parent"
                               rel="noopener noreferrer"
                             >
@@ -1061,11 +1078,7 @@ const CourseDetail = () => {
                           <div className="d-flex justify-content-center">
                             <button
                               className="button-know-more"
-                              onClick={() =>
-                                handleKnowMoreClick(
-                                  course.id || course.course_id
-                                )
-                              } // Ensure correct ID is used
+                              onClick={() => handleKnowMoreClick(course)}
                             >
                               {course.knowMoreText || "Know More"}
                             </button>

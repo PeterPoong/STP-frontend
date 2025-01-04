@@ -937,9 +937,11 @@ const InstituteListing = ({
   };
 
   const handleKnowMoreInstitute = (institute) => {
-    navigate(`/knowMoreInstitute/${institute.id}`, {
-      state_name: { institute: institute },
-    }); // Navigate with state_name
+    // Navigate to the know more page and store the institute in state
+    sessionStorage.setItem('schoolId', institute.id); // Store school ID
+    navigate(`/university-detail/${institute.name.replace(/\s+/g, '-').toLowerCase()}`, { // Navigate to university detail
+      state: { institute: institute }, // Correctly pass the state object
+    }); 
   };
 
   // if (!institutes || institutes.length === 0) {
@@ -967,7 +969,10 @@ const InstituteListing = ({
                   style={{ width: "100%", marginTop: "10px" }}
                 >
                   <div style={{ paddingLeft: "10px" }}>
-                    <Link to={`/knowMoreInstitute/${institute.id}`}>
+                    <Link 
+                      to={`/university-detail/${institute.name.replace(/\s+/g, '-').toLowerCase()}`} 
+                      onClick={() => sessionStorage.setItem('schoolId', institute.id)}
+                    >
                       <img
                         src={`${baseURL}storage/${institute.logo}`}
                         alt={institute.name}
@@ -978,7 +983,8 @@ const InstituteListing = ({
                   </div>
                   <div style={{ paddingLeft: "30px" }}>
                     <Link
-                      to={`/knowMoreInstitute/${institute.id}`}
+                      to={`/university-detail/${institute.name.replace(/\s+/g, '-').toLowerCase()}`} 
+                      onClick={() => sessionStorage.setItem('schoolId', institute.id)}
                       style={{ textDecoration: "none", color: "black" }}
                     >
                       <h5 className="card-text" style={{ cursor: "pointer" }}>

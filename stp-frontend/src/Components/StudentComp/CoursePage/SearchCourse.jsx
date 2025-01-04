@@ -267,7 +267,7 @@ const SearchCourse = () => {
     currentPage,
   ]);
 
-  /*useEffect(() => {
+  useEffect(() => {
     if (location.state?.initialSearchQuery) {
       setTempSearch(location.state.initialSearchQuery);
       setSearchQuery(location.state.initialSearchQuery);
@@ -435,8 +435,9 @@ useEffect(() => {
                   <h5 className="card-title">
                     <Link
                       rel="preload"
-                      to={`/courseDetails/${program.id}`}
+                      to={`/course-details/${program.school_name.replace(/\s+/g, '-').toLowerCase()}/${program.name.replace(/\s+/g, '-').toLowerCase()}`}
                       style={{ color: "black" }}
+                      onClick={() => sessionStorage.setItem('courseId', program.id)}
                     >
                       {program.name}
                     </Link>
@@ -448,8 +449,9 @@ useEffect(() => {
                     >
                       <Link
                         rel="preload"
-                        to={`/knowMoreInstitute/${program.school_id}`}
+                        to={`/university-details/${program.school_name.replace(/\s+/g, '-').toLowerCase()}`}
                         style={{ color: "black" }}
+                        onClick={() => sessionStorage.setItem("schoolId", program.school_id)}
                       >
                         <img
                           loading="lazy"
@@ -465,10 +467,11 @@ useEffect(() => {
                     >
                       <div>
                         <Link
-                            rel="preload"
-                            to={`/knowMoreInstitute/${program.school_id}`}
-                            style={{ color: "black" }}
-                          >
+                          rel="preload"
+                          to={`/university-details/${program.school_name.replace(/\s+/g, '-').toLowerCase()}`}
+                          style={{ color: "black" }}
+                          onClick={() => sessionStorage.setItem("schoolId", program.school_id)}
+                        >
                             <h5 className="card-text">
                               {program.school_name}
 

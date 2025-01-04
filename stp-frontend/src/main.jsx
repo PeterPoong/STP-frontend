@@ -94,7 +94,7 @@ const router = createBrowserRouter([
     errorElement: <NotFoundPage />,
   },
   {
-    path: "/knowMore",
+    path: "/university-details/:school_name",
     element: <KnowMore />,
   },
   {
@@ -106,7 +106,7 @@ const router = createBrowserRouter([
     element: <CourseDetailsPage />,
   },
   {
-    path: "/courseDetails/:id",
+    path: "/course-details/:school_name/:course_name", 
     element: <CourseDetailsPage />,
   },
   {
@@ -123,7 +123,7 @@ const router = createBrowserRouter([
     element: <InstitutePage />,
   },
   {
-    path: "/knowMoreInstitute/:id",
+    path: "/university-details/:school_name",
     element: <KnowMore />,
   },
   {

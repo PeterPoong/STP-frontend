@@ -2,12 +2,17 @@ import React from "react";
 import { Link } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 
-const ButtonGroup = () => {
+const ButtonGroup = ({ schoolId, schoolName }) => {
   return (
     <div className="button-container">
-      <Link to="/knowmore">
-        <Button>Know More</Button>
-      </Link>
+      <Button
+        onClick={() => {
+          sessionStorage.setItem("schoolId", schoolId);
+          window.location.href = `/university-details/${schoolName.replace(/\s+/g, '-').toLowerCase()}`;
+        }}
+      >
+        Know More
+      </Button>
       <Link to="/applynow">
         <Button>Apply Now</Button>
       </Link>
