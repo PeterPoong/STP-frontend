@@ -1059,10 +1059,10 @@ useEffect(() => {
           <Row>
             {/* Left Sidebar - Filters */}
             <Col
-              md={4}
-              className="location-container"
-              style={{ backgroundColor: "white", padding: "20px" }}
-            >
+                md={3}
+                className="location-container"
+                style={{ backgroundColor: "white", padding: "10px" }}
+              >
               {/* Desktop Filters */}
               <div className="filters-container">
                 {/* Location Filter */}
