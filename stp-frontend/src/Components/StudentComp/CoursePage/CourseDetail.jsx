@@ -48,7 +48,9 @@ const CourseDetail = () => {
   const [adsImage, setAdsImage] = useState(null);
 
   const { schoolName, courseName } = useParams();
- 
+  const [courseId, setCourseId] = useState(null);
+  const [schoolId, setSchoolId] = useState(null);
+
   const handleContentHeight = () => {
     if (contentRef.current) {
       setContentHeight(contentRef.current.scrollHeight);
@@ -194,6 +196,46 @@ const CourseDetail = () => {
         setFeaturedCourses([]);
       });
   };
+
+  useEffect(() => {
+    const fetchCourseIdAndSchoolId = async () => {
+      try {
+        // Fetch course ID based on courseName
+        const courseResponse = await fetch(`${courseDetailAPI}?courseName=${courseName}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const courseData = await courseResponse.json();
+        if (courseData && courseData.success) {
+          setCourseId(courseData.course_id); // Assuming the API returns course_id
+          sessionStorage.setItem('courseId', courseData.course_id); // Store course ID in session
+        } else {
+          console.error("Failed to fetch course ID");
+        }
+
+        // Fetch school ID based on schoolName
+        const schoolResponse = await fetch(`${baseURL}api/student/getSchoolId?schoolName=${schoolName}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const schoolData = await schoolResponse.json();
+        if (schoolData && schoolData.success) {
+          setSchoolId(schoolData.school_id); // Assuming the API returns school_id
+          sessionStorage.setItem('schoolId', schoolData.school_id); // Store school ID in session
+        } else {
+          console.error("Failed to fetch school ID");
+        }
+      } catch (error) {
+        console.error("Error fetching course or school ID:", error);
+      }
+    };
+
+    fetchCourseIdAndSchoolId();
+  }, [schoolName, courseName]); // Dependency array includes schoolName and courseName
 
   useEffect(() => {
     const storedCourseId = sessionStorage.getItem('courseId');
