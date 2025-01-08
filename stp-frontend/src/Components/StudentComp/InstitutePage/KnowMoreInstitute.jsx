@@ -40,7 +40,8 @@ const KnowMoreInstitute = () => {
   const [startIndex, setStartIndex] = useState(0);
 
   const [enlargedImageIndex, setEnlargedImageIndex] = useState(null);
-
+  const { school_name } = useParams();
+  const formattedSchoolName = school_name.replace(/-/g, ' ');
 
   const [showSwiperModal, setShowSwiperModal] = useState(false);
   const [activePhotoIndex, setActivePhotoIndex] = useState(0); // To track the clicked photo
@@ -105,7 +106,7 @@ const KnowMoreInstitute = () => {
   const [featuredInstitutes, setFeaturedInstitutes] = useState([]);
   const navigate = useNavigate();
   const storedSchoolId = sessionStorage.getItem("schoolId"); // Retrieve school_id from session
-
+  console.log("School Name from URL:", formattedSchoolName); // Log the school name
   const handleContentHeight = () => {
     if (contentRef.current) {
       setContentHeight(contentRef.current.scrollHeight);
@@ -154,8 +155,30 @@ const KnowMoreInstitute = () => {
         console.error("Error fetching school detail data: ", error);
         setInstitutes([]);
       }
+    } else if (formattedSchoolName) { // If storedSchoolId is not available, use formattedSchoolName
+      try {
+        const response = await fetch(`${baseURL}api/student/schoolDetail`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ schoolName: formattedSchoolName }), // Send formatted school name to the API
+        });
+        const data = await response.json();
+        if (data && data.success && data.data) {
+          setInstitutes([data.data]);
+          setCourses(data.data.courses);
+          // Store the schoolId in sessionStorage
+          sessionStorage.setItem('schoolId', data.data.id); // Store the fetched id in session
+        } else {
+          console.error("Invalid data structure for school detail: ", data.data);
+          setInstitutes([]);
+        }
+      } catch (error) {
+        console.error("Error fetching school detail data: ", error);
+        setInstitutes([]);
+      }
     }
-
     // Fetch featured institutes with type "thirdPage"
     fetch(`${baseURL}api/student/featuredInstituteList`, {
       method: "POST",

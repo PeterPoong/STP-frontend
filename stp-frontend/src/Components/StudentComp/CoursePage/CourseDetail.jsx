@@ -47,9 +47,23 @@ const CourseDetail = () => {
 
   const [adsImage, setAdsImage] = useState(null);
 
-  const { schoolName, courseName } = useParams();
+  const { school_name, course_name } = useParams();
   const [courseId, setCourseId] = useState(null);
   const [schoolId, setSchoolId] = useState(null);
+
+  // Convert hyphenated names to space-separated names
+  const formattedSchoolName = school_name.replace(/-/g, ' ');
+  const formattedCourseName = course_name.replace(/-/g, ' ');
+
+  // Log the formatted names to the console
+  console.log("School Name from URL:", formattedSchoolName); // Log the school name
+  console.log("Course Name from URL:", formattedCourseName); // Log the course name
+
+  // Check for undefined values
+  if (!formattedSchoolName || !formattedCourseName) {
+      console.error("School Name or Course Name is undefined");
+      return <div>Error: Missing school or course information.</div>;
+  }
 
   const handleContentHeight = () => {
     if (contentRef.current) {
@@ -143,7 +157,43 @@ const CourseDetail = () => {
   };
 
   const fetchProgram = async (courseID) => {
-    if (!programs || programs.length === 0) {
+    if (!courseID) { // Check if courseID is not provided
+      try {
+        const response = await fetch(courseDetailAPI, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            schoolName: formattedSchoolName, // Send formatted school name
+            courseName: formattedCourseName, // Send formatted course name
+          }),
+        });
+
+        const data = await response.json();
+        // Log the response data to the console
+        console.log("Fetched data:", data);
+
+        if (data && data.data) { // Check if data exists
+          const selectedProgram = data.data; // Directly use the fetched data
+          if (selectedProgram) {
+            setPrograms([selectedProgram]);
+            sessionStorage.setItem('courseId', selectedProgram.id); // Store course ID in session
+            sessionStorage.setItem('schoolId', selectedProgram.schoolID); // Store school ID in session
+          } else {
+            console.error("No matching program found for the given course name.");
+            setPrograms([]);
+          }
+        } else {
+          console.error("Invalid data structure:");
+          setPrograms([]);
+        }
+      } catch (error) {
+        console.error("Error fetching course data:", error);
+        setPrograms([]);
+      }
+    } else {
+      // Existing logic for fetching program by courseID
       fetch(courseDetailAPI, {
         method: "POST",
         headers: {
@@ -153,24 +203,21 @@ const CourseDetail = () => {
           courseID: courseID,
         }),
       })
-        .then((response) => response.json())
-        .then((data) => {
-          // console.log("Fetched Course Data:", data);
-          if (data && data.data && Array.isArray(data.data)) {
-            const selectedProgram = data.find(
-              (item) => item.id === parseInt(courseID)
-            );
-            // console.log("Selected Program:", selectedProgram);
-            setPrograms(selectedProgram ? [selectedProgram] : []);
-          } else {
-            console.error("Invalid data structure:");
-            setPrograms([data.data]);
-          }
-        })
-        .catch((error) => {
-          console.error("Error fetching course data:", error);
-          setPrograms([]);
-        });
+      .then((response) => response.json())
+      .then((data) => {
+        // console.log("Fetched Course Data:", data);
+        if (data && data.data) {
+          const selectedProgram = data.data; // Directly use the fetched data
+          setPrograms(selectedProgram ? [selectedProgram] : []);
+        } else {
+          console.error("Invalid data structure:");
+          setPrograms([data.data]);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching course data:", error);
+        setPrograms([]);
+      });
     }
 
     fetch(`${baseURL}api/student/featuredCourseList`, {
@@ -197,45 +244,45 @@ const CourseDetail = () => {
       });
   };
 
-  useEffect(() => {
-    const fetchCourseIdAndSchoolId = async () => {
-      try {
-        // Fetch course ID based on courseName
-        const courseResponse = await fetch(`${courseDetailAPI}?courseName=${courseName}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        const courseData = await courseResponse.json();
-        if (courseData && courseData.success) {
-          setCourseId(courseData.course_id); // Assuming the API returns course_id
-          sessionStorage.setItem('courseId', courseData.course_id); // Store course ID in session
-        } else {
-          console.error("Failed to fetch course ID");
-        }
+  // useEffect(() => {
+  //   const fetchCourseIdAndSchoolId = async () => {
+  //     try {
+  //       // Fetch course ID based on courseName
+  //       const courseResponse = await fetch(`${courseDetailAPI}?courseName=${courseName}`, {
+  //         method: "GET",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //       });
+  //       const courseData = await courseResponse.json();
+  //       if (courseData && courseData.success) {
+  //         setCourseId(courseData.course_id); // Assuming the API returns course_id
+  //         sessionStorage.setItem('courseId', courseData.course_id); // Store course ID in session
+  //       } else {
+  //         console.error("Failed to fetch course ID");
+  //       }
 
-        // Fetch school ID based on schoolName
-        const schoolResponse = await fetch(`${baseURL}api/student/getSchoolId?schoolName=${schoolName}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        const schoolData = await schoolResponse.json();
-        if (schoolData && schoolData.success) {
-          setSchoolId(schoolData.school_id); // Assuming the API returns school_id
-          sessionStorage.setItem('schoolId', schoolData.school_id); // Store school ID in session
-        } else {
-          console.error("Failed to fetch school ID");
-        }
-      } catch (error) {
-        console.error("Error fetching course or school ID:", error);
-      }
-    };
+  //       // Fetch school ID based on schoolName
+  //       const schoolResponse = await fetch(`${baseURL}api/student/getSchoolId?schoolName=${schoolName}`, {
+  //         method: "GET",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //       });
+  //       const schoolData = await schoolResponse.json();
+  //       if (schoolData && schoolData.success) {
+  //         setSchoolId(schoolData.school_id); // Assuming the API returns school_id
+  //         sessionStorage.setItem('schoolId', schoolData.school_id); // Store school ID in session
+  //       } else {
+  //         console.error("Failed to fetch school ID");
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching course or school ID:", error);
+  //     }
+  //   };
 
-    fetchCourseIdAndSchoolId();
-  }, [schoolName, courseName]); // Dependency array includes schoolName and courseName
+  //   fetchCourseIdAndSchoolId();
+  // }, [schoolName, courseName]); // Dependency array includes schoolName and courseName
 
   useEffect(() => {
     const storedCourseId = sessionStorage.getItem('courseId');

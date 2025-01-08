@@ -177,9 +177,8 @@ const FeaturedCoursesContainer = () => {
                       </span>
                     )}
                     <Link
-                      to={{
-                        pathname: `/knowMoreInstitute/${course.school_id}`
-                      }}
+                      to={`/university-details/${course.course_school.replace(/\s+/g, '-').toLowerCase()}`} // Correctly using course_school
+                      onClick={() => sessionStorage.setItem("schoolId", course.school_id)}
                     >
                       <img
                         src={`${baseURL}storage/${course.course_logo}`}
@@ -208,9 +207,8 @@ const FeaturedCoursesContainer = () => {
                         style={{
                           color: "#514E4E"
                         }}
-                        to={{
-                          pathname: `/knowMoreInstitute/${course.school_id}`
-                        }}
+                        to={`/university-details/${course.course_school.replace(/\s+/g, '-').toLowerCase()}`}
+                        onClick={() => sessionStorage.setItem("schoolId", course.school_id)}
                       >
                         {course.course_school}
                       </Link>
