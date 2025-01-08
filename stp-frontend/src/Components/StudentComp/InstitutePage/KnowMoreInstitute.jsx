@@ -41,7 +41,8 @@ const KnowMoreInstitute = () => {
 
   const [enlargedImageIndex, setEnlargedImageIndex] = useState(null);
   const { school_name } = useParams();
-  const formattedSchoolName = school_name.replace(/-/g, ' ');
+  const formattedSchoolName = school_name.replace(/(?<!\([^)]*)-(?![^)]*\))/g, ' ');
+
 
   const [showSwiperModal, setShowSwiperModal] = useState(false);
   const [activePhotoIndex, setActivePhotoIndex] = useState(0); // To track the clicked photo
@@ -207,7 +208,6 @@ const KnowMoreInstitute = () => {
         setFeaturedInstitutes([]);
       });
   };
-
 
   useEffect(() => {
     // console.log("Institute ID: ", id);
