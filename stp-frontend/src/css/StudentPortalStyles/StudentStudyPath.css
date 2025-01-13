@@ -573,6 +573,13 @@
     padding: 2rem 1rem;
 }
 
+.RR-Career-Profile-Container {
+    max-width: 1200px;
+    /*  margin: 0 auto;*/
+    width: 90%;
+    padding: 2rem 1rem;
+}
+
 .RS-Header-Section {
     display: flex;
     justify-content: space-between;
@@ -1555,7 +1562,7 @@
     .QS-Carousel-List-Wrapper {
         max-width: 100%;
         padding: 0 1rem;
-        width:28rem
+        width: 28rem
     }
 
     /* Hide scrollbar but keep functionality */
@@ -1580,6 +1587,10 @@
         background: rgba(186, 23, 24, 0.3);
         border-radius: 2px;
         animation: swipeHint 2s infinite;
+    }
+
+    .RR-Career-Profile-Container {
+        width: 100%;
     }
 
     @keyframes swipeHint {
@@ -1804,7 +1815,7 @@
     }
 
     .QS-Carousel-Item {
-        flex:0 0 0;
+        flex: 0 0 0;
     }
 
 

@@ -4,6 +4,7 @@ import { Spinner, Modal, Button } from "react-bootstrap";
 import NavButtonsSP from "../../Components/StudentPortalComp/NavButtonsSP";
 import MyProfileWidget from "../../Components/StudentPortalComp/MyProfileWidget";
 import SpcFooter from "../../Components/StudentPortalComp/SpcFooter";
+import RiasecResult from "../../Components/StudentPortalComp/RiasecResult";
 import BasicInformationWidget from "../../Components/StudentPortalComp/MyProfile/BasicInformationWidget";
 import ManagePasswordWidget from "../../Components/StudentPortalComp/MyProfile/ManagePasswordWidget";
 import CollapsibleSections from "../../Components/StudentPortalComp/CollapsibleSections";
@@ -119,6 +120,8 @@ const StudentPortalBasicInformations = () => {
         return <AppliedCoursePending status="pending" />; // Check if this is correctly imported
       case "appliedCourseHistory":
         return <AppliedCourseHistory status="history" />;
+        case "riasecresult":
+          return <RiasecResult/>;
       default:
         return <BasicInformationWidget />;
     }
