@@ -82,45 +82,57 @@ const StudentApplicationSummary = ({ }) => {
   }, [navigate]);
 
   const calculateOverallGrade = (subjects) => {
-    if (!subjects || subjects.length === 0) {
+    // Check if subjects is null, undefined, or not an array
+    if (!subjects || !Array.isArray(subjects) || subjects.length === 0) {
       return "N/A";
     }
 
-    const gradeCounts = subjects.reduce((counts, subject) => {
-      const grade =
-        subject.grade ||
-        subject.subject_grade ||
-        subject.higherTranscript_grade;
-      counts[grade] = (counts[grade] || 0) + 1;
-      return counts;
-    }, {});
+    try {
+      const gradeCounts = subjects.reduce((counts, subject) => {
+        // Safely extract grade, checking each property
+        const grade = subject?.grade ||
+          subject?.subject_grade ||
+          subject?.higherTranscript_grade;
 
-    const gradeOrder = [
-      "A+",
-      "A",
-      "A-",
-      "B+",
-      "B",
-      "B-",
-      "C+",
-      "C",
-      "D",
-      "E",
-      "G",
-      "F",
-      "A1",
-      "A2",
-      "B3",
-    ];
-    let overallGrade = "";
+        // Only count valid grades
+        if (grade) {
+          counts[grade] = (counts[grade] || 0) + 1;
+        }
+        return counts;
+      }, {});
 
-    for (const grade of gradeOrder) {
-      if (gradeCounts[grade]) {
-        overallGrade += `${gradeCounts[grade]}${grade} `;
+      const gradeOrder = [
+        "A+",
+        "A",
+        "A-",
+        "B+",
+        "B",
+        "B-",
+        "C+",
+        "C",
+        "D",
+        "E",
+        "G",
+        "F",
+        "A1",
+        "A2",
+        "B3",
+        "TH"
+      ];
+
+      let overallGrade = "";
+
+      for (const grade of gradeOrder) {
+        if (gradeCounts[grade]) {
+          overallGrade += `${gradeCounts[grade]}${grade} `;
+        }
       }
-    }
 
-    return overallGrade.trim() || "N/A";
+      return overallGrade.trim() || "N/A";
+    } catch (error) {
+      console.error('Error calculating overall grade:', error);
+      return "N/A";
+    }
   };
 
   const getPositionStyle = (position) => {
@@ -462,7 +474,7 @@ const StudentApplicationSummary = ({ }) => {
         let includeProgramInfo = false;
 
         // CGPA and Program Name for non-SPM categories
-        if (category.id !== 32) {
+        if (category.id !== 32 || category.id !== 85) {
           const cgpaInfo = await fetchCGPAForCategory(category, token);
           if (cgpaInfo.cgpa !== null || cgpaInfo.programName) {
             includeProgramInfo = true;
@@ -748,17 +760,15 @@ const StudentApplicationSummary = ({ }) => {
   // Helper function to fetch transcript subjects for a specific category
   const fetchTranscriptSubjectsForPDF = async (categoryId) => {
     try {
-      const token =
-        sessionStorage.getItem("token") || localStorage.getItem("token");
-      const url =
-        categoryId === 32
-          ? `${import.meta.env.VITE_BASE_URL}api/student/transcriptSubjectList`
-          : `${import.meta.env.VITE_BASE_URL
-          }api/student/higherTranscriptSubjectList`;
-      const method = categoryId === 32 ? "GET" : "POST";
-      const body =
-        categoryId === 32 ? null : JSON.stringify({ id: categoryId });
-
+      const token = sessionStorage.getItem("token") || localStorage.getItem("token");
+      const url = (categoryId === 32 || categoryId === '32' || categoryId === 85 || categoryId === '85')
+        ? `${import.meta.env.VITE_BASE_URL}api/student/transcriptSubjectList`
+        : `${import.meta.env.VITE_BASE_URL}api/student/higherTranscriptSubjectList`;
+      const method = (categoryId === 32 || categoryId === '32' || categoryId === 85 || categoryId === '85') ? "GET" : "POST";
+      const body = (categoryId === 32 || categoryId === '32' || categoryId === 85 || categoryId === '85')
+        ? null 
+        : JSON.stringify({ id: categoryId });
+  
       const response = await fetch(url, {
         method: method,
         headers: {
@@ -767,23 +777,29 @@ const StudentApplicationSummary = ({ }) => {
         },
         ...(method === "POST" && { body }),
       });
+      
       if (!response.ok) {
         throw new Error("Failed to fetch transcript subjects");
       }
+      
       const result = await response.json();
       if (result.success) {
-        return result.data;
+        // Handle special case for SPM and SPM Trial
+        if (categoryId === 32 || categoryId === '32') {
+          return result.data.spm || [];
+        } else if (categoryId === 85 || categoryId === '85') {
+          return result.data.trial || [];
+        } else {
+          return result.data;
+        }
       } else {
-        throw new Error(
-          result.message || "Failed to fetch transcript subjects"
-        );
+        throw new Error(result.message || "Failed to fetch transcript subjects");
       }
     } catch (error) {
       console.error("Error fetching transcript subjects:", error);
       return null;
     }
   };
-
   const fetchTranscriptCategories = async () => {
     try {
       const token =
@@ -821,17 +837,15 @@ const StudentApplicationSummary = ({ }) => {
 
   const fetchTranscriptSubjects = async (categoryId) => {
     try {
-      const token =
-        sessionStorage.getItem("token") || localStorage.getItem("token");
-      const url =
-        categoryId === 32
-          ? `${import.meta.env.VITE_BASE_URL}api/student/transcriptSubjectList`
-          : `${import.meta.env.VITE_BASE_URL
-          }api/student/higherTranscriptSubjectList`;
-      const method = categoryId === 32 ? "GET" : "POST";
-      const body =
-        categoryId === 32 ? null : JSON.stringify({ id: categoryId });
-
+      const token = sessionStorage.getItem("token") || localStorage.getItem("token");
+      const url = (categoryId === 32 || categoryId === '32' || categoryId === 85 || categoryId === '85')
+        ? `${import.meta.env.VITE_BASE_URL}api/student/transcriptSubjectList`
+        : `${import.meta.env.VITE_BASE_URL}api/student/higherTranscriptSubjectList`;
+      const method = (categoryId === 32 || categoryId === '32' || categoryId === 85 || categoryId === '85') ? "GET" : "POST";
+      const body = (categoryId === 32 || categoryId === '32' || categoryId === 85 || categoryId === '85') 
+        ? null 
+        : JSON.stringify({ id: categoryId });
+  
       const response = await fetch(url, {
         method: method,
         headers: {
@@ -840,16 +854,23 @@ const StudentApplicationSummary = ({ }) => {
         },
         ...(method === "POST" && { body }),
       });
+      
       if (!response.ok) {
         throw new Error("Failed to fetch transcript subjects");
       }
+      
       const result = await response.json();
       if (result.success) {
-        setTranscriptSubjects(result.data);
+        // Handle special case for SPM and SPM Trial
+        if (categoryId === 32 || categoryId === '32') {
+          setTranscriptSubjects(result.data.spm || []);
+        } else if (categoryId === 85 || categoryId === '85') {
+          setTranscriptSubjects(result.data.trial || []);
+        } else {
+          setTranscriptSubjects(result.data);
+        }
       } else {
-        throw new Error(
-          result.message || "Failed to fetch transcript subjects"
-        );
+        throw new Error(result.message || "Failed to fetch transcript subjects");
       }
     } catch (error) {
       console.error("Error fetching transcript subjects:", error);
@@ -1078,10 +1099,11 @@ const StudentApplicationSummary = ({ }) => {
   };
 
   const fetchCGPAForCategory = async (category, token) => {
-    if (category.id === 32) {
+    // Return null values for both SPM and SPM Trial
+    if (category.id === 32 || category.id === '32' || category.id === 85 || category.id === '85') {
       return { cgpa: null, programName: "", cgpaId: null };
     }
-
+  
     try {
       const response = await fetch(
         `${import.meta.env.VITE_BASE_URL}api/student/programCgpaList`,
@@ -1094,20 +1116,20 @@ const StudentApplicationSummary = ({ }) => {
           body: JSON.stringify({ transcriptCategory: category.id }),
         }
       );
-
+  
       if (!response.ok) {
         throw new Error(
           `Failed to fetch CGPA for category ${category.transcript_category}`
         );
       }
-
+  
       const result = await response.json();
       return result.success && result.data
         ? {
-          cgpa: result.data.cgpa,
-          programName: result.data.program_name,
-          cgpaId: result.data.id,
-        }
+            cgpa: result.data.cgpa,
+            programName: result.data.program_name,
+            cgpaId: result.data.id,
+          }
         : { cgpa: null, programName: "", cgpaId: null };
     } catch (error) {
       console.error("Error fetching CGPA:", error);
@@ -1116,14 +1138,13 @@ const StudentApplicationSummary = ({ }) => {
   };
 
   const fetchCGPAInfo = async (categoryId) => {
-    if (categoryId === 32) {
+    if (categoryId === 32 || categoryId === '32' || categoryId === 85 || categoryId === '85') {
       setCgpaInfo(null);
       return;
     }
-
+  
     try {
-      const token =
-        sessionStorage.getItem("token") || localStorage.getItem("token");
+      const token = sessionStorage.getItem("token") || localStorage.getItem("token");
       const response = await fetch(
         `${import.meta.env.VITE_BASE_URL}api/student/programCgpaList`,
         {
@@ -1135,11 +1156,11 @@ const StudentApplicationSummary = ({ }) => {
           body: JSON.stringify({ transcriptCategory: categoryId }),
         }
       );
-
+  
       if (!response.ok) {
         throw new Error("Failed to fetch CGPA information");
       }
-
+  
       const result = await response.json();
       if (result.success && result.data) {
         setCgpaInfo(result.data);
@@ -1940,7 +1961,7 @@ const StudentApplicationSummary = ({ }) => {
                           <BsCaretDownFill size={30} className="sas-pointer align-self-start" />
                         </div>
                       </div>
-                      {cgpaInfo && selectedExam !== "32" && (
+                      {cgpaInfo && (selectedExam !== "32" || selectedExam !== '85') && (
                         <div className="px-4 mb-3">
                           <div className="d-flex justify-content-between align-items-center">
                             <p className="mb-0 mt-2 d-flex align-items-center">

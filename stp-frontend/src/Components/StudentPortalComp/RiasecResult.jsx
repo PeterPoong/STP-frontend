@@ -228,6 +228,7 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
     const [isDownloading, setIsDownloading] = useState(false);
     const shareButtonRef = useRef(null);
     const [results, setResults] = useState(null);
+    const [createdAt, setCreatedAt] = useState();
     const [selectedDesign, setSelectedDesign] = useState(0);
     const [selectedCourse, setSelectedCourse] = useState(null);
     const [recommendedCourses, setRecommendedCourses] = useState([]);
@@ -297,6 +298,7 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                 if (data.success && data.data && data.data.score) {
                     const processedResults = processResults(data.data.score);
                     setResults(processedResults);
+                    setCreatedAt(data.data.created_at)
                     await fetchRecommendedCategories(processedResults.topTypes[0].type);
                 } else {
                     throw new Error('Invalid response format');
@@ -752,7 +754,8 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
             <div className="RS-Header-Section">
                 <div>
                     <h1>Your RIASEC Assessment Results</h1>
-                    <p>{userData.username}, Here's Your Study Path Analysis</p>
+                    <p className="mb-0">{userData.username}, Here's Your Study Path Analysis</p>
+                    <p style={{ fontSize: "14px", marginBottom: "10px" }}>Most recent test: {new Date(createdAt).toISOString().split('T')[0]}</p>
                 </div>
                 <button
                     className="SSP-Start-Button"
