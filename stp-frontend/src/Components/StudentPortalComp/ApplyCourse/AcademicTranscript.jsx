@@ -467,8 +467,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
   };
 
   const handleTranscriptChange = (index, { id, name }) => {
-    console.log('Transcript change - ID:', id, 'Name:', name);
-    
+//console.log('Transcript change - ID:', id, 'Name:', name);
     const updatedTranscripts = academicTranscripts.map((transcript, i) =>
       i === index ? { ...transcript, id, name } : transcript
     );
@@ -480,12 +479,10 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
       // Check if this specific type (SPM or SPM Trial) already exists with subjects
       const existingTranscriptWithSubjects = academicTranscripts.some(
         transcript => transcript.id === id && transcript.subjects && transcript.subjects.length > 0
-      );
-      
-      console.log('Is SPM Type:', isSPMType, 'Has existing subjects:', existingTranscriptWithSubjects);
-      
+      );    
+//console.log('Is SPM Type:', isSPMType, 'Has existing subjects:', existingTranscriptWithSubjects);    
       if (isSPMType && !existingTranscriptWithSubjects) {
-        console.log('Setting preset subjects for:', name);
+      //  console.log('Setting preset subjects for:', name);
         const presetSubjects = presetSPMSubjects();
         updatedTranscripts[index].subjects = presetSubjects;
         setAcademicTranscripts(updatedTranscripts);
@@ -863,22 +860,13 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
     setSavingStates(prev => ({ ...prev, [transcriptIndex]: 'loading' }));
     try {
       const transcript = academicTranscripts[transcriptIndex];
-      console.log('Current transcript data:', transcript);
-
+     // console.log('Current transcript data:', transcript);
       // Check if the transcript is empty or if any required fields are missing
       const isTranscriptEmpty = transcript.subjects.length === 0 && transcript.documents.length === 0;
       const isCGPAMissing = transcript.id !== 32 && transcript.id !== 85 && !transcript.cgpa;
       const areSubjectsIncomplete = transcript.subjects.some(subject => !subject.name || !subject.grade);
 
-      console.log('Validation checks:', {
-        isTranscriptEmpty,
-        isCGPAMissing,
-        areSubjectsIncomplete,
-        transcriptId: transcript.id
-      });
-
       if (isTranscriptEmpty || isCGPAMissing || areSubjectsIncomplete) {
-        console.log('Validation failed, showing reminder popup');
         setIsAcademicRemindPopupOpen(true);
         return;
       }
@@ -886,7 +874,6 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
       // Proceed with saving if all checks pass
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       const category = categories.find(cat => cat.transcript_category === transcript.name);
-      console.log('Category found:', category);
 
       if (!category) {
         throw new Error('Invalid transcript category');
@@ -894,12 +881,9 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
 
       let url, payload;
       if (category.id === 32 || category.id === 85) { // SPM
-        console.log('Processing SPM transcript');
         // Fetch the correct subject IDs for new subjects
         const subjectsWithCorrectIds = await Promise.all(transcript.subjects.map(async (subject) => {
-          console.log('Processing subject:', subject);
           if (subject.isNew || !subject.id) {
-            console.log('Fetching subject list for new/missing ID subject:', subject.name);
             const subjectResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/subjectList`, {
               method: 'POST',
               headers: {
@@ -909,15 +893,11 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
               body: JSON.stringify({ category: category.id }),
             });
             const subjectData = await subjectResponse.json();
-            console.log('Subject list API response:', subjectData);
             const correctSubject = subjectData.data.find(s => s.name === subject.name);
-            console.log('Matched subject:', correctSubject);
             return { ...subject, id: correctSubject ? correctSubject.id : subject.id };
           }
           return subject;
         }));
-
-        console.log('Subjects with correct IDs:', subjectsWithCorrectIds);
 
         url = `${import.meta.env.VITE_BASE_URL}api/student/addEditTranscript`;
         payload = {
@@ -929,9 +909,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
               grade: gradeToInt(subject.grade)
             }))
         };
-        console.log('SPM Payload being sent:', payload);
       } else {
-        console.log('Processing higher education transcript');
         url = `${import.meta.env.VITE_BASE_URL}api/student/addEditHigherTranscript`;
         payload = {
           category: category.id,
@@ -940,22 +918,15 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
             grade: subject.grade
           }))
         };
-        console.log('Higher transcript payload:', payload);
 
         // Add CGPA and program name to payload for non-SPM transcripts
         if (transcript.cgpa !== null) {
-          console.log('Processing CGPA data:', {
-            cgpa: transcript.cgpa,
-            programName: transcript.programName,
-            cgpaId: transcript.cgpaId
-          });
 
           // Determine whether to use addProgramCgpa or editProgramCgpa
           const cgpaUrl = transcript.cgpaId
             ? `${import.meta.env.VITE_BASE_URL}api/student/editProgramCgpa`
             : `${import.meta.env.VITE_BASE_URL}api/student/addProgramCgpa`;
 
-          console.log('Using CGPA endpoint:', cgpaUrl);
 
           const cgpaPayload = {
             transcriptCategory: category.id,
@@ -963,7 +934,6 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
             ...(transcript.programName && { programName: transcript.programName }),
             ...(transcript.cgpaId && { cgpaId: transcript.cgpaId })
           };
-          console.log('CGPA Payload:', cgpaPayload);
 
           const cgpaResponse = await fetch(cgpaUrl, {
             method: 'POST',
@@ -975,7 +945,6 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
           });
 
           const cgpaResult = await cgpaResponse.json();
-          console.log('CGPA API Response:', cgpaResult);
 
           if (!cgpaResult.success) {
             console.error('CGPA update failed:', cgpaResult);
@@ -984,7 +953,6 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
 
           // Update the transcript with the new CGPA ID if it was just added
           if (!transcript.cgpaId && cgpaResult.data && cgpaResult.data.id) {
-            console.log('New CGPA ID received:', cgpaResult.data.id);
             const updatedTranscripts = [...academicTranscripts];
             updatedTranscripts[transcriptIndex].cgpaId = cgpaResult.data.id;
             setAcademicTranscripts(updatedTranscripts);
@@ -992,7 +960,6 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
         }
       }
 
-      console.log('Sending final request to:', url);
       const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -1002,12 +969,6 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
         body: JSON.stringify(payload),
       });
       const data = await response.json();
-      console.log('Final API Response:', {
-        success: data.success,
-        message: data.message,
-        data: data.data,
-        error: data.error
-      });
 
       if (data.success) {
         setSavingStates(prev => ({ ...prev, [transcriptIndex]: 'success' }));
@@ -1019,9 +980,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
         fetchSubjects(category.id, transcriptIndex);
 
         if (category.id !== 32 || category.id !== 85) {
-          console.log('Fetching updated CGPA data');
           const updatedCGPAData = await fetchCGPAForCategory(category, token);
-          console.log('Updated CGPA data received:', updatedCGPAData);
           const updatedTranscripts = [...academicTranscripts];
           updatedTranscripts[transcriptIndex] = {
             ...updatedTranscripts[transcriptIndex],
