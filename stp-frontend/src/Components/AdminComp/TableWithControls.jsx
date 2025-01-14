@@ -12,6 +12,8 @@ import {
   MDBPaginationItem,
   MDBPaginationLink,
 } from "mdb-react-ui-kit";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const TableWithControls = ({
   theadContent,
@@ -27,8 +29,22 @@ const TableWithControls = ({
   showRowsPerPage = true, // New prop to toggle rows-per-page visibility
   onRowsPerPageChange,
   subjectList,
+  categoryList,
+  onCategoryChange,
   onSubjectChange,
+  showMonthFilter = false, // Add this prop
+  onMonthYearChange, // Add this prop
 }) => {
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+
+  const formatDate = (date) => {
+    if (!date) return '';
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${month}/${year}`;
+  };
+
   const renderPaginationItems = () => {
     const items = [];
 
@@ -163,6 +179,54 @@ const TableWithControls = ({
                     </option>
                   ))}
                 </select>
+              </div>
+            )}
+              {/* Conditionally render the category enquiry dropdown */}
+              {categoryList && categoryList.length > 0 && (
+              <div className="mb-3 mt-3 ms-3 custom-dropdown" >
+                Category
+                <select
+                  onChange={(e) => onCategoryChange(e.target.value)}
+                  className="subject-dropdown"
+                >
+                  <option value="">All Categories</option>
+                  {categoryList.map((category) => (
+                    <option key={category.id} value={category.id}>
+                      {category.category_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {/* Add the month/year filter after the category dropdown */}
+            {showMonthFilter && (
+              <div className="me-1 mb-3 mt-3 ms-3 custom-dropdown d-flex">
+                <h6 className="me-2" >MM/YY</h6>
+                <DatePicker
+                  selected={startDate}
+                  onChange={(dates) => {
+                    const [start, end] = dates;
+                    setStartDate(start);
+                    setEndDate(end);
+                    
+                    if (start && end) {
+                      // Range selection
+                      onMonthYearChange(`${formatDate(start)} - ${formatDate(end)}`);
+                    } else if (start) {
+                      // Single month selection
+                      onMonthYearChange(formatDate(start));
+                    }
+                  }}
+                  startDate={startDate}
+                  endDate={endDate}
+                  dateFormat="MM/yyyy"
+                  showMonthYearPicker
+                  selectsRange
+                  className="form-control interestDatepicker"
+                  placeholderText="Select Month/Year"
+                  isClearable
+                />
               </div>
             )}
           </div>

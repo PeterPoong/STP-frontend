@@ -53,6 +53,7 @@ import AdminEnquiry from "./Pages/AdminPages/AdminEnquiry";
 import AdminReplyEnquiry from "./Pages/AdminPages/AdminReplyEnquiry";
 import AdminFeatured from "./Pages/AdminPages/AdminFeatured";
 import AdminEditFeatured from "./Pages/AdminPages/AdminEditFeatured";
+import AdminInterest from "./Pages/AdminPages/AdminInterest";
 
 //StudentPortal Page
 import StudentPortalLogin from "./Pages/StudentPortalPages/StudentPortalLogin";
@@ -292,7 +293,10 @@ const router = createBrowserRouter([
     path: "/adminEditFeatured",
     element: <AdminEditFeatured />,
   },
-
+  {
+    path: "/adminInterest",
+    element: <AdminInterest />,
+  },
   //Student Portal Page
   {
     path: "/studentPortalLogin",

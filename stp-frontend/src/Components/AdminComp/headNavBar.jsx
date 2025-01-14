@@ -112,6 +112,15 @@ const HeadNavBar = () => {
 
           case '/adminReplyEnquiry':
             return 'Reply Enquiry';
+
+        case '/adminFeatured':
+          return 'Featured';
+
+          case '/adminEditFeatured':
+            return 'Edit Featured';
+
+        case '/adminInterest':
+          return 'Course Interest';
       default:
         return 'Dashboard'; // Default title if path doesn't match any case
     }
