@@ -225,14 +225,15 @@ const processResults = (scores) => {
 const CareerProfile = ({ userData = { username: "David Lim" } }) => {
     const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
-    const [isDownloading, setIsDownloading] = useState(false); // Moved up
+    const [isDownloading, setIsDownloading] = useState(false);
     const shareButtonRef = useRef(null);
     const [results, setResults] = useState(null);
     const [selectedDesign, setSelectedDesign] = useState(0);
     const [selectedCourse, setSelectedCourse] = useState(null);
     const [recommendedCourses, setRecommendedCourses] = useState([]);
-    const [recommendedCategories, setRecommendedCategories] = useState([]); // Added missing state
-    const [isLoading, setIsLoading] = useState(true); // Changed default to true
+    const [recommendedCategories, setRecommendedCategories] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isCourseLoading, setIsCourseLoading] = useState(true);
     const [error, setError] = useState(null);
     const { username = "User" } = userData;
     const designRef0 = useRef(null);
@@ -242,33 +243,33 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
     const createUrlFriendlyString = (str) => {
         if (!str) return '';
         return str.toLowerCase().replace(/\s+/g, '-');
-      };
-    
-      // Render course link with safety checks
-      const renderCourseLink = (course) => {
+    };
+
+    // Render course link with safety checks
+    const renderCourseLink = (course) => {
         if (!course?.school_name || !course?.category_name) {
-          return <h4 className="RS-Course-Name">Course details unavailable</h4>;
+            return <h4 className="RS-Course-Name">Course details unavailable</h4>;
         }
-    
+
         const schoolUrl = createUrlFriendlyString(course.school_name);
         const courseUrl = createUrlFriendlyString(course.category_name);
-    
+
         return (
-          <Link
-            rel="preload"
-            onClick={() => {
-              if (course.id) {
-                sessionStorage.setItem('selectedCourseId', course.id);
-              }
-            }}
-            to={`/course-details/${schoolUrl}/${courseUrl}`}
-            style={{ color: "#000000" }}
-          >
-            <h4 className="RS-Course-Name">{course.category_name}</h4>
-          </Link>
+            <Link
+                rel="preload"
+                onClick={() => {
+                    if (course.id) {
+                        sessionStorage.setItem('selectedCourseId', course.id);
+                    }
+                }}
+                to={`/course-details/${schoolUrl}/${courseUrl}`}
+                style={{ color: "#000000" }}
+            >
+                <h4 className="RS-Course-Name">{course.category_name}</h4>
+            </Link>
         );
-      };
-      
+    };
+
     useEffect(() => {
         const fetchResults = async () => {
             try {
@@ -362,6 +363,7 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
     };
 
     const fetchCoursesByCategory = async (categoryId) => {
+        setIsCourseLoading(true);
         try {
             const token = sessionStorage.getItem('token') || localStorage.getItem('token');
             const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/courseList`, {
@@ -381,6 +383,8 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
             }
         } catch (error) {
             console.error('Error fetching courses:', error);
+        } finally {
+            setIsCourseLoading(false);
         }
     };
 
@@ -403,10 +407,10 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
     if (error) {
         return (
             <div className="text-center p-4 " >
-                <h2 style={{fontSize:"36px",fontWeight:"bold",marginBottom:"10px"}}>No RIASEC Results Found</h2>
+                <h2 style={{ fontSize: "36px", fontWeight: "bold", marginBottom: "10px" }}>No RIASEC Results Found</h2>
                 <p>Take the assessment to discover your career interests</p>
-                <button 
-                    className="SSP-Start-Button" 
+                <button
+                    className="SSP-Start-Button"
                     onClick={() => navigate('/studentStudyPath')}
                 >
                     Take RIASEC Test
@@ -418,10 +422,10 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
     if (!results) {
         return (
             <div className="text-center p-4 " >
-                <h2 style={{fontSize:"36px",fontWeight:"bold",marginBottom:"10px"}}>No RIASEC Results Found</h2>
+                <h2 style={{ fontSize: "36px", fontWeight: "bold", marginBottom: "10px" }}>No RIASEC Results Found</h2>
                 <p>Take the assessment to discover your career interests</p>
-                <button 
-                    className="SSP-Start-Button" 
+                <button
+                    className="SSP-Start-Button"
                     onClick={() => navigate('/studentStudyPath')}
                 >
                     Take RIASEC Test
@@ -518,7 +522,7 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
             }
 
             if (!targetRef.current) {
-               // console.log('No design selected');
+                // console.log('No design selected');
                 return null;
             }
 
@@ -627,7 +631,7 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                 document.body.removeChild(link);
 
                 URL.revokeObjectURL(url);
-               // console.log('Download complete!');
+                // console.log('Download complete!');
             }, 'image/png', 1.0);
         } catch (error) {
             console.error('Download error:', error);
@@ -716,7 +720,7 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
         });
     };
 
-  
+
 
     const handleCategorySelect = (index, categoryName) => {
         setSelectedCourse(index);
@@ -737,6 +741,11 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
         }
     };
 
+    const handleRetakeTest = () => {
+        sessionStorage.setItem('retakeRiasecTest', 'true');
+        navigate('/studentStudyPath');
+    };
+
     return (
         <div className="RR-Career-Profile-Container">
             {/* Header Section */}
@@ -745,9 +754,15 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                     <h1>Your RIASEC Assessment Results</h1>
                     <p>{userData.username}, Here's Your Study Path Analysis</p>
                 </div>
-                <button className="SSP-Start-Button" onClick={handleShareResult}>
-                    SHARE RESULT
+                <button
+                    className="SSP-Start-Button"
+                    onClick={handleRetakeTest}
+                >
+                    Retake RIASEC Test
                 </button>
+                {/*<button className="SSP-Start-Button" onClick={handleShareResult}>
+                    SHARE RESULT
+                </button>*/}
             </div>
 
             {/* Main Result Card with Mascot */}
@@ -793,7 +808,7 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                 <div className="RS-Section-Card">
                     <h3 className="RS-Section-Title">Featured Courses for Your Study Path</h3>
                     <div className="RS-Universities-Grid">
-                        {isLoading ? (
+                        {isCourseLoading ? (
                             <div className="RS-Universities-Grid-Spinner">
                                 <div className="" >
                                     <Spinner animation="border" role="status">
@@ -806,7 +821,7 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                                 <div key={index} className="RS-University-Card">
                                     {course.featured && <span className="RS-Featured-Tag">FEATURED</span>}
                                     <div className="RS-Uni-Header">
-                                    {renderCourseLink(course)}
+                                        {renderCourseLink(course)}
                                         <Link
                                             rel="preload"
                                             to={`/university-details/${course.school_name.replace(/\s+/g, '-').toLowerCase()}`}
@@ -816,7 +831,7 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                                         >
                                             <img
                                                 src={`${baseURL}storage/${course.logo}`}
-                                                style={{ width: "150px", height: "100px", objectFit:"contain" }}
+                                                style={{ width: "150px", height: "100px", objectFit: "contain" }}
                                             />
                                         </Link>
                                         <Link
@@ -943,7 +958,7 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                                     <div className="RS-Type-Number">{index + 1}</div>
                                     <div className="RS-Type-Details">
                                         <span className="RS-Type-Name">{type.type}</span>
-                                        <span className="RS-Type-Percentage" style={{color:"#E31D1E"}}>{type.percentage}%</span>
+                                        <span className="RS-Type-Percentage" style={{ color: "#E31D1E" }}>{type.percentage}%</span>
                                     </div>
                                 </div>
                             ))}
