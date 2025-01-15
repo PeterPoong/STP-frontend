@@ -338,8 +338,8 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
             clone.style.width = getComputedStyle(targetRef.current).width;
             clone.style.height = getComputedStyle(targetRef.current).height;
             clone.style.position = 'fixed';
-            clone.style.top = '0';
-            clone.style.left = '0';
+            clone.style.top = '1px';
+            clone.style.left = '1px';
             clone.style.zIndex = '-9999';
 
             const qrContainer = clone.querySelector('.RS-Unique-QR-Container');
