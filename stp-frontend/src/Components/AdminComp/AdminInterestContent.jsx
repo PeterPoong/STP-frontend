@@ -91,7 +91,9 @@ const AdminInterestContent = () => {
             }
 
             const result = await response.json();
+            console.log('API Response:', result);
             if (result && result.categories) {
+                console.log('Setting interests with:', result.categories);
                 setinterests(result.categories);
                 setTotalPages(result.pagination.last_page);
                 setCurrentPage(result.pagination.current_page);
@@ -157,10 +159,10 @@ const AdminInterestContent = () => {
         sessionStorage.setItem('token', Authenticate);
         navigate('/adminAddinterest');
     };
-    const handleEdit = (id) => {
-        // console.log(`Edit interest with ID: ${id}`); // Log the ID being passed
-        sessionStorage.setItem('interestId', id); // Store package ID in session storage
-        navigate(`/adminReplyinterest`); // Navigate to the edit page
+    const handleEdit = (categoryId) => {
+        console.log('Sending categoryId:', categoryId);
+        setTargetinterest({ id: categoryId, action: 'sendEmail' });
+        setShowModal(true);
     };
     
 
@@ -172,40 +174,37 @@ const AdminInterestContent = () => {
 
     const confirmAction = async () => {
         if (!targetinterest) return;
-    
-        try {
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/disableinterest`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": Authenticate,
-                },
-                body: JSON.stringify({
-                    id: targetinterest.id,
-                    type: targetinterest.action
-                }),
-            });
-    
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+
+        if (targetinterest.action === 'sendEmail') {
+            try {
+                console.log('Sending API request with categoryId:', targetinterest.id);
+                const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/adminCourseCategoryInterested`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": Authenticate,
+                    },
+                    body: JSON.stringify({
+                        categoryId: targetinterest.id
+                    }),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                console.log('API Response:', result);
+                if (result.success) {
+                    alert("Emails sent successfully!");
+                }
+            } catch (error) {
+                console.error("Error sending emails:", error);
+                alert("Failed to send emails. Please try again.");
             }
-    
-            const result = await response.json();
-    
-            if (result.success) {
-                // Log the new status for debugging
-                // console.log("New status:", result.newStatus);
-                await fetchinterests(currentPage, rowsPerPage, searchQuery);
-    
-            } else {
-                console.error(result.message);
-            }
-        } catch (error) {
-            console.error("Error processing the action:", error);
-        } finally {
-            setShowModal(false);
-            setTargetinterest(null);
         }
+        setShowModal(false);
+        setTargetinterest(null);
     };
     
     const getStatusClass = (status) => {
@@ -257,23 +256,29 @@ const handleCategoryChange = (categoryId) => {
     );
 
     const tbodyContent = sortedinterests.length > 0 ? (
-        sortedinterests.map((category) => (
-            <tr key={category.category_type}>
-                <td>{category.category_type}</td>
-                <td>{category.category_total}</td>
-                <td>
-                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                        <FontAwesomeIcon
-                            className="icon-color-edit"
-                            title="Send Email"
-                            icon={faEnvelope}
-                            style={{ marginRight: '8px', color: '#691ED2', cursor: 'pointer' }}
-                            onClick={() => handleEdit(category.id)}
-                        />
-                    </div>
-                </td>
-            </tr>
-        ))
+        sortedinterests.map((category) => {
+            console.log('Mapping category:', category);
+            return (
+                <tr key={category.categoryId}>
+                    <td>{category.category_type}</td>
+                    <td>{category.category_total}</td>
+                    <td>
+                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                            <FontAwesomeIcon
+                                className="icon-color-edit"
+                                title="Send Email"
+                                icon={faEnvelope}
+                                style={{ marginRight: '8px', color: '#691ED2', cursor: 'pointer' }}
+                                onClick={() => {
+                                    console.log('Clicked category:', category);
+                                    handleEdit(category.categoryId);
+                                }}
+                            />
+                        </div>
+                    </td>
+                </tr>
+            );
+        })
     ) : (
         <tr>
             <td colSpan="3" style={{ textAlign: "center" }}>No Data Available</td>
@@ -310,14 +315,17 @@ const handleCategoryChange = (categoryId) => {
                     <Modal.Title>Confirm Action</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    Are you sure you want to {targetinterest?.action === 'enable' ? 'Enable' : 'Disable'} this interest?
+                    {targetinterest?.action === 'sendEmail' 
+                        ? 'Are you sure you want to send emails to all schools in this category?'
+                        : `Are you sure you want to ${targetinterest?.action === 'enable' ? 'Enable' : 'Disable'} this interest?`
+                    }
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={() => setShowModal(false)}>
-                        Cancel
+                        No
                     </Button>
                     <Button className="confirm" variant="primary" onClick={confirmAction}>
-                        Confirm
+                        Yes
                     </Button>
                 </Modal.Footer>
             </Modal>
