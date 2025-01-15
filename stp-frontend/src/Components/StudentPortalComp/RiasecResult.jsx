@@ -247,30 +247,7 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
     };
 
     // Render course link with safety checks
-    const renderCourseLink = (course) => {
-        if (!course?.school_name || !course?.category_name) {
-            return <h4 className="RS-Course-Name">Course details unavailable</h4>;
-        }
-
-        const schoolUrl = createUrlFriendlyString(course.school_name);
-        const courseUrl = createUrlFriendlyString(course.category_name);
-
-        return (
-            <Link
-                rel="preload"
-                onClick={() => {
-                    if (course.id) {
-                        sessionStorage.setItem('selectedCourseId', course.id);
-                    }
-                }}
-                to={`/course-details/${schoolUrl}/${courseUrl}`}
-                style={{ color: "#000000" }}
-            >
-                <h4 className="RS-Course-Name">{course.category_name}</h4>
-            </Link>
-        );
-    };
-
+  
     useEffect(() => {
         const fetchResults = async () => {
             try {
@@ -572,8 +549,8 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
             clone.style.width = getComputedStyle(targetRef.current).width;
             clone.style.height = getComputedStyle(targetRef.current).height;
             clone.style.position = 'fixed';
-            clone.style.top = '0';
-            clone.style.left = '0';
+            clone.style.top = '1px';
+            clone.style.left = '1px';
             clone.style.zIndex = '-9999';
 
             const qrContainer = clone.querySelector('.RS-Unique-QR-Container');
@@ -824,7 +801,16 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                                 <div key={index} className="RS-University-Card">
                                     {course.featured && <span className="RS-Featured-Tag">FEATURED</span>}
                                     <div className="RS-Uni-Header">
-                                        {renderCourseLink(course)}
+                                        <Link
+                                            rel="preload"
+                                            onClick={() => {
+                                                sessionStorage.setItem('selectedCourseId', course.id); // Store course ID in session
+                                            }}
+                                            to={`/course-details/${course.school_name.replace(/\s+/g, '-').toLowerCase()}/${course.name.replace(/\s+/g, '-').toLowerCase()}`}
+                                            style={{ color: "#000000" }}
+                                        >
+                                            <h4 className="RS-Course-Name">{course.name}</h4>
+                                        </Link>
                                         <Link
                                             rel="preload"
                                             to={`/university-details/${course.school_name.replace(/\s+/g, '-').toLowerCase()}`}
