@@ -37,6 +37,7 @@ const TableWithControls = ({
 }) => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [isRangeMode, setIsRangeMode] = useState(false);
 
   const formatDate = (date) => {
     if (!date) return '';
@@ -202,31 +203,62 @@ const TableWithControls = ({
             {/* Add the month/year filter after the category dropdown */}
             {showMonthFilter && (
               <div className="me-1 mb-3 mt-3 ms-3 custom-dropdown d-flex">
-                <h6 className="me-2" >MM/YY</h6>
+                {/* <h6 className="me-2" >MM/YY</h6> */}
+             
+                <button 
+                  onClick={() => setIsRangeMode(!isRangeMode)}
+                  style={{
+                    marginRight: '10px',
+                    padding: '2px',
+                    fontSize:'12px',
+                    backgroundColor: isRangeMode ? '#007bff' : '#6c757d',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  {isRangeMode ? 'MM/YY - MM/YY' : 'MM/YY'}
+                </button>
                 <DatePicker
                   selected={startDate}
                   onChange={(dates) => {
-                    const [start, end] = dates;
-                    setStartDate(start);
-                    setEndDate(end);
-                    
-                    if (start && end) {
-                      // Range selection
-                      onMonthYearChange(`${formatDate(start)} - ${formatDate(end)}`);
-                    } else if (start) {
-                      // Single month selection
-                      onMonthYearChange(formatDate(start));
+                    if (isRangeMode) {
+                      const [start, end] = dates;
+                      setStartDate(start);
+                      setEndDate(end);
+                      
+                      if (start && end) {
+                        onMonthYearChange(`${formatDate(start)} - ${formatDate(end)}`);
+                      } else if (start) {
+                        onMonthYearChange(formatDate(start));
+                      }
+                    } else {
+                      setStartDate(dates);
+                      setEndDate(null);
+                      onMonthYearChange(formatDate(dates));
                     }
                   }}
                   startDate={startDate}
-                  endDate={endDate}
+                  endDate={isRangeMode ? endDate : null}
                   dateFormat="MM/yyyy"
                   showMonthYearPicker
-                  selectsRange
-                  className="form-control interestDatepicker"
+                  selectsRange={isRangeMode}
+                  className="form-control"
                   placeholderText="Select Month/Year"
                   isClearable
+                  style={{
+                    height: '38px',
+                    width: '150px',
+                    padding: '8px 12px',
+                    fontSize: '14px',
+                    border: '1px solid #ced4da',
+                    borderRadius: '4px',
+                    backgroundColor: '#fff',
+                    cursor: 'pointer'
+                  }}
                 />
+                 
               </div>
             )}
           </div>

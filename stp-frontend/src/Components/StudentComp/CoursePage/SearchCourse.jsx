@@ -74,6 +74,10 @@ const SearchCourse = () => {
   // Add this to your state declarations at the top of the component
   const [resultCount, setResultCount] = useState(0);
 
+  // Add new state for interests
+  const [courseInterests, setCourseInterests] = useState({});
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
   const topRef = useRef(null);
   const scrollToTop = () => {
     // Method 2: Using scrollIntoView
@@ -396,6 +400,85 @@ useEffect(() => {
     }
   };
 
+  const handleInterestClick = async (courseId) => {
+    if (!isAuthenticated) {
+      navigate("/studentPortalLogin");
+      return;
+    }
+
+    try {
+      const token = sessionStorage.getItem("token") || localStorage.getItem("token");
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      };
+
+      if (!courseInterests[courseId]) {
+        // Add interest
+        const requestBody = { course_id: courseId };
+        console.log('Adding interest - Request:', {
+          url: `${baseURL}api/student/addInterestedCourse`,
+          headers,
+          body: requestBody
+        });
+
+        const response = await fetch(`${baseURL}api/student/addInterestedCourse`, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify(requestBody)
+        });
+
+        const data = await response.json();
+        console.log('Adding interest - Response:', data);
+
+        if (data.success) {
+          setCourseInterests(prev => ({
+            ...prev,
+            [courseId]: { 
+              id: data.data.id,
+              status: 1 
+            }
+          }));
+        }
+      } else {
+        // Toggle interest status using course_id instead of id
+        const requestBody = {
+          course_id: courseId,  // Changed from id to course_id
+          type: courseInterests[courseId].status === 1 ? 'disable' : 'enable'
+        };
+        console.log('Toggling interest - Request:', {
+          url: `${baseURL}api/student/removeInterestedCourse`,
+          headers,
+          body: requestBody
+        });
+
+        const response = await fetch(`${baseURL}api/student/removeInterestedCourse`, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify(requestBody)
+        });
+
+        const data = await response.json();
+        console.log('Toggling interest - Response:', data);
+
+        if (data.success) {
+          setCourseInterests(prev => ({
+            ...prev,
+            [courseId]: { 
+              ...prev[courseId],
+              status: prev[courseId].status === 1 ? 0 : 1
+            }
+          }));
+        }
+      }
+    } catch (error) {
+      console.error('Error handling interest:', error);
+      if (error.response) {
+        console.log('Error response:', await error.response.text());
+      }
+    }
+  };
+
   const renderPrograms = () => {
     if (!programs.length) {
       return (
@@ -432,16 +515,18 @@ useEffect(() => {
             <Row className="coursepage-row">
               <Col md={6} lg={6} className="course-card-ipad">
                 <div className="card-image mb-3 mb-md-0">
-                  <h5 className="card-title">
-                    <Link
-                      rel="preload"
-                      to={`/course-details/${program.school_name.replace(/\s+/g, '-').toLowerCase()}/${program.name.replace(/\s+/g, '-').toLowerCase()}`}
-                      style={{ color: "black" }}
-                      onClick={() => sessionStorage.setItem('courseId', program.id)}
-                    >
-                      {program.name}
-                    </Link>
-                  </h5>
+                  
+                    <h5 className="card-title">
+                      <Link
+                        rel="preload"
+                        to={`/course-details/${program.school_name.replace(/\s+/g, '-').toLowerCase()}/${program.name.replace(/\s+/g, '-').toLowerCase()}`}
+                        style={{ color: "black" }}
+                        onClick={() => sessionStorage.setItem('courseId', program.id)}
+                      >
+                        {program.name}
+                      </Link>
+                    </h5>
+               
                   <div className="coursepage-searchcourse-courselist-first">
                     <div
                       className="coursepage-img"
@@ -465,6 +550,7 @@ useEffect(() => {
                     <div
                       className="searchcourse-coursename-schoolname"
                     >
+                
                       <div>
                         <Link
                           rel="preload"
@@ -625,6 +711,20 @@ useEffect(() => {
                         </p>
                       </p>
                     </div>
+                    <div className="d-flex interest-division">
+                    <div className="interest">
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleInterestClick(program.id);
+                        }}
+                        className="interest-button"
+                        aria-label={courseInterests[program.id]?.status === 1 ? "Remove from interests" : "Add to interests"}
+                      >
+                        <i className={courseInterests[program.id]?.status === 1 ? "bi bi-heart-fill" : "bi bi-heart"}></i>
+                        I'm Interested
+                      </button>
+                    </div>
                     <div className="apply-button">
                       {program.institute_category === "Local University" ? (
                         <button
@@ -638,6 +738,7 @@ useEffect(() => {
                           Apply Now
                         </button>
                       )}
+                    </div>
                     </div>
                   </div>
                 </div>
@@ -829,6 +930,12 @@ useEffect(() => {
       </div>
     );
   };
+
+  // Add useEffect to check authentication
+  useEffect(() => {
+    const token = sessionStorage.getItem("token") || localStorage.getItem("token");
+    setIsAuthenticated(!!token);
+  }, []);
 
   return (
     <Container>
