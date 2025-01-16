@@ -540,57 +540,50 @@ const SchoolViewApplicantDetail = () => {
       setError(error.message);
     }
   };
+  
   const fetchTranscriptSubjects = async () => {
-    if (!studentId) {
-      console.log("studentId is missing, skipping API call.");
-      return;
-    }
     try {
-      const token =
-        sessionStorage.getItem("token") || localStorage.getItem("token");
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       const isSPM = selectedCategory === 32 || selectedCategory === 85;
-      const endpoint = isSPM
-        ? "schoolStudentTranscriptSubjectList"
-        : "schoolHigherTranscriptSubjectList";
-      const body = isSPM
-        ? { studentId }
-        : { studentId, categoryId: selectedCategory };
+      const endpoint = isSPM ? 'schoolStudentTranscriptSubjectList' : 'schoolHigherTranscriptSubjectList';
+      const body = isSPM ? { studentId } : { studentId, categoryId: selectedCategory };
 
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}api/school/${endpoint}`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(body),
-        }
-      );
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/school/${endpoint}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      });
 
       if (!response.ok) {
-        throw new Error("Failed to fetch transcript subjects");
+        throw new Error('Failed to fetch transcript subjects');
       }
 
       const result = await response.json();
+      console.log('Transcript subjects response:', result); // Add logging for debugging
+
       if (result.success) {
-        if (selectedCategory === 32) {
-          setTranscriptSubjects(result.data.spm || []);
-        } else if (selectedCategory === 85) {
-          setTranscriptSubjects(result.data.trial || []);
-        } else {
+        if (selectedCategory === 32 && result.data.spm && Array.isArray(result.data.spm.subject)) {
+          setTranscriptSubjects(result.data.spm.subject);
+        } else if (selectedCategory === 85 && result.data.trial && Array.isArray(result.data.trial.subject)) {
+          setTranscriptSubjects(result.data.trial.subject);
+        } else if (Array.isArray(result.data)) {
           setTranscriptSubjects(result.data);
+        } else {
+          setTranscriptSubjects([]);
         }
       } else {
-        throw new Error(
-          result.message || "Failed to fetch transcript subjects"
-        );
+        throw new Error(result.message || 'Failed to fetch transcript subjects');
       }
     } catch (error) {
-      console.error("Error fetching transcript subjects:", error);
+      console.error('Error fetching transcript subjects:', error);
       setError(error.message);
+      setTranscriptSubjects([]);
     }
   };
+
   const calculateOverallGrade = (subjects) => {
     if (!subjects || subjects.length === 0) {
       return "N/A";
