@@ -1243,13 +1243,13 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                     >
                         DOWNLOAD
                     </button>
-                    <button
+                    {/*<button
                         ref={shareButtonRef}
                         onClick={handleToggle}
                         onMouseEnter={() => setIsOpen(true)}
                     >
                         SHARE
-                    </button>
+                    </button>*/}
                     <div
                         className={`RS-Share-Menu ${isOpen ? 'RS-Share-Menu-Open' : ''}`}
                         onMouseLeave={() => setIsOpen(false)}
