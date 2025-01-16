@@ -20,7 +20,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
   const [isUnsavedChangesPopupOpen, setIsUnsavedChangesPopupOpen] = useState(false);
   const [navigationDirection, setNavigationDirection] = useState(null);
   const [savingStates, setSavingStates] = useState({});
-
+  const [usedTranscriptTypes, setUsedTranscriptTypes] = useState(new Set());
   // Replace the existing useEffect hook with this:
   /* useEffect(() => {
      const fetchAllData = async () => {
@@ -42,7 +42,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
   const fetchTranscriptData = async () => {
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-     // console.log('Token:', token ? 'Token exists' : 'Token is missing');
+      // console.log('Token:', token ? 'Token exists' : 'Token is missing');
 
       const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/applyCourseTranscript`, {
         method: 'POST',
@@ -81,33 +81,49 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
     setCategories(data.categories);
 
     const processedTranscripts = [
-      ...processSubjects(data.transcripts, 32), // SPM
-      ...processHigherTranscripts(data.higherTranscripts)
+      ...processSubjects(data.transcripts, 32, "SPM"),
+      ...processSubjects(data.transcripts, 85, "SPM Trial"),
+      ...processHigherTranscripts(data.higherTranscripts || [])
     ];
 
-    setAcademicTranscripts(processedTranscripts.filter(transcript =>
+    const filteredTranscripts = processedTranscripts.filter(transcript =>
       transcript.subjects.length > 0 || transcript.documents.length > 0 || transcript.cgpa
-    ));
-  };
-  const processSubjects = (transcriptData, categoryId) => {
-    if (!transcriptData || !transcriptData.subjects) return [];
+    );
 
-    return [{
-      id: categoryId,
-      name: "SPM",
-      subjects: transcriptData.subjects.map(subject => ({
-        id: subject.subject_id,
-        name: subject.subject_name,
-        grade: subject.subject_grade || subject.higherTranscript_grade || '', // Handle potential different property names
-        isEditing: false
-      })),
-      documents: processDocuments(transcriptData.document),
-      cgpa: null,
-      programName: null,
-      cgpaId: null
-    }];
+    setAcademicTranscripts(filteredTranscripts);
+
+    // Update used transcript types based on existing data
+    const usedTypes = new Set(filteredTranscripts.map(t => t.id));
+    setUsedTranscriptTypes(usedTypes);
   };
 
+
+  const processSubjects = (subjects, categoryId, categoryName) => {
+    if (!subjects) return [];
+
+    // For SPM and Trial categories, process differently
+    if (categoryId === 32 || categoryId === 85) {
+      const subjectsArray = categoryId === 32 ? subjects.spm.subjects : subjects.trial.subjects;
+      if (!Array.isArray(subjectsArray)) return [];
+
+      return [{
+        id: categoryId,
+        name: categoryName || (categoryId === 32 ? "SPM" : "SPM Trial"),
+        subjects: subjectsArray.map(subject => ({
+          id: subject.subject_id,
+          name: subject.subject_name,
+          grade: subject.subject_grade || '',
+          isEditing: false
+        })),
+        documents: processDocuments(categoryId === 32 ? subjects.spm.document : subjects.trial.document),
+        cgpa: null,
+        programName: null,
+        cgpaId: null
+      }];
+    }
+
+    return [];
+  };
   const processHigherTranscripts = (higherTranscripts) => {
     return higherTranscripts.map(transcript => ({
       id: transcript.id,
@@ -208,12 +224,12 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
   // Add these new functions after the fetchExistingTranscripts function
 
   const fetchSubjectsForCategory = async (category, token) => {
-    const subjectsUrl = category.id === 32
+    const subjectsUrl = (category.id === 32 || category.id === 85)
       ? `${import.meta.env.VITE_BASE_URL}api/student/transcriptSubjectList`
       : `${import.meta.env.VITE_BASE_URL}api/student/higherTranscriptSubjectList`;
 
-    const method = category.id === 32 ? 'GET' : 'POST';
-    const body = category.id === 32 ? null : JSON.stringify({ id: category.id });
+    const method = (category.id === 32 || category.id === 85) ? 'GET' : 'POST';
+    const body = (category.id === 32 || category.id === 85) ? null : JSON.stringify({ id: category.id });
 
     const response = await fetch(subjectsUrl, {
       method: method,
@@ -230,13 +246,29 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
     }
 
     const result = await response.json();
-    return result.success && result.data
-      ? result.data.map(subject => ({
-        id: subject.id || subject.subject_id,
-        name: subject.name || subject.subject_name || subject.highTranscript_name,
-        grade: subject.grade || subject.subject_grade || subject.higherTranscript_grade || '',
-      }))
-      : [];
+
+    if (result.success) {
+      if (category.id === 32) {
+        return result.data.spm.map(subject => ({
+          id: subject.subject_id,
+          name: subject.subject_name,
+          grade: subject.subject_grade || '',
+        }));
+      } else if (category.id === 85) {
+        return result.data.trial.map(subject => ({
+          id: subject.subject_id,
+          name: subject.subject_name,
+          grade: subject.subject_grade || '',
+        }));
+      } else {
+        return result.data.map(subject => ({
+          id: subject.id || subject.subject_id,
+          name: subject.name || subject.subject_name || subject.highTranscript_name,
+          grade: subject.grade || subject.subject_grade || subject.higherTranscript_grade || '',
+        }));
+      }
+    }
+    return [];
   };
 
   const fetchDocumentsForCategory = async (category, token) => {
@@ -265,7 +297,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
   };
 
   const fetchCGPAForCategory = async (category, token) => {
-    if (category.id === 32) {
+    if (category.id === 32 || category.id === 85) {
       return { cgpa: null, programName: '', cgpaId: null };
     }
 
@@ -318,12 +350,17 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
       { id: 5, name: "Sains", grade: "", isEditing: true }
     ];
   };
+
   const fetchAvailableSubjects = useCallback(async (categoryId, transcriptIndex) => {
-    if (categoryId !== 32) return; // Only fetch for SPM
+    if (categoryId !== 32 && categoryId !== 85) return;
 
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      const selectedSubjectIds = academicTranscripts[transcriptIndex]?.subjects.map(s => s.id) || [];
+
+      // Get all currently selected subjects for this transcript
+      const selectedSubjectIds = academicTranscripts[transcriptIndex]?.subjects
+        .filter(s => s.id && !s.isNew) // Only consider saved subjects
+        .map(s => s.id);
 
       const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/subjectList`, {
         method: 'POST',
@@ -336,22 +373,19 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
           selectedSubject: selectedSubjectIds
         }),
       });
+
       const data = await response.json();
       if (data.success) {
-        setAvailableSubjects(data.data.filter(subject =>
-          !selectedSubjectIds.includes(subject.id)
-        ));
-      } else {
-        console.error('Failed to fetch available subjects:', data);
+        // Don't filter out subjects here, let the Select component handle it
+        setAvailableSubjects(data.data);
       }
     } catch (error) {
       console.error('Error fetching available subjects:', error);
     }
   }, [academicTranscripts]);
 
-
   const fetchSubjects = useCallback(async (categoryId, transcriptIndex) => {
-    if (categoryId === 32 && isNewUser) {
+    if ((categoryId === 32 || categoryId === 85) && isNewUser) {
       // Don't fetch for SPM if it's a new user, as we've already preset the subjects
       return;
     }
@@ -359,7 +393,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       let url, method, body;
-      if (categoryId === 32) {
+      if (categoryId === 32 || categoryId === 85) {
         url = `${import.meta.env.VITE_BASE_URL}api/student/transcriptSubjectList`;
         method = 'GET';
       } else {
@@ -398,7 +432,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
           )
         );
 
-        if (categoryId === 32 && formattedSubjects.length > 0) {
+        if ((categoryId === 32 || categoryId === 85) && formattedSubjects.length > 0) {
           setIsNewUser(false);  // User has existing SPM subjects, so not a new user
         }
       } else {
@@ -437,26 +471,34 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
   };
 
   const handleTranscriptChange = (index, { id, name }) => {
+    //console.log('Transcript change - ID:', id, 'Name:', name);
     const updatedTranscripts = academicTranscripts.map((transcript, i) =>
       i === index ? { ...transcript, id, name } : transcript
     );
     setAcademicTranscripts(updatedTranscripts);
 
     if (id) {
-      if (id === 32 && isNewUser) {  // 32 is the ID for SPM
+      const isSPMType = id === 32 || id === 85;
+
+      // Check if this specific type (SPM or SPM Trial) already exists with subjects
+      const existingTranscriptWithSubjects = academicTranscripts.some(
+        transcript => transcript.id === id && transcript.subjects && transcript.subjects.length > 0
+      );
+      //console.log('Is SPM Type:', isSPMType, 'Has existing subjects:', existingTranscriptWithSubjects);    
+      if (isSPMType && !existingTranscriptWithSubjects) {
+        //  console.log('Setting preset subjects for:', name);
         const presetSubjects = presetSPMSubjects();
         updatedTranscripts[index].subjects = presetSubjects;
         setAcademicTranscripts(updatedTranscripts);
-        setIsNewUser(false);  // Set to false after applying preset
       } else {
         fetchSubjects(id, index);
       }
-      if (id === 32) {
+
+      if (isSPMType) {
         fetchAvailableSubjects(id, index);
       }
     }
   };
-
 
   const handleRemoveTranscript = async (index) => {
     const transcript = academicTranscripts[index];
@@ -506,17 +548,24 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
 
   const handleAddSubject = (transcriptIndex) => {
     const transcript = academicTranscripts[transcriptIndex];
-    if (transcript.id === 32) {
-      // For SPM, add a new subject with empty id and name
-      const updatedTranscripts = academicTranscripts.map((t, i) =>
-        i === transcriptIndex
-          ? { ...t, subjects: [...t.subjects, { id: '', name: '', grade: '', isEditing: true, isNew: true }] }
-          : t
-      );
-      setAcademicTranscripts(updatedTranscripts);
-      fetchAvailableSubjects(32, transcriptIndex);
+    if (transcript.id === 32 || transcript.id === 85) {
+      // Fetch available subjects before adding new subject
+      fetchAvailableSubjects(transcript.id, transcriptIndex).then(() => {
+        const updatedTranscripts = academicTranscripts.map((t, i) =>
+          i === transcriptIndex
+            ? {
+              ...t,
+              subjects: [
+                ...t.subjects,
+                { id: '', name: '', grade: '', isEditing: true, isNew: true }
+              ]
+            }
+            : t
+        );
+        setAcademicTranscripts(updatedTranscripts);
+      });
     } else {
-      // For other exams, keep the existing logic
+      // Original logic for non-SPM transcripts
       const updatedTranscripts = academicTranscripts.map((t, i) =>
         i === transcriptIndex
           ? { ...t, subjects: [...t.subjects, { name: '', grade: '', isEditing: true }] }
@@ -545,7 +594,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
 
     // After selecting a subject, update available subjects to prevent duplicates
     if (value) {
-      fetchAvailableSubjects(32, transcriptIndex);
+      fetchAvailableSubjects(32 || 85, transcriptIndex);
     }
   };
 
@@ -565,7 +614,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
 
     // If it's SPM and we're changing the subject, update available subjects
     if (updatedTranscripts[transcriptIndex].id === 32 && field === 'id') {
-      fetchAvailableSubjects(32, transcriptIndex);
+      fetchAvailableSubjects(32 || 85, transcriptIndex);
     }
   };
 
@@ -592,7 +641,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
     setHasUnsavedChanges(true);
 
     if (updatedTranscripts[transcriptIndex].id === 32) {
-      fetchAvailableSubjects(32, transcriptIndex);
+      fetchAvailableSubjects(32 || 85, transcriptIndex);
     }
   };
   const handleAddDocument = (transcriptIndex) => {
@@ -813,7 +862,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
       'B+': 20, 'B': 21,
       'C+': 22, 'C': 23,
       'D': 24, 'E': 25,
-      'G': 26
+      'G': 26, 'TH': 27
     };
     return gradeMap[grade] || 0; // Return 0 if grade not found
   };
@@ -822,10 +871,10 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
     setSavingStates(prev => ({ ...prev, [transcriptIndex]: 'loading' }));
     try {
       const transcript = academicTranscripts[transcriptIndex];
-
+      // console.log('Current transcript data:', transcript);
       // Check if the transcript is empty or if any required fields are missing
       const isTranscriptEmpty = transcript.subjects.length === 0 && transcript.documents.length === 0;
-      const isCGPAMissing = transcript.id !== 32 && !transcript.cgpa;
+      const isCGPAMissing = transcript.id !== 32 && transcript.id !== 85 && !transcript.cgpa;
       const areSubjectsIncomplete = transcript.subjects.some(subject => !subject.name || !subject.grade);
 
       if (isTranscriptEmpty || isCGPAMissing || areSubjectsIncomplete) {
@@ -842,7 +891,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
       }
 
       let url, payload;
-      if (category.id === 32) { // SPM
+      if (category.id === 32 || category.id === 85) { // SPM
         // Fetch the correct subject IDs for new subjects
         const subjectsWithCorrectIds = await Promise.all(transcript.subjects.map(async (subject) => {
           if (subject.isNew || !subject.id) {
@@ -883,10 +932,12 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
 
         // Add CGPA and program name to payload for non-SPM transcripts
         if (transcript.cgpa !== null) {
+
           // Determine whether to use addProgramCgpa or editProgramCgpa
           const cgpaUrl = transcript.cgpaId
             ? `${import.meta.env.VITE_BASE_URL}api/student/editProgramCgpa`
             : `${import.meta.env.VITE_BASE_URL}api/student/addProgramCgpa`;
+
 
           const cgpaPayload = {
             transcriptCategory: category.id,
@@ -905,7 +956,9 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
           });
 
           const cgpaResult = await cgpaResponse.json();
+
           if (!cgpaResult.success) {
+            console.error('CGPA update failed:', cgpaResult);
             throw new Error(cgpaResult.message || 'Failed to update CGPA and program name');
           }
 
@@ -917,7 +970,6 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
           }
         }
       }
-      //console.log('Saving transcript with payload:', payload);
 
       const response = await fetch(url, {
         method: 'POST',
@@ -928,16 +980,17 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
         body: JSON.stringify(payload),
       });
       const data = await response.json();
+
       if (data.success) {
         setSavingStates(prev => ({ ...prev, [transcriptIndex]: 'success' }));
         setTimeout(() => {
           setSavingStates(prev => ({ ...prev, [transcriptIndex]: null }));
         }, 2000);
-        //console.log('Transcript saved successfully');
         setHasUnsavedChanges(false);
+        setUsedTranscriptTypes(prev => new Set([...prev, category.id]));
         fetchSubjects(category.id, transcriptIndex);
 
-        if (category.id !== 32) {
+        if (category.id !== 32 || category.id !== 85) {
           const updatedCGPAData = await fetchCGPAForCategory(category, token);
           const updatedTranscripts = [...academicTranscripts];
           updatedTranscripts[transcriptIndex] = {
@@ -948,6 +1001,13 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
           };
           setAcademicTranscripts(updatedTranscripts);
         }
+
+        const updatedTranscripts = [...academicTranscripts];
+        updatedTranscripts[transcriptIndex].subjects = updatedTranscripts[transcriptIndex].subjects.map(subject => ({
+          ...subject,
+          isEditing: false
+        }));
+        setAcademicTranscripts(updatedTranscripts);
         // Clear any errors for this transcript
         setDocumentErrors(prevErrors => {
           const newErrors = { ...prevErrors };
@@ -955,7 +1015,12 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
           return newErrors;
         });
       } else {
-        console.error('Server responded with an error:', data);
+        console.error('Server Error Details:', {
+          message: data.message,
+          error: data.error,
+          validationErrors: data.error?.transcripts
+        });
+
         if (data.message === "Validation Error" && data.error && data.error.transcripts) {
           // Assign the error to the last document
           const lastDocIndex = transcript.documents.length - 1;
@@ -968,8 +1033,12 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
         }
       }
     } catch (error) {
+      console.error('Caught Exception:', {
+        message: error.message,
+        stack: error.stack,
+        transcriptIndex
+      });
       setSavingStates(prev => ({ ...prev, [transcriptIndex]: 'failed' }));
-      console.error('Error saving transcript:', error);
       setDocumentErrors(prevErrors => ({
         ...prevErrors,
         [transcriptIndex]: `Failed to save transcript: ${error.message}`
@@ -1012,6 +1081,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
     if (grade.includes('D')) return 'warning';
     if (grade.includes('E')) return 'warning';
     if (grade.includes('G')) return 'danger';
+    if (grade.includes('TH')) return 'danger';
 
     return 'secondary';
   };
@@ -1116,27 +1186,19 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                     <>
                       <div className="applycourse-academictranscript-dflex align-items-center flex-grow-1">
                         <AlignJustify className="mx-2" size={15} color="grey" />
-                        {transcript.id === 32 ? (
-                          (() => {
-                            // Prepare the options, including the selected subject
-                            const subjectOptions = availableSubjects.map(s => ({ value: s.id, label: s.name }));
-                            if (subject.id && subject.name) {
-                              // Avoid duplicates
-                              if (!subjectOptions.some(option => option.value === subject.id)) {
-                                subjectOptions.push({ value: subject.id, label: subject.name });
-                              }
-                            }
-
-                            return (
-                              <Select
-                                options={subjectOptions}
-                                value={subject.id && subject.name ? { value: subject.id, label: subject.name } : null}
-                                onChange={(selected) => handleSubjectSelectChange(index, subIndex, selected)}
-                                className="me-2 applycourse-academictranscript-select-width"
-                                placeholder="Select Subject"
-                              />
-                            );
-                          })()
+                        {(transcript.id === 32 || transcript.id === 85) ? (
+                          <Select
+                            options={availableSubjects
+                              .filter(s => !transcript.subjects
+                                .filter((existingSubject, idx) => idx !== subIndex && existingSubject.id) // Exclude current subject
+                                .map(s => s.id)
+                                .includes(s.id))
+                              .map(s => ({ value: s.id, label: s.name }))}
+                            value={subject.id && subject.name ? { value: subject.id, label: subject.name } : null}
+                            onChange={(selected) => handleSubjectSelectChange(index, subIndex, selected)}
+                            className="me-2 applycourse-academictranscript-select-width"
+                            placeholder="Select Subject"
+                          />
                         ) : (
                           <Form.Control
                             type="text"
@@ -1149,7 +1211,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                           />
                         )}
 
-                        {transcript.id === 32 ? (
+                        {transcript.id === 32 || transcript.id === 85 ? (
                           // SPM grade selection
                           <Form.Control
                             as="select"
@@ -1170,6 +1232,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                             <option value="D">D</option>
                             <option value="E">E</option>
                             <option value="G">G</option>
+                            <option value="TH">TH</option>
                           </Form.Control>
                         ) : (
                           // Other transcripts grade input
@@ -1231,7 +1294,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
               ))}
             </div>
           ) : null}
-          {transcript.id !== 32 && (
+          {(transcript.id !== 32 && transcript.id != 85) && (
             <div className="px-4 mt-3">
               <Form.Group as={Row} className="mb-3">
                 <Form.Label column sm="2">Program Name (Optional):</Form.Label>

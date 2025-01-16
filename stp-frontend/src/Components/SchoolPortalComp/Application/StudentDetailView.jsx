@@ -241,10 +241,11 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
       setSelectedCategory(null);
     }
   };
+
   const fetchTranscriptSubjects = async () => {
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      const isSPM = selectedCategory === 32; // Assuming 32 is the ID for SPM
+      const isSPM = selectedCategory === 32 || selectedCategory === 85;
       const endpoint = isSPM ? 'schoolStudentTranscriptSubjectList' : 'schoolHigherTranscriptSubjectList';
       const body = isSPM ? { studentId } : { studentId, categoryId: selectedCategory };
 
@@ -262,14 +263,25 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
       }
 
       const result = await response.json();
+      console.log('Transcript subjects response:', result); // Add logging for debugging
+
       if (result.success) {
-        setTranscriptSubjects(result.data);
+        if (selectedCategory === 32 && result.data.spm && Array.isArray(result.data.spm.subject)) {
+          setTranscriptSubjects(result.data.spm.subject);
+        } else if (selectedCategory === 85 && result.data.trial && Array.isArray(result.data.trial.subject)) {
+          setTranscriptSubjects(result.data.trial.subject);
+        } else if (Array.isArray(result.data)) {
+          setTranscriptSubjects(result.data);
+        } else {
+          setTranscriptSubjects([]);
+        }
       } else {
         throw new Error(result.message || 'Failed to fetch transcript subjects');
       }
     } catch (error) {
       console.error('Error fetching transcript subjects:', error);
       setError(error.message);
+      setTranscriptSubjects([]);
     }
   };
 
@@ -758,23 +770,38 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
   };
 
   const calculateOverallGrade = (subjects) => {
-    if (!subjects || subjects.length === 0) {
+    if (!subjects || !Array.isArray(subjects)) {
       return 'N/A';
     }
-    const gradeCounts = subjects.reduce((counts, subject) => {
+
+    // Handle SPM/Trial subjects which are nested in a 'subject' array
+    const actualSubjects = subjects.subject ? subjects.subject : subjects;
+
+    if (actualSubjects.length === 0) {
+      return 'N/A';
+    }
+
+    const gradeCounts = actualSubjects.reduce((counts, subject) => {
+      // Handle different grade field names
       const grade = subject.subject_grade || subject.higherTranscript_grade;
-      counts[grade] = (counts[grade] || 0) + 1;
+      if (grade) {
+        counts[grade] = (counts[grade] || 0) + 1;
+      }
       return counts;
     }, {});
-    const gradeOrder = ['A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'D', 'E', 'G', 'F', 'A1', 'A2', 'B3'];
+
+    const gradeOrder = ['A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'D', 'E', 'G', 'F', 'A1', 'A2', 'B3', 'TH'];
     let overallGrade = '';
+
     for (const grade of gradeOrder) {
       if (gradeCounts[grade]) {
         overallGrade += `${gradeCounts[grade]}${grade} `;
       }
     }
+
     return overallGrade.trim() || 'N/A';
   };
+
   if (isLoading) return <div>
     <div className="w-100 h-100 align-items-center justify-content-center">
       <Spinner animation="border" role="status">
@@ -807,7 +834,7 @@ const StudentDetailView = ({ student, viewAction, acceptRejectAction, onBack, on
           </div>
         </div>
 
-        {selectedCategory !== 32 && cgpaInfo && (
+        {(selectedCategory !== 32 && selectedCategory !== 85) && cgpaInfo && (
           <div className="px-4 mb-3">
             <div className="d-flex justify-content-between align-items-center">
               <p className="mb-0 mt-2 d-flex align-items-center">

@@ -48,11 +48,11 @@ const StudentStudyPath = () => {
     const typeAttributes = {
         Realistic: {
             strengths: [
-                'Analytics Thinking',
-                'Scientific Mindset',
-                'Research Abilities',
-                'Problem-solving Skills'
-            ],
+                'Technical Expertise',
+                'Hands-on Skills',
+                'Physical Coordination',
+                'Mechanical Aptitude'
+            ]/*,
             courses: [
                 'Agriculture & Plantation',
                 'Aviation',
@@ -61,7 +61,7 @@ const StudentStudyPath = () => {
                 'Marine',
                 'Oil and Gas',
                 'Technology',
-            ]
+            ]*/
         },
         Investigative: {
             strengths: [
@@ -69,7 +69,7 @@ const StudentStudyPath = () => {
                 'Scientific Mindset',
                 'Research Abilities',
                 'Problem-solving Skills'
-            ],
+            ]/*,
             courses: [
                 'Computing & IT',
                 'Dentistry',
@@ -78,7 +78,7 @@ const StudentStudyPath = () => {
                 'Medicine & Healthcare',
                 'Pharmacy',
                 'Science'
-            ]
+            ]*/
         },
         Artistic: {
             strengths: [
@@ -86,7 +86,7 @@ const StudentStudyPath = () => {
                 'Innovative Thinking',
                 'Aesthetic Awareness',
                 'Original Ideas'
-            ],
+            ]/*,
             courses: [
                 'Architecture',
                 'Arts, Design & Multimedia',
@@ -95,7 +95,7 @@ const StudentStudyPath = () => {
                 'Humanities',
                 'Language Studies',
                 'Media & Communication',
-            ]
+            ]*/
         },
         Social: {
             strengths: [
@@ -103,7 +103,7 @@ const StudentStudyPath = () => {
                 'Emotional Intelligence',
                 'Communication Ability',
                 'Teaching Aptitude'
-            ],
+            ]/*,
             courses: [
                 'Allied Health Sciences',
                 'Early Childhood Education & Education',
@@ -111,7 +111,7 @@ const StudentStudyPath = () => {
                 'Human Resource',
                 'Social Sciences',
                 'Psychology',
-            ]
+            ]*/
         },
         Enterprising: {
             strengths: [
@@ -119,14 +119,14 @@ const StudentStudyPath = () => {
                 'Persuasion Ability',
                 'Goal-oriented Drive',
                 'Strategic Thinking'
-            ],
+            ]/*,
             courses: [
                 'Banking & Finance',
                 'Business & Marketing',
                 'Economy',
                 'Law',
                 'Pre University'
-            ]
+            ]*/
         },
         Conventional: {
             strengths: [
@@ -134,11 +134,11 @@ const StudentStudyPath = () => {
                 'Attention to Detail',
                 'Data Management',
                 'System Development'
-            ],
+            ]/*,
             courses: [
                 'Accounting',
                 'Security Services'
-            ]
+            ]*/
         }
     };
 
@@ -172,19 +172,19 @@ const StudentStudyPath = () => {
     const handleQuestionSubmit = (answers) => {
         const { ranking, scores } = answers;
         const topType = ranking[1].type;
-      //  console.log('Available categories:', categories);
+        //  console.log('Available categories:', categories);
 
         // Map the recommended courses to their category IDs
-        const recommendedCategories = typeAttributes[topType].courses
-            .map(courseName => {
-                const category = categories.find(cat => cat.category_name === courseName);
-                //console.log('Mapping course:', courseName, 'to category:', category);
-                return {
-                    name: courseName,
-                    id: category?.id
-                };
-            });
-
+        /*const recommendedCategories = typeAttributes[topType].courses
+                    .map(courseName => {
+                        const category = categories.find(cat => cat.category_name === courseName);
+                        //console.log('Mapping course:', courseName, 'to category:', category);
+                        return {
+                            name: courseName,
+                            id: category?.id
+                        };
+                    });
+        */
         const topTypes = Object.entries(ranking)
             .slice(0, 3)
             .map(([, data]) => ({
@@ -198,7 +198,7 @@ const StudentStudyPath = () => {
             strengths: typeAttributes[topType].strengths,
             strengthsDesc: typeDescriptions[topType].strength,
             unique: typeDescriptions[topType].unique,
-            recommendedCourses: recommendedCategories, // Now includes IDs
+            //recommendedCourses: recommendedCategories, // Now includes IDs
             universities: [] // We'll fetch these in ResultSection
         };
 

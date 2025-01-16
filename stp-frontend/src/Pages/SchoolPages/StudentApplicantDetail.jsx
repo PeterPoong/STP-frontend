@@ -456,7 +456,7 @@ const SchoolViewApplicantDetail = () => {
     try {
       const token =
         sessionStorage.getItem("token") || localStorage.getItem("token");
-     // console.log("Fetching transcript categories...");
+      // console.log("Fetching transcript categories...");
       //console.log("Token:", token); // Log the token (be careful with this in production)
 
       const response = await fetch(
@@ -471,7 +471,7 @@ const SchoolViewApplicantDetail = () => {
         }
       );
 
-     // console.log("Response status:", response.status);
+      // console.log("Response status:", response.status);
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -540,51 +540,50 @@ const SchoolViewApplicantDetail = () => {
       setError(error.message);
     }
   };
+  
   const fetchTranscriptSubjects = async () => {
-    if (!studentId) {
-      console.log("studentId is missing, skipping API call.");
-      return;
-    }
     try {
-      const token =
-        sessionStorage.getItem("token") || localStorage.getItem("token");
-      const isSPM = selectedCategory === 32; // Assuming 32 is the ID for SPM
-      const endpoint = isSPM
-        ? "schoolStudentTranscriptSubjectList"
-        : "schoolHigherTranscriptSubjectList";
-      const body = isSPM
-        ? { studentId }
-        : { studentId, categoryId: selectedCategory };
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      const isSPM = selectedCategory === 32 || selectedCategory === 85;
+      const endpoint = isSPM ? 'schoolStudentTranscriptSubjectList' : 'schoolHigherTranscriptSubjectList';
+      const body = isSPM ? { studentId } : { studentId, categoryId: selectedCategory };
 
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}api/school/${endpoint}`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(body),
-        }
-      );
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/school/${endpoint}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      });
 
       if (!response.ok) {
-        throw new Error("Failed to fetch transcript subjects");
+        throw new Error('Failed to fetch transcript subjects');
       }
 
       const result = await response.json();
+      console.log('Transcript subjects response:', result); // Add logging for debugging
+
       if (result.success) {
-        setTranscriptSubjects(result.data);
+        if (selectedCategory === 32 && result.data.spm && Array.isArray(result.data.spm.subject)) {
+          setTranscriptSubjects(result.data.spm.subject);
+        } else if (selectedCategory === 85 && result.data.trial && Array.isArray(result.data.trial.subject)) {
+          setTranscriptSubjects(result.data.trial.subject);
+        } else if (Array.isArray(result.data)) {
+          setTranscriptSubjects(result.data);
+        } else {
+          setTranscriptSubjects([]);
+        }
       } else {
-        throw new Error(
-          result.message || "Failed to fetch transcript subjects"
-        );
+        throw new Error(result.message || 'Failed to fetch transcript subjects');
       }
     } catch (error) {
-      console.error("Error fetching transcript subjects:", error);
+      console.error('Error fetching transcript subjects:', error);
       setError(error.message);
+      setTranscriptSubjects([]);
     }
   };
+
   const calculateOverallGrade = (subjects) => {
     if (!subjects || subjects.length === 0) {
       return "N/A";
@@ -610,6 +609,7 @@ const SchoolViewApplicantDetail = () => {
       "A1",
       "A2",
       "B3",
+      "TH"
     ];
     let overallGrade = "";
     for (const grade of gradeOrder) {
@@ -649,7 +649,7 @@ const SchoolViewApplicantDetail = () => {
         );
         if (!response.ok) {
           const errorData = await response.json();
-         // console.log("Error Data:", errorData["error"]);
+          // console.log("Error Data:", errorData["error"]);
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
@@ -742,7 +742,7 @@ const SchoolViewApplicantDetail = () => {
         );
         if (!response.ok) {
           const errorData = await response.json();
-        //  console.log("Error Data:", errorData["error"]);
+          //  console.log("Error Data:", errorData["error"]);
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
@@ -777,7 +777,7 @@ const SchoolViewApplicantDetail = () => {
         );
         if (!response.ok) {
           const errorData = await response.json();
-        //  console.log("Error Data:", errorData["error"]);
+          //  console.log("Error Data:", errorData["error"]);
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
@@ -831,7 +831,7 @@ const SchoolViewApplicantDetail = () => {
           </div>
         </div>
 
-        {selectedCategory !== 32 && cgpaInfo && (
+        {(selectedCategory !== 32 && selectedCategory !== 85) && cgpaInfo && (
           <div className="px-4 mb-3">
             <div className="d-flex justify-content-between align-items-center">
               <p className="mb-0 mt-2 d-flex align-items-center">
@@ -1359,7 +1359,7 @@ const SchoolViewApplicantDetail = () => {
                                 <p className="mb-0">{activity.year || ""}</p>
                               </div>
                               <div className="col-6 col-sm-3 text-end sac-name-restrict">
-                              <span
+                                <span
                                   className={`position py-1 px-2 rounded-pill`}
                                   style={getPositionStyle(activity.student_position)}
                                 >

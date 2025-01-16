@@ -1,23 +1,22 @@
-.sac-previous-button
-{
-    background-color: white;
-    border-color: #B71A18;
-    color:#B71A18;
+.sac-previous-button {
+  background-color: white;
+  border-color: #B71A18;
+  color: #B71A18;
 }
 
-.sac-next-button
-{
-    background-color: #B71A18;
-    border-color: #B71A18;
-    color:white';
+.sac-next-button {
+  background-color: #B71A18;
+  border-color: #B71A18;
+  color: white';
+
 }
+
 .sac-previous-button:hover,
 .sac-previous-button:focus,
 .sac-previous-button:active,
-.sac-previous-button:active:focus
-{
-    background-color: #B71A18;
-    border-color: #B71A18;
+.sac-previous-button:active:focus {
+  background-color: #B71A18;
+  border-color: #B71A18;
 }
 
 
@@ -25,153 +24,139 @@
 .sac-next-button:hover,
 .sac-next-button:focus,
 .sac-next-button:active,
-.sac-next-button:active:focus
-{
-    
-    background-color: white;
-    border-color: #B71A18;
-    color:#B71A18;
+.sac-next-button:active:focus {
+
+  background-color: white;
+  border-color: #B71A18;
+  color: #B71A18;
 }
 
 
-.sac-next-button, .sac-previous-button
-{
-    width:15%;
+.sac-next-button,
+.sac-previous-button {
+  width: 15%;
 }
 
 
-.sac-add-new-button
-{
-    background-color: #FFEEE8;
-    border-color: transparent;
-    color: #B71A18;
-    font-weight: 600;
+.sac-add-new-button {
+  background-color: #FFEEE8;
+  border-color: transparent;
+  color: #B71A18;
+  font-weight: 600;
 }
 
 .sac-add-new-button:hover,
 .sac-add-new-button :focus,
 .sac-add-new-button:active,
-.sac-add-new-button:active:focus
-{
-    background-color: #B71A18;
-    color: #FFEEE8;
-    border-color: transparent;
+.sac-add-new-button:active:focus {
+  background-color: #B71A18;
+  color: #FFEEE8;
+  border-color: transparent;
 }
 
-.sac-submit-button
-{
-    background-color: #B71A18;
-    border-color: #B71A18;
-    color:white';
+.sac-submit-button {
+  background-color: #B71A18;
+  border-color: #B71A18;
+  color: white';
+
 }
 
 .sac-submit-button:hover,
 .sac-submit-button:focus,
 .sac-submit-button:active,
-.sac-submit-button:active:focus
-{
-    background-color:#ffffff;
-    border-color: #B71A18;
-    color:#B71A18;
+.sac-submit-button:active:focus {
+  background-color: #ffffff;
+  border-color: #B71A18;
+  color: #B71A18;
 }
 
-.sac-save-button
-{
+.sac-save-button {
   background-color: #B71A18;
   border-color: transparent;
-  margin:0 0;
+  margin: 0 0;
 }
 
 .sac-save-button:hover,
 .sac-save-button:focus,
 .sac-save-button:active,
-.sac-save-button:active:hover
-{
+.sac-save-button:active:hover {
   background-color: white;
   border-color: #B71A18;
-  color:#B71A18
-  /*color: #9da2a6;*/
+  color: #B71A18
+    /*color: #9da2a6;*/
 
 }
 
 
 
-.as-knowmore-button
-{
-    background-color: #FF6B00;
-    border-color: #FF6B00;
-    color:white';
+.as-knowmore-button {
+  background-color: #FF6B00;
+  border-color: #FF6B00;
+  color: white';
+
 }
 
 .as-knowmore-button:hover,
 .as-knowmore-button:focus,
 .as-knowmore-button:active,
-.as-knowmore-button:active:focus
-{
-    background-color: white;
-    border-color: #FF6B00;
-    color:#FF6B00;
+.as-knowmore-button:active:focus {
+  background-color: white;
+  border-color: #FF6B00;
+  color: #FF6B00;
 }
 
 /*for transcript page button*/
 .button-table {
-    background-color: #B71A18;
-    border-radius: 2rem;
-    align-self: center;
-    font-size: 1rem;
-    border:#B71A18
-  
-  }
+  background-color: #B71A18;
+  border-radius: 2rem;
+  align-self: center;
+  font-size: 1rem;
+  border: #B71A18
+}
 
-  .button-table:hover
-  {
-    
-    border:0.05rem solid #B71A18
-  }
+.button-table:hover {
+
+  border: 0.05rem solid #B71A18
+}
 
 /*manage password button*/
-.mpbtndiv
-{
-    background-color: #B71A18;
-    width: 15rem;
+.mpbtndiv {
+  background-color: #B71A18;
+  width: 15rem;
 
 }
 
-.mpbtndiv:hover,.btn-login-signup-forgetpassword:hover,
-.btn-signup-forgetpassword:hover
-{
-    background-color:#ffffff;
-    border-color: #B71A18;
-    color:#B71A18;
+.mpbtndiv:hover,
+.btn-login-signup-forgetpassword:hover,
+.btn-signup-forgetpassword:hover {
+  background-color: #ffffff;
+  border-color: #B71A18;
+  color: #B71A18;
 }
 
 /*login signup forgetpassword*/
-.btn-login-signup-forgetpassword
-{
-background-color: #B71A18;
-width:100%;
+.btn-login-signup-forgetpassword {
+  background-color: #B71A18;
+  width: 100%;
 
 
 }
 
-.btn-signup-forgetpassword
-{
-background-color: #B71A18;
-width:25rem;
+.btn-signup-forgetpassword {
+  background-color: #B71A18;
+  width: 25rem;
 
 }
 
 
-.mpw-profilepic-btn
-{
+.mpw-profilepic-btn {
   background-color: #E21B1B;
   border-color: transparent;
 }
 
 .mpw-profilepic-btn:hover,
 .mpw-profilepic-btn:focus,
-.mpw-profilepic-btn:active
-{
+.mpw-profilepic-btn:active {
   background-color: white;
   color: #E21B1B;
   border-color: #BF3634;
@@ -179,8 +164,7 @@ width:25rem;
 
 
 
-.view-result-slip-button
-{
+.view-result-slip-button {
   text-decoration: none;
   background: transparent;
   border: none;
@@ -189,121 +173,146 @@ width:25rem;
 
 /*responsive button*/
 @media (max-width: 768px) {
-    .sac-next-button, .sac-previous-button {
-        width: 30%;
-        min-width: 100px;
-        font-size: 0.9rem;
-        padding: 0.5rem 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-/*student apply course case 1*/
-    .sac-upload-button {
-        font-size: 0.8rem;
-        padding: 0.3rem 0.6rem;
-      }
-      .sac-upload-button .upload-icon {
-        width: 13px;
-        height: 13px;
-      }
 
-      .mpbtndiv
-      {
-        width:100%;
-        padding:0.25rem 2rem;
-        
-      }
-      
-      /*button table for add new button in transcript*/
-      .button-table {
-        background-color: #B71A18;
-        border-radius: 2rem;
-        align-self: center;
-        font-size: 0.825rem;
-        margin:0 0 0 1rem;
-      }
+  .sac-next-button,
+  .sac-previous-button {
+    width: 30%;
+    min-width: 100px;
+    font-size: 0.9rem;
+    padding: 0.5rem 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 
-      
+  /*student apply course case 1*/
+  .sac-upload-button {
+    font-size: 0.8rem;
+    padding: 0.3rem 0.6rem;
+  }
+
+  .sac-upload-button .upload-icon {
+    width: 13px;
+    height: 13px;
+  }
+
+  .mpbtndiv {
+    width: 100%;
+    padding: 0.25rem 2rem;
+
+  }
+
+  /*button table for add new button in transcript*/
+  .button-table {
+    background-color: #B71A18;
+    border-radius: 2rem;
+    align-self: center;
+    font-size: 0.825rem;
+    margin: 0 0 0 1rem;
+  }
+
+
 }
 
 @media (max-width: 576px) {
-    .sac-next-button, .sac-previous-button {
-        width: 45%;
-        min-width: 80px;
-        font-size: 0.8rem;
-        padding: 0.4rem 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
 
-    /*student apply course case 1*/
-    .sac-upload-button {
-        font-size: 0.75rem;
-        padding: 0.25rem 0.5rem;
-      }
-      .sac-upload-button .upload-icon {
-        width: 12px;
-        height: 12px;
-      }
+  .sac-next-button,
+  .sac-previous-button {
+    width: 45%;
+    min-width: 80px;
+    font-size: 0.8rem;
+    padding: 0.4rem 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 
-      .mpbtndiv
-      {
-        width:100%;
-      }
+  /*student apply course case 1*/
+  .sac-upload-button {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+  }
 
-      .button-table{
-        margin:0;
-      }
+  .sac-upload-button .upload-icon {
+    width: 12px;
+    height: 12px;
+  }
+
+  .mpbtndiv {
+    width: 100%;
+  }
+
+  .button-table {
+    margin: 0;
+  }
 }
 
 
-@media (max-width: 375px ) {
-    .sac-next-button, .sac-previous-button {
-        width: 100%;
-        min-width: 40px;
-        font-size: 0.8rem;
-        padding: 0.5rem 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
+@media (max-width: 375px) {
 
-    /*student apply course case 1*/
-    .sac-upload-button {
-        font-size: 0.7rem;
-        padding: 0.2rem 0.4rem;
-      }
-      .sac-upload-button .upload-icon {
-        width: 10px;
-        height: 10px;
-      }
-      .sac-upload-button .button-text {
-        display: none;
-      }
+  .sac-next-button,
+  .sac-previous-button {
+    width: 100%;
+    min-width: 40px;
+    font-size: 0.8rem;
+    padding: 0.5rem 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 
-      .mpbtndiv
-      {
-        width:100%;
-      }
+  /*student apply course case 1*/
+  .sac-upload-button {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.4rem;
+  }
 
-      .button-table{
-        margin:0;
-      }
+  .sac-upload-button .upload-icon {
+    width: 10px;
+    height: 10px;
+  }
+
+  .sac-upload-button .button-text {
+    display: none;
+  }
+
+  .mpbtndiv {
+    width: 100%;
+  }
+
+  .button-table {
+    margin: 0;
+  }
 }
 
-.grade-A
-{
+.grade-A {
   background-color: #146A17;
 }
 
-.grade-B
-{
+.grade-B {
+  background-color: #146A17;
+}
+
+.grade-C {
   background-color: #E1D925;
 }
-.grade-C
-{
+
+.grade-D {
+  background-color: #E1D925;
+}
+
+.grade-E {
   background-color: #BF3634;
 }
 
+.grade-F {
+  background-color: #BF3634;
+}
+
+.grade-G {
+  background-color: #BF3634;
+}
+
+.grade-TH {
+  background-color: #BF3634;
+}

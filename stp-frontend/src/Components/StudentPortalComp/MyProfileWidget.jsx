@@ -297,6 +297,13 @@ const MyProfileWidget = ({ onSelectContent, profilePic }) => {
                         </ListGroup.Item>
                     </div>
                 </Collapse>
+                <ListGroup.Item
+                    className="transcript-item"
+                    onClick={() => handleContentSelect('riasecresult')}
+                    style={getItemStyle('riasecresult')}
+                >
+                    RIASEC Result
+                </ListGroup.Item>
             </ListGroup>
         </Card>
     );

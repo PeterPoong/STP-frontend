@@ -1,13 +1,52 @@
-// Components/StudentPortalComp/StudyPath/IntroSection.jsx
-import React from 'react';
-import "../../../css/StudentPortalStyles/StudentStudyPath.css"
-import InformationIcon from "../../../assets/StudentPortalAssets/InformationIcon.svg"
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import "../../../css/StudentPortalStyles/StudentStudyPath.css";
+import InformationIcon from "../../../assets/StudentPortalAssets/InformationIcon.svg";
 
 const IntroSection = ({ onStart }) => {
+    const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate();
+
+    const handleStart = async () => {
+        setIsLoading(true);
+        try {
+            const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+            
+            // Check if user has an existing test result
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/getTestResult`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+            
+            // If there's existing test data and retake button wasn't pressed
+            if (data.success && data.data && !sessionStorage.getItem('retakeRiasecTest')) {
+                // Redirect to basic information page with RIASEC results tab
+                navigate('/studentPortalBasicInformations', {
+                    state: { selectedContent: 'riasecresult' }
+                });
+            } else {
+                // Clear retake flag if it exists
+                sessionStorage.removeItem('retakeRiasecTest');
+                // Proceed with starting the test
+                onStart();
+            }
+        } catch (error) {
+            console.error('Error checking test status:', error);
+            // In case of error, allow starting the test
+            onStart();
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     return (
-        <div className="SSP-Intro-Overall-Container" >
+        <div className="SSP-Intro-Overall-Container">
             <div className="SSP-Inner-Container">
-                {/* Header Section */}
                 <div className="SSP-Header">
                     <h1 className="SSP-Title">
                         RIASEC Career Assessment:<br />
@@ -33,12 +72,15 @@ const IntroSection = ({ onStart }) => {
                         </span>
                     </div>
                 </div>
-                <button className="SSP-Start-Button" onClick={onStart}>
-                    START
+                <button 
+                    className="SSP-Start-Button" 
+                    onClick={handleStart}
+                    disabled={isLoading}
+                >
+                    {isLoading ? 'START' : 'START'}
                 </button>
             </div>
         </div>
-
     );
 };
 

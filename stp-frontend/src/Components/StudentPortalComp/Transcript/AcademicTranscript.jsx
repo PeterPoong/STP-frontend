@@ -126,15 +126,17 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
       'B+': 20, 'B': 21,
       'C+': 22, 'C': 23,
       'D': 24, 'E': 25,
-      'G': 26
+      'G': 26,'TH':27
     };
     return gradeMap[grade] || 0; // Return 0 if grade not found
   };
   useEffect(() => {
-    if (examType === 'SPM' && isInitialLoad) {
+    if ((examType === 'SPM' || examType === 'SPM Trial')) {
       checkAndPresetSubjectsForNewUser();
+      setIsInitialLoad(false);
     }
-  }, [examType, isInitialLoad]);
+  }, [examType]);
+  
   const checkAndPresetSubjectsForNewUser = async () => {
     try {
       setIsLoadingSubjects(true);
@@ -145,15 +147,23 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
           'Authorization': `Bearer ${token}`,
         },
       });
-
+  
       const result = await response.json();
       if (result.success) {
-        if (result.data.length === 0) {
+        // Get the appropriate data array based on exam type
+        const spmData = result.data.spm || [];
+        const trialData = result.data.trial || [];
+        
+        if (examType === 'SPM' && spmData.length === 0) {
+          presetSubjectsForNewUser();
+          setIsNewUser(true);
+        } else if (examType === 'SPM Trial' && trialData.length === 0) {
           presetSubjectsForNewUser();
           setIsNewUser(true);
         } else {
           setIsNewUser(false);
-          onSubjectsChange(result.data.map(subject => ({
+          const relevantData = examType === 'SPM' ? spmData : trialData;
+          onSubjectsChange(relevantData.map(subject => ({
             id: subject.subject_id,
             name: subject.subject_name,
             grade: subject.subject_grade,
@@ -185,9 +195,10 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
   };
 
   const fetchAvailableSubjects = useCallback(async () => {
-
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      const categoryId = examType === 'SPM' ? 32 : 85; // Set category based on exam type
+  
       const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/subjectList`, {
         method: 'POST',
         headers: {
@@ -195,7 +206,7 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
           'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
-          category: 32,
+          category: categoryId,
           selectedSubject: subjects.map(s => s.id)
         }),
       });
@@ -209,15 +220,13 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
     } catch (error) {
       console.error('Error fetching available subjects:', error);
     }
-
-  }, [subjects]);
+  }, [subjects, examType]);
 
   useEffect(() => {
-    if (examType === 'SPM' && !isInitialLoad) {
+    if ((examType === 'SPM' || examType === 'SPM Trial')) {
       fetchAvailableSubjects();
     }
-  }, [examType, fetchAvailableSubjects, isInitialLoad]);
-
+  }, [examType, fetchAvailableSubjects]);
   const fetchSubjects = async () => {
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
@@ -293,14 +302,12 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
 
   const getGradeColor = (grade) => {
     if (grade.includes('A')) return 'grade-A';
-    if (grade.includes('B')) return 'grade-A';
-    if (grade.includes('C')) return 'grade-A';
-    if (grade.includes('D')) return 'grade-B';
-    if (grade.includes('E')) return 'grade-B';
-    if (grade.includes('G')) return 'grade-C';
-
-
-
+    if (grade.includes('B')) return 'grade-B';
+    if (grade.includes('C')) return 'grade-C';
+    if (grade.includes('D')) return 'grade-D';
+    if (grade.includes('E')) return 'grade-E';
+    if (grade.includes('G')) return 'grade-G';
+    if (grade.includes('TH')) return 'grade-TH';
     return 'bg-secondary';
   };
 
@@ -310,7 +317,7 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
       20: 'B+', 21: 'B',
       22: 'C+', 23: 'C',
       24: 'D', 25: 'E',
-      26: 'G'
+      26: 'G',27:'TH'
     };
     return gradeMap[grade] || grade;
   };
@@ -348,6 +355,7 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
                     <option value="D">D</option>
                     <option value="E">E</option>
                     <option value="G">G</option>
+                    <option value="TH">TH</option>
                   </select>
 
                 ) : (
@@ -369,7 +377,7 @@ const SubjectBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
 
             </div>
           ))}
-          {examType === 'SPM' && (
+          {(examType === 'SPM' || examType === 'SPM Trial') && (
             <div className="my-4">
               <label className="fw-bold small formlabel">Add Subject:</label>
               <select
@@ -524,11 +532,11 @@ const ProgramBasedExam = ({ examType, subjects, onSubjectsChange, files, onSaveA
 
   const getGradeColor = (grade) => {
     if (grade.includes('A')) return 'grade-A';
-    if (grade.includes('B')) return 'grade-A';
-    if (grade.includes('C')) return 'grade-A';
-    if (grade.includes('D')) return 'grade-B';
-    if (grade.includes('E')) return 'grade-B';
-    if (grade.includes('G')) return 'grade-C';
+    if (grade.includes('B')) return 'grade-B';
+    if (grade.includes('C')) return 'grade-C';
+    if (grade.includes('D')) return 'grade-D';
+    if (grade.includes('E')) return 'grade-E';
+    if (grade.includes('G')) return 'grade-G';
 
 
 
@@ -757,6 +765,7 @@ const AcademicTranscript = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [examData, setExamData] = useState({
     'SPM': [],
+    'SPM Trial': [],
     'UEC': [],
     'O-Level': [],
     'GCSE': [],
@@ -817,7 +826,7 @@ const AcademicTranscript = () => {
         if (category) {
           fetchMediaByCategory(category.id);
           fetchSubjects(category.id.toString());
-          if (category.id !== 32) { // Not SPM
+          if (category.id !== 32 && category.id !== 85) {  // Not SPM
             fetchCGPAInfo(category.id);
           }
         }
@@ -1040,7 +1049,7 @@ const AcademicTranscript = () => {
         setCategories(result.data.data);
 
         // Manually categorize transcript categories
-        const examBased = ['SPM', /*'O-level',*/ 'GCSE', 'IGCSE', 'SSCE', 'UEC', 'SAT / ACT'];
+        const examBased = ['SPM', 'SPM Trial', /*'O-level',*/ 'GCSE', 'IGCSE', 'SSCE', 'UEC', 'SAT / ACT'];
         const programBased = ['STPM', 'A-level', 'Foundation', 'Diploma', 'O-level'];
 
         setExamBasedCategories(result.data.data.filter(cat => examBased.includes(cat.transcript_category)));
@@ -1110,11 +1119,10 @@ const AcademicTranscript = () => {
   const fetchSubjects = useCallback(async (categoryId) => {
     try {
       setSubjects([]);
-      //console.log('Fetching subjects for category:', categoryId);
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       let url, method, body;
 
-      if (categoryId === "32") {
+      if (categoryId === "32" || categoryId === "85") {
         url = `${import.meta.env.VITE_BASE_URL}api/student/transcriptSubjectList`;
         method = 'GET';
       } else {
@@ -1137,21 +1145,27 @@ const AcademicTranscript = () => {
       }
 
       const result = await response.json();
-      //console.log('Fetched subjects:', result);
 
       if (result.success) {
-        const formattedSubjects = categoryId === "32"
-          ? result.data.map(subject => ({
+        let formattedSubjects;
+
+        if (categoryId === "32" || categoryId === "85") {
+          // Handle the new API response format for SPM and Trial
+          const dataArray = categoryId === "32" ? result.data.spm : result.data.trial;
+          formattedSubjects = dataArray.map(subject => ({
             id: subject.subject_id,
             name: subject.subject_name,
             grade: subject.subject_grade
-          }))
-          : result.data.map(subject => ({
+          }));
+        } else {
+          // Handle other transcript types
+          formattedSubjects = result.data.map(subject => ({
             id: subject.id,
             name: subject.highTranscript_name,
             grade: subject.higherTranscript_grade
           }));
-        //console.log('Formatted subjects:', formattedSubjects);
+        }
+
         setSubjects(formattedSubjects);
       } else {
         console.error('Failed to fetch subjects:', result);
@@ -1162,11 +1176,9 @@ const AcademicTranscript = () => {
       setSubjects([]);
     }
   }, []);
-
   //subject list for spm api//
   const addEditSPMTranscript = async (subjects) => {
     try {
-      //console.log('addEditSPMTranscript called with subjects:', subjects);
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       const category = categories.find(cat => cat.transcript_category === selectedExam);
 
@@ -1175,29 +1187,32 @@ const AcademicTranscript = () => {
         return;
       }
 
-      //console.log('Category for SPM:', category);
+      // Map the internal category IDs
+      const categoryMapping = {
+        32: 32,  // SPM stays as 32
+        85: 85   // Map 81 to 85 for SPM Trial
+      };
 
-      // Function to convert letter grade to integer
+      const apiCategoryId = categoryMapping[category.id];
+
       const gradeToInt = (grade) => {
         const gradeMap = {
           'A+': 17, 'A': 18, 'A-': 19,
           'B+': 20, 'B': 21,
           'C+': 22, 'C': 23,
           'D': 24, 'E': 25,
-          'G': 26
+          'G': 26,'TH':27
         };
-        return gradeMap[grade] || 0; // Return 0 if grade not found
+        return gradeMap[grade] || 0;
       };
 
       const payload = {
-        category: category.id,
+        category: apiCategoryId,
         data: subjects.map(subject => ({
           subjectID: subject.id,
           grade: gradeToInt(subject.grade)
         }))
       };
-
-      //console.log('Payload prepared for SPM API:', payload);
 
       const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/addEditTranscript`, {
         method: 'POST',
@@ -1209,23 +1224,20 @@ const AcademicTranscript = () => {
       });
 
       const data = await response.json();
-      //console.log('API response for SPM:', data);
 
       if (data.success) {
-        //console.log('SPM Subjects saved successfully');
-        // Refresh the subjects
         fetchSubjects(category.id.toString());
         setHasUnsavedChanges(false);
-        return { success: true }; // Return success
+        return { success: true };
       } else {
-        console.error('Error saving SPM subjects:', data.message);
-        alert(`Error saving SPM subjects: ${data.message}`);
-        return { success: false, message: data.message || 'Failed to save SPM subjects.' };
+        console.error(`Error saving ${selectedExam} subjects:`, data.message);
+        alert(`Error saving ${selectedExam} subjects: ${data.message}`);
+        return { success: false, message: data.message || `Failed to save ${selectedExam} subjects.` };
       }
     } catch (error) {
-      console.error('Error in addEditSPMTranscript:', error);
-      alert('An unexpected error occurred while saving SPM subjects.');
-      return { success: false, message: 'An unexpected error occurred while saving SPM subjects.' };
+      console.error(`Error in addEdit${selectedExam}Transcript:`, error);
+      alert('An unexpected error occurred while saving subjects.');
+      return { success: false, message: 'An unexpected error occurred while saving subjects.' };
     }
   };
 
@@ -1234,7 +1246,7 @@ const AcademicTranscript = () => {
       const category = categories.find(cat => cat.transcript_category === selectedExam);
       if (category) {
         fetchMediaByCategory(category.id, currentPage, itemsPerPage, searchTerm);
-        if (selectedExam !== 'SPM' || !isInitialLoad) {
+        if ((selectedExam !== 'SPM' && selectedExam !== 'SPM Trial') || !isInitialLoad) {
           fetchSubjects(category.id.toString());
         }
       }
@@ -1284,7 +1296,7 @@ const AcademicTranscript = () => {
 
       let response;
 
-      if (category.id === 32) {
+      if (category.id === 32 || category.id === 85) {
         //console.log('Saving SPM subjects...');
         const spmResult = await addEditSPMTranscript(subjectsToSave);
         return spmResult;
@@ -1370,7 +1382,7 @@ const AcademicTranscript = () => {
     const categoryId = category ? category.id : null;
     const files = mediaData[categoryId] || [];
 
-    if (selectedExam === 'SPM' || examBasedCategories.some(cat => cat.transcript_category === selectedExam)) {
+    if (selectedExam === 'SPM' || selectedExam === 'SPM Trial' || examBasedCategories.some(cat => cat.transcript_category === selectedExam)) {
       return <SubjectBasedExam
         examType={selectedExam}
         subjects={subjects}

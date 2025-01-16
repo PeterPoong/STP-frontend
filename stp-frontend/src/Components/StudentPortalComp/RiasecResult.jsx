@@ -1,61 +1,139 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import html2canvas from 'html2canvas';
-import "../../../css/StudentPortalStyles/StudentStudyPath.css";
+import "../../css/StudentPortalStyles/StudentStudyPath.css";
 import { GraduationCap, Calendar, Clock, CalendarDays, MapPin } from 'lucide-react';
-import StudyPalLogoYPNG from "../../../assets/StudentPortalAssets/studypalLogoYPNG.png"
-import StudyPalLogoYPNGWhite from "../../../assets/StudentPortalAssets/studypalLogoYPNGWhite.png"
-import StudyPalLogoYPNGBlack from "../../../assets/StudentPortalAssets/studypalLogoYPNGBlack.png"
-import testingSchool from '../../../assets/StudentPortalAssets/testingSchool.jpg';
+import StudyPalLogoYPNG from "../../assets/StudentPortalAssets/studypalLogoYPNG.png"
+import StudyPalLogoYPNGWhite from "../../assets/StudentPortalAssets/studypalLogoYPNGWhite.png"
+import StudyPalLogoYPNGBlack from "../../assets/StudentPortalAssets/studypalLogoYPNGBlack.png"
+import testingSchool from '../../assets/StudentPortalAssets/testingSchool.jpg';
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend, ResponsiveContainer } from 'recharts';
-import WMYSpecialLogo from "../../../assets/StudentPortalAssets/wmyspecialLogo.svg"
-import WMYSpecialLogoWhite from "../../../assets/StudentPortalAssets/wmyspecialLogoWhite.png"
-import StrengthIcon from "../../../assets/StudentPortalAssets/strengthIcon.svg"
-import StrengthIconFill from "../../../assets/StudentPortalAssets/strengthIconFill.svg"
+import WMYSpecialLogo from "../../assets/StudentPortalAssets/wmyspecialLogo.svg"
+import WMYSpecialLogoWhite from "../../assets/StudentPortalAssets/wmyspecialLogoWhite.png"
+import StrengthIcon from "../../assets/StudentPortalAssets/strengthIcon.svg"
+import StrengthIconFill from "../../assets/StudentPortalAssets/strengthIconFill.svg"
 import { HeartPulse, Whatsapp, Tiktok, Twitter, Instagram, TwitterX } from 'react-bootstrap-icons';
 import { Spinner } from 'react-bootstrap';
-import QRCode from "../../../assets/StudentPortalAssets/qrCode.png"
+import QRCode from "../../assets/StudentPortalAssets/qrCode.png"
 // Realistic type imports
-import realisticMain from "../../../assets/StudentPortalAssets/realisticmain.png";
-import realisticBg2 from "../../../assets/StudentPortalAssets/realisticbg2.png";
-import realisticBg3 from "../../../assets/StudentPortalAssets/realisticbg3.png";
-import realisticBg4 from "../../../assets/StudentPortalAssets/realisticbg4.png";
-import realisticGradient from "../../../assets/StudentPortalAssets/realisticgradient.png";
+import realisticMain from "../../assets/StudentPortalAssets/realisticmain.png";
+import realisticBg2 from "../../assets/StudentPortalAssets/realisticbg2.png";
+import realisticBg3 from "../../assets/StudentPortalAssets/realisticbg3.png";
+import realisticBg4 from "../../assets/StudentPortalAssets/realisticbg4.png";
+import realisticGradient from "../../assets/StudentPortalAssets/realisticgradient.png";
 
 // Investigative type imports
-import investigativeMain from "../../../assets/StudentPortalAssets/investigativemain.png";
-import investigativeBg2 from "../../../assets/StudentPortalAssets/investigativebg2.png";
-import investigativeBg3 from "../../../assets/StudentPortalAssets/investigativebg3.png";
-import investigativeBg4 from "../../../assets/StudentPortalAssets/investigativebg4.png";
-import investigativeGradient from "../../../assets/StudentPortalAssets/investigativegradient.png";
+import investigativeMain from "../../assets/StudentPortalAssets/investigativemain.png";
+import investigativeBg2 from "../../assets/StudentPortalAssets/investigativebg2.png";
+import investigativeBg3 from "../../assets/StudentPortalAssets/investigativebg3.png";
+import investigativeBg4 from "../../assets/StudentPortalAssets/investigativebg4.png";
+import investigativeGradient from "../../assets/StudentPortalAssets/investigativegradient.png";
 
 // Artistic type imports
-import artisticMain from "../../../assets/StudentPortalAssets/artisticmain.png";
-import artisticBg2 from "../../../assets/StudentPortalAssets/artisticbg2.png";
-import artisticBg3 from "../../../assets/StudentPortalAssets/artisticbg3.png";
-import artisticBg4 from "../../../assets/StudentPortalAssets/artisticbg4.png";
-import artisticGradient from "../../../assets/StudentPortalAssets/artisticgradient.png";
+import artisticMain from "../../assets/StudentPortalAssets/artisticmain.png";
+import artisticBg2 from "../../assets/StudentPortalAssets/artisticbg2.png";
+import artisticBg3 from "../../assets/StudentPortalAssets/artisticbg3.png";
+import artisticBg4 from "../../assets/StudentPortalAssets/artisticbg4.png";
+import artisticGradient from "../../assets/StudentPortalAssets/artisticgradient.png";
 
 // Social type imports
-import socialMain from "../../../assets/StudentPortalAssets/socialmain.png";
-import socialBg2 from "../../../assets/StudentPortalAssets/socialbg2.png";
-import socialBg3 from "../../../assets/StudentPortalAssets/socialbg3.png";
-import socialBg4 from "../../../assets/StudentPortalAssets/socialbg4.png";
-import socialGradient from "../../../assets/StudentPortalAssets/socialgradient.png";
+import socialMain from "../../assets/StudentPortalAssets/socialmain.png";
+import socialBg2 from "../../assets/StudentPortalAssets/socialbg2.png";
+import socialBg3 from "../../assets/StudentPortalAssets/socialbg3.png";
+import socialBg4 from "../../assets/StudentPortalAssets/socialbg4.png";
+import socialGradient from "../../assets/StudentPortalAssets/socialgradient.png";
 
 // Enterprising type imports
-import enterprisingMain from "../../../assets/StudentPortalAssets/enterprisingmain.png";
-import enterprisingBg2 from "../../../assets/StudentPortalAssets/enterprisingbg2.png";
-import enterprisingBg3 from "../../../assets/StudentPortalAssets/enterprisingbg3.png";
-import enterprisingBg4 from "../../../assets/StudentPortalAssets/enterprisingbg4.png";
-import enterprisingGradient from "../../../assets/StudentPortalAssets/enterprisinggradient.png";
+import enterprisingMain from "../../assets/StudentPortalAssets/enterprisingmain.png";
+import enterprisingBg2 from "../../assets/StudentPortalAssets/enterprisingbg2.png";
+import enterprisingBg3 from "../../assets/StudentPortalAssets/enterprisingbg3.png";
+import enterprisingBg4 from "../../assets/StudentPortalAssets/enterprisingbg4.png";
+import enterprisingGradient from "../../assets/StudentPortalAssets/enterprisinggradient.png";
 
 // Conventional type imports
-import conventionalMain from "../../../assets/StudentPortalAssets/conventionalmain.png";
-import conventionalBg2 from "../../../assets/StudentPortalAssets/conventionalbg2.png";
-import conventionalBg3 from "../../../assets/StudentPortalAssets/conventionalbg3.png";
-import conventionalBg4 from "../../../assets/StudentPortalAssets/conventionalbg4.png";
-import conventionalGradient from "../../../assets/StudentPortalAssets/conventionalgradient.png";
+import conventionalMain from "../../assets/StudentPortalAssets/conventionalmain.png";
+import conventionalBg2 from "../../assets/StudentPortalAssets/conventionalbg2.png";
+import conventionalBg3 from "../../assets/StudentPortalAssets/conventionalbg3.png";
+import conventionalBg4 from "../../assets/StudentPortalAssets/conventionalbg4.png";
+import conventionalGradient from "../../assets/StudentPortalAssets/conventionalgradient.png";
+
+const typeAttributes = {
+    Realistic: {
+        strengths: [
+            'Technical Expertise',
+            'Hands-on Skills',
+            'Physical Coordination',
+            'Mechanical Aptitude'
+        ]
+    },
+    Investigative: {
+        strengths: [
+            'Analytics Thinking',
+            'Scientific Mindset',
+            'Research Abilities',
+            'Problem-solving Skills'
+        ]
+    },
+    Artistic: {
+        strengths: [
+            'Creative Expression',
+            'Innovative Thinking',
+            'Aesthetic Awareness',
+            'Original Ideas'
+        ]
+    },
+    Social: {
+        strengths: [
+            'People Skills',
+            'Emotional Intelligence',
+            'Communication Ability',
+            'Teaching Aptitude'
+        ]
+    },
+    Enterprising: {
+        strengths: [
+            'Leadership Skills',
+            'Persuasion Ability',
+            'Goal-oriented Drive',
+            'Strategic Thinking'
+        ]
+    },
+    Conventional: {
+        strengths: [
+            'Organizational Skills',
+            'Attention to Detail',
+            'Data Management',
+            'System Development'
+        ]
+    }
+};
+
+const typeDescriptions = {
+    Realistic: {
+        unique: "Your natural ability to understand how things work and your hands-on approach makes you the go-to person for turning ideas into reality.",
+        strength: "Your practical mindset and hands-on capabilities allow you to tackle real-world challenges with confidence and precision."
+    },
+    Investigative: {
+        unique: "Your dedication to finding answers and understanding complex systems makes you an excellent researcher and problem solver.",
+        strength: "Your curious and analytical mind drives you to understand how and why things work. You excel at solving complex problems and uncovering new insights."
+    },
+    Artistic: {
+        unique: " Your creative vision and ability to think outside the box allows you to see possibilities where others see limitations.",
+        strength: "Your imaginative mind and creative instincts enable you to see the world differently and create unique solutions that others might never consider."
+    },
+    Social: {
+        unique: "Your genuine interest in people and natural ability to understand others makes you an inspiring force for positive change.",
+        strength: "Your natural empathy and people-focused mindset help you build meaningful connections and make a positive impact in others' lives."
+    },
+    Enterprising: {
+        unique: "Your natural leadership and ability to inspire others makes you the perfect person to turn visions into successful ventures.",
+        strength: "Your dynamic personality and leadership instincts make you naturally effective at motivating teams and driving initiatives to success."
+    },
+    Conventional: {
+        unique: "Your exceptional attention to detail and organizational skills make you the master of creating order from chaos.",
+        strength: "Your systematic approach and precise attention to detail make you exceptional at creating and maintaining efficient, well-organized systems."
+    }
+};
 
 const baseURL = import.meta.env.VITE_BASE_URL;
 const RIASEC_BACKGROUNDS = {
@@ -123,31 +201,105 @@ const RiasecBackground = ({ type, variant }) => {
     }
 };
 
+const processResults = (scores) => {
+    // Convert scores to array and sort to get top types
+    const typeRanking = Object.entries(scores)
+        .sort(([, a], [, b]) => b - a)
+        .map(([type, score]) => ({
+            type: type.charAt(0).toUpperCase() + type.slice(1),
+            percentage: score
+        }));
+
+    const topTypes = typeRanking.slice(0, 3);
+    const topType = topTypes[0].type;
+
+    return {
+        topTypes,
+        scores,
+        strengths: typeAttributes[topType].strengths,
+        strengthsDesc: typeDescriptions[topType].strength,
+        unique: typeDescriptions[topType].unique
+    };
+};
+
 const CareerProfile = ({ userData = { username: "David Lim" } }) => {
     const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
+    const [isDownloading, setIsDownloading] = useState(false);
     const shareButtonRef = useRef(null);
+    const [results, setResults] = useState(null);
+    const [createdAt, setCreatedAt] = useState();
     const [selectedDesign, setSelectedDesign] = useState(0);
     const [selectedCourse, setSelectedCourse] = useState(null);
     const [recommendedCourses, setRecommendedCourses] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
     const [recommendedCategories, setRecommendedCategories] = useState([]);
-    const { username = "User", results = null } = userData;
+    const [isLoading, setIsLoading] = useState(true);
+    const [isCourseLoading, setIsCourseLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const { username = "User" } = userData;
     const designRef0 = useRef(null);
     const designRef1 = useRef(null);
     const designRef2 = useRef(null);
-    const topType = results.topTypes[0]?.type || 'Realistic';
-    const gradientBackgroundStyle = {
-        backgroundImage: `url(${RiasecBackground({ type: topType, variant: 'gradient' })})`,
-        backgroundSize: 'auto 140%',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
+
+    const createUrlFriendlyString = (str) => {
+        if (!str) return '';
+        return str.toLowerCase().replace(/\s+/g, '-');
     };
 
-    useEffect(() => {
-        const fetchRecommendedCategories = async () => {
-            if (!results?.topTypes?.[0]?.type) return;
+    // Render course link with safety checks
 
+    useEffect(() => {
+        const fetchResults = async () => {
+            try {
+                const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+                if (!token) {
+                    throw new Error('No authorization token found');
+                }
+
+                const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/getTestResult`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => null);
+                    throw new Error(errorData?.message || 'Failed to fetch results');
+                }
+
+                const data = await response.json();
+                //console.log('API Response:', data); // Debug log
+
+                if (data.success && data.data && data.data.score) {
+                    const processedResults = processResults(data.data.score);
+                    setResults(processedResults);
+                    setCreatedAt(data.data.created_at)
+                    await fetchRecommendedCategories(processedResults.topTypes[0].type);
+                } else {
+                    throw new Error('Invalid response format');
+                }
+            } catch (err) {
+                console.error('Fetch error:', err);
+                setError(err.message);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchResults();
+    }, []);
+
+    useEffect(() => {
+        if (results && recommendedCategories.length > 0) {
+            setSelectedCourse(0);
+            fetchCoursesByCategory(recommendedCategories[0].id);
+        }
+    }, [results, recommendedCategories]);
+
+    const fetchRecommendedCategories = async (topType) => {
+        try {
             const riasecTypeMap = {
                 'Realistic': 1,
                 'Investigative': 6,
@@ -157,38 +309,63 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                 'Conventional': 5
             };
 
-            try {
-                const topType = results.topTypes[0].type;
-                const riasecTypeNumber = riasecTypeMap[topType];
+            const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/riasecCourseCategory`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    riasecType: riasecTypeMap[topType]
+                })
+            });
 
-                const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/riasecCourseCategory`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${sessionStorage.getItem('token') || localStorage.getItem('token')}`
-                    },
-                    body: JSON.stringify({
-                        riasecType: riasecTypeNumber
-                    })
-                });
+            const data = await response.json();
+            //console.log('Categories Response:', data); // Debug log
 
-                const result = await response.json();
-
-                if (result.success && result.data) {
-                    setRecommendedCategories(result.data);
-                    // Select first category and fetch its courses
-                    if (result.data.length > 0) {
-                        setSelectedCourse(0);
-                        fetchCoursesByCategory(result.data[0].id);
-                    }
-                }
-            } catch (error) {
-                console.error('Error fetching recommended categories:', error);
+            if (data.success && Array.isArray(data.data)) {
+                setRecommendedCategories(data.data);
             }
-        };
+        } catch (error) {
+            console.error('Error fetching categories:', error);
+        }
+    };
 
-        fetchRecommendedCategories();
-    }, [results?.topTypes]);
+    // Only access topType after results is available
+    const topType = results?.topTypes?.[0]?.type || 'Realistic';
+    const gradientBackgroundStyle = {
+        backgroundImage: `url(${RiasecBackground({ type: topType, variant: 'gradient' })})`,
+        backgroundSize: 'auto 140%',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+    };
+
+    const fetchCoursesByCategory = async (categoryId) => {
+        setIsCourseLoading(true);
+        try {
+            const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/courseList`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    category: [categoryId]
+                })
+            });
+
+            const result = await response.json();
+            if (result && result.data && Array.isArray(result.data)) {
+                setRecommendedCourses(result.data.slice(0, 3));
+            }
+        } catch (error) {
+            console.error('Error fetching courses:', error);
+        } finally {
+            setIsCourseLoading(false);
+        }
+    };
 
     //share button social media
     const handleToggle = () => {
@@ -196,10 +373,45 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
     };
 
 
-    if (!results) {
-        return <div>Loading results...</div>;
+    if (isLoading) {
+        return (
+            <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
+                <Spinner animation="border" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                </Spinner>
+            </div>
+        );
     }
 
+    if (error) {
+        return (
+            <div className="text-center p-4 " >
+                <h2 style={{ fontSize: "36px", fontWeight: "bold", marginBottom: "10px" }}>No RIASEC Results Found</h2>
+                <p>Take the assessment to discover your career interests</p>
+                <button
+                    className="SSP-Start-Button"
+                    onClick={() => navigate('/studentStudyPath')}
+                >
+                    Take RIASEC Test
+                </button>
+            </div>
+        );
+    }
+
+    if (!results) {
+        return (
+            <div className="text-center p-4 " >
+                <h2 style={{ fontSize: "36px", fontWeight: "bold", marginBottom: "10px" }}>No RIASEC Results Found</h2>
+                <p>Take the assessment to discover your career interests</p>
+                <button
+                    className="SSP-Start-Button"
+                    onClick={() => navigate('/studentStudyPath')}
+                >
+                    Take RIASEC Test
+                </button>
+            </div>
+        );
+    }
     const formatRadarData = () => {
         if (!results.scores) {
             return [
@@ -220,7 +432,6 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
 
     const radarData = formatRadarData();
 
-    const [isDownloading, setIsDownloading] = useState(false);
 
     const waitForImageLoad = (imgElement) => {
         return new Promise((resolve) => {
@@ -488,42 +699,11 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
         });
     };
 
-    useEffect(() => {
-        if (recommendedCategories?.length > 0) {
-            setSelectedCourse(0);
-            fetchCoursesByCategory(recommendedCategories[0].id);
-        }
-    }, [recommendedCategories]);
 
-    const fetchCoursesByCategory = async (categoryId) => {
-        setIsLoading(true);
-        try {
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/courseList`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${sessionStorage.getItem('token') || localStorage.getItem('token')}`
-                },
-                body: JSON.stringify({
-                    category: [categoryId]
-                })
-            });
 
-            const result = await response.json();
-
-            if (result && result.data && Array.isArray(result.data)) {
-                setRecommendedCourses(result.data.slice(0, 3));
-            }
-        } catch (error) {
-            console.error('Error fetching courses:', error);
-        } finally {
-            setTimeout(() => setIsLoading(false), 1000);
-        }
-    };
-
-    const handleCategorySelect = (index, categoryId) => {
+    const handleCategorySelect = (index, categoryName) => {
         setSelectedCourse(index);
-        fetchCoursesByCategory(categoryId);
+        fetchCoursesByCategory(categoryName);
     };
 
     const handleSeeMore = () => {
@@ -540,17 +720,29 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
         }
     };
 
+    const handleRetakeTest = () => {
+        sessionStorage.setItem('retakeRiasecTest', 'true');
+        navigate('/studentStudyPath');
+    };
+
     return (
-        <div className="RS-Career-Profile-Container">
+        <div className="RR-Career-Profile-Container">
             {/* Header Section */}
             <div className="RS-Header-Section">
                 <div>
                     <h1>Your RIASEC Assessment Results</h1>
-                    <p>{userData.username}, Here's Your Study Path Analysis</p>
+                    <p className="mb-0">{userData.username}, Here's Your Study Path Analysis</p>
+                    <p style={{ fontSize: "14px", marginBottom: "10px" }}>Most recent test: {new Date(createdAt).toISOString().split('T')[0]}</p>
                 </div>
-                <button className="SSP-Start-Button" onClick={handleShareResult}>
-                    SHARE RESULT
+                <button
+                    className="SSP-Start-Button"
+                    onClick={handleRetakeTest}
+                >
+                    Retake RIASEC Test
                 </button>
+                {/*<button className="SSP-Start-Button" onClick={handleShareResult}>
+                    SHARE RESULT
+                </button>*/}
             </div>
 
             {/* Main Result Card with Mascot */}
@@ -586,7 +778,7 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                                         className="course-logo"
                                     />
                                 </span>
-                                <span>{course.category_name}</span> {/* Use course.name instead of course */}
+                                <span>{course.category_name}</span> {/* Use course.category_name instead of course */}
                             </div>
                         ))}
                     </div>
@@ -596,7 +788,7 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                 <div className="RS-Section-Card">
                     <h3 className="RS-Section-Title">Featured Courses for Your Study Path</h3>
                     <div className="RS-Universities-Grid">
-                        {isLoading ? (
+                        {isCourseLoading ? (
                             <div className="RS-Universities-Grid-Spinner">
                                 <div className="" >
                                     <Spinner animation="border" role="status">
@@ -1098,4 +1290,4 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
     );
 };
 
-export default CareerProfile;
+export default CareerProfile; 

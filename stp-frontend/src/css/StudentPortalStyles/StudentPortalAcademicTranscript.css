@@ -388,6 +388,30 @@ tbody {
 
 }
 
+.grade-A {
+  background-color: #146A17;
+}
+
+.grade-B {
+  background-color: #146A17;
+}
+
+.grade-C {
+  background-color: #E1D925;
+}
+
+.grade-D {
+  background-color: #E1D925;
+}
+
+.grade-E {
+  background-color: #BF3634;
+}
+
+.grade-F {
+  background-color: #BF3634;
+}
+
 /*responsive*/
 @media (max-width: 768px) {
 

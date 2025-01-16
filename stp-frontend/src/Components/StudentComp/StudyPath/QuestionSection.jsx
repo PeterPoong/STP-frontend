@@ -15,259 +15,7 @@ const OPTIONS = {
 };
 
 // Questions organized by RIASEC type
-const questions = [
-    // Realistic Questions (7)
-    {
-        id: 1,
-        type: 'Realistic',
-        question: "I enjoy working with tools and machines",
-        options: Object.values(OPTIONS)
-    },
-    {
-        id: 2,
-        type: 'Realistic',
-        question: "I like to build or fix things with my hands",
-        options: Object.values(OPTIONS)
-    },
-    {
-        id: 3,
-        type: 'Realistic',
-        question: "I prefer hands-on activities over theoretical discussions",
-        options: Object.values(OPTIONS)
-    },
-    {
-        id: 4,
-        type: 'Realistic',
-        question: "I enjoy working outdoors",
-        options: Object.values(OPTIONS)
-    },
-    {
-        id: 5,
-        type: 'Realistic',
-        question: "I like to solve mechanical problems",
-        options: Object.values(OPTIONS)
-    },
-    {
-        id: 6,
-        type: 'Realistic',
-        question: "I enjoy working with physical materials (wood, metal, etc.)",
-        options: Object.values(OPTIONS)
-    },
-    {
-        id: 7,
-        type: 'Realistic',
-        question: "I prefer practical, concrete solutions to problems",
-        options: Object.values(OPTIONS)
-    },
 
-    // Investigative Questions (7)
-    {
-        id: 8,
-        type: 'Investigative',
-        question: "I enjoy solving complex problems",
-        options: Object.values(OPTIONS)
-    },
-    {
-        id: 9,
-        type: 'Investigative',
-        question: "I like to analyze data and information",
-        options: Object.values(OPTIONS)
-    },
-    {
-        id: 10,
-        type: 'Investigative',
-        question: "I enjoy conducting research",
-        options: Object.values(OPTIONS)
-    },
-    {
-        id: 11,
-        type: 'Investigative',
-        question: "I like to explore scientific theories",
-        options: Object.values(OPTIONS)
-    },
-    {
-        id: 12,
-        type: 'Investigative',
-        question: "I enjoy learning about new scientific discoveries",
-        options: Object.values(OPTIONS)
-    },
-    {
-        id: 13,
-        type: 'Investigative',
-        question: "I like to perform experiments and tests",
-        options: Object.values(OPTIONS)
-    },
-    {
-        id: 14,
-        type: 'Investigative',
-        question: "I enjoy solving mathematical problems",
-        options: Object.values(OPTIONS)
-    },
-
-    // Artistic Questions (7)
-    {
-        id: 15,
-        type: 'Artistic',
-        question: "I enjoy expressing myself creatively",
-        options: Object.values(OPTIONS)
-    },
-    {
-        id: 16,
-        type: 'Artistic',
-        question: "I like to think of new ways to do things",
-        options: Object.values(OPTIONS)
-    },
-    {
-        id: 17,
-        type: 'Artistic',
-        question: "I enjoy artistic activities (drawing, music, etc.)",
-        options: Object.values(OPTIONS)
-    },
-    {
-        id: 18,
-        type: 'Artistic',
-        question: "I like to work in unstructured situations",
-        options: Object.values(OPTIONS)
-    },
-    {
-        id: 19,
-        type: 'Artistic',
-        question: "I enjoy designing things",
-        options: Object.values(OPTIONS)
-    },
-    {
-        id: 20,
-        type: 'Artistic',
-        question: "I like to express myself through writing",
-        options: Object.values(OPTIONS)
-    },
-    {
-        id: 21,
-        type: 'Artistic',
-        question: "I enjoy creating original works",
-        options: Object.values(OPTIONS)
-    },
-
-    // Social Questions (7)
-    {
-        id: 22,
-        type: 'Social',
-        question: "I enjoy helping others learn new things",
-        options: Object.values(OPTIONS)
-    },
-    {
-        id: 23,
-        type: 'Social',
-        question: "I like to work in group settings",
-        options: Object.values(OPTIONS)
-    },
-    {
-        id: 24,
-        type: 'Social',
-        question: "I enjoy counseling or advising others",
-        options: Object.values(OPTIONS)
-    },
-    {
-        id: 25,
-        type: 'Social',
-        question: "I like to teach or train people",
-        options: Object.values(OPTIONS)
-    },
-    {
-        id: 26,
-        type: 'Social',
-        question: "I enjoy participating in group discussions",
-        options: Object.values(OPTIONS)
-    },
-    {
-        id: 27,
-        type: 'Social',
-        question: "I like to help people solve their problems",
-        options: Object.values(OPTIONS)
-    },
-    {
-        id: 28,
-        type: 'Social',
-        question: "I enjoy working with diverse groups of people",
-        options: Object.values(OPTIONS)
-    },
-
-    // Enterprising Questions (6)
-    {
-        id: 29,
-        type: 'Enterprising',
-        question: "I enjoy leading and directing others",
-        options: Object.values(OPTIONS)
-    },
-    {
-        id: 30,
-        type: 'Enterprising',
-        question: "I like to persuade or influence others",
-        options: Object.values(OPTIONS)
-    },
-    {
-        id: 31,
-        type: 'Enterprising',
-        question: "I enjoy selling things or promoting ideas",
-        options: Object.values(OPTIONS)
-    },
-    {
-        id: 32,
-        type: 'Enterprising',
-        question: "I like to start and carry out projects",
-        options: Object.values(OPTIONS)
-    },
-    {
-        id: 33,
-        type: 'Enterprising',
-        question: "I enjoy making business decisions",
-        options: Object.values(OPTIONS)
-    },
-    {
-        id: 34,
-        type: 'Enterprising',
-        question: "I like to take risks in business ventures",
-        options: Object.values(OPTIONS)
-    },
-
-    // Conventional Questions (6)
-    {
-        id: 35,
-        type: 'Conventional',
-        question: "I enjoy organizing and managing information",
-        options: Object.values(OPTIONS)
-    },
-    {
-        id: 36,
-        type: 'Conventional',
-        question: "I like to follow clearly defined procedures",
-        options: Object.values(OPTIONS)
-    },
-    {
-        id: 37,
-        type: 'Conventional',
-        question: "I enjoy working with numbers and records",
-        options: Object.values(OPTIONS)
-    },
-    {
-        id: 38,
-        type: 'Conventional',
-        question: "I like to pay attention to detail",
-        options: Object.values(OPTIONS)
-    },
-    {
-        id: 39,
-        type: 'Conventional',
-        question: "I enjoy creating and maintaining orderly systems",
-        options: Object.values(OPTIONS)
-    },
-    {
-        id: 40,
-        type: 'Conventional',
-        question: "I like to follow established rules and policies",
-        options: Object.values(OPTIONS)
-    }
-];
 
 const motivationalQuotes = [
     { threshold: 10, text: "You're Doing Great!" },
@@ -290,6 +38,44 @@ const QuestionSection = ({ onAnswer }) => {
     const [showTieBreaker, setShowTieBreaker] = useState(false);
     const [tiedTypes, setTiedTypes] = useState([]);
     const [tieBreakAnswers, setTieBreakAnswers] = useState({});
+    const [questions, setQuestions] = useState([]);
+    useEffect(() => {
+        const fetchQuestions = async () => {
+            try {
+                const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+                const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/personalityQuestionList`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch questions');
+                }
+
+                const data = await response.json();
+                if (data.success && data.data) {
+                    // Transform the questions data to match our format
+                    const formattedQuestions = data.data.map((q, index) => ({
+                        id: index + 1,
+                        type: q.riasec_type.type_name,
+                        question: q.question,
+                        options: Object.values(OPTIONS)
+                    }));
+                    setQuestions(formattedQuestions);
+                }
+            } catch (error) {
+                console.error('Error fetching questions:', error);
+            }
+        };
+
+        fetchQuestions();
+    }, []);
+
 
     // Add these helper functions
     const getPriorityText = (type) => {
@@ -326,13 +112,13 @@ const QuestionSection = ({ onAnswer }) => {
     };
 
     // Modify your existing handleSubmit to include tie-break check
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (answeredQuestions.size < 40) {
             alert("Please answer all questions before submitting!");
             return;
         }
 
-        // Your existing calculation code remains exactly the same until the typeRanking is created
+        // Calculate scores for each RIASEC type
         const typeScores = Object.entries(selectedOptions).reduce((acc, [questionId, answer]) => {
             const type = answer.type;
             if (!acc[type]) {
@@ -346,56 +132,79 @@ const QuestionSection = ({ onAnswer }) => {
             return acc;
         }, {});
 
-        const finalScores = Object.entries(typeScores).reduce((acc, [type, scores]) => {
-            const maxPossibleScore = scores.count * 6;
-            const percentage = (scores.total / maxPossibleScore) * 100;
-            acc[type] = Math.round(percentage);
-            return acc;
-        }, {});
+        // Calculate final scores as percentages
+        const finalScores = {};
+        Object.entries(typeScores).forEach(([type, scores]) => {
+            const maxPossibleScore = scores.count * 6; // Maximum score per question is 6
+            finalScores[type.toLowerCase()] = Math.round((scores.total / maxPossibleScore) * 100);
+        });
 
-        const averageScores = Object.entries(typeScores).reduce((acc, [type, scores]) => {
-            acc[type] = {
-                average: (scores.total / scores.count).toFixed(2),
-                total: scores.total,
-                maxPossible: scores.count * 6,
-                numberOfQuestions: scores.count
-            };
-            return acc;
-        }, {});
-
+        // Create ranking before API call to check for ties
         const typeRanking = Object.entries(finalScores)
             .sort(([, a], [, b]) => b - a)
             .reduce((acc, [type, score], index) => {
-                acc[index + 1] = { type, score };
+                acc[index + 1] = { 
+                    type: type.charAt(0).toUpperCase() + type.slice(1), 
+                    score 
+                };
                 return acc;
             }, {});
 
-        // Check for ties after creating typeRanking
+        // Check for ties
         const ties = checkForTies(typeRanking);
         if (ties) {
             setTiedTypes(ties);
             setShowTieBreaker(true);
-            return;
+            return; // Stop here and show tie breaker questions
         }
 
-        // If no ties, proceed with your existing formattedAnswers creation
-        const formattedAnswers = {
-            responses: Object.entries(selectedOptions).reduce((acc, [questionId, answer]) => {
-                acc[questionId] = {
-                    questionId: parseInt(questionId),
-                    type: answer.type,
-                    answer: questions[parseInt(questionId) - 1].options[answer.optionIndex].text,
-                    score: answer.score
+        try {
+            const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+            const userId = sessionStorage.getItem('id') || localStorage.getItem('id');
+
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/submitTestResult`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    userId: parseInt(userId),
+                    scores: finalScores
+                })
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                // Format answers for parent component
+                const formattedAnswers = {
+                    responses: Object.entries(selectedOptions).reduce((acc, [questionId, answer]) => {
+                        acc[questionId] = {
+                            questionId: parseInt(questionId),
+                            type: answer.type,
+                            answer: questions[parseInt(questionId) - 1].options[answer.optionIndex].text,
+                            score: answer.score
+                        };
+                        return acc;
+                    }, {}),
+                    scores: finalScores,
+                    ranking: Object.entries(finalScores)
+                        .sort(([, a], [, b]) => b - a)
+                        .reduce((acc, [type, score], index) => {
+                            acc[index + 1] = { type: type.charAt(0).toUpperCase() + type.slice(1), score };
+                            return acc;
+                        }, {})
                 };
-                return acc;
-            }, {}),
-            scores: finalScores,
-            ranking: typeRanking
-        };
 
-        onAnswer(formattedAnswers);
+                onAnswer(formattedAnswers);
+            } else {
+                throw new Error('Failed to submit test results');
+            }
+        } catch (error) {
+            console.error('Error submitting results:', error);
+            alert('Failed to submit test results. Please try again.');
+        }
     };
-
     // Add tie-break handling functions
     const handleTieBreakAnswer = (questionIndex, selectedType) => {
         setTieBreakAnswers(prev => ({
