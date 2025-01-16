@@ -1471,6 +1471,14 @@
 }
 
 
+/*Share Result Page*/
+.SRR-Body-Container {
+   /* background: #CF0102;
+    background: radial-gradient(at center, #CF0102, #FFFFFF);*/
+    padding: 10rem 0rem 8rem 0;
+}
+
+
 
 @media screen and (max-width:1024px) {
     .PB-Stepper-Container {
@@ -1738,6 +1746,7 @@
 
     .RS-Result-Card {
         height: 15rem;
+        background-size: auto 110% !important;
     }
 
     .RS-Mascot-Image {
@@ -1818,5 +1827,14 @@
         flex: 0 0 0;
     }
 
+    .SRR-Body-Container {
+        padding: 10rem 0;
+    }
+
+    .RS-Download-Share-Buttons
+    {
+        flex-direction: column;
+        align-items: flex-end;
+    }
 
 }

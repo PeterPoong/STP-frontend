@@ -699,7 +699,11 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
         });
     };
 
-
+    const handleShare = () => {
+        const shareableUrl = `${window.location.origin}/share/${userData.username}/${selectedDesign}/${topType}`;
+        navigator.clipboard.writeText(shareableUrl);
+        alert('Share link copied to clipboard!');
+    };
 
     const handleCategorySelect = (index, categoryName) => {
         setSelectedCourse(index);
@@ -740,7 +744,7 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                 >
                     Retake RIASEC Test
                 </button>
-                {/*<button className="SSP-Start-Button" onClick={handleShareResult}>
+                {/*<button className="SSP-Start-Button" onClick={handleShare}>
                     SHARE RESULT
                 </button>*/}
             </div>
@@ -1250,6 +1254,9 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                     >
                         SHARE
                     </button>*/}
+                    <button onClick={handleShare}>
+                        SHARE
+                    </button>
                     <div
                         className={`RS-Share-Menu ${isOpen ? 'RS-Share-Menu-Open' : ''}`}
                         onMouseLeave={() => setIsOpen(false)}

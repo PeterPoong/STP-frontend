@@ -487,6 +487,12 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
             block: 'center'
         });
     };
+    const handleShare = () => {
+        const shareableUrl = `${window.location.origin}/share/${userData.username}/${selectedDesign}/${topType}`;
+        navigator.clipboard.writeText(shareableUrl);
+        alert('Share link copied to clipboard!');
+    };
+
 
     useEffect(() => {
         if (recommendedCategories?.length > 0) {
@@ -1058,6 +1064,11 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                     >
                         SHARE
                     </button>*/}
+                <button
+                      onClick={handleShare}
+                    >
+                        SHARE
+                    </button>
                     <div
                         className={`RS-Share-Menu ${isOpen ? 'RS-Share-Menu-Open' : ''}`}
                         onMouseLeave={() => setIsOpen(false)}
