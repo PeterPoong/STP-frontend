@@ -456,7 +456,7 @@ const SchoolViewApplicantDetail = () => {
     try {
       const token =
         sessionStorage.getItem("token") || localStorage.getItem("token");
-     // console.log("Fetching transcript categories...");
+      // console.log("Fetching transcript categories...");
       //console.log("Token:", token); // Log the token (be careful with this in production)
 
       const response = await fetch(
@@ -471,7 +471,7 @@ const SchoolViewApplicantDetail = () => {
         }
       );
 
-     // console.log("Response status:", response.status);
+      // console.log("Response status:", response.status);
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -548,7 +548,7 @@ const SchoolViewApplicantDetail = () => {
     try {
       const token =
         sessionStorage.getItem("token") || localStorage.getItem("token");
-      const isSPM = selectedCategory === 32; // Assuming 32 is the ID for SPM
+      const isSPM = selectedCategory === 32 || selectedCategory === 85;
       const endpoint = isSPM
         ? "schoolStudentTranscriptSubjectList"
         : "schoolHigherTranscriptSubjectList";
@@ -574,7 +574,13 @@ const SchoolViewApplicantDetail = () => {
 
       const result = await response.json();
       if (result.success) {
-        setTranscriptSubjects(result.data);
+        if (selectedCategory === 32) {
+          setTranscriptSubjects(result.data.spm || []);
+        } else if (selectedCategory === 85) {
+          setTranscriptSubjects(result.data.trial || []);
+        } else {
+          setTranscriptSubjects(result.data);
+        }
       } else {
         throw new Error(
           result.message || "Failed to fetch transcript subjects"
@@ -610,6 +616,7 @@ const SchoolViewApplicantDetail = () => {
       "A1",
       "A2",
       "B3",
+      "TH"
     ];
     let overallGrade = "";
     for (const grade of gradeOrder) {
@@ -649,7 +656,7 @@ const SchoolViewApplicantDetail = () => {
         );
         if (!response.ok) {
           const errorData = await response.json();
-         // console.log("Error Data:", errorData["error"]);
+          // console.log("Error Data:", errorData["error"]);
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
@@ -742,7 +749,7 @@ const SchoolViewApplicantDetail = () => {
         );
         if (!response.ok) {
           const errorData = await response.json();
-        //  console.log("Error Data:", errorData["error"]);
+          //  console.log("Error Data:", errorData["error"]);
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
@@ -777,7 +784,7 @@ const SchoolViewApplicantDetail = () => {
         );
         if (!response.ok) {
           const errorData = await response.json();
-        //  console.log("Error Data:", errorData["error"]);
+          //  console.log("Error Data:", errorData["error"]);
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
@@ -831,7 +838,7 @@ const SchoolViewApplicantDetail = () => {
           </div>
         </div>
 
-        {selectedCategory !== 32 && cgpaInfo && (
+        {(selectedCategory !== 32 && selectedCategory !== 85) && cgpaInfo && (
           <div className="px-4 mb-3">
             <div className="d-flex justify-content-between align-items-center">
               <p className="mb-0 mt-2 d-flex align-items-center">
@@ -1359,7 +1366,7 @@ const SchoolViewApplicantDetail = () => {
                                 <p className="mb-0">{activity.year || ""}</p>
                               </div>
                               <div className="col-6 col-sm-3 text-end sac-name-restrict">
-                              <span
+                                <span
                                   className={`position py-1 px-2 rounded-pill`}
                                   style={getPositionStyle(activity.student_position)}
                                 >
