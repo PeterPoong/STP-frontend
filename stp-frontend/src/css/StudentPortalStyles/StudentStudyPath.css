@@ -23,7 +23,7 @@
 .SSP-Inner-Container {
     max-width: 1200px;
     margin: 1rem auto;
-    padding: 6rem;
+    padding: 10rem 6rem;
     background-color: white;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -121,8 +121,8 @@
 /*Name input Section*/
 /* Components/StudentComp/StudyPath/NameInputSection.css */
 .NIS-Section-Container {
-    max-width: 1200px;
-    padding: 10rem 6rem;
+    max-width: 100rem;
+    padding: 17rem 6rem;
     background-color: white;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
