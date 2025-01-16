@@ -118,7 +118,7 @@ const typeDescriptions = {
         strength: "Your curious and analytical mind drives you to understand how and why things work. You excel at solving complex problems and uncovering new insights."
     },
     Artistic: {
-        unique: "Your creative vision and ability to think outside the box allows you to see possibilities where others see limitations.",
+        unique: " Your creative vision and ability to think outside the box allows you to see possibilities where others see limitations.",
         strength: "Your imaginative mind and creative instincts enable you to see the world differently and create unique solutions that others might never consider."
     },
     Social: {
@@ -247,7 +247,7 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
     };
 
     // Render course link with safety checks
-  
+
     useEffect(() => {
         const fetchResults = async () => {
             try {

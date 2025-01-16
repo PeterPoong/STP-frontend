@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useLocation } from "react-router-dom";
 import { Spinner, Modal, Button } from "react-bootstrap";
 import NavButtonsSP from "../../Components/StudentPortalComp/NavButtonsSP";
 import MyProfileWidget from "../../Components/StudentPortalComp/MyProfileWidget";
@@ -30,6 +30,7 @@ const ScrollableModalBody = styled(Modal.Body)`
 `;
 
 const StudentPortalBasicInformations = () => {
+  const location = useLocation();
   const [selectedContent, setSelectedContent] = useState("basicInfo");
   const [profilePic, setProfilePic] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -52,6 +53,12 @@ const StudentPortalBasicInformations = () => {
     }
   }, [navigate]);
   /*end */
+
+  useEffect(() => {
+    if (location.state?.selectedContent) {
+      setSelectedContent(location.state.selectedContent);
+    }
+  }, [location]);
 
   /*validate Token api t check if have token or not if dont have will navigate back to studentPortalLoginPage and will remove the token */
   const verifyToken = async (token) => {
