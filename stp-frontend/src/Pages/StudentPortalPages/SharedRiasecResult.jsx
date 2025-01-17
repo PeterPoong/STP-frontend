@@ -256,7 +256,7 @@ const SharedRiasecResult = () => {
     const courses = attributes.courses || [];
     const gradientBackgroundStyle = {
         backgroundImage: `url(${RiasecBackground({ type: type, variant: 'gradient' })})`,
-        backgroundSize: 'auto 140%',
+        backgroundSize: 'auto 130%',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat'
     };
@@ -529,32 +529,33 @@ const SharedRiasecResult = () => {
                 <meta property="og:image:height" content="630" />
                 <meta property="og:image:alt" content={`${username}'s RIASEC Result Card showing ${type} type`} />
 
-                {/* Twitter Card Meta Tags */}
+                {/* Twitter Card Meta Tags 
                 <meta name="twitter:card" content="summary_large_image" />
                 <meta name="twitter:title" content={`${username}'s RIASEC Result - ${type} Type`} />
                 <meta name="twitter:description" content={`Check out ${username}'s RIASEC personality type: ${type}. ${descriptions.unique}`} />
                 <meta name="twitter:image" content={metaImage} />
                 <meta name="twitter:image:alt" content={`${username}'s RIASEC Result Card showing ${type} type`} />
                 <meta name="twitter:site" content="@studypal" />
-                <meta name="twitter:creator" content="@studypal" />
+                <meta name="twitter:creator" content="@studypal" />*/}
             </Helmet>
 
             <div>
                 <NavButtonsSP />
                 <div className="SRR-Body-Container">
-                    <h1 style={{ fontWeight: "bolder", color: "#1E1E1E", textAlign: "center" }}>This is {username}'s' RIASEC Test Result</h1>
-                    <h5 style={{ color: "#1E1E1E", fontStyle: "italic", letterSpacing: "0.3rem", textAlign: "center" }}>{type}</h5>
-                    <div ref={designRef}>
-                        {/* Your existing design rendering code */}
-                        {renderDesign()}
+                    <div className="SRR-Result-Card"   style={gradientBackgroundStyle}>
+                        <h1 className="SRR-Result-Card-h1">This is {username}'s' RIASEC Test Result</h1>
+                        {/*<h5 style={{ color: "#1E1E1E", fontStyle: "italic", letterSpacing: "0.3rem", textAlign: "center" }}>{type}</h5>*/}
+                        <div ref={designRef}>
+                            {/* Your existing design rendering code */}
+                            {renderDesign()}
+                        </div>
+                        <p className="SRR-Result-Card-p">Want to discover your own RIASEC type?</p>
+                        <div style={{ textAlign: "center",marginBottom:"2rem" }}>
+                            <button className="SSP-Start-Button" onClick={handleStartTest}>
+                                Take RIASEC Test
+                            </button>
+                        </div>
                     </div>
-                    <p style={{ fontSize: "16px", margin: "1rem 1rem", color: "#1E1E1E", textAlign: "center" }}>Want to discover your own RIASEC type?</p>
-                    <div style={{ textAlign: "center" }}>
-                        <button className="SSP-Start-Button" onClick={handleStartTest}>
-                            Take RIASEC Test
-                        </button>
-                    </div>
-
                 </div>
                 <SpcFooter />
             </div>

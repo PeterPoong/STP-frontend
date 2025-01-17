@@ -60,6 +60,7 @@
     "react-router-dom": "^6.25.1",
     "react-select": "^5.8.0",
     "react-select-search": "^4.1.7",
+    "react-share": "^5.1.2",
     "react-slick": "^0.30.2",
     "react-time-picker": "^7.0.0",
     "react-window": "^1.8.10",

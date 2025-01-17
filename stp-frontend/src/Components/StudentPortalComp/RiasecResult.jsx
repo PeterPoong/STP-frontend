@@ -15,6 +15,21 @@ import StrengthIconFill from "../../assets/StudentPortalAssets/strengthIconFill.
 import { HeartPulse, Whatsapp, Tiktok, Twitter, Instagram, TwitterX } from 'react-bootstrap-icons';
 import { Spinner } from 'react-bootstrap';
 import QRCode from "../../assets/StudentPortalAssets/qrCode.png"
+import {
+    FacebookShareButton,
+    WhatsappShareButton,
+    TwitterShareButton,
+    TelegramShareButton,
+    FacebookMessengerShareButton,
+    LinkedinShareButton,
+    FacebookIcon,
+    WhatsappIcon,
+    TwitterIcon,
+    TelegramIcon,
+    LinkedinIcon,
+    FacebookMessengerIcon
+} from 'react-share';
+
 // Realistic type imports
 import realisticMain from "../../assets/StudentPortalAssets/realisticmain.png";
 import realisticBg2 from "../../assets/StudentPortalAssets/realisticbg2.png";
@@ -241,6 +256,8 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
     const designRef1 = useRef(null);
     const designRef2 = useRef(null);
 
+
+
     const createUrlFriendlyString = (str) => {
         if (!str) return '';
         return str.toLowerCase().replace(/\s+/g, '-');
@@ -371,8 +388,9 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
     const handleToggle = () => {
         setIsOpen(!isOpen);
     };
-
-
+    const shareUrl = `studypal.my/share/${userData.username}/${selectedDesign}/${topType}`;
+    //const shareUrl = `${window.location.origin}/share/${userData.username}/${selectedDesign}/${topType}`;
+    const title = `Check out my RIASEC test result! My top type is ${topType}! \n`;
     if (isLoading) {
         return (
             <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
@@ -435,11 +453,35 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
 
     const waitForImageLoad = (imgElement) => {
         return new Promise((resolve) => {
-            if (imgElement.complete) {
+            // Check if image is already loaded
+            if (imgElement.complete && imgElement.naturalWidth !== 0) {
                 resolve();
-            } else {
-                imgElement.onload = resolve;
+                return;
             }
+
+            // For Safari: explicitly set crossOrigin to anonymous
+            if (!imgElement.crossOrigin) {
+                imgElement.crossOrigin = "anonymous";
+            }
+
+            const handleLoad = () => {
+                resolve();
+                cleanup();
+            };
+
+            const handleError = () => {
+                console.error('Image failed to load:', imgElement.src);
+                resolve(); // Resolve anyway to prevent hanging
+                cleanup();
+            };
+
+            const cleanup = () => {
+                imgElement.removeEventListener('load', handleLoad);
+                imgElement.removeEventListener('error', handleError);
+            };
+
+            imgElement.addEventListener('load', handleLoad);
+            imgElement.addEventListener('error', handleError);
         });
     };
 
@@ -447,23 +489,26 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
         return new Promise((resolve) => {
             try {
                 const canvas = document.createElement('canvas');
+                // Use natural dimensions if available, fallback to element dimensions
                 canvas.width = imgElement.naturalWidth || imgElement.width || 100;
                 canvas.height = imgElement.naturalHeight || imgElement.height || 100;
-                const ctx = canvas.getContext('2d');
+                const ctx = canvas.getContext('2d', { alpha: true });
 
-
-                if (selectedDesign === 0) {
-                    ctx.fillStyle = '#BA1718';  // Red background for first design
-                } else {
-                    ctx.fillStyle = '#FFFFFF';  // White background for other designs
-                }
+                // Fill background based on design
+                ctx.fillStyle = selectedDesign === 0 ? '#BA1718' : '#FFFFFF';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-
-                ctx.drawImage(imgElement, 0, 0, canvas.width, canvas.height);
-                resolve(canvas.toDataURL('image/png'));
+                // For Safari: Try-catch around drawImage
+                try {
+                    ctx.drawImage(imgElement, 0, 0, canvas.width, canvas.height);
+                    resolve(canvas.toDataURL('image/png', 1.0));
+                } catch (e) {
+                    console.error('Safari drawImage error:', e);
+                    // Fallback: return original source
+                    resolve(imgElement.src);
+                }
             } catch (error) {
-                console.error('Error converting image:', error);
+                console.error('Canvas error:', error);
                 resolve(imgElement.src);
             }
         });
@@ -471,98 +516,133 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
 
     const ensureQRCodeLoaded = async (element) => {
         const qrCodeImg = element.querySelector('img[src*="qrCode"]');
-        if (qrCodeImg) {
-            return new Promise((resolve) => {
-                if (qrCodeImg.complete) {
-                    resolve();
-                } else {
-                    qrCodeImg.onload = resolve;
-                }
-            });
-        }
-        return Promise.resolve();
+        if (!qrCodeImg) return Promise.resolve();
+
+        return new Promise((resolve) => {
+            if (qrCodeImg.complete && qrCodeImg.naturalWidth !== 0) {
+                resolve();
+                return;
+            }
+
+            // For Safari: Set crossOrigin
+            qrCodeImg.crossOrigin = "anonymous";
+
+            const handleLoad = () => {
+                resolve();
+                cleanup();
+            };
+
+            const handleError = () => {
+                console.error('QR Code failed to load');
+                resolve();
+                cleanup();
+            };
+
+            const cleanup = () => {
+                qrCodeImg.removeEventListener('load', handleLoad);
+                qrCodeImg.removeEventListener('error', handleError);
+            };
+
+            qrCodeImg.addEventListener('load', handleLoad);
+            qrCodeImg.addEventListener('error', handleError);
+        });
     };
+
 
     const generateDesignImage = async () => {
         try {
             let targetRef;
             switch (selectedDesign) {
-                case 0:
-                    targetRef = designRef0;
-                    break;
-                case 1:
-                    targetRef = designRef1;
-                    break;
-                case 2:
-                    targetRef = designRef2;
-                    break;
-                default:
-                    return null;
+                case 0: targetRef = designRef0; break;
+                case 1: targetRef = designRef1; break;
+                case 2: targetRef = designRef2; break;
+                default: return null;
             }
 
-            if (!targetRef.current) {
-                // console.log('No design selected');
-                return null;
-            }
+            if (!targetRef.current) return null;
 
-            const images = targetRef.current.getElementsByTagName('img');
+            // Wait for all images to load
+            const images = Array.from(targetRef.current.getElementsByTagName('img'));
             await Promise.all([
-                ...images].map(img => waitForImageLoad(img)),
+                ...images.map(img => {
+                    img.crossOrigin = "anonymous"; // For Safari
+                    return waitForImageLoad(img);
+                }),
                 ensureQRCodeLoaded(targetRef.current)
-            );
+            ]);
 
             const clone = targetRef.current.cloneNode(true);
+
+            // Style adjustments
             const titleElement = clone.querySelector('.RS-Design-Header-Container p');
             if (titleElement) {
                 titleElement.style.whiteSpace = 'nowrap';
                 titleElement.style.width = 'auto';
             }
 
+            // Process images in clone
             const cloneImages = clone.getElementsByTagName('img');
             for (let img of cloneImages) {
-                const originalImage = [...images].find(origImg =>
+                const originalImage = images.find(origImg =>
                     origImg.src === img.src ||
                     origImg.getAttribute('src') === img.getAttribute('src')
                 );
-                if (originalImage && originalImage.complete) {
+
+                if (originalImage?.complete) {
                     try {
                         const base64 = await convertImageToBase64(originalImage);
+                        img.crossOrigin = "anonymous"; // For Safari
                         img.src = base64;
+
+                        // Specific styling for QR container images
                         if (img.closest('.RS-Unique-QR-Container')) {
                             if (img.closest('.RS-Unique-Inner-Container')) {
-                                img.style.width = '12.5px';
-                                img.style.height = '12.5px';
-                                img.style.marginTop = '5px';
-                                img.style.marginRight = '10px';
+                                Object.assign(img.style, {
+                                    width: '12.5px',
+                                    height: '12.5px',
+                                    marginTop: '5px',
+                                    marginRight: '10px'
+                                });
                             } else {
-                                img.style.width = '100px';
-                                img.style.height = '100px';
-                                img.style.display = 'block';
+                                Object.assign(img.style, {
+                                    width: '100px',
+                                    height: '100px',
+                                    display: 'block'
+                                });
                             }
                         }
                     } catch (e) {
-                        console.error('Error converting image:', e);
+                        console.error('Image processing error:', e);
                     }
                 }
             }
 
-            clone.style.width = getComputedStyle(targetRef.current).width;
-            clone.style.height = getComputedStyle(targetRef.current).height;
-            clone.style.position = 'fixed';
-            clone.style.top = '1px';
-            clone.style.left = '1px';
-            clone.style.zIndex = '-9999';
+            // Position clone for capture
+            Object.assign(clone.style, {
+                position: 'fixed',
+                top: '1px',
+                left: '1px',
+                zIndex: '-9999',
+                width: getComputedStyle(targetRef.current).width,
+                height: getComputedStyle(targetRef.current).height
+            });
 
+            // Style QR container
             const qrContainer = clone.querySelector('.RS-Unique-QR-Container');
             if (qrContainer) {
-                qrContainer.style.display = 'flex';
-                qrContainer.style.justifyContent = 'space-between';
-                qrContainer.style.alignItems = 'center';
+                Object.assign(qrContainer.style, {
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center'
+                });
             }
 
             document.body.appendChild(clone);
 
-            const options = {
+            // Wait for Safari to properly render
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            const canvas = await html2canvas(clone, {
                 scale: 3,
                 useCORS: true,
                 allowTaint: true,
@@ -576,18 +656,16 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                 foreignObjectRendering: true,
                 removeContainer: false,
                 logging: true
-            };
+            });
 
-            await new Promise(resolve => setTimeout(resolve, 100));
-            const canvas = await html2canvas(clone, options);
             document.body.removeChild(clone);
-
             return canvas;
         } catch (error) {
             console.error('Error generating image:', error);
             return null;
         }
     };
+
     const handleDownload = async () => {
         setIsDownloading(true);
         try {
@@ -1243,18 +1321,29 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                     <button
                         onClick={handleDownload}
                         className="RS-Download-Button"
-                        disabled={selectedDesign === null || selectedDesign === undefined}
+                        disabled={selectedDesign === null || selectedDesign === undefined || isDownloading}
                     >
-                        DOWNLOAD
+                        {isDownloading ? (
+                            <div className="d-flex align-items-center align-content-center justify-content-center py-0">
+                                <Spinner
+                                    as="span"
+                                    animation="border"
+                                    size="sm"
+                                    role="status"
+                                    aria-hidden="true"
+                                    className="me-2 py-0 align-self-center"
+                                />
+                                Downloading...
+                            </div>
+                        ) : (
+                            'DOWNLOAD'
+                        )}
                     </button>
-                    {/*<button
+                    <button
                         ref={shareButtonRef}
                         onClick={handleToggle}
                         onMouseEnter={() => setIsOpen(true)}
                     >
-                        SHARE
-                    </button>*/}
-                    <button onClick={handleShare}>
                         SHARE
                     </button>
                     <div
@@ -1262,34 +1351,43 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                         onMouseLeave={() => setIsOpen(false)}
                     >
                         <div className="RS-Share-Icons-Container">
-                            <button
+                            <WhatsappShareButton
+                                url={shareUrl}
+                                title={title}
+                                separator=" "
                                 className="RS-Share-Icon RS-Share-Whatsapp"
-                                onClick={() => handleSocialShare('whatsapp')}
                             >
-                                <Whatsapp size={20} />
-                            </button>
+                                <WhatsappIcon size={50} round />
+                            </WhatsappShareButton>
 
-                            {/*} <button
-                                className="RS-Share-Icon RS-Share-Tiktok"
-                                onClick={() => handleSocialShare('tiktok')}
+                            <FacebookShareButton
+                                url={shareUrl}
+                                quote={title}
+                                hashtag="#RIASEC"
+                                className="RS-Share-Icon"
                             >
-                                <Tiktok size={20} />
-                            </button>
+                                <FacebookIcon size={50} round />
+                            </FacebookShareButton>
 
-                            <button
-                                className="RS-Share-Icon RS-Share-Twitter"
-                                onClick={() => handleSocialShare('twitter')}
+                            <TwitterShareButton
+                                url={shareUrl}
+                                title={title}
+                                className="RS-Share-Icon"
                             >
-                                <TwitterX size={20} />
-                            </button>
+                                <TwitterIcon size={50} round />
+                            </TwitterShareButton>
 
-                            <button
-                                className="RS-Share-Icon RS-Share-Instagram"
-                                onClick={() => handleSocialShare('instagram')}
+                            {/*<FacebookMessengerShareButton
+                                url={shareUrl}
+                                appId="YOUR_FACEBOOK_APP_ID" // Replace with your Facebook App ID
+                                className="RS-Share-Icon"
                             >
-                                <Instagram size={20} />
-                            </button>*/}
+                                <FacebookMessengerIcon size={32} round />
+                            </FacebookMessengerShareButton>*/}
+
+
                         </div>
+
                     </div>
                 </div>
             </div>
