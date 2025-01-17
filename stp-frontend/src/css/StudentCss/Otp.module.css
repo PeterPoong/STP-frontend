@@ -1,0 +1,13 @@
+.btnSendVerificationCode {
+    background-color: white;
+    border: 1px solid #B71A18;
+    color: #B71A18;
+    font-size: 15px;
+
+    transition: all 0.3s ease;
+  }
+  
+  .btnSendVerificationCode:hover {
+    background-color: #B71A18;
+    color: white;
+  }

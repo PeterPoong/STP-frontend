@@ -79,6 +79,7 @@ import CourseRequestFeatured from "./Pages/SchoolPages/CourseRequestFeatured";
 import SchoolRequestFeatured from "./Pages/SchoolPages/SchoolRequestFeatured";
 import Checkout from "./Pages/SchoolPages/Checkout";
 import Checkoutsc from "./Pages/SchoolPages/CheckoutSC";
+import VerifyPhoneNumberPage from "./Pages/StudentPortalPages/VerifyPhoneNumberPage";
 
 //marketing
 import AccountPackages from "./Pages/MarketingPages/AccountPackages";
@@ -86,7 +87,13 @@ import AccountPackages from "./Pages/MarketingPages/AccountPackages";
 import FacebookSocialPageRedirectPage from "./Pages/StudentPortalPages/FacebookSocialPageRedirectPage";
 import SocialContactPage from "./Pages/StudentPortalPages/SocialContactPage";
 
+import TestSocialPage from "./Pages/StudentPortalPages/TestSocialPage";
+
 const router = createBrowserRouter([
+  {
+    path: "/TestSocialPage",
+    element: <TestSocialPage />,
+  },
   {
     path: "/",
     element: <Home />,
@@ -335,6 +342,11 @@ const router = createBrowserRouter([
   {
     path: "/studentFeedback",
     element: <StudentFeedback />,
+  },
+
+  {
+    path: "/VerifyPhoneNumberPage",
+    element: <VerifyPhoneNumberPage />,
   },
 
   //School Portal
