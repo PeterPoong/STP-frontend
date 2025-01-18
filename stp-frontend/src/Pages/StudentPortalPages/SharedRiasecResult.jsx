@@ -251,9 +251,22 @@ const SharedRiasecResult = () => {
     const designNum = parseInt(design);
     const designRef = useRef(null);
     const [metaImage, setMetaImage] = useState('');
+    const validTypes = ['Realistic', 'Investigative', 'Artistic', 'Social', 'Enterprising', 'Conventional'];
+    const cleanType = validTypes.includes(type) ? type : 'Realistic'; // Default to Realistic if invalid
+
+    // Clean up URL if needed (remove tracking parameters while preserving the essential ones)
+    useEffect(() => {
+        const url = new URL(window.location.href);
+        const cleanUrl = `${window.location.pathname}`;
+
+        // Only update URL if there are tracking parameters to remove
+        if (url.search) {
+            window.history.replaceState({}, '', cleanUrl);
+        }
+    }, []);
     // Get the attributes for the specified type
-    const attributes = typeAttributes[type] || typeAttributes.Realistic;
-    const descriptions = typeDescriptions[type] || typeDescriptions.Realistic;
+    const attributes = typeAttributes[cleanType] || typeAttributes.Realistic;
+    const descriptions = typeDescriptions[cleanType] || typeDescriptions.Realistic;
     const courses = attributes.courses || [];
     const gradientBackgroundStyle = {
         backgroundImage: `url(${RiasecBackground({ type: type, variant: 'gradient' })})`,

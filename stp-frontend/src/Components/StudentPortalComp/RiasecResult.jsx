@@ -675,6 +675,108 @@ const CareerProfile = ({ }) => {
     const handleDownload = async () => {
         setIsDownloading(true);
         try {
+            // Pre-load all images with proper CORS headers for Safari
+            const preloadImages = async () => {
+                const targetRef = [designRef0, designRef1, designRef2][selectedDesign];
+                if (!targetRef?.current) return;
+    
+                const images = Array.from(targetRef.current.getElementsByTagName('img'));
+                return Promise.all(images.map(img => new Promise((resolve) => {
+                    const tempImg = new Image();
+                    tempImg.crossOrigin = "anonymous";
+                    
+                    // Add cache-busting parameter for Safari
+                    const cacheBuster = `?t=${Date.now()}`;
+                    const imgSrc = img.src.includes('?') ? img.src : `${img.src}${cacheBuster}`;
+                    
+                    tempImg.onload = () => {
+                        img.crossOrigin = "anonymous";
+                        img.src = imgSrc;
+                        resolve();
+                    };
+                    tempImg.onerror = () => {
+                        console.warn(`Failed to preload image: ${img.src}`);
+                        resolve();
+                    };
+                    tempImg.src = imgSrc;
+                })));
+            };
+    
+            // Wait for all images to preload
+            await preloadImages();
+            
+            // Additional delay for Safari to process images
+            if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+    
+            const canvas = await generateDesignImage();
+            if (!canvas) {
+                throw new Error('Failed to generate canvas');
+            }
+    
+            // For iOS Safari
+            if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+                // Convert canvas to blob with specific type and quality
+                const blob = await new Promise(resolve => {
+                    canvas.toBlob(resolve, 'image/png', 1.0);
+                });
+    
+                if (!blob) {
+                    throw new Error('Failed to create blob from canvas');
+                }
+    
+                // Create object URL
+                const url = URL.createObjectURL(blob);
+    
+                // Create download link
+                const link = document.createElement('a');
+                link.download = `RIASEC-Result-${username}-Design${selectedDesign + 1}.png`;
+                link.href = url;
+                
+                // For iOS standalone mode
+                if (window.navigator.standalone) {
+                    window.location.href = url;
+                } else {
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+    
+                // Clean up
+                setTimeout(() => URL.revokeObjectURL(url), 100);
+            } else {
+                // For other browsers including desktop Safari
+                canvas.toBlob((blob) => {
+                    if (!blob) {
+                        console.error('Failed to generate blob');
+                        return;
+                    }
+    
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `RIASEC-Result-${username}-Design${selectedDesign + 1}.png`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    // Clean up
+                    setTimeout(() => URL.revokeObjectURL(url), 100);
+                }, 'image/png', 1.0);
+            }
+        } catch (error) {
+            console.error('Download error:', error);
+            alert('There was an error downloading your image. Please try again.');
+        } finally {
+            setIsDownloading(false);
+        }
+    };
+
+    {/*
+           const handleDownload = async () => {
+        setIsDownloading(true);
+        try {
             // Preload QR code specifically for Safari
             if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
                 const qrCodeImg = new Image();
@@ -729,7 +831,7 @@ const CareerProfile = ({ }) => {
             setIsDownloading(false);
         }
     };
-
+*/}
     const handleSocialShare = async (platform) => {
         try {
             const canvas = await generateDesignImage();
