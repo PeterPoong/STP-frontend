@@ -11,7 +11,15 @@ const IntroSection = ({ onStart }) => {
         setIsLoading(true);
         try {
             const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-            
+
+            if (!token) {
+                // If no token, set a flag and redirect to login
+                sessionStorage.setItem('redirectToStudyPath', 'true');
+                navigate('/studentPortalLogin');
+                return;
+            }
+
+
             // Check if user has an existing test result
             const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/getTestResult`, {
                 method: 'GET',
@@ -22,7 +30,7 @@ const IntroSection = ({ onStart }) => {
             });
 
             const data = await response.json();
-            
+
             // If there's existing test data and retake button wasn't pressed
             if (data.success && data.data && !sessionStorage.getItem('retakeRiasecTest')) {
                 // Redirect to basic information page with RIASEC results tab
@@ -72,8 +80,8 @@ const IntroSection = ({ onStart }) => {
                         </span>
                     </div>
                 </div>
-                <button 
-                    className="SSP-Start-Button" 
+                <button
+                    className="SSP-Start-Button"
                     onClick={handleStart}
                     disabled={isLoading}
                 >

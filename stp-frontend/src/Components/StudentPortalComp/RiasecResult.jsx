@@ -237,12 +237,13 @@ const processResults = (scores) => {
     };
 };
 
-const CareerProfile = ({ userData = { username: "David Lim" } }) => {
+const CareerProfile = ({ }) => {
     const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
     const [isDownloading, setIsDownloading] = useState(false);
     const shareButtonRef = useRef(null);
     const [results, setResults] = useState(null);
+    const [username, setUsername] = useState("");
     const [createdAt, setCreatedAt] = useState();
     const [selectedDesign, setSelectedDesign] = useState(0);
     const [selectedCourse, setSelectedCourse] = useState(null);
@@ -251,12 +252,17 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [isCourseLoading, setIsCourseLoading] = useState(true);
     const [error, setError] = useState(null);
-    const { username = "User" } = userData;
     const designRef0 = useRef(null);
     const designRef1 = useRef(null);
     const designRef2 = useRef(null);
 
-
+    // Initialize username from session storage
+    useEffect(() => {
+        const storedUsername =sessionStorage.getItem('riasecUserName')||   localStorage.getItem('riasecUserName') || sessionStorage.getItem('userName') || localStorage.getItem('userName');
+        if (storedUsername) {
+            setUsername(storedUsername);
+        }
+    }, []);
 
     const createUrlFriendlyString = (str) => {
         if (!str) return '';
@@ -388,8 +394,8 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
     const handleToggle = () => {
         setIsOpen(!isOpen);
     };
-    const shareUrl = `studypal.my/share/${userData.username}/${selectedDesign}/${topType}`;
-    //const shareUrl = `${window.location.origin}/share/${userData.username}/${selectedDesign}/${topType}`;
+    const shareUrl = `https://studypal.my/share/${encodeURIComponent(username)}/${selectedDesign}/${topType}`;
+    //const shareUrl = `${window.location.origin}/share/${username}/${selectedDesign}/${topType}`;
     const title = `Check out my RIASEC test result! My top type is ${topType}! \n`;
     if (isLoading) {
         return (
@@ -669,27 +675,54 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
     const handleDownload = async () => {
         setIsDownloading(true);
         try {
+            // Preload QR code specifically for Safari
+            if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+                const qrCodeImg = new Image();
+                qrCodeImg.crossOrigin = "anonymous";
+                await new Promise((resolve) => {
+                    qrCodeImg.onload = resolve;
+                    qrCodeImg.src = QRCode;
+                });
+            }
+
             const canvas = await generateDesignImage();
             if (!canvas) return;
 
-            canvas.toBlob((blob) => {
-                if (!blob) {
-                    console.error('Failed to generate image');
-                    return;
-                }
+            // For iOS Safari
+            if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+                // Wait a bit to ensure QR code is rendered
+                await new Promise(resolve => setTimeout(resolve, 100));
 
-                const url = URL.createObjectURL(blob);
+                const dataUrl = canvas.toDataURL('image/png', 1.0);
                 const link = document.createElement('a');
-                link.href = url;
-                link.download = `RIASEC-Result-${userData.username}-Design${selectedDesign + 1}.png`;
+                link.download = `RIASEC-Result-${username}-Design${selectedDesign + 1}.png`;
+                link.href = dataUrl;
 
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+                if (window.navigator.standalone) {
+                    window.open(dataUrl);
+                } else {
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+            } else {
+                canvas.toBlob((blob) => {
+                    if (!blob) {
+                        console.error('Failed to generate image');
+                        return;
+                    }
 
-                URL.revokeObjectURL(url);
-                // console.log('Download complete!');
-            }, 'image/png', 1.0);
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `RIASEC-Result-${username}-Design${selectedDesign + 1}.png`;
+
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                }, 'image/png', 1.0);
+            }
         } catch (error) {
             console.error('Download error:', error);
         } finally {
@@ -715,7 +748,7 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                     const url = URL.createObjectURL(blob);
                     const link = document.createElement('a');
                     link.href = url;
-                    link.download = `RIASEC-Result-${userData.username}.png`;
+                    link.download = `RIASEC-Result-${username}.png`;
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
@@ -778,7 +811,7 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
     };
 
     const handleShare = () => {
-        const shareableUrl = `${window.location.origin}/share/${userData.username}/${selectedDesign}/${topType}`;
+        const shareableUrl = `${window.location.origin}/share/${username}/${selectedDesign}/${topType}`;
         navigator.clipboard.writeText(shareableUrl);
         alert('Share link copied to clipboard!');
     };
@@ -813,7 +846,7 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
             <div className="RS-Header-Section">
                 <div>
                     <h1>Your RIASEC Assessment Results</h1>
-                    <p className="mb-0">{userData.username}, Here's Your Study Path Analysis</p>
+                    <p className="mb-0">{username}, Here's Your Study Path Analysis</p>
                     <p style={{ fontSize: "14px", marginBottom: "10px" }}>Most recent test: {new Date(createdAt).toISOString().split('T')[0]}</p>
                 </div>
                 <button
@@ -1097,7 +1130,7 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                                             />
                                             <div className="ms-1 d-flex row justify-content-between">
                                                 <div>
-                                                    <p>{userData.username}, Your TOP 1 RIASEC test result are</p>
+                                                    <p>{username}, Your TOP 1 RIASEC test result are</p>
                                                     <h1>{topType}</h1>
                                                 </div>
                                                 <div className="text-end">
@@ -1170,7 +1203,7 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                                             />
                                             <div className="ms-1 d-flex row justify-content-between">
                                                 <div>
-                                                    <p style={{ color: "#BA1718" }}>{userData.username}, Your TOP 1 RIASEC test result are</p>
+                                                    <p style={{ color: "#BA1718" }}>{username}, Your TOP 1 RIASEC test result are</p>
                                                     <h1 style={{ color: "#BA1718" }}>{topType}</h1>
                                                 </div>
                                                 <div className="text-end">
@@ -1243,7 +1276,7 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                                             />
                                             <div className="ms-1 d-flex row justify-content-between">
                                                 <div>
-                                                    <p style={{ color: "#000000" }}>{userData.username}, Your TOP 1 RIASEC test result are</p>
+                                                    <p style={{ color: "#000000" }}>{username}, Your TOP 1 RIASEC test result are</p>
                                                     <svg viewBox="0 0 300 80">
                                                         <text
                                                             x="0%"
@@ -1363,7 +1396,7 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                             <FacebookShareButton
                                 url={shareUrl}
                                 quote={title}
-                                hashtag="#RIASEC"
+                                /*hashtag="#StudyPal #IMedia #Miri #Sarawak #Education #Academics #UniversityApplications #StudentLife "*/
                                 className="RS-Share-Icon"
                             >
                                 <FacebookIcon size={50} round />

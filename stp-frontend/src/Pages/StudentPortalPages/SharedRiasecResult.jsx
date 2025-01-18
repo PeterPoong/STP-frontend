@@ -10,6 +10,7 @@ import StudyPalLogoYPNGBlack from "../../assets/StudentPortalAssets/studypalLogo
 import WMYSpecialLogo from "../..//assets/StudentPortalAssets/wmyspecialLogo.svg";
 import WMYSpecialLogoWhite from "../../assets/StudentPortalAssets/wmyspecialLogoWhite.png";
 import QRCode from "../../assets/StudentPortalAssets/qrCode.png"
+import studentPortalLogin from "../../assets/StudentPortalAssets/studentPortalLogin.png";
 
 // Realistic type imports
 import realisticMain from "../../assets/StudentPortalAssets/realisticmain.png";
@@ -520,7 +521,7 @@ const SharedRiasecResult = () => {
                 {/* Open Graph Meta Tags */}
                 <meta property="og:title" content={`${username}'s RIASEC Result - ${type} Type`} />
                 <meta property="og:description" content={`Check out ${username}'s RIASEC personality type: ${type}. ${descriptions.unique}`} />
-                <meta property="og:image" content={metaImage} />
+                <meta property="og:image" content={studentPortalLogin} /> {/* Updated this line */}
                 <meta property="og:type" content="website" />
                 <meta property="og:url" content={window.location.href} />
                 <meta property="og:site_name" content="StudyPal RIASEC Assessment" />
@@ -528,6 +529,7 @@ const SharedRiasecResult = () => {
                 <meta property="og:image:width" content="1200" />
                 <meta property="og:image:height" content="630" />
                 <meta property="og:image:alt" content={`${username}'s RIASEC Result Card showing ${type} type`} />
+
 
                 {/* Twitter Card Meta Tags 
                 <meta name="twitter:card" content="summary_large_image" />
@@ -542,7 +544,7 @@ const SharedRiasecResult = () => {
             <div>
                 <NavButtonsSP />
                 <div className="SRR-Body-Container">
-                    <div className="SRR-Result-Card"   style={gradientBackgroundStyle}>
+                    <div className="SRR-Result-Card" style={gradientBackgroundStyle}>
                         <h1 className="SRR-Result-Card-h1">This is {username}'s' RIASEC Test Result</h1>
                         {/*<h5 style={{ color: "#1E1E1E", fontStyle: "italic", letterSpacing: "0.3rem", textAlign: "center" }}>{type}</h5>*/}
                         <div ref={designRef}>
@@ -550,7 +552,7 @@ const SharedRiasecResult = () => {
                             {renderDesign()}
                         </div>
                         <p className="SRR-Result-Card-p">Want to discover your own RIASEC type?</p>
-                        <div style={{ textAlign: "center",marginBottom:"2rem" }}>
+                        <div style={{ textAlign: "center", marginBottom: "2rem" }}>
                             <button className="SSP-Start-Button" onClick={handleStartTest}>
                                 Take RIASEC Test
                             </button>

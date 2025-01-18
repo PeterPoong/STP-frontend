@@ -209,8 +209,7 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
     const handleToggle = () => {
         setIsOpen(!isOpen);
     };
-
-    const shareUrl = `studypal.my/share/${userData.username}/${selectedDesign}/${topType}`;
+    const shareUrl = `https://studypal.my/share/${encodeURIComponent(userData.username)}/${selectedDesign}/${topType}`;
     //const shareUrl = `${window.location.origin}/share/${userData.username}/${selectedDesign}/${topType}`;
     const title = `Check out my RIASEC test result! My top type is ${topType}! \n`;
 
@@ -458,27 +457,54 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
     const handleDownload = async () => {
         setIsDownloading(true);
         try {
+            // Preload QR code specifically for Safari
+            if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+                const qrCodeImg = new Image();
+                qrCodeImg.crossOrigin = "anonymous";
+                await new Promise((resolve) => {
+                    qrCodeImg.onload = resolve;
+                    qrCodeImg.src = QRCode;
+                });
+            }
+
             const canvas = await generateDesignImage();
             if (!canvas) return;
 
-            canvas.toBlob((blob) => {
-                if (!blob) {
-                    console.error('Failed to generate image');
-                    return;
-                }
+            // For iOS Safari
+            if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+                // Wait a bit to ensure QR code is rendered
+                await new Promise(resolve => setTimeout(resolve, 100));
 
-                const url = URL.createObjectURL(blob);
+                const dataUrl = canvas.toDataURL('image/png', 1.0);
                 const link = document.createElement('a');
-                link.href = url;
                 link.download = `RIASEC-Result-${userData.username}-Design${selectedDesign + 1}.png`;
+                link.href = dataUrl;
 
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+                if (window.navigator.standalone) {
+                    window.open(dataUrl);
+                } else {
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+            } else {
+                canvas.toBlob((blob) => {
+                    if (!blob) {
+                        console.error('Failed to generate image');
+                        return;
+                    }
 
-                URL.revokeObjectURL(url);
-                // console.log('Download complete!');
-            }, 'image/png', 1.0);
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `RIASEC-Result-${userData.username}-Design${selectedDesign + 1}.png`;
+
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                }, 'image/png', 1.0);
+            }
         } catch (error) {
             console.error('Download error:', error);
         } finally {
@@ -1180,7 +1206,7 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                             <FacebookShareButton
                                 url={shareUrl}
                                 quote={title}
-                                hashtag="#RIASEC"
+                                /*hashtag="#StudyPal #IMedia #Miri #Sarawak #Education #Academics #UniversityApplications #StudentLife "*/
                                 className="RS-Share-Icon"
                             >
                                 <FacebookIcon size={50} round />
