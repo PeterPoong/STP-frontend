@@ -85,7 +85,7 @@
 }
 
 .SSP-Start-Button:hover {
-    background-color: transparent;
+    background-color: white;
     border: 2px #BA1718 solid;
 }
 
@@ -615,6 +615,34 @@
     text-align: center;
     margin-bottom: 2rem;
     box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+.SRR-Result-Card {
+    height: max-content;
+    align-content: center;
+    border-radius: 2rem;
+    text-align: center;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+    width: 80rem;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.SRR-Result-Card-h1 {
+    font-weight: bolder;
+    color: white;
+    text-align: center;
+    margin-bottom: 1rem;
+    margin-top: 2rem;
+    font-size: 26px;
+}
+
+.SRR-Result-Card-p {
+    font-size: 1.5rem;
+    margin: "1rem 1rem";
+    color: white;
+    text-align: center;
 }
 
 .RS-Mascot-Image {
@@ -1232,7 +1260,7 @@
 .RS-Share-Menu {
     position: absolute;
     bottom: 3rem;
-    right: -3.75rem;
+    right: -5.75rem;
     transform: translateX(-50%) translateY(10px);
     visibility: hidden;
     opacity: 0;
@@ -1282,8 +1310,8 @@
 }
 
 .RS-Share-Icon svg {
-    width: 20px;
-    height: 20px;
+    width: 30px;
+    height: 30px;
     color: white;
 }
 
@@ -1471,6 +1499,15 @@
 }
 
 
+/*Share Result Page*/
+.SRR-Body-Container {
+    /* background: #FF2222; /* Fallback color */
+    /* background: radial-gradient(circle at center, #000000 10%, #FFFFFF 100%); /* Example with color stops */
+    /*background: repeating-radial-gradient(ellipse 1px 20px at center, #000000 70%, #FFFFFF 100%); /* Example with color stops */
+    padding: 12rem 0rem 10rem 0;
+}
+
+
 
 @media screen and (max-width:1024px) {
     .PB-Stepper-Container {
@@ -1593,6 +1630,10 @@
         width: 100%;
     }
 
+    .SRR-Result-Card {
+        width: 60rem;
+    }
+
     @keyframes swipeHint {
 
         0%,
@@ -1642,6 +1683,10 @@
         margin-bottom: 1rem;
     }
 
+    .SRR-Result-Card {
+        width: 40rem;
+        background-size: auto 130% !important;
+    }
 }
 
 @media screen and (max-width:426px) {
@@ -1738,6 +1783,7 @@
 
     .RS-Result-Card {
         height: 15rem;
+        background-size: auto 110% !important;
     }
 
     .RS-Mascot-Image {
@@ -1817,6 +1863,28 @@
     .QS-Carousel-Item {
         flex: 0 0 0;
     }
+
+    .SRR-Body-Container {
+        padding: 10rem 0;
+    }
+
+    .RS-Download-Share-Buttons {
+        flex-direction: column;
+        align-items: flex-end;
+    }
+
+    .SRR-Result-Card {
+
+        width: 25rem;
+        background-size: auto 130% !important;
+        background: none !important;
+    }
+
+    .SRR-Result-Card-h1,
+    .SRR-Result-Card-p {
+        color: black;
+    }
+
 
 
 }

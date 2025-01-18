@@ -26,6 +26,8 @@ const NameInputSection = ({ username, onSubmit }) => {
 
     const handleNext = () => {
         if (inputValue.trim()) {
+            sessionStorage.setItem('riasecUserName', inputValue.trim());
+            localStorage.setItem('riasecUserName', inputValue.trim());
             onSubmit(inputValue);
         }
     };

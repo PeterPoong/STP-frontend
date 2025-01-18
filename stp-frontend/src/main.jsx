@@ -66,6 +66,7 @@ import StudentApplyCourse from "./Pages/StudentPortalPages/StudentApplyCourse";
 import StudentApplicationSummary from "./Pages/StudentPortalPages/StudentApplicationSummary";
 import StudentFeedback from "./Pages/StudentPortalPages/StudentFeedback";
 import StudentStudyPath from "./Pages/StudentPages/StudentStudyPath";
+import SharedRiasecResult from "./Pages/StudentPortalPages/SharedRiasecResult";
 
 //schoolPortal Page
 import SchoolPortalLogin from "./Pages/SchoolPages/SchoolPortalLogin";
@@ -344,6 +345,11 @@ const router = createBrowserRouter([
   {
     path: "/studentStudyPath",
     element: <StudentStudyPath />,
+  },
+
+  {
+    path:"/share/:username/:design/:type",
+     element:<SharedRiasecResult/>
   },
 
   //School Portal
