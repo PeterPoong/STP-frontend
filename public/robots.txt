@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Location-based study pages
+Allow: /study-in-*
+Allow: /university-in-*
+
+Sitemap: https://studypal.my/sitemap.xml 

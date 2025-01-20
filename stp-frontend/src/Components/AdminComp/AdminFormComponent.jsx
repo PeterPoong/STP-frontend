@@ -477,7 +477,7 @@ const AdminFormComponent = ({
                     onChange={account.onChange}
                     required={account.required || false}
                   >
-                    <option value="">Select School Account Type</option>
+                    <option value="">Select Type</option>
                     {account.options.map((option, optIndex) => (
                       <option key={optIndex} value={option.value}>
                         {option.label}

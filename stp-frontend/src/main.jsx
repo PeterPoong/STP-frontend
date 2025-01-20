@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
 import Home from "./Pages/StudentPages/Home";
 import NotFoundPage from "./Pages/StudentPages/NotFoundPage";
 import KnowMore from "./Pages/StudentPages/KnowMore"; // Import KnowMore component
@@ -54,6 +54,13 @@ import AdminReplyEnquiry from "./Pages/AdminPages/AdminReplyEnquiry";
 import AdminFeatured from "./Pages/AdminPages/AdminFeatured";
 import AdminEditFeatured from "./Pages/AdminPages/AdminEditFeatured";
 import AdminInterest from "./Pages/AdminPages/AdminInterest";
+import AdminQuestion from "./Pages/AdminPages/AdminQuestion";
+import AdminAddQuestion from "./Pages/AdminPages/AdminAddQuestion"
+import AdminEditQuestion from "./Pages/AdminPages/AdminEditQuestion"
+import AdminRiasec from "./Pages/AdminPages/AdminRiasec"
+import AdminAddRiasec from "./Pages/AdminPages/AdminAddRiasec"
+import AdminEditRiasec from "./Pages/AdminPages/AdminEditRiasec"
+
 
 //StudentPortal Page
 import StudentPortalLogin from "./Pages/StudentPortalPages/StudentPortalLogin";
@@ -297,6 +304,30 @@ const router = createBrowserRouter([
     path: "/adminInterest",
     element: <AdminInterest />,
   },
+  {
+    path: "/adminQuestion",
+    element: <AdminQuestion />,
+  },
+  {
+    path: "/adminAddQuestion",
+    element: <AdminAddQuestion />,
+  },
+  {
+    path: "/adminEditQuestion",
+    element: <AdminEditQuestion />,
+  },
+  {
+    path: "/adminRiasec",
+    element: <AdminRiasec />,
+  },
+  {
+    path: "/adminAddRiasec",
+    element: <AdminAddRiasec />,
+  },
+  {
+    path: "/adminEditRiasec",
+    element: <AdminEditRiasec />,
+  },
   //Student Portal Page
   {
     path: "/studentPortalLogin",
@@ -414,6 +445,26 @@ const router = createBrowserRouter([
   {
     path: "/marketing/AccountPackages",
     element: <AccountPackages />,
+  },
+
+  // Study in Location routes
+  {
+    path: "/study-in-:location",
+    element: <CoursesPage />,
+  },
+  {
+    path: "/university-in-:location",
+    element: <InstitutePage />,
+  },
+  
+  // Add aliases for common variations (e.g., KL)
+  {
+    path: "/study-in-kl",
+    element: <Navigate to="/study-in-kuala-lumpur" replace />,
+  },
+  {
+    path: "/university-in-kl",
+    element: <Navigate to="/university-in-kuala-lumpur" replace />,
   },
 ]);
 
