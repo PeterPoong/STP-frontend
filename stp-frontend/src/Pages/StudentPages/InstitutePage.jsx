@@ -11,10 +11,25 @@ import Footer from "../../Components/StudentComp/Footer";
 import SpcFooter from "../../Components/StudentPortalComp/SpcFooter";
 import { useParams } from "react-router-dom";
 
+// Add the location mappings
+const locationMap = {
+  'malaysia': 'Malaysia',
+  'singapore': 'Singapore',
+  'australia': 'Australia',
+  'uk': 'United Kingdom',
+  'usa': 'United States',
+  // Add more locations as needed
+};
+
+const locationDisplayNames = {
+  'sarawak': 'Sarawak',
+  'kuala-lumpur': 'Kuala Lumpur',
+  'johor': 'Johor',
+  // ... add all locations
+};
+
 const InstitutePage = () => {
   const { location } = useParams();
-  
-  // Use the same locationMap and locationDisplayNames as CoursesPage
   
   useEffect(() => {
     const displayName = locationDisplayNames[location] || 'Malaysia';
