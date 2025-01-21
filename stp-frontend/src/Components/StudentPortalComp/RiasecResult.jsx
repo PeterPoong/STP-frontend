@@ -15,6 +15,7 @@ import StrengthIconFill from "../../assets/StudentPortalAssets/strengthIconFill.
 import { HeartPulse, Whatsapp, Tiktok, Twitter, Instagram, TwitterX } from 'react-bootstrap-icons';
 import { Spinner } from 'react-bootstrap';
 import QRCode from "../../assets/StudentPortalAssets/qrCode.png"
+import { QRCodeSVG } from 'qrcode.react';
 import {
     FacebookShareButton,
     WhatsappShareButton,
@@ -258,7 +259,7 @@ const CareerProfile = ({ }) => {
 
     // Initialize username from session storage
     useEffect(() => {
-        const storedUsername =sessionStorage.getItem('riasecUserName')||   localStorage.getItem('riasecUserName') || sessionStorage.getItem('userName') || localStorage.getItem('userName');
+        const storedUsername = sessionStorage.getItem('riasecUserName') || localStorage.getItem('riasecUserName') || sessionStorage.getItem('userName') || localStorage.getItem('userName');
         if (storedUsername) {
             setUsername(storedUsername);
         }
@@ -1226,8 +1227,16 @@ const CareerProfile = ({ }) => {
                                             </div>
                                             <div>
                                                 <p style={{ marginBottom: "0", fontSize: "10px", fontWeight: "bold", color: "#ffffff" }}>Share to your friends</p>
-                                                <div style={{ height: "110px", width: "110px", background: "#ffffff", border: "2px #000000 solid" }}>
-                                                    <img src={QRCode} style={{ height: "100px", width: "100px" }} className="m-1" />
+                                                <div style={{ height: "110px", width: "110px", background: "#ffffff", border: "2px #000000 solid", display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                    <QRCodeSVG
+                                                        value={`https://studypal.my/share/${encodeURIComponent(username)}/0/${topType}`}
+                                                        size={100}
+                                                        bgColor={"#ffffff"}
+                                                        fgColor={"#000000"}
+                                                        level={"L"}
+                                                        includeMargin={false}
+                                                        className="m-1"
+                                                    />
                                                 </div>
                                             </div>
                                         </div>
@@ -1299,8 +1308,16 @@ const CareerProfile = ({ }) => {
                                             </div>
                                             <div>
                                                 <p style={{ marginBottom: "0", fontSize: "10px", fontWeight: "bold" }}>Share to your friends</p>
-                                                <div style={{ height: "110px", width: "110px", background: "#ffffff", border: "2px #000000 solid" }}>
-                                                    <img src={QRCode} style={{ height: "100px", width: "100px" }} className="m-1" />
+                                                <div style={{ height: "110px", width: "110px", background: "#ffffff", border: "2px #000000 solid", display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                    <QRCodeSVG
+                                                        value={`https://studypal.my/share/${encodeURIComponent(username)}/1/${topType}`}
+                                                        size={100}
+                                                        bgColor={"#ffffff"}
+                                                        fgColor={"#000000"}
+                                                        level={"L"}
+                                                        includeMargin={false}
+                                                        className="m-1"
+                                                    />
                                                 </div>
                                             </div>
                                         </div>
@@ -1390,8 +1407,16 @@ const CareerProfile = ({ }) => {
                                             </div>
                                             <div>
                                                 <p style={{ marginBottom: "0", fontSize: "10px", fontWeight: "bold" }}>Share to your friends</p>
-                                                <div style={{ height: "110px", width: "110px", background: "#ffffff", border: "2px #000000 solid" }}>
-                                                    <img src={QRCode} style={{ height: "100px", width: "100px" }} className="m-1" />
+                                                <div style={{ height: "110px", width: "110px", background: "#ffffff", border: "2px #000000 solid", display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                    <QRCodeSVG
+                                                        value={`https://studypal.my/share/${encodeURIComponent(username)}/2/${topType}`}
+                                                        size={100}
+                                                        bgColor={"#ffffff"}
+                                                        fgColor={"#000000"}
+                                                        level={"L"}
+                                                        includeMargin={false}
+                                                        className="m-1"
+                                                    />
                                                 </div>
                                             </div>
                                         </div>

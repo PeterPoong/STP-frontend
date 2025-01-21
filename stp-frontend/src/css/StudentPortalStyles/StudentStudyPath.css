@@ -1689,7 +1689,7 @@
     }
 }
 
-@media screen and (max-width:426px) {
+@media screen and (max-width:500px) {
     .SSP-Title {
         font-size: 36px;
     }
