@@ -1,0 +1,163 @@
+/* Styling for the Account Packages */
+.manageAccountContainer {
+    padding: 3rem; /* Larger padding for the container */
+    background-color: #f9f9f9;
+  }
+  
+  .heading {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 1rem;
+  }
+  
+  .description {
+    font-size: 1.4rem;
+    color: #666;
+    margin-bottom: 2.5rem;
+  }
+  
+  .packageRow {
+    gap: 2rem; /* Space between the package columns */
+  }
+  
+  .packageCol {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .packageCard {
+    width: 100%;
+    padding: 3rem;
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    text-align: left;
+    transition: transform 0.3s ease;
+    min-height: 300px; /* Example: Set a min-height */
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .packageCard:hover {
+    transform: translateY(-8px);
+  }
+  
+  .basicPackage {
+    background-color: #ffffff;
+    border: 3px solid #b71a18;
+  }
+  
+  .premiumPackage {
+    background-color: #b71a18;
+    color: #ffffff;
+  }
+  
+  .packageIcon {
+    /* Centering the image */
+    width: 100%;         /* Ensures the image spans the full width of the parent container */
+    height: 200px;       /* Set a fixed height for the image */
+    object-fit: contain; /* Maintains aspect ratio and fits the image */
+    margin-bottom: 1.0rem;
+    border-radius: 8px;  /* Optional: Add border-radius for rounded corners */
+  }
+  
+  .packageName {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 1rem 0;
+    color: inherit;
+  }
+  
+  .packageDetails {
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+    color: inherit;
+  }
+  
+  /* Styling the price and label together */
+  .packagePriceContainer {
+    display: flex;
+    align-items: baseline; /* Align the price and 'per month' text on the same line */
+  }
+  
+  .packagePrice {
+    font-size: 1.3rem; /* Adjust size as needed */
+    font-weight: bold;
+    color: inherit;
+    margin-right: 0.5rem;
+    text-align: center; /* Center the price text */
+  }
+  
+  .perMonthText {
+    font-size: 1rem; /* Slightly smaller size for 'per month' */
+    color: inherit; /* Light color */
+  }
+  
+  .priceLabel {
+    font-size: 1rem; /* Slightly smaller size for 'per month' */
+    color: inherit; /* Light color */
+    display: block; /* Make it a block element so it occupies full width */
+    text-align: center; /* Center the text horizontally */
+  }
+  
+  /* Toggle Buttons Style */
+  .toggleGroup {
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    gap: 0; /* Remove any gap */
+  }
+  
+  .toggleButton {
+    border-radius: 10px; /* Rounded edges */
+    font-size: 16px;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    color: #b71a18;
+    border: 1px solid #b71a18; /* Red border */
+    margin: 0; /* Ensure there's no margin between buttons */
+    transition: background-color 0.3s, opacity 0.3s;
+  }
+  
+  /* Discount styling */
+  .toggleButton .discount {
+    margin-left: 5px;
+    color: #b71a18;
+  }
+  
+  .toggleButton:hover .discount {
+    margin-left: 5px;
+    color: white;
+  }
+  
+  .toggleButton.activeButton .discount {
+    margin-left: 5px;
+    color: white;
+  }
+  
+  /* On hover: set opacity to 0.5 but keep the red border */
+  .toggleButton:hover {
+    background-color: #b71a18;
+    color: white;
+    opacity: 0.5; /* Reduce opacity */
+    border: 1px solid #b71a18; /* Keep the red border */
+  }
+  
+  /* Prevent hover effect on the active button */
+  .toggleButton.activeButton:hover {
+    background-color: #b71a18; /* Keep the active button color */
+    opacity: 1; /* Full opacity */
+    border: 1px solid #b71a18; /* Keep the red border */
+  }
+  
+  /* Active button (clicked) state: full red color */
+  .activeButton {
+    background-color: #b71a18;
+    color: white;
+    border: 1px solid #b71a18; /* Keep red border */
+  }
+  
+  button:focus {
+    box-shadow: none; /* Remove focus outline */
+  }

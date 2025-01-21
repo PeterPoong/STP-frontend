@@ -83,6 +83,7 @@ import VerifyPhoneNumberPage from "./Pages/StudentPortalPages/VerifyPhoneNumberP
 
 //marketing
 import AccountPackages from "./Pages/MarketingPages/AccountPackages";
+import AdvertisementPricingPage from "./Pages/MarketingPages/AdvertisementPricingPage";
 
 import FacebookSocialPageRedirectPage from "./Pages/StudentPortalPages/FacebookSocialPageRedirectPage";
 import SocialContactPage from "./Pages/StudentPortalPages/SocialContactPage";
@@ -417,6 +418,10 @@ const router = createBrowserRouter([
   {
     path: "/marketing/AccountPackages",
     element: <AccountPackages />,
+  },
+  {
+    path: "/marketing/AdvertisementPricingPage",
+    element: <AdvertisementPricingPage />,
   },
 ]);
 
