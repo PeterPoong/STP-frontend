@@ -125,16 +125,16 @@ const AdminAddSchoolContent = () => {
             });
             const addSchoolData = await addSchoolResponse.json();
             if (addSchoolResponse.ok) {
-                console.log('School successfully registered:', addSchoolData);
+                // console.log('School successfully registered:', addSchoolData);
                 navigate('/adminSchool');
             } else if (addSchoolResponse.status === 422) {
                 // Validation errors
-                console.log('Validation Errors:', addSchoolData.errors);
+                // console.log('Validation Errors:', addSchoolData.errors);
                 setFieldErrors(addSchoolData.errors); // Pass validation errors to the modal
                 setGeneralError(addSchoolData.message || "Validation Error");
                 setErrorModalVisible(true); // Show the error modal
             } else {
-                console.error('Server error:', addSchoolData.message);
+                // console.error('Server error:', addSchoolData.message);
                 setGeneralError(addSchoolData.message || 'Failed to add new school.');
                 setErrorModalVisible(true);
             }

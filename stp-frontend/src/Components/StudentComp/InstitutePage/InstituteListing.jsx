@@ -233,14 +233,14 @@ const InstituteListing = ({
 
   useEffect(() => {
     if (institutes.length > 0) {
-      console.log("Insitutes before filtering:", institutes);
+      // console.log("Insitutes before filtering:", institutes);
       const filtered = institutes.filter((institute) => {
-        console.log(
-          `Institute Name: ${institute.name}, Institute Category: ${institute.category}`
-        );
+        // console.log(
+        //   `Institute Name: ${institute.name}, Institute Category: ${institute.category}`
+        // );
         return institute.category === selectedInstitute;
       });
-      console.log("Filtered Institutes", filtered);
+      // console.log("Filtered Institutes", filtered);
       setFilteredPrograms(filtered);
     } else {
       console.log("No institutes available to filter.");
@@ -251,7 +251,7 @@ const InstituteListing = ({
 
   // Location filter
   useEffect(() => {
-    console.log("Country ID changed:", countryID);
+    // console.log("Country ID changed:", countryID);
     const fetchLocationFilters = async () => {
       if (!countryID) {
         setLocationFilters([]);
@@ -277,7 +277,7 @@ const InstituteListing = ({
         }
 
         const locationData = await response.json();
-        console.log("Fetched Location Filters:", locationData);
+        // console.log("Fetched Location Filters:", locationData);
 
         if (Array.isArray(locationData.data) && locationData.data.length > 0) {
           setLocationFilters(locationData.data);

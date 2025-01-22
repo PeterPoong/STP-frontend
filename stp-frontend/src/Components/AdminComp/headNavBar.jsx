@@ -121,6 +121,24 @@ const HeadNavBar = () => {
 
         case '/adminInterest':
           return 'Course Interest';
+
+        case '/adminQuestion':
+          return 'RIASEC Question';
+
+          case '/adminAddQuestion':
+          return 'Add RIASEC Question';
+
+            case '/adminEditQuestion':
+              return 'Edit RIASEC Question';
+
+        case '/adminRiasec':
+          return 'RIASEC List';
+
+          case '/adminAddRiasec':
+            return 'Add New RIASEC Type';
+
+            case '/adminEditRiasec':
+              return 'Edit RIASEC Type';
       default:
         return 'Dashboard'; // Default title if path doesn't match any case
     }

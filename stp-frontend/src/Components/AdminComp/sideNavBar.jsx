@@ -4,7 +4,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faTachometerAlt, faAd, faSchool, faUserGraduate, faBullhorn, 
   faBook, faThList, faClipboardList, faUserShield, faFileAlt, 
-  faDatabase, faBars, faClipboardQuestion, faBell, faHeart
+  faDatabase, faBars, faClipboardQuestion, faBell, faHeart,
+  faFileCircleQuestion, faIdCard
 } from '@fortawesome/free-solid-svg-icons';
 import { NavLink } from 'react-router-dom';
 import '../../css/AdminStyles/AdminSideNav.css';
@@ -159,6 +160,24 @@ const SideNavBar = () => {
         >
           <FontAwesomeIcon icon={faHeart} fixedWidth />
           <span className="link-text">Interest</span>
+        </NavLink>
+
+        <NavLink 
+          to='/adminQuestion' 
+          className='nav-link' 
+          activeClassName="active"
+        >
+          <FontAwesomeIcon icon={faFileCircleQuestion} fixedWidth />
+          <span className="link-text">Question List</span>
+        </NavLink>
+
+        <NavLink 
+          to='/adminRiasec' 
+          className='nav-link' 
+          activeClassName="active"
+        >
+          <FontAwesomeIcon icon={faIdCard} fixedWidth />
+          <span className="link-text">RIASEC</span>
         </NavLink>
       </Nav>
     </div>

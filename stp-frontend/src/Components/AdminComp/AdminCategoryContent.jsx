@@ -23,6 +23,7 @@ const AdminCategoryContent = () => {
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [searchQuery, setSearchQuery] = useState("");
     const [showAddButton, setShowAddButton] = useState(true); // Set true if you want the button to always show
+    const [riasecDetails, setRiasecDetails] = useState({});
 
      // To track if there are search results
     const token = sessionStorage.getItem('token');
@@ -60,9 +61,46 @@ const AdminCategoryContent = () => {
         }
     };
 
+    const fetchRiasecDetails = async (id) => {
+        try {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/riasecDetail`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": Authenticate,
+                },
+                body: JSON.stringify({ id })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            if (result.success) {
+                setRiasecDetails(prev => ({
+                    ...prev,
+                    [id]: result.data.updateRiasecType
+                }));
+            }
+        } catch (error) {
+            console.error("Error fetching RIASEC details:", error);
+        }
+    };
+
     useEffect(() => {
         fetchCategorys(currentPage, rowsPerPage, searchQuery);
     }, [Authenticate, currentPage, rowsPerPage, searchQuery]);
+
+    useEffect(() => {
+        if (Categorys.length > 0) {
+            Categorys.forEach(category => {
+                if (category.riasec && !riasecDetails[category.riasec]) {
+                    fetchRiasecDetails(category.riasec);
+                }
+            });
+        }
+    }, [Categorys]);
 
     const handleRowsPerPageChange = (newRowsPerPage) => {
         setRowsPerPage(newRowsPerPage);
@@ -229,6 +267,9 @@ const AdminCategoryContent = () => {
             <th onClick={() => handleSort("hotpick")}>
                 Hotpick {sortColumn === "email" && (sortDirection === "asc" ? "↑" : "↓")}
             </th>
+            <th onClick={() => handleSort("riasecTypes")}>
+                RIASEC Type {sortColumn === "riasecTypes" && (sortDirection === "asc" ? "↑" : "↓")}
+            </th>
             <th onClick={() => handleSort("status")}>
                 Status {sortColumn === "status" && (sortDirection === "asc" ? "↑" : "↓")}
             </th>
@@ -248,6 +289,7 @@ const AdminCategoryContent = () => {
                     onChange={() => handleToggleHotPick(Category.id, Category.course_hotPick)}
                 />
             </td>
+            <td>{riasecDetails[Category.riasec] || Category.riasec}</td>
             <td className={getStatusClass(Category.category_status)}>
                 {Category.category_status}
             </td>

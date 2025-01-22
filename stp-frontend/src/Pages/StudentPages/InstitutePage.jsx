@@ -9,33 +9,57 @@ import InstituteListing from "../../Components/StudentComp/InstitutePage/Institu
 // import Footer from "../Components/StudentComp/Footer";
 import Footer from "../../Components/StudentComp/Footer";
 import SpcFooter from "../../Components/StudentPortalComp/SpcFooter";
+import { useParams } from "react-router-dom";
+
+// Add the location mappings
+const locationMap = {
+  'malaysia': 'Malaysia',
+  'singapore': 'Singapore',
+  'australia': 'Australia',
+  'uk': 'United Kingdom',
+  'usa': 'United States',
+  // Add more locations as needed
+};
+
+const locationDisplayNames = {
+  'sarawak': 'Sarawak',
+  'kuala-lumpur': 'Kuala Lumpur',
+  'johor': 'Johor',
+  // ... add all locations
+};
 
 const InstitutePage = () => {
-
+  const { location } = useParams();
+  
   useEffect(() => {
-    // Set the page title
-    document.title = "StudyPal - Search for University";
-
-    // Set meta description
+    const displayName = locationDisplayNames[location] || 'Malaysia';
+    
+    document.title = `Universities in ${displayName} | StudyPal`;
+    
     const metaDescription = document.createElement("meta");
     metaDescription.name = "description";
-    metaDescription.content = "Explore premier universities to continue your education, with diploma certificate, degree, master's, and PhD courses available through StudyPal at studypal.my.";
+    metaDescription.content = `Find universities and higher education institutions in ${displayName}. Compare programs, facilities, and apply online with StudyPal.`;
     document.head.appendChild(metaDescription);
 
-    // Clean up by removing the meta tag when component unmounts
     return () => {
       document.head.removeChild(metaDescription);
     };
-  }, []);
+  }, [location]);
 
   return (
     <div style={{ backgroundColor: "#F5F4F4" }}>
       <NavButtonsSP />
       <header className="masthead">
-        <img src={headerImage} alt="Header" className="header-image" />
+        <img 
+          src={headerImage} 
+          alt={`Universities in ${locationDisplayNames[location] || 'Malaysia'}`} 
+          className="header-image" 
+        />
       </header>
-      <SearchInstitute />
-      <div> </div>
+      <SearchInstitute 
+        initialLocation={locationMap[location]}
+        locationName={locationDisplayNames[location]} 
+      />
       <div>
         <SpcFooter />
       </div>
