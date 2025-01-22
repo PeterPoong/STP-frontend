@@ -647,7 +647,7 @@ const CareerProfile = ({ }) => {
             document.body.appendChild(clone);
 
             // Wait for Safari to properly render
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            await new Promise(resolve => setTimeout(resolve, 6000));
 
             const canvas = await html2canvas(clone, {
                 scale: 3,
@@ -676,29 +676,50 @@ const CareerProfile = ({ }) => {
     const handleDownload = async () => {
         setIsDownloading(true);
         try {
-            // Preload QR code specifically for Safari
-            if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-                const qrCodeImg = new Image();
-                qrCodeImg.crossOrigin = "anonymous";
-                await new Promise((resolve) => {
-                    qrCodeImg.onload = resolve;
-                    qrCodeImg.src = QRCode;
+            // First, ensure all images are loaded
+            const targetRef = [designRef0, designRef1, designRef2][selectedDesign];
+            if (!targetRef?.current) return;
+    
+            // Get all images in the design
+            const images = Array.from(targetRef.current.getElementsByTagName('img'));
+            
+            // Preload all images with longer timeout for iOS Safari
+            await Promise.all(images.map(img => {
+                return new Promise((resolve) => {
+                    const newImg = new Image();
+                    newImg.crossOrigin = "anonymous";
+                    newImg.onload = () => {
+                        img.complete = true;
+                        resolve();
+                    };
+                    newImg.onerror = () => {
+                        console.error('Failed to load:', img.src);
+                        resolve();
+                    };
+                    newImg.src = img.src;
                 });
+            }));
+    
+            // Additional delay for iOS Safari to ensure images are rendered
+            if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+                await new Promise(resolve => setTimeout(resolve, 6000));
             }
-
+    
+            // Generate canvas with extra wait time
             const canvas = await generateDesignImage();
-            if (!canvas) return;
-
+            if (!canvas) throw new Error('Failed to generate canvas');
+    
             // For iOS Safari
             if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-                // Wait a bit to ensure QR code is rendered
-                await new Promise(resolve => setTimeout(resolve, 1000));
-
+                // Additional wait to ensure QR code and images are rendered
+                await new Promise(resolve => setTimeout(resolve, 6000));
+    
                 const dataUrl = canvas.toDataURL('image/png', 1.0);
                 const link = document.createElement('a');
                 link.download = `RIASEC-Result-${username}-Design${selectedDesign + 1}.png`;
                 link.href = dataUrl;
-
+    
+                // Handle standalone mode
                 if (window.navigator.standalone) {
                     window.open(dataUrl);
                 } else {
@@ -707,17 +728,17 @@ const CareerProfile = ({ }) => {
                     document.body.removeChild(link);
                 }
             } else {
+                // For other browsers
                 canvas.toBlob((blob) => {
                     if (!blob) {
-                        console.error('Failed to generate image');
-                        return;
+                        throw new Error('Failed to generate image');
                     }
-
+    
                     const url = URL.createObjectURL(blob);
                     const link = document.createElement('a');
                     link.href = url;
                     link.download = `RIASEC-Result-${username}-Design${selectedDesign + 1}.png`;
-
+    
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
@@ -726,6 +747,7 @@ const CareerProfile = ({ }) => {
             }
         } catch (error) {
             console.error('Download error:', error);
+            alert('Error downloading image. Please try again.');
         } finally {
             setIsDownloading(false);
         }
