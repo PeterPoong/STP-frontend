@@ -22,6 +22,7 @@ const AdminFeaturedContent = () => {
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
+    const [filteredFeatureds, setFilteredFeatureds] = useState([]);
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`;
     const navigate = useNavigate();
@@ -31,27 +32,16 @@ const AdminFeaturedContent = () => {
     const [editedData, setEditedData] = useState({ request_name: '', featured_type: '', duration: '' }); // State for edited data
     const [selectedFeaturedType, setSelectedFeaturedType] = useState('');
     const [isSearchResults, setIsSearchResults] = useState(false);
-
-    const fetchFeatureds = async (page = 1, perPage = rowsPerPage, search = searchQuery, featuredType = "") => {
+    const [featList, setFeatList] = useState([]); // State for category list
+    const [selectedFeat, setSelectedFeat] = useState(""); // State for selected subject
+    const fetchFeatList = async () => {
         try {
-            setLoading(true);
-    
-            // Construct request payload
-            const payload = {
-                ...(featuredType && { featured_type: Number(featuredType) }), // Include filter only if featuredType is not empty
-            };
-    
-            // If a filter is applied (i.e., featuredType is selected), send "All" for per_page
-            const requestPerPage = featuredType ? "All" : perPage;
-    
-            console.log("Payload sent to API:", payload);
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/featuredRequestList?page=${page}&per_page=${requestPerPage}&search=${search}`, {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/allFeaturedList`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": Authenticate,
                 },
-                body: JSON.stringify(payload), // Send the payload
             });
     
             if (!response.ok) {
@@ -59,15 +49,55 @@ const AdminFeaturedContent = () => {
             }
     
             const result = await response.json();
-            console.log("API Response:", result);
-    
+            // The response is already paginated, so we can directly use it
+            if (result && result.data) {
+                setFeatList(result.data);
+                // If you need pagination info, you can set it here:
+                // setTotalPages(result.last_page);
+                // setCurrentPage(result.current_page);
+            } else {
+                setFeatList([]);
+            }
+        } catch (error) {
+            setError(error.message);
+            console.error("Error fetching the featured list:", error);
+        }
+    };
+    useEffect(() => {
+        fetchFeatList(); // Fetch categorys on component mount
+        fetchFeatureds(); // Fetch enquiries initially
+    }, []);
+    const fetchFeatureds = async (page = 1, perPage = rowsPerPage, search = "", featuredType = "") => {
+        try {
+            setLoading(true);
+            const payload = {
+                ...(featuredType && { featured_type: Number(featuredType) }),
+            };
+            const requestPerPage = featuredType ? "All" : perPage;
+
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/featuredRequestList?page=${page}&per_page=${requestPerPage}&search=${search}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": Authenticate,
+                },
+                body: JSON.stringify(payload),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+
             if (result.success && result.data) {
-                console.log("Filtered Data:", result.data.data);
                 setFeatureds(result.data.data);
+                setFilteredFeatureds(result.data.data); // Store the original data
                 setTotalPages(result.data.last_page);
                 setCurrentPage(result.data.current_page);
             } else {
                 setFeatureds([]);
+                setFilteredFeatureds([]);
                 setTotalPages(1);
                 setCurrentPage(1);
             }
@@ -81,8 +111,8 @@ const AdminFeaturedContent = () => {
     
 
     useEffect(() => {
-        fetchFeatureds(currentPage, rowsPerPage, searchQuery, selectedFeaturedType);
-    }, [currentPage, rowsPerPage, searchQuery, selectedFeaturedType]); // Include selectedFeaturedType in dependencies
+        fetchFeatureds(currentPage, rowsPerPage, "", selectedFeaturedType);
+    }, [currentPage, rowsPerPage, selectedFeaturedType]);
 
     const handleRowsPerPageChange = (newRowsPerPage) => {
         setRowsPerPage(newRowsPerPage);
@@ -93,8 +123,18 @@ const AdminFeaturedContent = () => {
 
     const handleSearch = (query) => {
         setSearchQuery(query);
-        setCurrentPage(1);
-        fetchFeatureds(1, rowsPerPage, query, selectedFeaturedType); // Pass selectedFeaturedType as argument
+        
+        if (!query.trim()) {
+            setFilteredFeatureds(Featureds);
+            return;
+        }
+
+        const lowercaseQuery = query.toLowerCase();
+        const filtered = Featureds.filter(featured => 
+            featured.school?.school_name?.toLowerCase().includes(lowercaseQuery)
+        );
+        
+        setFilteredFeatureds(filtered);
     };
 
     const handleSort = (column) => {
@@ -105,9 +145,9 @@ const AdminFeaturedContent = () => {
     };
 
     const sortedFeatureds = (() => {
-        if (!sortColumn || !sortDirection) return Featureds;
+        if (!sortColumn || !sortDirection) return filteredFeatureds;
     
-        return [...Featureds].sort((a, b) => {
+        return [...filteredFeatureds].sort((a, b) => {
             const aValue = a[sortColumn] ? a[sortColumn].toString().toLowerCase() : '';
             const bValue = b[sortColumn] ? b[sortColumn].toString().toLowerCase() : '';
     
@@ -262,14 +302,15 @@ const AdminFeaturedContent = () => {
         setShowReceiptModal(true);
     };
 
-    const filteredFeatureds = selectedFeaturedType
-    ? Featureds.filter(featured => Number(featured.featured_type?.featured_id) === Number(selectedFeaturedType))
-    : Featureds;
     const handleFeaturedTypeFilter = (selectedType) => {
         setSelectedFeaturedType(selectedType); // Update the selected featured type
         fetchFeatureds(1, rowsPerPage, searchQuery, selectedType); // Re-fetch with new filter
     };
-
+    const handleFeatChange = (featuredId) => {
+        setSelectedFeaturedType(featuredId); // Update the selected featured type
+        setCurrentPage(1); // Reset to first page when filter changes
+        fetchFeatureds(1, rowsPerPage, searchQuery, featuredId); // Fetch with new filter
+    };
     const theadContent = (
         <tr>
             <th onClick={() => handleSort("schoolName")}>
@@ -411,7 +452,7 @@ const AdminFeaturedContent = () => {
     );
     return (
         <>
-            <Col md={4} style={{marginLeft:'75px'}}>
+            {/* <Col md={4} style={{marginLeft:'75px'}}>
                 <Form.Group className="d-flex">
                     <Col md={2}>
                     <Form.Label className="fw-light" style={{ lineHeight: '3' }}>Sort By:</Form.Label>
@@ -428,7 +469,7 @@ const AdminFeaturedContent = () => {
                         <option value="31">Third Page</option>
                     </Form.Select>
                 </Form.Group>
-            </Col>
+            </Col> */}
             {loading ? (
                 <CircleDotLoader />
             ) : (
@@ -441,6 +482,8 @@ const AdminFeaturedContent = () => {
                     currentPage={currentPage}
                     onPageChange={handlePageChange}
                     onRowsPerPageChange={handleRowsPerPageChange}
+                    featList={featList} // Pass the featured list
+                    onFeatChange={handleFeatChange} // Pass the handler function
                 />
             )}
             <Modal show={showModal} onHide={() => setShowModal(false)} centered>

@@ -30,6 +30,8 @@ const TableWithControls = ({
   onRowsPerPageChange,
   subjectList,
   categoryList,
+  featList,
+  onFeatChange,
   onCategoryChange,
   onSubjectChange,
   showMonthFilter = false, // Add this prop
@@ -199,6 +201,26 @@ const TableWithControls = ({
                 </select>
               </div>
             )}
+
+             {/* Conditionally render the category enquiry dropdown */}
+             {/* Featured Type Filter */}
+             {featList && featList.length > 0 && (
+                <div className="mb-3 mt-3 ms-3 custom-dropdown">
+                    Featured Type
+                    <select
+                        onChange={(e) => onFeatChange(e.target.value)}
+                        className="subject-dropdown"
+                    >
+                        <option value="">All Featured Types</option>
+                        {featList.map((feat) => (
+                            <option key={feat.id} value={feat.id}>
+                                {feat.name}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+            )}
+
 
             {/* Add the month/year filter after the category dropdown */}
             {showMonthFilter && (
