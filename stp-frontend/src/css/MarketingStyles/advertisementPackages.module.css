@@ -1,9 +1,10 @@
-/* Styling for the Account Packages */
+/* Container for Advertisement Packages */
 .manageAccountContainer {
     padding: 3rem; /* Larger padding for the container */
     background-color: #f9f9f9;
   }
   
+  /* Heading and Description */
   .heading {
     font-size: 2.5rem;
     font-weight: bold;
@@ -17,95 +18,89 @@
     margin-bottom: 2.5rem;
   }
   
+  /* Package Row and Column */
   .packageRow {
-    gap: 2rem; /* Space between the package columns */
+    gap: 2rem; /* Space between package columns */
+    display: flex;
+    flex-direction: column; /* Stack packages vertically */
+    align-items: center; /* Center packages horizontally */
   }
   
   .packageCol {
     display: flex;
     justify-content: center;
+    width: 100%;
   }
   
+  /* Card Styling */
   .packageCard {
     width: 100%;
-    padding: 3rem;
+    padding: 2rem;
     border-radius: 12px;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    /* box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); */
     text-align: left;
     transition: transform 0.3s ease;
-    min-height: 300px; /* Example: Set a min-height */
+    min-height: 400px; /* Increased minimum height */
     display: flex;
     flex-direction: column;
+    border: none; /* Removed the border */
+    margin-bottom: 1.5rem; /* Add space between cards */
   }
   
+  /* Make the package card hover effect */
   .packageCard:hover {
     transform: translateY(-8px);
   }
   
-  .basicPackage {
-    background-color: #ffffff;
-    border: 3px solid #b71a18;
-  }
-  
-  .premiumPackage {
-    background-color: #b71a18;
-    color: #ffffff;
-  }
-  
+  /* Package Image */
   .packageIcon {
-    /* Centering the image */
-    width: 100%;         /* Ensures the image spans the full width of the parent container */
-    height: 200px;       /* Set a fixed height for the image */
-    object-fit: contain; /* Maintains aspect ratio and fits the image */
-    margin-bottom: 1.0rem;
-    border-radius: 8px;  /* Optional: Add border-radius for rounded corners */
+    width: 100%;
+    height: 500px; /* Set a fixed height for the images */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1rem;
   }
   
+  .bannerImage {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    max-width: 1000px; /* Max width for larger images */
+    transition: transform 0.3s ease;
+  }
+  
+  .packageCard:hover .bannerImage {
+    transform: scale(1.05); /* Slight zoom effect on hover */
+  }
+  
+  /* Package Name */
   .packageName {
     font-size: 1.5rem;
     font-weight: 700;
     margin: 1rem 0;
-    color: inherit;
   }
   
-  .packageDetails {
-    font-size: 1.1rem;
-    margin-bottom: 1.5rem;
-    color: inherit;
-  }
-  
-  /* Styling the price and label together */
-  .packagePriceContainer {
-    display: flex;
-    align-items: baseline; /* Align the price and 'per month' text on the same line */
-  }
-  
+  /* Price Container Styling */
   .packagePrice {
-    font-size: 1.3rem; /* Adjust size as needed */
+    font-size: 1.3rem;
     font-weight: bold;
-    color: inherit;
     margin-right: 0.5rem;
-    text-align: center; /* Center the price text */
+    text-align: center;
   }
   
   .perMonthText {
-    font-size: 1rem; /* Slightly smaller size for 'per month' */
-    color: inherit; /* Light color */
+    font-size: 1rem;
+    color: inherit;
+    text-align: center;
   }
   
-  .priceLabel {
-    font-size: 1rem; /* Slightly smaller size for 'per month' */
-    color: inherit; /* Light color */
-    display: block; /* Make it a block element so it occupies full width */
-    text-align: center; /* Center the text horizontally */
-  }
-  
-  /* Toggle Buttons Style */
+  /* Toggle Button Styles */
   .toggleGroup {
     border-radius: 10px;
     overflow: hidden;
     display: flex;
-    gap: 0; /* Remove any gap */
+    gap: 0;
   }
   
   .toggleButton {
@@ -116,48 +111,34 @@
     align-items: center;
     color: #b71a18;
     border: 1px solid #b71a18; /* Red border */
-    margin: 0; /* Ensure there's no margin between buttons */
+    margin: 0;
     transition: background-color 0.3s, opacity 0.3s;
   }
   
-  /* Discount styling */
-  .toggleButton .discount {
-    margin-left: 5px;
-    color: #b71a18;
-  }
-  
-  .toggleButton:hover .discount {
-    margin-left: 5px;
+  .toggleButton.activeButton {
+    background-color: #b71a18;
     color: white;
   }
   
-  .toggleButton.activeButton .discount {
-    margin-left: 5px;
-    color: white;
-  }
-  
-  /* On hover: set opacity to 0.5 but keep the red border */
   .toggleButton:hover {
     background-color: #b71a18;
     color: white;
-    opacity: 0.5; /* Reduce opacity */
-    border: 1px solid #b71a18; /* Keep the red border */
+    opacity: 0.5;
   }
   
-  /* Prevent hover effect on the active button */
-  .toggleButton.activeButton:hover {
-    background-color: #b71a18; /* Keep the active button color */
-    opacity: 1; /* Full opacity */
-    border: 1px solid #b71a18; /* Keep the red border */
-  }
-  
-  /* Active button (clicked) state: full red color */
-  .activeButton {
-    background-color: #b71a18;
-    color: white;
-    border: 1px solid #b71a18; /* Keep red border */
-  }
-  
+  /* Focus Styles */
   button:focus {
     box-shadow: none; /* Remove focus outline */
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .packageIcon {
+      height: 250px; /* Slightly smaller on mobile devices */
+    }
+    
+    .packageCard {
+      min-height: 350px;
+      padding: 1.5rem;
+    }
   }

@@ -27,7 +27,6 @@ const AdvertisementPricingPage = () => {
 
       const fetchedData = await response.json();
       setAdPackages(fetchedData.data); // Store the fetched packages
-      console.log("data", adPackages);
     } catch (error) {
       console.error("Failed to fetch advertisement pricing:", error);
     }
@@ -41,7 +40,6 @@ const AdvertisementPricingPage = () => {
 
   // Calculate the price with a 5% discount for weekly pricing
   const calculatePrice = (price, isWeekly) => {
-    // Ensure the price is a valid number
     const validPrice = price && !isNaN(price) ? parseFloat(price) : 0;
 
     if (isWeekly) {
@@ -108,56 +106,38 @@ const AdvertisementPricingPage = () => {
       </div>
 
       {/* Advertisement Packages Display */}
-      <Row className={`justify-content-center ${styles.packageRow}`}>
+      <Row className="g-4 justify-content-center packageRow">
         {adPackages.length > 0 ? (
-          adPackages.map((pkg, index) => (
-            <Col md={5} lg={4} className={styles.packageCol} key={pkg.id}>
-              <div
-                className={`${styles.packageCard} d-flex flex-column`}
-                style={{
-                  border: "2px solid #b71a18", // Apply border color here
-                  borderRadius: "8px", // Optional: Add rounded corners
-                  padding: "16px", // Optional: Add padding inside the card
-                  transition: "border-color 0.3s ease", // Optional: Smooth transition on hover
-                }}
-              >
-                {/* Centering the banner image */}
+          adPackages.map((pkg) => (
+            <Col
+              md={12} // Full width for mobile
+              lg={12} // Full width for large screens as well
+              key={pkg.id}
+              className="mb-4 packageCol" // Adjusted column class for vertical stacking
+            >
+              <div className="text-center mb-2">
+                <h4 className={styles.packageName}>{pkg.advertisement_name}</h4>
+              </div>
+
+              <div className="text-center mb-3">
+                <p className={styles.packagePrice}>
+                  RM
+                  {calculatePrice(
+                    pkg.advertisement_price,
+                    activePricing === "weekly"
+                  )}{" "}
+                  <span className={styles.perMonthText}>{priceLabel}</span>
+                </p>
+              </div>
+
+              <div className={`${styles.packageCard} d-flex flex-column`}>
                 <div className="d-flex flex-column justify-content-center align-items-center">
                   <div className={styles.packageIcon}>
-                    {/* Dynamically choose the image based on advertisement name */}
                     <img
                       src={getImageByName(pkg.advertisement_name)}
                       alt={pkg.advertisement_name}
-                      className={styles.topAdBannerImage}
-                      style={{
-                        width: "100%", // Adjust the width to fill the container
-                        height: "200px", // Fixed height for better display
-                        objectFit: "contain", // Maintain aspect ratio while fitting inside the container
-                      }}
+                      className={styles.bannerImage}
                     />
-                  </div>
-                  <h4 className={styles.packageName}>
-                    {pkg.advertisement_name}
-                  </h4>
-                </div>
-
-                {/* Sticky pricing at the bottom */}
-                <div className="d-flex justify-content-center align-items-center text-center mt-auto">
-                  <div className="d-flex flex-column align-items-center justify-content-center">
-                    <Col md={12}>
-                      <div className={styles.packagePriceContainer}>
-                        <p className={styles.packagePrice}>
-                          RM
-                          {calculatePrice(
-                            pkg.advertisement_price,
-                            activePricing === "weekly"
-                          )}{" "}
-                          <span className={styles.perMonthText}>
-                            {priceLabel}
-                          </span>
-                        </p>
-                      </div>
-                    </Col>
                   </div>
                 </div>
               </div>
