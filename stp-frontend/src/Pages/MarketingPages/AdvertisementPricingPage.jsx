@@ -15,7 +15,7 @@ const AdvertisementPricingPage = () => {
   const getAdvertisementPricing = async () => {
     try {
       const response = await fetch(
-        "http://127.0.0.1:8000/api/marketing/advertisementPricing"
+        `${import.meta.env.VITE_BASE_URL}api/marketing/advertisementPricing`
       );
 
       if (!response.ok) {
