@@ -141,7 +141,7 @@ const RiasecBackground = ({ type, variant }) => {
 
 const CareerProfile = ({ userData = { username: "David Lim" } }) => {
     const navigate = useNavigate();
-    const [loadedImages,setLoadedImages] = useState(new Set());
+    const [loadedImages, setLoadedImages] = useState(new Set());
     const [isPreloading, setIsPreloading] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const shareButtonRef = useRef(null);
@@ -207,6 +207,25 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
 
         fetchRecommendedCategories();
     }, [results?.topTypes]);
+
+
+    const handleApplyNow = (course) => {
+        const token =
+            sessionStorage.getItem("token") || localStorage.getItem("token");
+        if (!token) {
+            navigate("/studentPortalLogin");
+        } else {
+            navigate(`/studentApplyCourses/${course.id}`, {
+                state: {
+                    programId: course.id,
+                    schoolLogoUrl: `${baseURL}storage/${course.logo}`,
+                    schoolName: course.school_name,
+                    courseName: course.name,
+                },
+            });
+        }
+    };
+
 
     //share button social media
     const handleToggle = () => {
@@ -361,6 +380,7 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                 }),
                 ensureQRCodeLoaded(targetRef.current)
             ]);
+
 
             const clone = targetRef.current.cloneNode(true);
 
@@ -838,7 +858,9 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                                                 <span><strong>RM</strong> {course.cost}</span>
                                             )}
                                         </p>
-                                        <button>Apply Now</button>
+                                        <button onClick={() => handleApplyNow(course)}>
+                                            Apply Now
+                                        </button>
                                     </div>
                                 </div>
                             ))
@@ -1237,7 +1259,7 @@ const CareerProfile = ({ userData = { username: "David Lim" } }) => {
                         className="RS-Download-Button"
                         disabled={selectedDesign === null || selectedDesign === undefined || isDownloading}
                     >
-                        {isDownloading || isPreloading? (
+                        {isDownloading || isPreloading ? (
                             <div className="d-flex align-items-center justify-content-center">
                                 <Spinner
                                     as="span"

@@ -393,6 +393,24 @@ const CareerProfile = ({ }) => {
         }
     };
 
+    const handleApplyNow = (course) => {
+        const token =
+          sessionStorage.getItem("token") || localStorage.getItem("token");
+        if (!token) {
+          navigate("/studentPortalLogin");
+        } else {
+          navigate(`/studentApplyCourses/${course.id}`, {
+            state: {
+              programId: course.id,
+              schoolLogoUrl: `${baseURL}storage/${course.logo}`,
+              schoolName: course.school_name,
+              courseName: course.name,
+            },
+          });
+        }
+      };
+    
+
     //share button social media
     const handleToggle = () => {
         setIsOpen(!isOpen);
@@ -1092,7 +1110,9 @@ const CareerProfile = ({ }) => {
                                                 <span><strong>RM</strong> {course.cost}</span>
                                             )}
                                         </p>
-                                        <button>Apply Now</button>
+                                        <button onClick={() => handleApplyNow(course)}>
+                                            Apply Now
+                                        </button>
                                     </div>
                                 </div>
                             ))
