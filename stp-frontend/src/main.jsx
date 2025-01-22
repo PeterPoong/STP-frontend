@@ -82,14 +82,22 @@ import CourseRequestFeatured from "./Pages/SchoolPages/CourseRequestFeatured";
 import SchoolRequestFeatured from "./Pages/SchoolPages/SchoolRequestFeatured";
 import Checkout from "./Pages/SchoolPages/Checkout";
 import Checkoutsc from "./Pages/SchoolPages/CheckoutSC";
+import VerifyPhoneNumberPage from "./Pages/StudentPortalPages/VerifyPhoneNumberPage";
 
 //marketing
 import AccountPackages from "./Pages/MarketingPages/AccountPackages";
+import AdvertisementPricingPage from "./Pages/MarketingPages/AdvertisementPricingPage";
 
 import FacebookSocialPageRedirectPage from "./Pages/StudentPortalPages/FacebookSocialPageRedirectPage";
 import SocialContactPage from "./Pages/StudentPortalPages/SocialContactPage";
 
+import TestSocialPage from "./Pages/StudentPortalPages/TestSocialPage";
+
 const router = createBrowserRouter([
+  {
+    path: "/TestSocialPage",
+    element: <TestSocialPage />,
+  },
   {
     path: "/",
     element: <Home />,
@@ -352,6 +360,11 @@ const router = createBrowserRouter([
      element:<SharedRiasecResult/>
   },
 
+  {
+    path: "/VerifyPhoneNumberPage",
+    element: <VerifyPhoneNumberPage />,
+  },
+
   //School Portal
   {
     path: "/schoolPortalLogin",
@@ -420,6 +433,10 @@ const router = createBrowserRouter([
   {
     path: "/marketing/AccountPackages",
     element: <AccountPackages />,
+  },
+  {
+    path: "/marketing/AdvertisementPricingPage",
+    element: <AdvertisementPricingPage />,
   },
 ]);
 
