@@ -673,9 +673,36 @@ const CareerProfile = ({ }) => {
         }
     };
 
+    // Add this helper function at the component level
+    const preloadRiasecBackgrounds = async (type) => {
+        const backgroundTypes = ['main', 'background2', 'background3', 'background4'];
+        const loadPromises = backgroundTypes.map(variant => {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.crossOrigin = "anonymous";
+                img.onload = () => resolve();
+                img.onerror = () => {
+                    console.error(`Failed to load ${variant} background`);
+                    resolve(); // Resolve anyway to prevent hanging
+                };
+                img.src = RiasecBackground({ type, variant });
+            });
+        });
+
+        await Promise.all(loadPromises);
+    };
+
     const handleDownload = async () => {
         setIsDownloading(true);
         try {
+            // First, ensure all RIASEC background images are loaded
+            await preloadRiasecBackgrounds(topType);
+
+            // Add delay for Safari to fully load images
+            if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+                await new Promise(resolve => setTimeout(resolve, 4000));
+            }
+
             // Preload QR code specifically for Safari
             if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
                 const qrCodeImg = new Image();
@@ -687,12 +714,14 @@ const CareerProfile = ({ }) => {
             }
 
             const canvas = await generateDesignImage();
-            if (!canvas) return;
+            if (!canvas) {
+                throw new Error('Failed to generate canvas');
+            }
 
             // For iOS Safari
             if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-                // Wait a bit to ensure QR code is rendered
-                await new Promise(resolve => setTimeout(resolve, 5000));
+                // Additional wait for iOS Safari to ensure everything is rendered
+                await new Promise(resolve => setTimeout(resolve, 4000));
 
                 const dataUrl = canvas.toDataURL('image/png', 1.0);
                 const link = document.createElement('a');
@@ -707,10 +736,10 @@ const CareerProfile = ({ }) => {
                     document.body.removeChild(link);
                 }
             } else {
+                // For other browsers
                 canvas.toBlob((blob) => {
                     if (!blob) {
-                        console.error('Failed to generate image');
-                        return;
+                        throw new Error('Failed to generate image blob');
                     }
 
                     const url = URL.createObjectURL(blob);
@@ -726,6 +755,7 @@ const CareerProfile = ({ }) => {
             }
         } catch (error) {
             console.error('Download error:', error);
+            alert('Failed to download image. Please try again.');
         } finally {
             setIsDownloading(false);
         }
