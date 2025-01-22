@@ -240,6 +240,8 @@ const processResults = (scores) => {
 
 const CareerProfile = ({ }) => {
     const navigate = useNavigate();
+    const [loadedImages, setLoadedImages] = useState(new Set());
+    const [isPreloading, setIsPreloading] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const [isDownloading, setIsDownloading] = useState(false);
     const shareButtonRef = useRef(null);
@@ -675,26 +677,53 @@ const CareerProfile = ({ }) => {
 
     // Add this helper function at the component level
     const preloadRiasecBackgrounds = async (type) => {
+        setIsPreloading(true);
         const backgroundTypes = ['main', 'background2', 'background3', 'background4'];
-        const loadPromises = backgroundTypes.map(variant => {
-            return new Promise((resolve) => {
-                const img = new Image();
-                img.crossOrigin = "anonymous";
-                img.onload = () => resolve();
-                img.onerror = () => {
-                    console.error(`Failed to load ${variant} background`);
-                    resolve(); // Resolve anyway to prevent hanging
-                };
-                img.src = RiasecBackground({ type, variant });
-            });
-        });
 
-        await Promise.all(loadPromises);
+        try {
+            const loadPromises = backgroundTypes.map(variant => {
+                const imgSrc = RiasecBackground({ type, variant });
+
+                // Skip if already loaded
+                if (loadedImages.has(imgSrc)) {
+                    return Promise.resolve();
+                }
+
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.crossOrigin = "anonymous";
+
+                    img.onload = () => {
+                        setLoadedImages(prev => new Set([...prev, imgSrc]));
+                        resolve();
+                    };
+
+                    img.onerror = () => {
+                        console.error(`Failed to load ${variant} background`);
+                        reject(new Error(`Failed to load ${variant} background`));
+                    };
+
+                    img.src = imgSrc;
+                });
+            });
+
+            await Promise.allSettled(loadPromises); // Use Promise.allSettled instead of Promise.all
+        } catch (error) {
+            console.error('Error preloading images:', error);
+            throw error;
+        } finally {
+            setIsPreloading(false);
+        }
     };
 
     const handleDownload = async () => {
+        if (isDownloading || isPreloading) return;
+
         setIsDownloading(true);
         try {
+            // Clear loaded images state when starting a new download
+            setLoadedImages(new Set());
+
             // First, ensure all RIASEC background images are loaded
             await preloadRiasecBackgrounds(topType);
 
@@ -703,15 +732,8 @@ const CareerProfile = ({ }) => {
                 await new Promise(resolve => setTimeout(resolve, 4000));
             }
 
-            // Preload QR code specifically for Safari
-            if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-                const qrCodeImg = new Image();
-                qrCodeImg.crossOrigin = "anonymous";
-                await new Promise((resolve) => {
-                    qrCodeImg.onload = resolve;
-                    qrCodeImg.src = QRCode;
-                });
-            }
+            // For non-Safari browsers, add a small delay to ensure images are rendered
+            await new Promise(resolve => setTimeout(resolve, 1000));
 
             const canvas = await generateDesignImage();
             if (!canvas) {
@@ -760,7 +782,6 @@ const CareerProfile = ({ }) => {
             setIsDownloading(false);
         }
     };
-
     {/*
            const handleDownload = async () => {
         setIsDownloading(true);
@@ -1468,9 +1489,9 @@ const CareerProfile = ({ }) => {
                     <button
                         onClick={handleDownload}
                         className="RS-Download-Button"
-                        disabled={selectedDesign === null || selectedDesign === undefined || isDownloading}
+                        disabled={selectedDesign === null || selectedDesign === undefined || isDownloading || isPreloading}
                     >
-                        {isDownloading ? (
+                        {isDownloading || isPreloading ? (
                             <div className="d-flex align-items-center align-content-center justify-content-center py-0">
                                 <Spinner
                                     as="span"
@@ -1480,7 +1501,7 @@ const CareerProfile = ({ }) => {
                                     aria-hidden="true"
                                     className="me-2 py-0 align-self-center"
                                 />
-                                Downloading...
+                                {isPreloading ? 'Preparing...' : 'Downloading...'}
                             </div>
                         ) : (
                             'DOWNLOAD'
