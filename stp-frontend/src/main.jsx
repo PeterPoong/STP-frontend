@@ -97,10 +97,10 @@ import VerifyPhoneNumberPage from "./Pages/StudentPortalPages/VerifyPhoneNumberP
 //marketing
 import AccountPackages from "./Pages/MarketingPages/AccountPackages";
 import AdvertisementPricingPage from "./Pages/MarketingPages/AdvertisementPricingPage";
+import FeaturedPricingList from "./Pages/MarketingPages/FeaturedPricingList";
 
 import FacebookSocialPageRedirectPage from "./Pages/StudentPortalPages/FacebookSocialPageRedirectPage";
 import SocialContactPage from "./Pages/StudentPortalPages/SocialContactPage";
-
 import TestSocialPage from "./Pages/StudentPortalPages/TestSocialPage";
 
 const router = createBrowserRouter([
@@ -472,25 +472,9 @@ const router = createBrowserRouter([
     path: "/marketing/AdvertisementPricingPage",
     element: <AdvertisementPricingPage />,
   },
-
-  // Study in Location routes
   {
-    path: "/study-in-:location",
-    element: <CoursesPage />,
-  },
-  {
-    path: "/university-in-:location",
-    element: <InstitutePage />,
-  },
-
-  // Add aliases for common variations (e.g., KL)
-  {
-    path: "/study-in-kl",
-    element: <Navigate to="/study-in-kuala-lumpur" replace />,
-  },
-  {
-    path: "/university-in-kl",
-    element: <Navigate to="/university-in-kuala-lumpur" replace />,
+    path: "/marketing/FeaturedPricingList",
+    element: <FeaturedPricingList />,
   },
 ]);
 
