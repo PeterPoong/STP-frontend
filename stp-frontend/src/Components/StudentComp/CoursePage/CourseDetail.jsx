@@ -51,8 +51,14 @@ const CourseDetail = () => {
   const [courseId, setCourseId] = useState(null);
   const [schoolId, setSchoolId] = useState(null);
 
-  // Convert hyphenated names to space-separated names
-  const formattedSchoolName = school_name.replace(/-/g, ' ');
+  // Convert hyphenated names to space-separated names while preserving hyphens in parentheses
+  const formattedSchoolName = decodeURIComponent(school_name)
+    .replace(/\((.*?)\)/g, match => match.replace(/-/g, '###HYPHEN###')) // Temporarily replace hyphens in parentheses
+    .replace(/-/g, ' ')  // Replace remaining hyphens with spaces
+    .replace(/\###HYPHEN###/g, '-') // Restore original hyphens in parentheses
+    .replace(/\s+/g, ' ') // Replace multiple spaces with single space
+    .trim(); // Remove leading/trailing spaces
+
   const formattedCourseName = course_name.replace(/-/g, ' ');
 
   // Log the formatted names to the console
