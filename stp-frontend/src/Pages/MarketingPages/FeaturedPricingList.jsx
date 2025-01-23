@@ -36,6 +36,7 @@ const FeaturedPricingList = () => {
       }
 
       const fetchedData = await response.json();
+      console.log("data", fetchedData.data.school[0].feature_name);
       setSchoolFeatured(fetchedData.data.school);
       setCourseFeatured(fetchedData.data.course);
     } catch (error) {
@@ -93,7 +94,7 @@ const FeaturedPricingList = () => {
         >
           <div className="text-center mb-2">
             <h4 className={styles.packageName}>
-              {pkg.school_name || pkg.course_name}
+              {pkg.feature_name} {/* Display the feature_name instead */}
             </h4>
           </div>
 
@@ -101,9 +102,7 @@ const FeaturedPricingList = () => {
             {/* Conditionally set price label based on category */}
             <p className={styles.packagePrice}>
               RM{pkg.price}{" "}
-              <span className={styles.perMonthText}>
-                {category === "School" ? "per month" : "per slot per month"}
-              </span>
+              <span className={styles.perMonthText}>{"per month"}</span>
             </p>
           </div>
 
