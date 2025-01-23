@@ -87,10 +87,10 @@ import VerifyPhoneNumberPage from "./Pages/StudentPortalPages/VerifyPhoneNumberP
 //marketing
 import AccountPackages from "./Pages/MarketingPages/AccountPackages";
 import AdvertisementPricingPage from "./Pages/MarketingPages/AdvertisementPricingPage";
+import FeaturedPricingList from "./Pages/MarketingPages/FeaturedPricingList";
 
 import FacebookSocialPageRedirectPage from "./Pages/StudentPortalPages/FacebookSocialPageRedirectPage";
 import SocialContactPage from "./Pages/StudentPortalPages/SocialContactPage";
-
 import TestSocialPage from "./Pages/StudentPortalPages/TestSocialPage";
 
 const router = createBrowserRouter([
@@ -116,7 +116,7 @@ const router = createBrowserRouter([
     element: <CourseDetailsPage />,
   },
   {
-    path: "/course-details/:school_name/:course_name", 
+    path: "/course-details/:school_name/:course_name",
     element: <CourseDetailsPage />,
   },
   {
@@ -356,8 +356,8 @@ const router = createBrowserRouter([
   },
 
   {
-    path:"/share/:username/:design/:type",
-     element:<SharedRiasecResult/>
+    path: "/share/:username/:design/:type",
+    element: <SharedRiasecResult />,
   },
 
   {
@@ -437,6 +437,10 @@ const router = createBrowserRouter([
   {
     path: "/marketing/AdvertisementPricingPage",
     element: <AdvertisementPricingPage />,
+  },
+  {
+    path: "/marketing/FeaturedPricingList",
+    element: <FeaturedPricingList />,
   },
 ]);
 
