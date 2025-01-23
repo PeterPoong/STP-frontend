@@ -41,8 +41,15 @@ const KnowMoreInstitute = () => {
 
   const [enlargedImageIndex, setEnlargedImageIndex] = useState(null);
   const { school_name } = useParams();
-  const formattedSchoolName = school_name.replace(/(?<!\([^)]*)-(?![^)]*\))/g, ' ');
-
+  const formattedSchoolName = decodeURIComponent(school_name)
+    .replace(/\((.*?)\)/g, match => match.replace(/-/g, '###HYPHEN###')) // Temporarily replace hyphens in parentheses
+    .replace(/-/g, ' ')  // Replace remaining hyphens with spaces
+    .replace(/\###HYPHEN###/g, '-') // Restore original hyphens in parentheses
+    .replace(/\s+/g, ' ') // Replace multiple spaces with single space
+    .trim(); // Remove leading/trailing spaces
+    
+  console.log("Original school name from URL:", school_name);
+  console.log("Formatted school name:", formattedSchoolName);
 
   const [showSwiperModal, setShowSwiperModal] = useState(false);
   const [activePhotoIndex, setActivePhotoIndex] = useState(0); // To track the clicked photo
@@ -135,7 +142,7 @@ const KnowMoreInstitute = () => {
   };
 
   const fetchSchool = async () => {
-    if (storedSchoolId) { // Check if school_id exists
+    if (storedSchoolId) {
       try {
         const response = await fetch(`${baseURL}api/student/schoolDetail`, {
           method: "POST",
@@ -156,24 +163,25 @@ const KnowMoreInstitute = () => {
         console.error("Error fetching school detail data: ", error);
         setInstitutes([]);
       }
-    } else if (formattedSchoolName) { // If storedSchoolId is not available, use formattedSchoolName
+    } else if (formattedSchoolName) {
       try {
         const response = await fetch(`${baseURL}api/student/schoolDetail`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ schoolName: formattedSchoolName }), // Send formatted school name to the API
+          body: JSON.stringify({ schoolName: formattedSchoolName }),
         });
         const data = await response.json();
         if (data && data.success && data.data) {
           setInstitutes([data.data]);
           setCourses(data.data.courses);
-          // Store the schoolId in sessionStorage
-          sessionStorage.setItem('schoolId', data.data.id); // Store the fetched id in session
+          sessionStorage.setItem('schoolId', data.data.id);
         } else {
-          console.error("Invalid data structure for school detail: ", data.data);
+          console.error("School not found:", formattedSchoolName);
           setInstitutes([]);
+          // You might want to show a user-friendly error message here
+          // or redirect to a 404 page
         }
       } catch (error) {
         console.error("Error fetching school detail data: ", error);
@@ -188,7 +196,7 @@ const KnowMoreInstitute = () => {
       },
       body: JSON.stringify({
         type: "thirdPage", // Use the required type value
-        schoolId: storedSchoolId // Use storedSchoolId instead of id
+        schoolId: storedSchoolId || schoolId // Use storedSchoolId if available, otherwise use schoolId
       }),
     })
       .then((response) => response.json())
