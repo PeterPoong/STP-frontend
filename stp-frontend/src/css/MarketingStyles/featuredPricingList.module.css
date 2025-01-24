@@ -133,13 +133,36 @@
   }
   
   /* Responsive adjustments */
+
   @media (max-width: 768px) {
-    .packageIcon {
-      height: 250px; /* Slightly smaller on mobile devices */
-    }
-    
+    /* Make the card more compact */
     .packageCard {
-      min-height: 350px;
-      padding: 1.5rem;
+      min-height: 100px; /* Reduce the minimum height of the card */
+      max-height: 250px; /* Set the maximum height */
+      padding: 0.2rem; /* Reduce padding inside the card */
+      margin-bottom: 0.5rem; /* Add a small margin between cards */
+      width: 100%; /* Ensure the card takes up full width */
+      overflow: hidden; /* Prevent overflow */
+    }
+  
+    /* Reduce margin and padding around the price and image */
+    .packagePrice {
+      margin-bottom: 0.2rem; /* Reduce gap below the price */
+      font-size: 1.2rem; /* Optionally, reduce the font size */
+    }
+  
+    .packageIcon {
+      margin-top: 0; /* Remove any extra space above the image */
+      margin-bottom: 0.5rem; /* Add a small space below the image */
+      padding: 0; /* Remove any padding inside the image container */
+      overflow: hidden; /* Prevent image overflow */
+    }
+  
+    /* Adjust the image size inside the card */
+    .bannerImage {
+      max-width: 100%; /* Make the image responsive */
+      height: 100%; /* Ensure the image takes up full height of its container */
+      padding: 0; /* Ensure there's no padding around the image */
+      object-fit: contain; /* Make the image fit without cropping */
     }
   }
