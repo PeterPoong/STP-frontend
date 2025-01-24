@@ -158,9 +158,12 @@ const AddCourseBasicInformation = ({ list }) => {
         formData.append(`intake[${index}]`, intake.id);
       });
 
-      // formData.forEach((value, key) => {
-      //   console.log(`${key}: ${value}`);
-      // });
+      // Debug: Log all FormData entries
+      // console.log("=== FormData Contents ===");
+      // for (let pair of formData.entries()) {
+      //   console.log(pair[0] + ': ' + pair[1]);
+      // }
+      // console.log("======================");
 
       const createNewCourse = async () => {
         try {
@@ -174,16 +177,16 @@ const AddCourseBasicInformation = ({ list }) => {
               body: formData,
             }
           );
+          
+          const responseData = await response.json();
+
           if (!response.ok) {
-            const errorData = await response.json();
-            console.log("Error Data:", errorData["errors"]);
-            throw new Error(errorData["errors"] || "Internal Server Error");
+            throw new Error(responseData["errors"] || "Internal Server Error");
           }
-          const data = await response.json();
-          if (data.success === false) {
+
+          if (responseData.success === false) {
             let error = [];
-            // console.log("error test", data);
-            const courseArrayError = data.error.courses ?? [];
+            const courseArrayError = responseData.error.courses ?? [];
             if (courseArrayError.length > 0) {
               setCourseNameError(courseArrayError[0]);
               error.push(courseArrayError[0]);
@@ -191,7 +194,7 @@ const AddCourseBasicInformation = ({ list }) => {
               setCourseNameError("");
             }
 
-            const logoArrayError = data.error.logo ?? [];
+            const logoArrayError = responseData.error.logo ?? [];
             if (logoArrayError.length > 0) {
               setLogoError(logoArrayError[0]);
               error.push(logoArrayError[0]);
@@ -206,7 +209,7 @@ const AddCourseBasicInformation = ({ list }) => {
             list();
           }
         } catch (error) {
-          console.error("Failed to create course", error);
+          console.error("Failed to create course:", error);
         }
       };
 
