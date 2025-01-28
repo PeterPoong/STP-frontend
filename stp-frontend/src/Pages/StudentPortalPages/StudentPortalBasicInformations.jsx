@@ -5,6 +5,7 @@ import NavButtonsSP from "../../Components/StudentPortalComp/NavButtonsSP";
 import MyProfileWidget from "../../Components/StudentPortalComp/MyProfileWidget";
 import SpcFooter from "../../Components/StudentPortalComp/SpcFooter";
 import RiasecResult from "../../Components/StudentPortalComp/RiasecResult";
+import InterestedList from "../../Components/StudentPortalComp/InterestedList";
 import BasicInformationWidget from "../../Components/StudentPortalComp/MyProfile/BasicInformationWidget";
 import ManagePasswordWidget from "../../Components/StudentPortalComp/MyProfile/ManagePasswordWidget";
 import CollapsibleSections from "../../Components/StudentPortalComp/CollapsibleSections";
@@ -129,6 +130,8 @@ const StudentPortalBasicInformations = () => {
         return <AppliedCourseHistory status="history" />;
         case "riasecresult":
           return <RiasecResult/>;
+        case "interestedList":
+          return <InterestedList/>;
       default:
         return <BasicInformationWidget />;
     }

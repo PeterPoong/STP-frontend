@@ -304,6 +304,13 @@ const MyProfileWidget = ({ onSelectContent, profilePic }) => {
                 >
                     RIASEC Result
                 </ListGroup.Item>
+                <ListGroup.Item
+                    className="interested-item"
+                    onClick={() => handleContentSelect('interestedList')}
+                    style={getItemStyle('interestedList')}
+                >
+                    Favourite Course
+                </ListGroup.Item>
             </ListGroup>
         </Card>
     );

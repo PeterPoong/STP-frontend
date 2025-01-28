@@ -20,7 +20,7 @@ import StudyPal from "../../../assets/StudentAssets/coursepage image/StudyPal.we
 import emptyStateImage from "../../../assets/StudentAssets/emptyStateImage/emptystate.png";
 import { Helmet } from 'react-helmet';
 
-const baseURL = import.meta.env.VITE_BASE_URL;
+export const baseURL = import.meta.env.VITE_BASE_URL;
 const countriesURL = `${baseURL}api/student/countryList`;
 const filterURL = `${baseURL}api/student/listingFilterList`;
 const courseListURL = `${baseURL}api/student/courseList`;
@@ -591,54 +591,7 @@ useEffect(() => {
                     <div className="flex-wrap coursepage-info-one">
                       <Col>
                         <div>
-                          {/*<Row
-                            style={{ paddingTop: "10px" }}
-                            className=" coursepage-seaerchcourse-courselist-list"
-                          >
-                            <div>
-                              <i
-                                className="bi bi-mortarboard"
-                                style={{ marginRight: "10px" }}
-                              ></i>
-                              <span style={{ paddingLeft: "20px" }}>
-                                {program.qualification}
-                              </span>
-                            </div>
-                            <div style={{ marginTop: "10px" }}>
-                              <i
-                                className="bi bi-calendar-check"
-                                style={{ marginRight: "10px" }}
-                              ></i>
-                              <span style={{ paddingLeft: "20px" }}>
-                                {program.mode}
-                              </span>
-                            </div>
-                            <div style={{ marginTop: "10px" }}>
-                              <i
-                                className="bi bi-clock"
-                                style={{ marginRight: "10px" }}
-                              ></i>
-                              <span style={{ paddingLeft: "20px" }}>
-                                {program.period}
-                              </span>
-                            </div>
-                            <div
-                              style={{ marginTop: "10px" }}
-                              className="d-flex"
-                            >
-                              <i
-                                className="bi bi-calendar2-week"
-                                style={{ marginRight: "10px" }}
-                              ></i>
-                              <span style={{ paddingLeft: "20px" }}>
-                                {Array.isArray(program.intake) &&
-                                  program.intake.length > 0
-                                  ? program.intake.join(", ")
-                                  : "N/A"}
-                              </span>
-                            </div>
-
-                          </Row>*/}
+                          
                            <div> {/* Align to bottom on iPad */}
                             <Row>
                               <div className="searchcourse-dflex-center" >
@@ -721,8 +674,10 @@ useEffect(() => {
                         className="interest-button"
                         aria-label={courseInterests[program.id]?.status === 1 ? "Remove from interests" : "Add to interests"}
                       >
+                        <span style={{ fontSize: "16px" }}>
+                           {courseInterests[program.id]?.status === 1 ? "Favourite" : "Favourite"}
+                         </span>
                         <i className={courseInterests[program.id]?.status === 1 ? "bi bi-heart-fill" : "bi bi-heart"}></i>
-                        I'm Interested
                       </button>
                     </div>
                     <div className="apply-button">
