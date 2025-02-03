@@ -25,7 +25,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
-import { Pagination, Navigation } from "swiper/modules";
+import { Pagination, Navigation, Autoplay } from "swiper/modules";
 import { Helmet } from "react-helmet";
 
 const baseURL = import.meta.env.VITE_BASE_URL;
@@ -1311,8 +1311,17 @@ const KnowMoreInstitute = () => {
             </Container>
             {Array.isArray(adsImage) && adsImage.length > 0 ? (
               <div className="advertisements-container">
+                <Swiper
+                  spaceBetween={10}
+                  slidesPerView={1}
+                  navigation
+                  pagination={{ clickable: true }}
+                  autoplay={{ delay: 5000, disableOnInteraction: false }} // Ensure autoplay is enabled
+                  modules={[Pagination, Navigation, Autoplay]} 
+                  style={{ padding: "20px 0" }}
+                >
                 {adsImage.map((ad, index) => (
-                  <div key={ad.id} className="advertisement-item mb-3">
+                  <SwiperSlide key={ad.id} className="advertisement-item mb-3">
                     <a
                       href={
                         ad.banner_url.startsWith("http")
@@ -1334,8 +1343,9 @@ const KnowMoreInstitute = () => {
                         }}
                       />
                     </a>
-                  </div>
+                  </SwiperSlide>
                 ))}
+                </Swiper>
               </div>
             ) : (
               <img

@@ -19,6 +19,12 @@ import StudyPal from "../../../assets/StudentAssets/institute image/StudyPal.png
 import emptyStateImage from "../../../assets/StudentAssets/emptyStateImage/emptystate.png";
 import "../../../css/StudentCss/course page css/SearchCourse.css";
 import { Helmet } from "react-helmet";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
+import "swiper/swiper-bundle.css";
+import { Navigation, Autoplay } from "swiper/modules";
 const baseURL = import.meta.env.VITE_BASE_URL;
 const countriesURL = `${baseURL}api/student/countryList`;
 const filterURL = `${baseURL}api/student/listingFilterList`;
@@ -542,8 +548,16 @@ const SearchInstitute = () => {
 
             {Array.isArray(adsImageB) && adsImageB.length > 0 ? (
               <div className="advertisements-container">
+                 <Swiper
+                 spaceBetween={10}
+                 slidesPerView={1}
+                 navigation
+                 autoplay={{ delay: 5000, disableOnInteraction: false }} // Ensure autoplay is enabled
+                 modules={[Navigation, Autoplay]} 
+                 style={{ padding: "20px 0" }}
+               >
                 {adsImageB.map((ad, index) => (
-                  <div key={ad.id} className="advertisement-item mb-3">
+                  <SwiperSlide key={ad.id} className="advertisement-item mb-3">
                     <a
                       href={ad.banner_url.startsWith('http') ? ad.banner_url : `https://${ad.banner_url}`}
                       target="_blank"
@@ -561,8 +575,9 @@ const SearchInstitute = () => {
                         }}
                       />
                     </a>
-                  </div>
+                  </SwiperSlide>
                 ))}
+                </Swiper>
               </div>
             ) : (
               <img
@@ -1290,9 +1305,16 @@ const SearchInstitute = () => {
             {/* Right Content - Institute Listings */}
             <Col xs={12} md={9} className="degreeinstitutes-division">
               {Array.isArray(adsImageA) && adsImageA.length > 0 ? (
-                <div >
+                 <Swiper
+                 spaceBetween={10}
+                 slidesPerView={1}
+                 navigation
+                 autoplay={{ delay: 5000, disableOnInteraction: false }} // Ensure autoplay is enabled
+                 modules={[Navigation, Autoplay]} 
+                 style={{ padding: "20px 0" }}
+               >
                   {adsImageA.map((ad, index) => (
-                    <div key={ad.id} className="advertisement-item mb-3">
+                     <SwiperSlide key={ad.id} className="advertisement-item mb-3">
                       <a
                         href={ad.banner_url.startsWith('http') ? ad.banner_url : `https://${ad.banner_url}`}
                         target="_blank"
@@ -1310,9 +1332,9 @@ const SearchInstitute = () => {
                           }}
                         />
                       </a>
-                    </div>
+                    </SwiperSlide>
                   ))}
-                </div>
+                </Swiper>
               ) : (
                 <img
                   loading="lazy"

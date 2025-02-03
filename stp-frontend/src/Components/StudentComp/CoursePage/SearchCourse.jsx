@@ -19,7 +19,12 @@ import debounce from "lodash.debounce";
 import StudyPal from "../../../assets/StudentAssets/coursepage image/StudyPal.webp"
 import emptyStateImage from "../../../assets/StudentAssets/emptyStateImage/emptystate.png";
 import { Helmet } from 'react-helmet';
-
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
+import "swiper/swiper-bundle.css";
+import { Navigation, Autoplay } from "swiper/modules";
 export const baseURL = import.meta.env.VITE_BASE_URL;
 const countriesURL = `${baseURL}api/student/countryList`;
 const filterURL = `${baseURL}api/student/listingFilterList`;
@@ -70,6 +75,7 @@ const SearchCourse = () => {
   //ads image
   const [adsImageA, setAdsImageA] = useState(null);
   const [adsImageB, setAdsImageB] = useState([]);
+  const [showSwiperModal, setShowSwiperModal] = useState(false);
 
   // Add this to your state declarations at the top of the component
   const [resultCount, setResultCount] = useState(0);
@@ -227,6 +233,14 @@ const SearchCourse = () => {
     } catch (error) {
       console.error("Error fetching advertisements:", error);
     }
+  };
+  const openSwiperModal = (index) => {
+    setActivePhotoIndex(index);
+    setShowSwiperModal(true);
+  };
+
+  const handleCloseSwiperModal = () => {
+    setShowSwiperModal(false);
   };
 
   const fetchAddsImageB = async () => {
@@ -711,9 +725,17 @@ useEffect(() => {
             />*/}
 
             {Array.isArray(adsImageB) && adsImageB.length > 0 ? (
-              <div className="advertisements-container">
+              // <div className="advertisements-container">
+                 <Swiper
+                  spaceBetween={10}
+                  slidesPerView={1}
+                  navigation
+                  autoplay={{ delay: 5000, disableOnInteraction: false }} // Ensure autoplay is enabled
+                  modules={[Navigation, Autoplay]} 
+                  style={{ padding: "20px 0" }}
+                >
                 {adsImageB.map((ad, index) => (
-                  <div key={ad.id} className="advertisement-item mb-3">
+                 <SwiperSlide key={ad.id} className="advertisement-item mb-3">
                     <a
                       href={ad.banner_url.startsWith('http') ? ad.banner_url : `https://${ad.banner_url}`}
                       target="_blank"
@@ -731,9 +753,10 @@ useEffect(() => {
                         }}
                       />
                     </a>
-                  </div>
+                    </SwiperSlide>
                 ))}
-              </div>
+                </Swiper>
+              // </div>
             ) : (
               <img
                 loading="lazy"
@@ -1519,9 +1542,16 @@ useEffect(() => {
               <Col xs={12} md={9}  className="degreeprograms-division">
                 <div>
                   {Array.isArray(adsImageA) && adsImageA.length > 0 ? (
-                    <div >
+                    <Swiper
+                    spaceBetween={10}
+                    slidesPerView={1}
+                    navigation
+                    autoplay={{ delay: 5000, disableOnInteraction: false }} // Ensure autoplay is enabled
+                    modules={[Navigation, Autoplay]} 
+                    style={{ padding: "20px 0" }}
+                  >
                       {adsImageA.map((ad, index) => (
-                        <div key={ad.id} className="advertisement-item mb-3">
+                        <SwiperSlide key={ad.id} className="advertisement-item mb-3">
                           <a
                             href={ad.banner_url.startsWith('http') ? ad.banner_url : `https://${ad.banner_url}`}
                             target="_blank"
@@ -1539,9 +1569,9 @@ useEffect(() => {
                               }}
                             />
                           </a>
-                        </div>
+                        </SwiperSlide>
                       ))}
-                    </div>
+                    </Swiper>
                   ) : (
                     <img
                       loading="lazy"
