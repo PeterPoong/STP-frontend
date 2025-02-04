@@ -25,6 +25,7 @@ const AdminEditCourseContent = () => {
         description:"",
         requirement:"",
         cost:"",
+        international_cost:"",
         period:"",
         category:"",
         qualification:"",
@@ -47,6 +48,7 @@ const AdminEditCourseContent = () => {
         description:"Course Description",
         requirement:"Course Requirements",
         cost:"Course Fee",
+        international_cost: "International Course Fee",
         period:"Study Period",
         category:"Course Category",
         qualification:"Course Qualification",
@@ -58,7 +60,7 @@ const AdminEditCourseContent = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         
-        const { name, schoolID, description, requirement, cost, period, category, qualification, mode } = formData;
+        const { name, schoolID, description, requirement, cost, international_cost, period, category, qualification, mode } = formData;
         if (!name || !schoolID  || !category || !qualification) {
             setError("Please fill in all required fields.");
             setErrorModalVisible(true);
@@ -71,6 +73,7 @@ const AdminEditCourseContent = () => {
         formPayload.append("description", description);
         formPayload.append("requirement", requirement);
         formPayload.append("cost", cost);
+        formPayload.append("international_cost", international_cost);
         formPayload.append("period", period);
         formPayload.append("category", category);
         formPayload.append("qualification", qualification);
@@ -152,6 +155,7 @@ const AdminEditCourseContent = () => {
                         description: courseDetails.description,
                         requirement: courseDetails.requirement,
                         cost: courseDetails.cost,
+                        international_cost: courseDetails.international_cost,
                         period: courseDetails.period,
                         category: courseDetails.category,
                         qualification: courseDetails.qualification,
@@ -456,6 +460,14 @@ const AdminEditCourseContent = () => {
             type: "text",
             placeholder: "Enter the cost",
             value: formData.cost,
+            onChange: handleFieldChange,
+        },
+        {
+            id: "international_cost",
+            label: "International Course Fee",
+            type: "text",
+            placeholder: "Enter the international cost",
+            value: formData.international_cost,
             onChange: handleFieldChange,
         },
     ];

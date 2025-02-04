@@ -1569,7 +1569,7 @@ useEffect(() => {
                               }}
                             />
                           </a>
-                        </SwiperSlide>
+                        </SwiperSlide >
                       ))}
                     </Swiper>
                   ) : (
