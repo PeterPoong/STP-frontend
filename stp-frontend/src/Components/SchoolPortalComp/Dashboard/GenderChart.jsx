@@ -31,6 +31,9 @@ export const barOptions = {
     position: "bottom",
     alignment: "center",
   },
+  bar: {
+    groupWidth: "40%", // Adjust bar width here
+  },
   // animation: {
   //   startup: true,
   //   duration: 1000,

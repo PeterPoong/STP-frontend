@@ -4,7 +4,7 @@ import Box from "@mui/material/Box";
 import { Row, Col } from "react-bootstrap";
 import Typography from "@mui/material/Typography";
 import Skeleton from "@mui/material/Skeleton";
-
+import "../../../css/SchoolPortalStyle/SchoolDashboard.css";
 // Define your chart options for pie chart
 const options = {
   pieHole: 0.4,
@@ -26,22 +26,31 @@ const options = {
 };
 
 export const barOptions = {
-  seriesType: "bars",
-  legend: {
-    position: "bottom",
-    alignment: "center",
-  },
-  bar: {
-    groupWidth: "40%", // Adjust bar width here
-  },
-  // animation: {
-  //   startup: true,
-  //   duration: 1000,
-  //   easing: "out",
+  // seriesType: "bars",
+  // legend: {
+  //   position: "bottom",
+  //   alignment: "center",
   // },
+  // // animation: {
+  // //   startup: true,
+  // //   duration: 1000,
+  // //   easing: "out",
+  // // },
+  hAxis: {
+    title: "Category", // X-axis title
+  },
+  vAxis: {
+    title: "Number", // Y-axis title
+  },
+  bar: { groupWidth: "30%" },
+  legend: { position: "none" }, // Disables the legend and the blue square
+  colors: ["#4285F4"], // Apply color to all bars directly in options
+  annotations: {
+    alwaysOutside: false, // Ensure the annotations (numbers) do not show
+  },
 };
 
-const ProgramChart = ({ typeOfFilter }) => {
+const GenderChart = ({ typeOfFilter }) => {
   const [itemNb, setItemNb] = useState(5);
   const [itemBarNb, setItemBarNb] = useState(5);
 
@@ -54,12 +63,12 @@ const ProgramChart = ({ typeOfFilter }) => {
   const token = sessionStorage.getItem("token");
   const modifiedData = [["Country", "Count"], ...pieChartData.slice(0, itemNb)];
   const modifiedBarData = [
-    ["Country", "Pending", "Accept", "Reject"],
+    ["Category", ""],
     ...barChartData.slice(0, itemBarNb),
   ];
 
   useEffect(() => {
-    const getProgramStatistic = async () => {
+    const getCountryStatistic = async () => {
       if (!token) {
         setLoading(false);
         return;
@@ -68,7 +77,9 @@ const ProgramChart = ({ typeOfFilter }) => {
       try {
         const formData = { filterDuration: typeOfFilter };
         const response = await fetch(
-          `${import.meta.env.VITE_BASE_URL}api/school/programStatisticPieChart`,
+          `${
+            import.meta.env.VITE_BASE_URL
+          }api/school/interestedStatisticPieChart`,
           {
             method: "POST",
             headers: {
@@ -100,11 +111,13 @@ const ProgramChart = ({ typeOfFilter }) => {
       }
     };
 
-    const getProgramBarStatistic = async () => {
+    const getCountryBarStatistic = async () => {
       try {
         const formData = { filterDuration: typeOfFilter };
         const response = await fetch(
-          `${import.meta.env.VITE_BASE_URL}api/school/programStatisticBarChart`,
+          `${
+            import.meta.env.VITE_BASE_URL
+          }api/school/interestedStatisticBarChart`,
           {
             method: "POST",
             headers: {
@@ -137,8 +150,8 @@ const ProgramChart = ({ typeOfFilter }) => {
       }
     };
 
-    getProgramStatistic();
-    getProgramBarStatistic();
+    getCountryStatistic();
+    getCountryBarStatistic();
   }, [token, typeOfFilter]);
 
   return (
@@ -147,12 +160,10 @@ const ProgramChart = ({ typeOfFilter }) => {
         <Col md={6}>
           <div style={{ fontSize: "1.25rem" }}>
             <b>
-              {" "}
-              Distribution of Applications by{" "}
-              <span style={{ color: "#B71A18" }}>CATEGORY</span>
+              Distribution of Student Interest by{" "}
+              <span style={{ color: "#B71A18" }}>Course Category</span>
             </b>
           </div>
-
           <Box
             sx={{
               width: "100%",
@@ -184,13 +195,13 @@ const ProgramChart = ({ typeOfFilter }) => {
           {/*   <Typography variant="h8" gutterBottom>
             <b>
               Number of Applications by{" "}
-              <span style={{ color: "#B71A18" }}>CATEGORY</span>
+              <span style={{ color: "#B71A18" }}>GENDER</span>
             </b>
-          </Typography>*/}
+          </Typography> */}
           <div style={{ fontSize: "1.25rem" }}>
             <b>
-              Number of Applications by{" "}
-              <span style={{ color: "#B71A18" }}>CATEGORY</span>
+              Number of Student Interest by{" "}
+              <span style={{ color: "#B71A18" }}>Course Category</span>
             </b>
           </div>
           <Box
@@ -209,7 +220,7 @@ const ProgramChart = ({ typeOfFilter }) => {
               <Typography>No data available</Typography>
             ) : (
               <Chart
-                chartType="ComboChart"
+                chartType="ColumnChart"
                 width="100%"
                 height="400px"
                 data={modifiedBarData}
@@ -223,4 +234,4 @@ const ProgramChart = ({ typeOfFilter }) => {
   );
 };
 
-export default ProgramChart;
+export default GenderChart;

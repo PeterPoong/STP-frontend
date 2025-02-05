@@ -130,7 +130,7 @@ function UploadBox() {
           );
           const data = await updateCover.json();
           getCoverPhoto();
-         // console.log("Cover photo updated:", data);
+          // console.log("Cover photo updated:", data);
         } catch (error) {
           console.error("Error updating cover photo:", error);
         }

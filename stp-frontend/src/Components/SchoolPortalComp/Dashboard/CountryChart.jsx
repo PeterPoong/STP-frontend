@@ -32,6 +32,9 @@ export const barOptions = {
     alignment: "center",
   },
   isStacked: true,
+  bar: {
+    groupWidth: "30%", // Thinner bars (adjust as needed)
+  },
   // animation: {
   //   startup: true,
   //   duration: 1000,
