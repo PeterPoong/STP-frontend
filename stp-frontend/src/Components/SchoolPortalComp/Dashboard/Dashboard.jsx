@@ -7,17 +7,17 @@ import {
   GenderAmbiguous,
   Book,
   Bookmark,
+  Heart,
 } from "react-bootstrap-icons";
 import Form from "react-bootstrap/Form";
+import Lock from "../../../assets/StudentPortalAssets/lock.svg";
 
-import Dropdown from "react-bootstrap/Dropdown";
-import DropdownButton from "react-bootstrap/DropdownButton";
-
-// tab component
+// Tab components
 import CountryChart from "./CountryChart";
 import QualificationChart from "./QualificationChart";
 import GenderChart from "./GenderChart";
 import ProgramChart from "./ProgramChart";
+import InterestedCategory from "./CourseCategoryInterested";
 
 const Dashboard = () => {
   const token = sessionStorage.getItem("token");
@@ -26,6 +26,7 @@ const Dashboard = () => {
   const [pendingApplication, setPendingApplication] = useState(null);
   const [acceptApplication, setAcceptApplication] = useState(null);
   const [rejectApplication, setRejectApplication] = useState(null);
+  const [accountType, setAccountType] = useState("");
   const [renderChart, setRenderChart] = useState("");
 
   // State to track active button (country, age group, etc.)
@@ -119,6 +120,11 @@ const Dashboard = () => {
       };
 
       getNumberOfApplication(formData);
+
+      const storedAccountType =
+        sessionStorage.getItem("account_type") ||
+        localStorage.getItem("account_type");
+      setAccountType(parseInt(storedAccountType, 10));
     } catch (error) {
       console.error("Something wrong after apply filter", error);
     }
@@ -128,7 +134,81 @@ const Dashboard = () => {
     getNumberOfApplication();
   }, [token]);
 
+  // const renderTabContent = () => {
+  //   const isLocked = accountType !== 65; // Check if the account type is not 65
+  //   const chartContainerClass = `chart-container ${isLocked ? "locked" : ""}`;
+
+  //   switch (activeTab) {
+  //     case "country":
+  //       return (
+  //         <div className={chartContainerClass}>
+  //           <div className="haze-overlay"></div>{" "}
+  //           {/* Haze effect before the chart */}
+  //           <CountryChart typeOfFilter={durationFilter} />
+  //         </div>
+  //       );
+  //     case "qualification":
+  //       return (
+  //         <div className={chartContainerClass}>
+  //           <div className="haze-overlay"></div>{" "}
+  //           {/* Haze effect before the chart */}
+  //           <QualificationChart typeOfFilter={durationFilter} />
+  //         </div>
+  //       );
+  //     case "gender":
+  //       return (
+  //         <div className={chartContainerClass}>
+  //           <div className="haze-overlay"></div>{" "}
+  //           {/* Haze effect before the chart */}
+  //           <GenderChart typeOfFilter={durationFilter} />
+  //         </div>
+  //       );
+  //     case "programs":
+  //       return (
+  //         <div className={chartContainerClass}>
+  //           <div className="haze-overlay"></div>{" "}
+  //           {/* Haze effect before the chart */}
+  //           <ProgramChart typeOfFilter={durationFilter} />
+  //         </div>
+  //       );
+  //     default:
+  //       return null;
+  //   }
+  // };
+
   const renderTabContent = () => {
+    const isLocked = accountType !== 65; // Check if the account type is not 65
+    const chartContainerClass = `chart-container ${isLocked ? "locked" : ""}`;
+
+    // Render the overlay if the account is locked
+    const renderOverlay = () => {
+      if (!isLocked) return null;
+
+      return (
+        <>
+          <div className="haze-overlay"></div>
+          <div className="lock-overlay">
+            <img src={Lock} alt="Lock Icon" className="lock-icon" />
+            <p>
+              {" "}
+              This feature is locked and available only with a premium account.
+            </p>
+          </div>
+        </>
+      );
+    };
+
+    return (
+      <div className={chartContainerClass}>
+        {/* Render the overlay conditionally */}
+        {renderOverlay()}
+
+        {/* Render the chart based on the active tab */}
+        {renderChartContent()}
+      </div>
+    );
+  };
+  const renderChartContent = () => {
     switch (activeTab) {
       case "country":
         return <CountryChart typeOfFilter={durationFilter} />;
@@ -138,11 +218,12 @@ const Dashboard = () => {
         return <GenderChart typeOfFilter={durationFilter} />;
       case "programs":
         return <ProgramChart typeOfFilter={durationFilter} />;
+      case "interested":
+        return <InterestedCategory typeOfFilter={durationFilter} />;
       default:
         return null;
     }
   };
-
   return (
     <>
       <Container className="px-4 py-3">
@@ -180,13 +261,15 @@ const Dashboard = () => {
             </Form>
           </div>
         </div>
+
+        {/* Application Stats Section */}
         <div className="SchoolDashboard-Application-Container">
           <div className="border shadow-sm rounded SchoolDasboard-Application-Content">
             <p className="SchoolDashboard-Application-Title">
               NEW APPLICATIONS
             </p>
             {newApplication !== null ? (
-              <h1 >{newApplication}</h1>
+              <h1>{newApplication}</h1>
             ) : (
               <div className="text-center">
                 <div
@@ -202,7 +285,7 @@ const Dashboard = () => {
               PENDING APPLICATIONS
             </p>
             {pendingApplication !== null ? (
-              <h1 >{pendingApplication}</h1>
+              <h1>{pendingApplication}</h1>
             ) : (
               <div className="text-center">
                 <div
@@ -212,12 +295,13 @@ const Dashboard = () => {
               </div>
             )}
           </div>
+
           <div className="border shadow-sm rounded SchoolDasboard-Application-Content">
             <p className="SchoolDashboard-Application-Title">
-              ACCEPT APPLICATION
+              ACCEPT APPLICATIONS
             </p>
             {acceptApplication !== null ? (
-              <h1 >{acceptApplication}</h1>
+              <h1>{acceptApplication}</h1>
             ) : (
               <div className="text-center">
                 <div
@@ -227,12 +311,13 @@ const Dashboard = () => {
               </div>
             )}
           </div>
+
           <div className="border shadow-sm rounded SchoolDasboard-Application-Content">
             <p className="SchoolDashboard-Application-Title">
-              REJECT APPLICATIONS
+              REJECT APPLICATION
             </p>
             {rejectApplication !== null ? (
-              <h1 >{rejectApplication}</h1>
+              <h1>{rejectApplication}</h1>
             ) : (
               <div className="text-center">
                 <div
@@ -243,38 +328,40 @@ const Dashboard = () => {
             )}
           </div>
         </div>
+
+        {/* Sort By Section */}
         <div className="SchoolDashboard-SortBy-Container">
           <h5>Sort By</h5>
         </div>
         <div className="SchoolDashboard-SortBy-Buttons">
           {/* Country */}
-          <button
-            onClick={() => handleTabClick("country")}
-          >
-            <GeoAlt size={22}/>
+          <button onClick={() => handleTabClick("country")}>
+            <GeoAlt size={22} />
             <p>Country</p>
           </button>
-          {/* Age group */}
-          <button
-            onClick={() => handleTabClick("qualification")}
-          >
+          {/* Qualification */}
+          <button onClick={() => handleTabClick("qualification")}>
             <Bookmark size={22} />
             <p>Qualification</p>
           </button>
-          <button
-            onClick={() => handleTabClick("gender")}
-          >
+          {/* Gender */}
+          <button onClick={() => handleTabClick("gender")}>
             <GenderAmbiguous size={22} />
             <p>Gender</p>
           </button>
           {/* Programs */}
-          <button
-            onClick={() => handleTabClick("programs")}
-          >
-            <Book size={22}/>
+          <button onClick={() => handleTabClick("programs")}>
+            <Book size={22} />
             <p>Category</p>
           </button>
+          {/* Interested */}
+          <button onClick={() => handleTabClick("interested")}>
+            <Heart size={22} />
+            <p>Interested</p>
+          </button>
         </div>
+
+        {/* Render chart */}
         {renderTabContent()}
       </Container>
     </>

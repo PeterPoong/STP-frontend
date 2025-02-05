@@ -18,6 +18,7 @@ const options = {
     height: "70%",
     top: "10%",
   },
+
   // animation: {
   //   startup: true,
   //   duration: 1000,
@@ -30,6 +31,9 @@ export const barOptions = {
   legend: {
     position: "bottom",
     alignment: "center",
+  },
+  bar: {
+    groupWidth: "80%", // Adjust bar width here
   },
   // animation: {
   //   startup: true,
@@ -65,7 +69,8 @@ const QualificationChart = ({ typeOfFilter }) => {
       try {
         const formData = { filterDuration: typeOfFilter };
         const response = await fetch(
-          `${import.meta.env.VITE_BASE_URL
+          `${
+            import.meta.env.VITE_BASE_URL
           }api/school/qualificationStatisticPieChart`,
           {
             method: "POST",
@@ -102,7 +107,8 @@ const QualificationChart = ({ typeOfFilter }) => {
       try {
         const formData = { filterDuration: typeOfFilter };
         const response = await fetch(
-          `${import.meta.env.VITE_BASE_URL
+          `${
+            import.meta.env.VITE_BASE_URL
           }api/school/qualificationStatisticBarChart`,
           {
             method: "POST",
@@ -184,7 +190,6 @@ const QualificationChart = ({ typeOfFilter }) => {
         </Col>
 
         <Col md={6}>
-
           {/*<Typography variant="h8" gutterBottom>
             <b>
               Number of Applications by{" "}
@@ -197,30 +202,30 @@ const QualificationChart = ({ typeOfFilter }) => {
               <span style={{ color: "#B71A18" }}>QUALIFICATION</span>
             </b>
           </div>
-            <Box
-              sx={{
-                width: "100%",
-                height: "400px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: "grey.200",
-              }}
-            >
-              {loading ? (
-                <Skeleton />
-              ) : barChartData.length === 0 ? (
-                <Typography>No data available</Typography>
-              ) : (
-                <Chart
-                  chartType="ComboChart"
-                  width="100%"
-                  height="400px"
-                  data={modifiedBarData}
-                  options={barOptions}
-                />
-              )}
-            </Box>
+          <Box
+            sx={{
+              width: "100%",
+              height: "400px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "grey.200",
+            }}
+          >
+            {loading ? (
+              <Skeleton />
+            ) : barChartData.length === 0 ? (
+              <Typography>No data available</Typography>
+            ) : (
+              <Chart
+                chartType="ComboChart"
+                width="100%"
+                height="400px"
+                data={modifiedBarData}
+                options={barOptions}
+              />
+            )}
+          </Box>
         </Col>
       </Row>
     </>
