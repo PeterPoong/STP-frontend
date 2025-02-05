@@ -16,6 +16,8 @@ import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { Pagination, Navigation, Autoplay } from "swiper/modules";
 import "../../../css/StudentCss/course page css/ApplyPage.css";
+import { requestUserCountry } from "../../../utils/locationRequest"; 
+
 const baseURL = import.meta.env.VITE_BASE_URL;
 const courseDetailAPI = `${baseURL}api/student/courseDetail`;
 const adsAURL = `${baseURL}api/student/advertisementList`;
@@ -305,7 +307,17 @@ const CourseDetail = () => {
       </div>
     );
   }
+  useEffect(() => {
+    const fetchCountry = async () => {
+      const country = await requestUserCountry();
+      if (country) {
+          console.log("User country:", country);
+          // You can also send this country to your backend if needed
+      }
+  };
 
+  fetchCountry();
+}, []);
   // Function to handle displaying more courses
   const handleViewMore = () => {
     setExpanded(!expanded); // Toggle collapse state

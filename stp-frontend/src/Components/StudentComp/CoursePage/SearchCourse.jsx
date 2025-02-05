@@ -25,6 +25,8 @@ import "swiper/css/pagination";
 import "swiper/css/navigation";
 import "swiper/swiper-bundle.css";
 import { Navigation, Autoplay } from "swiper/modules";
+import { requestUserCountry } from "../../../utils/locationRequest"; 
+
 export const baseURL = import.meta.env.VITE_BASE_URL;
 const countriesURL = `${baseURL}api/student/countryList`;
 const filterURL = `${baseURL}api/student/listingFilterList`;
@@ -83,7 +85,6 @@ const SearchCourse = () => {
   // Add new state for interests
   const [courseInterests, setCourseInterests] = useState({});
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-
   const topRef = useRef(null);
   const scrollToTop = () => {
     // Method 2: Using scrollIntoView
@@ -99,6 +100,35 @@ const SearchCourse = () => {
     window.requestAnimationFrame(scrollStep);
   };
 
+ const fetchCountry = async () => {
+  try {
+      const response = await fetch('https://ipinfo.io/json');
+      const data = await response.json();
+
+      if (data && data.country) {
+          const country = data.country; // Get the country code
+          sessionStorage.setItem('userCountry', country); // Save country in session storage
+          console.log("Fetched country:", country); // Log the fetched country
+          return country;
+      } else {
+          throw new Error('Unable to fetch location data');
+      }
+  } catch (error) {
+      console.error("Error fetching country:", error);
+      return null; // Return null if there's an error
+  }
+};
+
+useEffect(() => {
+  const fetchCountryAndSet = async () => {
+      const country = await fetchCountry(); // Fetch the country
+      if (country) {
+          console.log("User country:", country);
+          setSelectedCountry(countries.find(c => c.country_code === country)); // Set the selected country based on the fetched country
+      }
+  };
+  fetchCountryAndSet();
+}, []);
   useEffect(() => {
     if (currentPage) {
       scrollToTop();
@@ -666,17 +696,27 @@ useEffect(() => {
                         className="coursepage-estimatefee"
                       >
                         estimate fee
-                        <br />
+                        <br />program
                         <p style={{ fontSize: "16px" }}>
-                          {program.cost === "0" || program.cost === "RM0" ? (
-                            "N/A"
-                          ) : (
-                            <>
-                              <strong>RM </strong> {program.cost}
-                            </>
-                          )}
+                            {program.international_cost && program.country_code !== selectedCountry?.country_code ? (
+                                program.international_cost === "0" ? (
+                                    "N/A"
+                                ) : (
+                                    <>
+                                        <strong>RM </strong> {program.international_cost}
+                                    </>
+                                )
+                            ) : (
+                                program.cost === "0" || program.cost === "RM0" ? (
+                                    "N/A"
+                                ) : (
+                                    <>
+                                        <strong>RM </strong> {program.cost}
+                                    </>
+                                )
+                            )}
                         </p>
-                      </p>
+                    </p>
                     </div>
                     <div className="d-flex interest-division">
                     <div className="interest">

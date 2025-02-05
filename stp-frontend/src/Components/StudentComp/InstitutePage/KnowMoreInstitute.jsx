@@ -20,6 +20,7 @@ import {
 import "../../../css/StudentCss/course page css/SearchCourse.css";
 import studypal11 from "../../../assets/StudentAssets/institute image/StudyPal11.png";
 import Footer from "../../../Components/StudentComp/Footer";
+import { requestUserCountry } from "../../../utils/locationRequest"; 
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
@@ -250,7 +251,17 @@ const KnowMoreInstitute = () => {
       },
     });
   };
+  useEffect(() => {
+    const fetchCountry = async () => {
+      const country = await requestUserCountry();
+      if (country) {
+          console.log("User country:", country);
+          // You can also send this country to your backend if needed
+      }
+  };
 
+  fetchCountry();
+}, []);
   const handleContactSchool = (email) => {
     if (email) {
       // Remove any semicolons or other potential invalid characters
