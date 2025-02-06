@@ -171,7 +171,7 @@ const SearchCourse = () => {
       const data = await response.json();
   
       // Log the fetched data to the console
-      console.log("Fetched exchange rates:", data);
+      // console.log("Fetched exchange rates:", data);
   
       if (data && data.rates) {
         setExchangeRates(data.rates);
