@@ -203,7 +203,7 @@ const SearchCourse = () => {
         let country = data.country; // Get the real country code
         
         // Override country for testing
-        country = 'CN'; // Change this to 'SG' temporarily
+        // country = 'CN'; // Change this to 'SG' temporarily
   
         const currencyInfo = countryCurrencyMap[country] || { currency_code: "MYR", currency_symbol: "RM" };
   
@@ -211,9 +211,9 @@ const SearchCourse = () => {
         sessionStorage.setItem('userCurrencyCode', currencyInfo.currency_code);
         sessionStorage.setItem('userCurrencySymbol', currencyInfo.currency_symbol);
   
-        console.log("Fetched country:", country);
-        console.log("Currency Code:", currencyInfo.currency_code);
-        console.log("Currency Symbol:", currencyInfo.currency_symbol);
+        // console.log("Fetched country:", country);
+        // console.log("Currency Code:", currencyInfo.currency_code);
+        // console.log("Currency Symbol:", currencyInfo.currency_symbol);
   
         setFetchedCountry(country);
         setSelectedCurrency(currencyInfo); // Store currency info in state
@@ -232,7 +232,7 @@ const SearchCourse = () => {
     const fetchCountryAndSet = async () => {
       const country = await fetchCountry(); // Fetch the country
       if (country) {
-        console.log("User country:", country);
+        // console.log("User country:", country);
   
         const currencyCode = sessionStorage.getItem('userCurrencyCode') || "MYR"; // Fetch from storage
         setSelectedCountry(countries.find(c => c.country_code === country));

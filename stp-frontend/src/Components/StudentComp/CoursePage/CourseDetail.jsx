@@ -120,7 +120,7 @@ const CourseDetail = () => {
       const data = await response.json();
   
       // Log the fetched data to the console
-      console.log("Fetched exchange rates:", data);
+      // console.log("Fetched exchange rates:", data);
   
       if (data && data.rates) {
         setExchangeRates(data.rates);
@@ -135,16 +135,16 @@ const CourseDetail = () => {
     const currencyCode = sessionStorage.getItem('userCurrencyCode') || "MYR"; // Use sessionStorage value
     const currencySymbol = sessionStorage.getItem('userCurrencySymbol') || "RM";
 
-    console.log("Amount:", amount);
-    console.log("Currency Code:", currencyCode);
-    console.log("Exchange Rates:", exchangeRates);
+    // console.log("Amount:", amount);
+    // console.log("Currency Code:", currencyCode);
+    // console.log("Exchange Rates:", exchangeRates);
 
     if (!exchangeRates || !Object.keys(exchangeRates).length) {
         return `${currencySymbol} ${amount}`; // Return original cost if no rates available
     }
 
     const rate = exchangeRates[currencyCode] || 1; // Default to 1 if rate not found
-    console.log("Conversion Rate:", rate);
+    // console.log("Conversion Rate:", rate);
     return `${currencySymbol} ${currency(amount).multiply(rate).format()}`; // Convert MYR to the correct currency
   };
   const fetchCountry = async () => {
@@ -156,7 +156,7 @@ const CourseDetail = () => {
         let country = data.country; // Get the real country code
         
         // Override country for testing
-        country = 'AU'; // Change this to 'SG' temporarily
+        // country = 'AU'; // Change this to 'SG' temporarily
   
         const currencyInfo = countryCurrencyMap[country] || { currency_code: "MYR", currency_symbol: "RM" };
   
@@ -164,9 +164,9 @@ const CourseDetail = () => {
         sessionStorage.setItem('userCurrencyCode', currencyInfo.currency_code);
         sessionStorage.setItem('userCurrencySymbol', currencyInfo.currency_symbol);
   
-        console.log("Fetched country:", country);
-        console.log("Currency Code:", currencyInfo.currency_code);
-        console.log("Currency Symbol:", currencyInfo.currency_symbol);
+        // console.log("Fetched country:", country);
+        // console.log("Currency Code:", currencyInfo.currency_code);
+        // console.log("Currency Symbol:", currencyInfo.currency_symbol);
   
         setFetchedCountry(country);
         setSelectedCurrency(currencyInfo); // Store currency info in state
@@ -184,7 +184,7 @@ const CourseDetail = () => {
     const fetchCountryAndSet = async () => {
       const country = await fetchCountry(); // Fetch the country
       if (country) {
-        console.log("User country:", country);
+        // console.log("User country:", country);
   
         const currencyCode = sessionStorage.getItem('userCurrencyCode') || "MYR"; // Fetch from storage
         setSelectedCurrency(countryCurrencyMap[country]); // Use country directly from fetchCountry
