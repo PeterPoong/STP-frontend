@@ -1,32 +1,32 @@
-import React, { useState, useEffect } from 'react';
-import { Card, Form, Button, Row, Col, Alert,Spinner } from 'react-bootstrap';
+import React, { useState, useEffect } from "react";
+import { Card, Form, Button, Row, Col, Alert, Spinner } from "react-bootstrap";
 import "../../../css/StudentPortalStyles/StudentPortalLoginForm.css";
-import PhoneInput from 'react-phone-input-2';
-import 'react-phone-input-2/lib/style.css';
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 import "../../../css/StudentPortalStyles/StudentButtonGroup.css";
 
 const BasicInformationWidget = ({ onProfilePicUpdate }) => {
   const [studentData, setStudentData] = useState({
-    id: '',
-    username: '',
-    contact: '',
-    country_code: '',
-    email: '',
-    firstName: '',
-    lastName: '',
-    country: 'Malaysia',
-    city: '',
-    state: '',
-    postcode: '',
-    ic: '',
-    address: '',
-    gender: ''
+    id: "",
+    username: "",
+    contact: "",
+    country_code: "",
+    email: "",
+    firstName: "",
+    lastName: "",
+    country: "Malaysia",
+    city: "",
+    state: "",
+    postcode: "",
+    ic: "",
+    address: "",
+    gender: "",
   });
-  const [phone, setPhone] = useState('');
-  const [countryCode, setCountryCode] = useState('');
+  const [phone, setPhone] = useState("");
+  const [countryCode, setCountryCode] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [countries, setCountries] = useState([]);
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
@@ -47,91 +47,112 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
       setPhone(`${studentData.country_code}${studentData.contact}`);
     }
     if (countries.length > 0 && studentData.country) {
-      const countryId = countries.find(c => c.country_name === studentData.country)?.id;
+      const countryId = countries.find(
+        (c) => c.country_name === studentData.country
+      )?.id;
       if (countryId) fetchStates(countryId);
-    } 
+    }
     // New logic for gender preselection
-    if (studentData.country_code === '+60' && studentData.ic && !studentData.gender) {
+    if (
+      studentData.country_code === "+60" &&
+      studentData.ic &&
+      !studentData.gender
+    ) {
       const lastDigit = parseInt(studentData.ic.slice(-1));
-      const presetGender = lastDigit % 2 === 0 ? 'Female' : 'Male';
-      setStudentData(prevData => ({ ...prevData, gender: presetGender }));
+      const presetGender = lastDigit % 2 === 0 ? "Female" : "Male";
+      setStudentData((prevData) => ({ ...prevData, gender: presetGender }));
     }
   }, [studentData, countries]);
 
   useEffect(() => {
     if (studentData.state) {
-      const stateId = states.find(s => s.state_name === studentData.state)?.id;
+      const stateId = states.find(
+        (s) => s.state_name === studentData.state
+      )?.id;
       if (stateId) fetchCities(stateId);
     }
   }, [studentData.state, states]);
 
   const fetchGenderList = async () => {
     try {
-      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/genderList`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+      const token =
+        sessionStorage.getItem("token") || localStorage.getItem("token");
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL}api/student/genderList`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         }
-      });
+      );
 
       if (!response.ok) {
-        throw new Error(`Failed to fetch gender list. Status: ${response.status}`);
+        throw new Error(
+          `Failed to fetch gender list. Status: ${response.status}`
+        );
       }
 
       const data = await response.json();
       setGenderList(data.data || []);
     } catch (error) {
-      console.error('Error fetching gender list:', error);
-      setError('Failed to load gender options. Please try again later.');
+      console.error("Error fetching gender list:", error);
+      setError("Failed to load gender options. Please try again later.");
     }
   };
 
   const fetchStudentDetails = async () => {
     try {
-      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      const id = sessionStorage.getItem('id') || localStorage.getItem('id');
+      const token =
+        sessionStorage.getItem("token") || localStorage.getItem("token");
+      const id = sessionStorage.getItem("id") || localStorage.getItem("id");
 
       if (!id) {
-        setError('User ID not found. Please log in again.');
+        setError("User ID not found. Please log in again.");
         setIsLoading(false);
         return;
       }
 
-      const url = `${import.meta.env.VITE_BASE_URL}api/student/studentDetail?id=${id}`;
+      const url = `${
+        import.meta.env.VITE_BASE_URL
+      }api/student/studentDetail?id=${id}`;
 
       const response = await fetch(url, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ id: id })
+        body: JSON.stringify({ id: id }),
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to fetch student details. Status: ${response.status}`);
+        throw new Error(
+          `Failed to fetch student details. Status: ${response.status}`
+        );
       }
 
       const responseData = await response.json();
       //console.log('Fetched student data:', responseData);
 
       if (!responseData.data || Object.keys(responseData.data).length === 0) {
-        throw new Error('No data received from the server. Your profile might be incomplete.');
+        throw new Error(
+          "No data received from the server. Your profile might be incomplete."
+        );
       }
 
       if (responseData.data) {
         // Map gender ID to name
         // Use the gender from the response directly, as it's already the core_metaName
-        const genderName = responseData.data.gender || '';
+        const genderName = responseData.data.gender || "";
 
         const updatedStudentData = {
           ...responseData.data,
           gender: genderName, // This is already the core_metaName, not the ID
           // contact: responseData.data.contact_number || '',
           // country_code: responseData.data.country_code || ''
-          country : responseData.data.country || "Malaysia"
+          country: responseData.data.country || "Malaysia",
         };
 
         //console.log('Updated student data:', updatedStudentData);
@@ -139,57 +160,70 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
         setStudentData(updatedStudentData);
 
         // Set phone state
-        setPhone(`${updatedStudentData.country_code}${updatedStudentData.contact}`);
+        setPhone(
+          `${updatedStudentData.country_code}${updatedStudentData.contact}`
+        );
 
         // Add this line to update the profile picture
-        onProfilePicUpdate(responseData.data.profilePic || '');
+        onProfilePicUpdate(responseData.data.profilePic || "");
 
         setIsLoading(false);
       }
     } catch (error) {
-      console.error('Error in fetchStudentDetails:', error.message);
-      setError(error.message || 'Error fetching student details. Please try logging out and back in.');
+      console.error("Error in fetchStudentDetails:", error.message);
+      setError(
+        error.message ||
+          "Error fetching student details. Please try logging out and back in."
+      );
       setIsLoading(false);
     }
   };
 
   const fetchCountries = async () => {
     try {
-      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/countryList`, {
-        method: 'GET',
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      const token =
+        sessionStorage.getItem("token") || localStorage.getItem("token");
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL}api/student/countryList`,
+        {
+          method: "GET",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
       setCountries(data.data || []);
       if (!studentData.country) {
-      const malaysia = data.data.find(c => c.country_name === 'Malaysia');
-      if (malaysia) {
-        setStudentData(prevData => ({ ...prevData, country: 'Malaysia' }));
-        fetchStates(malaysia.id);
+        const malaysia = data.data.find((c) => c.country_name === "Malaysia");
+        if (malaysia) {
+          setStudentData((prevData) => ({ ...prevData, country: "Malaysia" }));
+          fetchStates(malaysia.id);
+        }
       }
+    } catch (error) {
+      console.error("Error fetching countries:", error);
+      setError("Failed to load countries. Please try again later.");
+      setCountries([]);
     }
-  } catch (error) {
-    console.error('Error fetching countries:', error);
-    setError('Failed to load countries. Please try again later.');
-    setCountries([]);
-  }
-};
+  };
 
   const fetchStates = async (countryId) => {
     try {
-      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/getState`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ id: countryId })
-      });
+      const token =
+        sessionStorage.getItem("token") || localStorage.getItem("token");
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL}api/getState`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ id: countryId }),
+        }
+      );
       if (!response.ok) {
         if (response.status === 404) {
           console.warn(`No states found for country ID: ${countryId}`);
@@ -197,12 +231,16 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
           return;
         }
         const errorData = await response.json();
-        throw new Error(`HTTP error! status: ${response.status}, message: ${JSON.stringify(errorData)}`);
+        throw new Error(
+          `HTTP error! status: ${response.status}, message: ${JSON.stringify(
+            errorData
+          )}`
+        );
       }
       const data = await response.json();
       setStates(data.data || []);
     } catch (error) {
-      console.error('Error fetching states:', error);
+      console.error("Error fetching states:", error);
       setError(`Failed to load states: ${error.message}`);
       setStates([]);
     }
@@ -210,15 +248,19 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
 
   const fetchCities = async (stateId) => {
     try {
-      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/getCities`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ id: stateId })
-      });
+      const token =
+        sessionStorage.getItem("token") || localStorage.getItem("token");
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL}api/getCities`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ id: stateId }),
+        }
+      );
       if (!response.ok) {
         if (response.status === 404) {
           console.warn(`No cities found for state ID: ${stateId}`);
@@ -226,12 +268,16 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
           return;
         }
         const errorData = await response.json();
-        throw new Error(`HTTP error! status: ${response.status}, message: ${JSON.stringify(errorData)}`);
+        throw new Error(
+          `HTTP error! status: ${response.status}, message: ${JSON.stringify(
+            errorData
+          )}`
+        );
       }
       const data = await response.json();
       setCities(data.data || []);
     } catch (error) {
-      console.error('Error fetching cities:', error);
+      console.error("Error fetching cities:", error);
       setError(`Failed to load cities: ${error.message}`);
       setCities([]);
     }
@@ -241,41 +287,41 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
     const { name, value } = e.target;
     let sanitizedValue = value;
 
-    if (name === 'username' ) {
-      sanitizedValue = value.replace(/[^a-zA-Z0-9]/g, '');
-    } else if (name === 'firstName' || name === 'lastName') {
-      sanitizedValue = value.replace(/[^a-zA-Z\s]/g, '');
-    } else if (name === 'postcode') {
-      sanitizedValue = value.replace(/[^0-9]/g, '');
-    } else if (name === 'ic') {
-      if (studentData.country_code === '+60') {
-        sanitizedValue = value.replace(/[^0-9]/g, '').slice(0, 12);
+    if (name === "username") {
+      sanitizedValue = value.replace(/[^a-zA-Z0-9]/g, "");
+    } else if (name === "firstName" || name === "lastName") {
+      sanitizedValue = value.replace(/[^a-zA-Z\s]/g, "");
+    } else if (name === "postcode") {
+      sanitizedValue = value.replace(/[^0-9]/g, "");
+    } else if (name === "ic") {
+      if (studentData.country_code === "+60") {
+        sanitizedValue = value.replace(/[^0-9]/g, "").slice(0, 12);
       } else {
-        sanitizedValue = value.replace(/[^a-zA-Z0-9]/g, '');
+        sanitizedValue = value.replace(/[^a-zA-Z0-9]/g, "");
       }
     }
 
-    setStudentData(prevData => ({
+    setStudentData((prevData) => ({
       ...prevData,
-      [name]: sanitizedValue
+      [name]: sanitizedValue,
     }));
 
-    if (name === 'gender') {
-      const selectedGender = genderList.find(g => g.core_metaName === value);
+    if (name === "gender") {
+      const selectedGender = genderList.find((g) => g.core_metaName === value);
       if (selectedGender) {
-        setStudentData(prevData => ({
+        setStudentData((prevData) => ({
           ...prevData,
-          gender: selectedGender.core_metaName
+          gender: selectedGender.core_metaName,
         }));
       }
     }
 
-     // If IC number changes and country code is Malaysia, preset gender
-     if (name === 'ic' && studentData.country_code === '+60') {
+    // If IC number changes and country code is Malaysia, preset gender
+    if (name === "ic" && studentData.country_code === "+60") {
       const lastDigit = parseInt(sanitizedValue.slice(-1));
       if (!isNaN(lastDigit)) {
-        const presetGender = lastDigit % 2 === 0 ? 'Female' : 'Male';
-        setStudentData(prevData => ({ ...prevData, gender: presetGender }));
+        const presetGender = lastDigit % 2 === 0 ? "Female" : "Male";
+        setStudentData((prevData) => ({ ...prevData, gender: presetGender }));
       }
     }
   };
@@ -283,56 +329,62 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
   const handlePhoneChange = (value, country, e, formattedValue) => {
     setPhone(value);
     setCountryCode(country.dialCode);
-    setStudentData(prevData => ({
+    setStudentData((prevData) => ({
       ...prevData,
       contact: value.slice(country.dialCode.length),
-      country_code: `+${country.dialCode}`
+      country_code: `+${country.dialCode}`,
     }));
 
     // If country code changes to Malaysia and IC exists, preset gender
-    if (country.dialCode === '60' && studentData.ic) {
+    if (country.dialCode === "60" && studentData.ic) {
       const lastDigit = parseInt(studentData.ic.slice(-1));
       if (!isNaN(lastDigit)) {
-        const presetGender = lastDigit % 2 === 0 ? 'Female' : 'Male';
-        setStudentData(prevData => ({ ...prevData, gender: presetGender }));
+        const presetGender = lastDigit % 2 === 0 ? "Female" : "Male";
+        setStudentData((prevData) => ({ ...prevData, gender: presetGender }));
       }
     }
   };
 
   const handleCountryChange = (e) => {
-    const selectedCountry = countries.find(country => country.id === parseInt(e.target.value));
-    setStudentData(prevData => ({
+    const selectedCountry = countries.find(
+      (country) => country.id === parseInt(e.target.value)
+    );
+    setStudentData((prevData) => ({
       ...prevData,
-      country: selectedCountry ? selectedCountry.country_name : '',
-      state: '',
-      city: ''
+      country: selectedCountry ? selectedCountry.country_name : "",
+      state: "",
+      city: "",
     }));
     fetchStates(e.target.value);
     setCities([]);
   };
 
   const handleStateChange = (e) => {
-    const selectedState = states.find(state => state.id === parseInt(e.target.value));
-    setStudentData(prevData => ({
+    const selectedState = states.find(
+      (state) => state.id === parseInt(e.target.value)
+    );
+    setStudentData((prevData) => ({
       ...prevData,
-      state: selectedState ? selectedState.state_name : '',
-      city: ''
+      state: selectedState ? selectedState.state_name : "",
+      city: "",
     }));
     fetchCities(e.target.value);
   };
 
   const handleCityChange = (e) => {
-    const selectedCity = cities.find(city => city.id === parseInt(e.target.value));
-    setStudentData(prevData => ({
+    const selectedCity = cities.find(
+      (city) => city.id === parseInt(e.target.value)
+    );
+    setStudentData((prevData) => ({
       ...prevData,
-      city: selectedCity ? selectedCity.city_name : ''
+      city: selectedCity ? selectedCity.city_name : "",
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
+    setError("");
+    setSuccess("");
 
     const submissionData = {
       name: studentData.username,
@@ -341,92 +393,116 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
       email: studentData.email,
       first_name: studentData.firstName,
       last_name: studentData.lastName,
-      country: countries.find(c => c.country_name === studentData.country)?.id.toString() || '',
-      state: states.find(s => s.state_name === studentData.state)?.id.toString() || '',
-      city: cities.find(c => c.city_name === studentData.city)?.id.toString() || '',
+      country:
+        countries
+          .find((c) => c.country_name === studentData.country)
+          ?.id.toString() || "",
+      state:
+        states.find((s) => s.state_name === studentData.state)?.id.toString() ||
+        "",
+      city:
+        cities.find((c) => c.city_name === studentData.city)?.id.toString() ||
+        "",
       postcode: studentData.postcode,
       ic: studentData.ic,
       address: studentData.address,
-      gender: genderList.find(g => g.core_metaName === studentData.gender)?.id.toString() || '',
+      gender:
+        genderList
+          .find((g) => g.core_metaName === studentData.gender)
+          ?.id.toString() || "",
     };
 
     //console.log('Data to be sent to the API:', JSON.stringify(submissionData, null, 2));
 
     try {
-      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/editStudentDetail`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(submissionData)
-      });
+      const token =
+        sessionStorage.getItem("token") || localStorage.getItem("token");
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL}api/student/editStudentDetail`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(submissionData),
+        }
+      );
 
       const responseData = await response.json();
       //console.log('API Response:', responseData);
 
       if (!response.ok) {
         if (response.status === 422) {
-          const errorMessages = Object.values(responseData.errors).flat().join(', ');
+          const errorMessages = Object.values(responseData.errors)
+            .flat()
+            .join(", ");
           throw new Error(`Validation error: ${errorMessages}`);
         }
-        throw new Error(`Failed to update student details. Status: ${response.status}`);
+        throw new Error(
+          `Failed to update student details. Status: ${response.status}`
+        );
       }
 
       if (responseData.success) {
-        setSuccess('Student details updated successfully!');
+        setSuccess("Student details updated successfully!");
+        localStorage.removeItem("userName");
+        localStorage.setItem("userName", studentData.username);
+
+        window.location.reload();
         // Optionally, you can refetch the student details here to update the form with the latest data
         // fetchStudentDetails();
       } else {
-        setError(responseData.message || 'Failed to update student details');
+        setError(responseData.message || "Failed to update student details");
       }
     } catch (error) {
-      console.error('Error in handleSubmit:', error);
+      console.error("Error in handleSubmit:", error);
       setError(`Error updating student details: ${error.message}`);
     }
   };
 
   if (isLoading) {
-    return <div>
+    return (
       <div>
-            <div className="d-flex justify-content-center align-self-center m-5" >
-              <Spinner animation="border" role="status">
-                <span className="visually-hidden">Loading...</span>
-              </Spinner>
-            </div>
+        <div>
+          <div className="d-flex justify-content-center align-self-center m-5">
+            <Spinner animation="border" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </Spinner>
           </div>
-    </div>;
+        </div>
+      </div>
+    );
   }
 
   if (error) {
-    return (
-      <Alert variant="danger">
-        {error}
-      </Alert>
-    );
+    return <Alert variant="danger">{error}</Alert>;
   }
 
   return (
     <div>
-      <h4 className="title-widget">{studentData.username || ''}'s Profile</h4>
+      <h4 className="title-widget">{studentData.username || ""}'s Profile</h4>
       <Card className="mb-4">
         <Card.Body className="mx-4">
           <div className="border-bottom mb-4">
-            <h2 className="fw-light title-widgettwo" style={{ color: "black" }}>Basic Information</h2>
+            <h2 className="fw-light title-widgettwo" style={{ color: "black" }}>
+              Basic Information
+            </h2>
           </div>
           {success && <Alert variant="success">{success}</Alert>}
           <Form onSubmit={handleSubmit}>
             <Row>
-              <Col md={6} >
+              <Col md={6}>
                 <Form.Group className="mb-3 " controlId="username">
-                  <Form.Label className="fw-bold small formlabel">Username <span className="text-danger">*</span></Form.Label>
+                  <Form.Label className="fw-bold small formlabel">
+                    Username <span className="text-danger">*</span>
+                  </Form.Label>
                   <Form.Control
                     type="text"
                     required
                     className="w-75 std-input-placeholder"
                     name="username"
-                    value={studentData.username || ''}
+                    value={studentData.username || ""}
                     onChange={handleInputChange}
                     placeholder="Enter username (letters and numbers only)"
                     pattern="[a-zA-Z0-9]+"
@@ -438,13 +514,15 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
             <Row className="mb-3 px-0">
               <Col md={6}>
                 <Form.Group controlId="first_name">
-                  <Form.Label className="fw-bold small formlabel">First Name <span className="text-danger">*</span></Form.Label>
+                  <Form.Label className="fw-bold small formlabel">
+                    First Name <span className="text-danger">*</span>
+                  </Form.Label>
                   <Form.Control
                     className="w-75 std-input-placeholder"
                     type="text"
                     required
                     name="firstName"
-                    value={studentData.firstName || ''}
+                    value={studentData.firstName || ""}
                     onChange={handleInputChange}
                     placeholder="Enter first name (letters and spaces only)"
                     pattern="[a-zA-Z\s]+"
@@ -454,13 +532,15 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
               </Col>
               <Col md={6}>
                 <Form.Group controlId="last_name">
-                  <Form.Label className="fw-bold small formlabel">Last Name <span className="text-danger">*</span></Form.Label>
+                  <Form.Label className="fw-bold small formlabel">
+                    Last Name <span className="text-danger">*</span>
+                  </Form.Label>
                   <Form.Control
                     type="text"
                     required
                     className="w-75 std-input-placeholder"
                     name="lastName"
-                    value={studentData.lastName || ''}
+                    value={studentData.lastName || ""}
                     onChange={handleInputChange}
                     placeholder="Enter last name (letters and spaces only)"
                     pattern="[a-zA-Z\s]+"
@@ -472,34 +552,55 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
             <Row className="mb-3 px-0">
               <Col md={6}>
                 <Form.Group controlId="ic">
-                  <Form.Label className="fw-bold small formlabel">Identity Card Number <span className="text-danger">*</span></Form.Label>
+                  <Form.Label className="fw-bold small formlabel">
+                    Identity Card Number <span className="text-danger">*</span>
+                  </Form.Label>
                   <Form.Control
                     type="text"
                     required
                     className="w-75 std-input-placeholder"
                     name="ic"
-                    value={studentData.ic || ''}
+                    value={studentData.ic || ""}
                     onChange={handleInputChange}
-                    placeholder={studentData.country_code === '+60' ? "Enter 12-digit IC number" : "Enter IC number"}
-                    pattern={studentData.country_code === '+60' ? "[0-9]{12}" : "[a-zA-Z0-9]+"}
-                    title={studentData.country_code === '+60' ? "IC must be exactly 12 digits" : "IC can only contain letters and numbers"}
-                    maxLength={studentData.country_code === '+60' ? 12 : undefined}
+                    placeholder={
+                      studentData.country_code === "+60"
+                        ? "Enter 12-digit IC number"
+                        : "Enter IC number"
+                    }
+                    pattern={
+                      studentData.country_code === "+60"
+                        ? "[0-9]{12}"
+                        : "[a-zA-Z0-9]+"
+                    }
+                    title={
+                      studentData.country_code === "+60"
+                        ? "IC must be exactly 12 digits"
+                        : "IC can only contain letters and numbers"
+                    }
+                    maxLength={
+                      studentData.country_code === "+60" ? 12 : undefined
+                    }
                   />
                 </Form.Group>
               </Col>
               <Col md={6}>
                 <Form.Group controlId="gender">
-                  <Form.Label className="fw-bold small formlabel">Gender <span className="text-danger">*</span></Form.Label>
+                  <Form.Label className="fw-bold small formlabel">
+                    Gender <span className="text-danger">*</span>
+                  </Form.Label>
                   <Form.Select
                     required
                     className="w-75 form-select "
                     name="gender"
-                    value={studentData.gender || ''}
+                    value={studentData.gender || ""}
                     onChange={handleInputChange}
                   >
-                    
                     {genderList.map((gender) => (
-                      <option key={gender.id} value={gender.core_metaName} style={{ color: "#000000" }}>
+                      <option
+                        key={gender.id}
+                        value={gender.core_metaName}
+                        style={{ color: "#000000" }}
+                      >
                         {gender.core_metaName}
                       </option>
                     ))}
@@ -510,15 +611,17 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
             <Row className="mb-3 px-0">
               <Col md={6}>
                 <Form.Group controlId="formBasicPhone" className="mb-3">
-                  <Form.Label className="fw-bold small formlabel">Contact Number</Form.Label>
+                  <Form.Label className="fw-bold small formlabel">
+                    Contact Number
+                  </Form.Label>
                   <PhoneInput
-                    country={'my'}
+                    country={"my"}
                     value={phone}
                     onChange={handlePhoneChange}
                     inputProps={{
-                      name: 'contact',
+                      name: "contact",
                       required: true,
-                      placeholder: 'Enter phone number'
+                      placeholder: "Enter phone number",
                     }}
                     inputClass="form-control"
                     containerClass="phone-input-container"
@@ -532,13 +635,15 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
               </Col>
               <Col md={6}>
                 <Form.Group controlId="email">
-                  <Form.Label className="fw-bold small formlabel">Email Address <span className="text-danger">*</span></Form.Label>
+                  <Form.Label className="fw-bold small formlabel">
+                    Email Address <span className="text-danger">*</span>
+                  </Form.Label>
                   <Form.Control
                     type="email"
                     required
                     className="w-75 std-input-placeholder"
                     name="email"
-                    value={studentData.email || ''}
+                    value={studentData.email || ""}
                     onChange={handleInputChange}
                     placeholder="Enter email address"
                   />
@@ -546,14 +651,16 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
               </Col>
             </Row>
             <Row>
-              <Col md={11}  >
+              <Col md={11}>
                 <Form.Group className="mb-3 pe-4" controlId="address">
-                  <Form.Label className="fw-bold small formlabel">Address <span className="text-danger">*</span></Form.Label>
+                  <Form.Label className="fw-bold small formlabel">
+                    Address <span className="text-danger">*</span>
+                  </Form.Label>
                   <Form.Control
                     required
                     className="w-100 std-input-placeholder"
                     name="address"
-                    value={studentData.address || ''}
+                    value={studentData.address || ""}
                     onChange={handleInputChange}
                     placeholder="Enter address"
                   />
@@ -561,17 +668,21 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
               </Col>
             </Row>
 
-
-
             <Row className="mb-3 px-0">
               <Col md={6}>
                 <Form.Group controlId="country">
-                  <Form.Label className="fw-bold small formlabel">Country <span className="text-danger">*</span></Form.Label>
+                  <Form.Label className="fw-bold small formlabel">
+                    Country <span className="text-danger">*</span>
+                  </Form.Label>
                   <Form.Select
                     required
                     className="w-75 "
                     name="country"
-                    value={countries.find(c => c.country_name === studentData.country)?.id || ''}
+                    value={
+                      countries.find(
+                        (c) => c.country_name === studentData.country
+                      )?.id || ""
+                    }
                     onChange={handleCountryChange}
                   >
                     <option value="">Select country</option>
@@ -585,12 +696,17 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
               </Col>
               <Col md={6}>
                 <Form.Group controlId="state">
-                  <Form.Label className="fw-bold small formlabel">State <span className="text-danger">*</span></Form.Label>
+                  <Form.Label className="fw-bold small formlabel">
+                    State <span className="text-danger">*</span>
+                  </Form.Label>
                   <Form.Select
                     required
                     className="w-75"
                     name="state"
-                    value={states.find(s => s.state_name === studentData.state)?.id || ''}
+                    value={
+                      states.find((s) => s.state_name === studentData.state)
+                        ?.id || ""
+                    }
                     onChange={handleStateChange}
                   >
                     <option value="">Select state</option>
@@ -606,12 +722,17 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
             <Row className="mb-4 ">
               <Col md={6}>
                 <Form.Group controlId="city">
-                  <Form.Label className="fw-bold small formlabel">City <span className="text-danger">*</span></Form.Label>
+                  <Form.Label className="fw-bold small formlabel">
+                    City <span className="text-danger">*</span>
+                  </Form.Label>
                   <Form.Select
                     required
                     className="w-75"
                     name="city"
-                    value={cities.find(c => c.city_name === studentData.city)?.id || ''}
+                    value={
+                      cities.find((c) => c.city_name === studentData.city)
+                        ?.id || ""
+                    }
                     onChange={handleCityChange}
                   >
                     <option value="">Select city</option>
@@ -625,13 +746,15 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
               </Col>
               <Col md={6}>
                 <Form.Group controlId="postcode">
-                  <Form.Label className="fw-bold small formlabel">Postcode <span className="text-danger">*</span></Form.Label>
+                  <Form.Label className="fw-bold small formlabel">
+                    Postcode <span className="text-danger">*</span>
+                  </Form.Label>
                   <Form.Control
                     type="text"
                     required
                     className="w-75 std-input-placeholder"
                     name="postcode"
-                    value={studentData.postcode || ''}
+                    value={studentData.postcode || ""}
                     onChange={handleInputChange}
                     placeholder="Enter postcode (numbers only)"
                     pattern="[0-9]+"
@@ -642,7 +765,11 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
             </Row>
             <div className="d-flex justify-content-end mt-3">
               <div className="my-2">
-                <Button variant="danger" type="submit" className="mpbtndiv m-0 fw-bold rounded-pill">
+                <Button
+                  variant="danger"
+                  type="submit"
+                  className="mpbtndiv m-0 fw-bold rounded-pill"
+                >
                   Save
                 </Button>
               </div>
@@ -650,7 +777,7 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
           </Form>
         </Card.Body>
       </Card>
-    </div >
+    </div>
   );
 };
 

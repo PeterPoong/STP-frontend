@@ -19,21 +19,21 @@ const NavigationBar = () => {
   const [displayLanguage, setDisplayLanguage] = useState(currentLanguage);
 
   const languages = [
-    { code: 'en', label: 'English', nativeLabel: 'English' },
-    { code: 'ms', label: 'Bahasa Melayu', nativeLabel: 'Bahasa Melayu' },
-    { code: 'zh-CN', label: '中文', nativeLabel: '中文' }
+    { code: "en", label: "English", nativeLabel: "English" },
+    { code: "ms", label: "Bahasa Melayu", nativeLabel: "Bahasa Melayu" },
+    { code: "zh-CN", label: "中文", nativeLabel: "中文" },
   ];
 
   useEffect(() => {
     const syncLanguageDisplay = () => {
       // Get the current Google Translate language
-      const translateElement = document.querySelector('.goog-te-combo');
+      const translateElement = document.querySelector(".goog-te-combo");
       if (translateElement) {
         const currentValue = translateElement.value;
-        setDisplayLanguage(currentValue || 'en');
+        setDisplayLanguage(currentValue || "en");
       } else {
         // If element not found, check localStorage
-        const savedLang = localStorage.getItem('preferredLanguage');
+        const savedLang = localStorage.getItem("preferredLanguage");
         if (savedLang) {
           setDisplayLanguage(savedLang);
         }
@@ -48,7 +48,7 @@ const NavigationBar = () => {
     const targetNode = document.body;
     observer.observe(targetNode, {
       childList: true,
-      subtree: true
+      subtree: true,
     });
 
     return () => observer.disconnect();
@@ -56,8 +56,10 @@ const NavigationBar = () => {
 
   useEffect(() => {
     const checkAuth = () => {
-      const token = sessionStorage.getItem("token") || localStorage.getItem("token");
-      const storedUserName = sessionStorage.getItem("userName") || localStorage.getItem("userName");
+      const token =
+        sessionStorage.getItem("token") || localStorage.getItem("token");
+      const storedUserName =
+        sessionStorage.getItem("userName") || localStorage.getItem("userName");
 
       setHasToken(!!token);
       if (storedUserName) {
@@ -67,8 +69,8 @@ const NavigationBar = () => {
 
     checkAuth();
     // Add event listener for storage changes
-    window.addEventListener('storage', checkAuth);
-    return () => window.removeEventListener('storage', checkAuth);
+    window.addEventListener("storage", checkAuth);
+    return () => window.removeEventListener("storage", checkAuth);
   }, []);
 
   const handleLogout = () => {
@@ -78,10 +80,10 @@ const NavigationBar = () => {
       "loginTimestamp",
       "userName",
       "lastAppliedCourseId",
-      "id"
+      "id",
     ];
 
-    itemsToRemove.forEach(item => {
+    itemsToRemove.forEach((item) => {
       sessionStorage.removeItem(item);
       localStorage.removeItem(item);
     });
@@ -91,7 +93,7 @@ const NavigationBar = () => {
     setUserName("");
 
     // Force a re-render by updating localStorage
-    localStorage.setItem('logoutTimestamp', Date.now().toString());
+    localStorage.setItem("logoutTimestamp", Date.now().toString());
 
     // Navigate to home page
     navigate("/", { replace: true });
@@ -112,12 +114,7 @@ const NavigationBar = () => {
     >
       <Container>
         <Navbar.Brand as={Link} to="/">
-          <img
-            src={logo}
-            alt="Logo"
-            className="logo"
-            loading="lazy"
-          />
+          <img src={logo} alt="Logo" className="logo" loading="lazy" />
           {/*<img 
             src={logo} 
             alt="Logo" 
@@ -137,11 +134,12 @@ const NavigationBar = () => {
               variant="link"
               as={Link}
               to="/courses"
-              className={`nav-link-custom ${location.pathname === "/courses" ||
+              className={`nav-link-custom ${
+                location.pathname === "/courses" ||
                 location.pathname.startsWith("/courses")
-                ? "active"
-                : ""
-                }`}
+                  ? "active"
+                  : ""
+              }`}
               style={{ marginLeft: "10px" }}
             >
               Courses
@@ -150,11 +148,12 @@ const NavigationBar = () => {
               variant="link"
               as={Link}
               to="/institute"
-              className={`nav-link-custom ${location.pathname === "/institute" ||
+              className={`nav-link-custom ${
+                location.pathname === "/institute" ||
                 location.pathname.startsWith("/institute")
-                ? "active"
-                : ""
-                }`}
+                  ? "active"
+                  : ""
+              }`}
               style={{ marginLeft: "10px" }}
             >
               Schools
@@ -163,11 +162,12 @@ const NavigationBar = () => {
               variant="link"
               as={Link}
               to="/studentStudyPath"
-              className={`nav-link-custom ${location.pathname === "/studentStudyPath" ||
+              className={`nav-link-custom ${
+                location.pathname === "/studentStudyPath" ||
                 location.pathname.startsWith("/studentStudyPath")
-                ? "active"
-                : ""
-                }`}
+                  ? "active"
+                  : ""
+              }`}
               style={{ marginLeft: "10px" }}
             >
               Find Your Path
@@ -176,11 +176,12 @@ const NavigationBar = () => {
               variant="link"
               as={Link}
               to="/studentFeedback"
-              className={`nav-link-custom ${location.pathname === "/studentFeedback" ||
+              className={`nav-link-custom ${
+                location.pathname === "/studentFeedback" ||
                 location.pathname.startsWith("/studentFeedback")
-                ? "active"
-                : ""
-                }`}
+                  ? "active"
+                  : ""
+              }`}
               style={{ marginLeft: "10px" }}
             >
               Contact Us
@@ -192,9 +193,10 @@ const NavigationBar = () => {
                 className="nav-button-language"
                 id="dropdown-custom-1"
               >
-                <span className="notranslate" style={{fontSize:"12px"}}>
-                  <Translate size={20} color="#BA1718"  className="me-2"/>
-                  {languages.find(lang => lang.code === displayLanguage)?.nativeLabel || 'English'}
+                <span className="notranslate" style={{ fontSize: "12px" }}>
+                  <Translate size={20} color="#BA1718" className="me-2" />
+                  {languages.find((lang) => lang.code === displayLanguage)
+                    ?.nativeLabel || "English"}
                 </span>
               </Dropdown.Toggle>
               <Dropdown.Menu>
@@ -208,9 +210,7 @@ const NavigationBar = () => {
                     className="dropdown"
                     active={displayLanguage === lang.code}
                   >
-                    <span className="notranslate">
-                      {lang.nativeLabel}
-                    </span>
+                    <span className="notranslate">{lang.nativeLabel}</span>
                   </Dropdown.Item>
                 ))}
               </Dropdown.Menu>
