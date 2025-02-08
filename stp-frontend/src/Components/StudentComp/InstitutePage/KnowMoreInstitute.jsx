@@ -200,22 +200,50 @@ const KnowMoreInstitute = () => {
       console.error("Error fetching exchange rates:", error);
     }
   };
+  useEffect(() => {
+    const fetchCurrencyOnChange = async () => {
+      const currencyCode = sessionStorage.getItem('userCurrencyCode') || 'MYR';
+      const currencySymbol = sessionStorage.getItem('userCurrencySymbol') || 'RM';
+  
+      // Fetch exchange rates based on the selected currency
+      await fetchExchangeRates(currencyCode);
+  
+      setSelectedCurrency({ currency_code: currencyCode, currency_symbol: currencySymbol });
+   
+    };   
+    fetchCurrencyOnChange(); // Fetch the currency rates immediately on component mount or currency change
+  }, [sessionStorage.getItem('userCurrencyCode')]);  // Trigger on currency code change in session storage
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const newCurrencyCode = sessionStorage.getItem('userCurrencyCode') || 'MYR';
+      
+      if (newCurrencyCode !== selectedCurrency.currency_code) {
+        setSelectedCurrency({ 
+          currency_code: newCurrencyCode, 
+          currency_symbol: sessionStorage.getItem('userCurrencySymbol') || 'RM' 
+        });
+  
+        console.log("Detected currency change in sessionStorage:", newCurrencyCode);
+        
+        fetchExchangeRates(newCurrencyCode);
+        fetchSchool();
+      }
+    }, 1000); // Check every second
+  
+    return () => clearInterval(interval);
+  }, [selectedCurrency]);
   const convertToFetchedCurrency = (amount) => {
     const currencyCode = sessionStorage.getItem('userCurrencyCode') || "MYR"; // Use sessionStorage value
     const currencySymbol = sessionStorage.getItem('userCurrencySymbol') || "RM";
-
-    // console.log("Amount:", amount);
-    // console.log("Currency Code:", currencyCode);
-    // console.log("Exchange Rates:", exchangeRates);
-
+  
     if (!exchangeRates || !Object.keys(exchangeRates).length) {
-        return `${currencySymbol} ${amount}`; // Return original cost if no rates available
+      return `${currencySymbol} ${amount}`; // Return original cost if no rates available
     }
-
-    const rate = exchangeRates[currencyCode] || 1; // Default to 1 if rate not found
-    // console.log("Conversion Rate:", rate);
+  
+    const rate = exchangeRates[currencyCode] || 1;
     return `${currencySymbol} ${currency(amount).multiply(rate).format()}`; // Convert MYR to the correct currency
   };
+  
   const fetchCountry = async () => {
     try {
       const response = await fetch('https://ipinfo.io/json');

@@ -10,23 +10,9 @@ import CoursesContainer from "../Components/StudentComp/CoursesContainer";
 import VideoSlide from "../Components/StudentComp/VideoSlide";
 import Footer from "../Components/StudentComp/Footer";
 import FeaturedCoursesContainer from "../../Components/StudentComp/FeaturedCoursesContainer";
-import { requestUserCountry } from "../../utils/locationRequest"; 
+
 const Home = () => {
   // Generate structured data for the homepage
-  useEffect(() => {
-    const fetchCountry = async () => {
-        const country = await requestUserCountry();
-        if (country) {
-            console.log("User country:", country); // Log the country to the console
-        } else {
-            console.log("No country fetched.");
-        }
-    };
-
-    fetchCountry();
-}, []);
-
-
   const generateStructuredData = () => {
     return {
       "@context": "https://schema.org",

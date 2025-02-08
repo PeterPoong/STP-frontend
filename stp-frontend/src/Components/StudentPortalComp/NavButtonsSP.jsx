@@ -10,6 +10,7 @@ import ButtonGroup from "react-bootstrap/ButtonGroup";
 import logo from "../../assets/StudentAssets/nav logo/logo.png";
 import "../../css/StudentPortalStyles/StudentNavBar.css";
 import { useTranslation } from "../../Context/TranslationContext";
+import currency from 'currency.js';
 
 const NavigationBar = () => {
   const [hasToken, setHasToken] = useState(null);
@@ -17,7 +18,144 @@ const NavigationBar = () => {
   const navigate = useNavigate();
   const { currentLanguage, changeLanguage } = useTranslation();
   const [displayLanguage, setDisplayLanguage] = useState(currentLanguage);
+  const countryCurrencyMap = {
+    // Asia
+    MY: { currency_code: "MYR", currency_symbol: "RM" }, // Malaysia
+    SG: { currency_code: "SGD", currency_symbol: "S$" }, // Singapore
+    ID: { currency_code: "IDR", currency_symbol: "Rp" }, // Indonesia
+    TH: { currency_code: "THB", currency_symbol: "฿" }, // Thailand
+    VN: { currency_code: "VND", currency_symbol: "₫" }, // Vietnam
+    PH: { currency_code: "PHP", currency_symbol: "₱" }, // Philippines
+    IN: { currency_code: "INR", currency_symbol: "₹" }, // India
+    CN: { currency_code: "CNY", currency_symbol: "¥" }, // China (Renminbi)
+    JP: { currency_code: "JPY", currency_symbol: "¥" }, // Japan
+    KR: { currency_code: "KRW", currency_symbol: "₩" }, // South Korea
+    HK: { currency_code: "HKD", currency_symbol: "HK$" }, // Hong Kong
+    TW: { currency_code: "TWD", currency_symbol: "NT$" }, // Taiwan
+  
+    // Europe
+    GB: { currency_code: "GBP", currency_symbol: "£" }, // United Kingdom
+    DE: { currency_code: "EUR", currency_symbol: "€" }, // Germany
+    FR: { currency_code: "EUR", currency_symbol: "€" }, // France
+    IT: { currency_code: "EUR", currency_symbol: "€" }, // Italy
+    ES: { currency_code: "EUR", currency_symbol: "€" }, // Spain
+    NL: { currency_code: "EUR", currency_symbol: "€" }, // Netherlands
+    CH: { currency_code: "CHF", currency_symbol: "CHF" }, // Switzerland
+    SE: { currency_code: "SEK", currency_symbol: "kr" }, // Sweden
+    NO: { currency_code: "NOK", currency_symbol: "kr" }, // Norway
+    DK: { currency_code: "DKK", currency_symbol: "kr" }, // Denmark
+  
+    // North America
+    US: { currency_code: "USD", currency_symbol: "$" }, // United States
+    CA: { currency_code: "CAD", currency_symbol: "C$" }, // Canada
+    MX: { currency_code: "MXN", currency_symbol: "Mex$" }, // Mexico
+  
+    // South America
+    BR: { currency_code: "BRL", currency_symbol: "R$" }, // Brazil
+    AR: { currency_code: "ARS", currency_symbol: "ARS$" }, // Argentina
+    CL: { currency_code: "CLP", currency_symbol: "CLP$" }, // Chile
+    CO: { currency_code: "COP", currency_symbol: "COP$" }, // Colombia
+    PE: { currency_code: "PEN", currency_symbol: "S/" }, // Peru
+  
+    // Middle East
+    AE: { currency_code: "AED", currency_symbol: "د.إ" }, // United Arab Emirates
+    SA: { currency_code: "SAR", currency_symbol: "﷼" }, // Saudi Arabia
+    TR: { currency_code: "TRY", currency_symbol: "₺" }, // Turkey
+    QA: { currency_code: "QAR", currency_symbol: "﷼" }, // Qatar
+    EG: { currency_code: "EGP", currency_symbol: "E£" }, // Egypt
+    IL: { currency_code: "ILS", currency_symbol: "₪" }, // Israel
+    BD: { currency_code: "BDT", currency_symbol: "৳" }, // Bangladesh
+  
+    // Africa
+    ZA: { currency_code: "ZAR", currency_symbol: "R" }, // South Africa
+    NG: { currency_code: "NGN", currency_symbol: "₦" }, // Nigeria
+    KE: { currency_code: "KES", currency_symbol: "KSh" }, // Kenya
+    GH: { currency_code: "GHS", currency_symbol: "₵" }, // Ghana
+  
+    // Oceania
+    AU: { currency_code: "AUD", currency_symbol: "A$" }, // Australia
+    NZ: { currency_code: "NZD", currency_symbol: "NZ$" }, // New Zealand
+  };
+  const [exchangeRates, setExchangeRates] = useState({});
+  const [selectedCurr, setSelectedCurr] = useState({ currency_code: "MYR", currency_symbol: "RM" });
+  const [fetchedCountry, setFetchedCountry] = useState(null);
+  const fetchExchangeRates = async (currencyCode) => {
+    try {
+      console.log("Fetching exchange rates..."); // Log before fetching
+      const response = await fetch(`https://api.frankfurter.app/latest?from=MYR`);
+      const data = await response.json();
+  
+      // Log the fetched data to the console
+      // console.log("Fetched exchange rates:", data);
+  
+      if (data && data.rates) {
+        setExchangeRates(data.rates);
+      } else {
+        console.warn("No rates found in the fetched data."); // Log if no rates found
+      }
+    } catch (error) {
+      console.error("Error fetching exchange rates:", error);
+    }
+  };
+  const convertToFetchedCurrency = (amount) => {
+    const currencyCode = selectedCurr.currency_code; // Use selectedCurr directly
+    const currencySymbol = selectedCurr.currency_symbol;
 
+    if (!exchangeRates || !Object.keys(exchangeRates).length) {
+        return `${currencySymbol} ${amount}`; // Return original cost if no rates available
+    }
+
+    const rate = exchangeRates[currencyCode] || 1; // Default to 1 if rate not found
+    return `${currencySymbol} ${currency(amount).multiply(rate).format()}`; // Convert MYR to the correct currency
+  };
+  const fetchCountry = async () => {
+    try {
+      const response = await fetch('https://ipinfo.io/json');
+      const data = await response.json();
+  
+      if (data && data.country) {
+        let country = data.country; // Get the real country code
+        
+        // Override country for testing
+        // country = 'AU'; // Change this to 'SG' temporarily
+  
+        const currencyInfo = countryCurrencyMap[country] || { currency_code: "MYR", currency_symbol: "RM" };
+  
+        sessionStorage.setItem('userCountry', country);
+        sessionStorage.setItem('userCurrencyCode', currencyInfo.currency_code);
+        sessionStorage.setItem('userCurrencySymbol', currencyInfo.currency_symbol);
+  
+        // console.log("Fetched country:", country);
+        // console.log("Currency Code:", currencyInfo.currency_code);
+        // console.log("Currency Symbol:", currencyInfo.currency_symbol);
+  
+        setFetchedCountry(country);
+        setSelectedCurr(currencyInfo); // Store currency info in state
+  
+        return country;
+      } else {
+        throw new Error('Unable to fetch location data');
+      }
+    } catch (error) {
+      console.error("Error fetching country:", error);
+      return null;
+    }
+  };
+  useEffect(() => {
+    const fetchCountryAndSet = async () => {
+      const country = await fetchCountry(); // Fetch the country
+      if (country) {
+        // console.log("User country:", country);
+  
+        const currencyCode = sessionStorage.getItem('userCurrencyCode') || "MYR"; // Fetch from storage
+        setSelectedCurr(countryCurrencyMap[country]); // Use country directly from fetchCountry
+  
+        // Fetch exchange rates based on the detected currency
+        await fetchExchangeRates(currencyCode);
+      }
+    };
+    fetchCountryAndSet();
+  }, []);
   const languages = [
     { code: 'en', label: 'English', nativeLabel: 'English' },
     { code: 'ms', label: 'Bahasa Melayu', nativeLabel: 'Bahasa Melayu' },
@@ -99,6 +237,17 @@ const NavigationBar = () => {
 
   const handleRoute = () => {
     navigate("/studentPortalBasicInformations");
+  };
+
+  const handleCurrencyChange = (currencyInfo) => {
+    console.log("Changing currency to:", currencyInfo); // Debugging line
+    setSelectedCurr(currencyInfo);
+    sessionStorage.setItem('userCurrencyCode', currencyInfo.currency_code);
+    sessionStorage.setItem('userCurrencySymbol', currencyInfo.currency_symbol);
+    
+    // Optionally, you can also trigger a re-fetch of data in other components if needed
+    // For example, if you need to fetch exchange rates again:
+    fetchExchangeRates(currencyInfo.currency_code);
   };
 
   if (hasToken === null) return null;
@@ -213,6 +362,30 @@ const NavigationBar = () => {
                     </span>
                   </Dropdown.Item>
                 ))}
+              </Dropdown.Menu>
+            </Dropdown>
+          </ButtonGroup>
+          <ButtonGroup>
+            <Dropdown as={ButtonGroup}>
+              <Dropdown.Toggle className="currency-dropdown">
+                {selectedCurr.currency_code}
+              </Dropdown.Toggle>
+              <Dropdown.Menu className="currency-dropdown-menu">
+                {Array.from(new Set(Object.entries(countryCurrencyMap).map(([countryCode, currencyInfo]) => currencyInfo.currency_code)))
+                  .map((currencyCode) => {
+                    const currencyInfo = Object.values(countryCurrencyMap).find(info => info.currency_code === currencyCode);
+                    return (
+                      <Dropdown.Item
+                        key={currencyCode}
+                        onClick={() => {
+                          handleCurrencyChange(currencyInfo);
+                          console.log("Selected Cur Info:", currencyInfo);
+                        }}
+                      >
+                        {currencyInfo.currency_code} - {currencyInfo.currency_symbol}
+                      </Dropdown.Item>
+                    );
+                  })}
               </Dropdown.Menu>
             </Dropdown>
           </ButtonGroup>
