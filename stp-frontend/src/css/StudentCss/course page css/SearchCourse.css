@@ -214,11 +214,11 @@
   font-size: 17px;
   text-align: center;
 }
-.searchinputborder{
+.searchinputborder, .countryinput{
   border: #ced4da 1px solid !important;
   border-radius: 5px !important;
 }
-.searchinputborder:focus{
+.searchinputborder:focus, .countryinput:focus{
   border: black 1px solid !important; /* Change border color to black on focus */
 
 }

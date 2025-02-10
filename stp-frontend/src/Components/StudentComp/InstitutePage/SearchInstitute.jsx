@@ -778,13 +778,14 @@ const SearchInstitute = () => {
                   )}
                 </Dropdown.Toggle>
                 <Dropdown.Menu className="scrollable-dropdown">
-                  <InputGroup className="mb-2">
+                  <InputGroup className="mb-2 ps-3 pe-3">
                     <Form.Control
                       placeholder="Filter countries"
                       onChange={(e) =>
                         setCountryFilter(e.target.value.toLowerCase())
                       }
                       value={countryFilter}
+                      className="ps-1 countryinput"
                     />
                   </InputGroup>
                   {countries
@@ -1080,11 +1081,12 @@ const SearchInstitute = () => {
                     )}
                   </Accordion.Header>
                   <Accordion.Body>
-                    <InputGroup className="mb-2">
+                    <InputGroup className="mb-2 ps-3 pe-3">
                       <Form.Control
                         placeholder="Filter countries"
                         onChange={(e) => setCountryFilter(e.target.value.toLowerCase())}
                         value={countryFilter}
+                      className="ps-1 countryinput"
                       />
                     </InputGroup>
                     <div className="country-list">
