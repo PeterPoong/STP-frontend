@@ -1,31 +1,23 @@
 import React, { useState, useEffect } from "react";
-import { Row, Col, Container, Button, Spinner } from "react-bootstrap";
+import { Row, Col, Container, Button, ButtonGroup } from "react-bootstrap";
 
 import "bootstrap/dist/css/bootstrap.min.css";
-import stickman from "../../../../assets/SchoolPortalAssets/20856932_6381326 1.png";
 import styles from "../../../../css/SchoolPortalStyle/ManageAccount.module.css";
+// import styles from "../../../../css/MarketingStyles/accountPackages.module.css";
 import basicIcon from "../../../../assets/SchoolPortalAssets/Group 1686550950.png";
 import premiumIcon from "../../../../assets/SchoolPortalAssets/Group 1686550952.png";
 
-const ManageAccount = () => {
-  const token = sessionStorage.getItem("token");
-  const [basicPackage, setBasicPackage] = useState({});
-  const [premiumPackage, setPremiumPackage] = useState({});
-  const [accountType, setAccountType] = useState("");
-  const [isLoading, setIsLoading] = useState(true)
-  const getPackage = async (type) => {
+const AccountPackages = () => {
+  const [packages, setPackages] = useState();
+  const [activePlan, setActivePlan] = useState("annual");
+  const [priceLabel, setPriceLabel] = useState("billed annually");
+  const [priceDiscount, setPriceDiscount] = useState(95);
+  const [account, setAccount] = useState();
+
+  const getPackageDetail = async () => {
     try {
-      const formData = { package_type: type };
       const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}api/admin/packageList`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        }
+        `${import.meta.env.VITE_BASE_URL}api/marketing/packageList`
       );
 
       if (!response.ok) {
@@ -34,298 +26,156 @@ const ManageAccount = () => {
       }
 
       const fetchedData = await response.json();
-      if (type === 76) {
-        setBasicPackage(fetchedData.data[0]);
-      } else if (type === 77) {
-        setPremiumPackage(fetchedData.data[0]);
-      }
-      setIsLoading(false)
+      setPackages(fetchedData.data);
+      // console.log("package", packages);
     } catch (error) {
-      console.error("Failed to get package data", error);
+      console.error("Failed to fetch package details:", error);
     }
   };
 
-  const getAccountDetail = async () => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}api/school/schoolDetail`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData["error"] || "Internal Server Error");
-      }
-
-      const fetchedData = await response.json();
-      setAccountType(fetchedData.data.account_type);
-      // setAccountType(65);
-    } catch (error) {
-      console.error("Failed to get package data", error);
+  const handleToggle = (plan) => {
+    setActivePlan(plan);
+    switch (plan) {
+      case "annual":
+        setPriceLabel("billed annually");
+        setPriceDiscount(95);
+        break;
+      case "quarterly":
+        setPriceLabel("billed quarterly");
+        setPriceDiscount(97);
+        break;
+      case "monthly":
+        setPriceLabel("billed monthly");
+        setPriceDiscount(100);
+        break;
     }
+  };
+
+  const calculatePrice = (price) => {
+    const discount = priceDiscount / 100;
+    const discountPrice = price * discount;
+    return discountPrice.toFixed(2);
   };
 
   useEffect(() => {
-    setIsLoading(true);
-    getPackage(76); // Basic Package
-    getPackage(77); // Premium Package
-    getAccountDetail();
-  }, [token]);
-
-  const decodeHTML = (html) => {
-    const textArea = document.createElement("textarea");
-    textArea.innerHTML = html;
-    return textArea.value;
-  };
-
-  const packageDetails = decodeHTML(basicPackage.package_detail);
-  const listItems = packageDetails
-    .split("<li>")
-    .slice(1)
-    .map((item) => item.replace(/<\/li>/, ""));
-
-  const handleRedirect = () => {
-    window.location.href = "https://example.com"; // Change to the desired URL
-  };
-
-  if (isLoading) return <div>
-    <div className="w-100 h-100 align-items-center justify-content-center">
-      <Spinner animation="border" role="status">
-        <span className="visually-hidden">Loading...</span>
-      </Spinner>
-    </div>
-  </div>;
+    getPackageDetail();
+    const account =
+      sessionStorage.getItem("account_type") ||
+      localStorage.getItem("account_type");
+    setAccount(account);
+  }, []);
 
   return (
-    <Container fluid className={` ${styles.manageAccountContainer}`}>
+    <Container fluid className={styles.manageAccountContainer}>
       <Row>
-        <Col
-          md={7}
-          className={` d-flex flex-column justify-content-start ${styles.basicText}`}
-        >
-          <h3 className={styles.heading}>Upgrade your Account</h3>
+        <Col md={12} className="text-center">
+          <h3 className={styles.heading}>Our Packages</h3>
           <p className={styles.description}>
             Enhance your experience with advanced features and exclusive access.
           </p>
         </Col>
       </Row>
-      <Row className="d-flex align-items-stretch ">
-        <Col md={6} className={styles.alignBottom}>
-          <div
-            className={`px-5 py-5 ${styles.packageBasicCard} ${styles.premiumPackage} `} // Use Premium styles for Basic
-            style={{
-              backgroundColor: accountType === 64 ? "#B71A18" : "white", // Conditional color
-            }}
+
+      {/* Toggle Buttons */}
+      <div className="d-flex justify-content-center align-items-center pb-4">
+        <ButtonGroup className={`${styles.toggleGroup} no-gap`}>
+          {/* monthly */}
+          <Button
+            variant={activePlan === "monthly" ? "primary" : "outline-light"}
+            onClick={() => handleToggle("monthly")}
+            className={`${styles.toggleButton} ${
+              activePlan === "monthly" ? styles.activeButton : ""
+            }`}
           >
-            <div className="text-start">
-              <img
-                src={accountType === 64 ? premiumIcon : basicIcon}
-                alt="basic package icon"
-              />
-            </div>
+            Monthly
+          </Button>
 
-            <h4
-              className={`mt-3 text-start ${styles.packageName}`}
-              style={{
-                color: accountType === 64 ? "white" : "#B71A18", // Conditional color
-              }}
-            >
-              {basicPackage.package_name || "Basic Package"}
-            </h4>
-
-            <div className="d-flex">
-              <button
-                className={`${styles.customBtn}`}
-                style={{
-                  backgroundColor: accountType === 64 ? "white" : "#B71A18",
-                  color: accountType === 64 ? "#B71A18" : "white",
-                }}
-              >
-                Features
-              </button>
-            </div>
-
-            <p
-              className="text-start"
-              style={{
-                color: accountType === 64 ? "white" : "#B71A18",
-              }}
-              dangerouslySetInnerHTML={{
-                __html:
-                  decodeHTML(basicPackage.package_detail) ||
-                  "Basic package description",
-              }}
-            />
-
-            <div className="text-start">
-              <p
-                className={styles.BasicPrice}
-                style={{
-                  color: accountType === 64 ? "white" : "black",
-                }}
-              >
-                RM{basicPackage.package_price || "350"}
-              </p>
-              <p
-                className={styles.BasicPriceLabel}
-                style={{
-                  color: accountType === 64 ? "white" : "black",
-                }}
-              >
-                per month
-              </p>
-            </div>
-
-            {accountType === 64 ? (
-              <button
-                className={`mt-2 ${styles.customCurrentBtn}`}
-                style={{
-                  backgroundColor: "white",
-                  color: "#B71A18",
-                }}
-              >
-                Current Package
-              </button>
-            ) : (
-              <Button
-                variant="danger"
-                onClick={handleRedirect}
-                className={`px-5 ${styles.contactButton}`}
-                style={{
-                  backgroundColor: "#B71A18",
-                  color: "white",
-                }}
-              >
-                Contact Now →
-              </Button>
-            )}
-          </div>
-        </Col>
-        {/* Right Side: Package Cards */}
-        <Col
-          md={6}
-          className={` justify-content-around  ${styles.premiumText}`}
-        >
-          {/* Premium Package */}
-          <div
-            className={`${styles.packagePremiumCard} ${styles.premiumPackage}`}
-            style={{
-              backgroundColor: accountType === 64 ? "white" : "#B71A18", // Conditional color
-            }}
+          {/* quarterly */}
+          <Button
+            variant={activePlan === "quarterly" ? "primary" : "outline-light"}
+            onClick={() => handleToggle("quarterly")}
+            className={`${styles.toggleButton} ${
+              activePlan === "quarterly" ? styles.activeButton : ""
+            }`}
           >
-            {/* icon  */}
-            <Row className="my-1">
-              <div className="text-start">
-                <img
-                  src={accountType === 64 ? basicIcon : premiumIcon}
-                  alt="premium icon"
+            Quarterly
+            <br />
+            {/* <span className={styles.discount}>
+              <b>(3% off)</b>
+            </span> */}
+          </Button>
+
+          {/* annual */}
+          <Button
+            variant={activePlan === "annual" ? "primary" : "outline-light"}
+            onClick={() => handleToggle("annual")}
+            className={`${styles.toggleButton} ${
+              activePlan === "annual" ? styles.activeButton : ""
+            }`}
+          >
+            Annual
+            {/* <span className={styles.discount}>
+              <b>(5% off)</b>
+            </span> */}
+          </Button>
+        </ButtonGroup>
+      </div>
+
+      {/* Package Display */}
+      <Row className={`justify-content-center ${styles.packageRow}`}>
+        {packages &&
+          packages.map((pkg, index) => (
+            <Col md={5} lg={4} className={styles.packageCol} key={pkg.id}>
+              <div
+                className={`${styles.packageCard} ${
+                  (account === "64" && pkg.id === 1) ||
+                  (account === "65" && pkg.id === 2)
+                    ? styles.highlightPackage
+                    : styles.normalPackage
+                } d-flex flex-column`} // Flex container for the card
+              >
+                {/* Centering the icon and package name */}
+                <div className="d-flex flex-column justify-content-center align-items-center">
+                  <img
+                    src={
+                      (account === "64" && pkg.id === 1) ||
+                      (account === "65" && pkg.id === 2)
+                        ? premiumIcon
+                        : basicIcon
+                    }
+                    alt={`${pkg.package_name} icon`}
+                    className={styles.packageIcon}
+                  />
+                  <h4 className={styles.packageName}>{pkg.package_name}</h4>
+                </div>
+
+                <p
+                  className={styles.packageDetails}
+                  dangerouslySetInnerHTML={{ __html: pkg.package_detail }}
                 />
+
+                {/* Sticky pricing at the bottom */}
+                <div className="text-center mt-auto">
+                  <div className="d-flex flex-column align-items-center justify-content-center">
+                    {" "}
+                    {/* Center everything */}
+                    <Col md={12}>
+                      <div className={styles.packagePriceContainer}>
+                        <p className={styles.packagePrice}>
+                          RM{calculatePrice(pkg.package_price)}{" "}
+                          <span className={styles.perMonthText}>/month</span>
+                        </p>
+                      </div>
+                      <span className={styles.priceLabel}>({priceLabel})</span>
+                    </Col>
+                  </div>
+                </div>
               </div>
-            </Row>
-
-            {/* package name  */}
-            <Row className="my-1">
-              <h4
-                className={`mt-3 text-start ${styles.premiumPackageName}`}
-                style={{
-                  color: accountType === 64 ? "#B71A18" : "white", // Conditional color
-                }}
-              >
-                {premiumPackage.package_name || "Basic Package"}
-              </h4>
-            </Row>
-
-            {/* feeatured  */}
-            <Row className="mb-2">
-              <div className="d-flex">
-                <button
-                  className={`${styles.customPremiumBtn}`}
-                  style={{
-                    backgroundColor: accountType === 64 ? "#B71A18" : "white",
-                    color: accountType === 64 ? "white" : "#B71A18",
-                  }}
-                >
-                  Features
-                </button>
-              </div>
-            </Row>
-
-            {/* description  */}
-            <Row>
-              <p
-                className="text-start fs-6"
-                style={{
-                  color: accountType === 64 ? "#B71A18" : "white",
-                }}
-                dangerouslySetInnerHTML={{
-                  __html:
-                    decodeHTML(premiumPackage.package_detail) ||
-                    "Basic package description",
-                }}
-              />
-            </Row>
-
-            {/* price  */}
-            <Row>
-              <div className="text-start">
-                <p
-                  className={`text-start ${styles.PremiumPrice}`}
-                  style={{
-                    color: accountType === 64 ? "black" : "white",
-                  }}
-                >
-                  RM{premiumPackage.package_price || "0"}
-                </p>
-                <p
-                  className={styles.PremiumPriceLabel}
-                  style={{
-                    color: accountType === 64 ? "black" : "white",
-                  }}
-                >
-                  per month
-                </p>
-              </div>
-            </Row>
-
-            {/* contact button  */}
-            <Row>
-              <div className="d-flex justify-content-center">
-                {accountType === 64 ? (
-                  <Button
-                    variant="danger"
-                    onClick={handleRedirect}
-                    className={`px-5 ${styles.contactButton}`}
-                    style={{
-                      backgroundColor: "#B71A18",
-                      color: "white",
-                    }}
-                  >
-                    Contact Now →
-                  </Button>
-                ) : (
-                  <button
-                    className={`mt-2 ${styles.customCurrentBtn}`}
-                    style={{
-                      backgroundColor: "white",
-                      color: "#B71A18",
-                    }}
-                  >
-                    Current Package
-                  </button>
-                )}
-              </div>
-            </Row>
-          </div>
-        </Col>
+            </Col>
+          ))}
       </Row>
     </Container>
   );
 };
 
-export default ManageAccount;
+export default AccountPackages;
