@@ -174,7 +174,7 @@ function GeneralInformationForm() {
         const schoolCatList = await schoolCat.json();
 
         setInstituteCategoryList(schoolCatList.data);
-        console.log("school_cat", instituteCategoryList);
+        // console.log("school_cat", instituteCategoryList);
       } catch (error) {
         console.error("There was a problem with the fetch operation:", error);
       }
