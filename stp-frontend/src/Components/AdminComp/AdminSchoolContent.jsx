@@ -29,16 +29,33 @@ const AdminSchoolContent = () => {
   const Authenticate = `Bearer ${token}`;
   const navigate = useNavigate();
 
+  const [statList, setStatList] = useState([]); // State for category list
+  const [selectedStat, setSelectedStat] = useState(""); // State for selected subject
+
+  useEffect(() => {
+      // Hardcoded statList values
+      const hardcodedStatList = [
+          { id: 0, name: "Disable" },
+          { id: 1, name: "Active" },
+          { id: 2, name: "Pending" },
+          { id: 3, name: "Temporary" },
+          { id: 4, name: "Temporary-Disable" },
+      ];
+      setStatList(hardcodedStatList);
+      fetchSchools(); // Fetch enquiries initially
+  }, []);
+
   const fetchSchools = async (
     page = 1,
     perPage = rowsPerPage,
-    search = searchQuery
+    search = searchQuery,
+    stat = selectedStat
   ) => {
     try {
       const response = await fetch(
         `${
           import.meta.env.VITE_BASE_URL
-        }api/admin/schoolList?page=${page}&per_page=${perPage}&search=${search}`,
+        }api/admin/schoolList?page=${page}&per_page=${perPage}&search=${search}&stat=${stat}`,
         {
           method: "POST",
           headers: {
@@ -71,19 +88,19 @@ const AdminSchoolContent = () => {
   };
 
   useEffect(() => {
-    fetchSchools(currentPage, rowsPerPage, searchQuery);
-  }, [Authenticate, currentPage, rowsPerPage, searchQuery]);
+    fetchSchools(currentPage, rowsPerPage, searchQuery, selectedStat);
+  }, [Authenticate, currentPage, rowsPerPage, searchQuery, selectedStat]);
 
   const handleRowsPerPageChange = (newRowsPerPage) => {
     setRowsPerPage(newRowsPerPage);
     setCurrentPage(1); // Reset to the first page whenever rows per page changes
-    fetchSchools(1, newRowsPerPage, searchQuery); // Fetch data with updated rowsPerPage
+    fetchSchools(1, newRowsPerPage, searchQuery, selectedStat); // Fetch data with updated rowsPerPage
   };
 
   const handleSearch = (query) => {
     setSearchQuery(query);
     setCurrentPage(1); // Reset to the first page whenever search query changes
-    fetchSchools(1, rowsPerPage, query); // Fetch data with updated search query
+    fetchSchools(1, rowsPerPage, query, selectedStat); // Fetch data with updated search query
   };
 
   const handleSort = (column) => {
@@ -91,7 +108,7 @@ const AdminSchoolContent = () => {
       sortColumn === column && sortDirection === "asc" ? "desc" : "asc";
     setSortColumn(column);
     setSortDirection(newDirection);
-    fetchSchools(currentPage, rowsPerPage, searchQuery); // Fetch sorted data
+    fetchSchools(currentPage, rowsPerPage, searchQuery, selectedStat); // Fetch sorted data
   };
 
   const sortedSchools = (() => {
@@ -171,7 +188,7 @@ const AdminSchoolContent = () => {
 
       if (result.success) {
         // Fetch the updated data from the database
-        await fetchSchools(currentPage, rowsPerPage, searchQuery);
+        await fetchSchools(currentPage, rowsPerPage, searchQuery, selectedStat);
       } else {
         console.error(result.message);
       }
@@ -199,7 +216,6 @@ const AdminSchoolContent = () => {
         return "";
     }
   };
-
   const theadContent = (
     <>
       <tr>
@@ -331,6 +347,12 @@ const AdminSchoolContent = () => {
       </tr>
     );
 
+  const handleStatChange = (stat) => {
+    setSelectedStat(stat);
+    setCurrentPage(1);
+    fetchSchools(1, rowsPerPage, searchQuery, stat);
+  };
+
   return (
     <>
       {loading ? (
@@ -347,6 +369,8 @@ const AdminSchoolContent = () => {
           onPageChange={handlePageChange}
           onRowsPerPageChange={handleRowsPerPageChange}
           showAddButton={showAddButton}
+          statList={statList}
+          onStatChange={handleStatChange}
         />
       )}
       <Modal show={showModal} onHide={() => setShowModal(false)}>

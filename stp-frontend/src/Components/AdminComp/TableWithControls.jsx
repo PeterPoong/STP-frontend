@@ -31,6 +31,8 @@ const TableWithControls = ({
   subjectList,
   categoryList,
   featList,
+  statList,
+  onStatChange,
   onFeatChange,
   onCategoryChange,
   onSubjectChange,
@@ -220,7 +222,23 @@ const TableWithControls = ({
                     </select>
                 </div>
             )}
-
+            {/* Status Type Filter */}
+            {statList && statList.length > 0 && (
+              <div className="mb-3 mt-3 ms-3 custom-dropdown">
+                  Status
+                  <select
+                      onChange={(e) => onStatChange(e.target.value)}
+                      className="subject-dropdown"
+                  >
+                      <option value="">All Status</option>
+                      {statList.map((stat) => (
+                          <option key={stat.id} value={stat.id}>
+                              {stat.name}
+                          </option>
+                      ))}
+                  </select>
+              </div>
+          )}
 
             {/* Add the month/year filter after the category dropdown */}
             {showMonthFilter && (
