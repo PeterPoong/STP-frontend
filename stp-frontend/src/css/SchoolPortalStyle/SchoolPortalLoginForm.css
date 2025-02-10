@@ -277,3 +277,10 @@ body, html {
     max-height: 100vh;
   }
 }
+.forminputlogin{
+border: #ced4da 1px solid !important;
+border-radius: 5px !important;
+}
+/* .input-group .form-control{
+  border-left: 1px solid !important;
+} */
