@@ -871,7 +871,7 @@ const SearchInstitute = () => {
         >
           <InputGroup className="mb-3">
             <Form.Control
-              className="custom-placeholder"
+              className="custom-placeholder searchinputborder"
               style={{ height: "45px", marginTop: "9px" }}
               placeholder="Search for Institutions, Country"
               value={tempSearch}
@@ -895,7 +895,7 @@ const SearchInstitute = () => {
           >
             <InputGroup >
               <Form.Control
-                className="custom-placeholder"
+                className="custom-placeholder searchinputborder"
                 style={{ height: "45px", marginTop: "9px" }}
                 placeholder="Search for Institutions, Country"
                 value={tempSearch}

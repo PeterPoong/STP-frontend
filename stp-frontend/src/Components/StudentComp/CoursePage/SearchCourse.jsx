@@ -1293,7 +1293,7 @@ useEffect(() => {
         >
           <InputGroup className="mb-3  saerchcourse-display-none">
             <Form.Control
-              className="custom-placeholder"
+              className="custom-placeholder searchinputborder"
               style={{ height: "45px", marginTop: "9px" }}
               placeholder="Search for Courses, Institutions"
               value={tempSearch}
@@ -1314,9 +1314,9 @@ useEffect(() => {
               fetchCourses();
             }}
           >
-            <InputGroup >
+            <InputGroup>
               <Form.Control
-                className="custom-placeholder"
+                className="custom-placeholder searchinputborder"
                 style={{ height: "45px", marginTop: "9px" }}
                 placeholder="Search for Courses, Institutions"
                 value={tempSearch}
