@@ -16,6 +16,8 @@ import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { Pagination, Navigation, Autoplay } from "swiper/modules";
 import "../../../css/StudentCss/course page css/ApplyPage.css";
+import currency from 'currency.js';
+
 const baseURL = import.meta.env.VITE_BASE_URL;
 const courseDetailAPI = `${baseURL}api/student/courseDetail`;
 const adsAURL = `${baseURL}api/student/advertisementList`;
@@ -50,7 +52,177 @@ const CourseDetail = () => {
   const { school_name, course_name } = useParams();
   const [courseId, setCourseId] = useState(null);
   const [schoolId, setSchoolId] = useState(null);
-
+  const countryCurrencyMap = {
+    // Asia
+    MY: { currency_code: "MYR", currency_symbol: "RM" }, // Malaysia
+    SG: { currency_code: "SGD", currency_symbol: "S$" }, // Singapore
+    ID: { currency_code: "IDR", currency_symbol: "Rp" }, // Indonesia
+    TH: { currency_code: "THB", currency_symbol: "฿" }, // Thailand
+    VN: { currency_code: "VND", currency_symbol: "₫" }, // Vietnam
+    PH: { currency_code: "PHP", currency_symbol: "₱" }, // Philippines
+    IN: { currency_code: "INR", currency_symbol: "₹" }, // India
+    CN: { currency_code: "CNY", currency_symbol: "¥" }, // China (Renminbi)
+    JP: { currency_code: "JPY", currency_symbol: "¥" }, // Japan
+    KR: { currency_code: "KRW", currency_symbol: "₩" }, // South Korea
+    HK: { currency_code: "HKD", currency_symbol: "HK$" }, // Hong Kong
+    TW: { currency_code: "TWD", currency_symbol: "NT$" }, // Taiwan
+  
+    // Europe
+    GB: { currency_code: "GBP", currency_symbol: "£" }, // United Kingdom
+    DE: { currency_code: "EUR", currency_symbol: "€" }, // Germany
+    FR: { currency_code: "EUR", currency_symbol: "€" }, // France
+    IT: { currency_code: "EUR", currency_symbol: "€" }, // Italy
+    ES: { currency_code: "EUR", currency_symbol: "€" }, // Spain
+    NL: { currency_code: "EUR", currency_symbol: "€" }, // Netherlands
+    CH: { currency_code: "CHF", currency_symbol: "CHF" }, // Switzerland
+    SE: { currency_code: "SEK", currency_symbol: "kr" }, // Sweden
+    NO: { currency_code: "NOK", currency_symbol: "kr" }, // Norway
+    DK: { currency_code: "DKK", currency_symbol: "kr" }, // Denmark
+  
+    // North America
+    US: { currency_code: "USD", currency_symbol: "$" }, // United States
+    CA: { currency_code: "CAD", currency_symbol: "C$" }, // Canada
+    MX: { currency_code: "MXN", currency_symbol: "Mex$" }, // Mexico
+  
+    // South America
+    BR: { currency_code: "BRL", currency_symbol: "R$" }, // Brazil
+    AR: { currency_code: "ARS", currency_symbol: "ARS$" }, // Argentina
+    CL: { currency_code: "CLP", currency_symbol: "CLP$" }, // Chile
+    CO: { currency_code: "COP", currency_symbol: "COP$" }, // Colombia
+    PE: { currency_code: "PEN", currency_symbol: "S/" }, // Peru
+  
+    // Middle East
+    AE: { currency_code: "AED", currency_symbol: "د.إ" }, // United Arab Emirates
+    SA: { currency_code: "SAR", currency_symbol: "﷼" }, // Saudi Arabia
+    TR: { currency_code: "TRY", currency_symbol: "₺" }, // Turkey
+    QA: { currency_code: "QAR", currency_symbol: "﷼" }, // Qatar
+    EG: { currency_code: "EGP", currency_symbol: "E£" }, // Egypt
+    IL: { currency_code: "ILS", currency_symbol: "₪" }, // Israel
+    BD: { currency_code: "BDT", currency_symbol: "৳" }, // Bangladesh
+  
+    // Africa
+    ZA: { currency_code: "ZAR", currency_symbol: "R" }, // South Africa
+    NG: { currency_code: "NGN", currency_symbol: "₦" }, // Nigeria
+    KE: { currency_code: "KES", currency_symbol: "KSh" }, // Kenya
+    GH: { currency_code: "GHS", currency_symbol: "₵" }, // Ghana
+  
+    // Oceania
+    AU: { currency_code: "AUD", currency_symbol: "A$" }, // Australia
+    NZ: { currency_code: "NZD", currency_symbol: "NZ$" }, // New Zealand
+  };
+  const [exchangeRates, setExchangeRates] = useState({});
+  const [selectedCurrency, setSelectedCurrency] = useState({});
+  const [fetchedCountry, setFetchedCountry] = useState(null);
+  const fetchExchangeRates = async (currencyCode) => {
+    try {
+      console.log("Fetching exchange rates..."); // Log before fetching
+      const response = await fetch(`https://api.frankfurter.app/latest?from=MYR`);
+      const data = await response.json();
+  
+      // Log the fetched data to the console
+      // console.log("Fetched exchange rates:", data);
+  
+      if (data && data.rates) {
+        setExchangeRates(data.rates);
+      } else {
+        console.warn("No rates found in the fetched data."); // Log if no rates found
+      }
+    } catch (error) {
+      console.error("Error fetching exchange rates:", error);
+    }
+  };
+  useEffect(() => {
+    const fetchCurrencyOnChange = async () => {
+      const currencyCode = sessionStorage.getItem('userCurrencyCode') || 'MYR';
+      const currencySymbol = sessionStorage.getItem('userCurrencySymbol') || 'RM';
+  
+      // Fetch exchange rates based on the selected currency
+      await fetchExchangeRates(currencyCode);
+  
+      setSelectedCurrency({ currency_code: currencyCode, currency_symbol: currencySymbol });
+   
+    };   
+    fetchCurrencyOnChange(); // Fetch the currency rates immediately on component mount or currency change
+  }, [sessionStorage.getItem('userCurrencyCode')]);  // Trigger on currency code change in session storage
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const newCurrencyCode = sessionStorage.getItem('userCurrencyCode') || 'MYR';
+      
+      if (newCurrencyCode !== selectedCurrency.currency_code) {
+        setSelectedCurrency({ 
+          currency_code: newCurrencyCode, 
+          currency_symbol: sessionStorage.getItem('userCurrencySymbol') || 'RM' 
+        });
+  
+        console.log("Detected currency change in sessionStorage:", newCurrencyCode);
+        
+        fetchExchangeRates(newCurrencyCode);
+        fetchProgram();
+      }
+    }, 1000); // Check every second
+  
+    return () => clearInterval(interval);
+  }, [selectedCurrency]);
+  const convertToFetchedCurrency = (amount) => {
+    const currencyCode = sessionStorage.getItem('userCurrencyCode') || "MYR"; // Use sessionStorage value
+    const currencySymbol = sessionStorage.getItem('userCurrencySymbol') || "RM";
+  
+    if (!exchangeRates || !Object.keys(exchangeRates).length) {
+      return `${currencySymbol} ${amount}`; // Return original cost if no rates available
+    }
+  
+    const rate = exchangeRates[currencyCode] || 1;
+    return `${currencySymbol} ${currency(amount).multiply(rate).format()}`; // Convert MYR to the correct currency
+  };
+  
+  const fetchCountry = async () => {
+    try {
+      const response = await fetch('https://ipinfo.io/json');
+      const data = await response.json();
+  
+      if (data && data.country) {
+        let country = data.country; // Get the real country code
+        
+        // Override country for testing
+        // country = 'AU'; // Change this to 'SG' temporarily
+  
+        const currencyInfo = countryCurrencyMap[country] || { currency_code: "MYR", currency_symbol: "RM" };
+  
+        sessionStorage.setItem('userCountry', country);
+        sessionStorage.setItem('userCurrencyCode', currencyInfo.currency_code);
+        sessionStorage.setItem('userCurrencySymbol', currencyInfo.currency_symbol);
+  
+        // console.log("Fetched country:", country);
+        // console.log("Currency Code:", currencyInfo.currency_code);
+        // console.log("Currency Symbol:", currencyInfo.currency_symbol);
+  
+        setFetchedCountry(country);
+        setSelectedCurrency(currencyInfo); // Store currency info in state
+  
+        return country;
+      } else {
+        throw new Error('Unable to fetch location data');
+      }
+    } catch (error) {
+      console.error("Error fetching country:", error);
+      return null;
+    }
+  };
+  useEffect(() => {
+    const fetchCountryAndSet = async () => {
+      const country = await fetchCountry(); // Fetch the country
+      if (country) {
+        // console.log("User country:", country);
+  
+        const currencyCode = sessionStorage.getItem('userCurrencyCode') || "MYR"; // Fetch from storage
+        setSelectedCurrency(countryCurrencyMap[country]); // Use country directly from fetchCountry
+  
+        // Fetch exchange rates based on the detected currency
+        await fetchExchangeRates(currencyCode);
+      }
+    };
+    fetchCountryAndSet();
+  }, []);
   // Convert hyphenated names to space-separated names while preserving hyphens in parentheses
   const formattedSchoolName = decodeURIComponent(school_name)
     .replace(/\((.*?)\)/g, match => match.replace(/-/g, '###HYPHEN###')) // Temporarily replace hyphens in parentheses
@@ -62,8 +234,8 @@ const CourseDetail = () => {
   const formattedCourseName = course_name.replace(/-/g, ' ');
 
   // Log the formatted names to the console
-  console.log("School Name from URL:", formattedSchoolName); // Log the school name
-  console.log("Course Name from URL:", formattedCourseName); // Log the course name
+  // console.log("School Name from URL:", formattedSchoolName); // Log the school name
+  // console.log("Course Name from URL:", formattedCourseName); // Log the course name
 
   // Check for undefined values
   if (!formattedSchoolName || !formattedCourseName) {
@@ -305,7 +477,6 @@ const CourseDetail = () => {
       </div>
     );
   }
-
   // Function to handle displaying more courses
   const handleViewMore = () => {
     setExpanded(!expanded); // Toggle collapse state
@@ -474,15 +645,32 @@ const CourseDetail = () => {
                     >
                       <div>
                         <p className="mb-0">
-                          {program.cost === "0" || program.cost === "RM0" ? (
-                            <p className="mb-0">
-                              <strong>RM</strong> N/A
-                            </p>
-                          ) : (
-                            <>
-                              <strong>RM </strong> {program.cost}/year
-                            </>
-                          )}
+                        {program.international_cost && program.country_code !== fetchedCountry ? (
+                            program.international_cost === "0" ? (
+                                program.cost === "0" || program.cost === "RM0" ? (
+                                    "N/A"
+                                ) : (
+                                    <>
+                                        <strong>{sessionStorage.getItem('userCurrencySymbol') || 'RM'}</strong>
+                                        {convertToFetchedCurrency(program.cost).replace(/^.*?(\d+.*)/, '$1')}
+                                    </>
+                                )
+                            ) : (
+                                <>
+                                    <strong>{sessionStorage.getItem('userCurrencySymbol') || 'RM'}</strong>
+                                    {convertToFetchedCurrency(program.international_cost).replace(/^.*?(\d+.*)/, '$1')}
+                                </>
+                            )
+                        ) : (
+                            program.cost === "0" || program.cost === "RM0" ? (
+                                "N/A"
+                            ) : (
+                                <>
+                                    <strong>{sessionStorage.getItem('userCurrencySymbol') || 'RM'}</strong>
+                                    {convertToFetchedCurrency(program.cost).replace(/^.*?(\d+.*)/, '$1')}
+                                </>
+                            )
+                        )}
                         </p>
                       </div>
                     </Col>

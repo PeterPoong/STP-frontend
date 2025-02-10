@@ -204,7 +204,7 @@ const SchoolPortalLogin = () => {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
-                        className="pe-5"
+                        className="forminputlogin pe-5"
                       />
                     </InputGroup>
                   </Form.Group>
@@ -219,7 +219,7 @@ const SchoolPortalLogin = () => {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
-                        className="pe-5"
+                        className="forminputlogin pe-5"
                       />
                       <div
                         className="position-absolute top-50 end-0 translate-middle-y pe-3"

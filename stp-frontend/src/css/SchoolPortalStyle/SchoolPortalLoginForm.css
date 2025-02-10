@@ -267,6 +267,10 @@ body, html {
     padding-top: 2rem;
     padding-bottom: 2rem;
   }
+  .forminputlogin{
+    border: #ced4da 1px solid !important;
+    border-radius: 5px !important;
+    }
 }
 
 /* Ensure the form content is scrollable on small screens */
@@ -276,4 +280,15 @@ body, html {
     overflow-y: auto;
     max-height: 100vh;
   }
+  .forminputlogin{
+    border: #ced4da 1px solid !important;
+    border-radius: 5px !important;
+    }
 }
+.forminputlogin{
+border: #ced4da 1px solid !important;
+border-radius: 5px !important;
+}
+/* .input-group .form-control{
+  border-left: 1px solid !important;
+} */

@@ -301,6 +301,13 @@ body, html {
     padding-top: 2rem;
     padding-bottom: 2rem;
   }
+  .loginpassword {
+    border: #ced4da 1px solid !important;
+    border-radius: 5px !important;
+  }
+  .loginpassword:focus {
+    border: black 1px solid !important; /* Change border color to black on focus */
+  }
 }
 
 /* Ensure the form content is scrollable on small screens */
@@ -315,5 +322,19 @@ body, html {
   {
     margin:0 15px 0 10px;
   }
+  .loginpassword {
+    border: #ced4da 1px solid !important;
+    border-radius: 5px !important;
+  }
+  .loginpassword:focus {
+    border: black 1px solid !important; /* Change border color to black on focus */
+  }
 }
 
+.loginpassword {
+  border: #ced4da 1px solid !important;
+  border-radius: 5px !important;
+}
+.loginpassword:focus {
+  border: black 1px solid !important; /* Change border color to black on focus */
+}

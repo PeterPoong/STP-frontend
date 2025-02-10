@@ -19,6 +19,7 @@ const AdminAddCourseContent = () => {
         description:"",
         requirement:"",
         cost:"",
+        international_cost:"",
         period:"",
         category:"",
         qualification:"",
@@ -41,6 +42,7 @@ const AdminAddCourseContent = () => {
         description:"Course Description",
         requirement:"Course Requirements",
         cost:"Course Fee",
+        international_cost:"International Course Fee",
         period:"Study Period",
         category:"Course Category",
         qualification:"Course Qualification",
@@ -52,7 +54,7 @@ const AdminAddCourseContent = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         
-        const { name, schoolID, logo, description, requirement, cost, period, category, qualification, mode } = formData;
+        const { name, schoolID, logo, description, requirement, cost, international_cost, period, category, qualification, mode } = formData;
          // Check if all required fields are filled
          if (!name || !schoolID || !description || !requirement || !period || !category || !qualification || !mode) {
             setError("Please fill in all required fields.");
@@ -65,6 +67,7 @@ const AdminAddCourseContent = () => {
         formPayload.append("description", description);
         formPayload.append("requirement", requirement);
         formPayload.append("cost", cost);
+        formPayload.append("international_cost", international_cost);
         formPayload.append("period", period);
         formPayload.append("category", category);
         formPayload.append("qualification", qualification);
@@ -108,6 +111,10 @@ const AdminAddCourseContent = () => {
         } catch (error) {
             setGeneralError(error.message || "An error occurred while adding the course. Please try again later.");
             setErrorModalVisible(true);
+        }
+
+        for (let [key, value] of formPayload.entries()) {
+            console.log(`${key}: ${value}`);
         }
     };    
     useEffect(() => {
@@ -320,7 +327,7 @@ const AdminAddCourseContent = () => {
 
     const handleFieldChange = (e) => {
         const { id, value, type, files } = e.target;
-        // console.log(`Field ${id} updated with value: ${value}`); // Debugging line
+        console.log(`Field ID: ${id}, Value: ${value}`); // Debugging line
         if (type === "file") {
             setFormData(prev => ({
                 ...prev,
@@ -375,6 +382,14 @@ const AdminAddCourseContent = () => {
             value: formData.cost,
             onChange: handleFieldChange,
             required: true,
+        },
+        {
+            id: "international_cost",
+            label: "International Course Fee",
+            type: "text",
+            placeholder: "Enter the international cost",
+            value: formData.international_cost,
+            onChange: handleFieldChange, // Ensure this is correctly set
         },
     ];
 

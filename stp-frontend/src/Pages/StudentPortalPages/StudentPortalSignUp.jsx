@@ -394,7 +394,7 @@ const StudentPortalSignUp = () => {
                         onChange={(e) => setPassword(e.target.value)}
                         required
                         isInvalid={password.length > 0 && password.length < 8}
-                        className="pe-5"
+                        className="loginpassword pe-5"
                       />
                       {(password.length === 0 || password.length >= 8) && (
                         <div
@@ -435,7 +435,7 @@ const StudentPortalSignUp = () => {
                           confirmPassword.length > 0 &&
                           confirmPassword !== password
                         }
-                        className="pe-5"
+                        className="loginpassword pe-5"
                       />
                       {(confirmPassword.length === 0 ||
                         (confirmPassword === password &&

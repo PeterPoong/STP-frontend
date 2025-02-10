@@ -76,105 +76,105 @@ const FeaturedRequest = ({ authToken }) => {
     const [pendingCourseChange, setPendingCourseChange] = useState(null);
     const [pendingStartDateChange, setPendingStartDateChange] = useState(null);
     const [currentPage, setCurrentPage] = useState(1); // Add state for current page
-const [totalPages, setTotalPages] = useState(1); // Add state for total pages
-const [selectedDates, setSelectedDates] = useState({});
+    const [totalPages, setTotalPages] = useState(1); // Add state for total pages
+    const [selectedDates, setSelectedDates] = useState({});
 
-const fetchFeaturedRequests = async () => {
-    try {
-        const requestBody = {
-            request_type: activeTab === 'course' ? 'courses' : 'school',
-            status: selectedStatus !== '' ? parseInt(selectedStatus) : undefined,
-            page: currentPage // Include current page in the request
-        };
+    const fetchFeaturedRequests = async () => {
+        try {
+            const requestBody = {
+                request_type: activeTab === 'course' ? 'courses' : 'school',
+                status: selectedStatus !== '' ? parseInt(selectedStatus) : undefined,
+                page: currentPage // Include current page in the request
+            };
 
-        const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/school/schoolFeaturedRequestLists`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': Authenticate,
-            },
-            body: JSON.stringify(requestBody)
-        });
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/school/schoolFeaturedRequestLists`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': Authenticate,
+                },
+                body: JSON.stringify(requestBody)
+            });
 
-        const result = await response.json();
+            const result = await response.json();
 
-        if (result.success && result.data?.data) {
-            // Set total pages from the API response
-            setTotalPages(result.data.last_page);
+            if (result.success && result.data?.data) {
+                // Set total pages from the API response
+                setTotalPages(result.data.last_page);
 
-            if (activeTab === 'course') {
-                // Transform course data
-                const transformedData = result.data.data.map(item => ({
-                    id: item.id,
-                    request_name: item.name,
-                    featured_type: item.featured_type.featured_type,
-                    featured_id: item.featured_type.featured_id,
-                    featured_duration: item.duration,
-                    request_quantity: item.total_quantity,
-                    quantity_used: item.quantity_used,
-                    request_status: (() => {
-                        switch(item.request_status) {
-                            case 0: return 'Disable';
-                            case 1: return 'Approved';
-                            case 2: return 'Pending';
-                            case 3: return 'Rejected';
-                            default: return 'Unknown';
-                        }
-                    })(),
-                    featured: item.featured.map(feat => ({
-                        id: feat.id,
-                        course_id: feat.course_id,
-                        course_name: feat.course_name,
-                        start_date: feat.start_date,
-                        end_date: feat.end_date,
-                        status: feat.status,
-                        day_left:feat.day_left
-                        
-                    })),
-                    courseAvailable: item.courseAvailable || []
-                }));
-                setCourseFeatured(transformedData);
+                if (activeTab === 'course') {
+                    // Transform course data
+                    const transformedData = result.data.data.map(item => ({
+                        id: item.id,
+                        request_name: item.name,
+                        featured_type: item.featured_type.featured_type,
+                        featured_id: item.featured_type.featured_id,
+                        featured_duration: item.duration,
+                        request_quantity: item.total_quantity,
+                        quantity_used: item.quantity_used,
+                        request_status: (() => {
+                            switch(item.request_status) {
+                                case 0: return 'Disable';
+                                case 1: return 'Approved';
+                                case 2: return 'Pending';
+                                case 3: return 'Rejected';
+                                default: return 'Unknown';
+                            }
+                        })(),
+                        featured: item.featured.map(feat => ({
+                            id: feat.id,
+                            course_id: feat.course_id,
+                            course_name: feat.course_name,
+                            start_date: feat.start_date,
+                            end_date: feat.end_date,
+                            status: feat.status,
+                            day_left:feat.day_left
+                            
+                        })),
+                        courseAvailable: item.courseAvailable || []
+                    }));
+                    setCourseFeatured(transformedData);
+                } else {
+                    // Transform school data
+                    const transformedData = result.data.data.map(item => ({
+                        id: item.id,
+                        request_name: item.name,
+                        featured_type: item.featured_type.featured_type,
+                        featured_duration: item.duration,
+                        request_quantity: item.total_quantity,
+                        quantity_used: item.quantity_used,
+                        school_name: item.school_name,
+                        request_status: (() => {
+                            switch(item.request_status) {
+                                case 0: return 'Disable';
+                                case 1: return 'Approved';
+                                case 2: return 'Pending';
+                                case 3: return 'Rejected';
+                                default: return 'Unknown';
+                            }
+                        })(),
+                        featured: item.featured.map(feat => ({
+                            id: feat.id,
+                            school_name: feat.school_name,
+                            start_date: feat.start_date,
+                            end_date: feat.end_date,
+                            status: feat.status,
+                            day_left: feat.day_left
+                        })),
+                        courseAvailable: item.courseAvailable || []
+                    }));
+                    setSchoolFeatured(transformedData);
+                }
             } else {
-                // Transform school data
-                const transformedData = result.data.data.map(item => ({
-                    id: item.id,
-                    request_name: item.name,
-                    featured_type: item.featured_type.featured_type,
-                    featured_duration: item.duration,
-                    request_quantity: item.total_quantity,
-                    quantity_used: item.quantity_used,
-                    school_name: item.school_name,
-                    request_status: (() => {
-                        switch(item.request_status) {
-                            case 0: return 'Disable';
-                            case 1: return 'Approved';
-                            case 2: return 'Pending';
-                            case 3: return 'Rejected';
-                            default: return 'Unknown';
-                        }
-                    })(),
-                    featured: item.featured.map(feat => ({
-                        id: feat.id,
-                        school_name: feat.school_name,
-                        start_date: feat.start_date,
-                        end_date: feat.end_date,
-                        status: feat.status,
-                        day_left: feat.day_left
-                    })),
-                    courseAvailable: item.courseAvailable || []
-                }));
-                setSchoolFeatured(transformedData);
+                console.log('No data found or success is false'); // Log if no data found
             }
-        } else {
-            console.log('No data found or success is false'); // Log if no data found
+        } catch (error) {
+            console.error('Error fetching featured requests:', error);
+            setError(error.message);
+        } finally {
+            setLoading(false);
         }
-    } catch (error) {
-        console.error('Error fetching featured requests:', error);
-        setError(error.message);
-    } finally {
-        setLoading(false);
-    }
-};
+    };
     const getFeaturedDetails = (requestType, requestId) => {
         const featured = activeTab === 'course' ? courseFeatured : schoolFeatured;
         const item = featured.find(f => f.id === requestId);
@@ -1325,18 +1325,38 @@ const fetchFeaturedRequests = async () => {
                 </Modal.Footer>
             </Modal>
 
-            {/* Add this in your return statement to render pagination buttons */}
-            <div className="pagination-controls">
-                {Array.from({ length: totalPages }, (_, index) => (
-                    <Button 
-                        key={index + 1} 
-                        onClick={() => handlePageChange(index + 1)} 
-                        disabled={currentPage === index + 1}
-                    >
-                        {index + 1}
-                    </Button>
-                ))}
-            </div>
+            {/* Add this condition to check for no data before rendering pagination */}
+            {loading ? (
+                <SkeletonLoader />
+            ) : error ? (
+                <div>Error: {error}</div>
+            ) : (
+                <div>
+                    {courseFeatured.length === 0 && activeTab === 'course' && (
+                        <div className="text-center">
+                            <h5>No Featured Request</h5>
+                        </div>
+                    )}
+                    {schoolFeatured.length === 0 && activeTab === 'school' && (
+                        <div className="text-center">
+                            <h5>No Featured Request</h5>
+                        </div>
+                    )}
+                    {courseFeatured.length > 0 || schoolFeatured.length > 0 ? (
+                        <div className="pagination-controls">
+                            {Array.from({ length: totalPages }, (_, index) => (
+                                <Button 
+                                    key={index + 1} 
+                                    onClick={() => handlePageChange(index + 1)} 
+                                    disabled={currentPage === index + 1}
+                                >
+                                    {index + 1}
+                                </Button>
+                            ))}
+                        </div>
+                    ) : null}
+                </div>
+            )}
             </div>
             )}
         </Container>

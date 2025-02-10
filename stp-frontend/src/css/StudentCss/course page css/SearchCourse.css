@@ -79,7 +79,14 @@
         text-align: justify;
     }
 
-    ;
+    .searchinputborder{
+      border: #ced4da 1px solid !important;
+      border-radius: 5px !important;
+    }
+    .searchinputborder:focus{
+      border: black 1px solid !important; /* Change border color to black on focus */
+    
+    }
 
 }
 
@@ -114,6 +121,14 @@
     .interest, .apply-button {
       width: 100% !important;
 
+    }
+    .searchinputborder{
+      border: #ced4da 1px solid !important;
+      border-radius: 5px !important;
+    }
+    .searchinputborder:focus{
+      border: black 1px solid !important; /* Change border color to black on focus */
+    
     }
   }
   
@@ -159,6 +174,14 @@
         width: 100% !important;
  
       }
+      .searchinputborder{
+        border: #ced4da 1px solid !important;
+        border-radius: 5px !important;
+      }
+      .searchinputborder:focus{
+        border: black 1px solid !important; /* Change border color to black on focus */
+      
+      }
     
   }
   
@@ -191,4 +214,11 @@
   font-size: 17px;
   text-align: center;
 }
-  
+.searchinputborder, .countryinput{
+  border: #ced4da 1px solid !important;
+  border-radius: 5px !important;
+}
+.searchinputborder:focus, .countryinput:focus{
+  border: black 1px solid !important; /* Change border color to black on focus */
+
+}

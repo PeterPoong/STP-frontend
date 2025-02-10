@@ -25,6 +25,9 @@ import "swiper/css/pagination";
 import "swiper/css/navigation";
 import "swiper/swiper-bundle.css";
 import { Navigation, Autoplay } from "swiper/modules";
+import { requestUserCountry } from "../../../utils/locationRequest"; 
+import currency from 'currency.js';
+
 export const baseURL = import.meta.env.VITE_BASE_URL;
 const countriesURL = `${baseURL}api/student/countryList`;
 const filterURL = `${baseURL}api/student/listingFilterList`;
@@ -54,7 +57,66 @@ const SearchCourse = () => {
     institueList: [],
     state: [],
   });
-
+  const countryCurrencyMap = {
+    // Asia
+    MY: { currency_code: "MYR", currency_symbol: "RM" }, // Malaysia
+    SG: { currency_code: "SGD", currency_symbol: "S$" }, // Singapore
+    ID: { currency_code: "IDR", currency_symbol: "Rp" }, // Indonesia
+    TH: { currency_code: "THB", currency_symbol: "฿" }, // Thailand
+    VN: { currency_code: "VND", currency_symbol: "₫" }, // Vietnam
+    PH: { currency_code: "PHP", currency_symbol: "₱" }, // Philippines
+    IN: { currency_code: "INR", currency_symbol: "₹" }, // India
+    CN: { currency_code: "CNY", currency_symbol: "¥" }, // China (Renminbi)
+    JP: { currency_code: "JPY", currency_symbol: "¥" }, // Japan
+    KR: { currency_code: "KRW", currency_symbol: "₩" }, // South Korea
+    HK: { currency_code: "HKD", currency_symbol: "HK$" }, // Hong Kong
+    TW: { currency_code: "TWD", currency_symbol: "NT$" }, // Taiwan
+  
+    // Europe
+    GB: { currency_code: "GBP", currency_symbol: "£" }, // United Kingdom
+    DE: { currency_code: "EUR", currency_symbol: "€" }, // Germany
+    FR: { currency_code: "EUR", currency_symbol: "€" }, // France
+    IT: { currency_code: "EUR", currency_symbol: "€" }, // Italy
+    ES: { currency_code: "EUR", currency_symbol: "€" }, // Spain
+    NL: { currency_code: "EUR", currency_symbol: "€" }, // Netherlands
+    CH: { currency_code: "CHF", currency_symbol: "CHF" }, // Switzerland
+    SE: { currency_code: "SEK", currency_symbol: "kr" }, // Sweden
+    NO: { currency_code: "NOK", currency_symbol: "kr" }, // Norway
+    DK: { currency_code: "DKK", currency_symbol: "kr" }, // Denmark
+  
+    // North America
+    US: { currency_code: "USD", currency_symbol: "$" }, // United States
+    CA: { currency_code: "CAD", currency_symbol: "C$" }, // Canada
+    MX: { currency_code: "MXN", currency_symbol: "Mex$" }, // Mexico
+  
+    // South America
+    BR: { currency_code: "BRL", currency_symbol: "R$" }, // Brazil
+    AR: { currency_code: "ARS", currency_symbol: "ARS$" }, // Argentina
+    CL: { currency_code: "CLP", currency_symbol: "CLP$" }, // Chile
+    CO: { currency_code: "COP", currency_symbol: "COP$" }, // Colombia
+    PE: { currency_code: "PEN", currency_symbol: "S/" }, // Peru
+  
+    // Middle East
+    AE: { currency_code: "AED", currency_symbol: "د.إ" }, // United Arab Emirates
+    SA: { currency_code: "SAR", currency_symbol: "﷼" }, // Saudi Arabia
+    TR: { currency_code: "TRY", currency_symbol: "₺" }, // Turkey
+    QA: { currency_code: "QAR", currency_symbol: "﷼" }, // Qatar
+    EG: { currency_code: "EGP", currency_symbol: "E£" }, // Egypt
+    IL: { currency_code: "ILS", currency_symbol: "₪" }, // Israel
+    BD: { currency_code: "BDT", currency_symbol: "৳" }, // Bangladesh
+  
+    // Africa
+    ZA: { currency_code: "ZAR", currency_symbol: "R" }, // South Africa
+    NG: { currency_code: "NGN", currency_symbol: "₦" }, // Nigeria
+    KE: { currency_code: "KES", currency_symbol: "KSh" }, // Kenya
+    GH: { currency_code: "GHS", currency_symbol: "₵" }, // Ghana
+  
+    // Oceania
+    AU: { currency_code: "AUD", currency_symbol: "A$" }, // Australia
+    NZ: { currency_code: "NZD", currency_symbol: "NZ$" }, // New Zealand
+  };
+  
+  
   // Selected Filter States
   const [selectedInstitute, setSelectedInstitute] = useState(null);
   const [selectedQualification, setSelectedQualification] = useState(null);
@@ -83,7 +145,6 @@ const SearchCourse = () => {
   // Add new state for interests
   const [courseInterests, setCourseInterests] = useState({});
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-
   const topRef = useRef(null);
   const scrollToTop = () => {
     // Method 2: Using scrollIntoView
@@ -98,6 +159,123 @@ const SearchCourse = () => {
     };
     window.requestAnimationFrame(scrollStep);
   };
+
+  const [exchangeRates, setExchangeRates] = useState({});
+  const [fetchedCountry, setFetchedCountry] = useState(null);
+
+  const [selectedCurrency, setSelectedCurrency] = useState({});
+
+  const fetchExchangeRates = async () => {
+    try {
+      const response = await fetch(`https://api.frankfurter.app/latest?from=MYR`);
+      const data = await response.json();
+  
+      // Log the fetched data to the console
+      // console.log("Fetched exchange rates:", data);
+  
+      if (data && data.rates) {
+        setExchangeRates(data.rates);
+      }
+    } catch (error) {
+      console.error("Error fetching exchange rates:", error);
+    }
+  };
+  useEffect(() => {
+    const fetchCurrencyOnChange = async () => {
+      const currencyCode = sessionStorage.getItem('userCurrencyCode') || 'MYR';
+      const currencySymbol = sessionStorage.getItem('userCurrencySymbol') || 'RM';
+  
+      // Fetch exchange rates based on the selected currency
+      await fetchExchangeRates(currencyCode);
+  
+      setSelectedCurrency({ currency_code: currencyCode, currency_symbol: currencySymbol });
+   
+    }; 
+    fetchCurrencyOnChange(); // Fetch the currency rates immediately on component mount or currency change
+  }, [sessionStorage.getItem('userCurrencyCode')]);  // Trigger on currency code change in session storage
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const newCurrencyCode = sessionStorage.getItem('userCurrencyCode') || 'MYR';
+      
+      if (newCurrencyCode !== selectedCurrency.currency_code) {
+        setSelectedCurrency({ 
+          currency_code: newCurrencyCode, 
+          currency_symbol: sessionStorage.getItem('userCurrencySymbol') || 'RM' 
+        });
+  
+        console.log("Detected currency change in sessionStorage:", newCurrencyCode);
+        
+        fetchExchangeRates(newCurrencyCode);
+        fetchCourses();
+      }
+    }, 1000); // Check every second
+  
+    return () => clearInterval(interval);
+  }, [selectedCurrency]);
+  
+  const convertToFetchedCurrency = (amount) => {
+    const currencyCode = sessionStorage.getItem('userCurrencyCode') || "MYR"; // Use sessionStorage value
+    const currencySymbol = sessionStorage.getItem('userCurrencySymbol') || "RM";
+  
+    if (!exchangeRates || !Object.keys(exchangeRates).length) {
+      return `${currencySymbol} ${amount}`; // Return original cost if no rates available
+    }
+  
+    const rate = exchangeRates[currencyCode] || 1;
+    return `${currencySymbol} ${currency(amount).multiply(rate).format()}`; // Convert MYR to the correct currency
+  };
+  
+
+  const fetchCountry = async () => {
+    try {
+      const response = await fetch('https://ipinfo.io/json');
+      const data = await response.json();
+  
+      if (data && data.country) {
+        let country = data.country; // Get the real country code
+        
+        // Override country for testing
+        // country = 'CN'; // Change this to 'SG' temporarily
+  
+        const currencyInfo = countryCurrencyMap[country] || { currency_code: "MYR", currency_symbol: "RM" };
+  
+        sessionStorage.setItem('userCountry', country);
+        sessionStorage.setItem('userCurrencyCode', currencyInfo.currency_code);
+        sessionStorage.setItem('userCurrencySymbol', currencyInfo.currency_symbol);
+  
+        // console.log("Fetched country:", country);
+        // console.log("Currency Code:", currencyInfo.currency_code);
+        // console.log("Currency Symbol:", currencyInfo.currency_symbol);
+  
+        setFetchedCountry(country);
+        setSelectedCurrency(currencyInfo); // Store currency info in state
+  
+        return country;
+      } else {
+        throw new Error('Unable to fetch location data');
+      }
+    } catch (error) {
+      console.error("Error fetching country:", error);
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    const fetchCountryAndSet = async () => {
+      const country = await fetchCountry(); // Fetch the country
+      if (country) {
+        // console.log("User country:", country);
+  
+        const currencyCode = sessionStorage.getItem('userCurrencyCode') || "MYR"; // Fetch from storage
+        setSelectedCountry(countries.find(c => c.country_code === country));
+  
+        // Fetch exchange rates based on the detected currency
+        await fetchExchangeRates(currencyCode);
+      }
+    };
+    fetchCountryAndSet();
+  }, []);
+  
 
   useEffect(() => {
     if (currentPage) {
@@ -155,7 +333,7 @@ const SearchCourse = () => {
     try {
       const requestBody = {
         countryID: selectedCountry.id,
-        page: currentPage,
+        page: currentPage
       };
       if (selectedInstitute) {
         requestBody.institute = selectedInstitute.id;
@@ -666,17 +844,37 @@ useEffect(() => {
                         className="coursepage-estimatefee"
                       >
                         estimate fee
-                        <br />
                         <p style={{ fontSize: "16px" }}>
-                          {program.cost === "0" || program.cost === "RM0" ? (
-                            "N/A"
+                          {program.international_cost && program.country_code !== fetchedCountry ? (
+                            program.international_cost === "0" ? (
+                              program.cost === "0" || program.cost === "RM0" ? (
+                                "N/A"
+                              ) : (
+                                <>
+                                  <strong>{sessionStorage.getItem('userCurrencySymbol') || 'RM'}</strong>
+                                  {convertToFetchedCurrency(program.cost).replace(/^.*?(\d+.*)/, '$1')}
+                                </>
+                              )
+                            ) : (
+                              <>
+                                <strong>{sessionStorage.getItem('userCurrencySymbol') || 'RM'}</strong>
+                                {convertToFetchedCurrency(program.international_cost).replace(/^.*?(\d+.*)/, '$1')}
+                              </>
+                            )
                           ) : (
-                            <>
-                              <strong>RM </strong> {program.cost}
-                            </>
+                            program.cost === "0" || program.cost === "RM0" ? (
+                              "N/A"
+                            ) : (
+                              <>
+                                <strong>{sessionStorage.getItem('userCurrencySymbol') || 'RM'}</strong>
+                                {convertToFetchedCurrency(program.cost).replace(/^.*?(\d+.*)/, '$1')}
+                              </>
+                            )
                           )}
                         </p>
-                      </p>
+
+
+                    </p>
                     </div>
                     <div className="d-flex interest-division">
                     <div className="interest">
@@ -915,6 +1113,13 @@ useEffect(() => {
     setIsAuthenticated(!!token);
   }, []);
 
+  // Function to convert cost based on the user's country
+  const convertCost = (cost, currencyCode) => {
+    if (!exchangeRates || !Object.keys(exchangeRates).length) return cost; // Return original cost if no rates available
+    const rate = exchangeRates[currencyCode] || 1; // Get the exchange rate for the selected currency
+    return currency(cost).multiply(rate).format(); // Convert and format the cost
+  };
+
   return (
     <Container>
       {generateSEOMetadata()}
@@ -963,13 +1168,14 @@ useEffect(() => {
                   </Dropdown.Toggle>
                   <Dropdown.Menu className="scrollable-dropdown">
                     {/* Country filter input */}
-                    <InputGroup className="mb-2">
+                    <InputGroup className="mb-2 ps-3 pe-3">
                       <Form.Control
                         placeholder="Filter countries"
                         onChange={(e) =>
                           setCountryFilter(e.target.value.toLowerCase())
                         }
                         value={countryFilter}
+                        className="ps-1 countryinput"
                       />
                     </InputGroup>
                     {/* Country list */}
@@ -1087,7 +1293,7 @@ useEffect(() => {
         >
           <InputGroup className="mb-3  saerchcourse-display-none">
             <Form.Control
-              className="custom-placeholder"
+              className="custom-placeholder searchinputborder"
               style={{ height: "45px", marginTop: "9px" }}
               placeholder="Search for Courses, Institutions"
               value={tempSearch}
@@ -1108,9 +1314,9 @@ useEffect(() => {
               fetchCourses();
             }}
           >
-            <InputGroup >
+            <InputGroup>
               <Form.Control
-                className="custom-placeholder"
+                className="custom-placeholder searchinputborder"
                 style={{ height: "45px", marginTop: "9px" }}
                 placeholder="Search for Courses, Institutions"
                 value={tempSearch}
@@ -1270,11 +1476,12 @@ useEffect(() => {
                       )}
                     </Accordion.Header>
                     <Accordion.Body>
-                      <InputGroup className="mb-2">
+                      <InputGroup className="mb-2 ps-3 pe-3">
                         <Form.Control
                           placeholder="Filter countries"
                           onChange={(e) => setCountryFilter(e.target.value.toLowerCase())}
                           value={countryFilter}
+                          className="ps-1 countryinput"
                         />
                       </InputGroup>
                       <div className="country-list">
@@ -1417,40 +1624,6 @@ useEffect(() => {
                     </Accordion.Body>
                   </Accordion.Item>
 
-                  {/* Qualification Filter
-                  <Accordion.Item eventKey="5">
-                    <Accordion.Header className="custom-accordion-header">
-                      Qualification
-                    </Accordion.Header>
-                    <Accordion.Body className="custom-accordion-body">
-                      <Form.Group>
-                        {filterData.qualificationList &&
-                          filterData.qualificationList.length > 0 ? (
-                          filterData.qualificationList.map(
-                            (qualification, index) => (
-                              <Form.Check
-                                key={index}
-                                type="checkbox"
-                                label={qualification.qualification_name}
-                                checked={selectedFilters.qualifications?.includes(
-                                  qualification.id
-                                )}
-                                onChange={() =>
-                                  handleFilterChange(
-                                    "qualifications",
-                                    qualification.id
-                                  )
-                                }
-                              />
-                            )
-                          )
-                        ) : (
-                          <p className="text-muted">No qualifications available</p>
-                        )}
-                      </Form.Group>
-                    </Accordion.Body>
-                  </Accordion.Item> */}
-
                   {/* Study Mode Filter */}
                   <Accordion.Item eventKey="6">
                     <Accordion.Header className="custom-accordion-header">
@@ -1569,7 +1742,7 @@ useEffect(() => {
                               }}
                             />
                           </a>
-                        </SwiperSlide>
+                        </SwiperSlide >
                       ))}
                     </Swiper>
                   ) : (
