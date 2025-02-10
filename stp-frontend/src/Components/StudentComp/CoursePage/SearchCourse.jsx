@@ -844,7 +844,6 @@ useEffect(() => {
                         className="coursepage-estimatefee"
                       >
                         estimate fee
-                        <br />program
                         <p style={{ fontSize: "16px" }}>
                           {program.international_cost && program.country_code !== fetchedCountry ? (
                             program.international_cost === "0" ? (
