@@ -317,3 +317,10 @@ body, html {
   }
 }
 
+.loginpassword {
+  border: #ced4da 1px solid !important;
+  border-radius: 5px !important;
+}
+.loginpassword:focus {
+  border: black 1px solid !important; /* Change border color to black on focus */
+}
