@@ -295,39 +295,223 @@ const InterestedList = () => {
     }
 
     if (results.length === 0) {
-        return <p>No courses found.</p>;
+        return (
+            <div className="no-favourite-courses text-center mt-5">
+                <h5>No Favourite Course Yet, Let's add more Favourite Courses!</h5>
+            </div>
+        );
     }
 
     return (
         <div className="RR-Career-Profile-Container">
-            <div className="RS-Header-Section">
-                <h3>Favourite Courses</h3>
+         <div className="RS-Header-Section">
+    <h3>Favourite Courses</h3>
+</div>
+
+{results.filter(program => courseInterests[program.course_id]?.status === 1).length > 0 ? (
+    results.filter(program => courseInterests[program.course_id]?.status === 1).map((program) => (
+        <div className="card mb-5 degree-card" key={program.id} style={{ position: "relative", height: "auto" }}>
+            {program.featured && <div className="featured-badge">Featured</div>}
+            <div className="card-body d-flex flex-column flex-md-row align-items-start mb-5">
+                <Row className="coursepage-row">
+                    <Col md={6} lg={6} className="course-card-ipad">
+                        <div className="card-image mb-3 mb-md-0">
+                            <h5 className="card-title">
+                                <Link
+                                    rel="preload"
+                                    to={`/course-details/${program.school_name.replace(/\s+/g, '-').toLowerCase()}/${program.name.replace(/\s+/g, '-').toLowerCase()}`}
+                                    style={{ color: "black" }}
+                                >
+                                    {program.name}
+                                </Link>
+                            </h5>
+                            <div className="coursepage-searchcourse-courselist-first">
+                                <div className="coursepage-img" style={{ paddingLeft: "20px" }}>
+                                    <Link
+                                        rel="preload"
+                                        to={`/university-details/${program.school_name.replace(/\s+/g, '-').toLowerCase()}`}
+                                        style={{ color: "black" }}
+                                        onClick={() => sessionStorage.setItem("schoolId", program.school_id)}
+                                    >
+                                        <img
+                                            loading="lazy"
+                                            src={`${baseURL}storage/${program.logo}`}
+                                            alt={program.school_name}
+                                            width="100"
+                                            className="coursepage-img-size"
+                                        />
+                                    </Link>
+                                </div>
+                                <div className="searchcourse-coursename-schoolname">
+                                    <div>
+                                        <h5 className="card-text">
+                                            <Link
+                                                rel="preload"
+                                                to={`/university-details/${program.school_name.replace(/\s+/g, '-').toLowerCase()}`}
+                                                style={{ color: "black" }}
+                                                onClick={() => sessionStorage.setItem("schoolId", program.school_id)}
+                                            >
+                                                {program.school_name}
+                                            </Link>
+                                        </h5>
+                                        <i className="bi bi-geo-alt" style={{ marginRight: "10px", color: "#AAAAAA" }}></i>
+                                        <span>
+                                            {program.state || "N/A"}, {program.country || "N/A"}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <a href={program.school_location} target="_blank" rel="noopener noreferrer">
+                                            Click and view on map
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </Col>
+                    <Col md={6} lg={6} className="course-card-fee-ipad">
+                        <div className="d-flex flex-grow-1 coursepage-searchcourse-courselist-second">
+                            <div className="details-div">
+                                <div className="flex-wrap coursepage-info-one">
+                                    <Col>
+                                        <div>
+                                            <Row>
+                                                <div className="searchcourse-dflex-center">
+                                                    <i className="bi bi-mortarboard" style={{ marginRight: "10px" }}></i>
+                                                    <p style={{ paddingLeft: "20px" }}>
+                                                        {program.qualification}
+                                                    </p>
+                                                </div>
+                                                <div style={{ marginTop: "10px" }} className="searchcourse-dflex-center">
+                                                    <i className="bi bi-calendar-check" style={{ marginRight: "10px" }}></i>
+                                                    <p style={{ paddingLeft: "20px" }}>
+                                                        {program.mode}
+                                                    </p>
+                                                </div>
+                                                <div style={{ marginTop: "10px" }} className="searchcourse-dflex-center">
+                                                    <i className="bi bi-clock" style={{ marginRight: "10px" }}></i>
+                                                    <p style={{ paddingLeft: "20px" }}>
+                                                        {program.period}
+                                                    </p>
+                                                </div>
+                                                <div style={{ marginTop: "10px" }} className="searchcourse-dflex-center">
+                                                    <i className="bi bi-calendar2-week" style={{ marginRight: "10px" }}></i>
+                                                    <p style={{ paddingLeft: "20px" }}>
+                                                        {Array.isArray(program.intake) && program.intake.length > 0
+                                                            ? program.intake.join(", ")
+                                                            : "N/A"}
+                                                    </p>
+                                                </div>
+                                            </Row>
+                                        </div>
+                                    </Col>
+                                </div>
+                            </div>
+                            <div className="fee-apply">
+                                <div className="fee-info text-right" style={{ marginTop: "25px" }}>
+                                    <p style={{ fontSize: "14px" }} className="coursepage-estimatefee">
+                                        estimate fee
+                                        <br />
+                                        <p style={{ fontSize: "16px" }}>
+                                            {program.international_cost && program.country_code !== fetchedCountry ? (
+                                                program.international_cost === "0" ? (
+                                                    program.cost === "0" || program.cost === "RM0" ? (
+                                                        "N/A"
+                                                    ) : (
+                                                        <>
+                                                            <strong>{sessionStorage.getItem('userCurrencySymbol') || 'RM'}</strong>
+                                                            {convertToFetchedCurrency(program.cost).replace(/^.*?(\d+.*)/, '$1')}
+                                                        </>
+                                                    )
+                                                ) : (
+                                                    <>
+                                                        <strong>{sessionStorage.getItem('userCurrencySymbol') || 'RM'}</strong>
+                                                        {convertToFetchedCurrency(program.international_cost).replace(/^.*?(\d+.*)/, '$1')}
+                                                    </>
+                                                )
+                                            ) : (
+                                                program.cost === "0" || program.cost === "RM0" ? (
+                                                    "N/A"
+                                                ) : (
+                                                    <>
+                                                        <strong>{sessionStorage.getItem('userCurrencySymbol') || 'RM'}</strong>
+                                                        {convertToFetchedCurrency(program.cost).replace(/^.*?(\d+.*)/, '$1')}
+                                                    </>
+                                                )
+                                            )}
+                                        </p>
+                                    </p>
+                                </div>
+                                <div className="d-flex interest-division">
+                                    <div className="interest">
+                                        <button
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                handleInterestClick(program.course_id);
+                                            }}
+                                            className="interest-button"
+                                            aria-label={courseInterests[program.course_id]?.status === 1 ? "Remove from interests" : "Add to interests"}
+                                        >
+                                            <span style={{ fontSize: "16px" }}>
+                                                {courseInterests[program.course_id]?.status === 1 ? "Favourite" : "Favourite"}
+                                            </span>
+                                            <i className={courseInterests[program.course_id]?.status === 1 ? "bi bi-heart-fill" : "bi bi-heart"}></i>
+                                        </button>
+                                    </div>
+                                    <div className="apply-button">
+                                        {program.institute_category === "Local University" ? (
+                                            <button
+                                                onClick={() => window.location.href = `mailto:${program.email}`}
+                                                className="featured coursepage-applybutton"
+                                            >
+                                                Contact Now
+                                            </button>
+                                        ) : (
+                                            <button className="featured coursepage-applybutton" onClick={() => handleApplyNow(program)}>
+                                                Apply Now
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </Col>
+                </Row>
             </div>
-            {results.filter(program => courseInterests[program.course_id]?.status === 1).map((program) => (
-                <div className="card mb-5 degree-card" key={program.id} style={{ position: "relative", height: "auto" }}>
-                    {program.featured && <div className="featured-badge">Featured</div>}
-                    <div className="card-body d-flex flex-column flex-md-row align-items-start mb-5">
-                        <Row className="coursepage-row">
-                            <Col md={6} lg={6} className="course-card-ipad">
-                                <div className="card-image mb-3 mb-md-0">
-                                    <h5 className="card-title">
+        </div>
+    ))
+) : (
+    <div className="no-favourite-courses text-center">
+        <h5>No Favourite Course Yet, Let's add more Favourite Courses!</h5>
+    </div>
+)}
+
+           {results.some(program => courseInterests[program.course_id]?.status === 0) && (
+    <>
+        <h6 style={{ color: "grey" }}>Previously Favourite Courses</h6>
+        {results.filter(program => courseInterests[program.course_id]?.status === 0).map((program) => (
+            <div className="card mb-4 degree-card" key={program.id} style={{ position: "relative", height: "auto" }}>
+                {program.featured && <div className="featured-badge">Featured</div>}
+                <div className="card-body d-flex flex-column flex-md-row align-items-start">
+                    <Row className="coursepage-row">
+                        <Col md={6} lg={6} className="course-card-ipad">
+                            <div className="card-image mb-3 mb-md-0">
+                                <h5 className="card-title">
+                                    <Link
+                                        rel="preload"
+                                        to={`/course-details/${program.school_name.replace(/\s+/g, '-').toLowerCase()}/${program.name.replace(/\s+/g, '-').toLowerCase()}`}
+                                        style={{ color: "black" }}
+                                    >
+                                        {program.name}
+                                    </Link>
+                                </h5>
+                                <div className="coursepage-searchcourse-courselist-first">
+                                    <div className="coursepage-img" style={{ paddingLeft: "20px" }}>
                                         <Link
                                             rel="preload"
-                                            to={`/course-details/${program.school_name.replace(/\s+/g, '-').toLowerCase()}/${program.name.replace(/\s+/g, '-').toLowerCase()}`}
+                                            to={`/university-details/${program.school_name.replace(/\s+/g, '-').toLowerCase()}`}
                                             style={{ color: "black" }}
-                                            // onClick={() => sessionStorage.setItem('courseId', program.id)}
+                                            onClick={() => sessionStorage.setItem("schoolId", program.school_id)}
                                         >
-                                        {program.name}
-                                        </Link>
-                                    </h5>
-                                    <div className="coursepage-searchcourse-courselist-first">
-                                        <div className="coursepage-img" style={{ paddingLeft: "20px" }}>
-                                            <Link
-                                                rel="preload"
-                                                to={`/university-details/${program.school_name.replace(/\s+/g, '-').toLowerCase()}`}
-                                                style={{ color: "black" }}
-                                                onClick={() => sessionStorage.setItem("schoolId", program.school_id)}
-                                                >
                                             <img
                                                 loading="lazy"
                                                 src={`${baseURL}storage/${program.logo}`}
@@ -335,317 +519,147 @@ const InterestedList = () => {
                                                 width="100"
                                                 className="coursepage-img-size"
                                             />
-                                            </Link>
-                                        </div>
-                                        <div className="searchcourse-coursename-schoolname">
-                                            <div>
-                                                <h5 className="card-text">
-                                                      <Link
-                                                        rel="preload"
-                                                        to={`/university-details/${program.school_name.replace(/\s+/g, '-').toLowerCase()}`}
-                                                        style={{ color: "black" }}
-                                                        onClick={() => sessionStorage.setItem("schoolId", program.school_id)}
-                      >
-                                                    {program.school_name}
-                                                    </Link>
-                                                </h5>
-                                                <i className="bi bi-geo-alt" style={{ marginRight: "10px", color: "#AAAAAA" }}></i>
-                                                <span>
-                                                    {program.state || "N/A"}, {program.country || "N/A"}
-                                                </span>
-                                            </div>
-                                            <div>
-                                                <a href={program.school_location} target="_blank" rel="noopener noreferrer">
-                                                    Click and view on map
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </Col>
-                            <Col md={6} lg={6} className="course-card-fee-ipad">
-                                <div className="d-flex flex-grow-1 coursepage-searchcourse-courselist-second">
-                                    <div className="details-div">
-                                        <div className="flex-wrap coursepage-info-one">
-                                            <Col>
-                                                <div>
-                                                    <Row>
-                                                        <div className="searchcourse-dflex-center">
-                                                            <i className="bi bi-mortarboard" style={{ marginRight: "10px" }}></i>
-                                                            <p style={{ paddingLeft: "20px" }}>
-                                                                {program.qualification}
-                                                            </p>
-                                                        </div>
-                                                        <div style={{ marginTop: "10px" }} className="searchcourse-dflex-center">
-                                                            <i className="bi bi-calendar-check" style={{ marginRight: "10px" }}></i>
-                                                            <p style={{ paddingLeft: "20px" }}>
-                                                                {program.mode}
-                                                            </p>
-                                                        </div>
-                                                        <div style={{ marginTop: "10px" }} className="searchcourse-dflex-center">
-                                                            <i className="bi bi-clock" style={{ marginRight: "10px" }}></i>
-                                                            <p style={{ paddingLeft: "20px" }}>
-                                                                {program.period}
-                                                            </p>
-                                                        </div>
-                                                        <div style={{ marginTop: "10px" }} className="searchcourse-dflex-center">
-                                                            <i className="bi bi-calendar2-week" style={{ marginRight: "10px" }}></i>
-                                                            <p style={{ paddingLeft: "20px" }}>
-                                                                {Array.isArray(program.intake) && program.intake.length > 0
-                                                                    ? program.intake.join(", ")
-                                                                    : "N/A"}
-                                                            </p>
-                                                        </div>
-                                                    </Row>
-                                                </div>
-                                            </Col>
-                                        </div>
-                                    </div>
-                                    <div className="fee-apply">
-                                        <div className="fee-info text-right" style={{ marginTop: "25px" }}>
-                                            <p style={{ fontSize: "14px" }} className="coursepage-estimatefee">
-                                                estimate fee
-                                                <br />
-                                                <p style={{ fontSize: "16px" }}>
-                                                    {program.international_cost && program.country_code !== fetchedCountry ? (
-                                                        program.international_cost === "0" ? (
-                                                        program.cost === "0" || program.cost === "RM0" ? (
-                                                            "N/A"
-                                                        ) : (
-                                                            <>
-                                                            <strong>{sessionStorage.getItem('userCurrencySymbol') || 'RM'}</strong>
-                                                            {convertToFetchedCurrency(program.cost).replace(/^.*?(\d+.*)/, '$1')}
-                                                            </>
-                                                        )
-                                                        ) : (
-                                                        <>
-                                                            <strong>{sessionStorage.getItem('userCurrencySymbol') || 'RM'}</strong>
-                                                            {convertToFetchedCurrency(program.international_cost).replace(/^.*?(\d+.*)/, '$1')}
-                                                        </>
-                                                        )
-                                                    ) : (
-                                                        program.cost === "0" || program.cost === "RM0" ? (
-                                                        "N/A"
-                                                        ) : (
-                                                        <>
-                                                            <strong>{sessionStorage.getItem('userCurrencySymbol') || 'RM'}</strong>
-                                                            {convertToFetchedCurrency(program.cost).replace(/^.*?(\d+.*)/, '$1')}
-                                                        </>
-                                                        )
-                                                    )}
-                                                    </p>
-                                            </p>
-                                        </div>
-                                        <div className="d-flex interest-division">
-                                            <div className="interest">
-                                                <button
-                                                    onClick={(e) => {
-                                                        e.preventDefault();
-                                                        handleInterestClick(program.course_id);
-                                                    }}
-                                                    className="interest-button"
-                                                    aria-label={courseInterests[program.course_id]?.status === 1 ? "Remove from interests" : "Add to interests"}
-                                                >
-                                                    <span style={{ fontSize: "16px" }}>
-                                                        {courseInterests[program.course_id]?.status === 1 ? "Favourite" : "Favourite"}
-                                                    </span>
-                                                    <i className={courseInterests[program.course_id]?.status === 1 ? "bi bi-heart-fill" : "bi bi-heart"}></i>
-                                                </button>
-                                            </div>
-                                            <div className="apply-button">
-                                                {program.institute_category === "Local University" ? (
-                                                    <button
-                                                        onClick={() => window.location.href = `mailto:${program.email}`}
-                                                        className="featured coursepage-applybutton"
-                                                    >
-                                                        Contact Now
-                                                    </button>
-                                                ) : (
-                                                    <button className="featured coursepage-applybutton" onClick={() => handleApplyNow(program)}>
-                                                        Apply Now
-                                                    </button>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </Col>
-                        </Row>
-                    </div>
-                </div>
-            ))}
-            <h6 style={{color:"grey"}}>Previously Favourite Courses</h6>
-            {results.filter(program => courseInterests[program.course_id]?.status === 0).map((program) => (
-                <div className="card mb-4 degree-card" key={program.id} style={{ position: "relative", height: "auto" }}>
-                    {program.featured && <div className="featured-badge">Featured</div>}
-                    <div className="card-body d-flex flex-column flex-md-row align-items-start">
-                        <Row className="coursepage-row">
-                            <Col md={6} lg={6} className="course-card-ipad">
-                                <div className="card-image mb-3 mb-md-0">
-                                    <h5 className="card-title">
-                                        <Link
-                                            rel="preload"
-                                            to={`/course-details/${program.school_name.replace(/\s+/g, '-').toLowerCase()}/${program.name.replace(/\s+/g, '-').toLowerCase()}`}
-                                            style={{ color: "black" }}
-                                            // onClick={() => sessionStorage.setItem('courseId', program.id)}
-                                        >
-                                        {program.name}
                                         </Link>
-                                    </h5>
-                                    <div className="coursepage-searchcourse-courselist-first">
-                                        <div className="coursepage-img" style={{ paddingLeft: "20px" }}>
-                                            <Link
-                                                rel="preload"
-                                                to={`/university-details/${program.school_name.replace(/\s+/g, '-').toLowerCase()}`}
-                                                style={{ color: "black" }}
-                                                onClick={() => sessionStorage.setItem("schoolId", program.school_id)}
+                                    </div>
+                                    <div className="searchcourse-coursename-schoolname">
+                                        <div>
+                                            <h5 className="card-text">
+                                                <Link
+                                                    rel="preload"
+                                                    to={`/university-details/${program.school_name.replace(/\s+/g, '-').toLowerCase()}`}
+                                                    style={{ color: "black" }}
+                                                    onClick={() => sessionStorage.setItem("schoolId", program.school_id)}
                                                 >
-                                            <img
-                                                loading="lazy"
-                                                src={`${baseURL}storage/${program.logo}`}
-                                                alt={program.school_name}
-                                                width="100"
-                                                className="coursepage-img-size"
-                                            />
-                                            </Link>
-                                        </div>
-                                        <div className="searchcourse-coursename-schoolname">
-                                            <div>
-                                                <h5 className="card-text">
-                                                      <Link
-                                                        rel="preload"
-                                                        to={`/university-details/${program.school_name.replace(/\s+/g, '-').toLowerCase()}`}
-                                                        style={{ color: "black" }}
-                                                        onClick={() => sessionStorage.setItem("schoolId", program.school_id)}
-                      >
                                                     {program.school_name}
-                                                    </Link>
-                                                </h5>
-                                                <i className="bi bi-geo-alt" style={{ marginRight: "10px", color: "#AAAAAA" }}></i>
-                                                <span>
-                                                    {program.state || "N/A"}, {program.country || "N/A"}
-                                                </span>
-                                            </div>
-                                            <div>
-                                                <a href={program.school_location} target="_blank" rel="noopener noreferrer">
-                                                    Click and view on map
-                                                </a>
-                                            </div>
+                                                </Link>
+                                            </h5>
+                                            <i className="bi bi-geo-alt" style={{ marginRight: "10px", color: "#AAAAAA" }}></i>
+                                            <span>
+                                                {program.state || "N/A"}, {program.country || "N/A"}
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <a href={program.school_location} target="_blank" rel="noopener noreferrer">
+                                                Click and view on map
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
-                            </Col>
-                            <Col md={6} lg={6} className="course-card-fee-ipad">
-                                <div className="d-flex flex-grow-1 coursepage-searchcourse-courselist-second">
-                                    <div className="details-div">
-                                        <div className="flex-wrap coursepage-info-one">
-                                            <Col>
-                                                <div>
-                                                    <Row>
-                                                        <div className="searchcourse-dflex-center">
-                                                            <i className="bi bi-mortarboard" style={{ marginRight: "10px" }}></i>
-                                                            <p style={{ paddingLeft: "20px" }}>
-                                                                {program.qualification}
-                                                            </p>
-                                                        </div>
-                                                        <div style={{ marginTop: "10px" }} className="searchcourse-dflex-center">
-                                                            <i className="bi bi-calendar-check" style={{ marginRight: "10px" }}></i>
-                                                            <p style={{ paddingLeft: "20px" }}>
-                                                                {program.mode}
-                                                            </p>
-                                                        </div>
-                                                        <div style={{ marginTop: "10px" }} className="searchcourse-dflex-center">
-                                                            <i className="bi bi-clock" style={{ marginRight: "10px" }}></i>
-                                                            <p style={{ paddingLeft: "20px" }}>
-                                                                {program.period}
-                                                            </p>
-                                                        </div>
-                                                        <div style={{ marginTop: "10px" }} className="searchcourse-dflex-center">
-                                                            <i className="bi bi-calendar2-week" style={{ marginRight: "10px" }}></i>
-                                                            <p style={{ paddingLeft: "20px" }}>
-                                                                {Array.isArray(program.intake) && program.intake.length > 0
-                                                                    ? program.intake.join(", ")
-                                                                    : "N/A"}
-                                                            </p>
-                                                        </div>
-                                                    </Row>
-                                                </div>
-                                            </Col>
-                                        </div>
+                            </div>
+                        </Col>
+                        <Col md={6} lg={6} className="course-card-fee-ipad">
+                            <div className="d-flex flex-grow-1 coursepage-searchcourse-courselist-second">
+                                <div className="details-div">
+                                    <div className="flex-wrap coursepage-info-one">
+                                        <Col>
+                                            <div>
+                                                <Row>
+                                                    <div className="searchcourse-dflex-center">
+                                                        <i className="bi bi-mortarboard" style={{ marginRight: "10px" }}></i>
+                                                        <p style={{ paddingLeft: "20px" }}>
+                                                            {program.qualification}
+                                                        </p>
+                                                    </div>
+                                                    <div style={{ marginTop: "10px" }} className="searchcourse-dflex-center">
+                                                        <i className="bi bi-calendar-check" style={{ marginRight: "10px" }}></i>
+                                                        <p style={{ paddingLeft: "20px" }}>
+                                                            {program.mode}
+                                                        </p>
+                                                    </div>
+                                                    <div style={{ marginTop: "10px" }} className="searchcourse-dflex-center">
+                                                        <i className="bi bi-clock" style={{ marginRight: "10px" }}></i>
+                                                        <p style={{ paddingLeft: "20px" }}>
+                                                            {program.period}
+                                                        </p>
+                                                    </div>
+                                                    <div style={{ marginTop: "10px" }} className="searchcourse-dflex-center">
+                                                        <i className="bi bi-calendar2-week" style={{ marginRight: "10px" }}></i>
+                                                        <p style={{ paddingLeft: "20px" }}>
+                                                            {Array.isArray(program.intake) && program.intake.length > 0
+                                                                ? program.intake.join(", ")
+                                                                : "N/A"}
+                                                        </p>
+                                                    </div>
+                                                </Row>
+                                            </div>
+                                        </Col>
                                     </div>
-                                    <div className="fee-apply">
-                                        <div className="fee-info text-right" style={{ marginTop: "25px" }}>
-                                            <p style={{ fontSize: "14px" }} className="coursepage-estimatefee">
-                                                estimate fee
-                                                <br />
-                                                <p style={{ fontSize: "16px" }}>
-                                                    {program.international_cost && program.country_code !== fetchedCountry ? (
-                                                        program.international_cost === "0" ? (
+                                </div>
+                                <div className="fee-apply">
+                                    <div className="fee-info text-right" style={{ marginTop: "25px" }}>
+                                        <p style={{ fontSize: "14px" }} className="coursepage-estimatefee">
+                                            estimate fee
+                                            <br />
+                                            <p style={{ fontSize: "16px" }}>
+                                                {program.international_cost && program.country_code !== fetchedCountry ? (
+                                                    program.international_cost === "0" ? (
                                                         program.cost === "0" || program.cost === "RM0" ? (
                                                             "N/A"
                                                         ) : (
                                                             <>
-                                                            <strong>{sessionStorage.getItem('userCurrencySymbol') || 'RM'}</strong>
-                                                            {convertToFetchedCurrency(program.cost).replace(/^.*?(\d+.*)/, '$1')}
+                                                                <strong>{sessionStorage.getItem('userCurrencySymbol') || 'RM'}</strong>
+                                                                {convertToFetchedCurrency(program.cost).replace(/^.*?(\d+.*)/, '$1')}
                                                             </>
                                                         )
-                                                        ) : (
+                                                    ) : (
                                                         <>
                                                             <strong>{sessionStorage.getItem('userCurrencySymbol') || 'RM'}</strong>
                                                             {convertToFetchedCurrency(program.international_cost).replace(/^.*?(\d+.*)/, '$1')}
                                                         </>
-                                                        )
-                                                    ) : (
-                                                        program.cost === "0" || program.cost === "RM0" ? (
+                                                    )
+                                                ) : (
+                                                    program.cost === "0" || program.cost === "RM0" ? (
                                                         "N/A"
-                                                        ) : (
+                                                    ) : (
                                                         <>
                                                             <strong>{sessionStorage.getItem('userCurrencySymbol') || 'RM'}</strong>
                                                             {convertToFetchedCurrency(program.cost).replace(/^.*?(\d+.*)/, '$1')}
                                                         </>
-                                                        )
-                                                    )}
-                                                    </p>
-                                            </p>
-                                        </div>
-                                        <div className="d-flex interest-division">
-                                            <div className="interest">
-                                                <button
-                                                    onClick={(e) => {
-                                                        e.preventDefault();
-                                                        handleInterestClick(program.course_id);
-                                                    }}
-                                                    className="interest-button"
-                                                    aria-label={courseInterests[program.course_id]?.status === 1 ? "Remove from interests" : "Add to interests"}
-                                                >
-                                                    <span style={{ fontSize: "16px" }}>
-                                                        {courseInterests[program.course_id]?.status === 1 ? "Favourite" : "Favourite"}
-                                                    </span>
-                                                    <i className={courseInterests[program.course_id]?.status === 1 ? "bi bi-heart-fill" : "bi bi-heart"}></i>
-                                                </button>
-                                            </div>
-                                            <div className="apply-button">
-                                                {program.institute_category === "Local University" ? (
-                                                    <button
-                                                        onClick={() => window.location.href = `mailto:${program.email}`}
-                                                        className="featured coursepage-applybutton"
-                                                    >
-                                                        Contact Now
-                                                    </button>
-                                                ) : (
-                                                    <button className="featured coursepage-applybutton" onClick={() => handleApplyNow(program)}>
-                                                        Apply Now
-                                                    </button>
+                                                    )
                                                 )}
-                                            </div>
+                                            </p>
+                                        </p>
+                                    </div>
+                                    <div className="d-flex interest-division">
+                                        <div className="interest">
+                                            <button
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    handleInterestClick(program.course_id);
+                                                }}
+                                                className="interest-button"
+                                                aria-label={courseInterests[program.course_id]?.status === 1 ? "Remove from interests" : "Add to interests"}
+                                            >
+                                                <span style={{ fontSize: "16px" }}>
+                                                    {courseInterests[program.course_id]?.status === 1 ? "Favourite" : "Favourite"}
+                                                </span>
+                                                <i className={courseInterests[program.course_id]?.status === 1 ? "bi bi-heart-fill" : "bi bi-heart"}></i>
+                                            </button>
+                                        </div>
+                                        <div className="apply-button">
+                                            {program.institute_category === "Local University" ? (
+                                                <button
+                                                    onClick={() => window.location.href = `mailto:${program.email}`}
+                                                    className="featured coursepage-applybutton"
+                                                >
+                                                    Contact Now
+                                                </button>
+                                            ) : (
+                                                <button className="featured coursepage-applybutton" onClick={() => handleApplyNow(program)}>
+                                                    Apply Now
+                                                </button>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
-                            </Col>
-                        </Row>
-                    </div>
+                            </div>
+                        </Col>
+                    </Row>
                 </div>
-            ))}
+            </div>
+        ))}
+    </>
+)}
         </div>
     );
 };
