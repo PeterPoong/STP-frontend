@@ -86,8 +86,8 @@ function GeneralInformationForm() {
           const errorData = await response.json();
           console.log("Error Data:", errorData["errors"]);
           const error = errorData["errors"];
-          if (error["contact"] !== null) {
-            setContactError(error["contact"]);
+          if (error["contact_no"] && error["contact_no"].length > 0) {
+            setContactError(error["contact_no"][0]); // Set the first error message for contact_no
           } else {
             setContactError("");
           }
@@ -585,7 +585,7 @@ function GeneralInformationForm() {
           variant="danger"
           className={`fade-alert alert-position ${showError ? "show" : "hide"}`}
         >
-          Something wrong !!
+          {fullDescError || contactError || "Something went wrong!"}
         </Alert>
       )}
       <h4 className="mb-2">General Information</h4>
@@ -618,7 +618,10 @@ function GeneralInformationForm() {
             <PhoneInput
               country={"my"}
               value={schoolContact}
-              onChange={handlePhoneChange}
+              onChange={(value, country) => {
+                handlePhoneChange(value, country);
+                setContactError(""); // Clear the contact error when typing
+              }}
               inputProps={{
                 name: "phone",
                 placeholder: "Enter phone number",

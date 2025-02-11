@@ -365,7 +365,7 @@ const NavigationBar = () => {
               </Dropdown.Menu>
             </Dropdown>
           </ButtonGroup>
-          <ButtonGroup>
+          {/* <ButtonGroup>
             <Dropdown as={ButtonGroup}>
               <Dropdown.Toggle className="currency-dropdown">
                 {selectedCurr.currency_code}
@@ -388,7 +388,7 @@ const NavigationBar = () => {
                   })}
               </Dropdown.Menu>
             </Dropdown>
-          </ButtonGroup>
+          </ButtonGroup> */}
           {hasToken ? (
             <div className="m-10 navbutton-section-afterlogin">
               <Button className="m-0 btnfirst">Hi !</Button>
