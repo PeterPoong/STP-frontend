@@ -35,6 +35,7 @@ const FacebookSocialPageRedirectPage = () => {
           localStorage.setItem("token", token);
           localStorage.setItem("userName", user_name);
           localStorage.setItem("id", id);
+          localStorage.setItem("accountType", "student");
 
           // Add a slight delay before navigating
           if (contact == false) {

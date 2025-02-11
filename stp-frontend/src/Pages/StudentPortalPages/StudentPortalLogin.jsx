@@ -137,6 +137,7 @@ const StudentPortalLogin = () => {
               sessionStorage.setItem("token", data.data.token);
               localStorage.setItem("rememberMe", JSON.stringify(rememberMe));
               sessionStorage.setItem("userName", userName);
+              sessionStorage.setItem("accountType", "student");
               localStorage.setItem("userName", userName);
               if (rememberMe) {
                 localStorage.setItem("token", data.data.token);
@@ -162,19 +163,26 @@ const StudentPortalLogin = () => {
                 if (rememberMe) {
                   localStorage.setItem("id", id);
                 }
-              } 
-            // Check if user came from study path page
-            const redirectToStudyPath = sessionStorage.getItem('redirectToStudyPath');
-            if (redirectToStudyPath === 'true') {
-              sessionStorage.removeItem('redirectToStudyPath');
-              setTimeout(() => navigate("/studentStudyPath"), 500);
+              }
+              // Check if user came from study path page
+              const redirectToStudyPath = sessionStorage.getItem(
+                "redirectToStudyPath"
+              );
+              if (redirectToStudyPath === "true") {
+                sessionStorage.removeItem("redirectToStudyPath");
+                setTimeout(() => navigate("/studentStudyPath"), 500);
+              } else {
+                setTimeout(
+                  () => navigate("/studentPortalBasicInformations"),
+                  500
+                );
+              }
             } else {
-              setTimeout(() => navigate("/studentPortalBasicInformations"), 500);
+              setError(
+                "Login successful, but token not received. Please try again."
+              );
             }
-          } else {
-            setError("Login successful, but token not received. Please try again.");
           }
-        }
         } else {
           console.error("Login failed:", data);
           setLoginStatus("failed");
