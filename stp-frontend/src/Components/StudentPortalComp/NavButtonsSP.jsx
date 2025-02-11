@@ -12,7 +12,7 @@ import "../../css/StudentPortalStyles/StudentNavBar.css";
 import { useTranslation } from "../../Context/TranslationContext";
 
 const NavigationBar = () => {
-  const [hasToken, setHasToken] = useState(null);
+  const [hasToken, setHasToken] = useState(false); // Initialize to false
   const [userName, setUserName] = useState("");
   const navigate = useNavigate();
   const { currentLanguage, changeLanguage } = useTranslation();
@@ -24,15 +24,14 @@ const NavigationBar = () => {
     { code: "zh-CN", label: "中文", nativeLabel: "中文" },
   ];
 
+  // Sync language display on load and any DOM changes
   useEffect(() => {
     const syncLanguageDisplay = () => {
-      // Get the current Google Translate language
       const translateElement = document.querySelector(".goog-te-combo");
       if (translateElement) {
         const currentValue = translateElement.value;
         setDisplayLanguage(currentValue || "en");
       } else {
-        // If element not found, check localStorage
         const savedLang = localStorage.getItem("preferredLanguage");
         if (savedLang) {
           setDisplayLanguage(savedLang);
@@ -40,47 +39,54 @@ const NavigationBar = () => {
       }
     };
 
-    // Initial sync
     syncLanguageDisplay();
 
-    // Set up a mutation observer to watch for Google Translate changes
     const observer = new MutationObserver(syncLanguageDisplay);
     const targetNode = document.body;
-    observer.observe(targetNode, {
-      childList: true,
-      subtree: true,
-    });
+    observer.observe(targetNode, { childList: true, subtree: true });
 
     return () => observer.disconnect();
   }, []);
 
+  // Check authentication and set token and username
   useEffect(() => {
     const checkAuth = () => {
+      const accountType = sessionStorage.getItem("accountType");
       const token =
         sessionStorage.getItem("token") || localStorage.getItem("token");
-      const storedUserName =
-        sessionStorage.getItem("userName") || localStorage.getItem("userName");
 
-      setHasToken(!!token);
+      let storedUserName = "";
+      if (accountType === "school") {
+        storedUserName =
+          sessionStorage.getItem("name") || localStorage.getItem("name");
+      } else {
+        storedUserName =
+          sessionStorage.getItem("userName") ||
+          localStorage.getItem("userName");
+      }
+
+      setHasToken(!!token); // Set hasToken based on token presence
+      console.log("token", !!token); // Log whether the token is found
+      console.log("accountType", accountType);
       if (storedUserName) {
-        setUserName(storedUserName);
+        setUserName(storedUserName); // Set the stored username
       }
     };
 
     checkAuth();
-    // Add event listener for storage changes
     window.addEventListener("storage", checkAuth);
     return () => window.removeEventListener("storage", checkAuth);
   }, []);
 
   const handleLogout = () => {
-    // Clear session storage
     const itemsToRemove = [
       "token",
       "loginTimestamp",
       "userName",
       "lastAppliedCourseId",
       "id",
+      "accountType",
+      "name",
     ];
 
     itemsToRemove.forEach((item) => {
@@ -88,22 +94,22 @@ const NavigationBar = () => {
       localStorage.removeItem(item);
     });
 
-    // Reset state
     setHasToken(false);
     setUserName("");
-
-    // Force a re-render by updating localStorage
     localStorage.setItem("logoutTimestamp", Date.now().toString());
-
-    // Navigate to home page
     navigate("/", { replace: true });
   };
 
   const handleRoute = () => {
-    navigate("/studentPortalBasicInformations");
+    const accountType = sessionStorage.getItem("accountType");
+    if (accountType == "school") {
+      navigate("/schoolPortalDashboard");
+    } else {
+      navigate("/studentPortalBasicInformations");
+    }
   };
 
-  if (hasToken === null) return null;
+  if (hasToken === null) return null; // Wait until hasToken is determined
 
   return (
     <Navbar
@@ -115,17 +121,6 @@ const NavigationBar = () => {
       <Container>
         <Navbar.Brand as={Link} to="/">
           <img src={logo} alt="Logo" className="logo" loading="lazy" />
-          {/*<img 
-            src={logo} 
-            alt="Logo" 
-            className="logo"
-            loading="eager"
-            fetchpriority="high"
-            decoding="async"
-            onLoad={(e) => {
-              e.target.previousSibling?.remove();
-            }}
-          />*/}
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
@@ -187,6 +182,7 @@ const NavigationBar = () => {
               Contact Us
             </Button>
           </Nav>
+
           <ButtonGroup className="me-2 nav-button-language-container">
             <Dropdown as={ButtonGroup}>
               <Dropdown.Toggle
@@ -216,6 +212,7 @@ const NavigationBar = () => {
               </Dropdown.Menu>
             </Dropdown>
           </ButtonGroup>
+
           {hasToken ? (
             <div className="m-10 navbutton-section-afterlogin">
               <Button className="m-0 btnfirst">Hi !</Button>

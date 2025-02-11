@@ -24,8 +24,9 @@ const SchoolDashboard = () => {
   const token =
     localStorage.getItem("token") || sessionStorage.getItem("token");
   //console.log("token", token);
+  const account = sessionStorage.getItem("accountType");
 
-  if (!token) {
+  if (!token || account != "school") {
     return <Navigate to="/schoolPortalLogin" />;
   }
 
@@ -93,8 +94,8 @@ const SchoolDashboard = () => {
             return <Dashboard />;
           case "courses":
             return <Courses />;
-          case"featured":
-            return <FeaturedRequest authToken={token} />
+          case "featured":
+            return <FeaturedRequest authToken={token} />;
           default:
             return <Dashboard />;
         }

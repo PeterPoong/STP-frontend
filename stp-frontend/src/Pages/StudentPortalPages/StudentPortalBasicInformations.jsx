@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate,useLocation } from "react-router-dom";
-import { Spinner, Modal, Button } from "react-bootstrap";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Spinner, Modal } from "react-bootstrap";
 import NavButtonsSP from "../../Components/StudentPortalComp/NavButtonsSP";
 import MyProfileWidget from "../../Components/StudentPortalComp/MyProfileWidget";
 import SpcFooter from "../../Components/StudentPortalComp/SpcFooter";
@@ -15,6 +15,7 @@ import "aos/dist/aos.css";
 import "../../css/StudentPortalStyles/StudentPortalBasicInformation.css";
 import styled from "styled-components";
 import Term from "../../Components/StudentPortalComp/Term";
+
 const ScrollableModalBody = styled(Modal.Body)`
   max-height: 70vh;
   overflow-y: auto;
@@ -38,33 +39,34 @@ const StudentPortalBasicInformations = () => {
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const [showTermsModal, setShowTermsModal] = useState(false);
-  const [hasReachedBottom, setHasReachedBottom] = useState(false);
   const modalBodyRef = useRef(null);
+  const hasNavigated = useRef(false); // Track if we've already navigated
 
-  /*loading to check if have  token or not if dont have will navigaate back to studentPortalLogin Page */
+  // Loading check for token existence, redirecting to login if no token
   useEffect(() => {
     const token =
       sessionStorage.getItem("token") || localStorage.getItem("token");
-    //console.log("Token found:", token ? "Yes" : "No");
+    const accountType =
+      sessionStorage.getItem("accountType") ||
+      localStorage.getItem("accountType");
+
+    console.log("type", accountType);
     if (!token) {
-      //console.log("No token found, redirecting to login");
-      navigate("/studentPortalLogin");
+      if (!hasNavigated.current) {
+        hasNavigated.current = true;
+        navigate("/studentPortalLogin");
+      }
     } else {
+      if (accountType == "school") {
+        navigate("/schoolPortalDashboard");
+      }
       verifyToken(token);
     }
   }, [navigate]);
-  /*end */
 
-  useEffect(() => {
-    if (location.state?.selectedContent) {
-      setSelectedContent(location.state.selectedContent);
-    }
-  }, [location]);
-
-  /*validate Token api t check if have token or not if dont have will navigate back to studentPortalLoginPage and will remove the token */
+  // Token verification logic
   const verifyToken = async (token) => {
     try {
-      //console.log("Verifying token:", token);
       const response = await fetch(
         `${import.meta.env.VITE_BASE_URL}api/validateToken`,
         {
@@ -81,19 +83,15 @@ const StudentPortalBasicInformations = () => {
       }
 
       const data = await response.json();
-      //console.log("Token validation response:", data);
 
       if (data && data.success === true) {
-        // console.log("Token is valid");
         setIsAuthenticated(true);
         // Add terms check after successful authentication
         checkTermsAgreement(token);
       } else {
-        //console.log("Token is invalid based on response structure");
         throw new Error("Token validation failed");
       }
     } catch (error) {
-      // console.error("Error during token verification:", error);
       sessionStorage.removeItem("token");
       localStorage.removeItem("token");
       navigate("/studentPortalLogin");
@@ -101,46 +99,10 @@ const StudentPortalBasicInformations = () => {
       setIsLoading(false);
     }
   };
-  /*end */
 
-  /*passing the profilepic url from basicInfomationWidget t MyProfileWidget */
-  const handleProfilePicUpdate = (newProfilePic) => {
-    setProfilePic(newProfilePic);
-  };
-  /*end */
-
-  /*rendercontent function */
-  const renderContent = () => {
-    switch (selectedContent) {
-      case "basicInfo":
-        return (
-          <div>
-            <BasicInformationWidget
-              onProfilePicUpdate={handleProfilePicUpdate}
-            />
-          </div>
-        );
-      case "managePassword":
-        return <ManagePasswordWidget />;
-      case "transcript":
-        return <CollapsibleSections />;
-      case "appliedCoursePending": // Ensure this matches the case of the component name
-        return <AppliedCoursePending status="pending" />; // Check if this is correctly imported
-      case "appliedCourseHistory":
-        return <AppliedCourseHistory status="history" />;
-        case "riasecresult":
-          return <RiasecResult/>;
-        case "interestedList":
-          return <InterestedList/>;
-      default:
-        return <BasicInformationWidget />;
-    }
-  };
-  /*end */
-
+  // Fetch terms agreement status
   const checkTermsAgreement = async (token) => {
     try {
-      // console.log("Checking terms agreement...");
       const response = await fetch(
         `${import.meta.env.VITE_BASE_URL}api/student/checkTermsAgreement`,
         {
@@ -153,45 +115,25 @@ const StudentPortalBasicInformations = () => {
         }
       );
 
-      // console.log("Response status:", response.status);
-
       if (!response.ok) {
         const errorData = await response.json();
-        console.error("Error response:", errorData);
         throw new Error(errorData.message || "Failed to check terms agreement");
       }
 
       const data = await response.json();
-      // console.log("Terms agreement response:", data);
-
       if (!data.hasAgreed) {
         setShowTermsModal(true);
       }
     } catch (error) {
-      // console.error("Error checking terms agreement:", error);
-      // Optionally show modal on error for testing
-      setShowTermsModal(true);
-    }
-  };
-
-  const handleScroll = (e) => {
-    const element = e.target;
-    const isAtBottom =
-      Math.abs(
-        element.scrollHeight - element.scrollTop - element.clientHeight
-      ) < 1;
-
-    if (isAtBottom) {
-      setHasReachedBottom(true);
+      setShowTermsModal(true); // Show the terms modal on error
     }
   };
 
   const handleAgree = async () => {
-    try {
-      const token =
-        sessionStorage.getItem("token") || localStorage.getItem("token");
-      // console.log("Submitting agreement...");
+    const token =
+      sessionStorage.getItem("token") || localStorage.getItem("token");
 
+    try {
       const response = await fetch(
         `${import.meta.env.VITE_BASE_URL}api/student/agreeTerms`,
         {
@@ -205,17 +147,12 @@ const StudentPortalBasicInformations = () => {
         }
       );
 
-      // console.log("Agreement response status:", response.status);
-
       if (!response.ok) {
         const errorData = await response.json();
-        console.error("Error response:", errorData);
         throw new Error(errorData.message || "Failed to update agreement");
       }
 
       const data = await response.json();
-      // console.log("Agreement update response:", data);
-
       if (data.success) {
         setShowTermsModal(false);
       } else {
@@ -223,7 +160,6 @@ const StudentPortalBasicInformations = () => {
       }
     } catch (error) {
       console.error("Error updating agreement:", error);
-      // Optionally show an error message to the user
     }
   };
 
@@ -233,21 +169,58 @@ const StudentPortalBasicInformations = () => {
     navigate("/studentPortalLogin");
   };
 
+  const handleScroll = (e) => {
+    const element = e.target;
+    const isAtBottom =
+      Math.abs(
+        element.scrollHeight - element.scrollTop - element.clientHeight
+      ) < 1;
+    if (isAtBottom) {
+      // Handle scroll action
+    }
+  };
+
+  const renderContent = () => {
+    switch (selectedContent) {
+      case "basicInfo":
+        return (
+          <BasicInformationWidget onProfilePicUpdate={handleProfilePicUpdate} />
+        );
+      case "managePassword":
+        return <ManagePasswordWidget />;
+      case "transcript":
+        return <CollapsibleSections />;
+      case "appliedCoursePending":
+        return <AppliedCoursePending status="pending" />;
+      case "appliedCourseHistory":
+        return <AppliedCourseHistory status="history" />;
+      case "riasecresult":
+        return <RiasecResult />;
+      case "interestedList":
+        return <InterestedList />;
+      default:
+        return <BasicInformationWidget />;
+    }
+  };
+
+  const handleProfilePicUpdate = (newProfilePic) => {
+    setProfilePic(newProfilePic);
+  };
+
   if (isLoading) {
     return (
       <div>
-        <div>
-          <div className="d-flex justify-content-center align-items-center m-5 h-100 w-100">
-            <Spinner animation="border" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </Spinner>
-          </div>
+        <div className="d-flex justify-content-center align-items-center m-5 h-100 w-100">
+          <Spinner animation="border" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </Spinner>
         </div>
       </div>
     );
   }
+
   if (!isAuthenticated) {
-    return null; // Or you could render a "Not Authorized" message
+    return null; // Or render an unauthorized message
   }
 
   return (

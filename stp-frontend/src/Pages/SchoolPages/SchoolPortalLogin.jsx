@@ -57,12 +57,13 @@ const SchoolPortalLogin = () => {
       .then((response) => response.json())
       .then((data) => {
         //console.log("Full API response:", data);
-       // console.log("trueTest", data.true);
+        // console.log("trueTest", data.true);
         if (data.true == true) {
           setErrorMessage("");
           console.log("Login successful:", data.data.user.school_status);
           setLoginStatus("success");
           sessionStorage.setItem("name", data.data.user.school_name);
+          sessionStorage.setItem("accountType", "school");
           // sessionStorage.setItem("token", data.data.token);
           // localStorage.setItem("token", data.data.token);
           localStorage.setItem("account_type", data.data.user.account_type);
@@ -131,9 +132,8 @@ const SchoolPortalLogin = () => {
         },
       });
       if (!response.ok) {
-        console.log("ok");
         const errorData = await response.json();
-      //  console.log("Error Data:", errorData["errors"]);
+        //  console.log("Error Data:", errorData["errors"]);
         throw new Error(errorData["errors"] || "Internal Server Error");
       }
 
@@ -147,7 +147,7 @@ const SchoolPortalLogin = () => {
   };
 
   const handleBackClick = () => {
-    navigate('/'); // This navigates to the previous page in history
+    navigate("/"); // This navigates to the previous page in history
   };
 
   return (
@@ -164,8 +164,12 @@ const SchoolPortalLogin = () => {
               height="1.25rem"
               fill="#FFFFFFFF"
               class="bi bi-chevron-left"
-              viewBox="0 0 16 16">
-              <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0" />
+              viewBox="0 0 16 16"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"
+              />
             </svg>
           </button>
         </div>

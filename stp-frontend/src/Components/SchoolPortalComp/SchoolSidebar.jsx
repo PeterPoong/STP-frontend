@@ -139,6 +139,8 @@ const Sidebar = ({ onDropdownItemSelect, selectTabPage }) => {
     sessionStorage.removeItem("token");
     localStorage.removeItem("token");
     localStorage.removeItem("account_type");
+    sessionStorage.removeItem("accountType");
+    sessionStorage.removeItem("name");
     navigate("/schoolPortalLogin");
   };
 
