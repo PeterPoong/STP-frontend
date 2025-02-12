@@ -137,6 +137,7 @@ const StudentPortalLogin = () => {
               sessionStorage.setItem("token", data.data.token);
               localStorage.setItem("rememberMe", JSON.stringify(rememberMe));
               sessionStorage.setItem("userName", userName);
+              sessionStorage.setItem("accountType", "student");
               localStorage.setItem("userName", userName);
               if (rememberMe) {
                 localStorage.setItem("token", data.data.token);
@@ -162,19 +163,26 @@ const StudentPortalLogin = () => {
                 if (rememberMe) {
                   localStorage.setItem("id", id);
                 }
-              } 
-            // Check if user came from study path page
-            const redirectToStudyPath = sessionStorage.getItem('redirectToStudyPath');
-            if (redirectToStudyPath === 'true') {
-              sessionStorage.removeItem('redirectToStudyPath');
-              setTimeout(() => navigate("/studentStudyPath"), 500);
+              }
+              // Check if user came from study path page
+              const redirectToStudyPath = sessionStorage.getItem(
+                "redirectToStudyPath"
+              );
+              if (redirectToStudyPath === "true") {
+                sessionStorage.removeItem("redirectToStudyPath");
+                setTimeout(() => navigate("/studentStudyPath"), 500);
+              } else {
+                setTimeout(
+                  () => navigate("/studentPortalBasicInformations"),
+                  500
+                );
+              }
             } else {
-              setTimeout(() => navigate("/studentPortalBasicInformations"), 500);
+              setError(
+                "Login successful, but token not received. Please try again."
+              );
             }
-          } else {
-            setError("Login successful, but token not received. Please try again.");
           }
-        }
         } else {
           console.error("Login failed:", data);
           setLoginStatus("failed");
@@ -209,8 +217,7 @@ const StudentPortalLogin = () => {
   return (
     <Container fluid className="h-100">
       <Row className="h-50">
-        <Col md={6} className="p-0 h-100">
-          <div className="position-absolute top-0 ">
+      <div className="position-absolute top-0 ">
             <button
               className="p-1 login-back-button rounded-circle"
               onClick={handleBackClick}
@@ -230,10 +237,12 @@ const StudentPortalLogin = () => {
               </svg>
             </button>
           </div>
+        <Col md={6} className="p-0 h-100 d-md-flex d-none">
+         
           <img
             src={studentPortalLogin}
             alt="Student Portal Login"
-            className="w-100 h-100 object-fit-cover d-md-flex d-none"
+            className="w-100 h-100 object-fit-cover"
           />
         </Col>
         <Col md={6} className="d-flex align-items-center bg-white">
