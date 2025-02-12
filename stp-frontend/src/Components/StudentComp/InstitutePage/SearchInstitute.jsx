@@ -80,6 +80,9 @@ const SearchInstitute = () => {
   // Add this with your other state declarations at the top
   const [resultCount, setResultCount] = useState(0);
 
+  // Add this state near other state declarations
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
+
   const topRef = useRef(null);
   const scrollToTop = () => {
     // Method 2: Using scrollIntoView
@@ -707,6 +710,18 @@ const SearchInstitute = () => {
     }
   };
 
+  // Add this function to count selected filters
+  const countSelectedFilters = () => {
+    return Object.values(selectedFilters).reduce((count, filter) => {
+      if (Array.isArray(filter)) {
+        return count + filter.length;
+      } else if (filter > 0) {
+        return count + 1;
+      }
+      return count;
+    }, 0);
+  };
+
   return (
     <Container>
       <Helmet>
@@ -870,7 +885,7 @@ const SearchInstitute = () => {
             fetchInstitutes();
           }}
         >
-          <InputGroup className="mb-3">
+          <InputGroup className="mb-3 saerchinstitute-display-none">
             <Form.Control
               className="custom-placeholder searchinputborder"
               style={{ height: "45px", marginTop: "9px" }}
@@ -893,8 +908,9 @@ const SearchInstitute = () => {
               e.preventDefault();
               fetchInstitutes();
             }}
+            className="d-flex align-items-center gap-2"
           >
-            <InputGroup >
+            <InputGroup style={{ flex: 1 }}>
               <Form.Control
                 className="custom-placeholder searchinputborder"
                 style={{ height: "45px", marginTop: "9px" }}
@@ -902,28 +918,29 @@ const SearchInstitute = () => {
                 value={tempSearch}
                 onChange={(e) => {
                   setTempSearch(e.target.value);
-                  // After 500ms, update the main searchQuery which triggers API call
                   setTimeout(() => {
                     setSearchQuery(e.target.value);
                   }, 1500);
                 }}
               />
             </InputGroup>
+            
+            {/* Mobile Filter Button */}
+            <button
+              onClick={() => setShowMobileFilters(!showMobileFilters)}
+              className="mobile-filter-button d-flex align-items-center"
+              style={{
+                height: "42px",
+                marginTop: "9px",
+                padding: "0 15px",
+                borderRadius: "5px"
+              }}
+            >
+              <i className={`bi bi-funnel${countSelectedFilters() > 0 ? '-fill' : ''}`}></i>
+              <span>Filter</span>
+              {countSelectedFilters() > 0 && <span className="ms-1">({countSelectedFilters()})</span>}
+            </button>
           </Form>
-          <button
-            onClick={resetFilters}
-            style={{
-              backgroundColor: "transparent",
-              border: "none",
-              color: "#B71A18",
-              fontWeight: "lighter",
-              textDecoration: "none",
-              cursor: "pointer",
-            }}
-          >
-            <i className="bi bi-funnel" style={{ marginRight: "5px" }} />
-            Reset Filters
-          </button>
         </div>
 
         {/* SEO-friendly heading below search bar */}
@@ -935,7 +952,7 @@ const SearchInstitute = () => {
             {/* Left Sidebar - Filters */}
             <Col
               md={3}
-              className="location-container"
+              className="location-container d-none d-md-block"
               style={{ backgroundColor: "white", padding: "10px" }}
             >
               {/* Desktop Filters */}
@@ -1055,100 +1072,186 @@ const SearchInstitute = () => {
               </div>
 
               {/* Mobile Accordion Filters */}
-              {/* Mobile Accordion Filters */}
-              <Accordion
-                //defaultActiveKey="0"
-                className="custom-accordion d-md-none"
-              >
+             
+            </Col>
 
-                <Accordion.Item eventKey="0">
-                  <Accordion.Header className="custom-accordion-header">
-                    {selectedCountry ? (
-                      <>
-                        <CountryFlag
-                          countryCode={selectedCountry.country_code}
-                          svg
+            {/* Right Content - Institute Listings */}
+            <Col xs={12} md={9} className="degreeinstitutes-division">
+              {Array.isArray(adsImageA) && adsImageA.length > 0 ? (
+                 <Swiper
+                 spaceBetween={10}
+                 slidesPerView={1}
+                 navigation
+                 autoplay={{ delay: 5000, disableOnInteraction: false }} // Ensure autoplay is enabled
+                 modules={[Navigation, Autoplay]} 
+                 style={{ padding: "20px 0" }}
+               >
+                  {adsImageA.map((ad, index) => (
+                     <SwiperSlide key={ad.id} className="advertisement-item mb-3">
+                      <a
+                        href={ad.banner_url.startsWith('http') ? ad.banner_url : `https://${ad.banner_url}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <img
+                          loading="lazy"
+                          src={`${baseURL}storage/${ad.banner_file}`}
+                          alt={`Advertisement ${ad.banner_name}`}
+                          className="studypal-image"
                           style={{
-                            width: "20px",
-                            height: "20px",
-                            marginRight: "10px",
+                            height: "175px",
+                            objectFit: "fill",
+                            marginBottom: index < adsImageA.length - 1 ? "20px" : "0"
                           }}
                         />
-                        {selectedCountry.country_name}
-                      </>
-                    ) : (
-                      "Select Country"
-                    )}
-                  </Accordion.Header>
-                  <Accordion.Body>
-                    <InputGroup className="mb-2 ps-3 pe-3">
-                      <Form.Control
-                        placeholder="Filter countries"
-                        onChange={(e) => setCountryFilter(e.target.value.toLowerCase())}
-                        value={countryFilter}
-                      className="ps-1 countryinput"
+                      </a>
+                    </SwiperSlide>
+                  ))}
+                </Swiper>
+              ) : (
+                <img
+                  loading="lazy"
+                  src={StudyPal}
+                  alt="Study Pal"
+                  className="studypal-image"
+                  style={{ height: "175px" }}
+                />
+              )}
+
+              {loading ? (
+                <div className="text-center">
+                  <Spinner animation="border" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                  </Spinner>
+                </div>
+              ) : error ? (
+                <div className="text-center text-danger">
+                  <p>Error: {error}</p>
+                </div>
+              ) : (
+                <>{renderInstitutes()}</>
+              )}
+            </Col>
+            {renderPagination()}
+          </Row>
+        </Container>
+      </div>
+
+      {/* Mobile Filters */}
+      <div className={`mobile-filters-container ${showMobileFilters ? 'show' : ''}`}>
+        {/* Close button */}
+        <button 
+          onClick={() => setShowMobileFilters(false)}
+          className="mobile-close-button"
+          style={{
+            position: 'absolute',
+            marginLeft: '-50px',
+            marginTop:'-50px',
+            background: 'none',
+            border: 'none',
+            fontSize: '2rem',
+            color: '#495057',
+            zIndex: 1
+          }}
+        > 
+          &times;
+        </button>
+        
+        <div className="accordion-scroll-container">
+          {/* Move the existing Accordion component here */}
+          <Accordion
+                className="custom-accordion d-md-none"
+              >
+                <Accordion.Item eventKey="0">
+                <Accordion.Header className="custom-accordion-header">
+                  {selectedCountry ? (
+                    <>
+                      <CountryFlag
+                        countryCode={selectedCountry.country_code}
+                        svg
+                        style={{
+                          width: "20px",
+                          height: "20px",
+                          marginRight: "10px",
+                        }}
                       />
-                    </InputGroup>
-                    <div className="country-list">
-                      {countries
-                        .filter((country) =>
-                          country.country_name.toLowerCase().includes(countryFilter)
-                        )
-                        .map((country, index) => (
-                          <Form.Check
-                            key={index}
-                            type="checkbox"
-                            id={`country-${country.id}`}
-                            label={
-                              <div
-                                className="d-flex align-items-center"
+                      {selectedCountry.country_name}
+                    </>
+                  ) : (
+                    "Select Country"
+                  )}
+                </Accordion.Header>
+                <Accordion.Body>
+                  <InputGroup className="mb-2 ps-3 pe-3">
+                    <Form.Control
+                      placeholder="Filter countries"
+                      onChange={(e) => setCountryFilter(e.target.value.toLowerCase())}
+                      value={countryFilter}
+                      className="ps-1 countryinput"
+                    />
+                  </InputGroup>
+                  <div className="country-list">
+                    {countries
+                      .filter((country) =>
+                        country.country_name.toLowerCase().includes(countryFilter)
+                      )
+                      .map((country, index) => (
+                        <Form.Check
+                          key={index}
+                          type="radio"
+                          name="country"
+                          id={`country-${country.id}`}
+                          label={
+                            <div
+                              className="d-flex align-items-center"
+                              style={{
+                                marginRight: "10px",
+                                paddingTop: "0",
+                                paddingBottom: "0"
+                              }}>
+                              <CountryFlag
+                                countryCode={country.country_code}
+                                svg
                                 style={{
+                                  width: "20px",
+                                  height: "20px",
                                   marginRight: "10px",
                                   paddingTop: "0",
                                   paddingBottom: "0"
-                                }}>
-                                <CountryFlag
-                                  countryCode={country.country_code}
-                                  svg
-                                  style={{
-                                    width: "20px",
-                                    height: "20px",
-                                    marginRight: "10px",
-                                    paddingTop: "0",
-                                    paddingBottom: "0"
-                                  }}
-                                />
-                                {country.country_name}
-                              </div>
-                            }
-                            checked={selectedCountry?.id === country.id}
-                            onChange={() => handleCountryChange(country)}
-                            className="mb-2"
-                          />
-                        ))}
-                    </div>
-                  </Accordion.Body>
-                </Accordion.Item>
+                                }}
+                              />
+                              {country.country_name}
+                            </div>
+                          }
+                          checked={selectedCountry?.id === country.id}
+                          onChange={() => handleCountryChange(country)}
+                          className="mb-2"
+                        />
+                      ))}
+                  </div>
+                </Accordion.Body>
+              </Accordion.Item>
 
-                {/* University Type Accordion Item */}
-                <Accordion.Item eventKey="1">
-                  <Accordion.Header className="custom-accordion-header">
-                    {selectedInstitute ? selectedInstitute.core_metaName : "Select University Type"}
-                  </Accordion.Header>
-                  <Accordion.Body>
-                    {filterData.institueList.map((institute, index) => (
-                      <Form.Check
-                        key={index}
-                        type="checkbox"
-                        id={`institute-${institute.id}`}
-                        label={institute.core_metaName}
-                        checked={selectedInstitute?.id === institute.id}
-                        onChange={() => setSelectedInstitute(institute)}
-                        className="mb-2"
-                      />
-                    ))}
-                  </Accordion.Body>
-                </Accordion.Item>
+              {/* University Filter */}
+              <Accordion.Item eventKey="1">
+                <Accordion.Header className="custom-accordion-header">
+                  {selectedInstitute ? selectedInstitute.core_metaName : "Select University"}
+                </Accordion.Header>
+                <Accordion.Body>
+                  {filterData.institueList.map((institute, index) => (
+                    <Form.Check
+                      key={index}
+                      type="radio"
+                      name="university"
+                      id={`institute-${institute.id}`}
+                      label={institute.core_metaName}
+                      checked={selectedInstitute?.id === institute.id}
+                      onChange={() => setSelectedInstitute(institute)}
+                      className="mb-2"
+                    />
+                  ))}
+                </Accordion.Body>
+              </Accordion.Item>
                 {/* Location Filter */}
                 <Accordion.Item eventKey="2">
                   <Accordion.Header className="custom-accordion-header">
@@ -1302,69 +1405,36 @@ const SearchInstitute = () => {
                   </Accordion.Body>
                 </Accordion.Item>
               </Accordion>
-            </Col>
-
-            {/* Right Content - Institute Listings */}
-            <Col xs={12} md={9} className="degreeinstitutes-division">
-              {Array.isArray(adsImageA) && adsImageA.length > 0 ? (
-                 <Swiper
-                 spaceBetween={10}
-                 slidesPerView={1}
-                 navigation
-                 autoplay={{ delay: 5000, disableOnInteraction: false }} // Ensure autoplay is enabled
-                 modules={[Navigation, Autoplay]} 
-                 style={{ padding: "20px 0" }}
-               >
-                  {adsImageA.map((ad, index) => (
-                     <SwiperSlide key={ad.id} className="advertisement-item mb-3">
-                      <a
-                        href={ad.banner_url.startsWith('http') ? ad.banner_url : `https://${ad.banner_url}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <img
-                          loading="lazy"
-                          src={`${baseURL}storage/${ad.banner_file}`}
-                          alt={`Advertisement ${ad.banner_name}`}
-                          className="studypal-image"
-                          style={{
-                            height: "175px",
-                            objectFit: "fill",
-                            marginBottom: index < adsImageA.length - 1 ? "20px" : "0"
-                          }}
-                        />
-                      </a>
-                    </SwiperSlide>
-                  ))}
-                </Swiper>
-              ) : (
-                <img
-                  loading="lazy"
-                  src={StudyPal}
-                  alt="Study Pal"
-                  className="studypal-image"
-                  style={{ height: "175px" }}
-                />
-              )}
-
-              {loading ? (
-                <div className="text-center">
-                  <Spinner animation="border" role="status">
-                    <span className="visually-hidden">Loading...</span>
-                  </Spinner>
-                </div>
-              ) : error ? (
-                <div className="text-center text-danger">
-                  <p>Error: {error}</p>
-                </div>
-              ) : (
-                <>{renderInstitutes()}</>
-              )}
-            </Col>
-            {renderPagination()}
-          </Row>
-        </Container>
+        </div>
+        
+        <div className="mobile-filter-buttons">
+          <button
+            onClick={() => {
+              resetFilters();
+              setShowMobileFilters(false);
+            }}
+            className="mobile-reset-button"
+          >
+            Reset Filters
+          </button>
+          <button
+            onClick={() => {
+              fetchInstitutes();
+              setShowMobileFilters(false);
+            }}
+            className="mobile-apply-button"
+          >
+            Apply Filters
+          </button>
+        </div>
       </div>
+
+      {showMobileFilters && (
+        <div 
+          className="mobile-filters-backdrop show"
+          onClick={() => setShowMobileFilters(false)}
+        ></div>
+      )}
     </Container>
   );
 };
