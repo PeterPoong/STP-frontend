@@ -13,6 +13,7 @@ import {
   Spinner,
   Accordion,
   Alert,
+  Button,
 } from "react-bootstrap";
 import CountryFlag from "react-country-flag";
 import debounce from "lodash.debounce";
@@ -25,7 +26,7 @@ import "swiper/css/pagination";
 import "swiper/css/navigation";
 import "swiper/swiper-bundle.css";
 import { Navigation, Autoplay } from "swiper/modules";
-import { requestUserCountry } from "../../../utils/locationRequest"; 
+
 import currency from 'currency.js';
 
 export const baseURL = import.meta.env.VITE_BASE_URL;
@@ -164,6 +165,8 @@ const SearchCourse = () => {
   const [fetchedCountry, setFetchedCountry] = useState(null);
 
   const [selectedCurrency, setSelectedCurrency] = useState({});
+
+  const [showFilters, setShowFilters] = useState(false);
 
   const fetchExchangeRates = async () => {
     try {
@@ -1266,7 +1269,7 @@ useEffect(() => {
             </Col>
 
             {/* Reset Filter Button */}
-            <Col xs={12} sm={4} md={3} lg={2} className="mb-2 mb-sm-0">
+            <Col xs={12} sm={4} md={3} lg={2} className="mb-2 mb-sm-0 d-sm-none">
               <button
                 onClick={resetFilters}
                 style={{
@@ -1291,6 +1294,7 @@ useEffect(() => {
             fetchCourses();
           }}
         >
+         
           <InputGroup className="mb-3  saerchcourse-display-none">
             <Form.Control
               className="custom-placeholder searchinputborder"
@@ -1329,21 +1333,20 @@ useEffect(() => {
                 }}
               />
             </InputGroup>
+              {/* Hamburger Menu for Mobile Filters */}
+            <div className="d-md-none">
+                    <Button
+                      variant="outline-primary"
+                      onClick={() => setShowFilters(prev => !prev)} // Toggle filter visibility
+                      aria-controls="filter-accordion"
+                      aria-expanded={showFilters}
+                      className="filterListButton"
+                    >
+                      <i className="bi bi-funnel-fill me-2" style={{color:"#B71A18"}}>Filters</i> 
+                    </Button>
+                  </div>
           </Form>
-          <button
-            onClick={resetFilters}
-            style={{
-              backgroundColor: "transparent",
-              border: "none",
-              color: "#B71A18",
-              fontWeight: "lighter",
-              textDecoration: "none",
-              cursor: "pointer",
-            }}
-          >
-            <i className="bi bi-funnel" style={{ marginRight: "5px" }} />
-            Reset Filters
-          </button>
+         
         </div>
         {/* Main Content */}
         <Container className="my-5">
@@ -1351,7 +1354,7 @@ useEffect(() => {
             {/* Left Sidebar - Filters */}
             <Col
                 md={3}
-                className="location-container"
+                className="location-container d-none d-md-block"
                 style={{ backgroundColor: "white", padding: "10px" }}
               >
               {/* Desktop Filters */}
@@ -1450,12 +1453,27 @@ useEffect(() => {
                   </div>
                 </div>
 
-                {/* Mobile Accordion Filters */}
+                
+
                 {/* Mobile Accordion Filters */}
                 <Accordion
-                  //defaultActiveKey="0"
-                  className="custom-accordion d-md-none"
+                  id="filter-accordion"
+                  className={`custom-accordion d-md-none ${showFilters ? 'show' : 'hide'}`} // Show or hide based on state
                 >
+                   <button
+                    onClick={resetFilters}
+                    style={{
+                      backgroundColor: "transparent",
+                      border: "none",
+                      color: "#B71A18",
+                      fontWeight: "lighter",
+                      textDecoration: "none",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <i className="bi bi-funnel" style={{ marginRight: "5px" }} />
+                    Reset Filters
+                  </button>
                   <Accordion.Item eventKey="0">
                     <Accordion.Header className="custom-accordion-header">
                       {selectedCountry ? (

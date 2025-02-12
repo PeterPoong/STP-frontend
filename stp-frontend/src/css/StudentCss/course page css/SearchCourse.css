@@ -222,3 +222,30 @@
   border: black 1px solid !important; /* Change border color to black on focus */
 
 }
+
+.custom-accordion {
+  transition: max-height 0.3s ease;
+}
+
+.custom-accordion.hide {
+  max-height: 0;
+  overflow: hidden;
+}
+
+.custom-accordion.show {
+  max-height: 1000px; /* Adjust as needed */
+}
+
+.filterListButton{
+  border: #B71A18 1px solid !important;
+}
+.filterListButton:active {
+  background-color: #B71A18; /* Change to your desired color */
+  color: white; /* Optional: Change text color for better contrast */
+}
+
+.coursepage-reset-display-search {
+    display: flex; /* Use flexbox for alignment */
+    align-items: center; /* Center items vertically */
+    justify-content: space-between; /* Space between items */
+}

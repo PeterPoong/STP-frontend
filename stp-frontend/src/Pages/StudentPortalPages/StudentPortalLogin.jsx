@@ -233,7 +233,7 @@ const StudentPortalLogin = () => {
           <img
             src={studentPortalLogin}
             alt="Student Portal Login"
-            className="w-100 h-100 object-fit-cover"
+            className="w-100 h-100 object-fit-cover d-md-flex d-none"
           />
         </Col>
         <Col md={6} className="d-flex align-items-center bg-white">
