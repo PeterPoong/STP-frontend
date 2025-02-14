@@ -101,56 +101,41 @@ const FeaturedCoursesContainer = () => {
           </div>
         </div></div>}
       {!loading && !error && courses.length > 0 && (
-        <Container className="course-container">
-
+        <Container className="course-container" style={{ position: 'relative' }}>
           <Swiper
             modules={[Navigation, Pagination]}
             spaceBetween={5}
             slidesPerView={5}
             loop={true}
-            navigation  // Helps with loop smoothness
+            navigation={true}
+            pagination={{ 
+              clickable: true 
+            }}
+            style={{
+              '--swiper-pagination-bottom': '-5px',
+              paddingBottom: '20px'
+            }}
+            grabCursor={true}
+            resistance={true}
+            resistanceRatio={0.85}
+            touchRatio={1.5}
             breakpoints={{
-              // Mobile phones (portrait)
               320: {
-                slidesPerView: getSlidesPerView(),
-                spaceBetween: 1,
+                slidesPerView: 1,
+                spaceBetween: 20,
               },
-              // Large phones & small tablets
               576: {
-                slidesPerView: getSlidesPerView(),
-                spaceBetween: 1,
+                slidesPerView: 2,
+                spaceBetween: 10,
               },
-              // Tablets & small laptops
               768: {
                 slidesPerView: getSlidesPerView(),
                 spaceBetween: 10,
               },
-              // Laptops & desktops
               992: {
                 slidesPerView: getSlidesPerView(),
                 spaceBetween: 5,
               },
-              // Mobile phones (portrait)
-              /*320: {
-                slidesPerView: 10,
-                spaceBetween: 1,
-              },
-              // Large phones & small tablets
-              576: {
-                slidesPerView: 10,
-                spaceBetween: 1,
-              },
-              // Tablets & small laptops
-              768: {
-                slidesPerView: 10,
-                spaceBetween: 10,
-              },
-              // Laptops & desktops
-              992: {
-                slidesPerView: 10,
-                spaceBetween: 5,
-              },*/
-              // Large desktops
               1200: {
                 slidesPerView: 5,
                 spaceBetween: 5,
@@ -259,6 +244,7 @@ const FeaturedCoursesContainer = () => {
               </SwiperSlide>
             ))}
           </Swiper>
+          <div className="swiper-pagination"></div>
         </Container>
       )
       }
