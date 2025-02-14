@@ -2,10 +2,11 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Container, Spinner } from "react-bootstrap";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination } from "swiper/modules";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import "swiper/css/autoplay";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import "../../css/StudentCss/homePageStudent/Unicard.css";
 
@@ -88,7 +89,17 @@ const FeaturedCoursesContainer = () => {
   const getSlidesPerView = () => {
     return courses.length > 0 ? courses.length - 1 : 1;
   };
-
+  const getAutoplaySettings = () => {
+    // Check if window exists (for SSR compatibility)
+    if (typeof window !== 'undefined') {
+      return window.innerWidth <= 768 ? {
+        delay: 3000,
+        disableOnInteraction: false,
+      } : false;
+    }
+    return false;
+  };
+  
   return (
     <div>
       {error && <div>Error: {error}</div>}
@@ -103,17 +114,28 @@ const FeaturedCoursesContainer = () => {
       {!loading && !error && courses.length > 0 && (
         <Container className="course-container" style={{ position: 'relative' }}>
           <Swiper
-            modules={[Navigation, Pagination]}
+            modules={[Navigation, Pagination, Autoplay]}
             spaceBetween={5}
             slidesPerView={5}
             loop={true}
-            navigation={true}
+            navigation={{
+              nextEl: '.swiper-button-next',
+              prevEl: '.swiper-button-prev',
+            }}
             pagination={{ 
               clickable: true 
             }}
+            autoplay={{
+              delay: 5000,
+              disableOnInteraction: false,
+            }}
             style={{
               '--swiper-pagination-bottom': '-5px',
-              paddingBottom: '20px'
+              '--swiper-navigation-color': '#BA1718',
+              '--swiper-navigation-size': '25px',
+              paddingBottom: '20px',
+              paddingLeft: '25px',
+              paddingRight: '25px'
             }}
             grabCursor={true}
             resistance={true}
@@ -142,6 +164,8 @@ const FeaturedCoursesContainer = () => {
               }
             }}
           >
+            <div className="swiper-button-prev"></div>
+            <div className="swiper-button-next"></div>
             {courses.map((course, idx) => (
               <SwiperSlide key={idx} className="swiper-slide-course">
                 <div
