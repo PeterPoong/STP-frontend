@@ -20,13 +20,13 @@ import {
 import "../../../css/StudentCss/course page css/SearchCourse.css";
 import studypal11 from "../../../assets/StudentAssets/institute image/StudyPal11.png";
 import Footer from "../../../Components/StudentComp/Footer";
-import currency from 'currency.js';
+import currency from "currency.js";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
-import { Pagination, Navigation, Autoplay } from "swiper/modules";
+import { Pagination, Autoplay, Navigation } from "swiper/modules";
 import { Helmet } from "react-helmet";
 
 const baseURL = import.meta.env.VITE_BASE_URL;
@@ -135,7 +135,7 @@ const KnowMoreInstitute = () => {
     KR: { currency_code: "KRW", currency_symbol: "₩" }, // South Korea
     HK: { currency_code: "HKD", currency_symbol: "HK$" }, // Hong Kong
     TW: { currency_code: "TWD", currency_symbol: "NT$" }, // Taiwan
-  
+
     // Europe
     GB: { currency_code: "GBP", currency_symbol: "£" }, // United Kingdom
     DE: { currency_code: "EUR", currency_symbol: "€" }, // Germany
@@ -147,19 +147,19 @@ const KnowMoreInstitute = () => {
     SE: { currency_code: "SEK", currency_symbol: "kr" }, // Sweden
     NO: { currency_code: "NOK", currency_symbol: "kr" }, // Norway
     DK: { currency_code: "DKK", currency_symbol: "kr" }, // Denmark
-  
+
     // North America
     US: { currency_code: "USD", currency_symbol: "$" }, // United States
     CA: { currency_code: "CAD", currency_symbol: "C$" }, // Canada
     MX: { currency_code: "MXN", currency_symbol: "Mex$" }, // Mexico
-  
+
     // South America
     BR: { currency_code: "BRL", currency_symbol: "R$" }, // Brazil
     AR: { currency_code: "ARS", currency_symbol: "ARS$" }, // Argentina
     CL: { currency_code: "CLP", currency_symbol: "CLP$" }, // Chile
     CO: { currency_code: "COP", currency_symbol: "COP$" }, // Colombia
     PE: { currency_code: "PEN", currency_symbol: "S/" }, // Peru
-  
+
     // Middle East
     AE: { currency_code: "AED", currency_symbol: "د.إ" }, // United Arab Emirates
     SA: { currency_code: "SAR", currency_symbol: "﷼" }, // Saudi Arabia
@@ -168,13 +168,13 @@ const KnowMoreInstitute = () => {
     EG: { currency_code: "EGP", currency_symbol: "E£" }, // Egypt
     IL: { currency_code: "ILS", currency_symbol: "₪" }, // Israel
     BD: { currency_code: "BDT", currency_symbol: "৳" }, // Bangladesh
-  
+
     // Africa
     ZA: { currency_code: "ZAR", currency_symbol: "R" }, // South Africa
     NG: { currency_code: "NGN", currency_symbol: "₦" }, // Nigeria
     KE: { currency_code: "KES", currency_symbol: "KSh" }, // Kenya
     GH: { currency_code: "GHS", currency_symbol: "₵" }, // Ghana
-  
+
     // Oceania
     AU: { currency_code: "AUD", currency_symbol: "A$" }, // Australia
     NZ: { currency_code: "NZD", currency_symbol: "NZ$" }, // New Zealand
@@ -185,12 +185,14 @@ const KnowMoreInstitute = () => {
   const fetchExchangeRates = async (currencyCode) => {
     try {
       console.log("Fetching exchange rates..."); // Log before fetching
-      const response = await fetch(`https://api.frankfurter.app/latest?from=MYR`);
+      const response = await fetch(
+        `https://api.frankfurter.app/latest?from=MYR`
+      );
       const data = await response.json();
-  
+
       // Log the fetched data to the console
       // console.log("Fetched exchange rates:", data);
-  
+
       if (data && data.rates) {
         setExchangeRates(data.rates);
       } else {
@@ -202,75 +204,88 @@ const KnowMoreInstitute = () => {
   };
   useEffect(() => {
     const fetchCurrencyOnChange = async () => {
-      const currencyCode = sessionStorage.getItem('userCurrencyCode') || 'MYR';
-      const currencySymbol = sessionStorage.getItem('userCurrencySymbol') || 'RM';
-  
+      const currencyCode = sessionStorage.getItem("userCurrencyCode") || "MYR";
+      const currencySymbol =
+        sessionStorage.getItem("userCurrencySymbol") || "RM";
+
       // Fetch exchange rates based on the selected currency
       await fetchExchangeRates(currencyCode);
-  
-      setSelectedCurrency({ currency_code: currencyCode, currency_symbol: currencySymbol });
-   
-    };   
+
+      setSelectedCurrency({
+        currency_code: currencyCode,
+        currency_symbol: currencySymbol,
+      });
+    };
     fetchCurrencyOnChange(); // Fetch the currency rates immediately on component mount or currency change
-  }, [sessionStorage.getItem('userCurrencyCode')]);  // Trigger on currency code change in session storage
+  }, [sessionStorage.getItem("userCurrencyCode")]); // Trigger on currency code change in session storage
   useEffect(() => {
     const interval = setInterval(() => {
-      const newCurrencyCode = sessionStorage.getItem('userCurrencyCode') || 'MYR';
-      
+      const newCurrencyCode =
+        sessionStorage.getItem("userCurrencyCode") || "MYR";
+
       if (newCurrencyCode !== selectedCurrency.currency_code) {
-        setSelectedCurrency({ 
-          currency_code: newCurrencyCode, 
-          currency_symbol: sessionStorage.getItem('userCurrencySymbol') || 'RM' 
+        setSelectedCurrency({
+          currency_code: newCurrencyCode,
+          currency_symbol: sessionStorage.getItem("userCurrencySymbol") || "RM",
         });
-  
-        console.log("Detected currency change in sessionStorage:", newCurrencyCode);
-        
+
+        console.log(
+          "Detected currency change in sessionStorage:",
+          newCurrencyCode
+        );
+
         fetchExchangeRates(newCurrencyCode);
         fetchSchool();
       }
     }, 1000); // Check every second
-  
+
     return () => clearInterval(interval);
   }, [selectedCurrency]);
   const convertToFetchedCurrency = (amount) => {
-    const currencyCode = sessionStorage.getItem('userCurrencyCode') || "MYR"; // Use sessionStorage value
-    const currencySymbol = sessionStorage.getItem('userCurrencySymbol') || "RM";
-  
+    const currencyCode = sessionStorage.getItem("userCurrencyCode") || "MYR"; // Use sessionStorage value
+    const currencySymbol = sessionStorage.getItem("userCurrencySymbol") || "RM";
+
     if (!exchangeRates || !Object.keys(exchangeRates).length) {
       return `${currencySymbol} ${amount}`; // Return original cost if no rates available
     }
-  
+
     const rate = exchangeRates[currencyCode] || 1;
     return `${currencySymbol} ${currency(amount).multiply(rate).format()}`; // Convert MYR to the correct currency
   };
-  
+
   const fetchCountry = async () => {
     try {
-      const response = await fetch('https://ipinfo.io/json');
+      const response = await fetch("https://ipinfo.io/json");
       const data = await response.json();
-  
+
       if (data && data.country) {
         let country = data.country; // Get the real country code
-        
+
         // Override country for testing
         // country = 'AU'; // Change this to 'SG' temporarily
-  
-        const currencyInfo = countryCurrencyMap[country] || { currency_code: "MYR", currency_symbol: "RM" };
-  
-        sessionStorage.setItem('userCountry', country);
-        sessionStorage.setItem('userCurrencyCode', currencyInfo.currency_code);
-        sessionStorage.setItem('userCurrencySymbol', currencyInfo.currency_symbol);
-  
+
+        const currencyInfo = countryCurrencyMap[country] || {
+          currency_code: "MYR",
+          currency_symbol: "RM",
+        };
+
+        sessionStorage.setItem("userCountry", country);
+        sessionStorage.setItem("userCurrencyCode", currencyInfo.currency_code);
+        sessionStorage.setItem(
+          "userCurrencySymbol",
+          currencyInfo.currency_symbol
+        );
+
         // console.log("Fetched country:", country);
         // console.log("Currency Code:", currencyInfo.currency_code);
         // console.log("Currency Symbol:", currencyInfo.currency_symbol);
-  
+
         setFetchedCountry(country);
         setSelectedCurrency(currencyInfo); // Store currency info in state
-  
+
         return country;
       } else {
-        throw new Error('Unable to fetch location data');
+        throw new Error("Unable to fetch location data");
       }
     } catch (error) {
       console.error("Error fetching country:", error);
@@ -282,10 +297,11 @@ const KnowMoreInstitute = () => {
       const country = await fetchCountry(); // Fetch the country
       if (country) {
         // console.log("User country:", country);
-  
-        const currencyCode = sessionStorage.getItem('userCurrencyCode') || "MYR"; // Fetch from storage
+
+        const currencyCode =
+          sessionStorage.getItem("userCurrencyCode") || "MYR"; // Fetch from storage
         setSelectedCurrency(countryCurrencyMap[country]); // Use country directly from fetchCountry
-  
+
         // Fetch exchange rates based on the detected currency
         await fetchExchangeRates(currencyCode);
       }
@@ -421,7 +437,7 @@ const KnowMoreInstitute = () => {
       },
     });
   };
- 
+
   const handleContactSchool = (email) => {
     if (email) {
       // Remove any semicolons or other potential invalid characters
@@ -523,21 +539,42 @@ const KnowMoreInstitute = () => {
                   md={6}
                   className="d-flex flex-column align-items-start"
                 >
-                  <div style={{ marginLeft: "15px", marginTop: "15px" }}>
-                    <h4>{institute.name}</h4>
-                    <p>
-                      <i className="bi bi-geo-alt"></i>
-                      <span style={{ paddingLeft: "10px" }}>
-                        {institute.city}, {institute.state}, {institute.country}
-                      </span>
-                      <i
-                        className="bi bi-mortarboard"
-                        style={{ marginLeft: "30px" }}
-                      ></i>
-                      <span style={{ paddingLeft: "10px" }}>
-                        {institute.category}
-                      </span>
-                    </p>
+                  <div
+                    style={{
+                      margin: window.innerWidth < 768 ? "5px 15px" : "15px", // Equal horizontal margins
+                      width: "100%", // Ensure full width for proper centering
+                    }}
+                    className="institute-name-container"
+                  >
+                    <h4
+                      className="institute-name"
+                      style={{
+                        textAlign: window.innerWidth < 768 ? "center" : "left",
+                        width: "100%", // Added to ensure full width
+                      }}
+                    >
+                      {institute.name}
+                    </h4>
+                    <div className="d-flex flex-column flex-md-row align-items-start">
+                      <p className="mb-2 mb-md-0 padding-10 text-center text-md-start w-100">
+                        <i className="bi bi-geo-alt"></i>
+                        <span style={{ paddingLeft: "10px" }}>
+                          {institute.city}, {institute.state},{" "}
+                          {institute.country}
+                        </span>
+                      </p>
+                      <p className="mb-0 text-center text-md-start w-100">
+                        <i
+                          className="bi bi-mortarboard"
+                          style={{
+                            marginLeft: { xs: "0", md: "30px" },
+                          }}
+                        ></i>
+                        <span style={{ paddingLeft: "10px" }}>
+                          {institute.category}
+                        </span>
+                      </p>
+                    </div>
                   </div>
                 </Col>
                 <Col
@@ -556,6 +593,8 @@ const KnowMoreInstitute = () => {
                       maxWidth: "180px",
                       height: "50px",
                       marginTop: "20px",
+                      display: "block",
+                      margin: "20px auto",
                     }}
                   >
                     Contact School
@@ -653,10 +692,9 @@ const KnowMoreInstitute = () => {
                       initialSlide={startIndex}
                       spaceBetween={10}
                       slidesPerView={1}
-                      navigation
                       loop={true}
                       pagination={{ clickable: true }}
-                      modules={[Navigation, Pagination]}
+                      modules={[Pagination]}
                       style={{
                         padding: "20px 0", // Padding to add spacing around the Swiper content
                       }}
@@ -809,11 +847,11 @@ const KnowMoreInstitute = () => {
                     }}
                   >
                     <Swiper
-                      modules={[Navigation, Pagination]}
+                      modules={[Pagination]}
                       initialSlide={activePhotoIndex} // Start Swiper on the clicked photo
                       spaceBetween={30} // Space between slides
                       slidesPerView={1} // Show one photo at a time
-                      navigation
+                      loop={true}
                       pagination={{ clickable: true }} // Optional: Add pagination
                     >
                       {selectedPhotos.map((photo) => (
@@ -1300,6 +1338,8 @@ const KnowMoreInstitute = () => {
                                           style={{
                                             marginTop: "10px",
                                             display: "flex",
+                                            flexWrap: "wrap",
+                                            width: "100%",
                                           }}
                                           className="knowmoreinstitute-dflex-center"
                                         >
@@ -1307,9 +1347,23 @@ const KnowMoreInstitute = () => {
                                             className="bi bi-calendar2-week"
                                             style={{ marginRight: "10px" }}
                                           ></i>
-                                          <p style={{ paddingLeft: "20px" }}>
+                                          <p
+                                            style={{
+                                              paddingLeft: "20px",
+                                              margin: 0,
+                                              whiteSpace: "normal",
+                                              wordBreak: "keep-all",
+                                              overflowWrap: "break-word",
+                                              display: "inline-block",
+                                              width: "calc(100% - 40px)",
+                                            }}
+                                          >
                                             {Array.isArray(course.course_intake)
-                                              ? course.course_intake.join(", ")
+                                              ? course.course_intake
+                                                  .map((intake) =>
+                                                    intake.trim()
+                                                  )
+                                                  .join(",")
                                               : course.course_intake}
                                           </p>
                                         </div>
@@ -1335,31 +1389,48 @@ const KnowMoreInstitute = () => {
                                   >
                                     estimate fee<br></br>
                                     <p style={{ fontSize: "16px" }}>
-                                      {fetchedCountry === course.country_code ? (
+                                      {fetchedCountry ===
+                                      course.country_code ? (
                                         course.course_cost === "0" ? (
                                           "N/A"
                                         ) : (
                                           <>
-                                            <strong>{sessionStorage.getItem('userCurrencySymbol') || 'RM'}</strong>{" "}
-                                              {convertToFetchedCurrency(course.course_cost).replace(/^.*?(\d+.*)/, '$1')}
+                                            <strong>
+                                              {sessionStorage.getItem(
+                                                "userCurrencySymbol"
+                                              ) || "RM"}
+                                            </strong>{" "}
+                                            {convertToFetchedCurrency(
+                                              course.course_cost
+                                            ).replace(/^.*?(\d+.*)/, "$1")}
+                                          </>
+                                        )
+                                      ) : course.international_cost === "0" ? (
+                                        course.course_cost === "0" ? (
+                                          "N/A"
+                                        ) : (
+                                          <>
+                                            <strong>
+                                              {sessionStorage.getItem(
+                                                "userCurrencySymbol"
+                                              ) || "RM"}
+                                            </strong>{" "}
+                                            {convertToFetchedCurrency(
+                                              course.course_cost
+                                            ).replace(/^.*?(\d+.*)/, "$1")}
                                           </>
                                         )
                                       ) : (
-                                        course.international_cost === "0" ? (
-                                          course.course_cost === "0" ? (
-                                            "N/A"
-                                          ) : (
-                                            <>
-                                              <strong>{sessionStorage.getItem('userCurrencySymbol') || 'RM'}</strong>{" "}
-                                                {convertToFetchedCurrency(course.course_cost).replace(/^.*?(\d+.*)/, '$1')}
-                                            </>
-                                          )
-                                        ) : (
-                                          <>
-                                            <strong>{sessionStorage.getItem('userCurrencySymbol') || 'RM'}</strong>{" "}
-                                              {convertToFetchedCurrency(course.international_cost).replace(/^.*?(\d+.*)/, '$1')}
-                                            </>
-                                          )
+                                        <>
+                                          <strong>
+                                            {sessionStorage.getItem(
+                                              "userCurrencySymbol"
+                                            ) || "RM"}
+                                          </strong>{" "}
+                                          {convertToFetchedCurrency(
+                                            course.international_cost
+                                          ).replace(/^.*?(\d+.*)/, "$1")}
+                                        </>
                                       )}
                                     </p>
                                   </p>
@@ -1412,41 +1483,52 @@ const KnowMoreInstitute = () => {
                   {featuredInstitutes.length > 0 && (
                     <Container className="my-4">
                       <h4>Featured Institutes</h4>
+                      <style>
+                        {`
+                          /* Hide navigation arrows on mobile */
+                          @media (max-width: 768px) {
+                            .swiper-button-next,
+                            .swiper-button-prev {
+                              display: none !important;
+                            }
+                          }
+                        `}
+                      </style>
                       <Swiper
-                        spaceBetween={1}
-                        slidesPerView={6}
+                        spaceBetween={20}
+                        slidesPerView={1}
                         navigation
                         style={{
-                          padding: "0 50px",
-                          backgroundColor: "white", // Add white background here
+                          padding: "0",
+                          backgroundColor: "white",
                         }}
                         loop={true}
-                        modules={[Pagination, Navigation]}
+                        autoplay={{
+                          delay: 2000, // Slides every 3 seconds
+                          disableOnInteraction: false, // Continues autoplay after user interaction
+                        }}
+                        modules={[Pagination, Navigation, Autoplay]}
                         className="featured-institute-swiper"
                         breakpoints={{
                           320: {
                             slidesPerView: 1,
-                            spaceBetween: 5,
+                            spaceBetween: 20,
                           },
-                          426: {
-                            slidesPerView: 1,
-                            spaceBetween: 5,
-                          },
-                          540: {
+                          576: {
                             slidesPerView: 2,
-                            spaceBetween: 5,
-                          },
-                          640: {
-                            slidesPerView: 3,
-                            spaceBetween: 5,
+                            spaceBetween: 20,
                           },
                           768: {
-                            slidesPerView: 4,
-                            spaceBetween: 5,
+                            slidesPerView: 3,
+                            spaceBetween: 30,
                           },
-                          1024: {
+                          992: {
+                            slidesPerView: 4,
+                            spaceBetween: 30,
+                          },
+                          1200: {
                             slidesPerView: 5,
-                            spaceBetween: 5,
+                            spaceBetween: 30,
                           },
                         }}
                       >
@@ -1455,13 +1537,16 @@ const KnowMoreInstitute = () => {
                             <div
                               className="featured-institute-card"
                               style={{
-                                width: "230px",
-                                height: "245px",
-                                margin: "0 50px",
-                                gap: "10rem",
+                                width: "100%",
+                                height: "120px",
+                                padding: "10px 0",
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                backgroundColor: "white",
+                                margin: "0 auto",
                               }}
                             >
-                              {/* Wrap the image inside a Link for navigation */}
                               <Link
                                 to={`/university-details/${institute.school_name
                                   .replace(/\s+/g, "-")
@@ -1474,15 +1559,26 @@ const KnowMoreInstitute = () => {
                                     institute.school_id
                                   )
                                 }
+                                style={{
+                                  width: "100%",
+                                  height: "100%",
+                                  display: "flex",
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  textDecoration: "none",
+                                  padding: "0 10px",
+                                }}
                               >
                                 <img
                                   src={`${baseURL}storage/${institute.school_logo}`}
                                   alt={institute.school_name}
                                   className="section-image"
                                   style={{
-                                    height: "80px",
-                                    width: "150px",
+                                    maxHeight: "80px",
+                                    maxWidth: "70%",
                                     objectFit: "contain",
+                                    margin: "0 auto",
+                                    display: "block",
                                   }}
                                 />
                               </Link>
@@ -1504,34 +1600,37 @@ const KnowMoreInstitute = () => {
                   navigation
                   pagination={{ clickable: true }}
                   autoplay={{ delay: 5000, disableOnInteraction: false }} // Ensure autoplay is enabled
-                  modules={[Pagination, Navigation, Autoplay]} 
+                  modules={[Pagination, Autoplay]}
                   style={{ padding: "20px 0" }}
                 >
-                {adsImage.map((ad, index) => (
-                  <SwiperSlide key={ad.id} className="advertisement-item mb-3">
-                    <a
-                      href={
-                        ad.banner_url.startsWith("http")
-                          ? ad.banner_url
-                          : `https://${ad.banner_url}`
-                      }
-                      target="_blank"
-                      rel="noopener noreferrer"
+                  {adsImage.map((ad, index) => (
+                    <SwiperSlide
+                      key={ad.id}
+                      className="advertisement-item mb-3"
                     >
-                      <img
-                        src={`${baseURL}storage/${ad.banner_file}`}
-                        alt={`Advertisement ${ad.banner_name}`}
-                        className="adverstise-image"
-                        style={{
-                          height: "175px",
-                          objectFit: "fill",
-                          marginBottom:
-                            index < adsImage.length - 1 ? "20px" : "0",
-                        }}
-                      />
-                    </a>
-                  </SwiperSlide>
-                ))}
+                      <a
+                        href={
+                          ad.banner_url.startsWith("http")
+                            ? ad.banner_url
+                            : `https://${ad.banner_url}`
+                        }
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <img
+                          src={`${baseURL}storage/${ad.banner_file}`}
+                          alt={`Advertisement ${ad.banner_name}`}
+                          className="adverstise-image"
+                          style={{
+                            height: "175px",
+                            objectFit: "fill",
+                            marginBottom:
+                              index < adsImage.length - 1 ? "20px" : "0",
+                          }}
+                        />
+                      </a>
+                    </SwiperSlide>
+                  ))}
                 </Swiper>
               </div>
             ) : (
