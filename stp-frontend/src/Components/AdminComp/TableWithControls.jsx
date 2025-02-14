@@ -215,7 +215,7 @@ const TableWithControls = ({
                     Featured Type
                     <select
                         onChange={(e) => onFeatChange(e.target.value)}
-                        className="subject-dropdown"
+                        className="subject-dropdown ms-2"
                     >
                         <option value="">All Featured Types</option>
                         {featList.map((feat) => (
@@ -233,7 +233,7 @@ const TableWithControls = ({
                   Status
                   <select
                       onChange={(e) => onStatChange(e.target.value)}
-                      className="subject-dropdown"
+                      className="subject-dropdown ms-2"
                   >
                       <option value="">All Status</option>
                       {statList.map((stat) => (
