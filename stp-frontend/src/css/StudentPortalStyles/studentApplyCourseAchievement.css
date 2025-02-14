@@ -1,0 +1,160 @@
+@media (max-width: 768px) {
+  .achievement-cocurriculum-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .achievement-cocurriculum-content .d-flex {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .achievement-cocurriculum-content .d-flex .achievement-icon {
+    margin-right: 100px;
+  }
+
+  .achievement-cocurriculum-content-button {
+    margin-top: 10px;
+  }
+}
+
+/* Add this to your CSS file */
+.test-style {
+  color: red !important; /* Use !important to ensure it overrides other styles */
+}
+
+
+@media (max-width: 768px) {
+  .achievement-cocurriculum-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .achievement-item .d-flex.flex-grow-1 {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .achievement-item .d-flex.align-items-center {
+    display: flex !important;
+    flex-direction: row !important;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  /* Set consistent width for all input fields */
+  .achievement-item .form-control,
+  .achievement-item .date-picker-short,
+  .achievement-item .input-short {
+    width: calc(100% - 40px) !important; /* 40px accounts for the icon space */
+    min-width: 0;
+  }
+
+  /* File upload button alignment */
+  .achievement-item .d-flex.justify-content-center button {
+    width: calc(100% - 40px);
+  }
+
+  .achievement-cocurriculum-content-button {
+    margin-top: 10px;
+  }
+
+  /* Ensure file name doesn't overflow */
+  .file-name {
+    max-width: calc(100% - 40px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.file-upload-container {
+  width: 80%;
+  margin-top: 10px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.file-display {
+  width: 100%;
+  gap: 8px;
+  padding: 8px;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+}
+
+.file-name-text {
+  flex: 1;
+  text-decoration: underline;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: calc(100% - 60px); /* Adjust based on icon and button width */
+}
+
+.remove-file-btn {
+  padding: 0;
+  color: #dc3545;
+  min-width: 24px;
+}
+
+.upload-container {
+  width: 100%;
+  gap: 8px;
+  padding: 8px;
+}
+
+.upload-btn {
+  display: flex;
+  align-items: center;
+  padding: 6px 16px;
+  border-radius: 4px;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  .file-display {
+    padding: 6px;
+  }
+
+  .file-name-text {
+    font-size: 14px;
+    max-width: calc(100% - 50px);
+  }
+
+  .upload-btn {
+    padding: 4px 12px;
+    font-size: 13px;
+  }
+
+  .remove-file-btn {
+    padding: 2px;
+  }
+
+  .file-upload-container {
+    width: 90%;
+  }
+}
+
+@media (max-width: 576px) {
+  .file-upload-container {
+    width: 95%;
+    margin-top: 8px;
+  }
+
+  .file-display, 
+  .upload-container {
+    padding: 4px;
+  }
+
+  .file-name-text {
+    font-size: 13px;
+  }
+
+  .upload-btn {
+    width: 100%;
+    justify-content: center;
+    margin-top: 4px;
+  }
+}

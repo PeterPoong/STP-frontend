@@ -1,9 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { Form, Button, Alert, Spinner } from 'react-bootstrap';
-import { Trash2, Edit, Save, Clock, Trophy, Building, FileText, X } from 'lucide-react';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import WidgetPopUpUnsavedChanges from '../../../Components/StudentPortalComp/Widget/WidgetPopUpUnsavedChanges';
+import React, { useState, useEffect } from "react";
+import { Form, Button, Alert, Spinner } from "react-bootstrap";
+import {
+  Trash2,
+  Edit,
+  Save,
+  Clock,
+  Trophy,
+  Building,
+  FileText,
+  X,
+} from "lucide-react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import WidgetPopUpUnsavedChanges from "../../../Components/StudentPortalComp/Widget/WidgetPopUpUnsavedChanges";
+import "../../../css/StudentPortalStyles/studentApplyCourseAchievement.css";
 
 const Achievements = ({ onBack, onNext }) => {
   const [achievements, setAchievements] = useState([]);
@@ -11,7 +21,8 @@ const Achievements = ({ onBack, onNext }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null); // Existing error state
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [isUnsavedChangesPopupOpen, setIsUnsavedChangesPopupOpen] = useState(false);
+  const [isUnsavedChangesPopupOpen, setIsUnsavedChangesPopupOpen] =
+    useState(false);
   const [navigationDirection, setNavigationDirection] = useState(null);
 
   useEffect(() => {
@@ -29,17 +40,23 @@ const Achievements = ({ onBack, onNext }) => {
   // Fetch Achievement Types
   const fetchAchievementTypes = async () => {
     try {
-      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/achievementTypeList`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const token =
+        sessionStorage.getItem("token") || localStorage.getItem("token");
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL}api/student/achievementTypeList`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (!response.ok) {
-        throw new Error(`Failed to fetch achievement types. Status: ${response.status}`);
+        throw new Error(
+          `Failed to fetch achievement types. Status: ${response.status}`
+        );
       }
 
       const result = await response.json();
@@ -48,11 +65,11 @@ const Achievements = ({ onBack, onNext }) => {
       if (result.success) {
         setAchievementTypes(result.data || []);
       } else {
-        throw new Error(result.message || 'Failed to fetch achievement types');
+        throw new Error(result.message || "Failed to fetch achievement types");
       }
     } catch (error) {
-      console.error('Error fetching achievement types:', error);
-      setError('Failed to load achievement types. Please try again later.');
+      console.error("Error fetching achievement types:", error);
+      setError("Failed to load achievement types. Please try again later.");
       setIsLoading(false); // Stop loading if achievement types fail to load
     }
   };
@@ -61,20 +78,26 @@ const Achievements = ({ onBack, onNext }) => {
   const fetchAchievements = async () => {
     try {
       setIsLoading(true);
-      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      const token =
+        sessionStorage.getItem("token") || localStorage.getItem("token");
 
       let allAchievements = [];
       let currentPage = 1;
       let hasMoreData = true;
 
       while (hasMoreData) {
-        const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/achievementsList?page=${currentPage}`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
+        const response = await fetch(
+          `${
+            import.meta.env.VITE_BASE_URL
+          }api/student/achievementsList?page=${currentPage}`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -90,7 +113,7 @@ const Achievements = ({ onBack, onNext }) => {
             );
             return {
               ...achievement,
-              title: matchedTitle ? matchedTitle.id.toString() : '',
+              title: matchedTitle ? matchedTitle.id.toString() : "",
               isEditing: false,
             };
           });
@@ -110,7 +133,7 @@ const Achievements = ({ onBack, onNext }) => {
       // console.log('Total achievements fetched:', allAchievements.length); // For debugging
       setAchievements(allAchievements);
     } catch (error) {
-      console.error('Error fetching achievements:', error);
+      console.error("Error fetching achievements:", error);
       setError(error.message);
     } finally {
       setIsLoading(false);
@@ -121,11 +144,11 @@ const Achievements = ({ onBack, onNext }) => {
   const handleAddAchievement = () => {
     const newAchievement = {
       id: null, // No ID yet since it's a new achievement
-      achievement_name: '',
+      achievement_name: "",
       date: new Date(),
-      title: '', // Initialize with empty title ID
-      title_obtained: '', // Initialize with empty title name
-      awarded_by: '',
+      title: "", // Initialize with empty title ID
+      title_obtained: "", // Initialize with empty title name
+      awarded_by: "",
       achievement_media: null,
       isEditing: true,
       fileRemoved: false,
@@ -135,8 +158,17 @@ const Achievements = ({ onBack, onNext }) => {
     setHasUnsavedChanges(true);
   };
 
-  // Handle Changes in Achievement Fields
   const handleAchievementChange = (index, field, value) => {
+    if (field === "date") {
+      // Ensure the value is a valid Date object
+      if (!(value instanceof Date) || isNaN(value.getTime())) {
+        console.error("Invalid date value:", value);
+        return;
+      }
+      // Normalize the date to midnight UTC to avoid timezone issues
+      value = new Date(value.getFullYear(), value.getMonth(), value.getDate());
+    }
+
     setAchievements((prevAchievements) =>
       prevAchievements.map((achievement, i) =>
         i === index ? { ...achievement, [field]: value } : achievement
@@ -144,12 +176,17 @@ const Achievements = ({ onBack, onNext }) => {
     );
 
     // If 'title' field changes, update 'title_obtained'
-    if (field === 'title') {
-      const matchedTitle = achievementTypes.find((type) => type.id.toString() === value);
+    if (field === "title") {
+      const matchedTitle = achievementTypes.find(
+        (type) => type.id.toString() === value
+      );
       setAchievements((prevAchievements) =>
         prevAchievements.map((achievement, i) =>
           i === index
-            ? { ...achievement, title_obtained: matchedTitle ? matchedTitle.core_metaName : '' }
+            ? {
+                ...achievement,
+                title_obtained: matchedTitle ? matchedTitle.core_metaName : "",
+              }
             : achievement
         )
       );
@@ -170,31 +207,34 @@ const Achievements = ({ onBack, onNext }) => {
       !achievement.awarded_by.trim() ||
       !achievement.date
     ) {
-      alert('Please fill in all required fields before saving.');
+      alert("Please fill in all required fields before saving.");
       return;
     }
 
     try {
-      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      const token =
+        sessionStorage.getItem("token") || localStorage.getItem("token");
       const dateToSave =
-        achievement.date instanceof Date ? achievement.date : new Date(achievement.date);
+        achievement.date instanceof Date
+          ? achievement.date
+          : new Date(achievement.date);
 
       const formData = new FormData();
 
       // Include 'id' only if it's an edit operation
       if (achievement.id) {
-        formData.append('id', achievement.id);
+        formData.append("id", achievement.id);
       }
 
-      formData.append('achievement_name', achievement.achievement_name);
-      formData.append('date', formatDate(achievement.date));
-      formData.append('title', achievement.title); // Send title ID
-      formData.append('awarded_by', achievement.awarded_by);
+      formData.append("achievement_name", achievement.achievement_name);
+      formData.append("date", formatDate(achievement.date));
+      formData.append("title", achievement.title); // Send title ID
+      formData.append("awarded_by", achievement.awarded_by);
 
       if (achievement.achievement_media instanceof File) {
-        formData.append('achievement_media', achievement.achievement_media);
+        formData.append("achievement_media", achievement.achievement_media);
       } else if (achievement.fileRemoved) {
-        formData.append('remove_media', 'true');
+        formData.append("remove_media", "true");
       }
 
       // Set the correct URL without the 'id' in the query parameter
@@ -203,7 +243,7 @@ const Achievements = ({ onBack, onNext }) => {
         : `${import.meta.env.VITE_BASE_URL}api/student/addAchievement`;
 
       const response = await fetch(url, {
-        method: 'POST', // Both add and edit use POST
+        method: "POST", // Both add and edit use POST
         headers: {
           Authorization: `Bearer ${token}`,
           // Do NOT set 'Content-Type' when sending FormData
@@ -222,14 +262,15 @@ const Achievements = ({ onBack, onNext }) => {
         const updatedAchievements = achievements.map((a, i) =>
           i === index
             ? {
-              ...a,
-              id: result.data.id || a.id, // Update ID if returned from backend
-              isEditing: false,
-              fileRemoved: false,
-              title_obtained:
-                achievementTypes.find((type) => type.id.toString() === a.title)?.core_metaName ||
-                '',
-            }
+                ...a,
+                id: result.data.id || a.id, // Update ID if returned from backend
+                isEditing: false,
+                fileRemoved: false,
+                title_obtained:
+                  achievementTypes.find(
+                    (type) => type.id.toString() === a.title
+                  )?.core_metaName || "",
+              }
             : a
         );
         setAchievements(updatedAchievements);
@@ -242,19 +283,19 @@ const Achievements = ({ onBack, onNext }) => {
           for (const key in result.error) {
             if (Array.isArray(result.error[key])) {
               backendErrors.push(...result.error[key]);
-            } else if (typeof result.error[key] === 'string') {
+            } else if (typeof result.error[key] === "string") {
               backendErrors.push(result.error[key]);
             }
           }
-          const errorMessage = backendErrors.join(' ');
+          const errorMessage = backendErrors.join(" ");
           alert(errorMessage); // Use browser alert instead of setting error state
         } else {
-          alert(result.message || 'Failed to save achievement.');
+          alert(result.message || "Failed to save achievement.");
         }
       }
     } catch (error) {
-      console.error('Error saving achievement:', error);
-      setError(error.message || 'An unexpected error occurred.');
+      console.error("Error saving achievement:", error);
+      setError(error.message || "An unexpected error occurred.");
     }
   };
 
@@ -270,19 +311,23 @@ const Achievements = ({ onBack, onNext }) => {
         return;
       }
 
-      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      const token =
+        sessionStorage.getItem("token") || localStorage.getItem("token");
 
-      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/deleteAchievement`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ id: achievement.id, type: 'delete' }),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL}api/student/deleteAchievement`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ id: achievement.id, type: "delete" }),
+        }
+      );
 
       if (!response.ok) {
-        throw new Error('Failed to delete achievement');
+        throw new Error("Failed to delete achievement");
       }
 
       const result = await response.json();
@@ -293,10 +338,10 @@ const Achievements = ({ onBack, onNext }) => {
         setHasUnsavedChanges(true);
         await fetchAchievements();
       } else {
-        throw new Error(result.message || 'Failed to delete achievement');
+        throw new Error(result.message || "Failed to delete achievement");
       }
     } catch (error) {
-      console.error('Error deleting achievement:', error);
+      console.error("Error deleting achievement:", error);
       setError(error.message);
     }
   };
@@ -315,7 +360,9 @@ const Achievements = ({ onBack, onNext }) => {
   const handleRemoveFile = (index) => {
     setAchievements((prevAchievements) =>
       prevAchievements.map((achievement, i) =>
-        i === index ? { ...achievement, achievement_media: null, fileRemoved: true } : achievement
+        i === index
+          ? { ...achievement, achievement_media: null, fileRemoved: true }
+          : achievement
       )
     );
     setHasUnsavedChanges(true);
@@ -323,12 +370,12 @@ const Achievements = ({ onBack, onNext }) => {
 
   // Format Date for Display
   const formatDate = (date) => {
-    if (!date) return '';
+    if (!date) return "";
     if (date instanceof Date) {
-      return date.toLocaleDateString('en-GB', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
+      return date.toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
       });
     }
     return date;
@@ -340,15 +387,15 @@ const Achievements = ({ onBack, onNext }) => {
       setNavigationDirection(direction);
       setIsUnsavedChangesPopupOpen(true);
     } else {
-      direction === 'next' ? onNext() : onBack();
+      direction === "next" ? onNext() : onBack();
     }
   };
 
   const handleUnsavedChangesConfirm = () => {
     setIsUnsavedChangesPopupOpen(false);
-    if (navigationDirection === 'next') {
+    if (navigationDirection === "next") {
       onNext();
-    } else if (navigationDirection === 'back') {
+    } else if (navigationDirection === "back") {
       onBack();
     }
     setNavigationDirection(null);
@@ -359,15 +406,18 @@ const Achievements = ({ onBack, onNext }) => {
   };
 
   // Loading and Error States
-  if (isLoading) return <div>
-    <div>
-      <div className="d-flex justify-content-center align-items-center m-5 " >
-        <Spinner animation="border" role="status">
-          <span className="visually-hidden">Loading...</span>
-        </Spinner>
+  if (isLoading)
+    return (
+      <div>
+        <div>
+          <div className="d-flex justify-content-center align-items-center m-5 ">
+            <Spinner animation="border" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </Spinner>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>;
+    );
   if (error && !achievements.length) return <div>Error: {error}</div>; // Show error if no achievements loaded
 
   return (
@@ -375,40 +425,74 @@ const Achievements = ({ onBack, onNext }) => {
       <h3 className="border-bottom pb-2 fw-normal">Achievements</h3>
       <div className="achievement-list">
         {achievements.map((achievement, index) => (
-          <div key={achievement.id || index} className="achievement-item row mb-4 border rounded p-4 mx-0">
+          <div
+            key={achievement.id || index}
+            className="achievement-item row mb-4 border rounded p-4 mx-0"
+          >
             {achievement.isEditing ? (
               <>
                 <Form.Control
                   type="text"
                   placeholder="Name of Achievement..."
                   value={achievement.achievement_name}
-                  onChange={(e) => handleAchievementChange(index, 'achievement_name', e.target.value)}
+                  onChange={(e) =>
+                    handleAchievementChange(
+                      index,
+                      "achievement_name",
+                      e.target.value
+                    )
+                  }
                   className="mb-2 ps-2 border p-0 fw-bold applycourse-cocurriculum-clubname-input ac-input-placeholder"
-                  style={{ fontSize: '1.1rem' }}
+                  style={{ fontSize: "1.1rem" }}
                 />
                 <div className="d-flex justify-content-between ps-0">
                   <div className="d-flex flex-grow-1  px-0">
                     <div className="d-flex align-items-center me-3 flex-shrink-0">
-                      <Clock size={18} className="me-2 applycourse-cocurriculum-icon" />
+                      <Clock
+                        size={18}
+                        className="me-2 applycourse-cocurriculum-icon"
+                      />
                       <DatePicker
                         selected={
-                          achievement.date instanceof Date ? achievement.date : new Date(achievement.date)
+                          achievement.date instanceof Date &&
+                          !isNaN(achievement.date.getTime())
+                            ? achievement.date
+                            : new Date()
                         }
-                        onChange={(date) => handleAchievementChange(index, 'date', date)}
+                        onChange={(date) => {
+                          if (date instanceof Date && !isNaN(date.getTime())) {
+                            handleAchievementChange(index, "date", date);
+                          }
+                        }}
                         dateFormat="dd/MM/yyyy"
                         className="form-control py-0 px-2 date-picker-short ac-input-placeholder"
                         placeholderText="Select date"
+                        maxDate={new Date()}
+                        showYearDropdown
+                        yearDropdownItemNumber={100}
+                        scrollableYearDropdown
                       />
                     </div>
                     <div className="d-flex align-items-center me-3 flex-shrink-0">
-                      <Trophy size={18} className="me-2 applycourse-cocurriculum-icon" />
+                      <Trophy
+                        size={18}
+                        className="me-2 applycourse-cocurriculum-icon"
+                      />
                       <Form.Control
                         as="select"
                         value={achievement.title}
-                        onChange={(e) => handleAchievementChange(index, 'title', e.target.value)}
+                        onChange={(e) =>
+                          handleAchievementChange(
+                            index,
+                            "title",
+                            e.target.value
+                          )
+                        }
                         className="py-0 px-2 input-short ac-input-placeholder"
                       >
-
+                        <option value="" disabled style={{ opacity: 0.6 }}>
+                          Please select Your Position
+                        </option>
                         {achievementTypes.map((type) => (
                           <option key={type.id} value={type.id.toString()}>
                             {type.core_metaName}
@@ -417,42 +501,88 @@ const Achievements = ({ onBack, onNext }) => {
                       </Form.Control>
                     </div>
                     <div className="d-flex align-items-center me-3 flex-shrink-0">
-                      <Building size={18} className="me-2 applycourse-cocurriculum-icon" />
+                      <Building
+                        size={18}
+                        className="me-2 applycourse-cocurriculum-icon"
+                      />
                       <Form.Control
                         type="text"
                         placeholder="Awarded By"
                         value={achievement.awarded_by}
-                        onChange={(e) => handleAchievementChange(index, 'awarded_by', e.target.value)}
+                        onChange={(e) =>
+                          handleAchievementChange(
+                            index,
+                            "awarded_by",
+                            e.target.value
+                          )
+                        }
                         className="py-0 px-2 input-short ac-input-placeholder"
                       />
                     </div>
+
+                    {/* uplaod */}
                     <div className="d-flex justify-content-center align-items-center">
                       {achievement.achievement_media ? (
-                        <div className="d-flex align-items-center">
-                          <FileText size={18} className="me-2 applycourse-cocurriculum-icon" />
-                          <span className="mx-0 text-decoration-underline text-truncate file-name applycourse-alignself-center">
-                            {achievement.achievement_media instanceof File
-                              ? achievement.achievement_media.name
-                              : typeof achievement.achievement_media === 'string'
-                                ? achievement.achievement_media
-                                : 'File uploaded'}
-                          </span>
-                          <Button
-                            variant="link"
-                            className="p-0 me-5 text-danger applycourse-alignself-center"
-                            onClick={() => handleRemoveFile(index)}
-                          >
-                            <X size={18} />
-                          </Button>
+                        <div className="d-flex align-items-center bg-light rounded py-1 px-2 w-100">
+                          <div className="d-flex align-items-center flex-grow-1">
+                            <FileText
+                              size={18}
+                              className="me-2 applyCourseAchievement-icon text-primary"
+                            />
+                            <div
+                              className="d-flex flex-column justify-content-center"
+                              style={{ minHeight: "24px" }}
+                            >
+                              <span className="text-truncate applyCourseAchievement-file-name small mb-0">
+                                {achievement.achievement_media instanceof File
+                                  ? achievement.achievement_media.name
+                                  : typeof achievement.achievement_media ===
+                                    "string"
+                                  ? achievement.achievement_media
+                                      .split("/")
+                                      .pop()
+                                  : "File uploaded"}
+                              </span>
+                              {achievement.achievement_media instanceof
+                                File && (
+                                <small
+                                  className="text-muted"
+                                  style={{ fontSize: "0.75rem", lineHeight: 1 }}
+                                >
+                                  {(
+                                    achievement.achievement_media.size /
+                                    1024 /
+                                    1024
+                                  ).toFixed(2)}{" "}
+                                  MB
+                                </small>
+                              )}
+                            </div>
+                          </div>
+                          <div className="d-flex align-items-center">
+                            <Button
+                              variant="link"
+                              className="p-1 text-danger applyCourseAchievement-remove-file-btn"
+                              onClick={() => handleRemoveFile(index)}
+                              title="Remove file"
+                            >
+                              <X size={18} strokeWidth={2.5} />
+                            </Button>
+                          </div>
                         </div>
                       ) : (
-                        <div className="d-flex align-items-center ms-2">
-                          <FileText size={18} className="me-2 applycourse-alignself-center" />
+                        <div className="applyCourseAchievement-upload-container d-flex align-items-center">
+                          <FileText
+                            size={18}
+                            className="me-2 d-flex align-self-center"
+                          />
                           <Button
                             variant="secondary"
-                            className="d-flex align-items-center py-1 px-4 rounded-2 applycourse-alignself-center"
+                            className="applyCourseAchievement-upload-btn d-flex align-items-center py-0 px-3"
                             onClick={() =>
-                              document.getElementById(`achievementFileInput-${index}`).click()
+                              document
+                                .getElementById(`achievementFileInput-${index}`)
+                                .click()
                             }
                           >
                             Upload File
@@ -460,8 +590,10 @@ const Achievements = ({ onBack, onNext }) => {
                           <input
                             id={`achievementFileInput-${index}`}
                             type="file"
-                            className="d-none "
-                            onChange={(e) => handleFileUpload(index, e.target.files[0])}
+                            className="d-none"
+                            onChange={(e) =>
+                              handleFileUpload(index, e.target.files[0])
+                            }
                           />
                         </div>
                       )}
@@ -475,7 +607,10 @@ const Achievements = ({ onBack, onNext }) => {
                     >
                       <Save size={18} color="green" />
                     </Button>
-                    <Button variant="link" onClick={() => handleDeleteAchievement(index)}>
+                    <Button
+                      variant="link"
+                      onClick={() => handleDeleteAchievement(index)}
+                    >
                       <Trash2 size={18} color="red" />
                     </Button>
                   </div>
@@ -483,65 +618,87 @@ const Achievements = ({ onBack, onNext }) => {
               </>
             ) : (
               <>
-                <div className="fw-bold mb-2 applycourse-cocurriculum-content" style={{
-                  fontSize: '1.1rem',
-                  wordWrap: 'break-word',
-                  overflowWrap: 'break-word',
-                  wordBreak: 'break-all',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  maxWidth: '500px' // You can adjust this width as needed
-                }}>
+                <div
+                  className="fw-bold mb-2 applycourse-cocurriculum-content"
+                  style={{
+                    fontSize: "1.1rem",
+                    wordWrap: "break-word",
+                    overflowWrap: "break-word",
+                    wordBreak: "break-all",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    maxWidth: "500px", // You can adjust this width as needed
+                  }}
+                >
                   {achievement.achievement_name}
                 </div>
                 <div className="d-flex justify-content-between">
                   <div className=" applycourse-cocurriculum-content">
                     <div className="me-3">
                       <Clock size={18} className="me-2" />
-                      <span className="border-end border-2 border-dark pe-2 me-2">Date</span>
-                      <a className="mx-2 text-dark fw-normal">{formatDate(achievement.date)}</a>
+                      <span className="border-end border-2 border-dark pe-2 me-2">
+                        Date
+                      </span>
+                      <a className="mx-2 text-dark fw-normal">
+                        {formatDate(achievement.date)}
+                      </a>
                     </div>
-                    <div className="me-3" style={{ width: '230px' }}>
+                    <div className="me-3" style={{ width: "230px" }}>
                       <Trophy size={18} className="me-2" />
-                      <span className="border-end border-2 border-dark pe-2 me-2">Title</span>
-                      <a className="mx-2 text-dark fw-normal">{achievement.title_obtained}</a>
+                      <span className="border-end border-2 border-dark pe-2 me-2">
+                        Title
+                      </span>
+                      <a className="mx-2 text-dark fw-normal">
+                        {achievement.title_obtained}
+                      </a>
                     </div>
-                    <div className="me-3" style={{
-                      width: '300px',
-                      wordWrap: 'break-word',
-                      overflowWrap: 'break-word',
-                      wordBreak: 'break-all',
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      maxWidth: '300px'
-                    }}>
+                    <div
+                      className="me-3"
+                      style={{
+                        width: "300px",
+                        wordWrap: "break-word",
+                        overflowWrap: "break-word",
+                        wordBreak: "break-all",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        maxWidth: "300px",
+                      }}
+                    >
                       <Building size={18} className="me-2" />
-                      <span className="border-end border-2 border-dark pe-2 me-2">Awarded by</span>
-                      <a className="mx-2 text-dark fw-normal">{achievement.awarded_by}</a>
+                      <span className="border-end border-2 border-dark pe-2 me-2">
+                        Awarded by
+                      </span>
+                      <a className="mx-2 text-dark fw-normal">
+                        {achievement.awarded_by}
+                      </a>
                     </div>
 
                     {achievement.achievement_media && (
                       <div className="d-flex align-items-center text-decoration-underline applycourse-achievements-file-direction ">
-                        <FileText size={18} className="me-2 applycourse-alignself-center" />
+                        <FileText
+                          size={18}
+                          className="me-2 applycourse-alignself-center"
+                        />
                         <span
-                        className="applycourse-alignself-center"
+                          className="applycourse-alignself-center"
                           style={{
-                            width: '225px',
-                            wordWrap: 'break-word',
-                            overflowWrap: 'break-word',
-                            wordBreak: 'break-all',
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            maxWidth: '225px'
-                          }}>
+                            width: "225px",
+                            wordWrap: "break-word",
+                            overflowWrap: "break-word",
+                            wordBreak: "break-all",
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            maxWidth: "225px",
+                          }}
+                        >
                           {achievement.achievement_media instanceof File
                             ? achievement.achievement_media.name
-                            : typeof achievement.achievement_media === 'string'
-                              ? achievement.achievement_media
-                              : 'File uploaded'}
+                            : typeof achievement.achievement_media === "string"
+                            ? achievement.achievement_media
+                            : "File uploaded"}
                         </span>
                       </div>
                     )}
@@ -550,15 +707,25 @@ const Achievements = ({ onBack, onNext }) => {
                     <Button
                       variant="link"
                       onClick={() => {
+                        // Check the value of the achievement.date
+                        console.log(
+                          "Current Achievement Date:",
+                          achievement.date
+                        );
+
                         // Map title_obtained back to title ID
                         const matchedTitle = achievementTypes.find(
-                          (type) => type.core_metaName === achievement.title_obtained
+                          (type) =>
+                            type.core_metaName === achievement.title_obtained
                         );
+                        console.log("Matched Title:", matchedTitle);
+
                         handleAchievementChange(
                           index,
-                          'title',
-                          matchedTitle ? matchedTitle.id.toString() : ''
+                          "title",
+                          matchedTitle ? matchedTitle.id.toString() : ""
                         );
+
                         // Enable editing
                         setAchievements((prevAchievements) =>
                           prevAchievements.map((a, i) =>
@@ -570,7 +737,10 @@ const Achievements = ({ onBack, onNext }) => {
                     >
                       <Edit size={18} color="black" />
                     </Button>
-                    <Button variant="link" onClick={() => handleDeleteAchievement(index)}>
+                    <Button
+                      variant="link"
+                      onClick={() => handleDeleteAchievement(index)}
+                    >
                       <Trash2 size={18} color="red" />
                     </Button>
                   </div>
@@ -589,12 +759,15 @@ const Achievements = ({ onBack, onNext }) => {
       </Button>
       <div className="d-flex justify-content-between mt-4">
         <Button
-          onClick={() => handleNavigation('back')}
+          onClick={() => handleNavigation("back")}
           className="me-2 rounded-pill px-5 sac-previous-button"
         >
           Previous
         </Button>
-        <Button onClick={() => handleNavigation('next')} className="sac-next-button rounded-pill px-5">
+        <Button
+          onClick={() => handleNavigation("next")}
+          className="sac-next-button rounded-pill px-5"
+        >
           Next
         </Button>
       </div>
@@ -603,7 +776,6 @@ const Achievements = ({ onBack, onNext }) => {
         onConfirm={handleUnsavedChangesConfirm}
         onCancel={handleUnsavedChangesCancel}
       />
-
     </div>
   );
 };
