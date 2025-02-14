@@ -145,7 +145,7 @@ const FeaturedUni = () => {
           textAlign: "left",
           paddingTop: "25px",
           fontSize: "20px",
-          paddingLeft: "100px",
+          paddingLeft: "90px",
           paddingBottom: "30px",
         }}
       >
