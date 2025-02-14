@@ -90,7 +90,6 @@ const FeaturedCoursesContainer = () => {
     return courses.length > 0 ? courses.length - 1 : 1;
   };
   const getAutoplaySettings = () => {
-    // Check if window exists (for SSR compatibility)
     if (typeof window !== 'undefined') {
       return window.innerWidth <= 768 ? {
         delay: 3000,
@@ -125,10 +124,7 @@ const FeaturedCoursesContainer = () => {
             pagination={{ 
               clickable: true 
             }}
-            autoplay={{
-              delay: 5000,
-              disableOnInteraction: false,
-            }}
+            autoplay={getAutoplaySettings()}
             style={{
               '--swiper-pagination-bottom': '-5px',
               '--swiper-navigation-color': '#BA1718',

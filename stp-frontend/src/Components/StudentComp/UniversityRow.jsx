@@ -54,7 +54,6 @@ const UniversityRow = () => {
     }
   };
   const getAutoplaySettings = () => {
-    // Check if window exists (for SSR compatibility)
     if (typeof window !== 'undefined') {
       return window.innerWidth <= 768 ? {
         delay: 3000,
@@ -79,26 +78,29 @@ const UniversityRow = () => {
           <Container className="university-row-carousel">
             
             <Swiper
-               modules={[Navigation, Pagination, Autoplay]}
-               spaceBetween={5}
-               slidesPerView={5}
-               loop={true}
-               navigation={true}
-               pagination={{ 
-                 clickable: true 
-               }}
-               autoplay={{
-                delay: 5000,
-                disableOnInteraction: false,
+              modules={[Navigation, Pagination, Autoplay]}
+              spaceBetween={10}
+              slidesPerView={5}
+              loop={true}
+              navigation={{
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+                enabled: true,
               }}
-               style={{
-                 '--swiper-pagination-bottom': '-5px',
-                 paddingBottom: '30px'
-               }}
-               grabCursor={true}
-               resistance={true}
-               resistanceRatio={0.85}
-               touchRatio={1.5}
+              pagination={{ 
+                clickable: true,
+                el: '.swiper-pagination'
+              }}
+              autoplay={getAutoplaySettings()}
+              style={{
+                '--swiper-pagination-bottom': '-5px',
+                '--swiper-navigation-color': '#BA1718',
+                '--swiper-navigation-size': '25px',
+                paddingBottom: '20px',
+                paddingLeft: '35px',
+                paddingRight: '35px',
+                position: 'relative'
+              }}
               breakpoints={{
                 320: {
                   slidesPerView: 1,
@@ -115,15 +117,16 @@ const UniversityRow = () => {
                 },
                 992: {
                   slidesPerView: 4,
-                  spaceBetween: 5,
+                  spaceBetween: 10,
                 },
                 1200: {
-                  slidesPerView: 5,
-                  spaceBetween: 5,
+                  slidesPerView: Math.min(9, schools.length),
+                  spaceBetween: 10,
                 }
               }}
             >
-             
+              <div className="swiper-button-prev"></div>
+              <div className="swiper-button-next"></div>
               {schools.map((school, index) => (
                 <SwiperSlide key={index} className="swiper-slide-image">
                   
