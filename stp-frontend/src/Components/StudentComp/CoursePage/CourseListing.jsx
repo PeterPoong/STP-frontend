@@ -734,7 +734,7 @@ const CourseListing = ({
   const handleCourseClick = (course) => {
     if (course) {
       // Store the courseID in session storage
-      sessionStorage.setItem('courseId', course.id);
+      sessionStorage.setItem("courseId", course.id);
       // Format the school and course names for the URL
       const formattedSchoolName = formatUrlString(course.school_name);
       const formattedCourseName = formatUrlString(course.name);

@@ -16,17 +16,17 @@ import {
 } from "react-bootstrap";
 import CountryFlag from "react-country-flag";
 import debounce from "lodash.debounce";
-import StudyPal from "../../../assets/StudentAssets/coursepage image/StudyPal.webp"
+import StudyPal from "../../../assets/StudentAssets/coursepage image/StudyPal.webp";
 import emptyStateImage from "../../../assets/StudentAssets/emptyStateImage/emptystate.png";
-import { Helmet } from 'react-helmet';
+import { Helmet } from "react-helmet";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import "swiper/swiper-bundle.css";
 import { Navigation, Autoplay } from "swiper/modules";
-import { requestUserCountry } from "../../../utils/locationRequest"; 
-import currency from 'currency.js';
+import { requestUserCountry } from "../../../utils/locationRequest";
+import currency from "currency.js";
 
 export const baseURL = import.meta.env.VITE_BASE_URL;
 const countriesURL = `${baseURL}api/student/countryList`;
@@ -71,7 +71,7 @@ const SearchCourse = () => {
     KR: { currency_code: "KRW", currency_symbol: "₩" }, // South Korea
     HK: { currency_code: "HKD", currency_symbol: "HK$" }, // Hong Kong
     TW: { currency_code: "TWD", currency_symbol: "NT$" }, // Taiwan
-  
+
     // Europe
     GB: { currency_code: "GBP", currency_symbol: "£" }, // United Kingdom
     DE: { currency_code: "EUR", currency_symbol: "€" }, // Germany
@@ -83,19 +83,19 @@ const SearchCourse = () => {
     SE: { currency_code: "SEK", currency_symbol: "kr" }, // Sweden
     NO: { currency_code: "NOK", currency_symbol: "kr" }, // Norway
     DK: { currency_code: "DKK", currency_symbol: "kr" }, // Denmark
-  
+
     // North America
     US: { currency_code: "USD", currency_symbol: "$" }, // United States
     CA: { currency_code: "CAD", currency_symbol: "C$" }, // Canada
     MX: { currency_code: "MXN", currency_symbol: "Mex$" }, // Mexico
-  
+
     // South America
     BR: { currency_code: "BRL", currency_symbol: "R$" }, // Brazil
     AR: { currency_code: "ARS", currency_symbol: "ARS$" }, // Argentina
     CL: { currency_code: "CLP", currency_symbol: "CLP$" }, // Chile
     CO: { currency_code: "COP", currency_symbol: "COP$" }, // Colombia
     PE: { currency_code: "PEN", currency_symbol: "S/" }, // Peru
-  
+
     // Middle East
     AE: { currency_code: "AED", currency_symbol: "د.إ" }, // United Arab Emirates
     SA: { currency_code: "SAR", currency_symbol: "﷼" }, // Saudi Arabia
@@ -104,19 +104,18 @@ const SearchCourse = () => {
     EG: { currency_code: "EGP", currency_symbol: "E£" }, // Egypt
     IL: { currency_code: "ILS", currency_symbol: "₪" }, // Israel
     BD: { currency_code: "BDT", currency_symbol: "৳" }, // Bangladesh
-  
+
     // Africa
     ZA: { currency_code: "ZAR", currency_symbol: "R" }, // South Africa
     NG: { currency_code: "NGN", currency_symbol: "₦" }, // Nigeria
     KE: { currency_code: "KES", currency_symbol: "KSh" }, // Kenya
     GH: { currency_code: "GHS", currency_symbol: "₵" }, // Ghana
-  
+
     // Oceania
     AU: { currency_code: "AUD", currency_symbol: "A$" }, // Australia
     NZ: { currency_code: "NZD", currency_symbol: "NZ$" }, // New Zealand
   };
-  
-  
+
   // Selected Filter States
   const [selectedInstitute, setSelectedInstitute] = useState(null);
   const [selectedQualification, setSelectedQualification] = useState(null);
@@ -148,7 +147,7 @@ const SearchCourse = () => {
   const topRef = useRef(null);
   const scrollToTop = () => {
     // Method 2: Using scrollIntoView
-    topRef.current?.scrollIntoView({ behavior: 'smooth' });
+    topRef.current?.scrollIntoView({ behavior: "smooth" });
 
     const scrollStep = () => {
       const currentPosition = window.pageYOffset;
@@ -167,12 +166,14 @@ const SearchCourse = () => {
 
   const fetchExchangeRates = async () => {
     try {
-      const response = await fetch(`https://api.frankfurter.app/latest?from=MYR`);
+      const response = await fetch(
+        `https://api.frankfurter.app/latest?from=MYR`
+      );
       const data = await response.json();
-  
+
       // Log the fetched data to the console
       // console.log("Fetched exchange rates:", data);
-  
+
       if (data && data.rates) {
         setExchangeRates(data.rates);
       }
@@ -182,77 +183,89 @@ const SearchCourse = () => {
   };
   useEffect(() => {
     const fetchCurrencyOnChange = async () => {
-      const currencyCode = sessionStorage.getItem('userCurrencyCode') || 'MYR';
-      const currencySymbol = sessionStorage.getItem('userCurrencySymbol') || 'RM';
-  
+      const currencyCode = sessionStorage.getItem("userCurrencyCode") || "MYR";
+      const currencySymbol =
+        sessionStorage.getItem("userCurrencySymbol") || "RM";
+
       // Fetch exchange rates based on the selected currency
       await fetchExchangeRates(currencyCode);
-  
-      setSelectedCurrency({ currency_code: currencyCode, currency_symbol: currencySymbol });
-   
-    }; 
+
+      setSelectedCurrency({
+        currency_code: currencyCode,
+        currency_symbol: currencySymbol,
+      });
+    };
     fetchCurrencyOnChange(); // Fetch the currency rates immediately on component mount or currency change
-  }, [sessionStorage.getItem('userCurrencyCode')]);  // Trigger on currency code change in session storage
+  }, [sessionStorage.getItem("userCurrencyCode")]); // Trigger on currency code change in session storage
   useEffect(() => {
     const interval = setInterval(() => {
-      const newCurrencyCode = sessionStorage.getItem('userCurrencyCode') || 'MYR';
-      
+      const newCurrencyCode =
+        sessionStorage.getItem("userCurrencyCode") || "MYR";
+
       if (newCurrencyCode !== selectedCurrency.currency_code) {
-        setSelectedCurrency({ 
-          currency_code: newCurrencyCode, 
-          currency_symbol: sessionStorage.getItem('userCurrencySymbol') || 'RM' 
+        setSelectedCurrency({
+          currency_code: newCurrencyCode,
+          currency_symbol: sessionStorage.getItem("userCurrencySymbol") || "RM",
         });
-  
-        console.log("Detected currency change in sessionStorage:", newCurrencyCode);
-        
+
+        console.log(
+          "Detected currency change in sessionStorage:",
+          newCurrencyCode
+        );
+
         fetchExchangeRates(newCurrencyCode);
         fetchCourses();
       }
     }, 1000); // Check every second
-  
+
     return () => clearInterval(interval);
   }, [selectedCurrency]);
-  
+
   const convertToFetchedCurrency = (amount) => {
-    const currencyCode = sessionStorage.getItem('userCurrencyCode') || "MYR"; // Use sessionStorage value
-    const currencySymbol = sessionStorage.getItem('userCurrencySymbol') || "RM";
-  
+    const currencyCode = sessionStorage.getItem("userCurrencyCode") || "MYR"; // Use sessionStorage value
+    const currencySymbol = sessionStorage.getItem("userCurrencySymbol") || "RM";
+
     if (!exchangeRates || !Object.keys(exchangeRates).length) {
       return `${currencySymbol} ${amount}`; // Return original cost if no rates available
     }
-  
+
     const rate = exchangeRates[currencyCode] || 1;
     return `${currencySymbol} ${currency(amount).multiply(rate).format()}`; // Convert MYR to the correct currency
   };
-  
 
   const fetchCountry = async () => {
     try {
-      const response = await fetch('https://ipinfo.io/json');
+      const response = await fetch("https://ipinfo.io/json");
       const data = await response.json();
-  
+
       if (data && data.country) {
         let country = data.country; // Get the real country code
-        
+
         // Override country for testing
         // country = 'CN'; // Change this to 'SG' temporarily
-  
-        const currencyInfo = countryCurrencyMap[country] || { currency_code: "MYR", currency_symbol: "RM" };
-  
-        sessionStorage.setItem('userCountry', country);
-        sessionStorage.setItem('userCurrencyCode', currencyInfo.currency_code);
-        sessionStorage.setItem('userCurrencySymbol', currencyInfo.currency_symbol);
-  
+
+        const currencyInfo = countryCurrencyMap[country] || {
+          currency_code: "MYR",
+          currency_symbol: "RM",
+        };
+
+        sessionStorage.setItem("userCountry", country);
+        sessionStorage.setItem("userCurrencyCode", currencyInfo.currency_code);
+        sessionStorage.setItem(
+          "userCurrencySymbol",
+          currencyInfo.currency_symbol
+        );
+
         // console.log("Fetched country:", country);
         // console.log("Currency Code:", currencyInfo.currency_code);
         // console.log("Currency Symbol:", currencyInfo.currency_symbol);
-  
+
         setFetchedCountry(country);
         setSelectedCurrency(currencyInfo); // Store currency info in state
-  
+
         return country;
       } else {
-        throw new Error('Unable to fetch location data');
+        throw new Error("Unable to fetch location data");
       }
     } catch (error) {
       console.error("Error fetching country:", error);
@@ -265,17 +278,17 @@ const SearchCourse = () => {
       const country = await fetchCountry(); // Fetch the country
       if (country) {
         // console.log("User country:", country);
-  
-        const currencyCode = sessionStorage.getItem('userCurrencyCode') || "MYR"; // Fetch from storage
-        setSelectedCountry(countries.find(c => c.country_code === country));
-  
+
+        const currencyCode =
+          sessionStorage.getItem("userCurrencyCode") || "MYR"; // Fetch from storage
+        setSelectedCountry(countries.find((c) => c.country_code === country));
+
         // Fetch exchange rates based on the detected currency
         await fetchExchangeRates(currencyCode);
       }
     };
     fetchCountryAndSet();
   }, []);
-  
 
   useEffect(() => {
     if (currentPage) {
@@ -333,7 +346,7 @@ const SearchCourse = () => {
     try {
       const requestBody = {
         countryID: selectedCountry.id,
-        page: currentPage
+        page: currentPage,
       };
       if (selectedInstitute) {
         requestBody.institute = selectedInstitute.id;
@@ -479,15 +492,15 @@ const SearchCourse = () => {
   }, []);
 
   // In SearchCourse component:
-useEffect(() => {
-  if (location.state?.initialCategory) {
-      setSelectedFilters(prev => ({
-          ...prev,
-          categories: [location.state.initialCategory]
+  useEffect(() => {
+    if (location.state?.initialCategory) {
+      setSelectedFilters((prev) => ({
+        ...prev,
+        categories: [location.state.initialCategory],
       }));
       setCurrentPage(1);
-  }
-}, [location.state?.initialCategory, location.state?.categoryTrigger]);
+    }
+  }, [location.state?.initialCategory, location.state?.categoryTrigger]);
 
   // Handle qualification and country filters from FeaturedUni
   useEffect(() => {
@@ -599,74 +612,81 @@ useEffect(() => {
     }
 
     try {
-      const token = sessionStorage.getItem("token") || localStorage.getItem("token");
+      const token =
+        sessionStorage.getItem("token") || localStorage.getItem("token");
       const headers = {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       };
 
       if (!courseInterests[courseId]) {
         // Add interest
         const requestBody = { course_id: courseId };
-        console.log('Adding interest - Request:', {
+        console.log("Adding interest - Request:", {
           url: `${baseURL}api/student/addInterestedCourse`,
           headers,
-          body: requestBody
+          body: requestBody,
         });
 
-        const response = await fetch(`${baseURL}api/student/addInterestedCourse`, {
-          method: 'POST',
-          headers,
-          body: JSON.stringify(requestBody)
-        });
+        const response = await fetch(
+          `${baseURL}api/student/addInterestedCourse`,
+          {
+            method: "POST",
+            headers,
+            body: JSON.stringify(requestBody),
+          }
+        );
 
         const data = await response.json();
-        console.log('Adding interest - Response:', data);
+        console.log("Adding interest - Response:", data);
 
         if (data.success) {
-          setCourseInterests(prev => ({
+          setCourseInterests((prev) => ({
             ...prev,
-            [courseId]: { 
+            [courseId]: {
               id: data.data.id,
-              status: 1 
-            }
+              status: 1,
+            },
           }));
         }
       } else {
         // Toggle interest status using course_id instead of id
         const requestBody = {
-          course_id: courseId,  // Changed from id to course_id
-          type: courseInterests[courseId].status === 1 ? 'disable' : 'enable'
+          course_id: courseId, // Changed from id to course_id
+          type: courseInterests[courseId].status === 1 ? "disable" : "enable",
         };
-        console.log('Toggling interest - Request:', {
+        console.log("Toggling interest - Request:", {
           url: `${baseURL}api/student/removeInterestedCourse`,
           headers,
-          body: requestBody
+          body: requestBody,
         });
 
-        const response = await fetch(`${baseURL}api/student/removeInterestedCourse`, {
-          method: 'POST',
-          headers,
-          body: JSON.stringify(requestBody)
-        });
+        const response = await fetch(
+          `${baseURL}api/student/removeInterestedCourse`,
+          {
+            method: "POST",
+            headers,
+            body: JSON.stringify(requestBody),
+          }
+        );
 
         const data = await response.json();
-        console.log('Toggling interest - Response:', data);
+        console.log("Toggling interest - Response:", data);
 
         if (data.success) {
-          setCourseInterests(prev => ({
+          setCourseInterests((prev) => ({
             ...prev,
-            [courseId]: { 
+            [courseId]: {
               ...prev[courseId],
-              status: prev[courseId].status === 1 ? 0 : 1
-            }
+              status: prev[courseId].status === 1 ? 0 : 1,
+            },
           }));
         }
       }
     } catch (error) {
-      console.error('Error handling interest:', error);
+      console.error("Error handling interest:", error);
       if (error.response) {
-        console.log('Error response:', await error.response.text());
+        console.log("Error response:", await error.response.text());
       }
     }
   };
@@ -707,62 +727,80 @@ useEffect(() => {
             <Row className="coursepage-row">
               <Col md={6} lg={6} className="course-card-ipad">
                 <div className="card-image mb-3 mb-md-0">
-                  
-                    <h5 className="card-title">
-                      <Link
-                        rel="preload"
-                        to={`/course-details/${program.school_name.replace(/\s+/g, '-').toLowerCase()}/${program.name.replace(/\s+/g, '-').toLowerCase()}`}
-                        style={{ color: "black" }}
-                        onClick={() => sessionStorage.setItem('courseId', program.id)}
-                      >
-                        {program.name}
-                      </Link>
-                    </h5>
-               
+                  <h5 className="card-title">
+                    <Link
+                      rel="preload"
+                      to={`/course-details/${program.school_name
+                        .replace(/\s+/g, "-")
+                        .toLowerCase()}/${program.name
+                        .replace(/\s+/g, "-")
+                        .toLowerCase()}`}
+                      style={{ color: "black" }}
+                      onClick={() =>
+                        sessionStorage.setItem("courseId", program.id)
+                      }
+                    >
+                      {program.name}
+                    </Link>
+                  </h5>
+
                   <div className="coursepage-searchcourse-courselist-first">
                     <div
                       className="coursepage-img"
-                      style={{ paddingLeft: "20px" }}
+                      style={{
+                        paddingLeft: "0", // Remove left padding
+                        display: "flex",
+                        justifyContent: "center", // Center the logo
+                        alignItems: "center", // Center vertically if needed
+                        flexDirection: "column", // Stack items vertically
+                      }}
                     >
                       <Link
                         rel="preload"
-                        to={`/university-details/${program.school_name.replace(/\s+/g, '-').toLowerCase()}`}
+                        to={`/university-details/${program.school_name
+                          .replace(/\s+/g, "-")
+                          .toLowerCase()}`}
                         style={{ color: "black" }}
-                        onClick={() => sessionStorage.setItem("schoolId", program.school_id)}
+                        onClick={() =>
+                          sessionStorage.setItem("schoolId", program.school_id)
+                        }
                       >
-                        <img
-                          loading="lazy"
-                          src={`${baseURL}storage/${program.logo}`}
-                          alt={program.school_name}
-                          width="100"
-                          className="coursepage-img-size"
-                        />
+                        <div className="image-container">
+                          <img
+                            loading="lazy"
+                            src={`${baseURL}storage/${program.logo}`}
+                            alt={program.school_name}
+                            width="100"
+                            className="coursepage-img-size"
+                          />
+                        </div>
                       </Link>
                     </div>
-                    <div
-                      className="searchcourse-coursename-schoolname"
-                    >
-                
+                    <div className="searchcourse-coursename-schoolname">
                       <div>
                         <Link
                           rel="preload"
-                          to={`/university-details/${program.school_name.replace(/\s+/g, '-').toLowerCase()}`}
+                          to={`/university-details/${program.school_name
+                            .replace(/\s+/g, "-")
+                            .toLowerCase()}`}
                           style={{ color: "black" }}
-                          onClick={() => sessionStorage.setItem("schoolId", program.school_id)}
+                          onClick={() =>
+                            sessionStorage.setItem(
+                              "schoolId",
+                              program.school_id
+                            )
+                          }
                         >
-                            <h5 className="card-text">
-                              {program.school_name}
+                          <h5 className="card-text">{program.school_name}</h5>
+                        </Link>
 
-                            </h5>
-                          </Link>
-
-                          <i
-                            className="bi bi-geo-alt"
-                            style={{ marginRight: "10px", color: "#AAAAAA" }}
-                          ></i>
-                          <span >
-                            {program.state || "N/A"}, {program.country || "N/A"}
-                          </span>
+                        <i
+                          className="bi bi-geo-alt"
+                          style={{ marginRight: "10px", color: "#AAAAAA" }}
+                        ></i>
+                        <span>
+                          {program.state || "N/A"}, {program.country || "N/A"}
+                        </span>
                       </div>
                       <div>
                         <a
@@ -778,15 +816,16 @@ useEffect(() => {
                 </div>
               </Col>
               <Col md={6} lg={6} className="course-card-fee-ipad">
-              <div className="d-flex flex-grow-1 coursepage-searchcourse-courselist-second">
+                <div className="d-flex flex-grow-1 coursepage-searchcourse-courselist-second">
                   <div className="details-div">
                     <div className="flex-wrap coursepage-info-one">
                       <Col>
                         <div>
-                          
-                           <div> {/* Align to bottom on iPad */}
+                          <div>
+                            {" "}
+                            {/* Align to bottom on iPad */}
                             <Row>
-                              <div className="searchcourse-dflex-center" >
+                              <div className="searchcourse-dflex-center">
                                 <i
                                   className="bi bi-mortarboard"
                                   style={{ marginRight: "10px" }}
@@ -795,7 +834,10 @@ useEffect(() => {
                                   {program.qualification}
                                 </p>
                               </div>
-                              <div style={{ marginTop: "10px" }} className="searchcourse-dflex-center">
+                              <div
+                                style={{ marginTop: "10px" }}
+                                className="searchcourse-dflex-center"
+                              >
                                 <i
                                   className="bi bi-calendar-check"
                                   style={{ marginRight: "10px" }}
@@ -804,7 +846,10 @@ useEffect(() => {
                                   {program.mode}
                                 </p>
                               </div>
-                              <div style={{ marginTop: "10px" }} className="searchcourse-dflex-center">
+                              <div
+                                style={{ marginTop: "10px" }}
+                                className="searchcourse-dflex-center"
+                              >
                                 <i
                                   className="bi bi-clock"
                                   style={{ marginRight: "10px" }}
@@ -814,17 +859,28 @@ useEffect(() => {
                                 </p>
                               </div>
                               <div
-                                style={{ marginTop: "10px" }}
+                                style={{ marginTop: "5px" }} // Reduced margin
                                 className="searchcourse-dflex-center"
                               >
                                 <i
                                   className="bi bi-calendar2-week"
-                                  style={{ marginRight: "10px" }}
+                                  style={{ marginRight: "5px" }} // Reduced margin
                                 ></i>
-                                <p style={{ paddingLeft: "20px" }}>
-                                  {Array.isArray(program.intake) &&
-                                    program.intake.length > 0
-                                    ? program.intake.join(", ")
+                                <p
+                                  style={{
+                                    paddingLeft: "10px", // Reduced padding
+                                    margin: 0,
+                                    whiteSpace: "normal",
+                                    wordBreak: "keep-all",
+                                    overflowWrap: "break-word",
+                                    display: "inline-block",
+                                    width: "calc(100% - 30px)", // Adjusted width
+                                  }}
+                                >
+                                  {Array.isArray(program.intake)
+                                    ? program.intake
+                                        .map((intake) => intake.trim())
+                                        .join(", ")
                                     : "N/A"}
                                 </p>
                               </div>
@@ -845,67 +901,104 @@ useEffect(() => {
                       >
                         estimate fee
                         <p style={{ fontSize: "16px" }}>
-                          {program.international_cost && program.country_code !== fetchedCountry ? (
+                          {program.international_cost &&
+                          program.country_code !== fetchedCountry ? (
                             program.international_cost === "0" ? (
                               program.cost === "0" || program.cost === "RM0" ? (
                                 "N/A"
                               ) : (
                                 <>
-                                  <strong>{sessionStorage.getItem('userCurrencySymbol') || 'RM'}</strong>
-                                  {convertToFetchedCurrency(program.cost).replace(/^.*?(\d+.*)/, '$1')}
+                                  <strong>
+                                    {sessionStorage.getItem(
+                                      "userCurrencySymbol"
+                                    ) || "RM"}
+                                  </strong>
+                                  {convertToFetchedCurrency(
+                                    program.cost
+                                  ).replace(/^.*?(\d+.*)/, "$1")}
                                 </>
                               )
                             ) : (
                               <>
-                                <strong>{sessionStorage.getItem('userCurrencySymbol') || 'RM'}</strong>
-                                {convertToFetchedCurrency(program.international_cost).replace(/^.*?(\d+.*)/, '$1')}
+                                <strong>
+                                  {sessionStorage.getItem(
+                                    "userCurrencySymbol"
+                                  ) || "RM"}
+                                </strong>
+                                {convertToFetchedCurrency(
+                                  program.international_cost
+                                ).replace(/^.*?(\d+.*)/, "$1")}
                               </>
                             )
+                          ) : program.cost === "0" || program.cost === "RM0" ? (
+                            "N/A"
                           ) : (
-                            program.cost === "0" || program.cost === "RM0" ? (
-                              "N/A"
-                            ) : (
-                              <>
-                                <strong>{sessionStorage.getItem('userCurrencySymbol') || 'RM'}</strong>
-                                {convertToFetchedCurrency(program.cost).replace(/^.*?(\d+.*)/, '$1')}
-                              </>
-                            )
+                            <>
+                              <strong>
+                                {sessionStorage.getItem("userCurrencySymbol") ||
+                                  "RM"}
+                              </strong>
+                              {convertToFetchedCurrency(program.cost).replace(
+                                /^.*?(\d+.*)/,
+                                "$1"
+                              )}
+                            </>
                           )}
                         </p>
-
-
-                    </p>
+                      </p>
                     </div>
                     <div className="d-flex interest-division">
-                    <div className="interest">
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handleInterestClick(program.id);
-                        }}
-                        className="interest-button"
-                        aria-label={courseInterests[program.id]?.status === 1 ? "Remove from interests" : "Add to interests"}
-                      >
-                        <span style={{ fontSize: "16px" }}>
-                           {courseInterests[program.id]?.status === 1 ? "Favourite" : "Favourite"}
-                         </span>
-                        <i className={courseInterests[program.id]?.status === 1 ? "bi bi-heart-fill" : "bi bi-heart"}></i>
-                      </button>
-                    </div>
-                    <div className="apply-button">
-                      {program.institute_category === "Local University" ? (
+                      <div className="interest">
                         <button
-                          onClick={() => window.location.href = `mailto:${program.email}`}
-                          className="featured coursepage-applybutton"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleInterestClick(program.id);
+                          }}
+                          className="interest-button"
+                          aria-label={
+                            courseInterests[program.id]?.status === 1
+                              ? "Remove from interests"
+                              : "Add to interests"
+                          }
                         >
-                          Contact Now
+                          <span style={{ fontSize: "16px" }}>
+                            {courseInterests[program.id]?.status === 1
+                              ? "Favourite"
+                              : "Favourite"}
+                          </span>
+                          <i
+                            className={
+                              courseInterests[program.id]?.status === 1
+                                ? "bi bi-heart-fill"
+                                : "bi bi-heart"
+                            }
+                          ></i>
                         </button>
-                      ) : (
-                        <button className="featured coursepage-applybutton" onClick={() => handleApplyNow(program)}>
-                          Apply Now
-                        </button>
-                      )}
-                    </div>
+                      </div>
+                      <div className="apply-button">
+                        {program.institute_category === "Local University" ? (
+                          <button
+                            onClick={() =>
+                              (window.location.href = `mailto:${program.email}`)
+                            }
+                            className="featured coursepage-applybutton"
+                            style={{
+                              padding: "5px 10px",
+                              fontSize: "14px",
+                              height: "auto",
+                            }}
+                          >
+                            Contact Now
+                          </button>
+                        ) : (
+                          <button
+                            className="featured coursepage-applybutton"
+                            onClick={() => handleApplyNow(program)}
+                          >
+                            Apply Now
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -924,18 +1017,22 @@ useEffect(() => {
 
             {Array.isArray(adsImageB) && adsImageB.length > 0 ? (
               // <div className="advertisements-container">
-                 <Swiper
-                  spaceBetween={10}
-                  slidesPerView={1}
-                  navigation
-                  autoplay={{ delay: 5000, disableOnInteraction: false }} // Ensure autoplay is enabled
-                  modules={[Navigation, Autoplay]} 
-                  style={{ padding: "20px 0" }}
-                >
+              <Swiper
+                spaceBetween={10}
+                slidesPerView={1}
+                navigation
+                autoplay={{ delay: 5000, disableOnInteraction: false }} // Ensure autoplay is enabled
+                modules={[Navigation, Autoplay]}
+                style={{ padding: "20px 0" }}
+              >
                 {adsImageB.map((ad, index) => (
-                 <SwiperSlide key={ad.id} className="advertisement-item mb-3">
+                  <SwiperSlide key={ad.id} className="advertisement-item mb-3">
                     <a
-                      href={ad.banner_url.startsWith('http') ? ad.banner_url : `https://${ad.banner_url}`}
+                      href={
+                        ad.banner_url.startsWith("http")
+                          ? ad.banner_url
+                          : `https://${ad.banner_url}`
+                      }
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -947,15 +1044,16 @@ useEffect(() => {
                         style={{
                           height: "100px",
                           objectFit: "fill",
-                          marginBottom: index < adsImageB.length - 1 ? "20px" : "0"
+                          marginBottom:
+                            index < adsImageB.length - 1 ? "20px" : "0",
                         }}
                       />
                     </a>
-                    </SwiperSlide>
+                  </SwiperSlide>
                 ))}
-                </Swiper>
-              // </div>
+              </Swiper>
             ) : (
+              // </div>
               <img
                 loading="lazy"
                 src={StudyPal}
@@ -1016,48 +1114,49 @@ useEffect(() => {
     return {
       "@context": "https://schema.org",
       "@type": "ItemList",
-      "itemListElement": programs.map((program, index) => ({
+      itemListElement: programs.map((program, index) => ({
         "@type": "Course",
-        "position": index + 1,
-        "name": program.course_name,
-        "description": program.description,
-        "provider": {
+        position: index + 1,
+        name: program.course_name,
+        description: program.description,
+        provider: {
           "@type": "EducationalOrganization",
-          "name": program.school_name,
-          "address": {
+          name: program.school_name,
+          address: {
             "@type": "PostalAddress",
-            "addressRegion": program.state,
-            "addressCountry": program.country
-          }
+            addressRegion: program.state,
+            addressCountry: program.country,
+          },
         },
-        "educationalLevel": program.qualification,
-        "timeRequired": program.period,
-        "startDate": program.intake?.join(", "),
-        "educationalProgramMode": program.study_mode,
-        "offers": {
+        educationalLevel: program.qualification,
+        timeRequired: program.period,
+        startDate: program.intake?.join(", "),
+        educationalProgramMode: program.study_mode,
+        offers: {
           "@type": "Offer",
-          "price": program.cost,
-          "priceCurrency": "MYR"
-        }
-      }))
+          price: program.cost,
+          priceCurrency: "MYR",
+        },
+      })),
     };
   };
 
   // Add SEO-friendly headings and meta descriptions
   const generateSEOMetadata = () => {
-    const locationText = selectedFilters.locations.length > 0
-      ? filterData.state
-          .filter(loc => selectedFilters.locations.includes(loc.id))
-          .map(loc => loc.state_name)
-          .reduce((text, location, index, array) => {
-            if (index === 0) return location;
-            if (index === array.length - 1) return `${text} and ${location}`;
-            return `${text}, ${location}`;
-          }, "")
-      : selectedCountry?.country_name || "Malaysia";
+    const locationText =
+      selectedFilters.locations.length > 0
+        ? filterData.state
+            .filter((loc) => selectedFilters.locations.includes(loc.id))
+            .map((loc) => loc.state_name)
+            .reduce((text, location, index, array) => {
+              if (index === 0) return location;
+              if (index === array.length - 1) return `${text} and ${location}`;
+              return `${text}, ${location}`;
+            }, "")
+        : selectedCountry?.country_name || "Malaysia";
 
-    const qualificationText = selectedQualification 
-      ? `${selectedQualification.qualification_name} ` 
+    const qualificationText = selectedQualification
+      ? `${selectedQualification.qualification_name} `
       : "";
 
     const title = `Top ${resultCount} ${qualificationText}Courses in ${locationText} | StudyPal Malaysia`;
@@ -1067,7 +1166,10 @@ useEffect(() => {
       <Helmet className="notranslate">
         <title>{title}</title>
         <meta name="description" content={description} />
-        <meta name="keywords" content={`courses, ${qualificationText.toLowerCase()}, study in ${locationText.toLowerCase()}`} />
+        <meta
+          name="keywords"
+          content={`courses, ${qualificationText.toLowerCase()}, study in ${locationText.toLowerCase()}`}
+        />
         <script type="application/ld+json">
           {JSON.stringify(generateCourseStructuredData(programs))}
         </script>
@@ -1076,26 +1178,28 @@ useEffect(() => {
   };
 
   const generateSEOHeading = () => {
-    const locationText = selectedFilters.locations.length > 0
-      ? filterData.state
-          .filter(loc => selectedFilters.locations.includes(loc.id))
-          .map(loc => loc.state_name)
-          .reduce((text, location, index, array) => {
-            if (index === 0) return location;
-            if (index === array.length - 1) return `${text} and ${location}`;
-            return `${text}, ${location}`;
-          }, "")
-      : selectedCountry?.country_name || "Malaysia";
+    const locationText =
+      selectedFilters.locations.length > 0
+        ? filterData.state
+            .filter((loc) => selectedFilters.locations.includes(loc.id))
+            .map((loc) => loc.state_name)
+            .reduce((text, location, index, array) => {
+              if (index === 0) return location;
+              if (index === array.length - 1) return `${text} and ${location}`;
+              return `${text}, ${location}`;
+            }, "")
+        : selectedCountry?.country_name || "Malaysia";
 
     const searchTerms = searchQuery ? `"${searchQuery}" ` : "";
-    const qualificationText = selectedQualification 
-      ? `${selectedQualification.qualification_name} ` 
+    const qualificationText = selectedQualification
+      ? `${selectedQualification.qualification_name} `
       : "";
-    
+
     return (
       <div className="seo-heading mt-4 mb-4 notranslate">
-        <h1 style={{ fontSize: '1.5rem', color: '#333', marginBottom: '0' }}>
-          {resultCount > 0 ? `${resultCount} ` : ''}{qualificationText}Courses {searchTerms}
+        <h1 style={{ fontSize: "1.5rem", color: "#333", marginBottom: "0" }}>
+          {resultCount > 0 ? `${resultCount} ` : ""}
+          {qualificationText}Courses {searchTerms}
           in {locationText}
         </h1>
         {searchQuery && (
@@ -1109,7 +1213,8 @@ useEffect(() => {
 
   // Add useEffect to check authentication
   useEffect(() => {
-    const token = sessionStorage.getItem("token") || localStorage.getItem("token");
+    const token =
+      sessionStorage.getItem("token") || localStorage.getItem("token");
     setIsAuthenticated(!!token);
   }, []);
 
@@ -1181,7 +1286,9 @@ useEffect(() => {
                     {/* Country list */}
                     {countries
                       .filter((country) =>
-                        country.country_name.toLowerCase().includes(countryFilter)
+                        country.country_name
+                          .toLowerCase()
+                          .includes(countryFilter)
                       )
                       .map((country, index) => (
                         <Dropdown.Item
@@ -1252,14 +1359,18 @@ useEffect(() => {
                       : "Qualification"}
                   </Dropdown.Toggle>
                   <Dropdown.Menu>
-                    {filterData.qualificationList.map((qualification, index) => (
-                      <Dropdown.Item
-                        key={index}
-                        onClick={() => setSelectedQualification(qualification)}
-                      >
-                        {qualification.qualification_name}
-                      </Dropdown.Item>
-                    ))}
+                    {filterData.qualificationList.map(
+                      (qualification, index) => (
+                        <Dropdown.Item
+                          key={index}
+                          onClick={() =>
+                            setSelectedQualification(qualification)
+                          }
+                        >
+                          {qualification.qualification_name}
+                        </Dropdown.Item>
+                      )
+                    )}
                   </Dropdown.Menu>
                 </Dropdown>
               </ButtonGroup>
@@ -1284,37 +1395,14 @@ useEffect(() => {
             </Col>
           </Row>
 
-        {/* Search Bar */}
-        <Form
-          onSubmit={(e) => {
-            e.preventDefault();
-            fetchCourses();
-          }}
-        >
-          <InputGroup className="mb-3  saerchcourse-display-none">
-            <Form.Control
-              className="custom-placeholder searchinputborder"
-              style={{ height: "45px", marginTop: "9px" }}
-              placeholder="Search for Courses, Institutions"
-              value={tempSearch}
-              onChange={(e) => {
-                setTempSearch(e.target.value);
-                // After 500ms, update the main searchQuery which triggers API call
-                setTimeout(() => {
-                  setSearchQuery(e.target.value);
-                }, 1500);
-              }}
-            />
-          </InputGroup>
-        </Form>
-        <div className="coursepage-reset-display-search">
+          {/* Search Bar */}
           <Form
             onSubmit={(e) => {
               e.preventDefault();
               fetchCourses();
             }}
           >
-            <InputGroup>
+            <InputGroup className="mb-3  saerchcourse-display-none">
               <Form.Control
                 className="custom-placeholder searchinputborder"
                 style={{ height: "45px", marginTop: "9px" }}
@@ -1330,49 +1418,74 @@ useEffect(() => {
               />
             </InputGroup>
           </Form>
-          <button
-            onClick={resetFilters}
-            style={{
-              backgroundColor: "transparent",
-              border: "none",
-              color: "#B71A18",
-              fontWeight: "lighter",
-              textDecoration: "none",
-              cursor: "pointer",
-            }}
-          >
-            <i className="bi bi-funnel" style={{ marginRight: "5px" }} />
-            Reset Filters
-          </button>
-        </div>
-        {/* Main Content */}
-        <Container className="my-5">
-          <Row>
-            {/* Left Sidebar - Filters */}
-            <Col
+          <div className="coursepage-reset-display-search">
+            <Form
+              onSubmit={(e) => {
+                e.preventDefault();
+                fetchCourses();
+              }}
+            >
+              <InputGroup>
+                <Form.Control
+                  className="custom-placeholder searchinputborder"
+                  style={{ height: "45px", marginTop: "9px" }}
+                  placeholder="Search for Courses, Institutions"
+                  value={tempSearch}
+                  onChange={(e) => {
+                    setTempSearch(e.target.value);
+                    // After 500ms, update the main searchQuery which triggers API call
+                    setTimeout(() => {
+                      setSearchQuery(e.target.value);
+                    }, 1500);
+                  }}
+                />
+              </InputGroup>
+            </Form>
+            <button
+              onClick={resetFilters}
+              style={{
+                backgroundColor: "transparent",
+                border: "none",
+                color: "#B71A18",
+                fontWeight: "lighter",
+                textDecoration: "none",
+                cursor: "pointer",
+              }}
+            >
+              <i className="bi bi-funnel" style={{ marginRight: "5px" }} />
+              Reset Filters
+            </button>
+          </div>
+          {/* Main Content */}
+          <Container className="my-5">
+            <Row>
+              {/* Left Sidebar - Filters */}
+              <Col
                 md={3}
                 className="location-container"
                 style={{ backgroundColor: "white", padding: "10px" }}
               >
-              {/* Desktop Filters */}
-              <div className="filters-container">
-                {/* Location Filter */}
-                <div className="filter-group">
-                  <h5 style={{ marginTop: "10px" }}>Location</h5>
-                  <Form.Group>
-                    {filterData.state.map((location, index) => (
-                      <Form.Check
-                        key={index}
-                        type="checkbox"
-                        label={location.state_name}
-                        checked={selectedFilters.locations.includes(location.id)}
-                        onChange={() =>
-                          handleFilterChange("locations", location.id)
-                        }
-                      />
-                    ))}
-                  </Form.Group>
-                </div>
+                {/* Desktop Filters */}
+                <div className="filters-container">
+                  {/* Location Filter */}
+                  <div className="filter-group">
+                    <h5 style={{ marginTop: "10px" }}>Location</h5>
+                    <Form.Group>
+                      {filterData.state.map((location, index) => (
+                        <Form.Check
+                          key={index}
+                          type="checkbox"
+                          label={location.state_name}
+                          checked={selectedFilters.locations.includes(
+                            location.id
+                          )}
+                          onChange={() =>
+                            handleFilterChange("locations", location.id)
+                          }
+                        />
+                      ))}
+                    </Form.Group>
+                  </div>
 
                   {/* Category Filter */}
                   <div className="filter-group">
@@ -1383,7 +1496,9 @@ useEffect(() => {
                           key={index}
                           type="checkbox"
                           label={category.category_name}
-                          checked={selectedFilters.categories.includes(category.id)}
+                          checked={selectedFilters.categories.includes(
+                            category.id
+                          )}
                           onChange={() =>
                             handleFilterChange("categories", category.id)
                           }
@@ -1402,7 +1517,9 @@ useEffect(() => {
                           type="checkbox"
                           label={intake.month}
                           checked={selectedFilters.intakes.includes(intake.id)}
-                          onChange={() => handleFilterChange("intakes", intake.id)}
+                          onChange={() =>
+                            handleFilterChange("intakes", intake.id)
+                          }
                         />
                       ))}
                     </Form.Group>
@@ -1418,7 +1535,9 @@ useEffect(() => {
                           type="checkbox"
                           label={mode.studyMode_name}
                           checked={selectedFilters.studyModes.includes(mode.id)}
-                          onChange={() => handleFilterChange("studyModes", mode.id)}
+                          onChange={() =>
+                            handleFilterChange("studyModes", mode.id)
+                          }
                         />
                       ))}
                     </Form.Group>
@@ -1426,12 +1545,10 @@ useEffect(() => {
 
                   {/* Tuition Fee Filter */}
                   <div className="filter-group">
-                    <h5 style={{ marginTop: "25px" }}>
-                      Tuition Fee
-                    </h5>
+                    <h5 style={{ marginTop: "25px" }}>Tuition Fee</h5>
                     <Form.Group id="customRange1">
                       <Form.Label className="custom-range-label d-flex justify-content-between">
-                        <span>Current: RM{(selectedFilters.tuitionFee)}</span>
+                        <span>Current: RM{selectedFilters.tuitionFee}</span>
                       </Form.Label>
                       <Form.Control
                         className="custom-range-input"
@@ -1440,11 +1557,16 @@ useEffect(() => {
                         max={filterData.maxAmount || 100000}
                         step="500"
                         value={selectedFilters.tuitionFee}
-                        onChange={(e) => handleFilterChange("tuitionFee", Number(e.target.value))}
+                        onChange={(e) =>
+                          handleFilterChange(
+                            "tuitionFee",
+                            Number(e.target.value)
+                          )
+                        }
                       />
                       <div className="d-flex justify-content-between mt-2">
                         <p>RM0</p>
-                        <p>RM{(filterData.maxAmount || 100000)}</p>
+                        <p>RM{filterData.maxAmount || 100000}</p>
                       </div>
                     </Form.Group>
                   </div>
@@ -1479,7 +1601,9 @@ useEffect(() => {
                       <InputGroup className="mb-2 ps-3 pe-3">
                         <Form.Control
                           placeholder="Filter countries"
-                          onChange={(e) => setCountryFilter(e.target.value.toLowerCase())}
+                          onChange={(e) =>
+                            setCountryFilter(e.target.value.toLowerCase())
+                          }
                           value={countryFilter}
                           className="ps-1 countryinput"
                         />
@@ -1487,7 +1611,9 @@ useEffect(() => {
                       <div className="country-list">
                         {countries
                           .filter((country) =>
-                            country.country_name.toLowerCase().includes(countryFilter)
+                            country.country_name
+                              .toLowerCase()
+                              .includes(countryFilter)
                           )
                           .map((country, index) => (
                             <Form.Check
@@ -1500,8 +1626,9 @@ useEffect(() => {
                                   style={{
                                     marginRight: "10px",
                                     paddingTop: "0",
-                                    paddingBottom: "0"
-                                  }}>
+                                    paddingBottom: "0",
+                                  }}
+                                >
                                   <CountryFlag
                                     countryCode={country.country_code}
                                     svg
@@ -1510,7 +1637,7 @@ useEffect(() => {
                                       height: "20px",
                                       marginRight: "10px",
                                       paddingTop: "0",
-                                      paddingBottom: "0"
+                                      paddingBottom: "0",
                                     }}
                                   />
                                   {country.country_name}
@@ -1528,11 +1655,12 @@ useEffect(() => {
                   {/* University Accordion Item */}
                   <Accordion.Item eventKey="1">
                     <Accordion.Header className="custom-accordion-header">
-                      {selectedInstitute ? selectedInstitute.core_metaName : "Select University"}
+                      {selectedInstitute
+                        ? selectedInstitute.core_metaName
+                        : "Select University"}
                     </Accordion.Header>
                     <Accordion.Body>
                       {filterData.institueList.map((institute, index) => (
-
                         <Form.Check
                           key={index}
                           type="checkbox"
@@ -1549,21 +1677,29 @@ useEffect(() => {
                   {/* Qualification Accordion Item */}
                   <Accordion.Item eventKey="2">
                     <Accordion.Header className="custom-accordion-header">
-                      {selectedQualification ? selectedQualification.qualification_name : "Qualification"}
+                      {selectedQualification
+                        ? selectedQualification.qualification_name
+                        : "Qualification"}
                     </Accordion.Header>
                     <Accordion.Body className="custom-accordion-body">
                       <Form.Group>
-                        {filterData.qualificationList.map((qualification, index) => (
-                          <Form.Check
-                            key={index}
-                            type="checkbox"
-                            id={`qualification-${qualification.id}`}
-                            label={qualification.qualification_name}
-                            checked={selectedQualification?.id === qualification.id}
-                            onChange={() => setSelectedQualification(qualification)}
-                            className="mb-2"
-                          />
-                        ))}
+                        {filterData.qualificationList.map(
+                          (qualification, index) => (
+                            <Form.Check
+                              key={index}
+                              type="checkbox"
+                              id={`qualification-${qualification.id}`}
+                              label={qualification.qualification_name}
+                              checked={
+                                selectedQualification?.id === qualification.id
+                              }
+                              onChange={() =>
+                                setSelectedQualification(qualification)
+                              }
+                              className="mb-2"
+                            />
+                          )
+                        )}
                       </Form.Group>
                     </Accordion.Body>
                   </Accordion.Item>
@@ -1603,7 +1739,7 @@ useEffect(() => {
                     <Accordion.Body className="custom-accordion-body">
                       <Form.Group>
                         {filterData.categoryList &&
-                          filterData.categoryList.length > 0 ? ( // Changed from filterData.categories to filterData.categoryList
+                        filterData.categoryList.length > 0 ? ( // Changed from filterData.categories to filterData.categoryList
                           filterData.categoryList.map((category, index) => (
                             <Form.Check
                               key={index}
@@ -1632,13 +1768,15 @@ useEffect(() => {
                     <Accordion.Body className="custom-accordion-body">
                       <Form.Group>
                         {filterData.studyModeListing &&
-                          filterData.studyModeListing.length > 0 ? (
+                        filterData.studyModeListing.length > 0 ? (
                           filterData.studyModeListing.map((mode, index) => (
                             <Form.Check
                               key={index}
                               type="checkbox"
                               label={mode.studyMode_name}
-                              checked={selectedFilters.studyModes.includes(mode.id)}
+                              checked={selectedFilters.studyModes.includes(
+                                mode.id
+                              )}
                               onChange={() =>
                                 handleFilterChange("studyModes", mode.id)
                               }
@@ -1659,7 +1797,7 @@ useEffect(() => {
                     <Accordion.Body className="custom-accordion-body">
                       <Form.Group>
                         {filterData.intakeList &&
-                          filterData.intakeList.length > 0 ? (
+                        filterData.intakeList.length > 0 ? (
                           filterData.intakeList.map((intake, index) => (
                             <Form.Check
                               key={index}
@@ -1698,7 +1836,10 @@ useEffect(() => {
                           step={500}
                           value={selectedFilters.tuitionFee || 0}
                           onChange={(e) =>
-                            handleFilterChange("tuitionFee", Number(e.target.value))
+                            handleFilterChange(
+                              "tuitionFee",
+                              Number(e.target.value)
+                            )
                           }
                         />
                         <div className="d-flex justify-content-between mt-2">
@@ -1712,21 +1853,28 @@ useEffect(() => {
               </Col>
 
               {/* Right Content - Course Listings */}
-              <Col xs={12} md={9}  className="degreeprograms-division">
+              <Col xs={12} md={9} className="degreeprograms-division">
                 <div>
                   {Array.isArray(adsImageA) && adsImageA.length > 0 ? (
                     <Swiper
-                    spaceBetween={10}
-                    slidesPerView={1}
-                    navigation
-                    autoplay={{ delay: 5000, disableOnInteraction: false }} // Ensure autoplay is enabled
-                    modules={[Navigation, Autoplay]} 
-                    style={{ padding: "20px 0" }}
-                  >
+                      spaceBetween={10}
+                      slidesPerView={1}
+                      navigation
+                      autoplay={{ delay: 5000, disableOnInteraction: false }} // Ensure autoplay is enabled
+                      modules={[Navigation, Autoplay]}
+                      style={{ padding: "20px 0" }}
+                    >
                       {adsImageA.map((ad, index) => (
-                        <SwiperSlide key={ad.id} className="advertisement-item mb-3">
+                        <SwiperSlide
+                          key={ad.id}
+                          className="advertisement-item mb-3"
+                        >
                           <a
-                            href={ad.banner_url.startsWith('http') ? ad.banner_url : `https://${ad.banner_url}`}
+                            href={
+                              ad.banner_url.startsWith("http")
+                                ? ad.banner_url
+                                : `https://${ad.banner_url}`
+                            }
                             target="_blank"
                             rel="noopener noreferrer"
                           >
@@ -1738,11 +1886,12 @@ useEffect(() => {
                               style={{
                                 height: "175px",
                                 objectFit: "fill",
-                                marginBottom: index < adsImageA.length - 1 ? "20px" : "0"
+                                marginBottom:
+                                  index < adsImageA.length - 1 ? "20px" : "0",
                               }}
                             />
                           </a>
-                        </SwiperSlide >
+                        </SwiperSlide>
                       ))}
                     </Swiper>
                   ) : (
@@ -1772,14 +1921,13 @@ useEffect(() => {
               </Col>
               {/* Pagination */}
               {programs.length > 0 && (
-                <Pagination className="d-flex justify-content-end">
+                <Pagination className="pagination-custom">
                   <Pagination.Prev
                     onClick={() => setCurrentPage((prev) => prev - 1)}
                     disabled={currentPage === 1}
                   >
                     <span aria-hidden="true">&laquo;</span>
                   </Pagination.Prev>
-
                   {/* First page */}
                   <Pagination.Item
                     active={1 === currentPage}
@@ -1787,36 +1935,35 @@ useEffect(() => {
                   >
                     1
                   </Pagination.Item>
-
                   {/* Show dots if current page is more than 3 */}
                   {currentPage > 3 && <Pagination.Ellipsis />}
-
                   {/* Pages around current page */}
-                  {[...Array(totalPages)].map((_, index) => {
-                    const pageNumber = index + 1;
-                    // Only show pages around current page
-                    if (
-                      pageNumber !== 1 && // Skip first page as it's already shown
-                      pageNumber !== totalPages && // Skip last page as it will be shown separately
-                      pageNumber >= currentPage - 1 &&
-                      pageNumber <= currentPage + 1
-                    ) {
-                      return (
-                        <Pagination.Item
-                          key={pageNumber}
-                          active={pageNumber === currentPage}
-                          onClick={() => setCurrentPage(pageNumber)}
-                        >
-                          {pageNumber}
-                        </Pagination.Item>
-                      );
-                    }
-                    return null;
-                  }).filter(Boolean)} {/* Remove null values */}
-
+                  {[...Array(totalPages)]
+                    .map((_, index) => {
+                      const pageNumber = index + 1;
+                      // Only show pages around current page
+                      if (
+                        pageNumber !== 1 && // Skip first page as it's already shown
+                        pageNumber !== totalPages && // Skip last page as it will be shown separately
+                        pageNumber >= currentPage - 1 &&
+                        pageNumber <= currentPage + 1
+                      ) {
+                        return (
+                          <Pagination.Item
+                            key={pageNumber}
+                            active={pageNumber === currentPage}
+                            onClick={() => setCurrentPage(pageNumber)}
+                          >
+                            {pageNumber}
+                          </Pagination.Item>
+                        );
+                      }
+                      return null;
+                    })
+                    .filter(Boolean)}{" "}
+                  {/* Remove null values */}
                   {/* Show dots if there are more pages */}
                   {currentPage < totalPages - 2 && <Pagination.Ellipsis />}
-
                   {/* Last page */}
                   {totalPages > 1 && (
                     <Pagination.Item
@@ -1835,8 +1982,8 @@ useEffect(() => {
                 </Pagination>
               )}
             </Row>
-          </Container >
-        </Container >
+          </Container>
+        </Container>
       </div>
     </Container>
   );
