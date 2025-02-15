@@ -1044,10 +1044,15 @@ const SearchCourse = () => {
                         alt={`Advertisement ${ad.banner_name}`}
                         className="studypal-image"
                         style={{
-                          height: "100px",
-                          objectFit: "fill",
-                          marginBottom:
-                            index < adsImageB.length - 1 ? "20px" : "0",
+                          height: "175px",
+                          objectFit: "contain",
+                          width: "100%",
+                          marginBottom: index < adsImageB.length - 1 ? "20px" : "0",
+                          "@media (max-width: 768px)": {
+                            height: "auto",
+                            maxHeight: "175px",
+                            objectFit: "contain",
+                          }
                         }}
                       />
                     </a>
@@ -1443,7 +1448,28 @@ const SearchCourse = () => {
               />
             </InputGroup>
           </Form>
-
+          <div className="coursepage-reset-display-search">
+          <Form
+            onSubmit={(e) => {
+              e.preventDefault();
+              fetchCourses();
+            }}
+          >
+            <InputGroup>
+              <Form.Control
+                className="custom-placeholder searchinputborder"
+                style={{ height: "45px", marginTop: "9px" }}
+                placeholder="Search for Courses, Institutions"
+                value={tempSearch}
+                onChange={(e) => {
+                  setTempSearch(e.target.value);
+                  setTimeout(() => {
+                    setSearchQuery(e.target.value);
+                  }, 1500);
+                }}
+              />
+            </InputGroup>
+          </Form>
           {/* Mobile Filter Button */}
           <button
             onClick={() => setShowMobileFilters(!showMobileFilters)}
@@ -1459,6 +1485,7 @@ const SearchCourse = () => {
               <span className="ms-1">({countSelectedFilters()})</span>
             )}
           </button>
+          </div>
         </Container>
         {/* Mobile Filters */}
         <div
