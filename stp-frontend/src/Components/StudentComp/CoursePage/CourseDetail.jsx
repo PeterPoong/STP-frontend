@@ -154,7 +154,7 @@ const CourseDetail = () => {
           currency_symbol: sessionStorage.getItem('userCurrencySymbol') || 'RM' 
         });
   
-        console.log("Detected currency change in sessionStorage:", newCurrencyCode);
+        // console.log("Detected currency change in sessionStorage:", newCurrencyCode);
         
         fetchExchangeRates(newCurrencyCode);
         fetchProgram();
@@ -192,7 +192,7 @@ const CourseDetail = () => {
         sessionStorage.setItem('userCurrencyCode', currencyInfo.currency_code);
         sessionStorage.setItem('userCurrencySymbol', currencyInfo.currency_symbol);
   
-        // console.log("Fetched country:", country);
+        console.log("Fetched country:", country);
         // console.log("Currency Code:", currencyInfo.currency_code);
         // console.log("Currency Symbol:", currencyInfo.currency_symbol);
   
@@ -350,7 +350,7 @@ const CourseDetail = () => {
 
         const data = await response.json();
         // Log the response data to the console
-        console.log("Fetched data:", data);
+        // console.log("Fetched data:", data);
 
         if (data && data.data) { // Check if data exists
           const selectedProgram = data.data; // Directly use the fetched data
@@ -645,7 +645,9 @@ const CourseDetail = () => {
                     >
                       <div>
                         <p className="mb-0">
-                        {program.international_cost && program.country_code !== fetchedCountry ? (
+                        {/* {console.log('Program Country:', program.country_code, 'Fetched Country:', fetchedCountry)} */}
+                        {fetchedCountry && program.international_cost && program.country_code && program.country_code !== fetchedCountry ? (
+                            // console.log('Showing international cost'),
                             program.international_cost === "0" ? (
                                 program.cost === "0" || program.cost === "RM0" ? (
                                     "N/A"
@@ -662,6 +664,7 @@ const CourseDetail = () => {
                                 </>
                             )
                         ) : (
+                            // console.log('Showing local cost'),
                             program.cost === "0" || program.cost === "RM0" ? (
                                 "N/A"
                             ) : (

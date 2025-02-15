@@ -107,3 +107,35 @@ justify-content: center;
   
   }
 }
+
+@media (max-width: 576px) {
+  .swiper-slide-image {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+
+  .university-card {
+    width: 250px !important;
+    margin: 0 auto;
+  }
+
+  /* Style pagination bullets */
+  .swiper-pagination-bullet {
+    width: 8px;
+    height: 8px;
+    background: rgba(183, 26, 24, 0.5);
+    opacity: 1;
+  }
+  
+  .swiper-pagination-bullet-active {
+    background: rgba(183, 26, 24, 1);
+  }
+
+  /* Add smooth scrolling behavior */
+  .swiper-container {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+}
