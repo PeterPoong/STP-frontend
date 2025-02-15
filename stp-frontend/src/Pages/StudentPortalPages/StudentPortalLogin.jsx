@@ -217,8 +217,7 @@ const StudentPortalLogin = () => {
   return (
     <Container fluid className="h-100">
       <Row className="h-50">
-        <Col md={6} className="p-0 h-100">
-          <div className="position-absolute top-0 ">
+      <div className="position-absolute top-0 ">
             <button
               className="p-1 login-back-button rounded-circle"
               onClick={handleBackClick}
@@ -238,6 +237,8 @@ const StudentPortalLogin = () => {
               </svg>
             </button>
           </div>
+        <Col md={6} className="p-0 h-100 d-md-flex d-none">
+         
           <img
             src={studentPortalLogin}
             alt="Student Portal Login"

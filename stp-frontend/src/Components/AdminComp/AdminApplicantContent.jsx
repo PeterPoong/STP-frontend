@@ -25,10 +25,27 @@ const AdminApplicantContent = () => {
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`;
     const navigate = useNavigate();
-
-    const fetchApplicants = async (page = 1, perPage = rowsPerPage, search = searchQuery) => {
+    const [statList, setStatList] = useState([]); // State for category list
+    const [selectedStat, setSelectedStat] = useState(""); // State for selected subject
+    useEffect(() => {
+        // Hardcoded statList values
+        const hardcodedStatList = [
+            { id: 0, name: "Disable" },
+            { id: 1, name: "Active" },
+            { id: 2, name: "Pending" },
+            { id: 3, name: "Rejected" },
+            { id: 4, name: "Accepted" },
+        ];
+        setStatList(hardcodedStatList);
+        fetchApplicants(); // Fetch enquiries initially
+    }, []);
+    const fetchApplicants = async (
+        page = 1, 
+        perPage = rowsPerPage, 
+        search = searchQuery,
+        stat = selectedStat) => {
         try {
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/applicantDetailInfo?page=${page}&per_page=${perPage === "All" ? subjects.length : perPage}&search=${search}`, {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/applicantDetailInfo?page=${page}&per_page=${perPage === "All" ? subjects.length : perPage}&search=${search}&stat=${stat}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -57,26 +74,26 @@ const AdminApplicantContent = () => {
     };
 
     useEffect(() => {
-        fetchApplicants(currentPage, rowsPerPage, searchQuery, sortColumn, sortDirection);
-    }, [currentPage, rowsPerPage, searchQuery, sortColumn, sortDirection]);
+        fetchApplicants(currentPage, rowsPerPage, searchQuery, selectedStat, sortColumn, sortDirection);
+    }, [currentPage, rowsPerPage, searchQuery, selectedStat, sortColumn, sortDirection]);
 
     const handleRowsPerPageChange = (newRowsPerPage) => {
         setRowsPerPage(newRowsPerPage);
         setCurrentPage(1); 
-        fetchApplicants(1, newRowsPerPage === "All" ? subjects.length : newRowsPerPage, searchQuery);
+        fetchApplicants(1, newRowsPerPage === "All" ? subjects.length : newRowsPerPage, searchQuery, selectedStat);
     };
 
     const handleSearch = (query) => {
         setSearchQuery(query);
         setCurrentPage(1);
-        fetchApplicants(1, rowsPerPage, query);
+        fetchApplicants(1, rowsPerPage, query, selectedStat);
     };
 
     const handleSort = (column) => {
         const newDirection = sortColumn === column && sortDirection === "asc" ? "desc" : "asc";
         setSortColumn(column);
         setSortDirection(newDirection);
-        fetchApplicants(currentPage, rowsPerPage, searchQuery);
+        fetchApplicants(currentPage, rowsPerPage, searchQuery, selectedStat);
     };
 
     const sortedApplicants = (() => {
@@ -120,7 +137,11 @@ const AdminApplicantContent = () => {
         setShowModal(false);
         setShowFeedbackModal(true);
     };
-
+    const handleStatChange = (statId) => {
+        setSelectedStat(statId);
+        setCurrentPage(1);
+        fetchApplicants(1, rowsPerPage, searchQuery, statId);
+    };
     const submitFeedback = async () => {
         if (!targetApplicant) return;
 
@@ -192,6 +213,9 @@ const AdminApplicantContent = () => {
             <th onClick={() => handleSort("contact")}>
                 Contact No. {sortColumn === "contact" && (sortDirection === "asc" ? "↑" : "↓")}
             </th>
+            <th onClick={() => handleSort("created_date")}>
+                Applied Date {sortColumn === "created_date" && (sortDirection === "asc" ? "↑" : "↓")}
+            </th>
             <th onClick={() => handleSort("form_status")}>
                 Status {sortColumn === "form_status" && (sortDirection === "asc" ? "↑" : "↓")}
             </th>
@@ -206,6 +230,7 @@ const AdminApplicantContent = () => {
             <td>{Applicant.course_name}</td>
             <td>{Applicant.institution}</td>
             <td>{Applicant.country_code}{Applicant.contact_number}</td>
+            <td>{Applicant.created_date}</td>
             <td className={getStatusClass(Applicant.form_status)}>
                 {Applicant.form_status}
             </td>
@@ -268,6 +293,8 @@ const AdminApplicantContent = () => {
                  currentPage={currentPage}
                  onPageChange={handlePageChange}
                  onRowsPerPageChange={handleRowsPerPageChange}
+                 statList={statList}
+                 onStatChange={handleStatChange}
             />
         )}
             <Modal show={showModal} onHide={() => setShowModal(false)} centered>

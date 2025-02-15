@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Card,Spinner } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination } from "swiper/modules";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
@@ -53,7 +53,15 @@ const UniversityRow = () => {
       setLoading(false);
     }
   };
-
+  const getAutoplaySettings = () => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth <= 768 ? {
+        delay: 3000,
+        disableOnInteraction: false,
+      } : false;
+    }
+    return false;
+  };
   return (
     <div>
       <div>
@@ -70,28 +78,55 @@ const UniversityRow = () => {
           <Container className="university-row-carousel">
             
             <Swiper
-              modules={[Navigation, Pagination]} // Add required modules here
-              spaceBetween={5}
-              slidesPerView={9}
+              modules={[Navigation, Pagination, Autoplay]}
+              spaceBetween={10}
+              slidesPerView={5}
               loop={true}
-              navigation
-              // style={{ padding: "0 5px" }}
+              navigation={{
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+                enabled: true,
+              }}
+              pagination={{ 
+                clickable: true,
+                el: '.swiper-pagination'
+              }}
+              autoplay={getAutoplaySettings()}
+              style={{
+                '--swiper-pagination-bottom': '-5px',
+                '--swiper-navigation-color': '#BA1718',
+                '--swiper-navigation-size': '25px',
+                paddingBottom: '20px',
+                paddingLeft: '35px',
+                paddingRight: '35px',
+                position: 'relative'
+              }}
               breakpoints={{
-                640: {
-                  slidesPerView: 10,
+                320: {
+                  slidesPerView: 1,
                   spaceBetween: 20,
+                  centeredSlides: true,
                 },
-                768: {
-                  slidesPerView: 5,
-                  spaceBetween: 15,
-                },
-                1024: {
-                  slidesPerView: 9,
+                576: {
+                  slidesPerView: 2,
                   spaceBetween: 10,
                 },
+                768: {
+                  slidesPerView: 3,
+                  spaceBetween: 10,
+                },
+                992: {
+                  slidesPerView: 4,
+                  spaceBetween: 10,
+                },
+                1200: {
+                  slidesPerView: Math.min(9, schools.length),
+                  spaceBetween: 10,
+                }
               }}
             >
-             
+              <div className="swiper-button-prev"></div>
+              <div className="swiper-button-next"></div>
               {schools.map((school, index) => (
                 <SwiperSlide key={index} className="swiper-slide-image">
                   

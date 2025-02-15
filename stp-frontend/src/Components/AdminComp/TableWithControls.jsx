@@ -32,8 +32,12 @@ const TableWithControls = ({
   categoryList,
   featList,
   statList,
+  schList,
+  catList,
+  onCatChange,
   onStatChange,
   onFeatChange,
+  onSchChange,
   onCategoryChange,
   onSubjectChange,
   showMonthFilter = false, // Add this prop
@@ -159,7 +163,7 @@ const TableWithControls = ({
 
             {/* Conditionally render the search input */}
             {showSearch && (
-              <div className="search-input-wrapper mt-2 mb-3">
+              <div className="search-input-wrapper mt-2 mb-3 ms-4">
                 <Form.Control
                   type="text"
                   placeholder="Search Name"
@@ -211,7 +215,7 @@ const TableWithControls = ({
                     Featured Type
                     <select
                         onChange={(e) => onFeatChange(e.target.value)}
-                        className="subject-dropdown"
+                        className="subject-dropdown ms-2"
                     >
                         <option value="">All Featured Types</option>
                         {featList.map((feat) => (
@@ -222,13 +226,14 @@ const TableWithControls = ({
                     </select>
                 </div>
             )}
+           
             {/* Status Type Filter */}
             {statList && statList.length > 0 && (
               <div className="mb-3 mt-3 ms-3 custom-dropdown">
                   Status
                   <select
                       onChange={(e) => onStatChange(e.target.value)}
-                      className="subject-dropdown"
+                      className="subject-dropdown ms-2"
                   >
                       <option value="">All Status</option>
                       {statList.map((stat) => (
@@ -239,7 +244,26 @@ const TableWithControls = ({
                   </select>
               </div>
           )}
-
+        {/* Category Type Filter */}
+        {catList && catList.length > 0 && (
+          <div className="mb-3 mt-3 ms-5 custom-dropdown">
+              Category
+              <select
+                  onChange={(e) => {
+                      const selectedCategoryId = e.target.value;
+                      onCatChange(selectedCategoryId); // Call the handler passed as a prop
+                  }}
+                  className="subject-dropdown ms-2"
+              >
+                  <option value="">All Categories</option>
+                  {catList.map((cat) => (
+                      <option key={cat.id} value={cat.id}>
+                          {cat.name}
+                      </option>
+                  ))}
+              </select>
+          </div>
+      )}
             {/* Add the month/year filter after the category dropdown */}
             {showMonthFilter && (
               <div className="me-1 mb-3 mt-3 ms-3 custom-dropdown d-flex">
@@ -316,7 +340,23 @@ const TableWithControls = ({
             )}
           </div>
         </div>
-
+ {/* School Type Filter */}
+ {schList && schList.length > 0 && (
+                <div className="mb-1 mt-1 custom-dropdown">
+                    School Name
+                    <select
+                        onChange={(e) => onSchChange(e.target.value)}
+                        className="subject-dropdown ms-2"
+                    >
+                        <option value="">All Schools</option>
+                        {schList.map((sch) => (
+                            <option key={sch.id} value={sch.id}>
+                                {sch.name}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+            )}
         <div className="TableContainer">
           <MDBTable className="AdminTable table-borderless" hover>
             <MDBTableHead className="AdminTableHead">

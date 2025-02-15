@@ -2,10 +2,11 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Container, Spinner } from "react-bootstrap";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination } from "swiper/modules";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import "swiper/css/autoplay";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import "../../css/StudentCss/homePageStudent/Unicard.css";
 
@@ -88,7 +89,16 @@ const FeaturedCoursesContainer = () => {
   const getSlidesPerView = () => {
     return courses.length > 0 ? courses.length - 1 : 1;
   };
-
+  const getAutoplaySettings = () => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth <= 768 ? {
+        delay: 3000,
+        disableOnInteraction: false,
+      } : false;
+    }
+    return false;
+  };
+  
   return (
     <div>
       {error && <div>Error: {error}</div>}
@@ -101,62 +111,57 @@ const FeaturedCoursesContainer = () => {
           </div>
         </div></div>}
       {!loading && !error && courses.length > 0 && (
-        <Container className="course-container">
-
+        <Container className="course-container" style={{ position: 'relative' }}>
           <Swiper
-            modules={[Navigation, Pagination]}
+            modules={[Navigation, Pagination, Autoplay]}
             spaceBetween={5}
             slidesPerView={5}
             loop={true}
-            navigation  // Helps with loop smoothness
+            navigation={{
+              nextEl: '.swiper-button-next',
+              prevEl: '.swiper-button-prev',
+            }}
+            pagination={{ 
+              clickable: true 
+            }}
+            autoplay={getAutoplaySettings()}
+            style={{
+              '--swiper-pagination-bottom': '-5px',
+              '--swiper-navigation-color': '#BA1718',
+              '--swiper-navigation-size': '25px',
+              paddingBottom: '20px',
+              paddingLeft: '25px',
+              paddingRight: '25px'
+            }}
+            grabCursor={true}
+            resistance={true}
+            resistanceRatio={0.85}
+            touchRatio={1.5}
             breakpoints={{
-              // Mobile phones (portrait)
               320: {
-                slidesPerView: getSlidesPerView(),
-                spaceBetween: 1,
+                slidesPerView: 1,
+                spaceBetween: 20,
               },
-              // Large phones & small tablets
               576: {
-                slidesPerView: getSlidesPerView(),
-                spaceBetween: 1,
+                slidesPerView: 2,
+                spaceBetween: 10,
               },
-              // Tablets & small laptops
               768: {
                 slidesPerView: getSlidesPerView(),
                 spaceBetween: 10,
               },
-              // Laptops & desktops
               992: {
                 slidesPerView: getSlidesPerView(),
                 spaceBetween: 5,
               },
-              // Mobile phones (portrait)
-              /*320: {
-                slidesPerView: 10,
-                spaceBetween: 1,
-              },
-              // Large phones & small tablets
-              576: {
-                slidesPerView: 10,
-                spaceBetween: 1,
-              },
-              // Tablets & small laptops
-              768: {
-                slidesPerView: 10,
-                spaceBetween: 10,
-              },
-              // Laptops & desktops
-              992: {
-                slidesPerView: 10,
-                spaceBetween: 5,
-              },*/
-              // Large desktops
               1200: {
                 slidesPerView: 5,
                 spaceBetween: 5,
               }
             }}
           >
+            <div className="swiper-button-prev"></div>
+            <div className="swiper-button-next"></div>
             {courses.map((course, idx) => (
               <SwiperSlide key={idx} className="swiper-slide-course">
                 <div
@@ -259,6 +264,7 @@ const FeaturedCoursesContainer = () => {
               </SwiperSlide>
             ))}
           </Swiper>
+          <div className="swiper-pagination"></div>
         </Container>
       )
       }

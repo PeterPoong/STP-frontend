@@ -727,8 +727,11 @@ margin-left:0;
 
 .coursepage-reset-display-search
 {
-  display: flex;
-  flex-direction: column;
+ display: flex !important; /* Use flexbox for alignment */
+  flex-direction: row; /* Align items in a row */
+  justify-content: space-between; /* Space items evenly */
+  width: 100% !important; /* Ensure it takes full width */
+  align-items: center; /* Center items vertically */
 }
 
 

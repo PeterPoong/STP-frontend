@@ -231,7 +231,7 @@ const AdminEditSchoolContent = () => {
         }
     
         const {
-            name, email, category, school_google_map_location, school_location, state, city, account, country,
+            name, email,logo, category, school_google_map_location, school_location, state, city, account, country,
             school_address, school_website, contact_number, person_in_charge_email, person_in_charge_name,
             person_in_charge_contact, country_code, confirm_password, school_shortDesc, school_fullDesc, password
         } = formData;
@@ -273,9 +273,10 @@ const AdminEditSchoolContent = () => {
     
         if (formData.logo instanceof File) {
             try {
-                formPayload.append("logo", formData.logo);
-            } catch {
+                formPayload.append("logo", formData.logo, formData.logo.name);
+            } catch (error) {
                 fieldErrors.logo = ["Something went wrong with the logo file."];
+                console.error("Logo upload error:", error);
             }
         }
     
@@ -382,15 +383,6 @@ useEffect(() => {
       .then(data => {
         if (data.success) {
           setCountryList(data.data);
-        //   console.log("Countries fetched: ", data.data);
-  
-          // Set default country to Malaysia (ID = 132) if no country is selected
-          if (!formData.country) {
-            setFormData(prevFormData => ({
-              ...prevFormData,
-              country: '132' // Set Malaysia as the default country
-            }));
-          }
         }
       })
       .catch(error => console.error('Error fetching countries:', error));
@@ -466,18 +458,30 @@ const fetchCities = (stateId) => {
     const handleLogoChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-        // Set the new logo file in form data
-        setFormData(prev => ({
-            ...prev,
-            logo: file
-        }));
-        
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            setNewLogo(reader.result); // This is just for preview purposes
-        };
-        reader.readAsDataURL(file); // Read the file as a data URL for the preview
-    }
+            // Validate file type and size
+            if (!file.type.startsWith('image/')) {
+                setError("Please upload a valid image file");
+                setErrorModalVisible(true);
+                return;
+            }
+            if (file.size > 2 * 1024 * 1024) { // 2MB limit
+                setError("File size should be less than 2MB");
+                setErrorModalVisible(true);
+                return;
+            }
+
+            // Set the new logo file in form data
+            setFormData(prev => ({
+                ...prev,
+                logo: file
+            }));
+            
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setNewLogo(reader.result); // This is just for preview purposes
+            };
+            reader.readAsDataURL(file); // Read the file as a data URL for the preview
+        }
     };
     
     const handleFieldChange = (e) => {
