@@ -1,8 +1,17 @@
 //applu course
-import React, { useState, useEffect, useCallback } from 'react';
-import { Form, Button, Row, Col, Spinner } from 'react-bootstrap';
-import { Trash2, Edit, Plus, Upload, Save, FileText, X, AlignJustify } from 'lucide-react';
-import Select from 'react-select';
+import React, { useState, useEffect, useCallback } from "react";
+import { Form, Button, Row, Col, Spinner } from "react-bootstrap";
+import {
+  Trash2,
+  Edit,
+  Plus,
+  Upload,
+  Save,
+  FileText,
+  X,
+  AlignJustify,
+} from "lucide-react";
+import Select from "react-select";
 import WidgetPopUpRemind from "../../../Components/StudentPortalComp/Widget/WidgetPopUpRemind";
 import WidgetPopUpAcademicRemind from "../../../Components/StudentPortalComp/Widget/WidgetPopUpAcademicRemind";
 import WidgetPopUpUnsavedChanges from "../../../Components/StudentPortalComp/Widget/WidgetPopUpUnsavedChanges";
@@ -14,10 +23,12 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
   const [isPopupOpen, setIsPopupOpen] = useState(false); // Popup state
   const [availableSubjects, setAvailableSubjects] = useState([]);
   const [documentErrors, setDocumentErrors] = useState({});
-  const [isAcademicRemindPopupOpen, setIsAcademicRemindPopupOpen] = useState(false);
+  const [isAcademicRemindPopupOpen, setIsAcademicRemindPopupOpen] =
+    useState(false);
   const [isNewUser, setIsNewUser] = useState(true);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [isUnsavedChangesPopupOpen, setIsUnsavedChangesPopupOpen] = useState(false);
+  const [isUnsavedChangesPopupOpen, setIsUnsavedChangesPopupOpen] =
+    useState(false);
   const [navigationDirection, setNavigationDirection] = useState(null);
   const [savingStates, setSavingStates] = useState({});
   const [usedTranscriptTypes, setUsedTranscriptTypes] = useState(new Set());
@@ -30,7 +41,6 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
      fetchAllData();
    }, []);*/
 
-
   useEffect(() => {
     const fetchAllData = async () => {
       await fetchTranscriptData();
@@ -41,24 +51,30 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
 
   const fetchTranscriptData = async () => {
     try {
-      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      const token =
+        sessionStorage.getItem("token") || localStorage.getItem("token");
       // console.log('Token:', token ? 'Token exists' : 'Token is missing');
 
-      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/applyCourseTranscript`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL}api/student/applyCourseTranscript`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       //console.log('Response status:', response.status);
       //console.log('Response headers:', response.headers);
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('Error response:', errorText);
-        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+        console.error("Error response:", errorText);
+        throw new Error(
+          `HTTP error! status: ${response.status}, message: ${errorText}`
+        );
       }
 
       const result = await response.json();
@@ -67,10 +83,10 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
       if (result.success) {
         processTranscriptData(result.data);
       } else {
-        throw new Error(result.message || 'Failed to fetch transcript data');
+        throw new Error(result.message || "Failed to fetch transcript data");
       }
     } catch (error) {
-      console.error('Detailed error in fetchTranscriptData:', error);
+      console.error("Detailed error in fetchTranscriptData:", error);
       setError(error.message);
     } finally {
       setIsLoading(false);
@@ -83,94 +99,106 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
     const processedTranscripts = [
       ...processSubjects(data.transcripts, 32, "SPM"),
       ...processSubjects(data.transcripts, 85, "SPM Trial"),
-      ...processHigherTranscripts(data.higherTranscripts || [])
+      ...processHigherTranscripts(data.higherTranscripts || []),
     ];
 
-    const filteredTranscripts = processedTranscripts.filter(transcript =>
-      transcript.subjects.length > 0 || transcript.documents.length > 0 || transcript.cgpa
+    const filteredTranscripts = processedTranscripts.filter(
+      (transcript) =>
+        transcript.subjects.length > 0 ||
+        transcript.documents.length > 0 ||
+        transcript.cgpa
     );
 
     setAcademicTranscripts(filteredTranscripts);
 
     // Update used transcript types based on existing data
-    const usedTypes = new Set(filteredTranscripts.map(t => t.id));
+    const usedTypes = new Set(filteredTranscripts.map((t) => t.id));
     setUsedTranscriptTypes(usedTypes);
   };
-
 
   const processSubjects = (subjects, categoryId, categoryName) => {
     if (!subjects) return [];
 
     // For SPM and Trial categories, process differently
     if (categoryId === 32 || categoryId === 85) {
-      const subjectsArray = categoryId === 32 ? subjects.spm.subjects : subjects.trial.subjects;
+      const subjectsArray =
+        categoryId === 32 ? subjects.spm.subjects : subjects.trial.subjects;
       if (!Array.isArray(subjectsArray)) return [];
 
-      return [{
-        id: categoryId,
-        name: categoryName || (categoryId === 32 ? "SPM" : "SPM Trial"),
-        subjects: subjectsArray.map(subject => ({
-          id: subject.subject_id,
-          name: subject.subject_name,
-          grade: subject.subject_grade || '',
-          isEditing: false
-        })),
-        documents: processDocuments(categoryId === 32 ? subjects.spm.document : subjects.trial.document),
-        cgpa: null,
-        programName: null,
-        cgpaId: null
-      }];
+      return [
+        {
+          id: categoryId,
+          name: categoryName || (categoryId === 32 ? "SPM" : "SPM Trial"),
+          subjects: subjectsArray.map((subject) => ({
+            id: subject.subject_id,
+            name: subject.subject_name,
+            grade: subject.subject_grade || "",
+            isEditing: false,
+          })),
+          documents: processDocuments(
+            categoryId === 32 ? subjects.spm.document : subjects.trial.document
+          ),
+          cgpa: null,
+          programName: null,
+          cgpaId: null,
+        },
+      ];
     }
 
     return [];
   };
   const processHigherTranscripts = (higherTranscripts) => {
-    return higherTranscripts.map(transcript => ({
+    return higherTranscripts.map((transcript) => ({
       id: transcript.id,
       name: transcript.name,
       subjects: Array.isArray(transcript.subject)
-        ? transcript.subject.flat().map(subj => ({
-          id: subj.id,
-          name: subj.highTranscript_name || subj.subject_name,
-          grade: subj.higherTranscript_grade || subj.subject_grade || '',
-          isEditing: false
-        }))
+        ? transcript.subject.flat().map((subj) => ({
+            id: subj.id,
+            name: subj.highTranscript_name || subj.subject_name,
+            grade: subj.higherTranscript_grade || subj.subject_grade || "",
+            isEditing: false,
+          }))
         : [],
       documents: processDocuments(transcript.document),
       cgpa: transcript.cgpa,
       programName: transcript.program_name,
-      cgpaId: null
+      cgpaId: null,
     }));
   };
-
 
   const processDocuments = (documents) => {
     if (!documents) return [];
     // If documents is an array of arrays, flatten it
-    const flatDocuments = Array.isArray(documents[0]) ? documents.flat() : documents;
+    const flatDocuments = Array.isArray(documents[0])
+      ? documents.flat()
+      : documents;
 
-    return flatDocuments.map(doc => ({
+    return flatDocuments.map((doc) => ({
       id: doc.id,
-      name: doc.studentMedia_name || doc.name || 'Untitled',
-      file: doc.studentMedia_location || doc.file || '',
-      isEditing: false
+      name: doc.studentMedia_name || doc.name || "Untitled",
+      file: doc.studentMedia_location || doc.file || "",
+      isEditing: false,
     }));
   };
 
   // Replace the existing fetchTranscriptCategories function with this:
   const fetchTranscriptCategories = async () => {
     try {
-      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/transcriptCategoryList`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const token =
+        sessionStorage.getItem("token") || localStorage.getItem("token");
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL}api/student/transcriptCategoryList`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (!response.ok) {
-        throw new Error('Failed to fetch transcript categories');
+        throw new Error("Failed to fetch transcript categories");
       }
 
       const result = await response.json();
@@ -178,10 +206,12 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
         setCategories(result.data.data);
         await fetchExistingTranscripts(result.data.data);
       } else {
-        throw new Error(result.message || 'Failed to fetch transcript categories');
+        throw new Error(
+          result.message || "Failed to fetch transcript categories"
+        );
       }
     } catch (error) {
-      console.error('Error fetching transcript categories:', error);
+      console.error("Error fetching transcript categories:", error);
       setError(error.message);
       setIsLoading(false);
     }
@@ -189,14 +219,17 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
   // Replace the existing fetchExistingTranscripts function with this:
   const fetchExistingTranscripts = async (categories) => {
     try {
-      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      const token =
+        sessionStorage.getItem("token") || localStorage.getItem("token");
 
       const transcriptPromises = categories.map(async (category) => {
-        const [subjectsResult, documentsResult, cgpaResult] = await Promise.all([
-          fetchSubjectsForCategory(category, token),
-          fetchDocumentsForCategory(category, token),
-          fetchCGPAForCategory(category, token)
-        ]);
+        const [subjectsResult, documentsResult, cgpaResult] = await Promise.all(
+          [
+            fetchSubjectsForCategory(category, token),
+            fetchDocumentsForCategory(category, token),
+            fetchCGPAForCategory(category, token),
+          ]
+        );
 
         return {
           id: category.id,
@@ -205,17 +238,22 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
           documents: documentsResult,
           cgpa: cgpaResult.cgpa,
           programName: cgpaResult.programName,
-          cgpaId: cgpaResult.cgpaId
+          cgpaId: cgpaResult.cgpaId,
         };
       });
 
       const existingTranscripts = await Promise.all(transcriptPromises);
-      setAcademicTranscripts(existingTranscripts.filter(transcript =>
-        transcript.subjects.length > 0 || transcript.documents.length > 0 || transcript.cgpa
-      ));
+      setAcademicTranscripts(
+        existingTranscripts.filter(
+          (transcript) =>
+            transcript.subjects.length > 0 ||
+            transcript.documents.length > 0 ||
+            transcript.cgpa
+        )
+      );
     } catch (error) {
-      console.error('Error fetching existing transcripts:', error);
-      setError('Failed to load existing transcripts. Please try again later.');
+      console.error("Error fetching existing transcripts:", error);
+      setError("Failed to load existing transcripts. Please try again later.");
     } finally {
       setIsLoading(false);
     }
@@ -224,24 +262,32 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
   // Add these new functions after the fetchExistingTranscripts function
 
   const fetchSubjectsForCategory = async (category, token) => {
-    const subjectsUrl = (category.id === 32 || category.id === 85)
-      ? `${import.meta.env.VITE_BASE_URL}api/student/transcriptSubjectList`
-      : `${import.meta.env.VITE_BASE_URL}api/student/higherTranscriptSubjectList`;
+    const subjectsUrl =
+      category.id === 32 || category.id === 85
+        ? `${import.meta.env.VITE_BASE_URL}api/student/transcriptSubjectList`
+        : `${
+            import.meta.env.VITE_BASE_URL
+          }api/student/higherTranscriptSubjectList`;
 
-    const method = (category.id === 32 || category.id === 85) ? 'GET' : 'POST';
-    const body = (category.id === 32 || category.id === 85) ? null : JSON.stringify({ id: category.id });
+    const method = category.id === 32 || category.id === 85 ? "GET" : "POST";
+    const body =
+      category.id === 32 || category.id === 85
+        ? null
+        : JSON.stringify({ id: category.id });
 
     const response = await fetch(subjectsUrl, {
       method: method,
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
-      ...(method === 'POST' && { body }),
+      ...(method === "POST" && { body }),
     });
 
     if (!response.ok) {
-      console.error(`Failed to fetch subjects for category ${category.transcript_category}`);
+      console.error(
+        `Failed to fetch subjects for category ${category.transcript_category}`
+      );
       return [];
     }
 
@@ -249,22 +295,27 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
 
     if (result.success) {
       if (category.id === 32) {
-        return result.data.spm.map(subject => ({
+        return result.data.spm.map((subject) => ({
           id: subject.subject_id,
           name: subject.subject_name,
-          grade: subject.subject_grade || '',
+          grade: subject.subject_grade || "",
         }));
       } else if (category.id === 85) {
-        return result.data.trial.map(subject => ({
+        return result.data.trial.map((subject) => ({
           id: subject.subject_id,
           name: subject.subject_name,
-          grade: subject.subject_grade || '',
+          grade: subject.subject_grade || "",
         }));
       } else {
-        return result.data.map(subject => ({
+        return result.data.map((subject) => ({
           id: subject.id || subject.subject_id,
-          name: subject.name || subject.subject_name || subject.highTranscript_name,
-          grade: subject.grade || subject.subject_grade || subject.higherTranscript_grade || '',
+          name:
+            subject.name || subject.subject_name || subject.highTranscript_name,
+          grade:
+            subject.grade ||
+            subject.subject_grade ||
+            subject.higherTranscript_grade ||
+            "",
         }));
       }
     }
@@ -272,60 +323,68 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
   };
 
   const fetchDocumentsForCategory = async (category, token) => {
-    const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/mediaListByCategory`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-      body: JSON.stringify({ category_id: category.id }),
-    });
+    const response = await fetch(
+      `${import.meta.env.VITE_BASE_URL}api/student/mediaListByCategory`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ category_id: category.id }),
+      }
+    );
 
     if (!response.ok) {
-      console.error(`Failed to fetch documents for category ${category.transcript_category}`);
+      console.error(
+        `Failed to fetch documents for category ${category.transcript_category}`
+      );
       return [];
     }
 
     const result = await response.json();
     return result.success && result.data && result.data.data
-      ? result.data.data.map(doc => ({
-        id: doc.id,
-        name: doc.studentMedia_name,
-        file: doc.studentMedia_location,
-      }))
+      ? result.data.data.map((doc) => ({
+          id: doc.id,
+          name: doc.studentMedia_name,
+          file: doc.studentMedia_location,
+        }))
       : [];
   };
 
   const fetchCGPAForCategory = async (category, token) => {
     if (category.id === 32 || category.id === 85) {
-      return { cgpa: null, programName: '', cgpaId: null };
+      return { cgpa: null, programName: "", cgpaId: null };
     }
 
-    const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/programCgpaList`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-      body: JSON.stringify({ transcriptCategory: category.id }),
-    });
+    const response = await fetch(
+      `${import.meta.env.VITE_BASE_URL}api/student/programCgpaList`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ transcriptCategory: category.id }),
+      }
+    );
 
     if (!response.ok) {
-      console.error(`Failed to fetch CGPA for category ${category.transcript_category}`);
-      return { cgpa: null, programName: '', cgpaId: null };
+      console.error(
+        `Failed to fetch CGPA for category ${category.transcript_category}`
+      );
+      return { cgpa: null, programName: "", cgpaId: null };
     }
 
     const result = await response.json();
     return result.success && result.data
       ? {
-        cgpa: result.data.cgpa,
-        programName: result.data.program_name,
-        cgpaId: result.data.id,
-      }
-      : { cgpa: null, programName: '', cgpaId: null };
+          cgpa: result.data.cgpa,
+          programName: result.data.program_name,
+          cgpaId: result.data.id,
+        }
+      : { cgpa: null, programName: "", cgpaId: null };
   };
-
-
 
   const handleProgramNameChange = (transcriptIndex, value) => {
     const updatedTranscripts = [...academicTranscripts];
@@ -347,126 +406,154 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
       { id: 2, name: "Bahasa Inggeris", grade: "", isEditing: true },
       { id: 3, name: "Pendidikan Moral", grade: "", isEditing: true },
       { id: 4, name: "Matematik", grade: "", isEditing: true },
-      { id: 5, name: "Sains", grade: "", isEditing: true }
+      { id: 5, name: "Sains", grade: "", isEditing: true },
     ];
   };
 
-  const fetchAvailableSubjects = useCallback(async (categoryId, transcriptIndex) => {
-    if (categoryId !== 32 && categoryId !== 85) return;
+  const fetchAvailableSubjects = useCallback(
+    async (categoryId, transcriptIndex) => {
+      if (categoryId !== 32 && categoryId !== 85) return;
 
-    try {
-      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      try {
+        const token =
+          sessionStorage.getItem("token") || localStorage.getItem("token");
 
-      // Get all currently selected subjects for this transcript
-      const selectedSubjectIds = academicTranscripts[transcriptIndex]?.subjects
-        .filter(s => s.id && !s.isNew) // Only consider saved subjects
-        .map(s => s.id);
+        // Get all currently selected subjects for this transcript
+        const selectedSubjectIds = academicTranscripts[
+          transcriptIndex
+        ]?.subjects
+          .filter((s) => s.id && !s.isNew) // Only consider saved subjects
+          .map((s) => s.id);
 
-      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/subjectList`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          category: categoryId,
-          selectedSubject: selectedSubjectIds
-        }),
-      });
-
-      const data = await response.json();
-      if (data.success) {
-        // Don't filter out subjects here, let the Select component handle it
-        setAvailableSubjects(data.data);
-      }
-    } catch (error) {
-      console.error('Error fetching available subjects:', error);
-    }
-  }, [academicTranscripts]);
-
-  const fetchSubjects = useCallback(async (categoryId, transcriptIndex) => {
-    if ((categoryId === 32 || categoryId === 85) && isNewUser) {
-      // Don't fetch for SPM if it's a new user, as we've already preset the subjects
-      return;
-    }
-
-    try {
-      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      let url, method, body;
-      if (categoryId === 32 || categoryId === 85) {
-        url = `${import.meta.env.VITE_BASE_URL}api/student/transcriptSubjectList`;
-        method = 'GET';
-      } else {
-        url = `${import.meta.env.VITE_BASE_URL}api/student/higherTranscriptSubjectList`;
-        method = 'POST';
-        body = JSON.stringify({ id: categoryId });
-      }
-
-      const response = await fetch(url, {
-        method: method,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        ...(method === 'POST' && { body }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
-      if (result.success) {
-        const formattedSubjects = result.data.map(subject => ({
-          id: subject.id || subject.subject_id,
-          name: subject.name || subject.subject_name || subject.highTranscript_name,
-          grade: subject.grade || subject.subject_grade || subject.higherTranscript_grade,
-          isEditing: false
-        }));
-
-        setAcademicTranscripts(prevTranscripts =>
-          prevTranscripts.map((transcript, index) =>
-            index === transcriptIndex
-              ? { ...transcript, subjects: formattedSubjects }
-              : transcript
-          )
+        const response = await fetch(
+          `${import.meta.env.VITE_BASE_URL}api/student/subjectList`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              category: categoryId,
+              selectedSubject: selectedSubjectIds,
+            }),
+          }
         );
 
-        if ((categoryId === 32 || categoryId === 85) && formattedSubjects.length > 0) {
-          setIsNewUser(false);  // User has existing SPM subjects, so not a new user
+        const data = await response.json();
+        if (data.success) {
+          // Don't filter out subjects here, let the Select component handle it
+          setAvailableSubjects(data.data);
         }
-      } else {
-        console.error('Failed to fetch subjects:', result);
+      } catch (error) {
+        console.error("Error fetching available subjects:", error);
       }
-    } catch (error) {
-      console.error('Error fetching subjects:', error);
-    }
-  }, [isNewUser]);
+    },
+    [academicTranscripts]
+  );
 
+  const fetchSubjects = useCallback(
+    async (categoryId, transcriptIndex) => {
+      if ((categoryId === 32 || categoryId === 85) && isNewUser) {
+        // Don't fetch for SPM if it's a new user, as we've already preset the subjects
+        return;
+      }
+
+      try {
+        const token =
+          sessionStorage.getItem("token") || localStorage.getItem("token");
+        let url, method, body;
+        if (categoryId === 32 || categoryId === 85) {
+          url = `${
+            import.meta.env.VITE_BASE_URL
+          }api/student/transcriptSubjectList`;
+          method = "GET";
+        } else {
+          url = `${
+            import.meta.env.VITE_BASE_URL
+          }api/student/higherTranscriptSubjectList`;
+          method = "POST";
+          body = JSON.stringify({ id: categoryId });
+        }
+
+        const response = await fetch(url, {
+          method: method,
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          ...(method === "POST" && { body }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+        if (result.success) {
+          const formattedSubjects = result.data.map((subject) => ({
+            id: subject.id || subject.subject_id,
+            name:
+              subject.name ||
+              subject.subject_name ||
+              subject.highTranscript_name,
+            grade:
+              subject.grade ||
+              subject.subject_grade ||
+              subject.higherTranscript_grade,
+            isEditing: false,
+          }));
+
+          setAcademicTranscripts((prevTranscripts) =>
+            prevTranscripts.map((transcript, index) =>
+              index === transcriptIndex
+                ? { ...transcript, subjects: formattedSubjects }
+                : transcript
+            )
+          );
+
+          if (
+            (categoryId === 32 || categoryId === 85) &&
+            formattedSubjects.length > 0
+          ) {
+            setIsNewUser(false); // User has existing SPM subjects, so not a new user
+          }
+        } else {
+          console.error("Failed to fetch subjects:", result);
+        }
+      } catch (error) {
+        console.error("Error fetching subjects:", error);
+      }
+    },
+    [isNewUser]
+  );
 
   // Helper function to get available categories for a specific transcript
   const getAvailableCategories = (currentTranscriptIndex) => {
     const selectedCategoryIds = academicTranscripts
-      .filter((transcript, index) => transcript.id && index !== currentTranscriptIndex)
-      .map(transcript => transcript.id);
+      .filter(
+        (transcript, index) => transcript.id && index !== currentTranscriptIndex
+      )
+      .map((transcript) => transcript.id);
 
     return categories
-      .filter(cat => !selectedCategoryIds.includes(cat.id))
-      .map(cat => ({ value: cat.id, label: cat.transcript_category }));
+      .filter((cat) => !selectedCategoryIds.includes(cat.id))
+      .map((cat) => ({ value: cat.id, label: cat.transcript_category }));
   };
 
   const handleAddTranscript = () => {
     const availableCategories = categories.filter(
-      category => !academicTranscripts.some(transcript => transcript.id === category.id)
+      (category) =>
+        !academicTranscripts.some((transcript) => transcript.id === category.id)
     );
 
     if (availableCategories.length > 0) {
       setAcademicTranscripts([
         ...academicTranscripts,
-        { id: null, name: '', subjects: [], documents: [] }
+        { id: null, name: "", subjects: [], documents: [] },
       ]);
     } else {
-      alert('All available exam types have been added.');
+      alert("All available exam types have been added.");
     }
   };
 
@@ -482,9 +569,12 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
 
       // Check if this specific type (SPM or SPM Trial) already exists with subjects
       const existingTranscriptWithSubjects = academicTranscripts.some(
-        transcript => transcript.id === id && transcript.subjects && transcript.subjects.length > 0
+        (transcript) =>
+          transcript.id === id &&
+          transcript.subjects &&
+          transcript.subjects.length > 0
       );
-      //console.log('Is SPM Type:', isSPMType, 'Has existing subjects:', existingTranscriptWithSubjects);    
+      //console.log('Is SPM Type:', isSPMType, 'Has existing subjects:', existingTranscriptWithSubjects);
       if (isSPMType && !existingTranscriptWithSubjects) {
         //  console.log('Setting preset subjects for:', name);
         const presetSubjects = presetSPMSubjects();
@@ -522,12 +612,14 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
       const result = await resetTranscript(transcript.id);
       if (result.success) {
         // Remove the transcript from the state
-        setAcademicTranscripts(academicTranscripts.filter((_, i) => i !== index));
+        setAcademicTranscripts(
+          academicTranscripts.filter((_, i) => i !== index)
+        );
 
         // Clear any errors associated with this transcript
-        setDocumentErrors(prevErrors => {
+        setDocumentErrors((prevErrors) => {
           const newErrors = { ...prevErrors };
-          Object.keys(newErrors).forEach(key => {
+          Object.keys(newErrors).forEach((key) => {
             if (key.startsWith(`${index}-`)) {
               delete newErrors[key];
             }
@@ -536,12 +628,14 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
         });
 
         // Optionally, show a success message
-        alert("Transcript successfully removed and all associated data has been deleted.");
+        alert(
+          "Transcript successfully removed and all associated data has been deleted."
+        );
       } else {
-        throw new Error(result.message || 'Failed to reset transcript');
+        throw new Error(result.message || "Failed to reset transcript");
       }
     } catch (error) {
-      console.error('Error removing transcript:', error);
+      console.error("Error removing transcript:", error);
       alert(`Failed to remove transcript: ${error.message}`);
     }
   };
@@ -554,12 +648,12 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
         const updatedTranscripts = academicTranscripts.map((t, i) =>
           i === transcriptIndex
             ? {
-              ...t,
-              subjects: [
-                ...t.subjects,
-                { id: '', name: '', grade: '', isEditing: true, isNew: true }
-              ]
-            }
+                ...t,
+                subjects: [
+                  ...t.subjects,
+                  { id: "", name: "", grade: "", isEditing: true, isNew: true },
+                ],
+              }
             : t
         );
         setAcademicTranscripts(updatedTranscripts);
@@ -568,7 +662,13 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
       // Original logic for non-SPM transcripts
       const updatedTranscripts = academicTranscripts.map((t, i) =>
         i === transcriptIndex
-          ? { ...t, subjects: [...t.subjects, { name: '', grade: '', isEditing: true }] }
+          ? {
+              ...t,
+              subjects: [
+                ...t.subjects,
+                { name: "", grade: "", isEditing: true },
+              ],
+            }
           : t
       );
       setAcademicTranscripts(updatedTranscripts);
@@ -576,17 +676,23 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
   };
 
   // Unified handler for subject selection
-  const handleSubjectSelectChange = (transcriptIndex, subjectIndex, selected) => {
+  const handleSubjectSelectChange = (
+    transcriptIndex,
+    subjectIndex,
+    selected
+  ) => {
     const { value, label } = selected;
 
     const updatedTranscripts = academicTranscripts.map((transcript, i) =>
       i === transcriptIndex
         ? {
-          ...transcript,
-          subjects: transcript.subjects.map((subject, j) =>
-            j === subjectIndex ? { ...subject, id: value, name: label } : subject
-          )
-        }
+            ...transcript,
+            subjects: transcript.subjects.map((subject, j) =>
+              j === subjectIndex
+                ? { ...subject, id: value, name: label }
+                : subject
+            ),
+          }
         : transcript
     );
 
@@ -602,30 +708,32 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
     const updatedTranscripts = academicTranscripts.map((transcript, i) =>
       i === transcriptIndex
         ? {
-          ...transcript,
-          subjects: transcript.subjects.map((subject, j) =>
-            j === subjectIndex ? { ...subject, [field]: value } : subject
-          )
-        }
+            ...transcript,
+            subjects: transcript.subjects.map((subject, j) =>
+              j === subjectIndex ? { ...subject, [field]: value } : subject
+            ),
+          }
         : transcript
     );
     setAcademicTranscripts(updatedTranscripts);
     setHasUnsavedChanges(true);
 
     // If it's SPM and we're changing the subject, update available subjects
-    if (updatedTranscripts[transcriptIndex].id === 32 && field === 'id') {
+    if (updatedTranscripts[transcriptIndex].id === 32 && field === "id") {
       fetchAvailableSubjects(32 || 85, transcriptIndex);
     }
   };
 
   const handleSaveSubject = (transcriptIndex, subjectIndex) => {
     const updatedTranscripts = academicTranscripts.map((transcript, i) =>
-      i === transcriptIndex ? {
-        ...transcript,
-        subjects: transcript.subjects.map((subject, j) =>
-          j === subjectIndex ? { ...subject, isEditing: false } : subject
-        )
-      } : transcript
+      i === transcriptIndex
+        ? {
+            ...transcript,
+            subjects: transcript.subjects.map((subject, j) =>
+              j === subjectIndex ? { ...subject, isEditing: false } : subject
+            ),
+          }
+        : transcript
     );
     setAcademicTranscripts(updatedTranscripts);
     setHasUnsavedChanges(true);
@@ -634,7 +742,10 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
   const handleRemoveSubject = (transcriptIndex, subjectIndex) => {
     const updatedTranscripts = academicTranscripts.map((transcript, i) =>
       i === transcriptIndex
-        ? { ...transcript, subjects: transcript.subjects.filter((_, j) => j !== subjectIndex) }
+        ? {
+            ...transcript,
+            subjects: transcript.subjects.filter((_, j) => j !== subjectIndex),
+          }
         : transcript
     );
     setAcademicTranscripts(updatedTranscripts);
@@ -647,48 +758,63 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
   const handleAddDocument = (transcriptIndex) => {
     const updatedTranscripts = academicTranscripts.map((transcript, i) =>
       i === transcriptIndex
-        ? { ...transcript, documents: [...transcript.documents, { name: '', file: null, isEditing: true }] }
+        ? {
+            ...transcript,
+            documents: [
+              ...transcript.documents,
+              { name: "", file: null, isEditing: true },
+            ],
+          }
         : transcript
     );
     setAcademicTranscripts(updatedTranscripts);
   };
 
-  const handleDocumentChange = (transcriptIndex, documentIndex, field, value) => {
+  const handleDocumentChange = (
+    transcriptIndex,
+    documentIndex,
+    field,
+    value
+  ) => {
     const updatedTranscripts = academicTranscripts.map((transcript, i) =>
       i === transcriptIndex
         ? {
-          ...transcript,
-          documents: transcript.documents.map((doc, j) =>
-            j === documentIndex ? { ...doc, [field]: value, isEditing: true } : doc
-          )
-        }
+            ...transcript,
+            documents: transcript.documents.map((doc, j) =>
+              j === documentIndex
+                ? { ...doc, [field]: value, isEditing: true }
+                : doc
+            ),
+          }
         : transcript
     );
     setAcademicTranscripts(updatedTranscripts);
 
     // Clear any existing errors for this document
-    setDocumentErrors(prevErrors => {
+    setDocumentErrors((prevErrors) => {
       const newErrors = { ...prevErrors };
       delete newErrors[`${transcriptIndex}-${documentIndex}`];
       return newErrors;
     });
   };
 
-
-
   const fetchDocumentsForTranscript = async (transcriptIndex) => {
     try {
-      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      const token =
+        sessionStorage.getItem("token") || localStorage.getItem("token");
       const transcript = academicTranscripts[transcriptIndex];
 
-      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/mediaListByCategory`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ category_id: transcript.id }),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL}api/student/mediaListByCategory`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ category_id: transcript.id }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -698,69 +824,73 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
       //console.log('Fetched documents:', result);
 
       if (result.success && result.data && result.data.data) {
-        const updatedDocuments = result.data.data.map(doc => ({
+        const updatedDocuments = result.data.data.map((doc) => ({
           id: doc.id,
           name: doc.studentMedia_name,
           file: doc.studentMedia_location,
-          isEditing: false
+          isEditing: false,
         }));
 
-        setAcademicTranscripts(prevTranscripts =>
+        setAcademicTranscripts((prevTranscripts) =>
           prevTranscripts.map((t, index) =>
-            index === transcriptIndex ? { ...t, documents: updatedDocuments } : t
+            index === transcriptIndex
+              ? { ...t, documents: updatedDocuments }
+              : t
           )
         );
       }
     } catch (error) {
-      console.error('Error fetching documents:', error);
-      setError('Failed to fetch updated documents. Please try again later.');
+      console.error("Error fetching documents:", error);
+      setError("Failed to fetch updated documents. Please try again later.");
     }
   };
 
   const handleSaveDocument = async (transcriptIndex, documentIndex) => {
     try {
       //console.log('Starting handleSaveDocument');
-      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      const token =
+        sessionStorage.getItem("token") || localStorage.getItem("token");
       const transcript = academicTranscripts[transcriptIndex];
       const document = transcript.documents[documentIndex];
 
       // Validate document title
       if (!document.name.trim()) {
-        setDocumentErrors(prevErrors => ({
+        setDocumentErrors((prevErrors) => ({
           ...prevErrors,
-          [`${transcriptIndex}-${documentIndex}`]: 'Document title cannot be empty'
+          [`${transcriptIndex}-${documentIndex}`]:
+            "Document title cannot be empty",
         }));
         return;
       }
 
       // Validate file upload
       if (!document.file) {
-        setDocumentErrors(prevErrors => ({
+        setDocumentErrors((prevErrors) => ({
           ...prevErrors,
-          [`${transcriptIndex}-${documentIndex}`]: 'File upload is required'
+          [`${transcriptIndex}-${documentIndex}`]: "File upload is required",
         }));
         return;
       }
 
       const formData = new FormData();
-      formData.append('studentMedia_type', transcript.id.toString());
-      formData.append('studentMedia_name', document.name);
+      formData.append("studentMedia_type", transcript.id.toString());
+      formData.append("studentMedia_name", document.name);
       if (document.file instanceof File) {
-        formData.append('studentMedia_location', document.file);
+        formData.append("studentMedia_location", document.file);
       }
 
       let url;
       if (document.id) {
         url = `${import.meta.env.VITE_BASE_URL}api/student/editTranscriptFile`;
-        formData.append('id', document.id.toString());
+        formData.append("id", document.id.toString());
       } else {
         url = `${import.meta.env.VITE_BASE_URL}api/student/addTranscriptFile`;
       }
 
       const response = await fetch(url, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: formData,
       });
@@ -772,55 +902,69 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
         //console.log('Document saved successfully');
         await fetchDocumentsForTranscript(transcriptIndex);
         // Clear errors for this document
-        setDocumentErrors(prevErrors => {
+        setDocumentErrors((prevErrors) => {
           const newErrors = { ...prevErrors };
           delete newErrors[`${transcriptIndex}-${documentIndex}`];
           return newErrors;
         });
       } else {
-        if (result.message === "Validation Error" && result.error && result.error.transcripts) {
-          setDocumentErrors(prevErrors => ({
+        if (
+          result.message === "Validation Error" &&
+          result.error &&
+          result.error.transcripts
+        ) {
+          setDocumentErrors((prevErrors) => ({
             ...prevErrors,
-            [`${transcriptIndex}-${documentIndex}`]: result.error.transcripts[0]
+            [`${transcriptIndex}-${documentIndex}`]:
+              result.error.transcripts[0],
           }));
         } else {
-          throw new Error(result.message || 'Failed to save document');
+          throw new Error(result.message || "Failed to save document");
         }
       }
     } catch (error) {
-      console.error('Error in handleSaveDocument:', error);
-      setDocumentErrors(prevErrors => ({
+      console.error("Error in handleSaveDocument:", error);
+      setDocumentErrors((prevErrors) => ({
         ...prevErrors,
-        [`${transcriptIndex}-${documentIndex}`]: error.message
+        [`${transcriptIndex}-${documentIndex}`]: error.message,
       }));
     }
   };
 
-
   const handleRemoveDocument = async (transcriptIndex, documentIndex) => {
     try {
-      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      const document = academicTranscripts[transcriptIndex].documents[documentIndex];
+      const token =
+        sessionStorage.getItem("token") || localStorage.getItem("token");
+      const document =
+        academicTranscripts[transcriptIndex].documents[documentIndex];
 
       if (!document.id) {
         // If the document doesn't have an ID, it's not saved in the backend yet
         const updatedTranscripts = academicTranscripts.map((transcript, i) =>
           i === transcriptIndex
-            ? { ...transcript, documents: transcript.documents.filter((_, j) => j !== documentIndex) }
+            ? {
+                ...transcript,
+                documents: transcript.documents.filter(
+                  (_, j) => j !== documentIndex
+                ),
+              }
             : transcript
         );
         setAcademicTranscripts(updatedTranscripts);
         return;
       }
 
-      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/deleteTranscriptFile`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ id: document.id, type: 'delete' }),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL}api/student/deleteTranscriptFile`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ id: document.id, type: "delete" }),
+        }
+      );
 
       const result = await response.json();
       if (result.success) {
@@ -828,14 +972,13 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
         // Fetch updated documents instead of updating state directly
         await fetchDocumentsForTranscript(transcriptIndex);
       } else {
-        throw new Error(result.message || 'Failed to delete document');
+        throw new Error(result.message || "Failed to delete document");
       }
     } catch (error) {
-      console.error('Error removing document:', error);
+      console.error("Error removing document:", error);
       setError(error.message);
     }
   };
-
 
   const handleDocumentFileUpload = (transcriptIndex, docIndex, file) => {
     //console.log('handleDocumentFileUpload called');
@@ -844,12 +987,16 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
     //console.log('file:', file);
 
     const updatedTranscripts = academicTranscripts.map((transcript, i) =>
-      i === transcriptIndex ? {
-        ...transcript,
-        documents: transcript.documents.map((doc, j) =>
-          j === docIndex ? { ...doc, file: file, mediaName: file.name, isEditing: true } : doc
-        )
-      } : transcript
+      i === transcriptIndex
+        ? {
+            ...transcript,
+            documents: transcript.documents.map((doc, j) =>
+              j === docIndex
+                ? { ...doc, file: file, mediaName: file.name, isEditing: true }
+                : doc
+            ),
+          }
+        : transcript
     );
 
     //console.log('Updated transcript:', updatedTranscripts[transcriptIndex]);
@@ -858,24 +1005,34 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
 
   const gradeToInt = (grade) => {
     const gradeMap = {
-      'A+': 17, 'A': 18, 'A-': 19,
-      'B+': 20, 'B': 21,
-      'C+': 22, 'C': 23,
-      'D': 24, 'E': 25,
-      'G': 26, 'TH': 27
+      "A+": 17,
+      A: 18,
+      "A-": 19,
+      "B+": 20,
+      B: 21,
+      "C+": 22,
+      C: 23,
+      D: 24,
+      E: 25,
+      G: 26,
+      TH: 27,
     };
     return gradeMap[grade] || 0; // Return 0 if grade not found
   };
 
   const saveTranscript = async (transcriptIndex) => {
-    setSavingStates(prev => ({ ...prev, [transcriptIndex]: 'loading' }));
+    setSavingStates((prev) => ({ ...prev, [transcriptIndex]: "loading" }));
     try {
       const transcript = academicTranscripts[transcriptIndex];
       // console.log('Current transcript data:', transcript);
       // Check if the transcript is empty or if any required fields are missing
-      const isTranscriptEmpty = transcript.subjects.length === 0 && transcript.documents.length === 0;
-      const isCGPAMissing = transcript.id !== 32 && transcript.id !== 85 && !transcript.cgpa;
-      const areSubjectsIncomplete = transcript.subjects.some(subject => !subject.name || !subject.grade);
+      const isTranscriptEmpty =
+        transcript.subjects.length === 0 && transcript.documents.length === 0;
+      const isCGPAMissing =
+        transcript.id !== 32 && transcript.id !== 85 && !transcript.cgpa;
+      const areSubjectsIncomplete = transcript.subjects.some(
+        (subject) => !subject.name || !subject.grade
+      );
 
       if (isTranscriptEmpty || isCGPAMissing || areSubjectsIncomplete) {
         setIsAcademicRemindPopupOpen(true);
@@ -883,74 +1040,92 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
       }
 
       // Proceed with saving if all checks pass
-      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      const category = categories.find(cat => cat.transcript_category === transcript.name);
+      const token =
+        sessionStorage.getItem("token") || localStorage.getItem("token");
+      const category = categories.find(
+        (cat) => cat.transcript_category === transcript.name
+      );
 
       if (!category) {
-        throw new Error('Invalid transcript category');
+        throw new Error("Invalid transcript category");
       }
 
       let url, payload;
-      if (category.id === 32 || category.id === 85) { // SPM
+      if (category.id === 32 || category.id === 85) {
+        // SPM
         // Fetch the correct subject IDs for new subjects
-        const subjectsWithCorrectIds = await Promise.all(transcript.subjects.map(async (subject) => {
-          if (subject.isNew || !subject.id) {
-            const subjectResponse = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/subjectList`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`,
-              },
-              body: JSON.stringify({ category: category.id }),
-            });
-            const subjectData = await subjectResponse.json();
-            const correctSubject = subjectData.data.find(s => s.name === subject.name);
-            return { ...subject, id: correctSubject ? correctSubject.id : subject.id };
-          }
-          return subject;
-        }));
+        const subjectsWithCorrectIds = await Promise.all(
+          transcript.subjects.map(async (subject) => {
+            if (subject.isNew || !subject.id) {
+              const subjectResponse = await fetch(
+                `${import.meta.env.VITE_BASE_URL}api/student/subjectList`,
+                {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                  },
+                  body: JSON.stringify({ category: category.id }),
+                }
+              );
+              const subjectData = await subjectResponse.json();
+              const correctSubject = subjectData.data.find(
+                (s) => s.name === subject.name
+              );
+              return {
+                ...subject,
+                id: correctSubject ? correctSubject.id : subject.id,
+              };
+            }
+            return subject;
+          })
+        );
 
         url = `${import.meta.env.VITE_BASE_URL}api/student/addEditTranscript`;
         payload = {
           category: category.id,
           data: subjectsWithCorrectIds
-            .filter(subject => subject.grade && subject.id)
-            .map(subject => ({
+            .filter((subject) => subject.grade && subject.id)
+            .map((subject) => ({
               subjectID: subject.id,
-              grade: gradeToInt(subject.grade)
-            }))
+              grade: gradeToInt(subject.grade),
+            })),
         };
       } else {
-        url = `${import.meta.env.VITE_BASE_URL}api/student/addEditHigherTranscript`;
+        url = `${
+          import.meta.env.VITE_BASE_URL
+        }api/student/addEditHigherTranscript`;
         payload = {
           category: category.id,
-          data: transcript.subjects.filter(subject => subject.name && subject.grade).map(subject => ({
-            name: subject.name,
-            grade: subject.grade
-          }))
+          data: transcript.subjects
+            .filter((subject) => subject.name && subject.grade)
+            .map((subject) => ({
+              name: subject.name,
+              grade: subject.grade,
+            })),
         };
 
         // Add CGPA and program name to payload for non-SPM transcripts
         if (transcript.cgpa !== null) {
-
           // Determine whether to use addProgramCgpa or editProgramCgpa
           const cgpaUrl = transcript.cgpaId
             ? `${import.meta.env.VITE_BASE_URL}api/student/editProgramCgpa`
             : `${import.meta.env.VITE_BASE_URL}api/student/addProgramCgpa`;
 
-
           const cgpaPayload = {
             transcriptCategory: category.id,
             cgpa: transcript.cgpa,
-            ...(transcript.programName && { programName: transcript.programName }),
-            ...(transcript.cgpaId && { cgpaId: transcript.cgpaId })
+            ...(transcript.programName && {
+              programName: transcript.programName,
+            }),
+            ...(transcript.cgpaId && { cgpaId: transcript.cgpaId }),
           };
 
           const cgpaResponse = await fetch(cgpaUrl, {
-            method: 'POST',
+            method: "POST",
             headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`,
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify(cgpaPayload),
           });
@@ -958,8 +1133,10 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
           const cgpaResult = await cgpaResponse.json();
 
           if (!cgpaResult.success) {
-            console.error('CGPA update failed:', cgpaResult);
-            throw new Error(cgpaResult.message || 'Failed to update CGPA and program name');
+            console.error("CGPA update failed:", cgpaResult);
+            throw new Error(
+              cgpaResult.message || "Failed to update CGPA and program name"
+            );
           }
 
           // Update the transcript with the new CGPA ID if it was just added
@@ -972,22 +1149,22 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
       }
 
       const response = await fetch(url, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(payload),
       });
       const data = await response.json();
 
       if (data.success) {
-        setSavingStates(prev => ({ ...prev, [transcriptIndex]: 'success' }));
+        setSavingStates((prev) => ({ ...prev, [transcriptIndex]: "success" }));
         setTimeout(() => {
-          setSavingStates(prev => ({ ...prev, [transcriptIndex]: null }));
+          setSavingStates((prev) => ({ ...prev, [transcriptIndex]: null }));
         }, 2000);
         setHasUnsavedChanges(false);
-        setUsedTranscriptTypes(prev => new Set([...prev, category.id]));
+        setUsedTranscriptTypes((prev) => new Set([...prev, category.id]));
         fetchSubjects(category.id, transcriptIndex);
 
         if (category.id !== 32 || category.id !== 85) {
@@ -997,93 +1174,103 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
             ...updatedTranscripts[transcriptIndex],
             cgpa: updatedCGPAData.cgpa,
             programName: updatedCGPAData.programName,
-            cgpaId: updatedCGPAData.cgpaId
+            cgpaId: updatedCGPAData.cgpaId,
           };
           setAcademicTranscripts(updatedTranscripts);
         }
 
         const updatedTranscripts = [...academicTranscripts];
-        updatedTranscripts[transcriptIndex].subjects = updatedTranscripts[transcriptIndex].subjects.map(subject => ({
+        updatedTranscripts[transcriptIndex].subjects = updatedTranscripts[
+          transcriptIndex
+        ].subjects.map((subject) => ({
           ...subject,
-          isEditing: false
+          isEditing: false,
         }));
         setAcademicTranscripts(updatedTranscripts);
         // Clear any errors for this transcript
-        setDocumentErrors(prevErrors => {
+        setDocumentErrors((prevErrors) => {
           const newErrors = { ...prevErrors };
           delete newErrors[transcriptIndex];
           return newErrors;
         });
       } else {
-        console.error('Server Error Details:', {
+        console.error("Server Error Details:", {
           message: data.message,
           error: data.error,
-          validationErrors: data.error?.transcripts
+          validationErrors: data.error?.transcripts,
         });
 
-        if (data.message === "Validation Error" && data.error && data.error.transcripts) {
+        if (
+          data.message === "Validation Error" &&
+          data.error &&
+          data.error.transcripts
+        ) {
           // Assign the error to the last document
           const lastDocIndex = transcript.documents.length - 1;
-          setDocumentErrors(prevErrors => ({
+          setDocumentErrors((prevErrors) => ({
             ...prevErrors,
-            [`${transcriptIndex}-${lastDocIndex}`]: data.error.transcripts[0]
+            [`${transcriptIndex}-${lastDocIndex}`]: data.error.transcripts[0],
           }));
         } else {
-          throw new Error(data.message || 'Server responded with an error');
+          throw new Error(data.message || "Server responded with an error");
         }
       }
     } catch (error) {
-      console.error('Caught Exception:', {
+      console.error("Caught Exception:", {
         message: error.message,
         stack: error.stack,
-        transcriptIndex
+        transcriptIndex,
       });
-      setSavingStates(prev => ({ ...prev, [transcriptIndex]: 'failed' }));
-      setDocumentErrors(prevErrors => ({
+      setSavingStates((prev) => ({ ...prev, [transcriptIndex]: "failed" }));
+      setDocumentErrors((prevErrors) => ({
         ...prevErrors,
-        [transcriptIndex]: `Failed to save transcript: ${error.message}`
+        [transcriptIndex]: `Failed to save transcript: ${error.message}`,
       }));
     }
   };
 
   const resetTranscript = async (transcriptType) => {
     try {
-      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/student/resetTranscript`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ transcriptType }),
-      });
+      const token =
+        sessionStorage.getItem("token") || localStorage.getItem("token");
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL}api/student/resetTranscript`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ transcriptType }),
+        }
+      );
 
       if (!response.ok) {
-        throw new Error('Failed to reset transcript');
+        throw new Error("Failed to reset transcript");
       }
 
       const result = await response.json();
       return result;
     } catch (error) {
-      console.error('Error resetting transcript:', error);
+      console.error("Error resetting transcript:", error);
       throw error;
     }
   };
 
   const getGradeColor = (grade) => {
-    if (!grade) return 'secondary'; // Handle undefined or null grades
+    if (!grade) return "secondary"; // Handle undefined or null grades
 
     grade = grade.toString().toUpperCase(); // Convert to string and uppercase
 
-    if (grade.includes('A')) return 'success';
-    if (grade.includes('B')) return 'success';
-    if (grade.includes('C')) return 'success';
-    if (grade.includes('D')) return 'warning';
-    if (grade.includes('E')) return 'warning';
-    if (grade.includes('G')) return 'danger';
-    if (grade.includes('TH')) return 'danger';
+    if (grade.includes("A")) return "success";
+    if (grade.includes("B")) return "success";
+    if (grade.includes("C")) return "success";
+    if (grade.includes("D")) return "warning";
+    if (grade.includes("E")) return "warning";
+    if (grade.includes("G")) return "danger";
+    if (grade.includes("TH")) return "danger";
 
-    return 'secondary';
+    return "secondary";
   };
 
   const handleNext = () => {
@@ -1103,15 +1290,15 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
       setNavigationDirection(direction);
       setIsUnsavedChangesPopupOpen(true);
     } else {
-      direction === 'next' ? handleNext() : onBack();
+      direction === "next" ? handleNext() : onBack();
     }
   };
 
   const handleUnsavedChangesConfirm = () => {
     setIsUnsavedChangesPopupOpen(false);
-    if (navigationDirection === 'next') {
+    if (navigationDirection === "next") {
       onNext();
-    } else if (navigationDirection === 'back') {
+    } else if (navigationDirection === "back") {
       onBack();
     }
     setNavigationDirection(null);
@@ -1123,22 +1310,28 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
     setNavigationDirection(null);
   };
 
-  if (isLoading) return <div>
-    <div>
-      <div className="d-flex justify-content-center align-items-center m-5 " >
-        <Spinner animation="border" role="status">
-          <span className="visually-hidden">Loading...</span>
-        </Spinner>
+  if (isLoading)
+    return (
+      <div>
+        <div>
+          <div className="d-flex justify-content-center align-items-center m-5 ">
+            <Spinner animation="border" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </Spinner>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>;
+    );
   if (error) return <div>Error: {error}</div>;
 
   return (
     <div className="step-content-casetwo p-4 rounded">
       <h3 className="border-bottom pb-2 fw-normal">Academic Transcript</h3>
       {academicTranscripts.map((transcript, index) => (
-        <div key={index} className="academic-transcript-item mb-4 border rounded py-4">
+        <div
+          key={index}
+          className="academic-transcript-item mb-4 border rounded py-4"
+        >
           <div className="sac-container-casetwo d-flex justify-content-between align-items-start align-items-sm-center mb-3 px-4">
             <div className="d-flex align-items-center mb-2 mb-sm-0">
               <AlignJustify className="me-2 align-self-center" size={15} />
@@ -1153,7 +1346,10 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                       : null
                   }
                   onChange={(selected) =>
-                    handleTranscriptChange(index, { id: selected.value, name: selected.label })
+                    handleTranscriptChange(index, {
+                      id: selected.value,
+                      name: selected.label,
+                    })
                   }
                   className="fw-bold border-0 sac-at-bg sac-at-select-style w-100"
                   placeholder="Choose an education"
@@ -1161,13 +1357,26 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
               )}
             </div>
             <div className="d-flex">
-              <Button variant="link" className="p-0 me-2" onClick={() => handleAddSubject(index)}>
+              <Button
+                variant="link"
+                className="p-0 me-2"
+                onClick={() => handleAddSubject(index)}
+              >
                 <Plus size={18} color="grey" />
               </Button>
-              <Button variant="link" className="p-0 me-2" onClick={() => handleAddDocument(index)}>
+              <Button
+                variant="link"
+                className="p-0 me-2"
+                onClick={() => handleAddDocument(index)}
+              >
                 <Upload size={18} color="grey" />
               </Button>
-              <Button variant="link" className="p-0" title="Remove Transcript" onClick={() => handleRemoveTranscript(index)}>
+              <Button
+                variant="link"
+                className="p-0"
+                title="Remove Transcript"
+                onClick={() => handleRemoveTranscript(index)}
+              >
                 <Trash2 size={18} color="grey" />
               </Button>
             </div>
@@ -1181,21 +1390,40 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
           {transcript.subjects.length > 0 ? (
             <div className="px-4">
               {transcript.subjects.map((subject, subIndex) => (
-                <div key={subIndex} className="justify-content-between subject-item  mb-2 bg-white p-1 rounded-3 applycourse-overflow">
+                <div
+                  key={subIndex}
+                  className="justify-content-between subject-item  mb-2 bg-white p-1 rounded-3 applycourse-overflow"
+                >
                   {subject.isEditing ? (
                     <>
                       <div className="applycourse-academictranscript-dflex align-items-center flex-grow-1">
                         <AlignJustify className="mx-2" size={15} color="grey" />
-                        {(transcript.id === 32 || transcript.id === 85) ? (
+                        {transcript.id === 32 || transcript.id === 85 ? (
                           <Select
                             options={availableSubjects
-                              .filter(s => !transcript.subjects
-                                .filter((existingSubject, idx) => idx !== subIndex && existingSubject.id) // Exclude current subject
-                                .map(s => s.id)
-                                .includes(s.id))
-                              .map(s => ({ value: s.id, label: s.name }))}
-                            value={subject.id && subject.name ? { value: subject.id, label: subject.name } : null}
-                            onChange={(selected) => handleSubjectSelectChange(index, subIndex, selected)}
+                              .filter(
+                                (s) =>
+                                  !transcript.subjects
+                                    .filter(
+                                      (existingSubject, idx) =>
+                                        idx !== subIndex && existingSubject.id
+                                    ) // Exclude current subject
+                                    .map((s) => s.id)
+                                    .includes(s.id)
+                              )
+                              .map((s) => ({ value: s.id, label: s.name }))}
+                            value={
+                              subject.id && subject.name
+                                ? { value: subject.id, label: subject.name }
+                                : null
+                            }
+                            onChange={(selected) =>
+                              handleSubjectSelectChange(
+                                index,
+                                subIndex,
+                                selected
+                              )
+                            }
                             className="me-2 applycourse-academictranscript-select-width"
                             placeholder="Select Subject"
                           />
@@ -1203,10 +1431,17 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                           <Form.Control
                             type="text"
                             value={subject.name}
-                            onChange={(e) => handleSubjectChange(index, subIndex, 'name', e.target.value)}
+                            onChange={(e) =>
+                              handleSubjectChange(
+                                index,
+                                subIndex,
+                                "name",
+                                e.target.value
+                              )
+                            }
                             className="me-2 applycourse-academictranscript-select-width"
                             placeholder="Enter Subject Name"
-                            style={{ fontSize: '0.9rem', fontWeight: "500" }}
+                            style={{ fontSize: "0.9rem", fontWeight: "500" }}
                             required
                           />
                         )}
@@ -1216,12 +1451,25 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                           <Form.Control
                             as="select"
                             value={subject.grade}
-                            onChange={(e) => handleSubjectChange(index, subIndex, 'grade', e.target.value)}
+                            onChange={(e) =>
+                              handleSubjectChange(
+                                index,
+                                subIndex,
+                                "grade",
+                                e.target.value
+                              )
+                            }
                             className={`me-2 w-auto px-4 py-1 px-3 rounded-5  text-black border-1  ms-2`}
-                            style={{ fontSize: '0.9rem', fontWeight: "500", borderColor: "#9E9E9E" }}
+                            style={{
+                              fontSize: "0.9rem",
+                              fontWeight: "500",
+                              borderColor: "#9E9E9E",
+                            }}
                             required
                           >
-                            <option value="" disabled>Grade</option>
+                            <option value="" disabled>
+                              Grade
+                            </option>
                             <option value="A+">A+</option>
                             <option value="A">A</option>
                             <option value="A-">A-</option>
@@ -1239,84 +1487,129 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                           <Form.Control
                             type="text"
                             value={subject.grade}
-                            onChange={(e) => handleSubjectChange(index, subIndex, 'grade', e.target.value)}
+                            onChange={(e) =>
+                              handleSubjectChange(
+                                index,
+                                subIndex,
+                                "grade",
+                                e.target.value
+                              )
+                            }
                             className="me-2 w-auto"
                             placeholder="Grade"
-                            style={{ fontSize: '0.9rem', fontWeight: "500" }}
+                            style={{ fontSize: "0.9rem", fontWeight: "500" }}
                             required
                           />
                         )}
                         <div className="d-flex ms-auto">
-                          <Button variant="link" className="p-0 me-2" onClick={() => handleSaveSubject(index, subIndex)}>
+                          <Button
+                            variant="link"
+                            className="p-0 me-2"
+                            onClick={() => handleSaveSubject(index, subIndex)}
+                          >
                             <Save size={15} color="green" />
                           </Button>
-                          <Button variant="link" className="p-0" onClick={() => handleRemoveSubject(index, subIndex)}>
+                          <Button
+                            variant="link"
+                            className="p-0"
+                            onClick={() => handleRemoveSubject(index, subIndex)}
+                          >
                             <Trash2 size={15} color="grey" />
                           </Button>
                         </div>
                       </div>
-
                     </>
                   ) : (
                     <>
                       <div className="applycourse-academictranscript-dflex align-items-center flex-grow-1">
-                        <AlignJustify size={15} className="me-2 ms-2" style={{ alignSelf: 'center' }} />
-                        <span className="me-2"
+                        <AlignJustify
+                          size={15}
+                          className="me-2 ms-2"
+                          style={{ alignSelf: "center" }}
+                        />
+                        <span
+                          className="me-2"
                           style={{
-                            fontSize: '0.9rem',
+                            fontSize: "0.9rem",
                             fontWeight: "500",
                             width: "275px",
-                            wordWrap: 'break-word',
-                            overflowWrap: 'break-word',
-                            wordBreak: 'break-all',
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-
-                          }}>{subject.name}</span>
-                        <span style={{ fontSize: '0.9rem', fontWeight: "500" }}
-                          className={`ms-3 me-2 px-2 py-1 px-3 rounded-5 text-white bg-${getGradeColor(subject.grade)}`}>
+                            wordWrap: "break-word",
+                            overflowWrap: "break-word",
+                            wordBreak: "break-all",
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                          }}
+                        >
+                          {subject.name}
+                        </span>
+                        <span
+                          style={{ fontSize: "0.9rem", fontWeight: "500" }}
+                          className={`ms-3 me-2 px-2 py-1 px-3 rounded-5 text-white bg-${getGradeColor(
+                            subject.grade
+                          )}`}
+                        >
                           Grade: {subject.grade}
                         </span>
                         <div className="d-flex ms-auto">
-                          <Button variant="link" className="p-0 me-2" onClick={() => handleSubjectChange(index, subIndex, 'isEditing', true)}>
+                          <Button
+                            variant="link"
+                            className="p-0 me-2"
+                            onClick={() =>
+                              handleSubjectChange(
+                                index,
+                                subIndex,
+                                "isEditing",
+                                true
+                              )
+                            }
+                          >
                             <Edit size={15} color="grey" />
                           </Button>
-                          <Button variant="link" className="p-0" onClick={() => handleRemoveSubject(index, subIndex)}>
+                          <Button
+                            variant="link"
+                            className="p-0"
+                            onClick={() => handleRemoveSubject(index, subIndex)}
+                          >
                             <Trash2 size={15} color="grey" />
                           </Button>
                         </div>
                       </div>
-
                     </>
                   )}
                 </div>
               ))}
             </div>
           ) : null}
-          {(transcript.id !== 32 && transcript.id != 85) && (
+          {transcript.id !== 32 && transcript.id != 85 && (
             <div className="px-4 mt-3">
               <Form.Group as={Row} className="mb-3">
-                <Form.Label column sm="2">Program Name (Optional):</Form.Label>
+                <Form.Label column sm="2">
+                  Program Name (Optional):
+                </Form.Label>
                 <Col sm="4">
                   <Form.Control
                     type="text"
-                    value={transcript.programName || ''}
-                    onChange={(e) => handleProgramNameChange(index, e.target.value)}
+                    value={transcript.programName || ""}
+                    onChange={(e) =>
+                      handleProgramNameChange(index, e.target.value)
+                    }
                     placeholder="Enter Program Name"
                     className="ACAT-ProgramName-CGPA-Input"
                   />
                 </Col>
               </Form.Group>
               <Form.Group as={Row} className="mb-3">
-                <Form.Label column sm="2">CGPA:</Form.Label>
+                <Form.Label column sm="2">
+                  CGPA:
+                </Form.Label>
                 <Col sm="4">
                   <Form.Control
                     type="number"
                     step="0.01"
                     min="0"
                     max="4"
-                    value={transcript.cgpa || ''}
+                    value={transcript.cgpa || ""}
                     onChange={(e) => handleCGPAChange(index, e.target.value)}
                     placeholder="Enter CGPA"
                     className="ACAT-ProgramName-CGPA-Input"
@@ -1329,7 +1622,11 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
           <div className="upload-documents mt-3 border border-4 border-top-3 border-bottom-0 border-start-0 border-end-0">
             <div className="d-flex justify-content-between align-items-center px-4">
               <h6 className="mb-0">Upload Documents</h6>
-              <Button variant="link" className="p-0 me-2" onClick={() => handleAddDocument(index)}>
+              <Button
+                variant="link"
+                className="p-0 me-2"
+                onClick={() => handleAddDocument(index)}
+              >
                 <Plus size={18} color="grey" />
               </Button>
             </div>
@@ -1345,11 +1642,20 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                             <>
                               <div className="sac-file-info">
                                 <FileText size={15} className="sac-file-icon" />
-                                <span className="sac-file-name" >{doc.mediaName || doc.file}</span>
+                                <span className="sac-file-name">
+                                  {doc.mediaName || doc.file}
+                                </span>
                                 <Button
                                   variant="link"
                                   className="sac-remove-file-btn"
-                                  onClick={() => handleDocumentChange(index, docIndex, 'file', null)}
+                                  onClick={() =>
+                                    handleDocumentChange(
+                                      index,
+                                      docIndex,
+                                      "file",
+                                      null
+                                    )
+                                  }
                                 >
                                   <X size={15} color="red" />
                                 </Button>
@@ -1360,16 +1666,31 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                               <Button
                                 variant="secondary"
                                 className="sac-upload-button"
-                                onClick={() => document.getElementById(`fileInput-${index}-${docIndex}`).click()}
+                                onClick={() =>
+                                  document
+                                    .getElementById(
+                                      `fileInput-${index}-${docIndex}`
+                                    )
+                                    .click()
+                                }
                               >
-                                <Upload size={15} className="me-2 upload-icon" />
+                                <Upload
+                                  size={15}
+                                  className="me-2 upload-icon"
+                                />
                                 <span className="button-text">Upload File</span>
                               </Button>
                               <input
                                 type="file"
                                 id={`fileInput-${index}-${docIndex}`}
                                 className="d-none"
-                                onChange={(e) => handleDocumentFileUpload(index, docIndex, e.target.files[0])}
+                                onChange={(e) =>
+                                  handleDocumentFileUpload(
+                                    index,
+                                    docIndex,
+                                    e.target.files[0]
+                                  )
+                                }
                               />
                             </>
                           )}
@@ -1378,18 +1699,33 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                           <Form.Control
                             type="text"
                             value={doc.name}
-                            onChange={(e) => handleDocumentChange(index, docIndex, 'name', e.target.value)}
+                            onChange={(e) =>
+                              handleDocumentChange(
+                                index,
+                                docIndex,
+                                "name",
+                                e.target.value
+                              )
+                            }
                             className="me-2 w-100 border-0 ac-input-placeholder"
                             placeholder="Enter document title..."
-                            style={{ fontSize: '0.825rem' }}
+                            style={{ fontSize: "0.825rem" }}
                           />
                         </div>
                       </div>
                       <div className="applycourwse-academictranscript-documentedit">
-                        <Button variant="link" className="p-0 me-2" onClick={() => handleSaveDocument(index, docIndex)}>
+                        <Button
+                          variant="link"
+                          className="p-0 me-2"
+                          onClick={() => handleSaveDocument(index, docIndex)}
+                        >
                           <Save size={15} color="green" />
                         </Button>
-                        <Button variant="link" className="p-0" onClick={() => handleRemoveDocument(index, docIndex)}>
+                        <Button
+                          variant="link"
+                          className="p-0"
+                          onClick={() => handleRemoveDocument(index, docIndex)}
+                        >
                           <Trash2 size={15} color="grey" />
                         </Button>
                       </div>
@@ -1398,31 +1734,56 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                     <>
                       <div className="ACAT-DocumentUpload-DisplayContainer">
                         <div className="ACAT-DocumentUpload-DisplayContainer-InnerOne">
-                          <FileText size={15} className="me-2 ms-2" style={{ alignSelf: 'center' }} />
-                          <span className="me-2"
+                          <FileText
+                            size={15}
+                            className="me-2 ms-2"
+                            style={{ alignSelf: "center" }}
+                          />
+                          <span
+                            className="me-2"
                             style={{
-                              fontSize: '0.825rem',
-                              textAlign: 'left',
+                              fontSize: "0.825rem",
+                              textAlign: "left",
                               flex: 1,
                               width: "112.5px",
-                              wordWrap: 'break-word',
-                              overflowWrap: 'break-word',
-                              wordBreak: 'break-all',
-                              whiteSpace: 'nowrap',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              maxWidth: '112.5px'
-                            }}>{doc.name}</span>
+                              wordWrap: "break-word",
+                              overflowWrap: "break-word",
+                              wordBreak: "break-all",
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              maxWidth: "112.5px",
+                            }}
+                          >
+                            {doc.name}
+                          </span>
                         </div>
                         <div>
-                          <span style={{ fontSize: '0.825rem' }}>{doc.mediaName || doc.file || 'No file uploaded'}</span>
+                          <span style={{ fontSize: "0.825rem" }}>
+                            {doc.mediaName || doc.file || "No file uploaded"}
+                          </span>
                         </div>
                       </div>
                       <div className="ACAT-Display-DocumentButton">
-                        <Button variant="link" className="p-0 me-2" onClick={() => handleDocumentChange(index, docIndex, 'isEditing', true)}>
+                        <Button
+                          variant="link"
+                          className="p-0 me-2"
+                          onClick={() =>
+                            handleDocumentChange(
+                              index,
+                              docIndex,
+                              "isEditing",
+                              true
+                            )
+                          }
+                        >
                           <Edit size={15} color="grey" />
                         </Button>
-                        <Button variant="link" className="p-0" onClick={() => handleRemoveDocument(index, docIndex)}>
+                        <Button
+                          variant="link"
+                          className="p-0"
+                          onClick={() => handleRemoveDocument(index, docIndex)}
+                        >
                           <Trash2 size={15} color="grey" />
                         </Button>
                       </div>
@@ -1430,10 +1791,8 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                   )}
                 </div>
 
-
-
                 {documentErrors[`${index}-${docIndex}`] && (
-                  <div className="text-danger" style={{ fontSize: '0.825rem' }}>
+                  <div className="text-danger" style={{ fontSize: "0.825rem" }}>
                     {documentErrors[`${index}-${docIndex}`]}
                   </div>
                 )}
@@ -1447,11 +1806,13 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
           </div>
           <div className="d-flex justify-content-end mt-3 px-4">
             <Button
-              variant={savingStates[index] === 'success' ? 'success' : 'primary'}
+              variant={
+                savingStates[index] === "success" ? "success" : "primary"
+              }
               onClick={() => saveTranscript(index)}
               className="sac-save-button "
             >
-              {savingStates[index] === 'loading' ? (
+              {savingStates[index] === "loading" ? (
                 <>
                   <Spinner
                     as="span"
@@ -1463,12 +1824,12 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                   />
                   Saving...
                 </>
-              ) : savingStates[index] === 'success' ? (
-                'Saved!'
-              ) : savingStates[index] === 'failed' ? (
-                'Failed!'
+              ) : savingStates[index] === "success" ? (
+                "Saved!"
+              ) : savingStates[index] === "failed" ? (
+                "Failed!"
               ) : (
-                'Save'
+                "Save"
               )}
             </Button>
           </div>
@@ -1483,13 +1844,18 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
       </Button>
 
       <div className="d-flex justify-content-between mt-4">
-        <Button onClick={() => handleNavigation('back')} className="me-2 rounded-pill px-5 sac-previous-button">
+        <Button
+          onClick={() => handleNavigation("back")}
+          className="me-2 rounded-pill px-5 sac-previous-button"
+        >
           Previous
         </Button>
-        <Button onClick={() => handleNavigation('next')} className="sac-next-button rounded-pill px-5">
+        <Button
+          onClick={() => handleNavigation("next")}
+          className="sac-next-button rounded-pill px-5"
+        >
           Next
         </Button>
-
       </div>
       <WidgetPopUpRemind isOpen={isPopupOpen} onClose={handleClosePopup} />
       <WidgetPopUpAcademicRemind

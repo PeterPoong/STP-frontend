@@ -1,0 +1,27 @@
+.cocuriculum-icon-container {
+    padding: 15px;
+    
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    min-width: auto;
+    width: 100%;
+  }
+  
+  .cocuriculum-icon {
+    margin-right: 0.5rem; /* Space between icon and input */
+    flex-shrink: 0; /* Prevent icon from shrinking */
+  }
+  
+  .cocuriculum-icon-input {
+    flex-grow: 1; /* Make input take up remaining space */
+    font-size: 1rem; /* Consistent font size */
+    padding: 0.25rem; /* Adjust padding for better alignment */
+    max-width: 200px;
+    width: 100%;
+    
+  }
+
+
+
+  
