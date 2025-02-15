@@ -283,7 +283,7 @@ const SearchCourse = () => {
 
         const currencyCode =
           sessionStorage.getItem("userCurrencyCode") || "MYR"; // Fetch from storage
-        setSelectedCountry(countries.find((c) => c.country_code === country));
+        setSelectedCountry(countries.find(c => c.country_code === country));
 
         // Fetch exchange rates based on the detected currency
         await fetchExchangeRates(currencyCode);
@@ -1008,7 +1008,7 @@ const SearchCourse = () => {
             </Row>
           </div>
         </div>
-        {index === 2 && (
+          {index === 2 && (
           <div key="ad" className="ad-container">
             {/*<img
               src={StudyPal}
@@ -1453,7 +1453,7 @@ const SearchCourse = () => {
             <span>Filter</span>
             {countSelectedFilters() > 0 && <span className="ms-1">({countSelectedFilters()})</span>}
           </button>
-        </div>
+        </Container>
         {/* Mobile Filters */}
         <div className={`mobile-filters-container ${showMobileFilters ? 'show' : ''}`}>
           {/* Close button */}
@@ -2280,8 +2280,8 @@ const SearchCourse = () => {
                 </Pagination>
               )}
             </Row>
-          </Container>
-        </Container>
+          
+        </Container >
       </div>
       {/* Add this backdrop component */}
       {showMobileFilters && (
@@ -2293,5 +2293,6 @@ const SearchCourse = () => {
     </Container>
   );
 };
+
 
 export default SearchCourse;
