@@ -243,7 +243,7 @@ const SchoolPortalLogin = () => {
                       </div>
                     </InputGroup>
                   </Form.Group>
-                  <Row className="mb-3">
+                  <Row className="d-flex flex-row mb-3">
                     <Col>
                       <Form.Check
                         type="checkbox"
@@ -257,7 +257,7 @@ const SchoolPortalLogin = () => {
                     <Col className="text-end">
                       <Link
                         to="/schoolPortalForgetPassword"
-                        className="forgetpassword"
+                        className="forgetpassword pe-3"
                       >
                         Forgot password?
                       </Link>

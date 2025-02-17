@@ -139,6 +139,10 @@
     box-shadow: none;
   }
 
+  .custom-checkbox {
+    padding-top: 4px;
+  }
+
   .std-custom-label 
   {
     color: #828282;
