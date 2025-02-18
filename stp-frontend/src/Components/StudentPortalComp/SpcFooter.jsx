@@ -22,7 +22,7 @@ const SpcFooter = () => {
         }}
       >
         <div style={{ marginBottom: "5px", marginTop: "5px" }}>
-          <Row className="gap-3">
+          <div className="d-flex gap-3 justify-content-center">
             <a
               href="https://www.facebook.com/profile.php?id=61567875925810"
               target="_blank"
@@ -90,14 +90,14 @@ const SpcFooter = () => {
                 <path d="M0 3v18h24v-18h-24zm21.518 2l-9.518 7.713-9.518-7.713h19.036zm-19.518 14v-11.817l10 8.104 10-8.104v11.817h-20z" />
               </svg>
             </a>
-          </Row>
+          </div>
         </div>
         <p style={{ marginBottom: "5px", color: "#AAAAAA" }}>
           Lot 3493, No.13 2nd Floor, Jalan Piasau, Piasau Commercial, 98000
           Miri, Sarawak
         </p>
         <p style={{ fontsize: "12px",marginBottom:"0" }}>
-          Copyright © 2024 iMedia Enterprise. Designed by{" "}
+        Copyright © {new Date().getFullYear()} iMedia Enterprise. Designed by{" "}
           <Link
             to="https://imedia.my"
             style={{ fontsize: "12px", color: "#EC3030" }}

@@ -47,7 +47,7 @@ const Footer = () => {
           Miri, Sarawak
         </div>
         <div style={{ fontSize: "12px" }}>
-          Copyright © 2024 iMedia Enterprise. Designed by iMedia.
+          Copyright © {new Date().getFullYear()} iMedia Enterprise. Designed by iMedia.
         </div>
       </div>
     </footer>
