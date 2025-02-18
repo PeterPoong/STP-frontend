@@ -26,10 +26,24 @@ const AdminSubjectContent = () => {
     const token = sessionStorage.getItem('token'); // Retrieve the token from sessionStorage
     const Authenticate = `Bearer ${token}`;
     const navigate = useNavigate();
-
-     const fetchSubjects = async (page = 1, perPage = rowsPerPage, search = searchQuery) => {
+    const [statList, setStatList] = useState([]); // State for category list
+    const [selectedStat, setSelectedStat] = useState(""); // State for selected subject
+    useEffect(() => {
+        // Hardcoded statList values
+        const hardcodedStatList = [
+            { id: 0, name: "Disable" },
+            { id: 1, name: "Active" }
+        ];
+        setStatList(hardcodedStatList);
+        fetchSubjects(); // Fetch enquiries initially
+    }, []);
+    const fetchSubjects = async (
+        page = 1, 
+        perPage = rowsPerPage, 
+        search = searchQuery,
+        stat = selectedStat) => {
         try {
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/subjectListAdmin?page=${page}&per_page=${perPage === "All" ? subjects.length : perPage}&search=${search}`, {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/subjectListAdmin?page=${page}&per_page=${perPage === "All" ? subjects.length : perPage}&search=${search}&stat=${stat}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -59,27 +73,27 @@ const AdminSubjectContent = () => {
     };
 
     useEffect(() => {
-        fetchSubjects(currentPage, rowsPerPage, searchQuery);
-    }, [Authenticate, currentPage, rowsPerPage, searchQuery]);
+        fetchSubjects(currentPage, rowsPerPage, searchQuery, selectedStat);
+    }, [Authenticate, currentPage, rowsPerPage, searchQuery, selectedStat]);
 
     const handleRowsPerPageChange = (newRowsPerPage) => {
         setRowsPerPage(newRowsPerPage);
         setCurrentPage(1); // Reset to the first page whenever rows per page changes
-        fetchSubjects(1, newRowsPerPage === "All" ? subjects.length : newRowsPerPage, searchQuery); // Fetch data
+        fetchSubjects(1, newRowsPerPage === "All" ? subjects.length : newRowsPerPage, searchQuery, selectedStat); // Fetch data
     };
     
 
     const handleSearch = (query) => {
         setSearchQuery(query);
         setCurrentPage(1); // Reset to the first page whenever search query changes
-        fetchSubjects(1, rowsPerPage, query); // Fetch data with updated search query
+        fetchSubjects(1, rowsPerPage, query, selectedStat); // Fetch data with updated search query
     };
 
     const handleSort = (column) => {
         const newDirection = sortColumn === column && sortDirection === "asc" ? "desc" : "asc";
         setSortColumn(column);
         setSortDirection(newDirection);
-        fetchSubjects(currentPage, rowsPerPage, searchQuery); // Fetch sorted data
+        fetchSubjects(currentPage, rowsPerPage, searchQuery, selectedStat); // Fetch sorted data
     };
 
     const sortedSubjects = (() => {
@@ -222,7 +236,11 @@ const AdminSubjectContent = () => {
             <td colSpan="6" style={{ textAlign: "center" }}>No Data Available</td>
         </tr>
     );
-
+    const handleStatChange = (stat) => {
+        setSelectedStat(stat);
+        setCurrentPage(1);
+        fetchSubjects(1, rowsPerPage, searchQuery, stat);
+      };
     return (
         <>
         {loading ? (
@@ -239,6 +257,8 @@ const AdminSubjectContent = () => {
                 onPageChange={handlePageChange}
                 onRowsPerPageChange={handleRowsPerPageChange}
                 showAddButton={showAddButton}
+                statList={statList}
+                onStatChange={handleStatChange}
             />
         )}
             <Modal show={showModal} onHide={() => setShowModal(false)}>
