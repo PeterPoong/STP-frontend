@@ -35,7 +35,7 @@ const AdvertisementPricingPage = () => {
   // Handle toggle between daily and weekly pricing
   const handleToggle = (pricing) => {
     setActivePricing(pricing);
-    setPriceLabel(pricing === "daily" ? "per day" : "per week");
+    setPriceLabel(pricing === "daily" ? "per day" : "per day");
   };
 
   // Calculate the price with a 5% discount for weekly pricing
