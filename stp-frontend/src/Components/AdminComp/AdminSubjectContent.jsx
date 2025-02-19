@@ -28,6 +28,8 @@ const AdminSubjectContent = () => {
     const navigate = useNavigate();
     const [statList, setStatList] = useState([]); // State for category list
     const [selectedStat, setSelectedStat] = useState(""); // State for selected subject
+    const [selectedCat, setSelectedCat] = useState('');
+    const [catList, setCatList] = useState([]); // State for category list
     useEffect(() => {
         // Hardcoded statList values
         const hardcodedStatList = [
@@ -37,13 +39,48 @@ const AdminSubjectContent = () => {
         setStatList(hardcodedStatList);
         fetchSubjects(); // Fetch enquiries initially
     }, []);
+    // Fetch the category list
+    const fetchCatList = async () => {
+        try {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/transcriptCategoryList`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": Authenticate,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            console.log('Category List API Response:', result);
+
+            if (result.data && Array.isArray(result.data)) {
+                console.log('Category List Data:', result.data);
+                setCatList(result.data);
+            } else {
+                console.log('No category data found or invalid format');
+                setCatList([]);
+            }
+        } catch (error) {
+            setError(error.message);
+            console.error("Error fetching the category list:", error);
+        }
+    };
+    useEffect(() => {
+        fetchCatList(); // Fetch categorys on component mount
+        fetchSubjects(); // Fetch enquiries initially
+    }, []);
     const fetchSubjects = async (
         page = 1, 
         perPage = rowsPerPage, 
         search = searchQuery,
-        stat = selectedStat) => {
+        stat = selectedStat,
+        category = category_id) => {
         try {
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/subjectListAdmin?page=${page}&per_page=${perPage === "All" ? subjects.length : perPage}&search=${search}&stat=${stat}`, {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/subjectListAdmin?page=${page}&per_page=${perPage === "All" ? subjects.length : perPage}&search=${search}&stat=${stat}&category=${category}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -73,27 +110,27 @@ const AdminSubjectContent = () => {
     };
 
     useEffect(() => {
-        fetchSubjects(currentPage, rowsPerPage, searchQuery, selectedStat);
-    }, [Authenticate, currentPage, rowsPerPage, searchQuery, selectedStat]);
+        fetchSubjects(currentPage, rowsPerPage, searchQuery, selectedStat, selectedCat);
+    }, [Authenticate, currentPage, rowsPerPage, searchQuery, selectedStat, selectedCat]);
 
     const handleRowsPerPageChange = (newRowsPerPage) => {
         setRowsPerPage(newRowsPerPage);
         setCurrentPage(1); // Reset to the first page whenever rows per page changes
-        fetchSubjects(1, newRowsPerPage === "All" ? subjects.length : newRowsPerPage, searchQuery, selectedStat); // Fetch data
+        fetchSubjects(1, newRowsPerPage === "All" ? subjects.length : newRowsPerPage, searchQuery, selectedStat, selectedCat); // Fetch data
     };
     
 
     const handleSearch = (query) => {
         setSearchQuery(query);
         setCurrentPage(1); // Reset to the first page whenever search query changes
-        fetchSubjects(1, rowsPerPage, query, selectedStat); // Fetch data with updated search query
+        fetchSubjects(1, rowsPerPage, query, selectedStat, selectedCat); // Fetch data with updated search query
     };
 
     const handleSort = (column) => {
         const newDirection = sortColumn === column && sortDirection === "asc" ? "desc" : "asc";
         setSortColumn(column);
         setSortDirection(newDirection);
-        fetchSubjects(currentPage, rowsPerPage, searchQuery, selectedStat); // Fetch sorted data
+        fetchSubjects(currentPage, rowsPerPage, searchQuery, selectedStat, selectedCat); // Fetch sorted data
     };
 
     const sortedSubjects = (() => {
@@ -241,6 +278,16 @@ const AdminSubjectContent = () => {
         setCurrentPage(1);
         fetchSubjects(1, rowsPerPage, searchQuery, stat);
       };
+      const handleCatChange = (catId) => {
+        setSelectedCat(catId); // Update the selected featured type
+        setCurrentPage(1); // Reset to first page when filter changes
+        fetchCourses(selectedCat, catId, 1, rowsPerPage, searchQuery); // Fetch with new filter
+      };
+      const handleCategoryChange = (categoryId) => {
+        setSelectedCat(categoryId); // Update the selected category
+        setCurrentPage(1); // Reset to the first page
+        fetchCourses(selectedCat, categoryId, 1, rowsPerPage, searchQuery); // Fetch courses with the new category filter
+    };
     return (
         <>
         {loading ? (
@@ -259,6 +306,8 @@ const AdminSubjectContent = () => {
                 showAddButton={showAddButton}
                 statList={statList}
                 onStatChange={handleStatChange}
+                catList={catList}
+                onCatChange={handleCategoryChange}
             />
         )}
             <Modal show={showModal} onHide={() => setShowModal(false)}>
