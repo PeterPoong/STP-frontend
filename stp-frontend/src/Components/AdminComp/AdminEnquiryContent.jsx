@@ -29,6 +29,18 @@ const AdminEnquiryContent = () => {
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`;
     const navigate = useNavigate();
+    const [statList, setStatList] = useState([]); // State for category list
+    const [selectedStat, setSelectedStat] = useState(""); // State for selected subject
+    useEffect(() => {
+        // Hardcoded statList values
+        const hardcodedStatList = [
+            { id: 1, name: "Replied" },
+            { id: 2, name: "Pending" }
+        ];
+        setStatList(hardcodedStatList);
+        fetchenquirys(); // Fetch enquiries initially
+    }, []);
+  
    // Fetch the subject list
     const fetchSubjectList = async () => {
         try {
@@ -60,12 +72,19 @@ const AdminEnquiryContent = () => {
         fetchSubjectList(); // Fetch subjects on component mount
         fetchenquirys(); // Fetch enquiries initially
     }, []);
-    const fetchenquirys = async (page = 1, perPage = rowsPerPage, search = searchQuery, subject = selectedSubject) => {
+    const fetchenquirys = async (
+        page = 1, 
+        perPage = rowsPerPage, 
+        search = searchQuery, 
+        subject = selectedSubject,
+        stat = selectedStat
+    ) => {
         try {
             const requestBody = {
                 page,
                 per_page: perPage,
                 search,
+                stat: stat || null  // Include stat in request body
             };
     
             // Only include subject if it's selected
@@ -82,7 +101,7 @@ const AdminEnquiryContent = () => {
                 body: JSON.stringify(requestBody),
             });
     
-            console.log("Fetching enquiries with request body:", requestBody); // Log request body to check
+            console.log("Fetching enquiries with request body:", requestBody);
     
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -106,26 +125,26 @@ const AdminEnquiryContent = () => {
     };
     
     useEffect(() => {
-        fetchenquirys(currentPage, rowsPerPage, searchQuery);
-    }, [Authenticate, currentPage, rowsPerPage, searchQuery]);
+        fetchenquirys(currentPage, rowsPerPage, searchQuery, selectedSubject, selectedStat);
+    }, [Authenticate, currentPage, rowsPerPage, searchQuery, selectedSubject, selectedStat]);
 
     const handleRowsPerPageChange = (newRowsPerPage) => {
         setRowsPerPage(newRowsPerPage);
         setCurrentPage(1); // Reset to the first page whenever rows per page changes
-        fetchenquirys(1, newRowsPerPage, searchQuery); // Fetch data with updated rowsPerPage
+        fetchenquirys(1, newRowsPerPage, searchQuery, selectedSubject, selectedStat); // Fetch data with updated rowsPerPage
     };
 
     const handleSearch = (query) => {
         setSearchQuery(query);
         setCurrentPage(1); // Reset to the first page whenever search query changes
-        fetchenquirys(1, rowsPerPage, query); // Fetch data with updated search query
+        fetchenquirys(1, rowsPerPage, query, selectedSubject, selectedStat); // Fetch data with updated search query
     };
 
     const handleSort = (column) => {
         const newDirection = sortColumn === column && sortDirection === "asc" ? "desc" : "asc";
         setSortColumn(column);
         setSortDirection(newDirection);
-        fetchenquirys(currentPage, rowsPerPage, searchQuery); // Fetch sorted data
+        fetchenquirys(currentPage, rowsPerPage, searchQuery, selectedSubject, selectedStat); // Fetch sorted data
     };
 
     const sortedenquirys = (() => {
@@ -193,7 +212,7 @@ const AdminEnquiryContent = () => {
             if (result.success) {
                 // Log the new status for debugging
                 // console.log("New status:", result.newStatus);
-                await fetchenquirys(currentPage, rowsPerPage, searchQuery);
+                await fetchenquirys(currentPage, rowsPerPage, searchQuery, selectedSubject, selectedStat);
     
             } else {
                 console.error(result.message);
@@ -222,7 +241,13 @@ const handleSubjectChange = (subjectId) => {
     console.log("Filtering enquiries with Subject ID:", subjectId); // Log subject ID
     setSelectedSubject(subjectId);  // Set the selected subject
     setCurrentPage(1);              // Reset to the first page
-    fetchenquirys(1, rowsPerPage, searchQuery, subjectId); // Pass subject ID as filter
+    fetchenquirys(1, rowsPerPage, searchQuery, subjectId, selectedStat); // Pass subject ID as filter
+};
+const handleStatChange = (stat) => {
+    console.log("Selected stat:", stat); // Add this for debugging
+    setSelectedStat(stat);
+    setCurrentPage(1);
+    fetchenquirys(1, rowsPerPage, searchQuery, selectedSubject, stat); // Pass all parameters
 };
     const theadContent = (
         <tr>
@@ -297,6 +322,8 @@ const handleSubjectChange = (subjectId) => {
                 showSearch={showSearch} // Pass showSearch here
                 subjectList={subjectList} // Pass subject list to TableWithControls
                 onSubjectChange={handleSubjectChange} // Pass handler for subject selection
+                statList={statList}
+                onStatChange={handleStatChange}
             />
         )}
             <Modal show={showModal} onHide={() => setShowModal(false)}>
