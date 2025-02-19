@@ -260,8 +260,13 @@ const AdminEditSchoolContent = () => {
         formPayload.append("country", country);
         formPayload.append("state", state);
         formPayload.append("city", city);
-        formPayload.append("password", password);
-        formPayload.append("confirm_password", confirm_password);
+        
+        // Only append password fields if they're not empty
+        if (password) {
+            formPayload.append("password", password);
+            formPayload.append("confirm_password", confirm_password);
+        }
+
         formPayload.append("school_shortDesc", school_shortDesc);
         formPayload.append("school_fullDesc", school_fullDesc);
     
@@ -320,7 +325,6 @@ const AdminEditSchoolContent = () => {
             const editSchoolData = await editSchoolResponse.json();
     
             if (editSchoolResponse.ok) {
-                console.log('School successfully updated:', editSchoolData);
                 navigate('/adminSchool');
             } else {
                 setError(editSchoolData.message || "Failed to edit the school.");
@@ -583,7 +587,7 @@ useEffect(() => {
     
                 // Check if response is HTML
                 const contentType = response.headers.get('content-type');
-                console.log('Response content type:', contentType);
+                // console.log('Response content type:', contentType);
                 
                 if (!response.ok) {
                     if (contentType && contentType.includes('text/html')) {
