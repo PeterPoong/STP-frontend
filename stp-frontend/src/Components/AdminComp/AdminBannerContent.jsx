@@ -27,10 +27,26 @@ const AdminBannerContent = () => {
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`;
     const navigate = useNavigate();
+    const [statList, setStatList] = useState([]); // State for category list
+    const [selectedStat, setSelectedStat] = useState(""); // State for selected subject
+    useEffect(() => {
+        // Hardcoded statList values
+        const hardcodedStatList = [
+            { id: 0, name: "Disable" },
+            { id: 1, name: "Active" }
+        ];
+        setStatList(hardcodedStatList);
+        fetchbanners(); // Fetch enquiries initially
+    }, []);
+    const fetchbanners = async (
+        page = 1, 
+        perPage = rowsPerPage, 
+        search = searchQuery,
+        stat = selectedStat
 
-    const fetchbanners = async (page = 1, perPage = rowsPerPage, search = searchQuery) => {
+    ) => {
         try {
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/bannerListAdmin?page=${page}&per_page=${perPage}&search=${search}`, {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/bannerListAdmin?page=${page}&per_page=${perPage}&search=${search}&stat=${stat}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -60,26 +76,26 @@ const AdminBannerContent = () => {
     };
 
     useEffect(() => {
-        fetchbanners(currentPage, rowsPerPage, searchQuery);
-    }, [Authenticate, currentPage, rowsPerPage, searchQuery]);
+        fetchbanners(currentPage, rowsPerPage, searchQuery, selectedStat);
+    }, [Authenticate, currentPage, rowsPerPage, searchQuery, selectedStat]);
 
     const handleRowsPerPageChange = (newRowsPerPage) => {
         setRowsPerPage(newRowsPerPage);
         setCurrentPage(1); // Reset to the first page whenever rows per page changes
-        fetchbanners(1, newRowsPerPage, searchQuery); // Fetch data with updated rowsPerPage
+        fetchbanners(1, newRowsPerPage, searchQuery, selectedStat); // Fetch data with updated rowsPerPage
     };
 
     const handleSearch = (query) => {
         setSearchQuery(query);
         setCurrentPage(1); // Reset to the first page whenever search query changes
-        fetchbanners(1, rowsPerPage, query); // Fetch data with updated search query
+        fetchbanners(1, rowsPerPage, query, selectedStat); // Fetch data with updated search query
     };
 
     const handleSort = (column) => {
         const newDirection = sortColumn === column && sortDirection === "asc" ? "desc" : "asc";
         setSortColumn(column);
         setSortDirection(newDirection);
-        fetchbanners(currentPage, rowsPerPage, searchQuery); // Fetch sorted data
+        fetchbanners(currentPage, rowsPerPage, searchQuery, selectedStat); // Fetch sorted data
     };
 
     const sortedbanners = (() => {
@@ -148,7 +164,7 @@ const AdminBannerContent = () => {
             if (result.success) {
                 // Log the new status for debugging
                 // console.log("New status:", result.newStatus);
-                await fetchbanners(currentPage, rowsPerPage, searchQuery);
+                await fetchbanners(currentPage, rowsPerPage, searchQuery, selectedStat);
     
             } else {
                 console.error(result.message);
@@ -249,7 +265,11 @@ const AdminBannerContent = () => {
         </tr>
     );
     
-
+    const handleStatChange = (stat) => {
+        setSelectedStat(stat);
+        setCurrentPage(1);
+        fetchSchools(1, rowsPerPage, searchQuery, stat);
+      };
     return (
         <>
         {loading ? (
@@ -266,6 +286,8 @@ const AdminBannerContent = () => {
                 onPageChange={handlePageChange}
                 onRowsPerPageChange={handleRowsPerPageChange}
                 showAddButton={showAddButton}
+                statList={statList}
+                onStatChange={handleStatChange}
             />
         )}
             <Modal show={showModal} onHide={() => setShowModal(false)}>
