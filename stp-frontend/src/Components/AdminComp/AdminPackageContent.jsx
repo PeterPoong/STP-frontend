@@ -28,10 +28,25 @@ const AdminPackageContent = () => {
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`;
     const navigate = useNavigate();
-
-    const fetchPackages = async (page = 1, perPage = rowsPerPage, search = searchQuery) => {
+    const [statList, setStatList] = useState([]); // State for category list
+    const [selectedStat, setSelectedStat] = useState(""); // State for selected subject
+    useEffect(() => {
+        // Hardcoded statList values
+        const hardcodedStatList = [
+            { id: 0, name: "Disable" },
+            { id: 1, name: "Active" }
+        ];
+        setStatList(hardcodedStatList);
+        fetchPackages(); // Fetch enquiries initially
+    }, []);
+    const fetchPackages = async (
+        page = 1, 
+        perPage = rowsPerPage, 
+        search = searchQuery,
+        stat = selectedStat
+    ) => {
         try {
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/packageList?page=${page}&per_page=${perPage}&search=${search}`, {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/packageList?page=${page}&per_page=${perPage}&search=${search}&stat=${stat}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -62,26 +77,26 @@ const AdminPackageContent = () => {
     
 
     useEffect(() => {
-        fetchPackages(currentPage, rowsPerPage, searchQuery);
-    }, [Authenticate, currentPage, rowsPerPage, searchQuery]);
+        fetchPackages(currentPage, rowsPerPage, searchQuery, selectedStat);
+    }, [Authenticate, currentPage, rowsPerPage, searchQuery, selectedStat]);
 
     const handleRowsPerPageChange = (newRowsPerPage) => {
         setRowsPerPage(newRowsPerPage);
         setCurrentPage(1); // Reset to the first page whenever rows per page changes
-        fetchPackages(1, newRowsPerPage, searchQuery); // Fetch data with updated rowsPerPage
+        fetchPackages(1, newRowsPerPage, searchQuery, selectedStat); // Fetch data with updated rowsPerPage
     };
 
     const handleSearch = (query) => {
         setSearchQuery(query);
         setCurrentPage(1); // Reset to the first page whenever search query changes
-        fetchPackages(1, rowsPerPage, query); // Fetch data with updated search query
+        fetchPackages(1, rowsPerPage, query, selectedStat); // Fetch data with updated search query
     };
 
     const handleSort = (column) => {
         const newDirection = sortColumn === column && sortDirection === "asc" ? "desc" : "asc";
         setSortColumn(column);
         setSortDirection(newDirection);
-        fetchPackages(currentPage, rowsPerPage, searchQuery); // Fetch sorted data
+        fetchPackages(currentPage, rowsPerPage, searchQuery, selectedStat); // Fetch sorted data
     };
 
     const sortedPackages = (() => {
@@ -154,7 +169,7 @@ const AdminPackageContent = () => {
     
             if (result.success) {
                 // Action was successful, fetch the updated package data
-                await fetchPackages(currentPage, rowsPerPage, searchQuery);
+                await fetchPackages(currentPage, rowsPerPage, searchQuery, selectedStat);
             } else {
                 console.error(result.message || "Failed to process the action.");
             }
@@ -249,7 +264,11 @@ const AdminPackageContent = () => {
             <td colSpan="6" style={{ textAlign: "center" }}>No Data Available</td>
         </tr>
     );
-
+    const handleStatChange = (stat) => {
+        setSelectedStat(stat);
+        setCurrentPage(1);
+        fetchSchools(1, rowsPerPage, searchQuery, stat);
+      };
     return (
         <>
          {loading ? (
@@ -266,6 +285,8 @@ const AdminPackageContent = () => {
                 onPageChange={handlePageChange}
                 onRowsPerPageChange={handleRowsPerPageChange}
                 showAddButton={showAddButton}
+                statList={statList}
+                onStatChange={handleStatChange}
             />
         )}
             <Modal show={showModal} onHide={() => setShowModal(false)}>
