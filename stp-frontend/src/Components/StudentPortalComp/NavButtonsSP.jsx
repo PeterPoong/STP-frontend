@@ -407,7 +407,7 @@ const NavigationBar = () => {
                   >
                     Register
                   </Dropdown.Toggle>
-                  <Dropdown.Menu className="w-100 center">
+                  <Dropdown.Menu className="w-100 mobile-dropup-menu">
                     <Dropdown.Item 
                       as={Link} 
                       to="/studentPortalSignUp"
