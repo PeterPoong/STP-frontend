@@ -34,6 +34,19 @@ const AdminFeaturedContent = () => {
     const [isSearchResults, setIsSearchResults] = useState(false);
     const [featList, setFeatList] = useState([]); // State for category list
     const [selectedFeat, setSelectedFeat] = useState(""); // State for selected subject
+    const [statList, setStatList] = useState([]); // State for category list
+    const [selectedStat, setSelectedStat] = useState(""); // State for selected subject
+    useEffect(() => {
+        // Hardcoded statList values
+        const hardcodedStatList = [
+            { id: 0, name: "Disable" },
+            { id: 1, name: "Active" },
+            { id: 2, name: "Pending" },
+            { id: 2, name: "Rejected" }
+        ];
+        setStatList(hardcodedStatList);
+        fetchFeatureds(); // Fetch enquiries initially
+    }, []);
     const fetchFeatList = async () => {
         try {
             const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/allFeaturedList`, {
@@ -67,7 +80,14 @@ const AdminFeaturedContent = () => {
         fetchFeatList(); // Fetch categorys on component mount
         fetchFeatureds(); // Fetch enquiries initially
     }, []);
-    const fetchFeatureds = async (page = 1, perPage = rowsPerPage, search = "", featuredType = "") => {
+    const fetchFeatureds = async (
+        page = 1, 
+        perPage = rowsPerPage, 
+        search = "", 
+        featuredType = "",
+        stat = selectedStat
+
+    ) => {
         try {
             setLoading(true);
             const payload = {
@@ -75,7 +95,7 @@ const AdminFeaturedContent = () => {
             };
             const requestPerPage = featuredType ? "All" : perPage;
 
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/featuredRequestList?page=${page}&per_page=${requestPerPage}&search=${search}`, {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/featuredRequestList?page=${page}&per_page=${requestPerPage}&search=${search}&stat=${stat}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -111,13 +131,13 @@ const AdminFeaturedContent = () => {
     
 
     useEffect(() => {
-        fetchFeatureds(currentPage, rowsPerPage, "", selectedFeaturedType);
-    }, [currentPage, rowsPerPage, selectedFeaturedType]);
+        fetchFeatureds(currentPage, rowsPerPage, "", selectedFeaturedType, selectedStat);
+    }, [currentPage, rowsPerPage, selectedFeaturedType, selectedStat]);
 
     const handleRowsPerPageChange = (newRowsPerPage) => {
         setRowsPerPage(newRowsPerPage);
         setCurrentPage(1); 
-        fetchFeatureds(1, newRowsPerPage, searchQuery, selectedFeaturedType); // Pass selectedFeaturedType as argument
+        fetchFeatureds(1, newRowsPerPage, searchQuery, selectedFeaturedType, selectedStat); // Pass selectedFeaturedType as argument
     };
     
 
@@ -141,7 +161,7 @@ const AdminFeaturedContent = () => {
         const newDirection = sortColumn === column && sortDirection === "asc" ? "desc" : "asc";
         setSortColumn(column);
         setSortDirection(newDirection);
-        fetchFeatureds(currentPage, rowsPerPage, searchQuery);
+        fetchFeatureds(currentPage, rowsPerPage, searchQuery, selectedStat);
     };
 
     const sortedFeatureds = (() => {
@@ -192,7 +212,7 @@ const AdminFeaturedContent = () => {
 
             if (result.success) {
                 alert(result.data.message); // Or use your preferred notification system
-                fetchFeatureds(currentPage, rowsPerPage, searchQuery);
+                fetchFeatureds(currentPage, rowsPerPage, searchQuery, selectedStat);
             } else {
                 alert(result.message || 'Failed to update request');
             }
@@ -309,7 +329,7 @@ const AdminFeaturedContent = () => {
     const handleFeatChange = (featuredId) => {
         setSelectedFeaturedType(featuredId); // Update the selected featured type
         setCurrentPage(1); // Reset to first page when filter changes
-        fetchFeatureds(1, rowsPerPage, searchQuery, featuredId); // Fetch with new filter
+        fetchFeatureds(1, rowsPerPage, searchQuery, featuredId, selectedStat); // Fetch with new filter
     };
     const theadContent = (
         <tr>
@@ -450,6 +470,13 @@ const AdminFeaturedContent = () => {
             <td colSpan="8" style={{ textAlign: "center" }}>No Data Available</td>
         </tr>
     );
+
+    const handleStatChange = (stat) => {
+        setSelectedStat(stat);
+        setCurrentPage(1);
+        fetchFeatureds(1, rowsPerPage, searchQuery, stat);
+      };
+    
     return (
         <>
             {/* <Col md={4} style={{marginLeft:'75px'}}>
@@ -484,6 +511,8 @@ const AdminFeaturedContent = () => {
                     onRowsPerPageChange={handleRowsPerPageChange}
                     featList={featList} // Pass the featured list
                     onFeatChange={handleFeatChange} // Pass the handler function
+                    statList={statList}
+                    onStatChange={handleStatChange}
                 />
             )}
             <Modal show={showModal} onHide={() => setShowModal(false)} centered>

@@ -257,10 +257,10 @@ const AdminDataContent = () => {
     return (
         <>
          {/* Custom Filter */}
-            <Form.Group controlId="filterDropdown" className="dataFilter d-flex justify-content-center align-items-center mt-5 ms-5">
-                <div className="row w-100">
-                    <Form.Label className="dataFilterLabel col-md-3 text-md-right text-center">Data Type:</Form.Label>
-                    <div className="col-md-6">
+            <Form.Group controlId="filterDropdown" className="dataFilter d-flex justify-content-center align-items-center mt-5 mb-2">
+                <div className="row w-100" style={{ maxWidth: '600px' }}>
+                    <Form.Label className="col-md-3 text-md-end mb-0 mt-2 pe-2">Data Type:</Form.Label>
+                    <div className="col-md-6 ps-0">
                         <Form.Control as="select" value={selectedFilter} onChange={handleFilterChange}>
                             <option value="">Select Data Type</option>
                             {filterOptions.map((option, index) => (

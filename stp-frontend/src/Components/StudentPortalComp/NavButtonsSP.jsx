@@ -393,15 +393,19 @@ const NavigationBar = () => {
                   >
                     Login
                   </Dropdown.Toggle>
-                  <Dropdown.Menu>
+                  <Dropdown.Menu className="w-100 center">
                     <Dropdown.Item
-                      className="dropdown"
+                      className="dropdown loginasitem text-center"
                       as={Link}
                       to="/studentPortalLogin"
                     >
                       Login as Student
                     </Dropdown.Item>
-                    <Dropdown.Item as={Link} to="/schoolPortalLogin">
+                    <Dropdown.Item 
+                      as={Link} 
+                      to="/schoolPortalLogin"
+                      className="text-center"
+                    >
                       Login as School
                     </Dropdown.Item>
                   </Dropdown.Menu>
@@ -415,11 +419,19 @@ const NavigationBar = () => {
                   >
                     Register
                   </Dropdown.Toggle>
-                  <Dropdown.Menu>
-                    <Dropdown.Item as={Link} to="/studentPortalSignUp">
+                  <Dropdown.Menu className="w-100 center">
+                    <Dropdown.Item 
+                      as={Link} 
+                      to="/studentPortalSignUp"
+                      className="text-center"
+                    >
                       Register as Student
                     </Dropdown.Item>
-                    <Dropdown.Item as={Link} to="/schoolPortalSignUp">
+                    <Dropdown.Item 
+                      as={Link} 
+                      to="/schoolPortalSignUp"
+                      className="text-center"
+                    >
                       Register as School
                     </Dropdown.Item>
                   </Dropdown.Menu>
