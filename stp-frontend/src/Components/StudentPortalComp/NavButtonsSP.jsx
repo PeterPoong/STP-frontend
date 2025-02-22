@@ -276,117 +276,107 @@ const NavigationBar = () => {
     <Navbar
       expand="lg"
       fixed="top"
-      className="bg-white"
-      style={{ paddingLeft: "20px", paddingRight: "20px" }}
+      className="bg-white px-3 px-lg-4"
+      collapseOnSelect
     >
-      <Container>
-        <Navbar.Brand as={Link} to="/">
-          <img src={logo} alt="Logo" className="logo" loading="lazy" />
+      <Container fluid className="px-0">
+        <Navbar.Brand as={Link} to="/" className="me-lg-4">
+          <img 
+            src={logo} 
+            alt="Logo" 
+            className="logo" 
+            style={{ width: '120px', height: 'auto' }}
+          />
         </Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="me-auto">
-            <Button
-              variant="link"
-              as={Link}
-              to="/courses"
-              className={`nav-link-custom ${
-                location.pathname === "/courses" ||
-                location.pathname.startsWith("/courses")
-                  ? "active"
-                  : ""
-              }`}
-              style={{ marginLeft: "10px" }}
-            >
-              Courses
-            </Button>
-            <Button
-              variant="link"
-              as={Link}
-              to="/institute"
-              className={`nav-link-custom ${
-                location.pathname === "/institute" ||
-                location.pathname.startsWith("/institute")
-                  ? "active"
-                  : ""
-              }`}
-              style={{ marginLeft: "10px" }}
-            >
-              Schools
-            </Button>
-            <Button
-              variant="link"
-              as={Link}
-              to="/studentStudyPath"
-              className={`nav-link-custom ${
-                location.pathname === "/studentStudyPath" ||
-                location.pathname.startsWith("/studentStudyPath")
-                  ? "active"
-                  : ""
-              }`}
-              style={{ marginLeft: "10px" }}
-            >
-              Find Your Path
-            </Button>
-            <Button
-              variant="link"
-              as={Link}
-              to="/studentFeedback"
-              className={`nav-link-custom ${
-                location.pathname === "/studentFeedback" ||
-                location.pathname.startsWith("/studentFeedback")
-                  ? "active"
-                  : ""
-              }`}
-              style={{ marginLeft: "10px" }}
-            >
-              Contact Us
-            </Button>
-          </Nav>
 
-          <ButtonGroup className="me-2 nav-button-language-container">
-            <Dropdown as={ButtonGroup}>
-              <Dropdown.Toggle
-                className="nav-button-language"
-                id="dropdown-custom-1"
+        <Navbar.Toggle aria-controls="main-nav" className="border-0" />
+
+        <Navbar.Collapse id="main-nav" className="justify-content-between">
+          <Nav className="mx-auto mx-lg-0 flex-grow-1 flex-lg-grow-0"> 
+            <div className="d-flex flex-column flex-lg-row gap-2 gap-lg-3 w-100 w-lg-auto">
+              <Button
+                variant="link"
+                as={Link}
+                to="/courses"
+                className="nav-link-custom text-nowrap px-lg-2"
               >
-                <span className="notranslate" style={{ fontSize: "12px" }}>
-                  <Translate size={20} color="#BA1718" className="me-2" />
-                  {languages.find((lang) => lang.code === displayLanguage)
-                    ?.nativeLabel || "English"}
-                </span>
-              </Dropdown.Toggle>
-              <Dropdown.Menu>
-                {languages.map((lang) => (
-                  <Dropdown.Item
-                    key={lang.code}
-                    onClick={() => {
-                      changeLanguage(lang.code);
-                      setDisplayLanguage(lang.code);
-                    }}
-                    className="dropdown"
-                    active={displayLanguage === lang.code}
-                  >
-                    <span className="notranslate">{lang.nativeLabel}</span>
-                  </Dropdown.Item>
-                ))}
-              </Dropdown.Menu>
-            </Dropdown>
-          </ButtonGroup>
-          {hasToken ? (
-            <div className="m-10 navbutton-section-afterlogin">
-              <Button className="m-0 btnfirst">Hi !</Button>
-              <Button className="m-0 btnsecond" onClick={handleRoute}>
-                {userName}
+                Courses
               </Button>
-              <Button className="m-0 btnfirstlogout" onClick={handleLogout}>
-                Logout
+              <Button
+                variant="link"
+                as={Link}
+                to="/institute"
+                className="nav-link-custom text-nowrap px-lg-2"
+              >
+                Schools
+              </Button>
+              <Button
+                variant="link"
+                as={Link}
+                to="/studentStudyPath"
+                className="nav-link-custom text-nowrap px-lg-2"
+              >
+                Find Your Path
+              </Button>
+              <Button
+                variant="link"
+                as={Link}
+                to="/studentFeedback"
+                className="nav-link-custom text-nowrap px-lg-2"
+              >
+                Contact Us
               </Button>
             </div>
-          ) : (
-            <div className="m-10 navbutton-section">
-              <ButtonGroup className="mb-2 mb-lg-0">
-                <Dropdown as={ButtonGroup}>
+          </Nav>
+
+          <div className="d-flex flex-column flex-lg-row align-items-center gap-3 mt-3 mt-lg-0">
+            <ButtonGroup className="nav-button-language-container">
+              <Dropdown as={ButtonGroup}>
+                <Dropdown.Toggle
+                  className="nav-button-language"
+                  id="dropdown-custom-1"
+                >
+                  <span className="notranslate" style={{ fontSize: "12px" }}>
+                    <Translate size={20} color="#BA1718" className="me-2" />
+                    {languages.find((lang) => lang.code === displayLanguage)
+                      ?.nativeLabel || "English"}
+                  </span>
+                </Dropdown.Toggle>
+                <Dropdown.Menu>
+                  {languages.map((lang) => (
+                    <Dropdown.Item
+                      key={lang.code}
+                      onClick={() => {
+                        changeLanguage(lang.code);
+                        setDisplayLanguage(lang.code);
+                      }}
+                      className="dropdown"
+                      active={displayLanguage === lang.code}
+                    >
+                      <span className="notranslate">{lang.nativeLabel}</span>
+                    </Dropdown.Item>
+                  ))}
+                </Dropdown.Menu>
+              </Dropdown>
+            </ButtonGroup>
+
+            {hasToken ? (
+              <div className="d-flex flex-wrap gap-2 justify-content-center w-100">
+                <Button className="btnfirst flex-grow-1 flex-lg-grow-0">Hi!</Button>
+                <Button 
+                  className="btnsecond text-truncate" 
+                  onClick={handleRoute}
+                  style={{ maxWidth: '150px' }}
+                >
+                  {userName}
+                </Button>
+                <Button className="btnfirstlogout flex-grow-1 flex-lg-grow-0">
+                  Logout
+                </Button>
+              </div>
+            ) : (
+              <div className="d-flex flex-column flex-lg-row gap-2 w-100 w-lg-auto">
+                <Dropdown as={ButtonGroup} className="w-100 w-lg-auto">
                   <Dropdown.Toggle
                     className="nav-button"
                     id="dropdown-custom-1"
@@ -410,9 +400,7 @@ const NavigationBar = () => {
                     </Dropdown.Item>
                   </Dropdown.Menu>
                 </Dropdown>
-              </ButtonGroup>
-              <ButtonGroup>
-                <Dropdown as={ButtonGroup}>
+                <Dropdown as={ButtonGroup} className="w-100 w-lg-auto">
                   <Dropdown.Toggle
                     className="nav-button"
                     id="dropdown-custom-2"
@@ -436,9 +424,9 @@ const NavigationBar = () => {
                     </Dropdown.Item>
                   </Dropdown.Menu>
                 </Dropdown>
-              </ButtonGroup>
-            </div>
-          )}
+              </div>
+            )}
+          </div>
         </Navbar.Collapse>
       </Container>
     </Navbar>
