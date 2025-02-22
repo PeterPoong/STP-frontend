@@ -298,7 +298,7 @@ const NavigationBar = () => {
                 variant="link"
                 as={Link}
                 to="/courses"
-                className="nav-link-custom text-nowrap px-lg-2"
+                className="nav-link-custom text-nowrap px-lg-4"
               >
                 Courses
               </Button>
@@ -306,7 +306,7 @@ const NavigationBar = () => {
                 variant="link"
                 as={Link}
                 to="/institute"
-                className="nav-link-custom text-nowrap px-lg-2"
+                className="nav-link-custom text-nowrap px-lg-4"
               >
                 Schools
               </Button>
@@ -314,7 +314,7 @@ const NavigationBar = () => {
                 variant="link"
                 as={Link}
                 to="/studentStudyPath"
-                className="nav-link-custom text-nowrap px-lg-2"
+                className="nav-link-custom text-nowrap px-lg-4 d-none d-sm-none d-md-none d-lg-none d-xl-block"
               >
                 Find Your Path
               </Button>
@@ -322,10 +322,37 @@ const NavigationBar = () => {
                 variant="link"
                 as={Link}
                 to="/studentFeedback"
-                className="nav-link-custom text-nowrap px-lg-2"
+                className="nav-link-custom text-nowrap px-lg-4 d-none d-sm-none d-md-none d-lg-none d-xl-block"
               >
                 Contact Us
               </Button>
+
+              {/* Add dropdown for smaller screens */}
+              <Dropdown className="d-xl-none">
+                <Dropdown.Toggle 
+                  variant="link" 
+                  className="nav-link-custom text-nowrap px-lg-4"
+                  id="dropdown-more-links"
+                >
+                  More
+                </Dropdown.Toggle>
+                <Dropdown.Menu>
+                  <Dropdown.Item 
+                    as={Link} 
+                    to="/studentStudyPath"
+                    className="nav-link-custom"
+                  >
+                    Find Your Path
+                  </Dropdown.Item>
+                  <Dropdown.Item 
+                    as={Link} 
+                    to="/studentFeedback"
+                    className="nav-link-custom"
+                  >
+                    Contact Us
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
             </div>
           </Nav>
 
@@ -361,16 +388,16 @@ const NavigationBar = () => {
             </ButtonGroup>
 
             {hasToken ? (
-              <div className="d-flex flex-wrap gap-2 justify-content-center w-100">
-                <Button className="btnfirst flex-grow-1 flex-lg-grow-0">Hi!</Button>
+              <div className="d-flex flex-wrap justify-content-center w-100">
+                <Button className="btnfirst flex-grow-1 flex-lg-grow-0 me-0">Hi!</Button>
                 <Button 
-                  className="btnsecond text-truncate" 
+                  className="btnsecond text-truncate mx-0" 
                   onClick={handleRoute}
                   style={{ maxWidth: '150px' }}
                 >
                   {userName}
                 </Button>
-                <Button className="btnfirstlogout flex-grow-1 flex-lg-grow-0">
+                <Button className="btnfirstlogout flex-grow-1 flex-lg-grow-0 ms-0" onClick={handleLogout}>
                   Logout
                 </Button>
               </div>
