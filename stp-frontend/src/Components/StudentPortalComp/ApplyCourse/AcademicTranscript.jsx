@@ -682,26 +682,18 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
     selected
   ) => {
     const { value, label } = selected;
-
-    const updatedTranscripts = academicTranscripts.map((transcript, i) =>
-      i === transcriptIndex
-        ? {
-            ...transcript,
-            subjects: transcript.subjects.map((subject, j) =>
-              j === subjectIndex
-                ? { ...subject, id: value, name: label }
-                : subject
-            ),
-          }
-        : transcript
+    setAcademicTranscripts(prevTranscripts => 
+      prevTranscripts.map((transcript, i) =>
+        i === transcriptIndex
+          ? {
+              ...transcript,
+              subjects: transcript.subjects.map((subject, j) =>
+                j === subjectIndex ? { ...subject, id: value, name: label } : subject
+              ),
+            }
+          : transcript
+      )
     );
-
-    setAcademicTranscripts(updatedTranscripts);
-
-    // After selecting a subject, update available subjects to prevent duplicates
-    if (value) {
-      fetchAvailableSubjects(32 || 85, transcriptIndex);
-    }
   };
 
   const handleSubjectChange = (transcriptIndex, subjectIndex, field, value) => {
@@ -1332,31 +1324,33 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
           key={index}
           className="academic-transcript-item mb-4 border rounded py-4"
         >
-          <div className="sac-container-casetwo d-flex justify-content-between align-items-start align-items-sm-center mb-3 px-4">
-            <div className="d-flex align-items-center mb-2 mb-sm-0">
+          <Row className="sac-container-casetwo justify-content-between align-items-start align-items-sm-center mb-3 px-4">
+            <Col sm="8" lg="auto" className="d-flex align-items-center mb-2 mb-sm-0">
               <AlignJustify className="me-2 align-self-center" size={15} />
-              {transcript.name ? (
-                <span className="fw-bold">{transcript.name}</span>
-              ) : (
-                <Select
-                  options={getAvailableCategories(index)}
-                  value={
-                    transcript.id
-                      ? { value: transcript.id, label: transcript.name }
-                      : null
-                  }
-                  onChange={(selected) =>
+              <Form.Select 
+                value={transcript.id || ""}
+                onChange={(e) => {
+                  const selectedCategory = getAvailableCategories(index)
+                    .find(cat => cat.value === parseInt(e.target.value));
+                  if (selectedCategory) {
                     handleTranscriptChange(index, {
-                      id: selected.value,
-                      name: selected.label,
-                    })
+                      id: selectedCategory.value,
+                      name: selectedCategory.label
+                    });
                   }
-                  className="fw-bold border-0 sac-at-bg sac-at-select-style w-100"
-                  placeholder="Choose an education"
-                />
-              )}
-            </div>
-            <div className="d-flex">
+                }}
+                className="fw-bold border-0 sac-at-bg sac-at-select-style w-100 bg-white"
+              >
+                <option disabled value="">Choose an education</option>
+                {getAvailableCategories(index).map(category => (
+                  <option key={category.value} value={category.value}>
+                    {category.label}
+                  </option>
+                ))}
+              </Form.Select>
+            </Col>
+            
+            <Col sm="auto" lg="auto" className="d-flex">
               <Button
                 variant="link"
                 className="p-0 me-2"
@@ -1379,8 +1373,8 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
               >
                 <Trash2 size={18} color="grey" />
               </Button>
-            </div>
-          </div>
+            </Col>
+          </Row>
 
           {transcript.subjects.length === 0 && (
             <div className="px-4 py-2 text-muted">
@@ -1399,34 +1393,49 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                       <div className="applycourse-academictranscript-dflex align-items-center flex-grow-1">
                         <AlignJustify className="mx-2" size={15} color="grey" />
                         {transcript.id === 32 || transcript.id === 85 ? (
-                          <Select
-                            options={availableSubjects
-                              .filter(
-                                (s) =>
-                                  !transcript.subjects
-                                    .filter(
-                                      (existingSubject, idx) =>
-                                        idx !== subIndex && existingSubject.id
-                                    ) // Exclude current subject
-                                    .map((s) => s.id)
-                                    .includes(s.id)
-                              )
-                              .map((s) => ({ value: s.id, label: s.name }))}
-                            value={
-                              subject.id && subject.name
-                                ? { value: subject.id, label: subject.name }
-                                : null
-                            }
-                            onChange={(selected) =>
-                              handleSubjectSelectChange(
-                                index,
-                                subIndex,
-                                selected
-                              )
-                            }
+                          <Form.Select
+                            value={subject.id || ""}
+                            onChange={(e) => {
+                              const selectedId = e.target.value;
+                              // Find the subject in AVAILABLE subjects, not in transcript subjects
+                              const selectedSubject = availableSubjects.find(
+                                (s) => s.id.toString() === selectedId
+                              );
+                              
+                              if (selectedSubject) {
+                                // Update only the specific subject in the specific transcript
+                                setAcademicTranscripts(prev => prev.map((t, tIdx) => 
+                                  tIdx === index ? {
+                                    ...t,
+                                    subjects: t.subjects.map((s, sIdx) => 
+                                      sIdx === subIndex ? {
+                                        ...s,
+                                        id: selectedSubject.id,
+                                        name: selectedSubject.name
+                                      } : s
+                                    )
+                                  } : t
+                                ));
+                              }
+                            }}
                             className="me-2 applycourse-academictranscript-select-width"
-                            placeholder="Select Subject"
-                          />
+                          >
+                            <option value="" disabled>Select Subject</option>
+                            {availableSubjects
+                              .filter(s => 
+                                !transcript.subjects.some(
+                                  (existing, idx) => idx !== subIndex && existing.id === s.id
+                                )
+                              )
+                              .map((subjectOption) => (
+                                <option 
+                                  key={subjectOption.id} 
+                                  value={subjectOption.id}
+                                >
+                                  {subjectOption.name}
+                                </option>
+                              ))}
+                          </Form.Select>
                         ) : (
                           <Form.Control
                             type="text"
