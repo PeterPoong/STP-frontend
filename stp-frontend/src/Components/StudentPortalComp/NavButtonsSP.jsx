@@ -281,24 +281,29 @@ const NavigationBar = () => {
     >
       <Container fluid className="px-0">
         <Navbar.Brand as={Link} to="/" className="me-lg-4">
-          <img 
-            src={logo} 
-            alt="Logo" 
-            className="logo" 
-            style={{ width: '120px', height: 'auto' }}
+          <img
+            src={logo}
+            alt="Logo"
+            className="logo"
+            style={{ width: "120px", height: "auto" }}
           />
         </Navbar.Brand>
 
         <Navbar.Toggle aria-controls="main-nav" className="border-0" />
 
         <Navbar.Collapse id="main-nav" className="justify-content-between">
-          <Nav className="mx-auto mx-lg-0 flex-grow-1 flex-lg-grow-0"> 
+          <Nav className="mx-auto mx-lg-0 flex-grow-1 flex-lg-grow-0">
             <div className="d-flex flex-column flex-lg-row gap-2 gap-lg-3 w-100 w-lg-auto">
               <Button
                 variant="link"
                 as={Link}
                 to="/courses"
-                className="nav-link-custom text-nowrap px-lg-4"
+                className={`nav-link-custom text-nowrap px-lg-4 ${
+                location.pathname === "/courses" ||
+                location.pathname.startsWith("/courses")
+                  ? "active"
+                  : ""
+              }`}
               >
                 Courses
               </Button>
@@ -306,7 +311,12 @@ const NavigationBar = () => {
                 variant="link"
                 as={Link}
                 to="/institute"
-                className="nav-link-custom text-nowrap px-lg-4"
+                className={`nav-link-custom text-nowrap px-lg-4 ${
+                location.pathname === "/institute" ||
+                location.pathname.startsWith("/institute")
+                  ? "active"
+                  : ""
+              }`}
               >
                 Schools
               </Button>
@@ -314,7 +324,12 @@ const NavigationBar = () => {
                 variant="link"
                 as={Link}
                 to="/studentStudyPath"
-                className="nav-link-custom text-nowrap px-lg-4 d-none d-sm-none d-md-none d-lg-none d-xl-block"
+                className={`nav-link-custom text-nowrap px-lg-4 d-none d-xl-block ${
+                location.pathname === "/studentStudyPath" ||
+                location.pathname.startsWith("/studentStudyPath")
+                  ? "active"
+                  : ""
+              }`}
               >
                 Find Your Path
               </Button>
@@ -322,37 +337,80 @@ const NavigationBar = () => {
                 variant="link"
                 as={Link}
                 to="/studentFeedback"
-                className="nav-link-custom text-nowrap px-lg-4 d-none d-sm-none d-md-none d-lg-none d-xl-block"
+                className={`nav-link-custom text-nowrap px-lg-4 d-none d-xl-block ${
+                location.pathname === "/studentFeedback" ||
+                location.pathname.startsWith("/studentFeedback")
+                  ? "active"
+                  : ""
+              }`}
               >
                 Contact Us
               </Button>
 
-              {/* Add dropdown for smaller screens */}
-              <Dropdown className="d-xl-none">
-                <Dropdown.Toggle 
-                  variant="link" 
-                  className="nav-link-custom text-nowrap px-lg-4"
+              {/* Dropdown for medium screens when navbar is expanded */}
+              <Dropdown className="d-none d-lg-block d-xl-none">
+                <Dropdown.Toggle
+                  variant="link"
+                  className="nav-link-custom text-nowrap px-lg-4 mb-0"
                   id="dropdown-more-links"
                 >
                   More
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
-                  <Dropdown.Item 
-                    as={Link} 
+                  <Dropdown.Item
+                    as={Link}
                     to="/studentStudyPath"
-                    className="nav-link-custom"
+                    className={`nav-link-custom bg-white ${
+                    location.pathname === "/studentStudyPath" ||
+                    location.pathname.startsWith("/studentStudyPath")
+                      ? "active"
+                      : ""
+                  }`}
                   >
                     Find Your Path
                   </Dropdown.Item>
-                  <Dropdown.Item 
-                    as={Link} 
+                  <Dropdown.Item
+                    as={Link}
                     to="/studentFeedback"
-                    className="nav-link-custom"
+                    className={`nav-link-custom bg-white ${
+                    location.pathname === "/studentFeedback" ||
+                    location.pathname.startsWith("/studentFeedback")
+                      ? "active"
+                      : ""
+                  }`}
                   >
                     Contact Us
                   </Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
+
+              {/* Mobile links shown in collapsed menu */}
+              <Button
+                variant="link"
+                as={Link}
+                to="/studentStudyPath"
+                className={`nav-link-custom text-nowrap px-lg-4 d-lg-none ${
+                location.pathname === "/studentStudyPath" ||
+                location.pathname.startsWith("/studentStudyPath")
+                  ? "active"
+                  : ""
+              }`}
+              >
+                Find Your Path
+              </Button>
+              <Button
+                variant="link"
+                as={Link}
+                to="/studentFeedback"
+                className={`nav-link-custom text-nowrap px-lg-4 d-lg-none ${
+                location.pathname === "/studentFeedback" ||
+                location.pathname.startsWith("/studentFeedback")
+                  ? "active"
+                  : ""
+              }`}
+              >
+                Contact Us
+              </Button>
             </div>
           </Nav>
 
@@ -389,15 +447,20 @@ const NavigationBar = () => {
 
             {hasToken ? (
               <div className="d-flex flex-wrap justify-content-center w-100">
-                <Button className="btnfirst flex-grow-1 flex-lg-grow-0 me-0">Hi!</Button>
-                <Button 
-                  className="btnsecond text-truncate mx-0" 
+                <Button className="btnfirst flex-grow-1 flex-lg-grow-0 me-0">
+                  Hi!
+                </Button>
+                <Button
+                  className="btnsecond text-truncate mx-0"
                   onClick={handleRoute}
-                  style={{ maxWidth: '150px' }}
+                  style={{ maxWidth: "150px" }}
                 >
                   {userName}
                 </Button>
-                <Button className="btnfirstlogout flex-grow-1 flex-lg-grow-0 ms-0" onClick={handleLogout}>
+                <Button
+                  className="btnfirstlogout flex-grow-1 flex-lg-grow-0 ms-0"
+                  onClick={handleLogout}
+                >
                   Logout
                 </Button>
               </div>
