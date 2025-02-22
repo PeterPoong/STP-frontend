@@ -231,7 +231,7 @@ const AdminEditSchoolContent = () => {
         }
     
         const {
-            name, email,logo, category, school_google_map_location, school_location, state, city, account, country,
+            name, email, category, school_google_map_location, school_location, state, city, account, country,
             school_address, school_website, contact_number, person_in_charge_email, person_in_charge_name,
             person_in_charge_contact, country_code, confirm_password, school_shortDesc, school_fullDesc, password
         } = formData;
@@ -271,10 +271,6 @@ const AdminEditSchoolContent = () => {
         formPayload.append("school_fullDesc", school_fullDesc);
     
         let fieldErrors = {};
-    
-        selectedFeatures.forEach((feature) => {
-            formPayload.append("featured[]", feature);
-        });
     
         if (formData.logo instanceof File) {
             try {
