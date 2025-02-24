@@ -1897,6 +1897,7 @@ ul {
   }
 
   .sac-image-applycourse {
+    object-fit: contain;
     width: auto;
     height: 3.5rem;
     margin-right: 0.5rem;
@@ -1904,7 +1905,7 @@ ul {
 
 
   .coursetext-applycourse {
-    font-size: 1.25rem;
+    font-size: 1.3rem;
     margin-bottom: 1.25rem;
   }
 

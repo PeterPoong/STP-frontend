@@ -339,16 +339,16 @@ const StudentApplyCourses = () => {
             <h3 className="text-black align-self-center fw-normal mb-3">
               You are now applying for{" "}
             </h3>
-            <p className="coursetext-applycourse  align-self-center fw-bold ">
+            <p className="coursetext-applycourse align-self-center fw-bold">
               {courseName || "Bachelor in Mass Communication"}
             </p>
-            <div className="d-flex justify-content-center">
+            <div className="d-flex flex-column flex-md-row justify-content-center">
               <img
                 src={schoolLogoUrl || image1}
-                className="sac-image-applycourse "
+                className="sac-image-applycourse mb-3 text-center"
                 alt={`${schoolName || "University"} Logo`}
               />
-              <p className="schooltext-applycourse text-black fw-bold align-self-center">
+              <p className="schooltext-applycourse text-black fw-bold align-self-center text-center">
                 {schoolName || "Swinburne University of Technology"}
               </p>
             </div>
