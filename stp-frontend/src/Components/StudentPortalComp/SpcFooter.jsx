@@ -96,8 +96,8 @@ const SpcFooter = () => {
           Lot 3493, No.13 2nd Floor, Jalan Piasau, Piasau Commercial, 98000
           Miri, Sarawak
         </p>
-        <p style={{ fontsize: "12px",marginBottom:"0" }}>
-        Copyright © {new Date().getFullYear()} iMedia Enterprise. Designed by{" "}
+        <p style={{ fontsize: "12px", marginBottom: "0" }}>
+          Copyright © {new Date().getFullYear()} iMedia Enterprise. Designed by{" "}
           <Link
             to="https://imedia.my"
             style={{ fontsize: "12px", color: "#EC3030" }}
