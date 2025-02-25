@@ -1287,25 +1287,25 @@ const CourseDetail = () => {
                         spaceBetween: 5,
                       },
                       1024: {
-                        slidesPerView: 5,
+                        slidesPerView: 3,
                         spaceBetween: 5,
                       },
+                      1025: {
+                        // Custom breakpoint for specific screen height
+                        slidesPerView: 4, // Adjust as needed
+                        spaceBetween: 1, // Adjust as needed
+                      },
                       1254: {
-                        slidesPerView: 5,
+                        slidesPerView: 4,
                         spaceBetween: 1,
                       },
                       1324: {
-                        slidesPerView: 5,
+                        slidesPerView: 4,
                         spaceBetween: 1,
                       },
                       1488: {
                         slidesPerView: 5,
-                        spaceBetween: 10,
-                      },
-                      1025: {
-                        // Custom breakpoint for specific screen height
-                        slidesPerView: 5, // Adjust as needed
-                        spaceBetween: 3, // Adjust as needed
+                        spaceBetween: 1,
                       },
                     }}
                   >
