@@ -223,12 +223,17 @@ const StudentPortalSignUp = () => {
               </svg>
             </button>
           </div>
-          <img
-            src={studentPortalLogin}
-            className="w-100 h-100 object-fit-cover"
-            alt="Background"
-          />
+          
+         
         </Col>
+        <Col md={6} className="p-0 h-100 d-md-flex d-none">
+         
+         <img
+           src={studentPortalLogin}
+           alt="Student Portal Login"
+           className="w-100 h-100 object-fit-cover"
+         />
+       </Col>
         <Col
           md={6}
           className="d-flex align-items-center justify-content-center bg-white"

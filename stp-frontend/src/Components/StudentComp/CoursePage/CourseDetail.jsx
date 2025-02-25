@@ -729,40 +729,34 @@ const CourseDetail = () => {
                     </Col>
                     <Col md={12}>
                       {!openDescription ? (
-                        <div
-                          id="collapse-description"
-                          className="student-coursedetil-wordbreak"
-                        >
-                          {/* Use dangerouslySetInnerHTML to render HTML safely */}
-                          <div
-                            dangerouslySetInnerHTML={{
-                              __html: program.description,
-                            }}
+                        <div id="collapse-description" className="student-coursedetil-wordbreak">
+                          <div 
+                            dangerouslySetInnerHTML={{ __html: program.description }} 
+                            style={{ display: '-webkit-box',
+                               WebkitLineClamp: 3, WebkitBoxOrient: 'vertical',
+                                overflow: 'hidden' }}
                           />
                         </div>
                       ) : (
                         <Collapse in={openDescription}>
                           <div id="collapse-description">
-                            {/* Use dangerouslySetInnerHTML to render HTML safely */}
-                            <div
-                              dangerouslySetInnerHTML={{
-                                __html: program.description,
-                              }}
-                            />
+                            <div dangerouslySetInnerHTML={{ __html: program.description }} />
                           </div>
                         </Collapse>
                       )}
                     </Col>
                     <Col className="d-flex justify-content-center">
-                      <Button
-                        onClick={() => setOpenDescription(!openDescription)}
-                        aria-controls="collapse-description"
-                        aria-expanded={openDescription}
-                        style={{ textDecoration: "none" }}
-                        variant="link"
-                      >
-                        {openDescription ? "View Less" : "View More"}
-                      </Button>
+                      {program.description && program.description.length > 500 && (
+                        <Button
+                          onClick={() => setOpenDescription(!openDescription)}
+                          aria-controls="collapse-description"
+                          aria-expanded={openDescription}
+                          style={{ textDecoration: "none" }}
+                          variant="link"
+                        >
+                          {openDescription ? "View Less" : "View More"}
+                        </Button>
+                      )}
                     </Col>
                   </Row>
                 </div>
@@ -780,38 +774,32 @@ const CourseDetail = () => {
                     </Col>
                     <Col md={12}>
                       {!openRequirement ? (
-                        <div
-                          id="collapse-requirement"
-                          className="student-coursedetil-wordbreak"
-                        >
-                          <div
-                            dangerouslySetInnerHTML={{
-                              __html: program.requirement,
-                            }}
+                        <div id="collapse-requirement" className="student-coursedetil-wordbreak">
+                          <div 
+                            dangerouslySetInnerHTML={{ __html: program.requirement }}
+                            style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
                           />
                         </div>
                       ) : (
                         <Collapse in={openRequirement}>
                           <div id="collapse-requirement">
-                            <div
-                              dangerouslySetInnerHTML={{
-                                __html: program.requirement,
-                              }}
-                            />
+                            <div dangerouslySetInnerHTML={{ __html: program.requirement }} />
                           </div>
                         </Collapse>
                       )}
                     </Col>
                     <Col className="d-flex justify-content-center">
-                      <Button
-                        onClick={() => setOpenRequirement(!openRequirement)}
-                        aria-controls="collapse-requirement"
-                        aria-expanded={openRequirement}
-                        style={{ textDecoration: "none" }}
-                        variant="link"
-                      >
-                        {openRequirement ? "View Less" : "View More"}
-                      </Button>
+                      {program.requirement && program.requirement.length > 200 && (
+                        <Button
+                          onClick={() => setOpenRequirement(!openRequirement)}
+                          aria-controls="collapse-requirement"
+                          aria-expanded={openRequirement}
+                          style={{ textDecoration: "none" }}
+                          variant="link"
+                        >
+                          {openRequirement ? "View Less" : "View More"}
+                        </Button>
+                      )}
                     </Col>
                   </Row>
                 </div>
@@ -906,11 +894,17 @@ const CourseDetail = () => {
                               maxHeight: openAboutInstitute ? "none" : "100px",
                               overflow: "hidden",
                               transition: "max-height 0.5s ease",
+                              position: 'relative'
                             }}
                           >
-                            <div
-                              dangerouslySetInnerHTML={{
-                                __html: program.schoolLongDescription,
+                            <div 
+                              dangerouslySetInnerHTML={{ __html: program.schoolLongDescription }}
+                              style={{ 
+                                display: '-webkit-box',
+                                WebkitLineClamp: openAboutInstitute ? 'unset' : 3,
+                                WebkitBoxOrient: 'vertical',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis'
                               }}
                             />
                           </div>
@@ -924,27 +918,28 @@ const CourseDetail = () => {
                           </Collapse>
                         </Col>
                         <Col className="d-flex justify-content-center">
-                          <Button
-                            style={{
-                              textDecoration: "none",
-                              color: "#007bff",
-                              background: "none",
-                              border: "none",
-                              marginTop: "20px",
-                              cursor: "pointer",
-                            }}
-                            onClick={() => {
-                              setOpenAboutInstitute(!openAboutInstitute);
-                              // Add a small delay to ensure the content is rendered before measuring
-                              setTimeout(() => {
-                                handleContentHeight();
-                              }, 0);
-                            }}
-                            aria-controls="collapse-about-institute"
-                            aria-expanded={openAboutInstitute}
-                          >
-                            {openAboutInstitute ? "View Less" : "View More"}
-                          </Button>
+                          {program.schoolLongDescription && program.schoolLongDescription.length > 100 && (
+                            <Button
+                              style={{
+                                textDecoration: "none",
+                                color: "#007bff",
+                                background: "none",
+                                border: "none",
+                                marginTop: "20px",
+                                cursor: "pointer",
+                              }}
+                              onClick={() => {
+                                setOpenAboutInstitute(!openAboutInstitute);
+                                setTimeout(() => {
+                                  handleContentHeight();
+                                }, 0);
+                              }}
+                              aria-controls="collapse-about-institute"
+                              aria-expanded={openAboutInstitute}
+                            >
+                              {openAboutInstitute ? "View Less" : "View More"}
+                            </Button>
+                          )}
                         </Col>
                       </Row>
                     </div>

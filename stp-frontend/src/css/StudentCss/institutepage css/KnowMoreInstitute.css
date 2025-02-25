@@ -473,3 +473,11 @@
     text-align: center !important;
   }
 }
+.truncate-text p {
+  display: inline;
+  margin: 0;
+}
+
+.truncate-text br {
+  display: none;
+}
