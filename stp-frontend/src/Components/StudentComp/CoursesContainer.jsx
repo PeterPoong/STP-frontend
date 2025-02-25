@@ -84,12 +84,8 @@ const CoursesContainer = () => {
 
   return (
     <div style={{ backgroundColor: "white" }}>
-      <Container>
-        <h4
-          style={{ color: "#a90000", textAlign: "center", paddingTop: "40px" }}
-        >
-          Hot pick Courses
-        </h4>
+      <Container fluid>
+        <h4 className="courses-title">Hot pick Courses</h4>
         {loading ? (
           <div style={{ textAlign: "center", padding: "40px" }}>
             {" "}
@@ -107,46 +103,30 @@ const CoursesContainer = () => {
           </div>
         ) : buttons.length > 0 ? (
           <Swiper
-            key={buttons.length} // This forces a re-render only when the data changes
+            key={buttons.length}
             modules={[Navigation, Pagination]}
             spaceBetween={10}
             slidesPerView={1}
-            effect="slide"
+            breakpoints={{
+              640: {
+                slidesPerView: 1,
+                spaceBetween: 20
+              },
+              768: {
+                slidesPerView: 1,
+                spaceBetween: 30
+              },
+              1024: {
+                slidesPerView: 1,
+                spaceBetween: 50
+              }
+            }}
             navigation
           >
             {slides.map((slide, index) => (
               <SwiperSlide key={index}>
-                <div
-                  className="button-grid first-row"
-                  style={{
-                    justifyContent: "center",
-                    display: "flex",
-                    gap: "50px",
-                    padding: "0 50px",
-                  }}
-                >
-                  {/* First row */}
-                  {slide.slice(0, 7).map((button) => (
-                    <CoursesButton
-                      key={button.id}
-                      src={button.src}
-                      label={button.label}
-                      onClick={() => handleButtonClick(button)}
-                    />
-                  ))}
-                </div>
-
-                <div
-                  className="button-grid second-row"
-                  style={{
-                    justifyContent: "center",
-                    display: "flex",
-                    gap: "50px",
-                    padding: "0 50px",
-                  }}
-                >
-                  {/* Second row */}
-                  {slide.slice(7).map((button) => (
+                <div className="button-grid-container ms-3">
+                  {slide.map((button) => (
                     <CoursesButton
                       key={button.id}
                       src={button.src}
