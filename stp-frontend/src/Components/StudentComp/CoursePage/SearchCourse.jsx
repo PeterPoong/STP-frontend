@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo, useCallback, Suspense, lazy } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import "../../../css/StudentCss/course page css/SearchCourse.css";
 import {
@@ -27,12 +27,18 @@ import "swiper/swiper-bundle.css";
 import { Navigation, Autoplay } from "swiper/modules";
 import { requestUserCountry } from "../../../utils/locationRequest";
 import currency from "currency.js";
+import { FixedSizeList as List } from 'react-window';
 
 export const baseURL = import.meta.env.VITE_BASE_URL;
 const countriesURL = `${baseURL}api/student/countryList`;
 const filterURL = `${baseURL}api/student/listingFilterList`;
 const courseListURL = `${baseURL}api/student/courseList`;
 const adsAURL = `${baseURL}api/student/advertisementList`;
+
+// Lazy load Swiper components which are only needed when ads are available
+const LazySwiper = lazy(() => import('swiper/react').then(module => ({ default: module.Swiper })));
+const LazySwiperSlide = lazy(() => import('swiper/react').then(module => ({ default: module.SwiperSlide })));
+
 const SearchCourse = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -165,6 +171,11 @@ const SearchCourse = () => {
   const [selectedCurrency, setSelectedCurrency] = useState({});
 
   const [showMobileFilters, setShowMobileFilters] = useState(false);
+
+  // Add new state for filter loading and search
+  const [filterLoading, setFilterLoading] = useState(false);
+  const [expandedFilters, setExpandedFilters] = useState({});
+  const [filterSearch, setFilterSearch] = useState("");
 
   const fetchExchangeRates = async () => {
     try {
@@ -320,26 +331,42 @@ const SearchCourse = () => {
     }
   };
 
-  // Step 2: Fetch Filters
-  const fetchFilters = async (countryID) => {
+  // Optimize filter fetching with caching
+  const fetchFilters = useCallback(async (countryID) => {
+    setFilterLoading(true);
     try {
+      // Check cache first
+      const cacheKey = `filters_${countryID}`;
+      const cachedData = sessionStorage.getItem(cacheKey);
+      
+      if (cachedData) {
+        const parsedData = JSON.parse(cachedData);
+        setFilterData(parsedData);
+        setFilterLoading(false);
+        return;
+      }
+      
       const response = await fetch(filterURL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ countryID }),
       });
       const result = await response.json();
-      //console.log(result)
+
       if (result.success) {
+        // Cache results for future visits
+        sessionStorage.setItem(cacheKey, JSON.stringify(result.data));
         setFilterData(result.data);
       }
     } catch (error) {
-      // console.error("Error fetching filters:", error);
+      console.error("Error fetching filters:", error);
+    } finally {
+      setFilterLoading(false);
     }
-  };
+  }, []);
 
   // Step 3: Fetch Courses
-  const fetchCourses = async () => {
+  const fetchCourses = useCallback(async () => {
     if (!selectedCountry) {
       console.log("No country selected, returning early");
       return;
@@ -409,7 +436,7 @@ const SearchCourse = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedCountry, currentPage, selectedInstitute, selectedQualification, selectedFilters, searchQuery]);
 
   const fetchAddsImageA = async () => {
     try {
@@ -461,7 +488,7 @@ const SearchCourse = () => {
     if (selectedCountry) {
       fetchFilters(selectedCountry.id);
     }
-  }, [selectedCountry]);
+  }, [selectedCountry, fetchFilters]);
 
   useEffect(() => {
     if (selectedCountry) {
@@ -693,7 +720,65 @@ const SearchCourse = () => {
     }
   };
 
-  const renderPrograms = () => {
+  const renderAdImages = (adsImages, defaultImage) => {
+    if (Array.isArray(adsImages) && adsImages.length > 0) {
+      return (
+        <Suspense fallback={<div className="loading-placeholder" style={{ height: "175px", background: "#f0f0f0" }}></div>}>
+          <LazySwiper
+            spaceBetween={10}
+            slidesPerView={1}
+            navigation
+            autoplay={{ delay: 5000, disableOnInteraction: false }}
+            modules={[Navigation, Autoplay]}
+            style={{ padding: "20px 0" }}
+          >
+            {adsImages.map((ad, index) => (
+              <LazySwiperSlide key={ad.id} className="advertisement-item mb-3">
+                <a
+                  href={ad.banner_url.startsWith("http") ? ad.banner_url : `https://${ad.banner_url}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <img
+                    loading="lazy"
+                    src={`${baseURL}storage/${ad.banner_file}`}
+                    alt={`Advertisement ${ad.banner_name}`}
+                    className="studypal-image"
+                    style={{
+                      height: "175px",
+                      objectFit: "contain",
+                      width: "100%",
+                      marginBottom: index < adsImages.length - 1 ? "20px" : "0",
+                    }}
+                  />
+                </a>
+              </LazySwiperSlide>
+            ))}
+          </LazySwiper>
+        </Suspense>
+      );
+    }
+    return (
+      <img
+        loading="lazy"
+        src={defaultImage}
+        alt="Default Image"
+        className="studypal-image"
+        style={{ height: "175px" }}
+      />
+    );
+  };
+
+  // 3. Implement debounced search with useCallback
+  const debouncedSearch = useCallback(
+    debounce((value) => {
+      setSearchQuery(value);
+    }, 500),
+    []
+  );
+
+  // 4. Memoize rendered programs to prevent recalculation
+  const renderedPrograms = useMemo(() => {
     if (!programs.length) {
       return (
         <div className="blankslate-courses text-center mx-auto col-11 col-md-8 col-lg-6">
@@ -1008,114 +1093,50 @@ const SearchCourse = () => {
             </Row>
           </div>
         </div>
-        {index === 2 && (
-          <div key="ad" className="ad-container">
-            {/*<img
-              src={StudyPal}
-              alt="Study Pal"
-              className="studypal-image"
-              style={{ height: "100px" }}
-            />*/}
-
-            {Array.isArray(adsImageB) && adsImageB.length > 0 ? (
-              // <div className="advertisements-container">
-              <Swiper
-                spaceBetween={10}
-                slidesPerView={1}
-                navigation
-                autoplay={{ delay: 5000, disableOnInteraction: false }} // Ensure autoplay is enabled
-                modules={[Navigation, Autoplay]}
-                style={{ padding: "20px 0" }}
-              >
-                {adsImageB.map((ad, index) => (
-                  <SwiperSlide key={ad.id} className="advertisement-item mb-3">
-                    <a
-                      href={
-                        ad.banner_url.startsWith("http")
-                          ? ad.banner_url
-                          : `https://${ad.banner_url}`
-                      }
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <img
-                        loading="lazy"
-                        src={`${baseURL}storage/${ad.banner_file}`}
-                        alt={`Advertisement ${ad.banner_name}`}
-                        className="studypal-image"
-                        style={{
-                          height: "175px",
-                          objectFit: "contain",
-                          width: "100%",
-                          marginBottom: index < adsImageB.length - 1 ? "20px" : "0",
-                          "@media (max-width: 768px)": {
-                            height: "auto",
-                            maxHeight: "175px",
-                            objectFit: "contain",
-                          }
-                        }}
-                      />
-                    </a>
-                  </SwiperSlide>
-                ))}
-              </Swiper>
-            ) : (
-              // </div>
-              <img
-                loading="lazy"
-                src={StudyPal}
-                alt="Study Pal"
-                className="studypal-image"
-                style={{ height: "100px" }}
-              />
-            )}
-          </div>
-        )}
       </React.Fragment>
     ));
-  };
+  }, [programs, selectedCurrency, fetchedCountry, courseInterests, handleInterestClick, handleApplyNow]);
 
-  // Add these useEffects after your state declarations
+  // 5. Optimize initial data loading
   useEffect(() => {
-    // Initial fetch of countries when component mounts
-    fetchCountries();
-  }, []);
-
-  useEffect(() => {
-    // When selectedCountry changes, fetch filters
-    if (selectedCountry) {
-      fetchFilters(selectedCountry.id);
-    }
-  }, [selectedCountry]);
-
-  // Handle the incoming search query from FeaturedUni
-  useEffect(() => {
-    if (location.state?.initialSearchQuery) {
-      setTempSearch(location.state.initialSearchQuery);
-      setSearchQuery(location.state.initialSearchQuery);
-    }
-  }, [location.state]);
-
-  // Trigger search when searchQuery or selectedCountry changes
-  useEffect(() => {
-    if (searchQuery && selectedCountry) {
-      fetchCourses();
-    }
-  }, [searchQuery, selectedCountry, currentPage]);
-
-  // Add this useEffect to handle initial data loading
-  useEffect(() => {
+    // Batch fetch operations to reduce render cycles
     const initializeData = async () => {
-      await fetchCountries();
-      if (location.state?.initialSearchQuery && selectedCountry) {
-        setTempSearch(location.state.initialSearchQuery);
-        setSearchQuery(location.state.initialSearchQuery);
-        fetchCourses();
+      setLoading(true);
+      try {
+        // Parallel fetch operations
+        const [countriesResult, countryInfo] = await Promise.all([
+          fetch(countriesURL).then(res => res.json()),
+          fetchCountry()
+        ]);
+        
+        if (countriesResult.data) {
+          setCountries(countriesResult.data);
+          const malaysia = countriesResult.data.find(
+            (country) => country.country_name === "Malaysia"
+          );
+          if (malaysia) {
+            setSelectedCountry(malaysia);
+            // Only fetch filters and exchange rates after country is selected
+            fetchFilters(malaysia.id);
+            fetchExchangeRates();
+          }
+        }
+      } catch (error) {
+        console.error("Error initializing data:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
     initializeData();
   }, []);
+
+  // 6. Handle search form changes more efficiently
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setTempSearch(value);
+    debouncedSearch(value);
+  };
 
   const generateCourseStructuredData = (programs) => {
     return {
@@ -1243,6 +1264,113 @@ const SearchCourse = () => {
     count += selectedFilters.studyModes.length;
     if (selectedFilters.tuitionFee > 0) count++;
     return count;
+  };
+
+  // Add a virtualized list component for large filter sets
+  const VirtualizedFilterList = ({ items, selectedItems, onItemSelect, height = 200 }) => {
+    // Filter displayed items if there's a search term
+    const filteredItems = useMemo(() => {
+      if (!filterSearch) return items;
+      return items.filter(item => {
+        const label = item.category_name || item.state_name || item.month || '';
+        return label.toLowerCase().includes(filterSearch.toLowerCase());
+      });
+    }, [items, filterSearch]);
+    
+    const Row = ({ index, style }) => {
+      const item = filteredItems[index];
+      return (
+        <div style={style}>
+          <Form.Check
+            type="checkbox"
+            id={`filter-${item.id}`}
+            label={item.category_name || item.state_name || item.month}
+            checked={selectedItems.includes(item.id)}
+            onChange={() => onItemSelect(item.id)}
+          />
+        </div>
+      );
+    };
+
+    return (
+      <>
+        {items.length > 15 && (
+          <Form.Control
+            size="sm"
+            placeholder="Search filters..."
+            value={filterSearch}
+            onChange={e => setFilterSearch(e.target.value)}
+            className="mb-2"
+          />
+        )}
+        <List
+          height={Math.min(height, filteredItems.length * 35)}
+          itemCount={filteredItems.length}
+          itemSize={35}
+          width="100%"
+          className="custom-filter-list"
+        >
+          {Row}
+        </List>
+      </>
+    );
+  };
+
+  // Function to toggle expanded state of a filter section
+  const toggleFilterExpand = (filterType) => {
+    setExpandedFilters(prev => ({
+      ...prev,
+      [filterType]: !prev[filterType]
+    }));
+  };
+
+  // Render a filter section with proper loading state and optimization
+  const renderFilterSection = (title, filterType, items, selectedItems, onItemSelect) => {
+    const isExpanded = expandedFilters[filterType];
+    const itemCount = items.length;
+    const showVirtualized = itemCount > 15;
+    const displayLimit = 8;
+    
+    return (
+      <div className="filter-group">
+        <h5 style={{ marginTop: "25px" }}>
+          {title}
+          {itemCount > displayLimit && (
+            <small 
+              className="ms-2 text-primary cursor-pointer" 
+              onClick={() => toggleFilterExpand(filterType)}
+              style={{ cursor: 'pointer', fontSize: '0.8rem' }}
+            >
+              {isExpanded ? 'Show less' : `Show all (${itemCount})`}
+            </small>
+          )}
+        </h5>
+        
+        {filterLoading ? (
+          <div className="d-flex justify-content-center my-3">
+            <Spinner animation="border" size="sm" />
+          </div>
+        ) : showVirtualized && isExpanded ? (
+          <VirtualizedFilterList 
+            items={items} 
+            selectedItems={selectedItems}
+            onItemSelect={onItemSelect}
+          />
+        ) : (
+          <Form.Group>
+            {(isExpanded ? items : items.slice(0, displayLimit)).map((item, index) => (
+              <Form.Check
+                key={index}
+                type="checkbox"
+                label={item.category_name || item.state_name || item.month || item.studyMode_name}
+                checked={selectedItems.includes(item.id)}
+                onChange={() => onItemSelect(item.id)}
+              />
+            ))}
+          </Form.Group>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -1433,18 +1561,13 @@ const SearchCourse = () => {
               fetchCourses();
             }}
           >
-            <InputGroup className="mb-3  saerchcourse-display-none">
+            <InputGroup className="mb-3 saerchcourse-display-none">
               <Form.Control
                 className="custom-placeholder searchinputborder"
                 style={{ height: "45px", marginTop: "9px" }}
                 placeholder="Search for Courses, Institutions"
                 value={tempSearch}
-                onChange={(e) => {
-                  setTempSearch(e.target.value);
-                  setTimeout(() => {
-                    setSearchQuery(e.target.value);
-                  }, 1500);
-                }}
+                onChange={handleSearchChange}
               />
             </InputGroup>
           </Form>
@@ -1461,12 +1584,7 @@ const SearchCourse = () => {
                 style={{ height: "45px", marginTop: "9px" }}
                 placeholder="Search for Courses, Institutions"
                 value={tempSearch}
-                onChange={(e) => {
-                  setTempSearch(e.target.value);
-                  setTimeout(() => {
-                    setSearchQuery(e.target.value);
-                  }, 1500);
-                }}
+                onChange={handleSearchChange}
               />
             </InputGroup>
           </Form>
@@ -1644,58 +1762,75 @@ const SearchCourse = () => {
               </Accordion.Item>
               {/* Location Filter */}
               <Accordion.Item eventKey="3">
-                <Accordion.Header className="custom-accordion-header">
+                <Accordion.Header 
+                  className="custom-accordion-header"
+                  onClick={() => toggleFilterExpand("mobileLocations")}
+                >
                   Location
                 </Accordion.Header>
                 <Accordion.Body className="custom-accordion-body">
-                  <Form.Group>
-                    {filterData.state && filterData.state.length > 0 ? ( // Changed from filterData.locations to filterData.state
-                      filterData.state.map((location, index) => (
-                        <Form.Check
-                          key={index}
-                          type="checkbox"
-                          label={location.state_name}
-                          checked={selectedFilters.locations.includes(
-                            location.id
-                          )}
-                          onChange={() =>
-                            handleFilterChange("locations", location.id)
-                          }
+                  {filterLoading ? (
+                    <div className="text-center py-2">
+                      <Spinner animation="border" size="sm" />
+                    </div>
+                  ) : (
+                    <Form.Group>
+                      {expandedFilters.mobileLocations && filterData.state && filterData.state.length > 15 ? (
+                        <VirtualizedFilterList 
+                          items={filterData.state} 
+                          selectedItems={selectedFilters.locations}
+                          onItemSelect={(id) => handleFilterChange("locations", id)}
                         />
-                      ))
-                    ) : (
-                      <p className="text-muted">No locations available</p>
-                    )}
-                  </Form.Group>
+                      ) : (
+                        filterData.state && filterData.state.map((location, index) => (
+                          <Form.Check
+                            key={index}
+                            type="checkbox"
+                            label={location.state_name}
+                            checked={selectedFilters.locations.includes(location.id)}
+                            onChange={() => handleFilterChange("locations", location.id)}
+                          />
+                        ))
+                      )}
+                    </Form.Group>
+                  )}
                 </Accordion.Body>
               </Accordion.Item>
 
               {/* Course Category Filter */}
               <Accordion.Item eventKey="4">
-                <Accordion.Header className="custom-accordion-header">
+                <Accordion.Header 
+                  className="custom-accordion-header"
+                  onClick={() => toggleFilterExpand("mobileCategories")}
+                >
                   Category
                 </Accordion.Header>
                 <Accordion.Body className="custom-accordion-body">
-                  <Form.Group>
-                    {filterData.categoryList &&
-                    filterData.categoryList.length > 0 ? ( // Changed from filterData.categories to filterData.categoryList
-                      filterData.categoryList.map((category, index) => (
-                        <Form.Check
-                          key={index}
-                          type="checkbox"
-                          label={category.category_name}
-                          checked={selectedFilters.categories.includes(
-                            category.id
-                          )}
-                          onChange={() =>
-                            handleFilterChange("categories", category.id)
-                          }
+                  {filterLoading ? (
+                    <div className="text-center py-2">
+                      <Spinner animation="border" size="sm" />
+                    </div>
+                  ) : (
+                    <Form.Group>
+                      {expandedFilters.mobileCategories && filterData.categoryList && filterData.categoryList.length > 15 ? (
+                        <VirtualizedFilterList 
+                          items={filterData.categoryList} 
+                          selectedItems={selectedFilters.categories}
+                          onItemSelect={(id) => handleFilterChange("categories", id)}
                         />
-                      ))
-                    ) : (
-                      <p className="text-muted">No categories available</p>
-                    )}
-                  </Form.Group>
+                      ) : (
+                        filterData.categoryList && filterData.categoryList.map((category, index) => (
+                          <Form.Check
+                            key={index}
+                            type="checkbox"
+                            label={category.category_name}
+                            checked={selectedFilters.categories.includes(category.id)}
+                            onChange={() => handleFilterChange("categories", category.id)}
+                          />
+                        ))
+                      )}
+                    </Form.Group>
+                  )}
                 </Accordion.Body>
               </Accordion.Item>
 
@@ -1740,9 +1875,7 @@ const SearchCourse = () => {
                           key={index}
                           type="checkbox"
                           label={intake.month}
-                          checked={selectedFilters.intakes.includes(
-                            intake.month
-                          )}
+                          checked={selectedFilters.intakes.includes(intake.month)}
                           onChange={() =>
                             handleFilterChange("intakes", intake.month)
                           }
@@ -1818,83 +1951,40 @@ const SearchCourse = () => {
             >
               {/* Desktop Filters */}
               <div className="filters-container">
-                {/* Location Filter */}
-                <div className="filter-group">
-                  <h5 style={{ marginTop: "10px" }}>Location</h5>
-                  <Form.Group>
-                    {filterData.state.map((location, index) => (
-                      <Form.Check
-                        key={index}
-                        type="checkbox"
-                        label={location.state_name}
-                        checked={selectedFilters.locations.includes(
-                          location.id
-                        )}
-                        onChange={() =>
-                          handleFilterChange("locations", location.id)
-                        }
-                      />
-                    ))}
-                  </Form.Group>
-                </div>
+                {/* Replace existing filter sections with optimized versions */}
+                {renderFilterSection(
+                  "Location", 
+                  "locations", 
+                  filterData.state || [], 
+                  selectedFilters.locations,
+                  (id) => handleFilterChange("locations", id)
+                )}
+                
+                {renderFilterSection(
+                  "Category", 
+                  "categories", 
+                  filterData.categoryList || [], 
+                  selectedFilters.categories,
+                  (id) => handleFilterChange("categories", id)
+                )}
+                
+                {renderFilterSection(
+                  "Intakes", 
+                  "intakes", 
+                  filterData.intakeList || [], 
+                  selectedFilters.intakes,
+                  (month) => handleFilterChange("intakes", month)
+                )}
+                
+                {renderFilterSection(
+                  "Study Mode", 
+                  "studyModes", 
+                  filterData.studyModeListing || [], 
+                  selectedFilters.studyModes,
+                  (id) => handleFilterChange("studyModes", id)
+                )}
 
-                {/* Category Filter */}
-                <div className="filter-group">
-                  <h5 style={{ marginTop: "25px" }}>Category</h5>
-                  <Form.Group>
-                    {filterData.categoryList.map((category, index) => (
-                      <Form.Check
-                        key={index}
-                        type="checkbox"
-                        label={category.category_name}
-                        checked={selectedFilters.categories.includes(
-                          category.id
-                        )}
-                        onChange={() =>
-                          handleFilterChange("categories", category.id)
-                        }
-                      />
-                    ))}
-                  </Form.Group>
-                </div>
-
-                {/* Intake Filter */}
-                <div className="filter-group">
-                  <h5 style={{ marginTop: "25px" }}>Intakes</h5>
-                  <Form.Group>
-                    {filterData.intakeList.map((intake, index) => (
-                      <Form.Check
-                        key={index}
-                        type="checkbox"
-                        label={intake.month}
-                        checked={selectedFilters.intakes.includes(intake.month)}
-                        onChange={() =>
-                          handleFilterChange("intakes", intake.month)
-                        }
-                      />
-                    ))}
-                  </Form.Group>
-                </div>
-
-                {/* Study Mode Filter */}
-                <div className="filter-group">
-                  <h5 style={{ marginTop: "25px" }}>Study Mode</h5>
-                  <Form.Group>
-                    {filterData.studyModeListing.map((mode, index) => (
-                      <Form.Check
-                        key={index}
-                        type="checkbox"
-                        label={mode.studyMode_name}
-                        checked={selectedFilters.studyModes.includes(mode.id)}
-                        onChange={() =>
-                          handleFilterChange("studyModes", mode.id)
-                        }
-                      />
-                    ))}
-                  </Form.Group>
-                </div>
-
-                {/* Tuition Fee Filter */}
+                {/* Tuition Fee Filter - Keep as is */}
                 <div className="filter-group">
                   <h5 style={{ marginTop: "25px" }}>Tuition Fee</h5>
                   <Form.Group id="customRange1">
@@ -1919,341 +2009,12 @@ const SearchCourse = () => {
                   </Form.Group>
                 </div>
               </div>
-
-              {/* Mobile Accordion Filters */}
-              {/* Mobile Accordion Filters */}
-              <Accordion
-                //defaultActiveKey="0"
-                className="custom-accordion d-md-none"
-              >
-                <Accordion.Item eventKey="0">
-                  <Accordion.Header className="custom-accordion-header">
-                    {selectedCountry ? (
-                      <>
-                        <CountryFlag
-                          countryCode={selectedCountry.country_code}
-                          svg
-                          style={{
-                            width: "20px",
-                            height: "20px",
-                            marginRight: "10px",
-                          }}
-                        />
-                        {selectedCountry.country_name}
-                      </>
-                    ) : (
-                      "Select Country"
-                    )}
-                  </Accordion.Header>
-                  <Accordion.Body>
-                    <InputGroup className="mb-2 ps-3 pe-3">
-                      <Form.Control
-                        placeholder="Filter countries"
-                        onChange={(e) =>
-                          setCountryFilter(e.target.value.toLowerCase())
-                        }
-                        value={countryFilter}
-                        className="ps-1 countryinput"
-                      />
-                    </InputGroup>
-                    <div className="country-list">
-                      {countries
-                        .filter((country) =>
-                          country.country_name
-                            .toLowerCase()
-                            .includes(countryFilter)
-                        )
-                        .map((country, index) => (
-                          <Form.Check
-                            key={index}
-                            type="radio"
-                            name="country"
-                            id={`country-${country.id}`}
-                            label={
-                              <div
-                                className="d-flex align-items-center"
-                                style={{
-                                  marginRight: "10px",
-                                  paddingTop: "0",
-                                  paddingBottom: "0",
-                                }}
-                              >
-                                <CountryFlag
-                                  countryCode={country.country_code}
-                                  svg
-                                  style={{
-                                    width: "20px",
-                                    height: "20px",
-                                    marginRight: "10px",
-                                    paddingTop: "0",
-                                    paddingBottom: "0",
-                                  }}
-                                />
-                                {country.country_name}
-                              </div>
-                            }
-                            checked={selectedCountry?.id === country.id}
-                            onChange={() => handleCountryChange(country)}
-                            className="mb-2"
-                          />
-                        ))}
-                    </div>
-                  </Accordion.Body>
-                </Accordion.Item>
-
-                {/* University Accordion Item */}
-                <Accordion.Item eventKey="1">
-                  <Accordion.Header className="custom-accordion-header">
-                    {selectedInstitute
-                      ? selectedInstitute.core_metaName
-                      : "Select University"}
-                  </Accordion.Header>
-                  <Accordion.Body>
-                    {filterData.institueList.map((institute, index) => (
-                      <Form.Check
-                        key={index}
-                        type="radio"
-                        name="university"
-                        id={`institute-${institute.id}`}
-                        label={institute.core_metaName}
-                        checked={selectedInstitute?.id === institute.id}
-                        onChange={() => setSelectedInstitute(institute)}
-                        className="mb-2"
-                      />
-                    ))}
-                  </Accordion.Body>
-                </Accordion.Item>
-
-                {/* Qualification Accordion Item */}
-                <Accordion.Item eventKey="2">
-                  <Accordion.Header className="custom-accordion-header">
-                    {selectedQualification
-                      ? selectedQualification.qualification_name
-                      : "Qualification"}
-                  </Accordion.Header>
-                  <Accordion.Body className="custom-accordion-body">
-                    <Form.Group>
-                      {filterData.qualificationList.map(
-                        (qualification, index) => (
-                          <Form.Check
-                            key={index}
-                            type="radio"
-                            name="qualification"
-                            id={`qualification-${qualification.id}`}
-                            label={qualification.qualification_name}
-                            checked={
-                              selectedQualification?.id === qualification.id
-                            }
-                            onChange={() =>
-                              setSelectedQualification(qualification)
-                            }
-                            className="mb-2"
-                          />
-                        )
-                      )}
-                    </Form.Group>
-                  </Accordion.Body>
-                </Accordion.Item>
-                {/* Location Filter */}
-                <Accordion.Item eventKey="3">
-                  <Accordion.Header className="custom-accordion-header">
-                    Location
-                  </Accordion.Header>
-                  <Accordion.Body className="custom-accordion-body">
-                    <Form.Group>
-                      {filterData.state && filterData.state.length > 0 ? ( // Changed from filterData.locations to filterData.state
-                        filterData.state.map((location, index) => (
-                          <Form.Check
-                            key={index}
-                            type="checkbox"
-                            label={location.state_name}
-                            checked={selectedFilters.locations.includes(
-                              location.id
-                            )}
-                            onChange={() =>
-                              handleFilterChange("locations", location.id)
-                            }
-                          />
-                        ))
-                      ) : (
-                        <p className="text-muted">No locations available</p>
-                      )}
-                    </Form.Group>
-                  </Accordion.Body>
-                </Accordion.Item>
-
-                {/* Course Category Filter */}
-                <Accordion.Item eventKey="4">
-                  <Accordion.Header className="custom-accordion-header">
-                    Category
-                  </Accordion.Header>
-                  <Accordion.Body className="custom-accordion-body">
-                    <Form.Group>
-                      {filterData.categoryList &&
-                      filterData.categoryList.length > 0 ? ( // Changed from filterData.categories to filterData.categoryList
-                        filterData.categoryList.map((category, index) => (
-                          <Form.Check
-                            key={index}
-                            type="checkbox"
-                            label={category.category_name}
-                            checked={selectedFilters.categories.includes(
-                              category.id
-                            )}
-                            onChange={() =>
-                              handleFilterChange("categories", category.id)
-                            }
-                          />
-                        ))
-                      ) : (
-                        <p className="text-muted">No categories available</p>
-                      )}
-                    </Form.Group>
-                  </Accordion.Body>
-                </Accordion.Item>
-
-                {/* Study Mode Filter */}
-                <Accordion.Item eventKey="6">
-                  <Accordion.Header className="custom-accordion-header">
-                    Study Mode
-                  </Accordion.Header>
-                  <Accordion.Body className="custom-accordion-body">
-                    <Form.Group>
-                      {filterData.studyModeListing &&
-                      filterData.studyModeListing.length > 0 ? (
-                        filterData.studyModeListing.map((mode, index) => (
-                          <Form.Check
-                            key={index}
-                            type="checkbox"
-                            label={mode.studyMode_name}
-                            checked={selectedFilters.studyModes.includes(
-                              mode.id
-                            )}
-                            onChange={() =>
-                              handleFilterChange("studyModes", mode.id)
-                            }
-                          />
-                        ))
-                      ) : (
-                        <p className="text-muted">No study modes available</p>
-                      )}
-                    </Form.Group>
-                  </Accordion.Body>
-                </Accordion.Item>
-
-                {/* Intake Filter */}
-                <Accordion.Item eventKey="7">
-                  <Accordion.Header className="custom-accordion-header">
-                    Intakes
-                  </Accordion.Header>
-                  <Accordion.Body className="custom-accordion-body">
-                    <Form.Group>
-                      {filterData.intakeList &&
-                      filterData.intakeList.length > 0 ? (
-                        filterData.intakeList.map((intake, index) => (
-                          <Form.Check
-                            key={index}
-                            type="checkbox"
-                            label={intake.month}
-                            checked={selectedFilters.intakes.includes(
-                              intake.month
-                            )}
-                            onChange={() =>
-                              handleFilterChange("intakes", intake.month)
-                            }
-                          />
-                        ))
-                      ) : (
-                        <p className="text-muted">No intakes available</p>
-                      )}
-                    </Form.Group>
-                  </Accordion.Body>
-                </Accordion.Item>
-
-                {/* Tuition Fee Filter */}
-                <Accordion.Item eventKey="8">
-                  <Accordion.Header className="custom-accordion-header">
-                    Tuition Fee
-                  </Accordion.Header>
-                  <Accordion.Body className="custom-accordion-body">
-                    <Form.Group>
-                      <Form.Label className="mb-3">
-                        Range: RM{selectedFilters.tuitionFee || 0}
-                      </Form.Label>
-                      <Form.Control
-                        type="range"
-                        className="custom-range"
-                        min={0}
-                        max={filterData.maxAmount || 100000}
-                        step={500}
-                        value={selectedFilters.tuitionFee || 0}
-                        onChange={(e) =>
-                          handleFilterChange(
-                            "tuitionFee",
-                            Number(e.target.value)
-                          )
-                        }
-                      />
-                      <div className="d-flex justify-content-between mt-2">
-                        <small>RM0</small>
-                        <small>RM{filterData.maxAmount || 100000}</small>
-                      </div>
-                    </Form.Group>
-                  </Accordion.Body>
-                </Accordion.Item>
-              </Accordion>
             </Col>
 
             {/* Right Content - Course Listings */}
             <Col xs={12} md={9} className="degreeprograms-division">
               <div>
-                {Array.isArray(adsImageA) && adsImageA.length > 0 ? (
-                  <Swiper
-                    spaceBetween={10}
-                    slidesPerView={1}
-                    navigation
-                    autoplay={{ delay: 5000, disableOnInteraction: false }} // Ensure autoplay is enabled
-                    modules={[Navigation, Autoplay]}
-                    style={{ padding: "20px 0" }}
-                  >
-                    {adsImageA.map((ad, index) => (
-                      <SwiperSlide
-                        key={ad.id}
-                        className="advertisement-item mb-3"
-                      >
-                        <a
-                          href={
-                            ad.banner_url.startsWith("http")
-                              ? ad.banner_url
-                              : `https://${ad.banner_url}`
-                          }
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <img
-                            loading="lazy"
-                            src={`${baseURL}storage/${ad.banner_file}`}
-                            alt={`Advertisement ${ad.banner_name}`}
-                            className="studypal-image"
-                            style={{
-                              height: "175px",
-                              objectFit: "fill",
-                              marginBottom:
-                                index < adsImageA.length - 1 ? "20px" : "0",
-                            }}
-                          />
-                        </a>
-                      </SwiperSlide>
-                    ))}
-                  </Swiper>
-                ) : (
-                  <img
-                    loading="lazy"
-                    src={StudyPal}
-                    alt="Study Pal"
-                    className="studypal-image"
-                    style={{ height: "175px" }}
-                  />
-                )}
+                {renderAdImages(adsImageA, StudyPal)}
               </div>
 
               {loading ? (
@@ -2267,7 +2028,7 @@ const SearchCourse = () => {
                   <p>Error: {error}</p>
                 </div>
               ) : (
-                <>{renderPrograms()}</>
+                <>{renderedPrograms}</>
               )}
             </Col>
             {/* Pagination */}
@@ -2346,4 +2107,4 @@ const SearchCourse = () => {
   );
 };
 
-export default SearchCourse;
+export default React.memo(SearchCourse);
