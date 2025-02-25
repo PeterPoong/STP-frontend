@@ -11,6 +11,7 @@ import logo from "../../assets/StudentAssets/nav logo/logo.png";
 import "../../css/StudentPortalStyles/StudentNavBar.css";
 import { useTranslation } from "../../Context/TranslationContext";
 import currency from "currency.js";
+import OrbitingStarButton from './OrbitingStarButton';
 
 const NavigationBar = () => {
   const [hasToken, setHasToken] = useState(false); // Initialize to false
@@ -320,19 +321,12 @@ const NavigationBar = () => {
               >
                 Schools
               </Button>
-              <Button
-                variant="link"
-                as={Link}
-                to="/studentStudyPath"
-                className={`nav-link-custom text-nowrap px-lg-4 d-none d-xl-block ${
-                location.pathname === "/studentStudyPath" ||
-                location.pathname.startsWith("/studentStudyPath")
-                  ? "active"
-                  : ""
-              }`}
-              >
-                Find Your Path
-              </Button>
+              <div className="d-none d-xl-block nav-item-custom" style={{ height: "38px", width: "140px" }}>
+                <OrbitingStarButton 
+                  isActive={location.pathname === "/studentStudyPath" || 
+                          location.pathname.startsWith("/studentStudyPath")} 
+                />
+              </div>
               <Button
                 variant="link"
                 as={Link}
