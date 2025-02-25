@@ -1402,48 +1402,41 @@ const KnowMoreInstitute = () => {
                                   >
                                     estimate fee<br></br>
                                     <p style={{ fontSize: "16px" }}>
-                                      {fetchedCountry ===
-                                      course.country_code ? (
+                                      {console.log("Fetched Country:", fetchedCountry)}
+                                      {console.log("Institute Country Code:", institute.country_code)}
+                                      {console.log("Are they equal?:", fetchedCountry?.toUpperCase() === institute.country_code?.toUpperCase())}
+                                      
+                                      {fetchedCountry?.toUpperCase() === institute.country_code?.toUpperCase() ? (
                                         course.course_cost === "0" ? (
                                           "N/A"
                                         ) : (
                                           <>
                                             <strong>
-                                              {sessionStorage.getItem(
-                                                "userCurrencySymbol"
-                                              ) || "RM"}
+                                              {sessionStorage.getItem("userCurrencySymbol") || "RM"}
                                             </strong>{" "}
-                                            {convertToFetchedCurrency(
-                                              course.course_cost
-                                            ).replace(/^.*?(\d+.*)/, "$1")}
-                                          </>
-                                        )
-                                      ) : course.international_cost === "0" ? (
-                                        course.course_cost === "0" ? (
-                                          "N/A"
-                                        ) : (
-                                          <>
-                                            <strong>
-                                              {sessionStorage.getItem(
-                                                "userCurrencySymbol"
-                                              ) || "RM"}
-                                            </strong>{" "}
-                                            {convertToFetchedCurrency(
-                                              course.course_cost
-                                            ).replace(/^.*?(\d+.*)/, "$1")}
+                                            {convertToFetchedCurrency(course.course_cost).replace(/^.*?(\d+.*)/, "$1")}
                                           </>
                                         )
                                       ) : (
-                                        <>
-                                          <strong>
-                                            {sessionStorage.getItem(
-                                              "userCurrencySymbol"
-                                            ) || "RM"}
-                                          </strong>{" "}
-                                          {convertToFetchedCurrency(
-                                            course.international_cost
-                                          ).replace(/^.*?(\d+.*)/, "$1")}
-                                        </>
+                                        course.international_cost === "0" ? (
+                                          course.course_cost === "0" ? (
+                                            "N/A"
+                                          ) : (
+                                            <>
+                                              <strong>
+                                                {sessionStorage.getItem("userCurrencySymbol") || "RM"}
+                                              </strong>{" "}
+                                              {convertToFetchedCurrency(course.course_cost).replace(/^.*?(\d+.*)/, "$1")}
+                                            </>
+                                          )
+                                        ) : (
+                                          <>
+                                            <strong>
+                                              {sessionStorage.getItem("userCurrencySymbol") || "RM"}
+                                            </strong>{" "}
+                                            {convertToFetchedCurrency(course.international_cost).replace(/^.*?(\d+.*)/, "$1")}
+                                          </>
+                                        )
                                       )}
                                     </p>
                                   </p>
