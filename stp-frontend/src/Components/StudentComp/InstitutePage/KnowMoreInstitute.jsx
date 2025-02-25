@@ -499,6 +499,12 @@ const KnowMoreInstitute = () => {
     );
   };
 
+  const countWords = (html) => {
+    if (!html) return 0;
+    const text = html.replace(/<[^>]+>/g, ' '); // Remove HTML tags
+    return text.trim().split(/\s+/).filter(word => word).length;
+  };
+
   return (
     <div style={{ backgroundColor: "#F5F4F4" }}>
       <NavButtonsSP />
@@ -604,68 +610,69 @@ const KnowMoreInstitute = () => {
 
               {/* Image Swiper */}
               <div className="image-gallery" style={{ marginTop: "20px" }}>
-                {institutes.map((institute) =>
-                  // Check if school_photo exists, otherwise use studypal12
-                  (institute.school_photo && institute.school_photo.length > 0
-                    ? institute.school_photo.slice(0, 5)
-                    : [{ id: "default", schoolMedia_location: null }]
-                  ) // Use a placeholder with default image
-                    .map((photo, index) => (
-                      <div
-                        key={photo.id}
-                        style={{
-                          display: "inline-block",
-                          position: "relative",
-                        }}
-                        onClick={() => openModal(institute.school_photo, index)}
-                      >
-                        <img
-                          src={
-                            photo.schoolMedia_location
-                              ? `${baseURL}storage/${photo.schoolMedia_location}`
-                              : studypal12 // Use studypal12 as the default image if schoolMedia_location is not available
-                          }
-                          className="gallery-image"
-                          alt={`Slide ${photo.id}`}
-                          width="500"
-                          style={{ objectFit: "cover" }}
-                        />
-                        {index === 4 && institute.school_photo.length > 5 && (
-                          <div
+                {institutes.map((institute) => {
+                  // Get photos array or use default - ensure proper fallback
+                  const photos = institute.school_photo?.length > 0 
+                    ? institute.school_photo 
+                    : [{ id: "default", schoolMedia_location: null }];
+                    
+                  return photos.slice(0, 5).map((photo, index) => (
+                    <div
+                      key={`${institute.id}-${photo.id}`}
+                      style={{
+                        display: "inline-block",
+                        position: "relative",
+                      }}
+                      onClick={() => openModal(photos, index)}
+                    >
+                      <img
+                        src={
+                          photo.schoolMedia_location
+                            ? `${baseURL}storage/${photo.schoolMedia_location}`
+                            : studypal12
+                        }
+                        className="gallery-image"
+                        alt={`${institute.name} photo ${index + 1}`}
+                        width="500"
+                        style={{ objectFit: "cover" }}
+                      />
+                      {/* Check against the actual photos array length */}
+                      {index === 4 && photos.length > 5 && (
+                        <div
+                          style={{
+                            position: "absolute",
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            backgroundColor: "rgba(0, 0, 0, 0.5)",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            zIndex: 1,
+                          }}
+                        >
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleShowMore(photos);
+                            }}
                             style={{
-                              position: "absolute",
-                              top: 0,
-                              left: 0,
-                              right: 0,
-                              bottom: 0,
-                              backgroundColor: "rgba(0, 0, 0, 0.5)",
-                              display: "flex",
-                              justifyContent: "center",
-                              alignItems: "center",
-                              zIndex: 1,
+                              color: "white",
+                              backgroundColor: "transparent",
+                              padding: "10px 20px",
+                              border: "none",
+                              width: "100%",
+                              height: "100%",
                             }}
                           >
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleShowMore(institute.school_photo);
-                              }}
-                              style={{
-                                color: "white",
-                                backgroundColor: "transparent",
-                                padding: "10px 20px",
-                                border: "none",
-                                width: "100%",
-                                height: "100%",
-                              }}
-                            >
-                              see more
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    ))
-                )}
+                            see more
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ));
+                })}
                 <Modal
                   show={modalIsOpen}
                   onHide={closeModal}
@@ -894,42 +901,32 @@ const KnowMoreInstitute = () => {
                       </div>
                     </Col>
                     <Col md={12}>
-                      {!open ? (
-                        <div
-                          id="collapse-course-overview"
-                          className="student-knowmoreinsti-wordbreak"
-                        >
-                          <div
-                            dangerouslySetInnerHTML={{
-                              __html: institute.short_description,
-                            }}
-                          />
-                        </div>
-                      ) : (
-                        <Collapse in={open}>
-                          {/* <div>
-                        <p>{institute.short_description}</p>
-                      </div> */}
-                          <div id="collapse-course-overview">
-                            <div
-                              dangerouslySetInnerHTML={{
-                                __html: institute.short_description,
-                              }}
-                            />
-                          </div>
-                        </Collapse>
-                      )}
+                      <div
+                        id="collapse-course-overview"
+                        className="student-knowmoreinsti-wordbreak"
+                        style={{
+                          overflow: 'hidden',
+                          display: '-webkit-box',
+                          WebkitLineClamp: open ? 'unset' : 3,
+                          WebkitBoxOrient: 'vertical',
+                          textOverflow: 'ellipsis'
+                        }}
+                      >
+                        <div dangerouslySetInnerHTML={{ __html: institute.short_description }} />
+                      </div>
                     </Col>
                     <Col className="d-flex justify-content-center">
-                      <Button
-                        style={{ textDecoration: "none" }}
-                        variant="link"
-                        onClick={() => setOpen(!open)}
-                        aria-controls="collapse-course-overview"
-                        aria-expanded={open}
-                      >
-                        {open ? "View Less" : "View More"}
-                      </Button>
+                      {institute.short_description && countWords(institute.short_description) > 100 && (
+                        <Button
+                          style={{ textDecoration: "none" }}
+                          variant="link"
+                          onClick={() => setOpen(!open)}
+                          aria-controls="collapse-course-overview"
+                          aria-expanded={open}
+                        >
+                          {open ? "View Less" : "View More"}
+                        </Button>
+                      )}
                     </Col>
                   </Row>
                 </div>
@@ -1163,40 +1160,56 @@ const KnowMoreInstitute = () => {
                             ref={contentRef}
                             style={{
                               zIndex: 1,
-                              maxHeight: openAbout ? "none" : "100px",
+                              maxHeight: openAbout ? `${contentRef.current?.scrollHeight}px` : "100px",
                               overflow: "hidden",
                               transition: "max-height 0.5s ease",
                             }}
                           >
-                            <div
-                              dangerouslySetInnerHTML={{
-                                __html: institute.long_description,
+                            <div 
+                              className="truncate-text" 
+                              style={{ 
+                                display: '-webkit-box',
+                                WebkitLineClamp: openAbout ? 'unset' : 3,
+                                WebkitBoxOrient: 'vertical',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis'
                               }}
-                            />
+                            >
+                              <div 
+                                dangerouslySetInnerHTML={{ __html: institute.long_description }} 
+                                style={{ 
+                                  display: 'inline', // Makes nested elements inline
+                                  lineClamp: 3 
+                                }} 
+                              />
+                            </div>
                           </div>
                         </Col>
                         <Col className="d-flex justify-content-center">
-                          <Button
-                            style={{
-                              textDecoration: "none",
-                              color: "#007bff",
-                              background: "none",
-                              border: "none",
-                              marginTop: "20px",
-                              cursor: "pointer",
-                            }}
-                            onClick={() => {
-                              setOpenAbout(!openAbout);
-                              // Add a small delay to ensure the content is rendered before measuring
-                              setTimeout(() => {
-                                handleContentHeight();
-                              }, 0);
-                            }}
-                            aria-controls="collapse-about-institute"
-                            aria-expanded={openAbout}
-                          >
-                            {openAbout ? "View Less" : "View More"}
-                          </Button>
+                          {countWords(institute.long_description) > 100 && (
+                            <Button
+                              style={{
+                                textDecoration: "none",
+                                color: "#007bff",
+                                background: "none",
+                                border: "none",
+                                marginTop: "20px",
+                                cursor: "pointer",
+                              }}
+                              onClick={() => {
+                                setOpenAbout(!openAbout);
+                                if (!openAbout) {
+                                  setTimeout(() => {
+                                    setContentHeight(contentRef.current?.scrollHeight);
+                                  }, 50);
+                                }
+                              }}
+                              aria-controls="collapse-about-institute"
+                              aria-expanded={openAbout}
+                            >
+                              {openAbout ? "View Less" : "View More"}
+                            </Button>
+                          )}
                         </Col>
                       </Row>
                     </div>
@@ -1338,32 +1351,32 @@ const KnowMoreInstitute = () => {
                                           style={{
                                             marginTop: "10px",
                                             display: "flex",
-                                            flexWrap: "wrap",
+                                            flexWrap: "nowrap",
                                             width: "100%",
+                                            alignItems: "center"
                                           }}
                                           className="knowmoreinstitute-dflex-center"
                                         >
                                           <i
                                             className="bi bi-calendar2-week"
-                                            style={{ marginRight: "10px" }}
+                                            style={{ marginRight: "10px", flexShrink: 0 }}
                                           ></i>
                                           <p
                                             style={{
                                               paddingLeft: "20px",
                                               margin: 0,
                                               whiteSpace: "normal",
-                                              wordBreak: "keep-all",
+                                              wordBreak: "break-word",
                                               overflowWrap: "break-word",
                                               display: "inline-block",
-                                              width: "calc(100% - 40px)",
+                                              flex: 1,
+                                              minWidth: 0
                                             }}
                                           >
                                             {Array.isArray(course.course_intake)
                                               ? course.course_intake
-                                                  .map((intake) =>
-                                                    intake.trim()
-                                                  )
-                                                  .join(",")
+                                                  .map((intake) => intake.trim())
+                                                  .join(", ")
                                               : course.course_intake}
                                           </p>
                                         </div>
