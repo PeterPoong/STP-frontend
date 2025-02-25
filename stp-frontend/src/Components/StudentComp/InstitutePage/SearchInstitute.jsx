@@ -557,18 +557,26 @@ const SearchInstitute = () => {
   const renderInstitutes = () => {
     if (!institutes.length) {
       return (
-        <div className="blankslate-institutes text-center">
+        <div className="blankslate-institutes text-center mx-auto col-11 col-md-8 col-lg-6">
           <img
             loading="lazy"
             src={emptyStateImage}
             alt="No results"
-            style={{ height: "175px" }}
+            className="img-fluid"
+            style={{ 
+              maxWidth: "100%",
+              height: "auto",
+              maxHeight: "175px"
+            }}
           />
-          <div className="blankslate-institutes-body">
-            <h4>No institutes found</h4>
-            <p>
+          <div className="blankslate-institutes-body mt-3">
+            <h4 className="h5 h4-md">No institutes found</h4>
+            <p className="mb-0 d-none d-md-block">
               There are no institutes that match your selected filters. Please
               try adjusting your filters and search criteria.
+            </p>
+            <p className="mb-0 d-block d-md-none">
+              No results match your filters. Try adjusting your search criteria.
             </p>
           </div>
         </div>
