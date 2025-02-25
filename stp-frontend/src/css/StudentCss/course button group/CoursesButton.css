@@ -1,6 +1,10 @@
 .custom-button {
-  width: 150px;
-  height: 150px;
+  width: 100%;
+  max-width: 150px;
+  height: auto;
+  aspect-ratio: 1;
+  padding: 10px;
+  margin: 10px 0;
   background-color: #F5F4F4;
   border-radius: 10px;
   display: flex;
@@ -9,8 +13,6 @@
   align-items: center;
   cursor: pointer;
   transition: transform 0.3s ease-in-out;
-  margin-bottom: 50px;
-  margin-top: 20px;
 }
 
 .custom-button:hover {
@@ -22,8 +24,10 @@
 }
 
 .custom-button-image {
-  width: 90px;
+  width: 70%;
   height: 50px;
+  object-fit: cover;
+  max-width: 90px;
   margin-top: 10px;
   margin-bottom: 10px;
   border-radius: 10px;
@@ -61,9 +65,9 @@
     height: 40px;
   }
 
-  .custom-button-label {
+  /* .custom-button-label {
     font-size: 12px;
-  }
+  } */
 }
 
 /* Media Query for Smaller Mobile Devices */
@@ -78,9 +82,9 @@
     height: 35px;
   }
 
-  .custom-button-label {
+  /* .custom-button-label {
     font-size: 10px;
-  }
+  } */
 }
 
 /* Grid Layout */
@@ -119,4 +123,41 @@
 /* Swiper customization */
 .swiper-slide {
   transition: all 0.3s ease;
+}
+
+/* Add to existing CSS */
+.courses-title {
+  color: #a90000;
+  text-align: center;
+  padding-top: 40px;
+  font-size: 1.5rem;
+}
+
+.button-grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 50px;
+  padding: 20px 50px;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .button-grid-container {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 15px;
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .button-grid-container {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 10px;
+    padding: 10px;
+  }
+  
+  .courses-title {
+    font-size: 1.2rem;
+    padding-top: 20px;
+  }
 }

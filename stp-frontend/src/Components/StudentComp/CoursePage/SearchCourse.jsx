@@ -696,21 +696,21 @@ const SearchCourse = () => {
   const renderPrograms = () => {
     if (!programs.length) {
       return (
-        <div
-          className="blankslate-courses text-center"
-          style={{ marginLeft: "100px" }}
-        >
+        <div className="blankslate-courses text-center mx-auto col-11 col-md-8 col-lg-6">
           <img
             loading="lazy"
             className="blankslate-courses-top-img"
             src={emptyStateImage}
             alt="Empty State"
           />
-          <div className="blankslate-courses-body">
-            <h4>No programs found</h4>
-            <p>
+          <div className="blankslate-courses-body text-md-left mt-3 mt-md-0 ml-md-0">
+            <h4 className="h5 h4-md">No programs found</h4>
+            <p className="mb-0 d-none d-md-block">
               There are no programs that match your selected filters. Please try
               adjusting your filters and search criteria.
+            </p>
+            <p className="mb-0 d-block d-md-none">
+              No results match your filters. Try adjusting your search criteria.
             </p>
           </div>
         </div>
