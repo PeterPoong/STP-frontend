@@ -16,7 +16,7 @@ import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { Pagination, Navigation, Autoplay } from "swiper/modules";
 import "../../../css/StudentCss/course page css/ApplyPage.css";
-import currency from 'currency.js';
+import currency from "currency.js";
 
 const baseURL = import.meta.env.VITE_BASE_URL;
 const courseDetailAPI = `${baseURL}api/student/courseDetail`;
@@ -24,10 +24,10 @@ const adsAURL = `${baseURL}api/student/advertisementList`;
 const formatUrlString = (str) => {
   return str
     .toLowerCase() // Convert to lowercase
-    .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
+    .replace(/[^a-z0-9\s-]/g, "") // Remove special characters
     .trim() // Trim whitespace
-    .replace(/\s+/g, '-') // Replace spaces with hyphens
-    .replace(/-+/g, '-'); // Replace multiple hyphens with a single hyphen
+    .replace(/\s+/g, "-") // Replace spaces with hyphens
+    .replace(/-+/g, "-"); // Replace multiple hyphens with a single hyphen
 };
 const CourseDetail = () => {
   const [contentHeight, setContentHeight] = useState(0);
@@ -66,7 +66,7 @@ const CourseDetail = () => {
     KR: { currency_code: "KRW", currency_symbol: "₩" }, // South Korea
     HK: { currency_code: "HKD", currency_symbol: "HK$" }, // Hong Kong
     TW: { currency_code: "TWD", currency_symbol: "NT$" }, // Taiwan
-  
+
     // Europe
     GB: { currency_code: "GBP", currency_symbol: "£" }, // United Kingdom
     DE: { currency_code: "EUR", currency_symbol: "€" }, // Germany
@@ -78,19 +78,19 @@ const CourseDetail = () => {
     SE: { currency_code: "SEK", currency_symbol: "kr" }, // Sweden
     NO: { currency_code: "NOK", currency_symbol: "kr" }, // Norway
     DK: { currency_code: "DKK", currency_symbol: "kr" }, // Denmark
-  
+
     // North America
     US: { currency_code: "USD", currency_symbol: "$" }, // United States
     CA: { currency_code: "CAD", currency_symbol: "C$" }, // Canada
     MX: { currency_code: "MXN", currency_symbol: "Mex$" }, // Mexico
-  
+
     // South America
     BR: { currency_code: "BRL", currency_symbol: "R$" }, // Brazil
     AR: { currency_code: "ARS", currency_symbol: "ARS$" }, // Argentina
     CL: { currency_code: "CLP", currency_symbol: "CLP$" }, // Chile
     CO: { currency_code: "COP", currency_symbol: "COP$" }, // Colombia
     PE: { currency_code: "PEN", currency_symbol: "S/" }, // Peru
-  
+
     // Middle East
     AE: { currency_code: "AED", currency_symbol: "د.إ" }, // United Arab Emirates
     SA: { currency_code: "SAR", currency_symbol: "﷼" }, // Saudi Arabia
@@ -99,13 +99,13 @@ const CourseDetail = () => {
     EG: { currency_code: "EGP", currency_symbol: "E£" }, // Egypt
     IL: { currency_code: "ILS", currency_symbol: "₪" }, // Israel
     BD: { currency_code: "BDT", currency_symbol: "৳" }, // Bangladesh
-  
+
     // Africa
     ZA: { currency_code: "ZAR", currency_symbol: "R" }, // South Africa
     NG: { currency_code: "NGN", currency_symbol: "₦" }, // Nigeria
     KE: { currency_code: "KES", currency_symbol: "KSh" }, // Kenya
     GH: { currency_code: "GHS", currency_symbol: "₵" }, // Ghana
-  
+
     // Oceania
     AU: { currency_code: "AUD", currency_symbol: "A$" }, // Australia
     NZ: { currency_code: "NZD", currency_symbol: "NZ$" }, // New Zealand
@@ -116,12 +116,14 @@ const CourseDetail = () => {
   const fetchExchangeRates = async (currencyCode) => {
     try {
       console.log("Fetching exchange rates..."); // Log before fetching
-      const response = await fetch(`https://api.frankfurter.app/latest?from=MYR`);
+      const response = await fetch(
+        `https://api.frankfurter.app/latest?from=MYR`
+      );
       const data = await response.json();
-  
+
       // Log the fetched data to the console
       // console.log("Fetched exchange rates:", data);
-  
+
       if (data && data.rates) {
         setExchangeRates(data.rates);
       } else {
@@ -133,75 +135,85 @@ const CourseDetail = () => {
   };
   useEffect(() => {
     const fetchCurrencyOnChange = async () => {
-      const currencyCode = sessionStorage.getItem('userCurrencyCode') || 'MYR';
-      const currencySymbol = sessionStorage.getItem('userCurrencySymbol') || 'RM';
-  
+      const currencyCode = sessionStorage.getItem("userCurrencyCode") || "MYR";
+      const currencySymbol =
+        sessionStorage.getItem("userCurrencySymbol") || "RM";
+
       // Fetch exchange rates based on the selected currency
       await fetchExchangeRates(currencyCode);
-  
-      setSelectedCurrency({ currency_code: currencyCode, currency_symbol: currencySymbol });
-   
-    };   
+
+      setSelectedCurrency({
+        currency_code: currencyCode,
+        currency_symbol: currencySymbol,
+      });
+    };
     fetchCurrencyOnChange(); // Fetch the currency rates immediately on component mount or currency change
-  }, [sessionStorage.getItem('userCurrencyCode')]);  // Trigger on currency code change in session storage
+  }, [sessionStorage.getItem("userCurrencyCode")]); // Trigger on currency code change in session storage
   useEffect(() => {
     const interval = setInterval(() => {
-      const newCurrencyCode = sessionStorage.getItem('userCurrencyCode') || 'MYR';
-      
+      const newCurrencyCode =
+        sessionStorage.getItem("userCurrencyCode") || "MYR";
+
       if (newCurrencyCode !== selectedCurrency.currency_code) {
-        setSelectedCurrency({ 
-          currency_code: newCurrencyCode, 
-          currency_symbol: sessionStorage.getItem('userCurrencySymbol') || 'RM' 
+        setSelectedCurrency({
+          currency_code: newCurrencyCode,
+          currency_symbol: sessionStorage.getItem("userCurrencySymbol") || "RM",
         });
-  
+
         // console.log("Detected currency change in sessionStorage:", newCurrencyCode);
-        
+
         fetchExchangeRates(newCurrencyCode);
         fetchProgram();
       }
     }, 1000); // Check every second
-  
+
     return () => clearInterval(interval);
   }, [selectedCurrency]);
   const convertToFetchedCurrency = (amount) => {
-    const currencyCode = sessionStorage.getItem('userCurrencyCode') || "MYR"; // Use sessionStorage value
-    const currencySymbol = sessionStorage.getItem('userCurrencySymbol') || "RM";
-  
+    const currencyCode = sessionStorage.getItem("userCurrencyCode") || "MYR"; // Use sessionStorage value
+    const currencySymbol = sessionStorage.getItem("userCurrencySymbol") || "RM";
+
     if (!exchangeRates || !Object.keys(exchangeRates).length) {
       return `${currencySymbol} ${amount}`; // Return original cost if no rates available
     }
-  
+
     const rate = exchangeRates[currencyCode] || 1;
     return `${currencySymbol} ${currency(amount).multiply(rate).format()}`; // Convert MYR to the correct currency
   };
-  
+
   const fetchCountry = async () => {
     try {
-      const response = await fetch('https://ipinfo.io/json');
+      const response = await fetch("https://ipinfo.io/json");
       const data = await response.json();
-  
+
       if (data && data.country) {
         let country = data.country; // Get the real country code
-        
+
         // Override country for testing
         // country = 'AU'; // Change this to 'SG' temporarily
-  
-        const currencyInfo = countryCurrencyMap[country] || { currency_code: "MYR", currency_symbol: "RM" };
-  
-        sessionStorage.setItem('userCountry', country);
-        sessionStorage.setItem('userCurrencyCode', currencyInfo.currency_code);
-        sessionStorage.setItem('userCurrencySymbol', currencyInfo.currency_symbol);
-  
+
+        const currencyInfo = countryCurrencyMap[country] || {
+          currency_code: "MYR",
+          currency_symbol: "RM",
+        };
+
+        sessionStorage.setItem("userCountry", country);
+        sessionStorage.setItem("userCurrencyCode", currencyInfo.currency_code);
+        sessionStorage.setItem(
+          "userCurrencySymbol",
+          currencyInfo.currency_symbol
+        );
+
         console.log("Fetched country:", country);
         // console.log("Currency Code:", currencyInfo.currency_code);
         // console.log("Currency Symbol:", currencyInfo.currency_symbol);
-  
+
         setFetchedCountry(country);
         setSelectedCurrency(currencyInfo); // Store currency info in state
-  
+
         return country;
       } else {
-        throw new Error('Unable to fetch location data');
+        throw new Error("Unable to fetch location data");
       }
     } catch (error) {
       console.error("Error fetching country:", error);
@@ -213,10 +225,11 @@ const CourseDetail = () => {
       const country = await fetchCountry(); // Fetch the country
       if (country) {
         // console.log("User country:", country);
-  
-        const currencyCode = sessionStorage.getItem('userCurrencyCode') || "MYR"; // Fetch from storage
+
+        const currencyCode =
+          sessionStorage.getItem("userCurrencyCode") || "MYR"; // Fetch from storage
         setSelectedCurrency(countryCurrencyMap[country]); // Use country directly from fetchCountry
-  
+
         // Fetch exchange rates based on the detected currency
         await fetchExchangeRates(currencyCode);
       }
@@ -225,13 +238,13 @@ const CourseDetail = () => {
   }, []);
   // Convert hyphenated names to space-separated names while preserving hyphens in parentheses
   const formattedSchoolName = decodeURIComponent(school_name)
-    .replace(/\((.*?)\)/g, match => match.replace(/-/g, '###HYPHEN###')) // Temporarily replace hyphens in parentheses
-    .replace(/-/g, ' ')  // Replace remaining hyphens with spaces
-    .replace(/\###HYPHEN###/g, '-') // Restore original hyphens in parentheses
-    .replace(/\s+/g, ' ') // Replace multiple spaces with single space
+    .replace(/\((.*?)\)/g, (match) => match.replace(/-/g, "###HYPHEN###")) // Temporarily replace hyphens in parentheses
+    .replace(/-/g, " ") // Replace remaining hyphens with spaces
+    .replace(/\###HYPHEN###/g, "-") // Restore original hyphens in parentheses
+    .replace(/\s+/g, " ") // Replace multiple spaces with single space
     .trim(); // Remove leading/trailing spaces
 
-  const formattedCourseName = course_name.replace(/-/g, ' ');
+  const formattedCourseName = course_name.replace(/-/g, " ");
 
   // Log the formatted names to the console
   // console.log("School Name from URL:", formattedSchoolName); // Log the school name
@@ -239,8 +252,8 @@ const CourseDetail = () => {
 
   // Check for undefined values
   if (!formattedSchoolName || !formattedCourseName) {
-      console.error("School Name or Course Name is undefined");
-      return <div>Error: Missing school or course information.</div>;
+    console.error("School Name or Course Name is undefined");
+    return <div>Error: Missing school or course information.</div>;
   }
 
   const handleContentHeight = () => {
@@ -285,12 +298,15 @@ const CourseDetail = () => {
   const handleKnowMoreClick = (course) => {
     if (course) {
       // Store the courseID in session storage
-      sessionStorage.setItem('courseId', course.course_id);
+      sessionStorage.setItem("courseId", course.course_id);
       // Format the school and course names for the URL
       const formattedSchoolName = formatUrlString(course.course_school);
       const formattedCourseName = formatUrlString(course.course_name);
       // Navigate to the new URL format
-      navigate(`/course-details/${formattedSchoolName}/${formattedCourseName}`, { replace: true });
+      navigate(
+        `/course-details/${formattedSchoolName}/${formattedCourseName}`,
+        { replace: true }
+      );
       // Refresh the page to fetch new data
       window.location.reload(); // This will refresh the page
     } else {
@@ -335,7 +351,8 @@ const CourseDetail = () => {
   };
 
   const fetchProgram = async (courseID) => {
-    if (!courseID) { // Check if courseID is not provided
+    if (!courseID) {
+      // Check if courseID is not provided
       try {
         const response = await fetch(courseDetailAPI, {
           method: "POST",
@@ -352,14 +369,17 @@ const CourseDetail = () => {
         // Log the response data to the console
         // console.log("Fetched data:", data);
 
-        if (data && data.data) { // Check if data exists
+        if (data && data.data) {
+          // Check if data exists
           const selectedProgram = data.data; // Directly use the fetched data
           if (selectedProgram) {
             setPrograms([selectedProgram]);
-            sessionStorage.setItem('courseId', selectedProgram.id); // Store course ID in session
-            sessionStorage.setItem('schoolId', selectedProgram.schoolID); // Store school ID in session
+            sessionStorage.setItem("courseId", selectedProgram.id); // Store course ID in session
+            sessionStorage.setItem("schoolId", selectedProgram.schoolID); // Store school ID in session
           } else {
-            console.error("No matching program found for the given course name.");
+            console.error(
+              "No matching program found for the given course name."
+            );
             setPrograms([]);
           }
         } else {
@@ -381,21 +401,21 @@ const CourseDetail = () => {
           courseID: courseID,
         }),
       })
-      .then((response) => response.json())
-      .then((data) => {
-        // console.log("Fetched Course Data:", data);
-        if (data && data.data) {
-          const selectedProgram = data.data; // Directly use the fetched data
-          setPrograms(selectedProgram ? [selectedProgram] : []);
-        } else {
-          console.error("Invalid data structure:");
-          setPrograms([data.data]);
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching course data:", error);
-        setPrograms([]);
-      });
+        .then((response) => response.json())
+        .then((data) => {
+          // console.log("Fetched Course Data:", data);
+          if (data && data.data) {
+            const selectedProgram = data.data; // Directly use the fetched data
+            setPrograms(selectedProgram ? [selectedProgram] : []);
+          } else {
+            console.error("Invalid data structure:");
+            setPrograms([data.data]);
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching course data:", error);
+          setPrograms([]);
+        });
     }
 
     fetch(`${baseURL}api/student/featuredCourseList`, {
@@ -463,7 +483,7 @@ const CourseDetail = () => {
   // }, [schoolName, courseName]); // Dependency array includes schoolName and courseName
 
   useEffect(() => {
-    const storedCourseId = sessionStorage.getItem('courseId');
+    const storedCourseId = sessionStorage.getItem("courseId");
     const courseID = storedCourseId || id;
 
     fetchProgram(courseID);
@@ -645,35 +665,54 @@ const CourseDetail = () => {
                     >
                       <div>
                         <p className="mb-0">
-                        {/* {console.log('Program Country:', program.country_code, 'Fetched Country:', fetchedCountry)} */}
-                        {fetchedCountry && program.international_cost && program.country_code && program.country_code !== fetchedCountry ? (
+                          {/* {console.log('Program Country:', program.country_code, 'Fetched Country:', fetchedCountry)} */}
+                          {fetchedCountry &&
+                          program.international_cost &&
+                          program.country_code &&
+                          program.country_code !== fetchedCountry ? (
                             // console.log('Showing international cost'),
                             program.international_cost === "0" ? (
-                                program.cost === "0" || program.cost === "RM0" ? (
-                                    "N/A"
-                                ) : (
-                                    <>
-                                        <strong>{sessionStorage.getItem('userCurrencySymbol') || 'RM'}</strong>
-                                        {convertToFetchedCurrency(program.cost).replace(/^.*?(\d+.*)/, '$1')}
-                                    </>
-                                )
-                            ) : (
-                                <>
-                                    <strong>{sessionStorage.getItem('userCurrencySymbol') || 'RM'}</strong>
-                                    {convertToFetchedCurrency(program.international_cost).replace(/^.*?(\d+.*)/, '$1')}
-                                </>
-                            )
-                        ) : (
-                            // console.log('Showing local cost'),
-                            program.cost === "0" || program.cost === "RM0" ? (
+                              program.cost === "0" || program.cost === "RM0" ? (
                                 "N/A"
-                            ) : (
+                              ) : (
                                 <>
-                                    <strong>{sessionStorage.getItem('userCurrencySymbol') || 'RM'}</strong>
-                                    {convertToFetchedCurrency(program.cost).replace(/^.*?(\d+.*)/, '$1')}
+                                  <strong>
+                                    {sessionStorage.getItem(
+                                      "userCurrencySymbol"
+                                    ) || "RM"}
+                                  </strong>
+                                  {convertToFetchedCurrency(
+                                    program.cost
+                                  ).replace(/^.*?(\d+.*)/, "$1")}
                                 </>
+                              )
+                            ) : (
+                              <>
+                                <strong>
+                                  {sessionStorage.getItem(
+                                    "userCurrencySymbol"
+                                  ) || "RM"}
+                                </strong>
+                                {convertToFetchedCurrency(
+                                  program.international_cost
+                                ).replace(/^.*?(\d+.*)/, "$1")}
+                              </>
                             )
-                        )}
+                          ) : // console.log('Showing local cost'),
+                          program.cost === "0" || program.cost === "RM0" ? (
+                            "N/A"
+                          ) : (
+                            <>
+                              <strong>
+                                {sessionStorage.getItem("userCurrencySymbol") ||
+                                  "RM"}
+                              </strong>
+                              {convertToFetchedCurrency(program.cost).replace(
+                                /^.*?(\d+.*)/,
+                                "$1"
+                              )}
+                            </>
+                          )}
                         </p>
                       </div>
                     </Col>
@@ -912,7 +951,6 @@ const CourseDetail = () => {
                   </div>
                 </div>
               </div>
-
               {/* Image Swiper */}
               <div className="image-gallery-course">
                 {programs.map((program) => {
@@ -1191,7 +1229,6 @@ const CourseDetail = () => {
                 </Modal>
               </div>
               {/* End of Image Swiper */}
-
               <div className="d-flex justify-content-center">
                 <Button
                   style={{
@@ -1218,16 +1255,17 @@ const CourseDetail = () => {
                   Know More
                 </Button>*/}
               </div>
-
               {/* Featured courses */}
               {featuredCourses.length > 0 && (
-                <Container className="university-row-carousel">
+                <Container className="university-row-carousel pt-5">
                   <h4>Featured Courses</h4>
                   <Swiper
                     spaceBetween={20}
                     slidesPerView={1}
                     navigation
-                    style={{ padding: "0 50px" }}
+                    style={{
+                      padding: window.innerWidth < 768 ? "0 20px" : "10px",
+                    }}
                     loop={true}
                     modules={[Pagination, Navigation]}
                     breakpoints={{
@@ -1252,22 +1290,22 @@ const CourseDetail = () => {
                         slidesPerView: 3,
                         spaceBetween: 5,
                       },
+                      1025: {
+                        // Custom breakpoint for specific screen height
+                        slidesPerView: 4, // Adjust as needed
+                        spaceBetween: 1, // Adjust as needed
+                      },
                       1254: {
-                        slidesPerView: 3,
+                        slidesPerView: 4,
                         spaceBetween: 1,
                       },
                       1324: {
-                        slidesPerView: 3,
+                        slidesPerView: 4,
                         spaceBetween: 1,
                       },
                       1488: {
                         slidesPerView: 5,
-                        spaceBetween: 10,
-                      },
-                      1025: {
-                        // Custom breakpoint for specific screen height
-                        slidesPerView: 3, // Adjust as needed
-                        spaceBetween: 3, // Adjust as needed
+                        spaceBetween: 1,
                       },
                     }}
                   >
@@ -1292,8 +1330,15 @@ const CourseDetail = () => {
                               </span>
                             )}
                             <Link
-                              to={`/university-details/${formatUrlString(course.course_school)}`}
-                              onClick={() => sessionStorage.setItem('schoolId', course.school_id)}
+                              to={`/university-details/${formatUrlString(
+                                course.course_school
+                              )}`}
+                              onClick={() =>
+                                sessionStorage.setItem(
+                                  "schoolId",
+                                  course.school_id
+                                )
+                              }
                               target="_parent"
                               rel="noopener noreferrer"
                             >
@@ -1311,8 +1356,15 @@ const CourseDetail = () => {
                           </div>
                           <div>
                             <Link
-                              to={`/university-details/${formatUrlString(course.course_school)}`}
-                              onClick={() => sessionStorage.setItem('schoolId', course.school_id)}
+                              to={`/university-details/${formatUrlString(
+                                course.course_school
+                              )}`}
+                              onClick={() =>
+                                sessionStorage.setItem(
+                                  "schoolId",
+                                  course.school_id
+                                )
+                              }
                               target="_parent"
                               rel="noopener noreferrer"
                             >
@@ -1389,6 +1441,8 @@ const CourseDetail = () => {
                 </Container>
               )}
               {/* End of Featured courses */}
+              {/* Adjusted margin to reduce gap */}
+              <div style={{ margin: "10px 0" }}></div> {/* Reduced gap here */}
             </Container>
           </div>
         ))}
@@ -1399,8 +1453,8 @@ const CourseDetail = () => {
           navigation
           pagination={{ clickable: true }}
           autoplay={{ delay: 5000, disableOnInteraction: false }} // Ensure autoplay is enabled
-          modules={[Pagination, Navigation, Autoplay]} 
-          style={{ padding: "20px 0" }}
+          modules={[Pagination, Navigation, Autoplay]}
+          style={{ padding: "0px 0" }}
         >
           {adsImage.map((ad, index) => (
             <SwiperSlide key={ad.id} className="advertisement-item mb-3">
