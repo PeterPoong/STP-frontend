@@ -129,6 +129,11 @@ const FeaturedCoursesContainer = () => {
               '--swiper-pagination-bottom': '-5px',
               '--swiper-navigation-color': '#BA1718',
               '--swiper-navigation-size': '25px',
+              '--swiper-pagination-color': '#BA1718',
+              '--swiper-pagination-bullet-inactive-color': '#CCCCCC',
+              '--swiper-pagination-bullet-inactive-opacity': '0.5',
+              '--swiper-pagination-bullet-size': '8px',
+              '--swiper-pagination-bullet-horizontal-gap': '4px',
               paddingBottom: '20px',
               paddingLeft: '25px',
               paddingRight: '25px'
