@@ -20,6 +20,7 @@ import ApplyForm from "./Pages/StudentPages/ApplyPage/ApplyForm";
 import PersonalDetails from "./Pages/StudentPages/ApplyPage/PersonalDetails";
 
 // Admin Login Page
+import ProtectedAdminRoute from './Components/AdminComp/ProtectedAdminRoute';
 import AdminSignup from "./Pages/AdminPages/AdminSignup";
 import AdminLogin from "./Pages/AdminPages/AdminLogin";
 import AdminForgetPass from "./Pages/AdminPages/AdminForgetPass";
@@ -184,161 +185,309 @@ const router = createBrowserRouter([
   // Admin Dashboard Pages
   {
     path: "/adminDashboard",
-    element: <AdminDashboard />,
+    element: (
+      <ProtectedAdminRoute>
+        <AdminDashboard />,
+      </ProtectedAdminRoute>
+    ),
   },
 
   {
     path: "/adminSchool",
-    element: <AdminSchool />,
+    element:(
+      <ProtectedAdminRoute>
+        <AdminSchool />,
+      </ProtectedAdminRoute>
+    ),
   },
 
   {
     path: "/adminAddSchool",
-    element: <AdminAddSchool />,
+    element:(
+      <ProtectedAdminRoute>
+        <AdminAddSchool />,
+      </ProtectedAdminRoute>
+    ),
   },
 
   {
     path: "/adminEditSchool",
-    element: <AdminEditSchool />,
+    element: (
+      <ProtectedAdminRoute>
+        <AdminEditSchool />,
+      </ProtectedAdminRoute>
+    ),
   },
 
   {
     path: "/adminStudent",
-    element: <AdminStudent />,
+    element:  (
+      <ProtectedAdminRoute>
+        <AdminStudent />,
+      </ProtectedAdminRoute>
+    ),
   },
 
   {
     path: "/adminAddStudent",
-    element: <AdminAddStudent />,
+    element:  (
+      <ProtectedAdminRoute>
+        <AdminAddStudent />,
+      </ProtectedAdminRoute>
+    ),
   },
   {
     path: "/adminEditStudent",
-    element: <AdminEditStudent />,
+    element:  (
+      <ProtectedAdminRoute>
+        <AdminEditStudent />,
+      </ProtectedAdminRoute>
+    ),
   },
   {
     path: "/adminCourses",
-    element: <AdminCourses />,
+    element: (
+      <ProtectedAdminRoute>
+        <AdminCourses />,
+      </ProtectedAdminRoute>
+    ),
   },
   {
     path: "/adminAddCourse",
-    element: <AdminAddCourse />,
+    element: (
+      <ProtectedAdminRoute>
+        <AdminAddCourse />,
+      </ProtectedAdminRoute>
+    ),
   },
   {
     path: "/adminEditCourse",
-    element: <AdminEditCourse />,
+    element: (
+      <ProtectedAdminRoute>
+        <AdminEditCourse />,
+      </ProtectedAdminRoute>
+    ),
   },
 
   {
     path: "/adminCategory",
-    element: <AdminCategory />,
+    element: (
+      <ProtectedAdminRoute>
+        <AdminCategory />,
+      </ProtectedAdminRoute>
+    ),
   },
   {
     path: "/adminAddCategory",
-    element: <AdminAddCategory />,
+    element: (
+      <ProtectedAdminRoute>
+        <AdminAddCategory />,
+      </ProtectedAdminRoute>
+    ),
   },
 
   {
     path: "/adminEditCategory",
-    element: <AdminEditCategory />,
+    element: (
+      <ProtectedAdminRoute>
+        <AdminEditCategory />,
+      </ProtectedAdminRoute>
+    ),
   },
 
   {
     path: "/adminSubject",
-    element: <AdminSubject />,
+    element: (
+      <ProtectedAdminRoute>
+        <AdminSubject />,
+      </ProtectedAdminRoute>
+    ),
   },
   {
     path: "/adminAddSubject",
-    element: <AdminAddSubject />,
+    element:  (
+      <ProtectedAdminRoute>
+        <AdminAddSubject />,
+      </ProtectedAdminRoute>
+    ),
   },
   {
     path: "/adminEditSubject",
-    element: <AdminEditSubject />,
+    element: (
+      <ProtectedAdminRoute>
+        <AdminEditSubject />,
+      </ProtectedAdminRoute>
+    ),
   },
   {
     path: "/adminList",
-    element: <AdminList />,
+    element: (
+      <ProtectedAdminRoute>
+        <AdminList />,
+      </ProtectedAdminRoute>
+    ),
   },
 
   {
     path: "/adminApplicant",
-    element: <AdminApplicant />,
+    element: (
+      <ProtectedAdminRoute>
+        <AdminApplicant />,
+      </ProtectedAdminRoute>
+    ),
   },
   {
     path: "/adminEditApplicant",
-    element: <AdminEditApplicant />,
+    element: (
+      <ProtectedAdminRoute>
+        <AdminEditApplicant />,
+      </ProtectedAdminRoute>
+    ),
   },
   {
     path: "/adminBanner",
-    element: <AdminBanner />,
+    element: (
+      <ProtectedAdminRoute>
+        <AdminBanner />,
+      </ProtectedAdminRoute>
+    ),
   },
 
   {
     path: "/adminAddbanner",
-    element: <AdminAddBanner />,
+    element: (
+      <ProtectedAdminRoute>
+        <AdminAddBanner />,
+      </ProtectedAdminRoute>
+    ),
   },
   {
     path: "/adminEditBanner",
-    element: <AdminEditBanner />,
+    element: (
+      <ProtectedAdminRoute>
+        <AdminEditBanner />,
+      </ProtectedAdminRoute>
+    ),
   },
   {
     path: "/adminPackage",
-    element: <AdminPackage />,
+    element: (
+      <ProtectedAdminRoute>
+        <AdminPackage />,
+      </ProtectedAdminRoute>
+    ),
   },
   {
     path: "/adminAddPackage",
-    element: <AdminAddPackage />,
+    element: (
+      <ProtectedAdminRoute>
+        <AdminAddPackage />,
+      </ProtectedAdminRoute>
+    ),
   },
   {
     path: "/adminEditPackage",
-    element: <AdminEditPackage />,
+    element: (
+      <ProtectedAdminRoute>
+        <AdminEditPackage />,
+      </ProtectedAdminRoute>
+    ),
   },
   {
     path: "/adminData",
-    element: <AdminData />,
+    element: (
+      <ProtectedAdminRoute>
+        <AdminData />,
+      </ProtectedAdminRoute>
+    ),
   },
   {
     path: "/adminEnquiry",
-    element: <AdminEnquiry />,
+    element: (
+      <ProtectedAdminRoute>
+        <AdminEnquiry />,
+      </ProtectedAdminRoute>
+    ),
   },
   {
     path: "/adminReplyEnquiry",
-    element: <AdminReplyEnquiry />,
+    element: (
+      <ProtectedAdminRoute>
+        <AdminReplyEnquiry />,
+      </ProtectedAdminRoute>
+    ),
   },
   {
     path: "/adminFeatured",
-    element: <AdminFeatured />,
+    element: (
+      <ProtectedAdminRoute>
+        <AdminFeatured />,
+      </ProtectedAdminRoute>
+    ),
   },
   {
     path: "/adminEditFeatured",
-    element: <AdminEditFeatured />,
+    element: (
+      <ProtectedAdminRoute>
+        <AdminEditFeatured />,
+      </ProtectedAdminRoute>
+    ),
   },
   {
     path: "/adminInterest",
-    element: <AdminInterest />,
+    element: (
+      <ProtectedAdminRoute>
+        <AdminInterest />,
+      </ProtectedAdminRoute>
+    ),
   },
   {
     path: "/adminQuestion",
-    element: <AdminQuestion />,
+    element: (
+      <ProtectedAdminRoute>
+        <AdminQuestion />,
+      </ProtectedAdminRoute>
+    ),
   },
   {
     path: "/adminAddQuestion",
-    element: <AdminAddQuestion />,
+    element: (
+      <ProtectedAdminRoute>
+        <AdminAddQuestion />,
+      </ProtectedAdminRoute>
+    ),
   },
   {
     path: "/adminEditQuestion",
-    element: <AdminEditQuestion />,
+    element: (
+      <ProtectedAdminRoute>
+        <AdminEditQuestion />,
+      </ProtectedAdminRoute>
+    ),
   },
   {
     path: "/adminRiasec",
-    element: <AdminRiasec />,
+    element: (
+      <ProtectedAdminRoute>
+        <AdminRiasec />,
+      </ProtectedAdminRoute>
+    ),
   },
   {
     path: "/adminAddRiasec",
-    element: <AdminAddRiasec />,
+    element: (
+      <ProtectedAdminRoute>
+        <AdminAddRiasec />,
+      </ProtectedAdminRoute>
+    ),
   },
   {
     path: "/adminEditRiasec",
-    element: <AdminEditRiasec />,
+    element:  (
+      <ProtectedAdminRoute>
+        <AdminEditRiasec />,
+      </ProtectedAdminRoute>
+    ),
   },
   //Student Portal Page
   {
