@@ -57,17 +57,32 @@ const AdminStudentContent = () => {
 
   //     fetchStudents();
   // }, [currentPage, rowsPerPage]);
+  const [statList, setStatList] = useState([]); // State for category list
+  const [selectedStat, setSelectedStat] = useState(""); // State for selected subject
+
+  useEffect(() => {
+      // Hardcoded statList values
+      const hardcodedStatList = [
+          { id: 0, name: "Disable" },
+          { id: 1, name: "Active" },
+          { id: 3, name: "Temporary" },
+          { id: 4, name: "Temporary-Disable" },
+      ];
+      setStatList(hardcodedStatList);
+      fetchstudents(); // Fetch enquiries initially
+  }, []);
 
   const fetchstudents = async (
     page = 1,
     perPage = rowsPerPage,
-    search = searchQuery
+    search = searchQuery,
+    stat = selectedStat
   ) => {
     try {
       const response = await fetch(
         `${
           import.meta.env.VITE_BASE_URL
-        }api/admin/studentListAdmin?page=${page}&per_page=${perPage}&search=${search}`,
+        }api/admin/studentListAdmin?page=${page}&per_page=${perPage}&search=${search}&stat=${stat}`,
         {
           method: "POST",
           headers: {
@@ -101,13 +116,13 @@ const AdminStudentContent = () => {
   };
 
   useEffect(() => {
-    fetchstudents(currentPage, rowsPerPage, searchQuery);
-  }, [Authenticate, currentPage, rowsPerPage, searchQuery]);
+    fetchstudents(currentPage, rowsPerPage, searchQuery, selectedStat);
+  }, [Authenticate, currentPage, rowsPerPage, searchQuery, selectedStat]);
 
   const handleRowsPerPageChange = (newRowsPerPage) => {
     setRowsPerPage(newRowsPerPage);
     setCurrentPage(1); // Reset to the first page whenever rows per page changes
-    fetchstudents(1, newRowsPerPage, searchQuery); // Fetch data with updated rowsPerPage
+    fetchstudents(1, newRowsPerPage, searchQuery, selectedStat); // Fetch data with updated rowsPerPage
   };
 
   const handleSearch = (query) => {
@@ -156,7 +171,7 @@ const AdminStudentContent = () => {
 
       if (result.success) {
         // Log the new status for debugging
-        await fetchstudents(currentPage, rowsPerPage, searchQuery);
+        await fetchstudents(currentPage, rowsPerPage, searchQuery, selectedStat);
       } else {
         console.error(result.message);
       }
@@ -195,7 +210,7 @@ const AdminStudentContent = () => {
       sortColumn === column && sortDirection === "asc" ? "desc" : "asc";
     setSortColumn(column);
     setSortDirection(newDirection);
-    fetchstudents(currentPage, rowsPerPage, searchQuery); // Fetch sorted data
+    fetchstudents(currentPage, rowsPerPage, searchQuery, selectedStat); // Fetch sorted data
   };
 
   const sortedstudents = (() => {
@@ -307,6 +322,11 @@ const AdminStudentContent = () => {
         </td>
       </tr>
     );
+    const handleStatChange = (stat) => {
+      setSelectedStat(stat);
+      setCurrentPage(1);
+      fetchstudents(1, rowsPerPage, searchQuery, stat);
+    };
   return (
     <>
       {loading ? (
@@ -326,6 +346,8 @@ const AdminStudentContent = () => {
             onRowsPerPageChange={handleRowsPerPageChange}
             showAddButton={showAddButton}
             onAddButtonClick={handleAddStudent}
+            statList={statList}
+            onStatChange={handleStatChange}
           />
         </div>
       )}
