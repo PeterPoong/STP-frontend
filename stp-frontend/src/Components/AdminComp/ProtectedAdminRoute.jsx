@@ -9,43 +9,31 @@ const ProtectedAdminRoute = ({ children }) => {
     
     useEffect(() => {
         const verifyAdmin = async () => {
-            const token = sessionStorage.getItem('token');
-            const userData = JSON.parse(sessionStorage.getItem('user')); // Get stored user data
-            
-            if (!token || !userData) {
-                setIsLoading(false);
-                navigate('/adminLogin');
-                return;
-            }
-
             try {
-                const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/adminList`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                    },
-                });
-
-                const data = await response.json();
+                const token = sessionStorage.getItem('token');
+                const userDataString = sessionStorage.getItem('user');
                 
-                // Find the current user in the admin list
-                const currentUser = data.data.find(admin => 
-                    admin.email === userData.email && 
-                    admin.contact_no === userData.contact_no
-                );
+                console.log('Retrieved token:', token);
+                console.log('Retrieved user data string:', userDataString);
 
-                // Verify if user exists and has correct role and active status
-                if (currentUser && 
-                    currentUser.user_role === 1 && 
-                    currentUser.status === "Active") {
+                if (!token || !userDataString) {
+                    throw new Error('No authentication data');
+                }
+
+                const userData = JSON.parse(userDataString);
+                console.log('Parsed user data:', userData);
+
+                // Check user role and status from stored data
+                // Status can be 1 (Active) or "Active"
+                if (userData.user_role === 1 && (userData.status === 1 || userData.status === "Active")) {
+                    console.log('User authenticated successfully');
                     setIsAuthenticated(true);
                 } else {
-                    console.log('Unauthorized access attempt');
-                    sessionStorage.removeItem('token');
-                    sessionStorage.removeItem('user');
-                    navigate('/adminLogin');
+                    console.log('User role:', userData.user_role);
+                    console.log('User status:', userData.status);
+                    throw new Error('Unauthorized access');
                 }
+
             } catch (error) {
                 console.error('Authentication error:', error);
                 sessionStorage.removeItem('token');
