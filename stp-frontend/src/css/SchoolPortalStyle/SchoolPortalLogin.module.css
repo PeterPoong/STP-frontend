@@ -1,23 +1,24 @@
-.loginButton {
+.schoolLoginButton {
   padding: 0.5rem 10rem;
-      border: 1px solid #B71A18; /* Red border */
-    background-color: white; /* White background */
-    color: #B71A18; /* Red text */
-    cursor: pointer; /* Pointer cursor on hover */
-    border-radius:  12px;
-    transition: background-color 0.3s, color 0.3s; /* Smooth transition */
-    font-weight: normal; /* Remove bold */
-    font-size: 14px;
-  }
-  
-  .loginButton:hover {
-    background-color: #B71A18; /* Red background on hover */
-    color: white; /* White text on hover */
-  }
+  width: 100%;
+  border: 1px solid #B71A18; /* Red border */
+  background-color: white; /* White background */
+  color: #B71A18; /* Red text */
+  cursor: pointer; /* Pointer cursor on hover */
+  border-radius:  12px;
+  transition: background-color 0.3s, color 0.3s; /* Smooth transition */
+  font-weight: normal; /* Remove bold */
+  font-size: 14px;
+}
 
-  @media (max-width: 768px){
-    .loginButton{
-      padding: 0.5rem 10rem;
-      width:100%;
-    }
+.loginButton:hover {
+  background-color: #B71A18; /* Red background on hover */
+  color: white; /* White text on hover */
+}
+
+@media (max-width: 768px){
+  .loginButton{
+    padding: 0.5rem 10rem;
+    width:100%;
   }
+}
