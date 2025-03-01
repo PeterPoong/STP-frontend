@@ -301,17 +301,15 @@ const AdminFeaturedContent = () => {
     const getStatusClass = (request_status) => {
         switch (request_status) {
             case 0:
-                return 'status-disable';
+                return 'status-expired';
             case 3:
                 return 'status-rejected';
-            case 3:
-                return 'status-disable';
             case 1:
-                return 'status-active';
+                return 'status-ongoing';
             case 2:
                 return 'status-pending';
-            case 2:
-                return 'status-temporary';
+            case 4:
+                return 'status-schedule';
             default:
                 return '';
         }
