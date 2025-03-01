@@ -113,7 +113,15 @@
     font-weight: bold;
 
 }
+.status-expired {
+    content: "Expired";
+    color: red !important;
+    padding: 5px;
+    text-align: center;
+    position: relative;
+    font-weight: bold;
 
+}
 .status-active {
     color: green !important;
     padding: 5px;
@@ -123,8 +131,17 @@
     font-weight: bold;
 
 }
+.status-active {
+    color: green !important;
+    padding: 5px;
+    text-align: center;
+    text-indent: -9999px; /* Hide the actual content off-screen */
+    position: relative;
+    font-weight: bold;
 
-.status-accepted {
+}
+.status-ongoing {
+    content: "Ongoing";
     color: green !important;
     padding: 5px;
     text-align: center;
@@ -162,7 +179,14 @@
     font-weight: bold;
 
 }
+.status-schedule {
+    content: "Schedule";
+    color: #D2691E !important;
+    padding: 5px;
+    text-align: center;
+    font-weight: bold;
 
+}
 .icon-color-edit {
     color: #a14bfc;
 }
