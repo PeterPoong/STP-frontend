@@ -824,7 +824,7 @@ const SearchCourse = () => {
             style={{ padding: "0px 0" }}
           >
             {adsImages.map((ad, index) => (
-              <LazySwiperSlide key={ad.id} className="advertisement-item mb-3">
+              <LazySwiperSlide key={ad.id} className="advertisement-item">
                 <a
                   href={
                     ad.banner_url.startsWith("http")
@@ -840,8 +840,8 @@ const SearchCourse = () => {
                     alt={`Advertisement ${ad.banner_name}`}
                     className="studypal-image rounded-3"
                     style={{
-                      height: "175px",
-                      objectFit: "cover",
+                      height: adsImages === adsImageB ? "100px" : "175px",
+                      objectFit: "fill",
                       width: "100%",
                       marginBottom: index < adsImages.length - 1 ? "20px" : "0",
                     }}
@@ -2178,7 +2178,7 @@ const SearchCourse = () => {
 
             {/* Right Content - Course Listings */}
             <Col xs={12} md={9} className="degreeprograms-division">
-              <div>{renderAdImages(adsImageA, StudyPal)}</div>
+              <div className="mb-5">{renderAdImages(adsImageA, StudyPal)}</div>
 
               {loading ? (
                 <div>
@@ -2315,7 +2315,590 @@ const SearchCourse = () => {
                   </div>
                 </div>
               ) : (
-                <>{renderedPrograms}</>
+                <>
+                  {/* First 3 programs */}
+                  {programs.slice(0, 3).map((program, index) => (
+                    <React.Fragment key={program.id}>
+                      <div
+                        className="card mb-4 degree-card"
+                        style={{ position: "relative", height: "auto" }}
+                      >
+                        {program.featured && <div className="featured-badge">Featured</div>}
+                        <div className="card-body d-flex flex-column flex-md-row align-items-start">
+                          <Row className="coursepage-row">
+                            <Col md={6} lg={6} className="course-card-ipad">
+                              <div className="card-image mb-3 mb-md-0">
+                                <h5 className="card-title">
+                                  <Link
+                                    rel="preload"
+                                    to={`/course-details/${program.school_name
+                                      .replace(/\s+/g, "-")
+                                      .toLowerCase()}/${program.name
+                                      .replace(/\s+/g, "-")
+                                      .toLowerCase()}`}
+                                    style={{ color: "black" }}
+                                    onClick={() =>
+                                      sessionStorage.setItem("courseId", program.id)
+                                    }
+                                  >
+                                    {program.name}
+                                  </Link>
+                                </h5>
+
+                                <div className="coursepage-searchcourse-courselist-first">
+                                  <div
+                                    className="coursepage-img"
+                                    style={{
+                                      paddingLeft: "0", // Remove left padding
+                                      display: "flex",
+                                      justifyContent: "center", // Center the logo
+                                      alignItems: "center", // Center vertically if needed
+                                      flexDirection: "column", // Stack items vertically
+                                    }}
+                                  >
+                                    <Link
+                                      rel="preload"
+                                      to={`/university-details/${program.school_name
+                                        .replace(/\s+/g, "-")
+                                        .toLowerCase()}`}
+                                      style={{ color: "black" }}
+                                      onClick={() =>
+                                        sessionStorage.setItem("schoolId", program.school_id)
+                                      }
+                                    >
+                                      <div className="image-container">
+                                        <img
+                                          loading="lazy"
+                                          src={`${baseURL}storage/${program.logo}`}
+                                          alt={program.school_name}
+                                          width="100"
+                                          className="coursepage-img-size"
+                                        />
+                                      </div>
+                                    </Link>
+                                  </div>
+                                  <div className="searchcourse-coursename-schoolname">
+                                    <div>
+                                      <Link
+                                        rel="preload"
+                                        to={`/university-details/${program.school_name
+                                          .replace(/\s+/g, "-")
+                                          .toLowerCase()}`}
+                                        style={{ color: "black" }}
+                                        onClick={() =>
+                                          sessionStorage.setItem(
+                                            "schoolId",
+                                            program.school_id
+                                          )
+                                        }
+                                      >
+                                        <h5 className="card-text">{program.school_name}</h5>
+                                      </Link>
+
+                                      <i
+                                        className="bi bi-geo-alt"
+                                        style={{ marginRight: "10px", color: "#AAAAAA" }}
+                                      ></i>
+                                      <span>
+                                        {program.state || "N/A"}, {program.country || "N/A"}
+                                      </span>
+                                    </div>
+                                    <div>
+                                      <a
+                                        href={program.school_location}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                      >
+                                        Click and view on map
+                                      </a>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </Col>
+                            <Col md={6} lg={6} className="course-card-fee-ipad">
+                              <div className="d-flex flex-grow-1 coursepage-searchcourse-courselist-second">
+                                <div className="details-div">
+                                  <div className="flex-wrap coursepage-info-one">
+                                    <Col>
+                                      <div>
+                                        <div>
+                                          {" "}
+                                          {/* Align to bottom on iPad */}
+                                          <Row>
+                                            <div className="searchcourse-dflex-center">
+                                              <i
+                                                className="bi bi-mortarboard"
+                                                style={{ marginRight: "10px" }}
+                                              ></i>
+                                              <p style={{ paddingLeft: "20px" }}>
+                                                {program.qualification}
+                                              </p>
+                                            </div>
+                                            <div
+                                              style={{ marginTop: "10px" }}
+                                              className="searchcourse-dflex-center"
+                                            >
+                                              <i
+                                                className="bi bi-calendar-check"
+                                                style={{ marginRight: "10px" }}
+                                              ></i>
+                                              <p style={{ paddingLeft: "20px" }}>
+                                                {program.mode}
+                                              </p>
+                                            </div>
+                                            <div
+                                              style={{ marginTop: "10px" }}
+                                              className="searchcourse-dflex-center"
+                                            >
+                                              <i
+                                                className="bi bi-clock"
+                                                style={{ marginRight: "10px" }}
+                                              ></i>
+                                              <p style={{ paddingLeft: "20px" }}>
+                                                {program.period}
+                                              </p>
+                                            </div>
+                                            <div
+                                              style={{ marginTop: "5px" }} // Reduced margin
+                                              className="searchcourse-dflex-center"
+                                            >
+                                              <i
+                                                className="bi bi-calendar2-week"
+                                                style={{ marginRight: "5px" }} // Reduced margin
+                                              ></i>
+                                              <p
+                                                style={{
+                                                  paddingLeft: "10px", // Reduced padding
+                                                  margin: 0,
+                                                  whiteSpace: "normal",
+                                                  wordBreak: "keep-all",
+                                                  overflowWrap: "break-word",
+                                                  display: "inline-block",
+                                                  width: "calc(100% - 30px)", // Adjusted width
+                                                }}
+                                              >
+                                                {Array.isArray(program.intake)
+                                                  ? program.intake
+                                                      .map((intake) => intake.trim())
+                                                      .join(", ")
+                                                  : "N/A"}
+                                              </p>
+                                            </div>
+                                          </Row>
+                                        </div>
+                                      </div>
+                                    </Col>
+                                  </div>
+                                </div>
+                                <div className="fee-apply">
+                                  <div
+                                    className="fee-info text-right"
+                                    style={{ marginTop: "25px" }}
+                                  >
+                                    <p
+                                      style={{ fontSize: "14px" }}
+                                      className="coursepage-estimatefee"
+                                    >
+                                      estimate fee
+                                      <p style={{ fontSize: "16px" }}>
+                                        {program.international_cost &&
+                                        program.country_code !== fetchedCountry ? (
+                                          program.international_cost === "0" ? (
+                                            program.cost === "0" || program.cost === "RM0" ? (
+                                              "N/A"
+                                            ) : (
+                                              <>
+                                                <strong>
+                                                  {sessionStorage.getItem(
+                                                    "userCurrencySymbol"
+                                                  ) || "RM"}
+                                                </strong>
+                                                {convertToFetchedCurrency(
+                                                  program.cost
+                                                ).replace(/^.*?(\d+.*)/, "$1")}
+                                              </>
+                                            )
+                                          ) : (
+                                            <>
+                                              <strong>
+                                                {sessionStorage.getItem(
+                                                  "userCurrencySymbol"
+                                                ) || "RM"}
+                                              </strong>
+                                              {convertToFetchedCurrency(
+                                                program.international_cost
+                                              ).replace(/^.*?(\d+.*)/, "$1")}
+                                            </>
+                                          )
+                                        ) : program.cost === "0" || program.cost === "RM0" ? (
+                                          "N/A"
+                                        ) : (
+                                          <>
+                                            <strong>
+                                              {sessionStorage.getItem("userCurrencySymbol") ||
+                                                "RM"}
+                                            </strong>
+                                            {convertToFetchedCurrency(program.cost).replace(
+                                              /^.*?(\d+.*)/,
+                                              "$1"
+                                            )}
+                                          </>
+                                        )}
+                                      </p>
+                                    </p>
+                                  </div>
+                                  <div className="d-flex interest-division">
+                                    <div className="interest">
+                                      <button
+                                        onClick={(e) => {
+                                          e.preventDefault();
+                                          handleInterestClick(program.id);
+                                        }}
+                                        className="interest-button"
+                                        aria-label={
+                                          courseInterests[program.id]?.status === 1
+                                            ? "Remove from interests"
+                                            : "Add to interests"
+                                        }
+                                      >
+                                        <span style={{ fontSize: "16px" }}>
+                                          {courseInterests[program.id]?.status === 1
+                                            ? "Favourite"
+                                            : "Favourite"}
+                                        </span>
+                                        <i
+                                          className={
+                                            courseInterests[program.id]?.status === 1
+                                              ? "bi bi-heart-fill"
+                                              : "bi bi-heart"
+                                          }
+                                        ></i>
+                                      </button>
+                                    </div>
+                                    <div className="apply-button">
+                                      {program.institute_category === "Local University" ? (
+                                        <button
+                                          onClick={() =>
+                                            (window.location.href = `mailto:${program.email}`)
+                                          }
+                                          className="featured coursepage-applybutton">
+                                          Contact Now
+                                        </button>
+                                      ) : (
+                                        <button
+                                          className="featured coursepage-applybutton"
+                                          onClick={() => handleApplyNow(program)}
+                                        >
+                                          Apply Now
+                                        </button>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </Col>
+                          </Row>
+                        </div>
+                      </div>
+                    </React.Fragment>
+                  ))}
+                  
+                  {/* Advertisement after first 3 programs */}
+                  {programs.length > 3 && (
+                    <div className="my-5">
+                      {renderAdImages(adsImageB, StudyPal)}
+                    </div>
+                  )}
+                  
+                  {/* Remaining programs */}
+                  {programs.slice(3).map((program, index) => (
+                    <React.Fragment key={program.id}>
+                      <div
+                        className="card mb-4 degree-card"
+                        style={{ position: "relative", height: "auto" }}
+                      >
+                        {program.featured && <div className="featured-badge">Featured</div>}
+                        <div className="card-body d-flex flex-column flex-md-row align-items-start">
+                          <Row className="coursepage-row">
+                            <Col md={6} lg={6} className="course-card-ipad">
+                              <div className="card-image mb-3 mb-md-0">
+                                <h5 className="card-title">
+                                  <Link
+                                    rel="preload"
+                                    to={`/course-details/${program.school_name
+                                      .replace(/\s+/g, "-")
+                                      .toLowerCase()}/${program.name
+                                      .replace(/\s+/g, "-")
+                                      .toLowerCase()}`}
+                                    style={{ color: "black" }}
+                                    onClick={() =>
+                                      sessionStorage.setItem("courseId", program.id)
+                                    }
+                                  >
+                                    {program.name}
+                                  </Link>
+                                </h5>
+
+                                <div className="coursepage-searchcourse-courselist-first">
+                                  <div
+                                    className="coursepage-img"
+                                    style={{
+                                      paddingLeft: "0", // Remove left padding
+                                      display: "flex",
+                                      justifyContent: "center", // Center the logo
+                                      alignItems: "center", // Center vertically if needed
+                                      flexDirection: "column", // Stack items vertically
+                                    }}
+                                  >
+                                    <Link
+                                      rel="preload"
+                                      to={`/university-details/${program.school_name
+                                        .replace(/\s+/g, "-")
+                                        .toLowerCase()}`}
+                                      style={{ color: "black" }}
+                                      onClick={() =>
+                                        sessionStorage.setItem("schoolId", program.school_id)
+                                      }
+                                    >
+                                      <div className="image-container">
+                                        <img
+                                          loading="lazy"
+                                          src={`${baseURL}storage/${program.logo}`}
+                                          alt={program.school_name}
+                                          width="100"
+                                          className="coursepage-img-size"
+                                        />
+                                      </div>
+                                    </Link>
+                                  </div>
+                                  <div className="searchcourse-coursename-schoolname">
+                                    <div>
+                                      <Link
+                                        rel="preload"
+                                        to={`/university-details/${program.school_name
+                                          .replace(/\s+/g, "-")
+                                          .toLowerCase()}`}
+                                        style={{ color: "black" }}
+                                        onClick={() =>
+                                          sessionStorage.setItem(
+                                            "schoolId",
+                                            program.school_id
+                                          )
+                                        }
+                                      >
+                                        <h5 className="card-text">{program.school_name}</h5>
+                                      </Link>
+
+                                      <i
+                                        className="bi bi-geo-alt"
+                                        style={{ marginRight: "10px", color: "#AAAAAA" }}
+                                      ></i>
+                                      <span>
+                                        {program.state || "N/A"}, {program.country || "N/A"}
+                                      </span>
+                                    </div>
+                                    <div>
+                                      <a
+                                        href={program.school_location}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                      >
+                                        Click and view on map
+                                      </a>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </Col>
+                            <Col md={6} lg={6} className="course-card-fee-ipad">
+                              <div className="d-flex flex-grow-1 coursepage-searchcourse-courselist-second">
+                                <div className="details-div">
+                                  <div className="flex-wrap coursepage-info-one">
+                                    <Col>
+                                      <div>
+                                        <div>
+                                          {" "}
+                                          {/* Align to bottom on iPad */}
+                                          <Row>
+                                            <div className="searchcourse-dflex-center">
+                                              <i
+                                                className="bi bi-mortarboard"
+                                                style={{ marginRight: "10px" }}
+                                              ></i>
+                                              <p style={{ paddingLeft: "20px" }}>
+                                                {program.qualification}
+                                              </p>
+                                            </div>
+                                            <div
+                                              style={{ marginTop: "10px" }}
+                                              className="searchcourse-dflex-center"
+                                            >
+                                              <i
+                                                className="bi bi-calendar-check"
+                                                style={{ marginRight: "10px" }}
+                                              ></i>
+                                              <p style={{ paddingLeft: "20px" }}>
+                                                {program.mode}
+                                              </p>
+                                            </div>
+                                            <div
+                                              style={{ marginTop: "10px" }}
+                                              className="searchcourse-dflex-center"
+                                            >
+                                              <i
+                                                className="bi bi-clock"
+                                                style={{ marginRight: "10px" }}
+                                              ></i>
+                                              <p style={{ paddingLeft: "20px" }}>
+                                                {program.period}
+                                              </p>
+                                            </div>
+                                            <div
+                                              style={{ marginTop: "5px" }} // Reduced margin
+                                              className="searchcourse-dflex-center"
+                                            >
+                                              <i
+                                                className="bi bi-calendar2-week"
+                                                style={{ marginRight: "5px" }} // Reduced margin
+                                              ></i>
+                                              <p
+                                                style={{
+                                                  paddingLeft: "10px", // Reduced padding
+                                                  margin: 0,
+                                                  whiteSpace: "normal",
+                                                  wordBreak: "keep-all",
+                                                  overflowWrap: "break-word",
+                                                  display: "inline-block",
+                                                  width: "calc(100% - 30px)", // Adjusted width
+                                                }}
+                                              >
+                                                {Array.isArray(program.intake)
+                                                  ? program.intake
+                                                      .map((intake) => intake.trim())
+                                                      .join(", ")
+                                                  : "N/A"}
+                                              </p>
+                                            </div>
+                                          </Row>
+                                        </div>
+                                      </div>
+                                    </Col>
+                                  </div>
+                                </div>
+                                <div className="fee-apply">
+                                  <div
+                                    className="fee-info text-right"
+                                    style={{ marginTop: "25px" }}
+                                  >
+                                    <p
+                                      style={{ fontSize: "14px" }}
+                                      className="coursepage-estimatefee"
+                                    >
+                                      estimate fee
+                                      <p style={{ fontSize: "16px" }}>
+                                        {program.international_cost &&
+                                        program.country_code !== fetchedCountry ? (
+                                          program.international_cost === "0" ? (
+                                            program.cost === "0" || program.cost === "RM0" ? (
+                                              "N/A"
+                                            ) : (
+                                              <>
+                                                <strong>
+                                                  {sessionStorage.getItem(
+                                                    "userCurrencySymbol"
+                                                  ) || "RM"}
+                                                </strong>
+                                                {convertToFetchedCurrency(
+                                                  program.cost
+                                                ).replace(/^.*?(\d+.*)/, "$1")}
+                                              </>
+                                            )
+                                          ) : (
+                                            <>
+                                              <strong>
+                                                {sessionStorage.getItem(
+                                                  "userCurrencySymbol"
+                                                ) || "RM"}
+                                              </strong>
+                                              {convertToFetchedCurrency(
+                                                program.international_cost
+                                              ).replace(/^.*?(\d+.*)/, "$1")}
+                                            </>
+                                          )
+                                        ) : program.cost === "0" || program.cost === "RM0" ? (
+                                          "N/A"
+                                        ) : (
+                                          <>
+                                            <strong>
+                                              {sessionStorage.getItem("userCurrencySymbol") ||
+                                                "RM"}
+                                            </strong>
+                                            {convertToFetchedCurrency(program.cost).replace(
+                                              /^.*?(\d+.*)/,
+                                              "$1"
+                                            )}
+                                          </>
+                                        )}
+                                      </p>
+                                    </p>
+                                  </div>
+                                  <div className="d-flex interest-division">
+                                    <div className="interest">
+                                      <button
+                                        onClick={(e) => {
+                                          e.preventDefault();
+                                          handleInterestClick(program.id);
+                                        }}
+                                        className="interest-button"
+                                        aria-label={
+                                          courseInterests[program.id]?.status === 1
+                                            ? "Remove from interests"
+                                            : "Add to interests"
+                                        }
+                                      >
+                                        <span style={{ fontSize: "16px" }}>
+                                          {courseInterests[program.id]?.status === 1
+                                            ? "Favourite"
+                                            : "Favourite"}
+                                        </span>
+                                        <i
+                                          className={
+                                            courseInterests[program.id]?.status === 1
+                                              ? "bi bi-heart-fill"
+                                              : "bi bi-heart"
+                                          }
+                                        ></i>
+                                      </button>
+                                    </div>
+                                    <div className="apply-button">
+                                      {program.institute_category === "Local University" ? (
+                                        <button
+                                          onClick={() =>
+                                            (window.location.href = `mailto:${program.email}`)
+                                          }
+                                          className="featured coursepage-applybutton">
+                                          Contact Now
+                                        </button>
+                                      ) : (
+                                        <button
+                                          className="featured coursepage-applybutton"
+                                          onClick={() => handleApplyNow(program)}
+                                        >
+                                          Apply Now
+                                        </button>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </Col>
+                          </Row>
+                        </div>
+                      </div>
+                    </React.Fragment>
+                  ))}
+                </>
               )}
             </Col>
             {/* Pagination */}
