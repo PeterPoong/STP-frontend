@@ -328,86 +328,70 @@ const KnowMoreInstitute = () => {
   };
 
   const fetchSchool = async () => {
-    if (storedSchoolId) {
-      try {
-        const response = await fetch(`${baseURL}api/student/schoolDetail`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ id: storedSchoolId }), // Use the stored school_id
-        });
-        const data = await response.json();
-        if (data && data.success && data.data) {
-          setInstitutes([data.data]);
-          setCourses(data.data.courses);
-        } else {
-          console.error(
-            "Invalid data structure for school detail: ",
-            data.data
-          );
-          setInstitutes([]);
-        }
-      } catch (error) {
-        console.error("Error fetching school detail data: ", error);
-        setInstitutes([]);
+    try {
+      let response;
+      let requestBody;
+
+      if (storedSchoolId) {
+        requestBody = { id: storedSchoolId };
+      } else if (formattedSchoolName) {
+        requestBody = { schoolName: formattedSchoolName };
+      } else {
+        console.error("No school identifier available");
+        return;
       }
-    } else if (formattedSchoolName) {
-      try {
-        const response = await fetch(`${baseURL}api/student/schoolDetail`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ schoolName: formattedSchoolName }),
-        });
-        const data = await response.json();
-        if (data && data.success && data.data) {
-          setInstitutes([data.data]);
-          setCourses(data.data.courses);
+
+      response = await fetch(`${baseURL}api/student/schoolDetail`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      const data = await response.json();
+      
+      if (data && data.success && data.data) {
+        setInstitutes([data.data]);
+        setCourses(data.data.courses);
+        
+        // If we got school via name, store the ID
+        if (formattedSchoolName && !storedSchoolId) {
           sessionStorage.setItem("schoolId", data.data.id);
-        } else {
-          console.error("School not found:", formattedSchoolName);
-          setInstitutes([]);
-          // You might want to show a user-friendly error message here
-          // or redirect to a 404 page
         }
-      } catch (error) {
-        console.error("Error fetching school detail data: ", error);
-        setInstitutes([]);
-      }
-    }
-    // Fetch featured institutes with type "thirdPage"
-    fetch(`${baseURL}api/student/featuredInstituteList`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        type: "thirdPage", // Use the required type value
-        schoolId: storedSchoolId || schoolId, // Use storedSchoolId if available, otherwise use schoolId
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data && data.success && Array.isArray(data.data)) {
-          setFeaturedInstitutes(data.data);
+
+        // Immediately fetch featured institutes using the school ID
+        const featuredResponse = await fetch(`${baseURL}api/student/featuredInstituteList`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            type: "thirdPage",
+            schoolId: data.data.id,
+          }),
+        });
+
+        const featuredData = await featuredResponse.json();
+        if (featuredData && featuredData.success && Array.isArray(featuredData.data)) {
+          setFeaturedInstitutes(featuredData.data);
         } else {
-          console.error(
-            "Invalid data structure for featured institutes: ",
-            data
-          );
+          console.error("Invalid data structure for featured institutes: ", featuredData);
           setFeaturedInstitutes([]);
         }
-      })
-      .catch((error) => {
-        console.error("Error fetching featured institutes data: ", error);
+      } else {
+        console.error("Invalid data structure for school detail: ", data);
+        setInstitutes([]);
         setFeaturedInstitutes([]);
-      });
+      }
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+      setInstitutes([]);
+      setFeaturedInstitutes([]);
+    }
   };
 
   useEffect(() => {
-    // console.log("Institute ID: ", id);
     fetchSchool();
     fetchAddsImage();
   }, []);

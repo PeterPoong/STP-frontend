@@ -351,141 +351,77 @@ const CourseDetail = () => {
   };
 
   const fetchProgram = async (courseID) => {
-    if (!courseID) {
-      // Check if courseID is not provided
-      try {
-        const response = await fetch(courseDetailAPI, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            schoolName: formattedSchoolName, // Send formatted school name
-            courseName: formattedCourseName, // Send formatted course name
-          }),
-        });
+    try {
+      let response;
+      let requestBody;
 
-        const data = await response.json();
-        // Log the response data to the console
-        // console.log("Fetched data:", data);
-
-        if (data && data.data) {
-          // Check if data exists
-          const selectedProgram = data.data; // Directly use the fetched data
-          if (selectedProgram) {
-            setPrograms([selectedProgram]);
-            sessionStorage.setItem("courseId", selectedProgram.id); // Store course ID in session
-            sessionStorage.setItem("schoolId", selectedProgram.schoolID); // Store school ID in session
-          } else {
-            console.error(
-              "No matching program found for the given course name."
-            );
-            setPrograms([]);
-          }
-        } else {
-          console.error("Invalid data structure:");
-          setPrograms([]);
-        }
-      } catch (error) {
-        console.error("Error fetching course data:", error);
-        setPrograms([]);
+      if (courseID) {
+        requestBody = { courseID: courseID };
+      } else {
+        requestBody = {
+          schoolName: formattedSchoolName,
+          courseName: formattedCourseName
+        };
       }
-    } else {
-      // Existing logic for fetching program by courseID
-      fetch(courseDetailAPI, {
+
+      // Fetch course details
+      response = await fetch(courseDetailAPI, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          courseID: courseID,
-        }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          // console.log("Fetched Course Data:", data);
-          if (data && data.data) {
-            const selectedProgram = data.data; // Directly use the fetched data
-            setPrograms(selectedProgram ? [selectedProgram] : []);
-          } else {
-            console.error("Invalid data structure:");
-            setPrograms([data.data]);
-          }
-        })
-        .catch((error) => {
-          console.error("Error fetching course data:", error);
-          setPrograms([]);
-        });
-    }
+        body: JSON.stringify(requestBody),
+      });
 
-    fetch(`${baseURL}api/student/featuredCourseList`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ type: "thirdPage", courseId: courseID }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        // console.log("Fetched Featured Courses:", data.data);
-        // console.log('Program school photo:', program.schoolPhoto);
-        if (data && data.success && Array.isArray(data.data)) {
-          setFeaturedCourses(data.data);
+      const data = await response.json();
+
+      if (data && data.data) {
+        const selectedProgram = data.data;
+        if (selectedProgram) {
+          setPrograms([selectedProgram]);
+          sessionStorage.setItem("courseId", selectedProgram.id);
+          sessionStorage.setItem("schoolId", selectedProgram.schoolID);
+
+          // Immediately fetch featured courses
+          const featuredResponse = await fetch(`${baseURL}api/student/featuredCourseList`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ 
+              type: "thirdPage", 
+              courseId: selectedProgram.id 
+            }),
+          });
+
+          const featuredData = await featuredResponse.json();
+          if (featuredData && featuredData.success && Array.isArray(featuredData.data)) {
+            setFeaturedCourses(featuredData.data);
+          } else {
+            console.error("Invalid data structure for featured courses:", featuredData);
+            setFeaturedCourses([]);
+          }
         } else {
-          console.error("Invalid data structure for featured courses:", data);
+          console.error("No matching program found for the given course name.");
+          setPrograms([]);
           setFeaturedCourses([]);
         }
-      })
-      .catch((error) => {
-        console.error("Error fetching featured courses:", error);
+      } else {
+        console.error("Invalid data structure:", data);
+        setPrograms([]);
         setFeaturedCourses([]);
-      });
+      }
+    } catch (error) {
+      console.error("Error fetching course data:", error);
+      setPrograms([]);
+      setFeaturedCourses([]);
+    }
   };
-
-  // useEffect(() => {
-  //   const fetchCourseIdAndSchoolId = async () => {
-  //     try {
-  //       // Fetch course ID based on courseName
-  //       const courseResponse = await fetch(`${courseDetailAPI}?courseName=${courseName}`, {
-  //         method: "GET",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //       });
-  //       const courseData = await courseResponse.json();
-  //       if (courseData && courseData.success) {
-  //         setCourseId(courseData.course_id); // Assuming the API returns course_id
-  //         sessionStorage.setItem('courseId', courseData.course_id); // Store course ID in session
-  //       } else {
-  //         console.error("Failed to fetch course ID");
-  //       }
-
-  //       // Fetch school ID based on schoolName
-  //       const schoolResponse = await fetch(`${baseURL}api/student/getSchoolId?schoolName=${schoolName}`, {
-  //         method: "GET",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //       });
-  //       const schoolData = await schoolResponse.json();
-  //       if (schoolData && schoolData.success) {
-  //         setSchoolId(schoolData.school_id); // Assuming the API returns school_id
-  //         sessionStorage.setItem('schoolId', schoolData.school_id); // Store school ID in session
-  //       } else {
-  //         console.error("Failed to fetch school ID");
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching course or school ID:", error);
-  //     }
-  //   };
-
-  //   fetchCourseIdAndSchoolId();
-  // }, [schoolName, courseName]); // Dependency array includes schoolName and courseName
 
   useEffect(() => {
     const storedCourseId = sessionStorage.getItem("courseId");
     const courseID = storedCourseId || id;
-
+    
     fetchProgram(courseID);
     fetchAddsImage();
   }, [id]);
@@ -732,9 +668,12 @@ const CourseDetail = () => {
                         <div id="collapse-description" className="student-coursedetil-wordbreak">
                           <div 
                             dangerouslySetInnerHTML={{ __html: program.description }} 
-                            style={{ display: '-webkit-box',
-                               WebkitLineClamp: 3, WebkitBoxOrient: 'vertical',
-                                overflow: 'hidden' }}
+                            style={{ 
+                                display: '-webkit-box',
+                                WebkitLineClamp: 2,
+                                WebkitBoxOrient: 'vertical',
+                                overflow: 'hidden' 
+                            }}
                           />
                         </div>
                       ) : (
@@ -746,7 +685,8 @@ const CourseDetail = () => {
                       )}
                     </Col>
                     <Col className="d-flex justify-content-center">
-                      {program.description && program.description.length > 500 && (
+                      {program.description && 
+                       (program.description.length > 100) && (
                         <Button
                           onClick={() => setOpenDescription(!openDescription)}
                           aria-controls="collapse-description"
@@ -777,7 +717,10 @@ const CourseDetail = () => {
                         <div id="collapse-requirement" className="student-coursedetil-wordbreak">
                           <div 
                             dangerouslySetInnerHTML={{ __html: program.requirement }}
-                            style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
+                            style={{ display: '-webkit-box',
+                                      WebkitLineClamp: 2,
+                                      WebkitBoxOrient: 'vertical',
+                                      overflow: 'hidden' }}
                           />
                         </div>
                       ) : (
@@ -789,7 +732,7 @@ const CourseDetail = () => {
                       )}
                     </Col>
                     <Col className="d-flex justify-content-center">
-                      {program.requirement && program.requirement.length > 200 && (
+                      {program.requirement && program.requirement.length > 300 && (
                         <Button
                           onClick={() => setOpenRequirement(!openRequirement)}
                           aria-controls="collapse-requirement"

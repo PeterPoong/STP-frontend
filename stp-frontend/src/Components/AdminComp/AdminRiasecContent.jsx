@@ -31,6 +31,19 @@ const AdminRiasecContent = () => {
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`;
     const navigate = useNavigate();
+
+    const [statList, setStatList] = useState([]); // State for category list
+    const [selectedStat, setSelectedStat] = useState(""); // State for selected subject
+  
+    useEffect(() => {
+        // Hardcoded statList values
+        const hardcodedStatList = [
+            { id: 0, name: "Disable" },
+            { id: 1, name: "Active" }
+        ];
+        setStatList(hardcodedStatList);
+        fetchriasecs(); // Fetch enquiries initially
+    }, []);
    // Fetch the category list
     // const fetchCategoryList = async () => {
     //     try {
@@ -62,7 +75,12 @@ const AdminRiasecContent = () => {
         // fetchCategoryList(); // Fetch categorys on component mount
         fetchriasecs(); // Fetch enquiries initially
     }, []);
-    const fetchriasecs = async (page = 1, perPage = rowsPerPage, search = "", category = selectedCategory, monthYear = null) => {
+    const fetchriasecs = async (
+      page = 1, 
+      perPage = rowsPerPage, 
+      search = "",
+      stat = selectedStat
+      ) => {
         try {
             // Build query parameters
             const queryParams = new URLSearchParams({
@@ -73,6 +91,11 @@ const AdminRiasecContent = () => {
             // Only add search to query params if it's not empty
             if (search && search.trim() !== "") {
                 queryParams.append('search', search.trim());
+            }
+            
+            // Add stat to query params if it's not empty
+            if (stat !== "") {
+                queryParams.append('stat', stat);
             }
             
             console.log('Query Params:', queryParams.toString());
@@ -110,13 +133,13 @@ const AdminRiasecContent = () => {
     };
     
     useEffect(() => {
-        fetchriasecs(currentPage, rowsPerPage, searchQuery, selectedCategory);
-    }, [Authenticate, currentPage, rowsPerPage, searchQuery, selectedCategory]);
+        fetchriasecs(currentPage, rowsPerPage, searchQuery, selectedStat);
+    }, [Authenticate, currentPage, rowsPerPage, searchQuery, selectedStat]);
 
     const handleRowsPerPageChange = (newRowsPerPage) => {
         setRowsPerPage(newRowsPerPage);
         setCurrentPage(1); // Reset to the first page whenever rows per page changes
-        fetchriasecs(1, newRowsPerPage, searchQuery); // Fetch data with updated rowsPerPage
+        fetchriasecs(1, newRowsPerPage, searchQuery, selectedStat); // Fetch data with updated rowsPerPage
     };
 
     const handleSearch = (query) => {
@@ -131,7 +154,7 @@ const AdminRiasecContent = () => {
         const newDirection = sortColumn === column && sortDirection === "asc" ? "desc" : "asc";
         setSortColumn(column);
         setSortDirection(newDirection);
-        fetchriasecs(currentPage, rowsPerPage, searchQuery); // Fetch sorted data
+        fetchriasecs(currentPage, rowsPerPage, searchQuery, selectedStat); // Fetch sorted data
     };
 
     const sortedriasecs = (() => {
@@ -199,7 +222,7 @@ const AdminRiasecContent = () => {
             const result = await response.json();
 
             if (result.success) {
-                await fetchriasecs(currentPage, rowsPerPage, searchQuery);
+                await fetchriasecs(currentPage, rowsPerPage, searchQuery, selectedStat);
             } else {
                 console.error(result.message);
             }
@@ -222,18 +245,6 @@ const AdminRiasecContent = () => {
         }
     };
     
-// Function to handle category change
-const handleCategoryChange = (categoryId) => {
-    setSelectedCategory(categoryId);
-    setCurrentPage(1);
-    fetchriasecs(1, rowsPerPage, searchQuery, categoryId);
-};
-
-    const handleMonthYearChange = (value) => {
-        setMonthYear(value);
-        // Use the existing fetchriasecs function instead of fetchData
-        fetchriasecs(currentPage, rowsPerPage, searchQuery, selectedCategory, value);
-    };
 
     const theadContent = (
         <tr>
@@ -333,7 +344,11 @@ const handleCategoryChange = (categoryId) => {
         </td>
       </tr>
     );
-
+    const handleStatChange = (stat) => {
+      setSelectedStat(stat);
+      setCurrentPage(1);
+      fetchriasecs(1, rowsPerPage, searchQuery, stat);
+    };
     return (
         <>
          {loading ? (
@@ -352,6 +367,8 @@ const handleCategoryChange = (categoryId) => {
                 showSearch={false}
                 showRowsPerPage={true}
                 showAddButton={showAddButton}
+                statList={statList}
+                onStatChange={handleStatChange}
             />
         )}
             <Modal show={showModal} onHide={() => setShowModal(false)}>
