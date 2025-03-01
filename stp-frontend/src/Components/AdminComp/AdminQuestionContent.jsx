@@ -31,6 +31,19 @@ const AdminQuestionContent = () => {
     const token = sessionStorage.getItem('token');
     const Authenticate = `Bearer ${token}`;
     const navigate = useNavigate();
+
+    const [statList, setStatList] = useState([]); // State for category list
+    const [selectedStat, setSelectedStat] = useState(""); // State for selected subject
+  
+    useEffect(() => {
+        // Hardcoded statList values
+        const hardcodedStatList = [
+            { id: 0, name: "Disable" },
+            { id: 1, name: "Active" }
+        ];
+        setStatList(hardcodedStatList);
+        fetchquestions(); // Fetch enquiries initially
+    }, []);
    // Fetch the category list
     const fetchCategoryList = async () => {
         try {
@@ -62,7 +75,13 @@ const AdminQuestionContent = () => {
         fetchCategoryList(); // Fetch categorys on component mount
         fetchquestions(); // Fetch enquiries initially
     }, []);
-    const fetchquestions = async (page = 1, perPage = rowsPerPage, search = "", category = selectedCategory, monthYear = null) => {
+    const fetchquestions = async (
+        page = 1, 
+        perPage = rowsPerPage, 
+        search = "", 
+        category = selectedCategory, 
+        stat = selectedStat,
+        monthYear = null) => {
         try {
             const requestBody = {
                 page: parseInt(page),
@@ -76,6 +95,11 @@ const AdminQuestionContent = () => {
 
             if (category && category !== "") {
                 requestBody.category_id = parseInt(category);
+            }
+
+            // Add stat to requestBody if it's not empty
+            if (stat !== "") {
+                requestBody.status = parseInt(stat);
             }
 
             if (monthYear) {
@@ -119,13 +143,13 @@ const AdminQuestionContent = () => {
     };
     
     useEffect(() => {
-        fetchquestions(currentPage, rowsPerPage, searchQuery, selectedCategory);
-    }, [Authenticate, currentPage, rowsPerPage, searchQuery, selectedCategory]);
+        fetchquestions(currentPage, rowsPerPage, searchQuery, selectedCategory, selectedStat);
+    }, [Authenticate, currentPage, rowsPerPage, searchQuery, selectedCategory, selectedStat]);
 
     const handleRowsPerPageChange = (newRowsPerPage) => {
         setRowsPerPage(newRowsPerPage);
         setCurrentPage(1); // Reset to the first page whenever rows per page changes
-        fetchquestions(1, newRowsPerPage, searchQuery); // Fetch data with updated rowsPerPage
+        fetchquestions(1, newRowsPerPage, searchQuery, selectedStat); // Fetch data with updated rowsPerPage
     };
 
     const handleSearch = (query) => {
@@ -140,7 +164,7 @@ const AdminQuestionContent = () => {
         const newDirection = sortColumn === column && sortDirection === "asc" ? "desc" : "asc";
         setSortColumn(column);
         setSortDirection(newDirection);
-        fetchquestions(currentPage, rowsPerPage, searchQuery); // Fetch sorted data
+        fetchquestions(currentPage, rowsPerPage, searchQuery, selectedStat); // Fetch sorted data
     };
 
     const sortedquestions = (() => {
@@ -334,6 +358,11 @@ const handleCategoryChange = (categoryId) => {
     );
 
     console.log("Current categoryList:", categoryList);
+    const handleStatChange = (stat) => {
+        setSelectedStat(stat);
+        setCurrentPage(1);
+        fetchquestions(1, rowsPerPage, searchQuery, stat);
+      };
     return (
         <>
          {loading ? (
@@ -354,6 +383,8 @@ const handleCategoryChange = (categoryId) => {
                 categoryList={categoryList}
                 onCategoryChange={handleCategoryChange}
                 showAddButton={showAddButton}
+                statList={statList}
+                onStatChange={handleStatChange}
             />
         )}
             <Modal show={showModal} onHide={() => setShowModal(false)}>

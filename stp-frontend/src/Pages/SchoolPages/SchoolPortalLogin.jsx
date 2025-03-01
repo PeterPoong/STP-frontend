@@ -151,7 +151,11 @@ const SchoolPortalLogin = () => {
   };
 
   return (
-    <Container fluid className="h-100 notranslate">
+    <Container
+      fluid
+      className="h-100 notranslate "
+      style={{ backgroundColor: "red" }}
+    >
       <Row className="h-50">
         <div className="position-absolute top-0 ">
           <button
@@ -173,7 +177,7 @@ const SchoolPortalLogin = () => {
             </svg>
           </button>
         </div>
-        <Col md={6} className="d-flex align-items-center bg-white">
+        <Col md={6} className="d-flex align-items-center bg-white h-100">
           <Container>
             <Row className="justify-content-center mt-4">
               <Col md={8} lg={6} className="px-0">
@@ -190,12 +194,7 @@ const SchoolPortalLogin = () => {
                     Login successful! Redirecting...
                   </Alert>
                 )}
-                {/* {loginStatus === 'failed' && (
-                  <Alert variant="danger">Login failed. Please check your credentials.</Alert>
-                )}
-                {loginStatus === 'error' && (
-                  <Alert variant="danger">An error occurred. Please try again later.</Alert>
-                )} */}
+
                 <Form onSubmit={handleSubmit}>
                   <Form.Group controlId="formBasicPhone" className="mb-3">
                     <p className="text-start p-0 mb-0 custom-color-title-label small ">
@@ -209,6 +208,7 @@ const SchoolPortalLogin = () => {
                         onChange={(e) => setEmail(e.target.value)}
                         required
                         className="forminputlogin pe-5"
+                        style={{ paddingLeft: "10px" }}
                       />
                     </InputGroup>
                   </Form.Group>
@@ -224,6 +224,7 @@ const SchoolPortalLogin = () => {
                         onChange={(e) => setPassword(e.target.value)}
                         required
                         className="forminputlogin pe-5"
+                        style={{ paddingLeft: "10px" }}
                       />
                       <div
                         className="position-absolute top-50 end-0 translate-middle-y pe-3"
@@ -244,7 +245,7 @@ const SchoolPortalLogin = () => {
                     </InputGroup>
                   </Form.Group>
                   <Row className="mb-3">
-                    <Col>
+                    <Col xs={12} className="d-flex justify-content-between">
                       <Form.Check
                         type="checkbox"
                         id="rememberMe"
@@ -253,8 +254,6 @@ const SchoolPortalLogin = () => {
                         onChange={(e) => setRememberMe(e.target.checked)}
                         className="custom-checkbox"
                       />
-                    </Col>
-                    <Col className="text-end">
                       <Link
                         to="/schoolPortalForgetPassword"
                         className="forgetpassword"
@@ -263,69 +262,18 @@ const SchoolPortalLogin = () => {
                       </Link>
                     </Col>
                   </Row>
-                  <Button
-                    variant="danger"
-                    type="submit"
-                    className={`my-3 m-0 ${styles.loginButton}`}
-                  >
-                    Login
-                  </Button>
-                  {/* <Row>
-                    <Col>
-                      <p className="text-center text-secondary small">
-                        or Login/Signup using
-                      </p>
+                  <Row>
+                    <Col xs={12}>
+                      <Button
+                        variant="danger"
+                        type="submit"
+                        style={{ width: "100%", padding: "0.5rem" }}
+                        className={`my-3 m-0 ${styles.schoolLoginButton}`}
+                      >
+                        Login
+                      </Button>
                     </Col>
                   </Row>
-                  <Row className="justify-content-center">
-                    <Col xs="auto">
-                      <button
-                        type="button"
-                        className="btn btn-outline-primary rounded-circle p-0 social-btn facebook-btn"
-                        style={{
-                          width: "40px",
-                          height: "40px",
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}
-                        onClick={handleFacebookLogin}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="currentColor"
-                        >
-                          <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z" />
-                        </svg>
-                      </button>
-                    </Col>
-                    <Col xs="auto">
-                      <button
-                        type="button"
-                        className="btn btn-outline-danger rounded-circle p-0 mb-5 social-btn google-btn"
-                        style={{
-                          width: "40px",
-                          height: "40px",
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="currentColor"
-                        >
-                          <path d="M7 11v2.4h3.97c-.16 1.029-1.2 3.02-3.97 3.02-2.39 0-4.34-1.979-4.34-4.42 0-2.44 1.95-4.42 4.34-4.42 1.36 0 2.27.58 2.79 1.08l1.9-1.83c-1.22-1.14-2.8-1.83-4.69-1.83-3.87 0-7 3.13-7 7s3.13 7 7 7c4.04 0 6.721-2.84 6.721-6.84 0-.46-.051-.81-.111-1.16h-6.61zm0 0 17 2h-3v3h-2v-3h-3v-2h3v-3h2v3h3v2z" />
-                        </svg>
-                      </button>
-                    </Col>
-                  </Row> */}
                   <div className="text-center text-lg-center m-5 pt-2">
                     <p className="small pt-1 mb-0 text-secondary">
                       Not Registered Yet?{" "}

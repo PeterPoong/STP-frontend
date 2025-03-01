@@ -263,6 +263,9 @@ const handleStatChange = (stat) => {
             <th onClick={() => handleSort("enquiry_subject")}>
                 Subject {sortColumn === "enquiry_subject" && (sortDirection === "asc" ? "↑" : "↓")}
             </th>
+            <th onClick={() => handleSort("created_at")}>
+                Created Date {sortColumn === "created_at" && (sortDirection === "asc" ? "↑" : "↓")}
+            </th>
             <th onClick={() => handleSort("enquiry_message")}>
                 Message {sortColumn === "enquiry_message" && (sortDirection === "asc" ? "↑" : "↓")}
             </th>
@@ -280,6 +283,7 @@ const handleStatChange = (stat) => {
                 <td>{enquiry.enquiry_email}</td>
                 <td>{enquiry.enquiry_phone}</td>
                 <td>{enquiry.enquiry_subject}</td>
+                <td>{enquiry.created_at}</td>
                 <td>{enquiry.enquiry_message}</td>
                 <td className={getStatusClass(enquiry.enquiry_status)}>
                     {enquiry.enquiry_status === 1 ? "Replied" : enquiry.enquiry_status === 2 ? "Pending" : "Disabled"}

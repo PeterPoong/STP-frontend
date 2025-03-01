@@ -57,40 +57,44 @@ const AdminLogin = () => {
 
     const handleLogin = (e) => {
         e.preventDefault();
-        setErrorMessage(''); // Clear any previous error messages
+        setErrorMessage('');
       
         const formData = {
-          password: password,
-          country_code: `+${countryCode}`,
-          contact_number: phone.slice(countryCode.length),
+            contact_number: phone.slice(countryCode.length),
+            country_code: `+${countryCode}`,
+            password: password
         };
       
+        console.log('Login attempt with:', formData);
+
         fetch(`${import.meta.env.VITE_BASE_URL}api/admin/login`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(formData),
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(formData),
         })
-        .then(response => response.json())
-        .then(data => {
-        //   console.log('API Response:', data); // Add this line
-          if (data.true === true) {
-            // console.log('Login successful:', data);
-            const { token, user } = data.data;
-            sessionStorage.setItem('token', token);
-            sessionStorage.setItem('user', JSON.stringify(user)); // Store user data
-            navigate('/adminSchool');
-          } else {
-            setErrorMessage('Login failed. Please try again.');
-            console.error('Login failed:', data);
-          }
+        .then(async response => {
+            const responseData = await response.json();
+            console.log('Login response data:', responseData); // Log the full response
+            
+            if (responseData.true === true) {
+                const { token, user } = responseData.data;
+                console.log('Storing user data:', user); // Log what we're storing
+                console.log('Storing token:', token);
+                sessionStorage.setItem('token', token);
+                sessionStorage.setItem('user', JSON.stringify(user));
+                navigate('/adminSchool');
+            } else {
+                setErrorMessage(responseData.message || 'Login failed. Please try again.');
+            }
         })
         .catch(error => {
-          setErrorMessage('An error occurred during login. Please try again later.');
-          console.error('Error during login:', error);
+            console.error('Login error:', error);
+            setErrorMessage('An error occurred during login. Please check your credentials.');
         });
-      };
+    };
       
 
     return (
