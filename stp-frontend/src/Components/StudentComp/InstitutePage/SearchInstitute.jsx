@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef, useMemo, Suspense, lazy } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import {
   ButtonGroup,
@@ -25,6 +25,8 @@ import "swiper/css/pagination";
 import "swiper/css/navigation";
 import "swiper/swiper-bundle.css";
 import { Navigation, Autoplay } from "swiper/modules";
+import { debounce } from 'lodash';
+import { FixedSizeList as List } from 'react-window';
 const baseURL = import.meta.env.VITE_BASE_URL;
 const countriesURL = `${baseURL}api/student/countryList`;
 const filterURL = `${baseURL}api/student/listingFilterList`;
@@ -83,6 +85,11 @@ const SearchInstitute = () => {
   // Add this state near other state declarations
   const [showMobileFilters, setShowMobileFilters] = useState(false);
 
+  // Add new state for filter loading and search
+  const [filterLoading, setFilterLoading] = useState(false);
+  const [expandedFilters, setExpandedFilters] = useState({});
+  const [filterSearch, setFilterSearch] = useState("");
+
   const topRef = useRef(null);
   const scrollToTop = () => {
     // Method 2: Using scrollIntoView
@@ -136,23 +143,175 @@ const SearchInstitute = () => {
     }
   };
 
-  // Step 2: Fetch Filters
-  const fetchFilters = async (countryID) => {
+  // Optimize filter fetching with caching
+  const fetchFilters = useCallback(async (countryID) => {
+    setFilterLoading(true);
     try {
+      // Check cache first
+      const cacheKey = `institute_filters_${countryID}`;
+      const cachedData = sessionStorage.getItem(cacheKey);
+      
+      if (cachedData) {
+        const parsedData = JSON.parse(cachedData);
+        setFilterData(parsedData);
+        setFilterLoading(false);
+        return;
+      }
+      
       const response = await fetch(filterURL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ countryID }),
       });
-
       const result = await response.json();
-      // console.log(result);
+
       if (result.success) {
+        // Cache results for future visits
+        sessionStorage.setItem(cacheKey, JSON.stringify(result.data));
         setFilterData(result.data);
       }
     } catch (error) {
       console.error("Error fetching filters:", error);
+    } finally {
+      setFilterLoading(false);
     }
+  }, []);
+
+  // Implement debounced search
+  const debouncedSearch = useCallback(
+    debounce((value) => {
+      setSearchQuery(value);
+    }, 500),
+    []
+  );
+
+  // Add a virtualized list component for large filter sets
+  const VirtualizedFilterList = ({ items, selectedItems, onItemSelect, height = 200 }) => {
+    // Filter displayed items if there's a search term
+    const filteredItems = useMemo(() => {
+      if (!filterSearch) return items;
+      return items.filter(item => {
+        const label = item.category_name || item.state_name || item.level_name || '';
+        return label.toLowerCase().includes(filterSearch.toLowerCase());
+      });
+    }, [items, filterSearch]);
+    
+    const Row = ({ index, style }) => {
+      const item = filteredItems[index];
+      if (!item) return null;
+      return (
+        <div style={style}>
+          <Form.Check
+            type="checkbox"
+            id={`filter-${item.id}`}
+            label={item.category_name || item.state_name || item.level_name}
+            checked={selectedItems.includes(item.id)}
+            onChange={() => onItemSelect(item.id)}
+          />
+        </div>
+      );
+    };
+
+    return (
+      <>
+        {items.length > 15 && (
+          <Form.Control
+            size="sm"
+            placeholder="Search filters..."
+            value={filterSearch}
+            onChange={e => setFilterSearch(e.target.value)}
+            className="mb-2"
+          />
+        )}
+        <List
+          height={Math.min(height, filteredItems.length * 35)}
+          itemCount={filteredItems.length}
+          itemSize={35}
+          width="100%"
+          className="custom-filter-list"
+        >
+          {Row}
+        </List>
+      </>
+    );
+  };
+
+  // Function to toggle expanded state of a filter section
+  const toggleFilterExpand = (filterType) => {
+    setExpandedFilters(prev => ({
+      ...prev,
+      [filterType]: !prev[filterType]
+    }));
+  };
+
+  // Render a filter section with proper loading state and optimization
+  const renderFilterSection = (title, filterType, items, selectedItems, onItemSelect) => {
+    const isExpanded = expandedFilters[filterType];
+    const itemCount = items ? items.length : 0;
+    const showVirtualized = itemCount > 15;
+    const displayLimit = 8;
+    
+    return (
+      <div className="filter-group">
+        <h5 style={{ marginTop: "25px" }}>
+          {title}
+          {itemCount > displayLimit && (
+            <small 
+              className="ms-2 text-primary cursor-pointer" 
+              onClick={() => toggleFilterExpand(filterType)}
+              style={{ cursor: 'pointer', fontSize: '0.8rem' }}
+            >
+              {isExpanded ? 'Show less' : `Show all (${itemCount})`}
+            </small>
+          )}
+        </h5>
+        
+        {filterLoading ? (
+          <div className="d-flex justify-content-center my-3">
+            <Spinner animation="border" size="sm" role="status">
+              <span className="visually-hidden">Loading filters...</span>
+            </Spinner>
+          </div>
+        ) : !items || items.length === 0 ? (
+          <p className="text-muted">No options available</p>
+        ) : showVirtualized && isExpanded ? (
+          <VirtualizedFilterList 
+            items={items} 
+            selectedItems={selectedItems}
+            onItemSelect={onItemSelect}
+          />
+        ) : (
+          <Form.Group>
+            {(isExpanded ? items : items.slice(0, displayLimit)).map((item, index) => (
+              <Form.Check
+                key={index}
+                type="checkbox"
+                label={getItemLabel(item)}
+                checked={selectedItems.includes(getItemId(item, filterType))}
+                onChange={() => onItemSelect(getItemId(item, filterType))}
+              />
+            ))}
+          </Form.Group>
+        )}
+      </div>
+    );
+  };
+
+  // Helper function to get the appropriate label based on item type
+  const getItemLabel = (item) => {
+    if (item.category_name) return item.category_name;
+    if (item.state_name) return item.state_name;
+    if (item.qualification_name) return item.qualification_name;
+    if (item.studyMode_name) return item.studyMode_name;
+    if (item.month) return item.month;
+    if (item.level_name) return item.level_name;
+    return '';
+  };
+
+  // Helper function to get the appropriate ID based on filter type
+  const getItemId = (item, filterType) => {
+    if (filterType === "intakes") return item.month;
+    return item.id;
   };
 
   // Step 3: Fetch Schools/Institutes
@@ -398,18 +557,26 @@ const SearchInstitute = () => {
   const renderInstitutes = () => {
     if (!institutes.length) {
       return (
-        <div className="blankslate-institutes text-center">
+        <div className="blankslate-institutes text-center mx-auto col-11 col-md-8 col-lg-6">
           <img
             loading="lazy"
             src={emptyStateImage}
             alt="No results"
-            style={{ height: "175px" }}
+            className="img-fluid"
+            style={{ 
+              maxWidth: "100%",
+              height: "auto",
+              maxHeight: "175px"
+            }}
           />
-          <div className="blankslate-institutes-body">
-            <h4>No institutes found</h4>
-            <p>
+          <div className="blankslate-institutes-body mt-3">
+            <h4 className="h5 h4-md">No institutes found</h4>
+            <p className="mb-0 d-none d-md-block">
               There are no institutes that match your selected filters. Please
               try adjusting your filters and search criteria.
+            </p>
+            <p className="mb-0 d-block d-md-none">
+              No results match your filters. Try adjusting your search criteria.
             </p>
           </div>
         </div>
@@ -722,6 +889,18 @@ const SearchInstitute = () => {
     }, 0);
   };
 
+  // Optimize institute rendering with memoization
+  const renderedInstitutes = useMemo(() => {
+    return renderInstitutes();
+  }, [institutes, handleKnowMoreInstitute]);
+
+  // Optimize search functionality with debounce
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setTempSearch(value);
+    debouncedSearch(value);
+  };
+
   return (
     <Container>
       <Helmet>
@@ -891,13 +1070,7 @@ const SearchInstitute = () => {
               style={{ height: "45px", marginTop: "9px" }}
               placeholder="Search for Institutions, Country"
               value={tempSearch}
-              onChange={(e) => {
-                setTempSearch(e.target.value);
-                // After 500ms, update the main searchQuery which triggers API call
-                setTimeout(() => {
-                  setSearchQuery(e.target.value);
-                }, 1500);
-              }}
+              onChange={handleSearchChange}
             />
           </InputGroup>
         </Form>
@@ -916,12 +1089,7 @@ const SearchInstitute = () => {
                 style={{ height: "45px", marginTop: "9px" }}
                 placeholder="Search for Institutions, Country"
                 value={tempSearch}
-                onChange={(e) => {
-                  setTempSearch(e.target.value);
-                  setTimeout(() => {
-                    setSearchQuery(e.target.value);
-                  }, 1500);
-                }}
+                onChange={handleSearchChange}
               />
             </InputGroup>
             
@@ -957,93 +1125,48 @@ const SearchInstitute = () => {
             >
               {/* Desktop Filters */}
               <div className="filters-container">
-                {/* Location Filter */}
-                <div className="filter-group">
-                  <h5 style={{ marginTop: "10px" }}>Location</h5>
-                  <Form.Group>
-                    {filterData.state.map((location, index) => (
-                      <Form.Check
-                        key={index}
-                        type="checkbox"
-                        label={location.state_name}
-                        checked={selectedFilters.locations.includes(location.id)}
-                        onChange={() =>
-                          handleFilterChange("locations", location.id)
-                        }
-                      />
-                    ))}
-                  </Form.Group>
-                </div>
-
-                {/* Category Filter */}
-                <div className="filter-group">
-                  <h5 style={{ marginTop: "25px" }}>Category</h5>
-                  <Form.Group>
-                    {filterData.categoryList.map((category, index) => (
-                      <Form.Check
-                        key={index}
-                        type="checkbox"
-                        label={category.category_name}
-                        checked={selectedFilters.categories.includes(category.id)}
-                        onChange={() =>
-                          handleFilterChange("categories", category.id)
-                        }
-                      />
-                    ))}
-                  </Form.Group>
-                </div>
-
-                {/* Study Level Filter */}
-                <div className="filter-group">
-                  <h5 style={{ marginTop: "25px" }}>Study Level</h5>
-                  <Form.Group>
-                    {filterData.qualificationList.map((level, index) => (
-                      <Form.Check
-                        key={index}
-                        type="checkbox"
-                        label={level.qualification_name}
-                        checked={selectedFilters.studyLevels.includes(level.id)}
-                        onChange={() =>
-                          handleFilterChange("studyLevels", level.id)
-                        }
-                      />
-                    ))}
-                  </Form.Group>
-                </div>
+                {/* Replace existing filter sections with optimized versions */}
+                {renderFilterSection(
+                  "Location", 
+                  "locations", 
+                  filterData.state || [], 
+                  selectedFilters.locations,
+                  (id) => handleFilterChange("locations", id)
+                )}
+                
+                {renderFilterSection(
+                  "Category", 
+                  "categories", 
+                  filterData.categoryList || [], 
+                  selectedFilters.categories,
+                  (id) => handleFilterChange("categories", id)
+                )}
+                
+                {renderFilterSection(
+                  "Study Level", 
+                  "studyLevels", 
+                  filterData.qualificationList || [], 
+                  selectedFilters.studyLevels,
+                  (id) => handleFilterChange("studyLevels", id)
+                )}
 
                 {/* Study Mode Filter */}
-                <div className="filter-group">
-                  <h5 style={{ marginTop: "25px" }}>Study Mode</h5>
-                  <Form.Group>
-                    {filterData.studyModeListing.map((mode, index) => (
-                      <Form.Check
-                        key={index}
-                        type="checkbox"
-                        label={mode.studyMode_name}
-                        checked={selectedFilters.studyModes.includes(mode.id)}
-                        onChange={() => handleFilterChange("studyModes", mode.id)}
-                      />
-                    ))}
-                  </Form.Group>
-                </div>
+                {renderFilterSection(
+                  "Study Mode", 
+                  "studyModes", 
+                  filterData.studyModeListing || [], 
+                  selectedFilters.studyModes,
+                  (id) => handleFilterChange("studyModes", id)
+                )}
 
                 {/* Intake Filter */}
-                <div className="filter-group">
-                  <h5 style={{ marginTop: "25px" }}>Intakes</h5>
-                  <Form.Group>
-                    {filterData.intakeList.map((intake, index) => (
-                      <Form.Check
-                        key={index}
-                        type="checkbox"
-                        label={intake.month}
-                        checked={selectedFilters.intakes.includes(intake.month)}
-                        onChange={() =>
-                          handleFilterChange("intakes", intake.month)
-                        }
-                      />
-                    ))}
-                  </Form.Group>
-                </div>
+                {renderFilterSection(
+                  "Intakes", 
+                  "intakes", 
+                  filterData.intakeList || [], 
+                  selectedFilters.intakes,
+                  (month) => handleFilterChange("intakes", month)
+                )}
 
                 {/* Tuition Fee Filter */}
                 <div className="filter-group">
@@ -1070,9 +1193,6 @@ const SearchInstitute = () => {
                   </Form.Group>
                 </div>
               </div>
-
-              {/* Mobile Accordion Filters */}
-             
             </Col>
 
             {/* Right Content - Institute Listings */}
@@ -1129,7 +1249,7 @@ const SearchInstitute = () => {
                   <p>Error: {error}</p>
                 </div>
               ) : (
-                <>{renderInstitutes()}</>
+                <>{renderedInstitutes}</>
               )}
             </Col>
             {renderPagination()}
@@ -1158,7 +1278,6 @@ const SearchInstitute = () => {
         </button>
         
         <div className="accordion-scroll-container">
-          {/* Move the existing Accordion component here */}
           <Accordion
                 className="custom-accordion d-md-none"
               >
@@ -1258,25 +1377,31 @@ const SearchInstitute = () => {
                     Location
                   </Accordion.Header>
                   <Accordion.Body className="custom-accordion-body">
-                    <Form.Group>
-                      {filterData.state && filterData.state.length > 0 ? (
-                        filterData.state.map((location, index) => (
-                          <Form.Check
-                            key={index}
-                            type="checkbox"
-                            label={location.state_name}
-                            checked={selectedFilters.locations.includes(
-                              location.id
-                            )}
-                            onChange={() =>
-                              handleFilterChange("locations", location.id)
-                            }
+                    {filterLoading ? (
+                      <div className="text-center py-2">
+                        <Spinner animation="border" size="sm" />
+                      </div>
+                    ) : (
+                      <Form.Group>
+                        {expandedFilters.mobileLocations && filterData.state && filterData.state.length > 15 ? (
+                          <VirtualizedFilterList 
+                            items={filterData.state} 
+                            selectedItems={selectedFilters.locations}
+                            onItemSelect={(id) => handleFilterChange("locations", id)}
                           />
-                        ))
-                      ) : (
-                        <p>No location available</p>
-                      )}
-                    </Form.Group>
+                        ) : (
+                          filterData.state && filterData.state.map((location, index) => (
+                            <Form.Check
+                              key={index}
+                              type="checkbox"
+                              label={location.state_name}
+                              checked={selectedFilters.locations.includes(location.id)}
+                              onChange={() => handleFilterChange("locations", location.id)}
+                            />
+                          ))
+                        )}
+                      </Form.Group>
+                    )}
                   </Accordion.Body>
                 </Accordion.Item>
 
@@ -1286,22 +1411,31 @@ const SearchInstitute = () => {
                     Category
                   </Accordion.Header>
                   <Accordion.Body className="custom-accordion-body">
-                    <Form.Group>
-                      {filterData.categoryList &&
-                        filterData.categoryList.map((category, index) => (
-                          <Form.Check
-                            key={index}
-                            type="checkbox"
-                            label={category.category_name}
-                            checked={selectedFilters.categories.includes(
-                              category.id
-                            )}
-                            onChange={() =>
-                              handleFilterChange("categories", category.id)
-                            }
+                    {filterLoading ? (
+                      <div className="text-center py-2">
+                        <Spinner animation="border" size="sm" />
+                      </div>
+                    ) : (
+                      <Form.Group>
+                        {expandedFilters.mobileCategories && filterData.categoryList && filterData.categoryList.length > 15 ? (
+                          <VirtualizedFilterList 
+                            items={filterData.categoryList} 
+                            selectedItems={selectedFilters.categories}
+                            onItemSelect={(id) => handleFilterChange("categories", id)}
                           />
-                        ))}
-                    </Form.Group>
+                        ) : (
+                          filterData.categoryList && filterData.categoryList.map((category, index) => (
+                            <Form.Check
+                              key={index}
+                              type="checkbox"
+                              label={category.category_name}
+                              checked={selectedFilters.categories.includes(category.id)}
+                              onChange={() => handleFilterChange("categories", category.id)}
+                            />
+                          ))
+                        )}
+                      </Form.Group>
+                    )}
                   </Accordion.Body>
                 </Accordion.Item>
 
@@ -1311,22 +1445,31 @@ const SearchInstitute = () => {
                     Study Level
                   </Accordion.Header>
                   <Accordion.Body className="custom-accordion-body">
-                    <Form.Group>
-                      {filterData.qualificationList &&
-                        filterData.qualificationList.map((level, index) => (
-                          <Form.Check
-                            key={index}
-                            type="checkbox"
-                            label={level.qualification_name}
-                            checked={selectedFilters.studyLevels.includes(
-                              level.id
-                            )}
-                            onChange={() =>
-                              handleFilterChange("studyLevels", level.id)
-                            }
+                    {filterLoading ? (
+                      <div className="text-center py-2">
+                        <Spinner animation="border" size="sm" />
+                      </div>
+                    ) : (
+                      <Form.Group>
+                        {expandedFilters.mobileStudyLevels && filterData.qualificationList && filterData.qualificationList.length > 15 ? (
+                          <VirtualizedFilterList 
+                            items={filterData.qualificationList} 
+                            selectedItems={selectedFilters.studyLevels}
+                            onItemSelect={(id) => handleFilterChange("studyLevels", id)}
                           />
-                        ))}
-                    </Form.Group>
+                        ) : (
+                          filterData.qualificationList && filterData.qualificationList.map((level, index) => (
+                            <Form.Check
+                              key={index}
+                              type="checkbox"
+                              label={level.qualification_name}
+                              checked={selectedFilters.studyLevels.includes(level.id)}
+                              onChange={() => handleFilterChange("studyLevels", level.id)}
+                            />
+                          ))
+                        )}
+                      </Form.Group>
+                    )}
                   </Accordion.Body>
                 </Accordion.Item>
 
@@ -1336,20 +1479,31 @@ const SearchInstitute = () => {
                     Study Mode
                   </Accordion.Header>
                   <Accordion.Body className="custom-accordion-body">
-                    <Form.Group>
-                      {filterData.studyModeListing &&
-                        filterData.studyModeListing.map((mode, index) => (
-                          <Form.Check
-                            key={index}
-                            type="checkbox"
-                            label={mode.studyMode_name}
-                            checked={selectedFilters.studyModes.includes(mode.id)}
-                            onChange={() =>
-                              handleFilterChange("studyModes", mode.id)
-                            }
+                    {filterLoading ? (
+                      <div className="text-center py-2">
+                        <Spinner animation="border" size="sm" />
+                      </div>
+                    ) : (
+                      <Form.Group>
+                        {expandedFilters.mobileStudyModes && filterData.studyModeListing && filterData.studyModeListing.length > 15 ? (
+                          <VirtualizedFilterList 
+                            items={filterData.studyModeListing} 
+                            selectedItems={selectedFilters.studyModes}
+                            onItemSelect={(id) => handleFilterChange("studyModes", id)}
                           />
-                        ))}
-                    </Form.Group>
+                        ) : (
+                          filterData.studyModeListing && filterData.studyModeListing.map((mode, index) => (
+                            <Form.Check
+                              key={index}
+                              type="checkbox"
+                              label={mode.studyMode_name}
+                              checked={selectedFilters.studyModes.includes(mode.id)}
+                              onChange={() => handleFilterChange("studyModes", mode.id)}
+                            />
+                          ))
+                        )}
+                      </Form.Group>
+                    )}
                   </Accordion.Body>
                 </Accordion.Item>
 
@@ -1359,26 +1513,31 @@ const SearchInstitute = () => {
                     Intakes
                   </Accordion.Header>
                   <Accordion.Body className="custom-accordion-body">
-                    <Form.Group>
-                      {filterData.intakeList &&
-                        filterData.intakeList.length > 0 ? (
-                        filterData.intakeList.map((intake, index) => (
-                          <Form.Check
-                            key={index}
-                            type="checkbox"
-                            label={intake.month}
-                            checked={selectedFilters.intakes.includes(
-                              intake.month
-                            )}
-                            onChange={() =>
-                              handleFilterChange("intakes", intake.month)
-                            }
+                    {filterLoading ? (
+                      <div className="text-center py-2">
+                        <Spinner animation="border" size="sm" />
+                      </div>
+                    ) : (
+                      <Form.Group>
+                        {expandedFilters.mobileIntakes && filterData.intakeList && filterData.intakeList.length > 15 ? (
+                          <VirtualizedFilterList 
+                            items={filterData.intakeList} 
+                            selectedItems={selectedFilters.intakes}
+                            onItemSelect={(id) => handleFilterChange("intakes", id)}
                           />
-                        ))
-                      ) : (
-                        <p>No intakes available</p>
-                      )}
-                    </Form.Group>
+                        ) : (
+                          filterData.intakeList && filterData.intakeList.map((intake, index) => (
+                            <Form.Check
+                              key={index}
+                              type="checkbox"
+                              label={intake.month}
+                              checked={selectedFilters.intakes.includes(intake.month)}
+                              onChange={() => handleFilterChange("intakes", intake.month)}
+                            />
+                          ))
+                        )}
+                      </Form.Group>
+                    )}
                   </Accordion.Body>
                 </Accordion.Item>
 
@@ -1439,4 +1598,5 @@ const SearchInstitute = () => {
   );
 };
 
-export default SearchInstitute;
+// Export with memo to prevent unnecessary re-renders
+export default React.memo(SearchInstitute);

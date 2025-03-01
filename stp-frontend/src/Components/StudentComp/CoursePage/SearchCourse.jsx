@@ -1,4 +1,12 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useMemo,
+  useCallback,
+  Suspense,
+  lazy,
+} from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import "../../../css/StudentCss/course page css/SearchCourse.css";
 import {
@@ -10,9 +18,9 @@ import {
   Pagination,
   Row,
   Col,
-  Spinner,
   Accordion,
   Alert,
+  Placeholder,
 } from "react-bootstrap";
 import CountryFlag from "react-country-flag";
 import debounce from "lodash.debounce";
@@ -27,16 +35,31 @@ import "swiper/swiper-bundle.css";
 import { Navigation, Autoplay } from "swiper/modules";
 import { requestUserCountry } from "../../../utils/locationRequest";
 import currency from "currency.js";
+import { FixedSizeList as List } from "react-window";
+import { dotWave, dotPulse } from "ldrs";
+
+// Register the ldrs loader
+dotWave.register();
+dotPulse.register();
 
 export const baseURL = import.meta.env.VITE_BASE_URL;
 const countriesURL = `${baseURL}api/student/countryList`;
 const filterURL = `${baseURL}api/student/listingFilterList`;
 const courseListURL = `${baseURL}api/student/courseList`;
 const adsAURL = `${baseURL}api/student/advertisementList`;
+
+// Lazy load Swiper components which are only needed when ads are available
+const LazySwiper = lazy(() =>
+  import("swiper/react").then((module) => ({ default: module.Swiper }))
+);
+const LazySwiperSlide = lazy(() =>
+  import("swiper/react").then((module) => ({ default: module.SwiperSlide }))
+);
+
 const SearchCourse = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   // Country States
@@ -166,6 +189,49 @@ const SearchCourse = () => {
 
   const [showMobileFilters, setShowMobileFilters] = useState(false);
 
+  // Add new state for filter loading and search
+  const [filterLoading, setFilterLoading] = useState(false);
+  const [expandedFilters, setExpandedFilters] = useState({});
+  const [filterSearch, setFilterSearch] = useState("");
+
+  // Add this new state for tracking initialization
+  const [isInitializing, setIsInitializing] = useState(true);
+
+  // Move fetchFilters definition here - before any references to it
+  // Optimize filter fetching with caching
+  const fetchFilters = useCallback(async (countryID) => {
+    setFilterLoading(true);
+    try {
+      // Check cache first
+      const cacheKey = `filters_${countryID}`;
+      const cachedData = sessionStorage.getItem(cacheKey);
+
+      if (cachedData) {
+        const parsedData = JSON.parse(cachedData);
+        setFilterData(parsedData);
+        setFilterLoading(false);
+        return;
+      }
+
+      const response = await fetch(filterURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ countryID }),
+      });
+      const result = await response.json();
+
+      if (result.success) {
+        // Cache results for future visits
+        sessionStorage.setItem(cacheKey, JSON.stringify(result.data));
+        setFilterData(result.data);
+      }
+    } catch (error) {
+      console.error("Error fetching filters:", error);
+    } finally {
+      setFilterLoading(false);
+    }
+  }, []);
+
   const fetchExchangeRates = async () => {
     try {
       const response = await fetch(
@@ -276,21 +342,90 @@ const SearchCourse = () => {
   };
 
   useEffect(() => {
-    const fetchCountryAndSet = async () => {
-      const country = await fetchCountry(); // Fetch the country
-      if (country) {
-        // console.log("User country:", country);
+    // Completely revamped initialization process
+    const initializeData = async () => {
+      setLoading(true);
+      setIsInitializing(true);
+      try {
+        // Step 1: Fetch countries and user's location in parallel
+        const [countriesResult, userCountry] = await Promise.all([
+          fetch(countriesURL).then(res => res.json()),
+          fetchCountry(),
+        ]);
 
-        const currencyCode =
-          sessionStorage.getItem("userCurrencyCode") || "MYR"; // Fetch from storage
-        setSelectedCountry(countries.find((c) => c.country_code === country));
-
-        // Fetch exchange rates based on the detected currency
-        await fetchExchangeRates(currencyCode);
+        // Step 2: Set countries and determine selected country
+        if (countriesResult.data) {
+          setCountries(countriesResult.data);
+          
+          // Determine which country to select (from URL params, user location, or default to Malaysia)
+          let countryToSelect;
+          
+          if (location.state?.initialCountry) {
+            countryToSelect = countriesResult.data.find(
+              c => c.country_name === location.state.initialCountry
+            );
+          }
+          
+          if (!countryToSelect && userCountry) {
+            countryToSelect = countriesResult.data.find(
+              c => c.country_code === userCountry
+            );
+          }
+          
+          if (!countryToSelect) {
+            countryToSelect = countriesResult.data.find(
+              c => c.country_name === "Malaysia"
+            );
+          }
+          
+          // Step 3: Set selected country without triggering course fetch
+          if (countryToSelect) {
+            setSelectedCountry(countryToSelect);
+            
+            // Step 4: Fetch filters and exchange rates in parallel
+            await Promise.all([
+              fetchFilters(countryToSelect.id),
+              fetchExchangeRates(),
+              fetchAddsImageA(),
+              fetchAddsImageB()
+            ]);
+          }
+        }
+      } catch (error) {
+        console.error("Error during initialization:", error);
+        setError("Failed to initialize. Please try again.");
+      } finally {
+        // Step 5: Mark initialization as complete
+        setIsInitializing(false);
+        // Note: We don't set loading=false here as fetchCourses will do that
       }
     };
-    fetchCountryAndSet();
+
+    initializeData();
+    // Empty dependency array - only run once on mount
   }, []);
+
+  // This effect will run only after initialization is complete
+  useEffect(() => {
+    if (!isInitializing && selectedCountry) {
+      fetchCourses();
+    }
+  }, [
+    isInitializing,
+    selectedCountry,
+    selectedInstitute,
+    selectedQualification,
+    selectedFilters,
+    searchQuery,
+    currentPage,
+  ]);
+
+  // Modify the country selection effect to respect the initialization flow
+  useEffect(() => {
+    if (selectedCountry && !isInitializing) {
+      fetchFilters(selectedCountry.id);
+    }
+  }, [selectedCountry, isInitializing, fetchFilters]);
 
   useEffect(() => {
     if (currentPage) {
@@ -320,26 +455,9 @@ const SearchCourse = () => {
     }
   };
 
-  // Step 2: Fetch Filters
-  const fetchFilters = async (countryID) => {
-    try {
-      const response = await fetch(filterURL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ countryID }),
-      });
-      const result = await response.json();
-      //console.log(result)
-      if (result.success) {
-        setFilterData(result.data);
-      }
-    } catch (error) {
-      // console.error("Error fetching filters:", error);
-    }
-  };
-
   // Step 3: Fetch Courses
-  const fetchCourses = async () => {
+  const fetchCourses = useCallback(async () => {
+    console.log("fetchCourses called");
     if (!selectedCountry) {
       console.log("No country selected, returning early");
       return;
@@ -409,7 +527,14 @@ const SearchCourse = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [
+    selectedCountry,
+    currentPage,
+    selectedInstitute,
+    selectedQualification,
+    selectedFilters,
+    searchQuery,
+  ]);
 
   const fetchAddsImageA = async () => {
     try {
@@ -456,27 +581,6 @@ const SearchCourse = () => {
   useEffect(() => {
     fetchCountries();
   }, []);
-
-  useEffect(() => {
-    if (selectedCountry) {
-      fetchFilters(selectedCountry.id);
-    }
-  }, [selectedCountry]);
-
-  useEffect(() => {
-    if (selectedCountry) {
-      fetchCourses();
-      fetchAddsImageA();
-      fetchAddsImageB();
-    }
-  }, [
-    selectedCountry,
-    selectedInstitute,
-    selectedQualification,
-    selectedFilters,
-    searchQuery,
-    currentPage,
-  ]);
 
   useEffect(() => {
     if (location.state?.initialSearchQuery) {
@@ -587,6 +691,7 @@ const SearchCourse = () => {
       tuitionFee: 0,
     });
     setSearchQuery("");
+    setTempSearch(""); // Clear the search input field as well
     setCurrentPage(1);
   };
 
@@ -693,30 +798,82 @@ const SearchCourse = () => {
     }
   };
 
-  const renderPrograms = () => {
-    if (!programs.length) {
+  const renderAdImages = (adsImages, defaultImage) => {
+    if (Array.isArray(adsImages) && adsImages.length > 0) {
       return (
-        <div className="blankslate-courses text-center mx-auto col-11 col-md-8 col-lg-6">
-          <img
-            loading="lazy"
-            className="blankslate-courses-top-img"
-            src={emptyStateImage}
-            alt="Empty State"
-          />
-          <div className="blankslate-courses-body text-md-left mt-3 mt-md-0 ml-md-0">
-            <h4 className="h5 h4-md">No programs found</h4>
-            <p className="mb-0 d-none d-md-block">
-              There are no programs that match your selected filters. Please try
-              adjusting your filters and search criteria.
-            </p>
-            <p className="mb-0 d-block d-md-none">
-              No results match your filters. Try adjusting your search criteria.
-            </p>
-          </div>
-        </div>
+        <Suspense
+          fallback={
+            <div className="mb-4">
+              <Placeholder
+                as="div"
+                animation="wave"
+                className="w-100"
+                style={{ height: "175px" }}
+              >
+                <Placeholder xs={12} style={{ height: "100%" }} />
+              </Placeholder>
+            </div>
+          }
+        >
+          <LazySwiper
+            spaceBetween={10}
+            slidesPerView={1}
+            navigation
+            autoplay={{ delay: 5000, disableOnInteraction: false }}
+            modules={[Navigation, Autoplay]}
+            style={{ padding: "0px 0" }}
+          >
+            {adsImages.map((ad, index) => (
+              <LazySwiperSlide key={ad.id} className="advertisement-item mb-3">
+                <a
+                  href={
+                    ad.banner_url.startsWith("http")
+                      ? ad.banner_url
+                      : `https://${ad.banner_url}`
+                  }
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <img
+                    loading="lazy"
+                    src={`${baseURL}storage/${ad.banner_file}`}
+                    alt={`Advertisement ${ad.banner_name}`}
+                    className="studypal-image rounded-3"
+                    style={{
+                      height: "175px",
+                      objectFit: "cover",
+                      width: "100%",
+                      marginBottom: index < adsImages.length - 1 ? "20px" : "0",
+                    }}
+                  />
+                </a>
+              </LazySwiperSlide>
+            ))}
+          </LazySwiper>
+        </Suspense>
       );
     }
+    return (
+      <img
+        loading="lazy"
+        src={defaultImage}
+        alt="Default Image"
+        className="studypal-image"
+        style={{ height: "175px" }}
+      />
+    );
+  };
 
+  // 3. Implement debounced search with useCallback
+  const debouncedSearch = useCallback(
+    debounce((value) => {
+      setSearchQuery(value);
+    }, 500),
+    []
+  );
+
+  // 4. Memoize rendered programs to prevent recalculation
+  const renderedPrograms = useMemo(() => {
     return programs.map((program, index) => (
       <React.Fragment key={program.id}>
         <div
@@ -983,13 +1140,7 @@ const SearchCourse = () => {
                             onClick={() =>
                               (window.location.href = `mailto:${program.email}`)
                             }
-                            className="featured coursepage-applybutton"
-                            style={{
-                              padding: "5px 10px",
-                              fontSize: "14px",
-                              height: "auto",
-                            }}
-                          >
+                            className="featured coursepage-applybutton">
                             Contact Now
                           </button>
                         ) : (
@@ -1008,114 +1159,103 @@ const SearchCourse = () => {
             </Row>
           </div>
         </div>
-        {index === 2 && (
-          <div key="ad" className="ad-container">
-            {/*<img
-              src={StudyPal}
-              alt="Study Pal"
-              className="studypal-image"
-              style={{ height: "100px" }}
-            />*/}
-
-            {Array.isArray(adsImageB) && adsImageB.length > 0 ? (
-              // <div className="advertisements-container">
-              <Swiper
-                spaceBetween={10}
-                slidesPerView={1}
-                navigation
-                autoplay={{ delay: 5000, disableOnInteraction: false }} // Ensure autoplay is enabled
-                modules={[Navigation, Autoplay]}
-                style={{ padding: "20px 0" }}
-              >
-                {adsImageB.map((ad, index) => (
-                  <SwiperSlide key={ad.id} className="advertisement-item mb-3">
-                    <a
-                      href={
-                        ad.banner_url.startsWith("http")
-                          ? ad.banner_url
-                          : `https://${ad.banner_url}`
-                      }
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <img
-                        loading="lazy"
-                        src={`${baseURL}storage/${ad.banner_file}`}
-                        alt={`Advertisement ${ad.banner_name}`}
-                        className="studypal-image"
-                        style={{
-                          height: "175px",
-                          objectFit: "contain",
-                          width: "100%",
-                          marginBottom: index < adsImageB.length - 1 ? "20px" : "0",
-                          "@media (max-width: 768px)": {
-                            height: "auto",
-                            maxHeight: "175px",
-                            objectFit: "contain",
-                          }
-                        }}
-                      />
-                    </a>
-                  </SwiperSlide>
-                ))}
-              </Swiper>
-            ) : (
-              // </div>
-              <img
-                loading="lazy"
-                src={StudyPal}
-                alt="Study Pal"
-                className="studypal-image"
-                style={{ height: "100px" }}
-              />
-            )}
-          </div>
-        )}
       </React.Fragment>
     ));
-  };
+  }, [
+    programs,
+    selectedCurrency,
+    fetchedCountry,
+    courseInterests,
+    handleInterestClick,
+    handleApplyNow,
+  ]);
 
-  // Add these useEffects after your state declarations
+  // 5. Optimize initial data loading
   useEffect(() => {
-    // Initial fetch of countries when component mounts
-    fetchCountries();
-  }, []);
-
-  useEffect(() => {
-    // When selectedCountry changes, fetch filters
-    if (selectedCountry) {
-      fetchFilters(selectedCountry.id);
-    }
-  }, [selectedCountry]);
-
-  // Handle the incoming search query from FeaturedUni
-  useEffect(() => {
-    if (location.state?.initialSearchQuery) {
-      setTempSearch(location.state.initialSearchQuery);
-      setSearchQuery(location.state.initialSearchQuery);
-    }
-  }, [location.state]);
-
-  // Trigger search when searchQuery or selectedCountry changes
-  useEffect(() => {
-    if (searchQuery && selectedCountry) {
-      fetchCourses();
-    }
-  }, [searchQuery, selectedCountry, currentPage]);
-
-  // Add this useEffect to handle initial data loading
-  useEffect(() => {
+    // Completely revamped initialization process
     const initializeData = async () => {
-      await fetchCountries();
-      if (location.state?.initialSearchQuery && selectedCountry) {
-        setTempSearch(location.state.initialSearchQuery);
-        setSearchQuery(location.state.initialSearchQuery);
-        fetchCourses();
+      setLoading(true);
+      setIsInitializing(true);
+      try {
+        // Step 1: Fetch countries and user's location in parallel
+        const [countriesResult, userCountry] = await Promise.all([
+          fetch(countriesURL).then(res => res.json()),
+          fetchCountry(),
+        ]);
+
+        // Step 2: Set countries and determine selected country
+        if (countriesResult.data) {
+          setCountries(countriesResult.data);
+          
+          // Determine which country to select (from URL params, user location, or default to Malaysia)
+          let countryToSelect;
+          
+          if (location.state?.initialCountry) {
+            countryToSelect = countriesResult.data.find(
+              c => c.country_name === location.state.initialCountry
+            );
+          }
+          
+          if (!countryToSelect && userCountry) {
+            countryToSelect = countriesResult.data.find(
+              c => c.country_code === userCountry
+            );
+          }
+          
+          if (!countryToSelect) {
+            countryToSelect = countriesResult.data.find(
+              c => c.country_name === "Malaysia"
+            );
+          }
+          
+          // Step 3: Set selected country without triggering course fetch
+          if (countryToSelect) {
+            setSelectedCountry(countryToSelect);
+            
+            // Step 4: Fetch filters and exchange rates in parallel
+            await Promise.all([
+              fetchFilters(countryToSelect.id),
+              fetchExchangeRates(),
+              fetchAddsImageA(),
+              fetchAddsImageB()
+            ]);
+          }
+        }
+      } catch (error) {
+        console.error("Error during initialization:", error);
+        setError("Failed to initialize. Please try again.");
+      } finally {
+        // Step 5: Mark initialization as complete
+        setIsInitializing(false);
+        // Note: We don't set loading=false here as fetchCourses will do that
       }
     };
 
     initializeData();
+    // Empty dependency array - only run once on mount
   }, []);
+
+  // This effect will run only after initialization is complete
+  useEffect(() => {
+    if (!isInitializing && selectedCountry) {
+      fetchCourses();
+    }
+  }, [
+    isInitializing,
+    selectedCountry,
+    selectedInstitute,
+    selectedQualification,
+    selectedFilters,
+    searchQuery,
+    currentPage,
+  ]);
+
+  // 6. Handle search form changes more efficiently
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setTempSearch(value);
+    debouncedSearch(value);
+  };
 
   const generateCourseStructuredData = (programs) => {
     return {
@@ -1243,6 +1383,135 @@ const SearchCourse = () => {
     count += selectedFilters.studyModes.length;
     if (selectedFilters.tuitionFee > 0) count++;
     return count;
+  };
+
+  // Add a virtualized list component for large filter sets
+  const VirtualizedFilterList = ({
+    items,
+    selectedItems,
+    onItemSelect,
+    height = 200,
+  }) => {
+    // Filter displayed items if there's a search term
+    const filteredItems = useMemo(() => {
+      if (!filterSearch) return items;
+      return items.filter((item) => {
+        const label = item.category_name || item.state_name || item.month || "";
+        return label.toLowerCase().includes(filterSearch.toLowerCase());
+      });
+    }, [items, filterSearch]);
+
+    const Row = ({ index, style }) => {
+      const item = filteredItems[index];
+      return (
+        <div style={style}>
+          <Form.Check
+            type="checkbox"
+            id={`filter-${item.id}`}
+            label={item.category_name || item.state_name || item.month}
+            checked={selectedItems.includes(item.id)}
+            onChange={() => onItemSelect(item.id)}
+          />
+        </div>
+      );
+    };
+
+    return (
+      <>
+        {items.length > 15 && (
+          <Form.Control
+            size="sm"
+            placeholder="Search filters..."
+            value={filterSearch}
+            onChange={(e) => setFilterSearch(e.target.value)}
+            className="mb-2"
+          />
+        )}
+        <List
+          height={Math.min(height, filteredItems.length * 35)}
+          itemCount={filteredItems.length}
+          itemSize={35}
+          width="100%"
+          className="custom-filter-list"
+        >
+          {Row}
+        </List>
+      </>
+    );
+  };
+
+  // Function to toggle expanded state of a filter section
+  const toggleFilterExpand = (filterType) => {
+    setExpandedFilters((prev) => ({
+      ...prev,
+      [filterType]: !prev[filterType],
+    }));
+  };
+
+  // Render a filter section with proper loading state and optimization
+  const renderFilterSection = (
+    title,
+    filterType,
+    items,
+    selectedItems,
+    onItemSelect
+  ) => {
+    const isExpanded = expandedFilters[filterType];
+    const itemCount = items.length;
+    const showVirtualized = itemCount > 15;
+    const displayLimit = 8;
+
+    return (
+      <div className="filter-group">
+        <h5 style={{ marginTop: "25px" }}>
+          {title}
+          {itemCount > displayLimit && (
+            <small
+              className="ms-2 cursor-pointer"
+              onClick={() => toggleFilterExpand(filterType)}
+              style={{ 
+                color: "#B71A18", 
+                fontSize: "0.8rem",
+                cursor: "pointer",
+              }}
+            >
+              {isExpanded ? "Show less" : `Show all (${itemCount})`}
+            </small>
+          )}
+        </h5>
+
+        {filterLoading ? (
+          <div className="d-flex justify-content-center my-3">
+            <l-dot-pulse size="30" speed="1.5" color="#b71a18"></l-dot-pulse>
+          </div>
+        ) : showVirtualized && isExpanded ? (
+          <VirtualizedFilterList
+            items={items}
+            selectedItems={selectedItems}
+            onItemSelect={onItemSelect}
+          />
+        ) : (
+          <Form.Group>
+            {(isExpanded ? items : items.slice(0, displayLimit)).map(
+              (item, index) => (
+                <Form.Check
+                  key={index}
+                  type="checkbox"
+                  label={
+                    item.category_name ||
+                    item.state_name ||
+                    item.month ||
+                    item.studyMode_name
+                  }
+                  checked={selectedItems.includes(item.id)}
+                  onChange={() => onItemSelect(item.id)}
+                />
+              )
+            )}
+          </Form.Group>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -1433,58 +1702,44 @@ const SearchCourse = () => {
               fetchCourses();
             }}
           >
-            <InputGroup className="mb-3  saerchcourse-display-none">
-              <Form.Control
-                className="custom-placeholder searchinputborder"
-                style={{ height: "45px", marginTop: "9px" }}
-                placeholder="Search for Courses, Institutions"
-                value={tempSearch}
-                onChange={(e) => {
-                  setTempSearch(e.target.value);
-                  setTimeout(() => {
-                    setSearchQuery(e.target.value);
-                  }, 1500);
-                }}
-              />
-            </InputGroup>
+            <Form.Control
+              className="custom-placeholder searchinputborder saerchcourse-display-none"
+              style={{ height: "45px", marginTop: "9px" }}
+              placeholder="Search for Courses, Institutions"
+              value={tempSearch}
+              onChange={handleSearchChange}
+            />
           </Form>
           <div className="coursepage-reset-display-search">
-          <Form
-            onSubmit={(e) => {
-              e.preventDefault();
-              fetchCourses();
-            }}
-          >
-            <InputGroup>
+            <Form
+              onSubmit={(e) => {
+                e.preventDefault();
+                fetchCourses();
+              }}
+            >
               <Form.Control
                 className="custom-placeholder searchinputborder"
                 style={{ height: "45px", marginTop: "9px" }}
                 placeholder="Search for Courses, Institutions"
                 value={tempSearch}
-                onChange={(e) => {
-                  setTempSearch(e.target.value);
-                  setTimeout(() => {
-                    setSearchQuery(e.target.value);
-                  }, 1500);
-                }}
+                onChange={handleSearchChange}
               />
-            </InputGroup>
-          </Form>
-          {/* Mobile Filter Button */}
-          <button
-            onClick={() => setShowMobileFilters(!showMobileFilters)}
-            className="mobile-filter-button d-flex mt-3"
-          >
-            <i
-              className={`bi bi-funnel${
-                countSelectedFilters() > 0 ? "-fill" : ""
-              }`}
-            ></i>
-            <span>Filter</span>
-            {countSelectedFilters() > 0 && (
-              <span className="ms-1">({countSelectedFilters()})</span>
-            )}
-          </button>
+            </Form>
+            {/* Mobile Filter Button */}
+            <button
+              onClick={() => setShowMobileFilters(!showMobileFilters)}
+              className="mobile-filter-button d-flex mt-3"
+            >
+              <i
+                className={`bi bi-funnel${
+                  countSelectedFilters() > 0 ? "-fill" : ""
+                }`}
+              ></i>
+              <span>Filter</span>
+              {countSelectedFilters() > 0 && (
+                <span className="ms-1">({countSelectedFilters()})</span>
+              )}
+            </button>
           </div>
         </Container>
         {/* Mobile Filters */}
@@ -1644,58 +1899,101 @@ const SearchCourse = () => {
               </Accordion.Item>
               {/* Location Filter */}
               <Accordion.Item eventKey="3">
-                <Accordion.Header className="custom-accordion-header">
+                <Accordion.Header
+                  className="custom-accordion-header"
+                  onClick={() => toggleFilterExpand("mobileLocations")}
+                >
                   Location
                 </Accordion.Header>
                 <Accordion.Body className="custom-accordion-body">
-                  <Form.Group>
-                    {filterData.state && filterData.state.length > 0 ? ( // Changed from filterData.locations to filterData.state
-                      filterData.state.map((location, index) => (
-                        <Form.Check
-                          key={index}
-                          type="checkbox"
-                          label={location.state_name}
-                          checked={selectedFilters.locations.includes(
-                            location.id
-                          )}
-                          onChange={() =>
-                            handleFilterChange("locations", location.id)
+                  {filterLoading ? (
+                    <div className="text-center py-2">
+                      <l-dot-pulse
+                        size="30"
+                        speed="1.5"
+                        color="#b71a18"
+                      ></l-dot-pulse>
+                    </div>
+                  ) : (
+                    <Form.Group>
+                      {expandedFilters.mobileLocations &&
+                      filterData.state &&
+                      filterData.state.length > 15 ? (
+                        <VirtualizedFilterList
+                          items={filterData.state}
+                          selectedItems={selectedFilters.locations}
+                          onItemSelect={(id) =>
+                            handleFilterChange("locations", id)
                           }
                         />
-                      ))
-                    ) : (
-                      <p className="text-muted">No locations available</p>
-                    )}
-                  </Form.Group>
+                      ) : (
+                        filterData.state &&
+                        filterData.state.map((location, index) => (
+                          <Form.Check
+                            key={index}
+                            type="checkbox"
+                            label={location.state_name}
+                            checked={selectedFilters.locations.includes(
+                              location.id
+                            )}
+                            onChange={() =>
+                              handleFilterChange("locations", location.id)
+                            }
+                          />
+                        ))
+                      )}
+                    </Form.Group>
+                  )}
                 </Accordion.Body>
               </Accordion.Item>
 
               {/* Course Category Filter */}
               <Accordion.Item eventKey="4">
-                <Accordion.Header className="custom-accordion-header">
+                <Accordion.Header
+                  className="custom-accordion-header"
+                  onClick={() => toggleFilterExpand("mobileCategories")}
+                >
                   Category
                 </Accordion.Header>
                 <Accordion.Body className="custom-accordion-body">
-                  <Form.Group>
-                    {filterData.categoryList &&
-                    filterData.categoryList.length > 0 ? ( // Changed from filterData.categories to filterData.categoryList
-                      filterData.categoryList.map((category, index) => (
-                        <Form.Check
-                          key={index}
-                          type="checkbox"
-                          label={category.category_name}
-                          checked={selectedFilters.categories.includes(
-                            category.id
-                          )}
-                          onChange={() =>
-                            handleFilterChange("categories", category.id)
+                  {filterLoading ? (
+                    <div className="text-center py-2">
+                      <l-dot-pulse
+                        size="30"
+                        speed="1.5"
+                        color="#b71a18"
+                      ></l-dot-pulse>
+                    </div>
+                  ) : (
+                    <Form.Group>
+                      {expandedFilters.mobileCategories &&
+                      filterData.categoryList &&
+                      filterData.categoryList.length > 15 ? (
+                        <VirtualizedFilterList
+                          items={filterData.categoryList}
+                          selectedItems={selectedFilters.categories}
+                          onItemSelect={(id) =>
+                            handleFilterChange("categories", id)
                           }
                         />
-                      ))
-                    ) : (
-                      <p className="text-muted">No categories available</p>
-                    )}
-                  </Form.Group>
+                      ) : (
+                        filterData.categoryList &&
+                        filterData.categoryList.map((category, index) => (
+                          <Form.Check
+                            key={index}
+                            type="checkbox"
+                            label={category.category_name}
+                            checked={selectedFilters.categories.includes(
+                              category.id
+                            )}
+                            onChange={() =>
+                              handleFilterChange("categories", category.id)
+                            }
+                          />
+                        ))
+                      )}
+                    </Form.Group>
+                  )}
                 </Accordion.Body>
               </Accordion.Item>
 
@@ -1818,83 +2116,40 @@ const SearchCourse = () => {
             >
               {/* Desktop Filters */}
               <div className="filters-container">
-                {/* Location Filter */}
-                <div className="filter-group">
-                  <h5 style={{ marginTop: "10px" }}>Location</h5>
-                  <Form.Group>
-                    {filterData.state.map((location, index) => (
-                      <Form.Check
-                        key={index}
-                        type="checkbox"
-                        label={location.state_name}
-                        checked={selectedFilters.locations.includes(
-                          location.id
-                        )}
-                        onChange={() =>
-                          handleFilterChange("locations", location.id)
-                        }
-                      />
-                    ))}
-                  </Form.Group>
-                </div>
+                {/* Replace existing filter sections with optimized versions */}
+                {renderFilterSection(
+                  "Location",
+                  "locations",
+                  filterData.state || [],
+                  selectedFilters.locations,
+                  (id) => handleFilterChange("locations", id)
+                )}
 
-                {/* Category Filter */}
-                <div className="filter-group">
-                  <h5 style={{ marginTop: "25px" }}>Category</h5>
-                  <Form.Group>
-                    {filterData.categoryList.map((category, index) => (
-                      <Form.Check
-                        key={index}
-                        type="checkbox"
-                        label={category.category_name}
-                        checked={selectedFilters.categories.includes(
-                          category.id
-                        )}
-                        onChange={() =>
-                          handleFilterChange("categories", category.id)
-                        }
-                      />
-                    ))}
-                  </Form.Group>
-                </div>
+                {renderFilterSection(
+                  "Category",
+                  "categories",
+                  filterData.categoryList || [],
+                  selectedFilters.categories,
+                  (id) => handleFilterChange("categories", id)
+                )}
 
-                {/* Intake Filter */}
-                <div className="filter-group">
-                  <h5 style={{ marginTop: "25px" }}>Intakes</h5>
-                  <Form.Group>
-                    {filterData.intakeList.map((intake, index) => (
-                      <Form.Check
-                        key={index}
-                        type="checkbox"
-                        label={intake.month}
-                        checked={selectedFilters.intakes.includes(intake.month)}
-                        onChange={() =>
-                          handleFilterChange("intakes", intake.month)
-                        }
-                      />
-                    ))}
-                  </Form.Group>
-                </div>
+                {renderFilterSection(
+                  "Intakes",
+                  "intakes",
+                  filterData.intakeList || [],
+                  selectedFilters.intakes,
+                  (month) => handleFilterChange("intakes", month)
+                )}
 
-                {/* Study Mode Filter */}
-                <div className="filter-group">
-                  <h5 style={{ marginTop: "25px" }}>Study Mode</h5>
-                  <Form.Group>
-                    {filterData.studyModeListing.map((mode, index) => (
-                      <Form.Check
-                        key={index}
-                        type="checkbox"
-                        label={mode.studyMode_name}
-                        checked={selectedFilters.studyModes.includes(mode.id)}
-                        onChange={() =>
-                          handleFilterChange("studyModes", mode.id)
-                        }
-                      />
-                    ))}
-                  </Form.Group>
-                </div>
+                {renderFilterSection(
+                  "Study Mode",
+                  "studyModes",
+                  filterData.studyModeListing || [],
+                  selectedFilters.studyModes,
+                  (id) => handleFilterChange("studyModes", id)
+                )}
 
-                {/* Tuition Fee Filter */}
+                {/* Tuition Fee Filter - Keep as is */}
                 <div className="filter-group">
                   <h5 style={{ marginTop: "25px" }}>Tuition Fee</h5>
                   <Form.Group id="customRange1">
@@ -1913,361 +2168,154 @@ const SearchCourse = () => {
                       }
                     />
                     <div className="d-flex justify-content-between mt-2">
-                      <p>RM0</p>
-                      <p>RM{filterData.maxAmount || 100000}</p>
+                      <small>RM0</small>
+                      <small>RM{filterData.maxAmount || 100000}</small>
                     </div>
                   </Form.Group>
                 </div>
               </div>
-
-              {/* Mobile Accordion Filters */}
-              {/* Mobile Accordion Filters */}
-              <Accordion
-                //defaultActiveKey="0"
-                className="custom-accordion d-md-none"
-              >
-                <Accordion.Item eventKey="0">
-                  <Accordion.Header className="custom-accordion-header">
-                    {selectedCountry ? (
-                      <>
-                        <CountryFlag
-                          countryCode={selectedCountry.country_code}
-                          svg
-                          style={{
-                            width: "20px",
-                            height: "20px",
-                            marginRight: "10px",
-                          }}
-                        />
-                        {selectedCountry.country_name}
-                      </>
-                    ) : (
-                      "Select Country"
-                    )}
-                  </Accordion.Header>
-                  <Accordion.Body>
-                    <InputGroup className="mb-2 ps-3 pe-3">
-                      <Form.Control
-                        placeholder="Filter countries"
-                        onChange={(e) =>
-                          setCountryFilter(e.target.value.toLowerCase())
-                        }
-                        value={countryFilter}
-                        className="ps-1 countryinput"
-                      />
-                    </InputGroup>
-                    <div className="country-list">
-                      {countries
-                        .filter((country) =>
-                          country.country_name
-                            .toLowerCase()
-                            .includes(countryFilter)
-                        )
-                        .map((country, index) => (
-                          <Form.Check
-                            key={index}
-                            type="radio"
-                            name="country"
-                            id={`country-${country.id}`}
-                            label={
-                              <div
-                                className="d-flex align-items-center"
-                                style={{
-                                  marginRight: "10px",
-                                  paddingTop: "0",
-                                  paddingBottom: "0",
-                                }}
-                              >
-                                <CountryFlag
-                                  countryCode={country.country_code}
-                                  svg
-                                  style={{
-                                    width: "20px",
-                                    height: "20px",
-                                    marginRight: "10px",
-                                    paddingTop: "0",
-                                    paddingBottom: "0",
-                                  }}
-                                />
-                                {country.country_name}
-                              </div>
-                            }
-                            checked={selectedCountry?.id === country.id}
-                            onChange={() => handleCountryChange(country)}
-                            className="mb-2"
-                          />
-                        ))}
-                    </div>
-                  </Accordion.Body>
-                </Accordion.Item>
-
-                {/* University Accordion Item */}
-                <Accordion.Item eventKey="1">
-                  <Accordion.Header className="custom-accordion-header">
-                    {selectedInstitute
-                      ? selectedInstitute.core_metaName
-                      : "Select University"}
-                  </Accordion.Header>
-                  <Accordion.Body>
-                    {filterData.institueList.map((institute, index) => (
-                      <Form.Check
-                        key={index}
-                        type="radio"
-                        name="university"
-                        id={`institute-${institute.id}`}
-                        label={institute.core_metaName}
-                        checked={selectedInstitute?.id === institute.id}
-                        onChange={() => setSelectedInstitute(institute)}
-                        className="mb-2"
-                      />
-                    ))}
-                  </Accordion.Body>
-                </Accordion.Item>
-
-                {/* Qualification Accordion Item */}
-                <Accordion.Item eventKey="2">
-                  <Accordion.Header className="custom-accordion-header">
-                    {selectedQualification
-                      ? selectedQualification.qualification_name
-                      : "Qualification"}
-                  </Accordion.Header>
-                  <Accordion.Body className="custom-accordion-body">
-                    <Form.Group>
-                      {filterData.qualificationList.map(
-                        (qualification, index) => (
-                          <Form.Check
-                            key={index}
-                            type="radio"
-                            name="qualification"
-                            id={`qualification-${qualification.id}`}
-                            label={qualification.qualification_name}
-                            checked={
-                              selectedQualification?.id === qualification.id
-                            }
-                            onChange={() =>
-                              setSelectedQualification(qualification)
-                            }
-                            className="mb-2"
-                          />
-                        )
-                      )}
-                    </Form.Group>
-                  </Accordion.Body>
-                </Accordion.Item>
-                {/* Location Filter */}
-                <Accordion.Item eventKey="3">
-                  <Accordion.Header className="custom-accordion-header">
-                    Location
-                  </Accordion.Header>
-                  <Accordion.Body className="custom-accordion-body">
-                    <Form.Group>
-                      {filterData.state && filterData.state.length > 0 ? ( // Changed from filterData.locations to filterData.state
-                        filterData.state.map((location, index) => (
-                          <Form.Check
-                            key={index}
-                            type="checkbox"
-                            label={location.state_name}
-                            checked={selectedFilters.locations.includes(
-                              location.id
-                            )}
-                            onChange={() =>
-                              handleFilterChange("locations", location.id)
-                            }
-                          />
-                        ))
-                      ) : (
-                        <p className="text-muted">No locations available</p>
-                      )}
-                    </Form.Group>
-                  </Accordion.Body>
-                </Accordion.Item>
-
-                {/* Course Category Filter */}
-                <Accordion.Item eventKey="4">
-                  <Accordion.Header className="custom-accordion-header">
-                    Category
-                  </Accordion.Header>
-                  <Accordion.Body className="custom-accordion-body">
-                    <Form.Group>
-                      {filterData.categoryList &&
-                      filterData.categoryList.length > 0 ? ( // Changed from filterData.categories to filterData.categoryList
-                        filterData.categoryList.map((category, index) => (
-                          <Form.Check
-                            key={index}
-                            type="checkbox"
-                            label={category.category_name}
-                            checked={selectedFilters.categories.includes(
-                              category.id
-                            )}
-                            onChange={() =>
-                              handleFilterChange("categories", category.id)
-                            }
-                          />
-                        ))
-                      ) : (
-                        <p className="text-muted">No categories available</p>
-                      )}
-                    </Form.Group>
-                  </Accordion.Body>
-                </Accordion.Item>
-
-                {/* Study Mode Filter */}
-                <Accordion.Item eventKey="6">
-                  <Accordion.Header className="custom-accordion-header">
-                    Study Mode
-                  </Accordion.Header>
-                  <Accordion.Body className="custom-accordion-body">
-                    <Form.Group>
-                      {filterData.studyModeListing &&
-                      filterData.studyModeListing.length > 0 ? (
-                        filterData.studyModeListing.map((mode, index) => (
-                          <Form.Check
-                            key={index}
-                            type="checkbox"
-                            label={mode.studyMode_name}
-                            checked={selectedFilters.studyModes.includes(
-                              mode.id
-                            )}
-                            onChange={() =>
-                              handleFilterChange("studyModes", mode.id)
-                            }
-                          />
-                        ))
-                      ) : (
-                        <p className="text-muted">No study modes available</p>
-                      )}
-                    </Form.Group>
-                  </Accordion.Body>
-                </Accordion.Item>
-
-                {/* Intake Filter */}
-                <Accordion.Item eventKey="7">
-                  <Accordion.Header className="custom-accordion-header">
-                    Intakes
-                  </Accordion.Header>
-                  <Accordion.Body className="custom-accordion-body">
-                    <Form.Group>
-                      {filterData.intakeList &&
-                      filterData.intakeList.length > 0 ? (
-                        filterData.intakeList.map((intake, index) => (
-                          <Form.Check
-                            key={index}
-                            type="checkbox"
-                            label={intake.month}
-                            checked={selectedFilters.intakes.includes(
-                              intake.month
-                            )}
-                            onChange={() =>
-                              handleFilterChange("intakes", intake.month)
-                            }
-                          />
-                        ))
-                      ) : (
-                        <p className="text-muted">No intakes available</p>
-                      )}
-                    </Form.Group>
-                  </Accordion.Body>
-                </Accordion.Item>
-
-                {/* Tuition Fee Filter */}
-                <Accordion.Item eventKey="8">
-                  <Accordion.Header className="custom-accordion-header">
-                    Tuition Fee
-                  </Accordion.Header>
-                  <Accordion.Body className="custom-accordion-body">
-                    <Form.Group>
-                      <Form.Label className="mb-3">
-                        Range: RM{selectedFilters.tuitionFee || 0}
-                      </Form.Label>
-                      <Form.Control
-                        type="range"
-                        className="custom-range"
-                        min={0}
-                        max={filterData.maxAmount || 100000}
-                        step={500}
-                        value={selectedFilters.tuitionFee || 0}
-                        onChange={(e) =>
-                          handleFilterChange(
-                            "tuitionFee",
-                            Number(e.target.value)
-                          )
-                        }
-                      />
-                      <div className="d-flex justify-content-between mt-2">
-                        <small>RM0</small>
-                        <small>RM{filterData.maxAmount || 100000}</small>
-                      </div>
-                    </Form.Group>
-                  </Accordion.Body>
-                </Accordion.Item>
-              </Accordion>
             </Col>
 
             {/* Right Content - Course Listings */}
             <Col xs={12} md={9} className="degreeprograms-division">
-              <div>
-                {Array.isArray(adsImageA) && adsImageA.length > 0 ? (
-                  <Swiper
-                    spaceBetween={10}
-                    slidesPerView={1}
-                    navigation
-                    autoplay={{ delay: 5000, disableOnInteraction: false }} // Ensure autoplay is enabled
-                    modules={[Navigation, Autoplay]}
-                    style={{ padding: "20px 0" }}
-                  >
-                    {adsImageA.map((ad, index) => (
-                      <SwiperSlide
-                        key={ad.id}
-                        className="advertisement-item mb-3"
-                      >
-                        <a
-                          href={
-                            ad.banner_url.startsWith("http")
-                              ? ad.banner_url
-                              : `https://${ad.banner_url}`
-                          }
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <img
-                            loading="lazy"
-                            src={`${baseURL}storage/${ad.banner_file}`}
-                            alt={`Advertisement ${ad.banner_name}`}
-                            className="studypal-image"
-                            style={{
-                              height: "175px",
-                              objectFit: "fill",
-                              marginBottom:
-                                index < adsImageA.length - 1 ? "20px" : "0",
-                            }}
-                          />
-                        </a>
-                      </SwiperSlide>
-                    ))}
-                  </Swiper>
-                ) : (
-                  <img
-                    loading="lazy"
-                    src={StudyPal}
-                    alt="Study Pal"
-                    className="studypal-image"
-                    style={{ height: "175px" }}
-                  />
-                )}
-              </div>
+              <div>{renderAdImages(adsImageA, StudyPal)}</div>
 
               {loading ? (
-                <div className="text-center">
-                  <Spinner animation="border" role="status">
-                    <span className="visually-hidden">Loading...</span>
-                  </Spinner>
+                <div>
+                  {[1, 2, 3].map((item) => (
+                    <div key={item} className="card mb-4 degree-card py-4">
+                      <div className="card-body d-flex flex-column flex-md-row align-items-start">
+                        <Row className="coursepage-row w-100">
+                          <Col md={6} lg={6} className="course-card-ipad">
+                            <div className="card-image mb-3 mb-md-0">
+                              <Placeholder as="h5" animation="glow">
+                                <Placeholder xs={10} />
+                              </Placeholder>
+
+                              <div className="coursepage-searchcourse-courselist-first">
+                                <div className="coursepage-img">
+                                  <Placeholder animation="glow">
+                                    <Placeholder
+                                      xs={12}
+                                      style={{
+                                        height: "100px",
+                                        width: "100px",
+                                      }}
+                                    />
+                                  </Placeholder>
+                                </div>
+                                <div className="searchcourse-coursename-schoolname">
+                                  <div>
+                                    <Placeholder as="h5" animation="glow">
+                                      <Placeholder xs={8} />
+                                    </Placeholder>
+                                    <Placeholder animation="glow">
+                                      <Placeholder xs={6} />
+                                    </Placeholder>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </Col>
+                          <Col md={6} lg={6} className="course-card-fee-ipad">
+                            <div className="d-flex flex-grow-1 coursepage-searchcourse-courselist-second">
+                              <div className="details-div">
+                                <div className="flex-wrap coursepage-info-one">
+                                  <Col>
+                                    <div>
+                                      <Row>
+                                        <Placeholder animation="glow">
+                                          <Placeholder
+                                            xs={8}
+                                            className="mb-2"
+                                          />
+                                          <Placeholder
+                                            xs={7}
+                                            className="mb-2"
+                                          />
+                                          <Placeholder
+                                            xs={6}
+                                            className="mb-2"
+                                          />
+                                          <Placeholder
+                                            xs={9}
+                                            className="mb-2"
+                                          />
+                                        </Placeholder>
+                                      </Row>
+                                    </div>
+                                  </Col>
+                                </div>
+                              </div>
+                              <div className="fee-apply">
+                                <div
+                                  className="fee-info text-right"
+                                  style={{ marginTop: "25px" }}
+                                >
+                                  <Placeholder animation="glow">
+                                    <Placeholder xs={6} />
+                                    <Placeholder xs={4} />
+                                  </Placeholder>
+                                </div>
+                                <div className="d-flex interest-division">
+                                  <div className="apply-button w-50">
+                                    <button
+                                      className="btn btn-danger featured coursepage-applybutton p-3"
+                                      disabled
+                                      style={{
+                                        opacity: 0.65,
+                                        cursor: "not-allowed",
+                                        backgroundColor: "#ffffff",
+                                        border: "1px solid #B71A18",
+                                      }}
+                                    ></button>
+                                  </div>
+                                  <div className="apply-button w-50">
+                                    <button
+                                      className="btn btn-danger featured coursepage-applybutton p-3"
+                                      disabled
+                                      style={{
+                                        opacity: 0.65,
+                                        cursor: "not-allowed",
+                                        backgroundColor: "#B71A18",
+                                        borderColor: "#B71A18",
+                                      }}
+                                    ></button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </Col>
+                        </Row>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               ) : error ? (
                 <div className="text-center text-danger">
                   <p>Error: {error}</p>
                 </div>
+              ) : programs.length === 0 ? (
+                <div className="blankslate-courses text-center mx-auto col-11 col-md-8 col-lg-6">
+                  <img
+                    loading="lazy"
+                    className="blankslate-courses-top-img"
+                    src={emptyStateImage}
+                    alt="Empty State"
+                  />
+                  <div className="blankslate-courses-body text-md-left mt-3 mt-md-0 ml-md-0">
+                    <h4 className="h5 h4-md">No programs found</h4>
+                    <p className="mb-0 d-none d-md-block">
+                      There are no programs that match your selected filters. Please try
+                      adjusting your filters and search criteria.
+                    </p>
+                    <p className="mb-0 d-block d-md-none">
+                      No results match your filters. Try adjusting your search criteria.
+                    </p>
+                  </div>
+                </div>
               ) : (
-                <>{renderPrograms()}</>
+                <>{renderedPrograms}</>
               )}
             </Col>
             {/* Pagination */}
@@ -2346,4 +2394,4 @@ const SearchCourse = () => {
   );
 };
 
-export default SearchCourse;
+export default React.memo(SearchCourse);

@@ -96,7 +96,7 @@ const OrbitingStarButton = ({ isActive }) => {
       ctx.fillStyle = STAR_COLOR;
       
       // Draw a 5-pointed star instead of a circle
-      const drawStar = (x, y, radius, rotation, innerRadius = radius/2.5) => {
+      const drawStar = (x, y, radius, rotation, innerRadius = radius/1.7) => {
         const points = 5;
         const outerRadius = radius;
         
