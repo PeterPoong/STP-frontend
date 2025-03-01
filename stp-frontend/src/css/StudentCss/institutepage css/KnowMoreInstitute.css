@@ -474,7 +474,7 @@
   }
 }
 .truncate-text p {
-  display: inline;
+  /* display: inline; */
   margin: 0;
 }
 
