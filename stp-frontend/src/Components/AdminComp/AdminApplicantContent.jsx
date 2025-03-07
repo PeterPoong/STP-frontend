@@ -202,7 +202,10 @@ const AdminApplicantContent = () => {
     const theadContent = (
         <tr>
             <th onClick={() => handleSort("student")}>
-                Name{sortColumn === "student" && (sortDirection === "asc" ? "↑" : "↓")}
+                Username{sortColumn === "student" && (sortDirection === "asc" ? "↑" : "↓")}
+            </th>
+            <th onClick={() => handleSort("student")}>
+                Fullname{sortColumn === "student" && (sortDirection === "asc" ? "↑" : "↓")}
             </th>
             <th onClick={() => handleSort("name")}>
                 Course(s) {sortColumn === "name" && (sortDirection === "asc" ? "↑" : "↓")}
@@ -226,6 +229,7 @@ const AdminApplicantContent = () => {
     const tbodyContent = sortedApplicants.length > 0 ? (
     sortedApplicants.map((Applicant) => (
         <tr key={Applicant.id}>
+            <td>{Applicant.username}</td>
             <td>{Applicant.student_name}</td>
             <td>{Applicant.course_name}</td>
             <td>{Applicant.institution}</td>

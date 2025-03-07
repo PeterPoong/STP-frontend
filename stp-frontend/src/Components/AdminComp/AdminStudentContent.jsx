@@ -249,7 +249,10 @@ const AdminStudentContent = () => {
       {/* Regular Table Headers */}
       <tr>
         <th onClick={() => handleSort("name")}>
-          Name{sortColumn === "name" && (sortDirection === "asc" ? "↑" : "↓")}
+          Username{sortColumn === "name" && (sortDirection === "asc" ? "↑" : "↓")}
+        </th>
+        <th onClick={() => handleSort("name")}>
+          Fullname{sortColumn === "name" && (sortDirection === "asc" ? "↑" : "↓")}
         </th>
         <th onClick={() => handleSort("email")}>
           Email{" "}
@@ -274,6 +277,7 @@ const AdminStudentContent = () => {
       sortedstudents.map((student) => (
         <tr key={student.id}>
           <td>{student.name}</td>
+          <td>{student.fullname}</td>
           <td>{student.email}</td>
           <td>{student.contact_number}</td>
           <td>{student.created_at}</td>
