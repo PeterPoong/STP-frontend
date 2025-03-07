@@ -1850,7 +1850,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                         <div className="d-flex justify-content-center">
                           <span
                             style={{ fontSize: "0.9rem", fontWeight: "500" }}
-                            className={`px-3 py-1 rounded-5 text-white ms-md-0 ms-4 bg-${getGradeColor(
+                            className={`px-3 py-1 rounded-5 text-nowrap text-white ms-md-0 ms-4 bg-${getGradeColor(
                               subject.grade
                             )}`}
                           >
