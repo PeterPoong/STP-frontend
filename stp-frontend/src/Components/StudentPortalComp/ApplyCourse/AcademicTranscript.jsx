@@ -1,6 +1,6 @@
 //applu course
-import React, { useState, useEffect, useCallback } from "react";
-import { Form, Button, Row, Col, Spinner } from "react-bootstrap";
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import { Form, Button, Row, Col, Spinner, Card } from "react-bootstrap";
 import {
   Trash2,
   Edit,
@@ -32,14 +32,16 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
   const [navigationDirection, setNavigationDirection] = useState(null);
   const [savingStates, setSavingStates] = useState({});
   const [usedTranscriptTypes, setUsedTranscriptTypes] = useState(new Set());
-  // Replace the existing useEffect hook with this:
-  /* useEffect(() => {
-     const fetchAllData = async () => {
-       await fetchTranscriptCategories();
-       setIsLoading(false);
-     };
-     fetchAllData();
-   }, []);*/
+  // Add a state for tracking hovered buttons
+  const [hoveredButton, setHoveredButton] = useState(null);
+  // Add a ref for the new document element
+  const newDocumentRef = useRef(null);
+  // Keep track of the last added document
+  const [lastAddedDocument, setLastAddedDocument] = useState(null);
+  // Add a function to handle both hover and touch events
+  const handleButtonInteraction = (buttonId, isActive) => {
+    setHoveredButton(isActive ? buttonId : null);
+  };
 
   useEffect(() => {
     const fetchAllData = async () => {
@@ -682,13 +684,15 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
     selected
   ) => {
     const { value, label } = selected;
-    setAcademicTranscripts(prevTranscripts => 
+    setAcademicTranscripts((prevTranscripts) =>
       prevTranscripts.map((transcript, i) =>
         i === transcriptIndex
           ? {
               ...transcript,
               subjects: transcript.subjects.map((subject, j) =>
-                j === subjectIndex ? { ...subject, id: value, name: label } : subject
+                j === subjectIndex
+                  ? { ...subject, id: value, name: label }
+                  : subject
               ),
             }
           : transcript
@@ -760,6 +764,10 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
         : transcript
     );
     setAcademicTranscripts(updatedTranscripts);
+    
+    // Set the last added document for scrolling
+    const newDocIndex = updatedTranscripts[transcriptIndex].documents.length - 1;
+    setLastAddedDocument({ transcriptIndex, docIndex: newDocIndex });
   };
 
   const handleDocumentChange = (
@@ -1302,6 +1310,19 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
     setNavigationDirection(null);
   };
 
+  // Add this effect to scroll to new document when added
+  useEffect(() => {
+    if (lastAddedDocument !== null) {
+      const { transcriptIndex, docIndex } = lastAddedDocument;
+      const element = document.getElementById(`document-${transcriptIndex}-${docIndex}`);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Reset last added document after scrolling
+        setLastAddedDocument(null);
+      }
+    }
+  }, [lastAddedDocument]);
+
   if (isLoading)
     return (
       <div>
@@ -1318,128 +1339,398 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
 
   return (
     <div className="step-content-casetwo p-4 rounded">
-      <h3 className="border-bottom pb-2 fw-normal">Academic Transcript</h3>
+      <h3 className="border-bottom border-2 pb-2 mb-3 fw-normal">
+        Academic Transcript
+      </h3>
       {academicTranscripts.map((transcript, index) => (
         <div
           key={index}
           className="academic-transcript-item mb-4 border rounded py-4"
         >
           <Row className="sac-container-casetwo justify-content-between align-items-start align-items-sm-center mb-3 px-4">
-            <Col sm="8" lg="auto" className="d-flex align-items-center mb-2 mb-sm-0">
-              <AlignJustify className="me-2 align-self-center" size={15} />
-              <Form.Select 
+            <Col
+              sm="8"
+              lg="auto"
+              className="d-flex align-items-center mb-2 mb-sm-0"
+            >
+              <AlignJustify className="me-2 align-self-center" size={20} />
+              <Form.Select
                 value={transcript.id || ""}
                 onChange={(e) => {
-                  const selectedCategory = getAvailableCategories(index)
-                    .find(cat => cat.value === parseInt(e.target.value));
+                  const selectedCategory = getAvailableCategories(index).find(
+                    (cat) => cat.value === parseInt(e.target.value)
+                  );
                   if (selectedCategory) {
                     handleTranscriptChange(index, {
                       id: selectedCategory.value,
-                      name: selectedCategory.label
+                      name: selectedCategory.label,
                     });
                   }
                 }}
-                className="fw-bold border-0 sac-at-bg sac-at-select-style w-100 bg-white"
+                className="fw-bold border-0 sac-at-bg sac-at-select-style w-100 bg-white py-2 rounded-pill"
               >
-                <option disabled value="">Choose an education</option>
-                {getAvailableCategories(index).map(category => (
+                <option disabled value="">
+                  Choose an education
+                </option>
+                {getAvailableCategories(index).map((category) => (
                   <option key={category.value} value={category.value}>
                     {category.label}
                   </option>
                 ))}
               </Form.Select>
             </Col>
-            
-            <Col sm="auto" lg="auto" className="d-flex">
-              <Button
-                variant="link"
-                className="p-0 me-2"
-                onClick={() => handleAddSubject(index)}
-              >
-                <Plus size={18} color="grey" />
-              </Button>
-              <Button
-                variant="link"
-                className="p-0 me-2"
-                onClick={() => handleAddDocument(index)}
-              >
-                <Upload size={18} color="grey" />
-              </Button>
-              <Button
-                variant="link"
-                className="p-0"
-                title="Remove Transcript"
-                onClick={() => handleRemoveTranscript(index)}
-              >
-                <Trash2 size={18} color="grey" />
-              </Button>
+
+            {/* Desktop buttons - hide on mobile */}
+            <Col sm="auto" lg="auto" className="d-none d-sm-block">
+              {/* Mobile responsive pill style buttons */}
+              <div className="bg-white bg-opacity-75 p-0 rounded-pill d-flex align-items-center transition-all">
+                {/* Add Subject Button */}
+                <button
+                  className={`
+                    border-0 rounded-pill transition-all
+                    d-flex align-items-center justify-content-center overflow-hidden
+                    ${
+                      hoveredButton === `subject-${index}`
+                        ? "bg-primary text-white px-2"
+                        : "bg-transparent text-secondary hover-bg-light"
+                    }
+                  `}
+                  style={{
+                    height: "calc(28px + min(0.5vw, 4px))",
+                    width:
+                      hoveredButton === `subject-${index}`
+                        ? "auto"
+                        : "calc(28px + min(0.5vw, 4px))",
+                    minWidth: "calc(28px + min(0.5vw, 4px))",
+                    transition: "all 0.3s",
+                  }}
+                  onMouseEnter={() =>
+                    handleButtonInteraction(`subject-${index}`, true)
+                  }
+                  onMouseLeave={() =>
+                    handleButtonInteraction(`subject-${index}`, false)
+                  }
+                  onTouchStart={() =>
+                    handleButtonInteraction(`subject-${index}`, true)
+                  }
+                  onTouchEnd={() =>
+                    setTimeout(
+                      () => handleButtonInteraction(`subject-${index}`, false),
+                      1000
+                    )
+                  }
+                  onClick={() => handleAddSubject(index)}
+                  aria-label="Add Subject"
+                >
+                  <Plus size={14} className="flex-shrink-0" />
+                  <span
+                    className="ms-1 fw-medium text-nowrap transition-all"
+                    style={{
+                      fontSize: "min(0.75rem, 3.5vw)",
+                      opacity: hoveredButton === `subject-${index}` ? 1 : 0,
+                      maxWidth:
+                        hoveredButton === `subject-${index}` ? "80px" : "0",
+                      overflow: "hidden",
+                      transition: "all 0.2s",
+                    }}
+                  >
+                    Subject
+                  </span>
+                </button>
+
+                {/* Add Document Button */}
+                <button
+                  className={`
+                    border-0 rounded-pill mx-1 transition-all
+                    d-flex align-items-center justify-content-center overflow-hidden
+                    ${
+                      hoveredButton === `document-${index}`
+                        ? "bg-primary text-white px-2"
+                        : "bg-transparent text-secondary hover-bg-light"
+                    }
+                  `}
+                  style={{
+                    height: "calc(28px + min(0.5vw, 4px))",
+                    width:
+                      hoveredButton === `document-${index}`
+                        ? "auto"
+                        : "calc(28px + min(0.5vw, 4px))",
+                    minWidth: "calc(28px + min(0.5vw, 4px))",
+                    transition: "all 0.3s",
+                  }}
+                  onMouseEnter={() =>
+                    handleButtonInteraction(`document-${index}`, true)
+                  }
+                  onMouseLeave={() =>
+                    handleButtonInteraction(`document-${index}`, false)
+                  }
+                  onTouchStart={() =>
+                    handleButtonInteraction(`document-${index}`, true)
+                  }
+                  onTouchEnd={() =>
+                    setTimeout(
+                      () => handleButtonInteraction(`document-${index}`, false),
+                      1000
+                    )
+                  }
+                  onClick={() => handleAddDocument(index)}
+                  aria-label="Add Document"
+                >
+                  <Upload size={14} className="flex-shrink-0" />
+                  <span
+                    className="ms-1 fw-medium text-nowrap transition-all"
+                    style={{
+                      fontSize: "min(0.75rem, 3.5vw)",
+                      opacity: hoveredButton === `document-${index}` ? 1 : 0,
+                      maxWidth:
+                        hoveredButton === `document-${index}` ? "80px" : "0",
+                      overflow: "hidden",
+                      transition: "all 0.2s",
+                    }}
+                  >
+                    Document
+                  </span>
+                </button>
+
+                {/* Remove Transcript Button */}
+                <button
+                  className={`
+                    border-0 rounded-pill transition-all
+                    d-flex align-items-center justify-content-center overflow-hidden
+                    ${
+                      hoveredButton === `remove-${index}`
+                        ? "bg-danger text-white px-2"
+                        : "bg-transparent text-secondary hover-bg-light"
+                    }
+                  `}
+                  style={{
+                    height: "calc(28px + min(0.5vw, 4px))",
+                    width:
+                      hoveredButton === `remove-${index}`
+                        ? "auto"
+                        : "calc(28px + min(0.5vw, 4px))",
+                    minWidth: "calc(28px + min(0.5vw, 4px))",
+                    transition: "all 0.3s",
+                  }}
+                  onMouseEnter={() =>
+                    handleButtonInteraction(`remove-${index}`, true)
+                  }
+                  onMouseLeave={() =>
+                    handleButtonInteraction(`remove-${index}`, false)
+                  }
+                  onTouchStart={() =>
+                    handleButtonInteraction(`remove-${index}`, true)
+                  }
+                  onTouchEnd={() =>
+                    setTimeout(
+                      () => handleButtonInteraction(`remove-${index}`, false),
+                      1000
+                    )
+                  }
+                  onClick={() => handleRemoveTranscript(index)}
+                  title="Remove Transcript"
+                  aria-label="Remove Transcript"
+                >
+                  <Trash2 size={14} className="flex-shrink-0" />
+                  <span
+                    className="ms-1 fw-medium text-nowrap transition-all"
+                    style={{
+                      fontSize: "min(0.75rem, 3.5vw)",
+                      opacity: hoveredButton === `remove-${index}` ? 1 : 0,
+                      maxWidth:
+                        hoveredButton === `remove-${index}` ? "80px" : "0",
+                      overflow: "hidden",
+                      transition: "all 0.2s",
+                    }}
+                  >
+                    Remove
+                  </span>
+                </button>
+              </div>
+            </Col>
+
+            {/* Mobile buttons - only show on mobile screens */}
+            <Col xs="12" className="d-block d-sm-none px-0 mx-0">
+              <div className="d-flex justify-content-center">
+                <div className="btn-group">
+                  <Button
+                    variant="light"
+                    size="sm"
+                    className="text-secondary d-flex align-items-center py-2 px-3 mx-0 rounded-start-pill"
+                    onClick={() => handleAddSubject(index)}
+                  >
+                    <div className="align-items-center">
+                      <Plus size={14} className="me-2" />
+                      Subject
+                    </div>
+                  </Button>
+                  <Button
+                    variant="light"
+                    size="sm"
+                    className="text-secondary d-flex align-items-center py-2 px-3 mx-0"
+                    onClick={() => handleAddDocument(index)}
+                  >
+                    <div className="align-items-center">
+                      <Upload size={14} className="me-2" />
+                      Document
+                    </div>
+                  </Button>
+                  <Button
+                    variant="light"
+                    size="sm"
+                    className="text-secondary d-flex align-items-center py-2 px-3 mx-0 mt-auto rounded-end-pill"
+                    onClick={() => handleRemoveTranscript(index)}
+                  >
+                    <div className="align-items-center">
+                      <Trash2 size={14} className="me-2" />
+                      Remove
+                    </div>
+                  </Button>
+                </div>
+              </div>
             </Col>
           </Row>
 
           {transcript.subjects.length === 0 && (
-            <div className="px-4 py-2 text-muted">
+            <div className="px-4 py-2 text-muted text-center">
               No subjects added yet. Click the "+" icon to add a subject.
             </div>
           )}
           {transcript.subjects.length > 0 ? (
             <div className="px-4">
+              <div className="d-flex justify-content-between align-items-center mb-0 mb-md-2">
+                <h6 className="d-flex align-self-center pt-2 ">
+                  Subjects :
+                </h6>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="d-flex align-self-center py-2 py-md-2 rounded-pill me-0 me-md-3"
+                  onClick={() => {
+                    // Toggle editing state for all subjects in this transcript
+                    const updatedTranscripts = [...academicTranscripts];
+                    const isCurrentlyEditing = updatedTranscripts[
+                      index
+                    ].subjects.some((s) => s.isEditing);
+
+                    updatedTranscripts[index].subjects = updatedTranscripts[
+                      index
+                    ].subjects.map((subject) => ({
+                      ...subject,
+                      isEditing: !isCurrentlyEditing,
+                    }));
+
+                    setAcademicTranscripts(updatedTranscripts);
+
+                    // If turning on edit mode, fetch available subjects for SPM transcripts
+                    if (
+                      !isCurrentlyEditing &&
+                      (transcript.id === 32 || transcript.id === 85)
+                    ) {
+                      fetchAvailableSubjects(transcript.id, index);
+                    }
+                  }}
+                >
+                  {academicTranscripts[index].subjects.some(
+                    (s) => s.isEditing
+                  ) ? (
+                    <div className="px-1 px-md-1">
+                      <Save size={14} className="me-1" />
+                      Save Edits
+                    </div>
+                  ) : (
+                    <div className="px-1 px-md-1">
+                      <Edit size={14} className="me-1" />
+                      Edit Subjects
+                    </div>
+                  )}
+                </Button>
+              </div>
+
               {transcript.subjects.map((subject, subIndex) => (
                 <div
                   key={subIndex}
-                  className="justify-content-between subject-item  mb-2 bg-white p-1 rounded-3 applycourse-overflow"
+                  className="mb-2 bg-white p-2 rounded-3 mx-0 d-flex flex-wrap align-items-center"
                 >
+                  <div className="p-1" style={{ width: "40px" }}>
+                    <AlignJustify size={15} />
+                  </div>
+
                   {subject.isEditing ? (
+                    // Edit mode - show form controls
                     <>
-                      <div className="applycourse-academictranscript-dflex align-items-center flex-grow-1">
-                        <AlignJustify className="mx-2" size={15} color="grey" />
-                        {transcript.id === 32 || transcript.id === 85 ? (
+                      {transcript.id === 32 || transcript.id === 85 ? (
+                        <div className="p-1">
                           <Form.Select
                             value={subject.id || ""}
                             onChange={(e) => {
                               const selectedId = e.target.value;
-                              // Find the subject in AVAILABLE subjects, not in transcript subjects
                               const selectedSubject = availableSubjects.find(
                                 (s) => s.id.toString() === selectedId
                               );
-                              
+
                               if (selectedSubject) {
-                                // Update only the specific subject in the specific transcript
-                                setAcademicTranscripts(prev => prev.map((t, tIdx) => 
-                                  tIdx === index ? {
-                                    ...t,
-                                    subjects: t.subjects.map((s, sIdx) => 
-                                      sIdx === subIndex ? {
-                                        ...s,
-                                        id: selectedSubject.id,
-                                        name: selectedSubject.name
-                                      } : s
-                                    )
-                                  } : t
-                                ));
+                                setAcademicTranscripts((prev) =>
+                                  prev.map((t, tIdx) =>
+                                    tIdx === index
+                                      ? {
+                                          ...t,
+                                          subjects: t.subjects.map((s, sIdx) =>
+                                            sIdx === subIndex
+                                              ? {
+                                                  ...s,
+                                                  id: selectedSubject.id,
+                                                  name: selectedSubject.name,
+                                                }
+                                              : s
+                                          ),
+                                        }
+                                      : t
+                                  )
+                                );
                               }
                             }}
-                            className="me-2 applycourse-academictranscript-select-width"
+                            className="w-100"
                           >
-                            <option value="" disabled>Select Subject</option>
+                            <option value="" disabled>
+                              Select Subject
+                            </option>
+                            {/* Include current subject in dropdown options if not found in availableSubjects */}
+                            {subject.id &&
+                              subject.name &&
+                              !availableSubjects.some(
+                                (s) => s.id.toString() === subject.id.toString()
+                              ) && (
+                                <option key={subject.id} value={subject.id}>
+                                  {subject.name}
+                                </option>
+                              )}
                             {availableSubjects
-                              .filter(s => 
-                                !transcript.subjects.some(
-                                  (existing, idx) => idx !== subIndex && existing.id === s.id
-                                )
+                              .filter(
+                                (s) =>
+                                  !transcript.subjects.some(
+                                    (existing, idx) =>
+                                      idx !== subIndex && existing.id === s.id
+                                  ) || s.id.toString() === subject.id.toString() // Always include current subject
                               )
                               .map((subjectOption) => (
-                                <option 
-                                  key={subjectOption.id} 
+                                <option
+                                  key={subjectOption.id}
                                   value={subjectOption.id}
                                 >
                                   {subjectOption.name}
                                 </option>
                               ))}
                           </Form.Select>
-                        ) : (
+                        </div>
+                      ) : (
+                        <div
+                          className="p-1 flex-grow-1"
+                          style={{ minWidth: "200px" }}
+                        >
                           <Form.Control
                             type="text"
-                            value={subject.name}
+                            value={subject.name || ""}
                             onChange={(e) =>
                               handleSubjectChange(
                                 index,
@@ -1448,18 +1739,24 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                                 e.target.value
                               )
                             }
-                            className="me-2 applycourse-academictranscript-select-width"
                             placeholder="Enter Subject Name"
                             style={{ fontSize: "0.9rem", fontWeight: "500" }}
                             required
+                            className="rounded-pill"
                           />
-                        )}
+                        </div>
+                      )}
 
+                      <div
+                        className="p-1 mt-2 mt-sm-0"
+                        style={{
+                          width: "calc(100% - 110px)",
+                          maxWidth: "180px",
+                        }}
+                      >
                         {transcript.id === 32 || transcript.id === 85 ? (
-                          // SPM grade selection
-                          <Form.Control
-                            as="select"
-                            value={subject.grade}
+                          <Form.Select
+                            value={subject.grade || ""}
                             onChange={(e) =>
                               handleSubjectChange(
                                 index,
@@ -1468,7 +1765,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                                 e.target.value
                               )
                             }
-                            className={`me-2 w-auto px-4 py-1 px-3 rounded-5  text-black border-1  ms-2`}
+                            className="text-black"
                             style={{
                               fontSize: "0.9rem",
                               fontWeight: "500",
@@ -1490,12 +1787,11 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                             <option value="E">E</option>
                             <option value="G">G</option>
                             <option value="TH">TH</option>
-                          </Form.Control>
+                          </Form.Select>
                         ) : (
-                          // Other transcripts grade input
                           <Form.Control
                             type="text"
-                            value={subject.grade}
+                            value={subject.grade || ""}
                             onChange={(e) =>
                               handleSubjectChange(
                                 index,
@@ -1504,84 +1800,62 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                                 e.target.value
                               )
                             }
-                            className="me-2 w-auto"
+                            style={{
+                              fontSize: "0.9rem",
+                              fontWeight: "500",
+                            }}
                             placeholder="Grade"
-                            style={{ fontSize: "0.9rem", fontWeight: "500" }}
                             required
+                            className="rounded-pill"
                           />
                         )}
-                        <div className="d-flex ms-auto">
-                          <Button
-                            variant="link"
-                            className="p-0 me-2"
-                            onClick={() => handleSaveSubject(index, subIndex)}
-                          >
-                            <Save size={15} color="green" />
-                          </Button>
-                          <Button
-                            variant="link"
-                            className="p-0"
-                            onClick={() => handleRemoveSubject(index, subIndex)}
-                          >
-                            <Trash2 size={15} color="grey" />
-                          </Button>
-                        </div>
+                      </div>
+
+                      {/* Show delete button in edit mode */}
+                      <div
+                        className="p-1 text-end mt-2 mt-sm-0 ms-auto"
+                        style={{ width: "40px" }}
+                      >
+                        <Button
+                          variant="link"
+                          className="p-0"
+                          onClick={() => handleRemoveSubject(index, subIndex)}
+                        >
+                          <Trash2 size={15} color="grey" />
+                        </Button>
                       </div>
                     </>
                   ) : (
+                    // View mode - show static text
                     <>
-                      <div className="applycourse-academictranscript-dflex align-items-center flex-grow-1">
-                        <AlignJustify
-                          size={15}
-                          className="me-2 ms-2"
-                          style={{ alignSelf: "center" }}
-                        />
+                      <div
+                        className="p-1 text-truncate flex-grow-1"
+                        style={{ maxWidth: "calc(100% - 170px)" }}
+                      >
                         <span
-                          className="me-2"
                           style={{
                             fontSize: "0.9rem",
                             fontWeight: "500",
-                            width: "275px",
-                            wordWrap: "break-word",
-                            overflowWrap: "break-word",
-                            wordBreak: "break-all",
-                            whiteSpace: "nowrap",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
                           }}
+                          className="text-truncate"
+                          title={subject.name} // Add title for tooltip on hover
                         >
                           {subject.name}
                         </span>
-                        <span
-                          style={{ fontSize: "0.9rem", fontWeight: "500" }}
-                          className={`ms-3 me-2 px-2 py-1 px-3 rounded-5 text-white bg-${getGradeColor(
-                            subject.grade
-                          )}`}
-                        >
-                          Grade: {subject.grade}
-                        </span>
-                        <div className="d-flex ms-auto">
-                          <Button
-                            variant="link"
-                            className="p-0 me-2"
-                            onClick={() =>
-                              handleSubjectChange(
-                                index,
-                                subIndex,
-                                "isEditing",
-                                true
-                              )
-                            }
+                      </div>
+                      <div
+                        className="p-1 text-center ms-auto"
+                        style={{ width: "120px" }}
+                      >
+                        <div className="d-flex justify-content-center">
+                          <span
+                            style={{ fontSize: "0.9rem", fontWeight: "500" }}
+                            className={`px-3 py-1 rounded-5 text-white ms-md-0 ms-4 bg-${getGradeColor(
+                              subject.grade
+                            )}`}
                           >
-                            <Edit size={15} color="grey" />
-                          </Button>
-                          <Button
-                            variant="link"
-                            className="p-0"
-                            onClick={() => handleRemoveSubject(index, subIndex)}
-                          >
-                            <Trash2 size={15} color="grey" />
-                          </Button>
+                            Grade: {subject.grade}
+                          </span>
                         </div>
                       </div>
                     </>
@@ -1593,7 +1867,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
           {transcript.id !== 32 && transcript.id != 85 && (
             <div className="px-4 mt-3">
               <Form.Group as={Row} className="mb-3">
-                <Form.Label column sm="2">
+                <Form.Label column sm="auto">
                   Program Name (Optional):
                 </Form.Label>
                 <Col sm="4">
@@ -1604,12 +1878,10 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                       handleProgramNameChange(index, e.target.value)
                     }
                     placeholder="Enter Program Name"
-                    className="ACAT-ProgramName-CGPA-Input"
+                    className="ACAT-ProgramName-CGPA-Input w-75 rounded-pill"
                   />
                 </Col>
-              </Form.Group>
-              <Form.Group as={Row} className="mb-3">
-                <Form.Label column sm="2">
+                <Form.Label column sm="auto">
                   CGPA:
                 </Form.Label>
                 <Col sm="4">
@@ -1621,27 +1893,94 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                     value={transcript.cgpa || ""}
                     onChange={(e) => handleCGPAChange(index, e.target.value)}
                     placeholder="Enter CGPA"
-                    className="ACAT-ProgramName-CGPA-Input"
+                    className="ACAT-ProgramName-CGPA-Input rounded-pill"
                   />
                 </Col>
               </Form.Group>
             </div>
           )}
+          <div className="upload-documents mt-3 pt-0 pt-sm-3 border border-4 border-top-3 border-bottom-0 border-start-0 border-end-0">
+            <div className="d-flex justify-content-between align-items-center px-4 mb-0 mb-md-4">
+              <h6 className="mb-0 align-self-center">Upload Documents :</h6>
+              {/* <div className="d-none d-sm-block bg-white bg-opacity-75 p-0 rounded-pill d-flex align-items-center">
+                <button
+                  className={`
+                    border-0 rounded-pill transition-all
+                    d-flex align-items-center justify-content-center overflow-hidden
+                    ${
+                      hoveredButton === `doc-add-${index}`
+                        ? "bg-primary text-white px-2"
+                        : "bg-transparent text-secondary hover-bg-light"
+                    }
+                  `}
+                  style={{
+                    height: "calc(28px + min(0.5vw, 4px))",
+                    width:
+                      hoveredButton === `doc-add-${index}`
+                        ? "auto"
+                        : "calc(28px + min(0.5vw, 4px))",
+                    minWidth: "calc(28px + min(0.5vw, 4px))",
+                    transition: "all 0.3s",
+                  }}
+                  onMouseEnter={() =>
+                    handleButtonInteraction(`doc-add-${index}`, true)
+                  }
+                  onMouseLeave={() =>
+                    handleButtonInteraction(`doc-add-${index}`, false)
+                  }
+                  onTouchStart={() =>
+                    handleButtonInteraction(`doc-add-${index}`, true)
+                  }
+                  onTouchEnd={() =>
+                    setTimeout(
+                      () => handleButtonInteraction(`doc-add-${index}`, false),
+                      1000
+                    )
+                  }
+                  onClick={() => handleAddDocument(index)}
+                  aria-label="Add Document"
+                >
+                  <Plus size={14} className="flex-shrink-0" />
+                  <span
+                    className="ms-1 fw-medium text-nowrap transition-all"
+                    style={{
+                      fontSize: "min(0.75rem, 3.5vw)",
+                      opacity: hoveredButton === `doc-add-${index}` ? 1 : 0,
+                      maxWidth:
+                        hoveredButton === `doc-add-${index}` ? "80px" : "0",
+                      overflow: "hidden",
+                      transition: "all 0.2s",
+                    }}
+                  >
+                    Add
+                  </span>
+                </button>
+              </div> */}
 
-          <div className="upload-documents mt-3 border border-4 border-top-3 border-bottom-0 border-start-0 border-end-0">
-            <div className="d-flex justify-content-between align-items-center px-4">
-              <h6 className="mb-0">Upload Documents</h6>
-              <Button
-                variant="link"
-                className="p-0 me-2"
-                onClick={() => handleAddDocument(index)}
-              >
-                <Plus size={18} color="grey" />
-              </Button>
+              {/* Mobile View */}
+              <div className="d-block d-sm-none">
+                <div className="d-flex justify-content-center bg-light rounded-pill">
+                  <Button
+                    variant="light"
+                    size="sm"
+                    className="text-secondary d-flex align-items-center rounded-pill border shadow-sm py-1 px-2"
+                    onClick={() => handleAddDocument(index)}
+                  >
+                    <div className="align-items-center">
+                      <Plus size={14} className="me-1" />
+                      Add
+                    </div>
+                  </Button>
+                </div>
+              </div>
             </div>
 
             {transcript.documents.map((doc, docIndex) => (
-              <div key={docIndex} className="px-4">
+              <div 
+                key={docIndex} 
+                className="px-4"
+                id={`document-${index}-${docIndex}`}
+              >
                 <div className="ACAT-DocumentUpload-Container rounded-3">
                   {doc.isEditing ? (
                     <>
@@ -1674,7 +2013,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                             <>
                               <Button
                                 variant="secondary"
-                                className="sac-upload-button"
+                                className="sac-upload-button px-5"
                                 onClick={() =>
                                   document
                                     .getElementById(
@@ -1683,10 +2022,6 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                                     .click()
                                 }
                               >
-                                <Upload
-                                  size={15}
-                                  className="me-2 upload-icon"
-                                />
                                 <span className="button-text">Upload File</span>
                               </Button>
                               <input
@@ -1808,8 +2143,8 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
               </div>
             ))}
             {transcript.documents.length === 0 && (
-              <div className="px-4 py-2 text-muted">
-                No documents added yet. Click the "+" icon to add a document.
+              <div className="px-4 py-2 text-muted text-center">
+                No documents added yet. Click the "<Upload size={14} className="flex-shrink-0" />" icon to add a document.
               </div>
             )}
           </div>
@@ -1819,7 +2154,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                 savingStates[index] === "success" ? "success" : "primary"
               }
               onClick={() => saveTranscript(index)}
-              className="sac-save-button "
+              className="sac-save-button px-5 rounded-pill"
             >
               {savingStates[index] === "loading" ? (
                 <>
