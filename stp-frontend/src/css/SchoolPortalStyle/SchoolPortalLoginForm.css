@@ -1,5 +1,4 @@
-
-  /*.container {
+/*.container {
     width: 100%;
     max-width: 500px;
     padding: 2rem;
@@ -7,144 +6,135 @@
     border-radius: 10px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
   } */
-  
 
-  .studypal-school-logo-div
-  {
-    background-image:url("../../assets/StudentPortalAssets/StudyPalLogo.svg");
-    background-size: 24vh 12vh;
-    background-repeat: no-repeat;
-    padding: 0;
-    margin: 0;
-    top: 0;
-    left:23rem;
-    width: 100rem;
-    height: 5.5rem;
-  }
+.studypal-school-logo-div {
+  background-image: url("../../assets/StudentPortalAssets/StudyPalLogo.svg");
+  background-size: 24vh 12vh;
+  background-repeat: no-repeat;
+  padding: 0;
+  margin: 0;
+  top: 0;
+  left: 23rem;
+  width: 100rem;
+  height: 5.5rem;
+}
 
+.custom-color-title {
+  color: #525252;
+}
 
-  .custom-color-title
-  {
-    color:#525252
-  }
-  
-  .phone-input-container {
-    display: flex;
-    width:100%;
-  }
+.phone-input-container {
+  display: flex;
+  width: 100%;
+}
+.react-tel-input {
+  width: 100%;
+  background-color: white;
+}
+
+.react-tel-input .form-control {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+@media (max-width: 767px) {
+  .phone-input-container,
   .react-tel-input {
-    width: 100%;
-    background-color: white;
+    max-width: 100%;
   }
-  
-  .react-tel-input .form-control {
-    width: 100% !important;
-    max-width: none !important;
-  }
-  
-  @media (max-width: 767px) {
-    .phone-input-container,
-    .react-tel-input {
-      max-width: 100%;
-    }
-  }
+}
 
-  .react-tel-input .country-list {
-    width: 300px;
-    max-height: 200px;
-    overflow-y: scroll;
-    background: #ffffff;
-    z-index: 1000;
-  }
-  
-  .react-tel-input .country-list::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
-    background-color: #F5F5F5;
-    border-radius: 10px;
-  }
-  
-  .react-tel-input .country-list::-webkit-scrollbar {
-    width: 8px;
-    background-color: #F5F5F5;
-  }
-  
-  .react-tel-input .country-list::-webkit-scrollbar-thumb {
-    border-radius: 10px;
-    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
-    background-color: #C6C6C6; /* You can change this color as needed */
-  }
-  
-  .react-tel-input .country-list .country {
-    display: flex;
-    align-items: center;
-    padding: 7px 10px;
-    
-  }
-  
-  .react-tel-input .country-list .country .flag {
-    margin-right: 10px;
-  }
-  
-  .react-tel-input .country-list .country-name {
-    color: black;
-    margin-right: auto;
-  }
-  
-  .react-tel-input .country-list .dial-code {
-    color: #6b6b6b;
-  }
-  .phone-input-container .form-control {
-    flex-grow: 1;
-    width:auto;
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-    padding-left: 50px ;
-  }
-  
-  .phone-input-container .flag-dropdown {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-  }
-  
-  .phone-input-container .selected-flag {
-    background-color: #f8f9fa;
-    border: 1px solid #ced4da;
-    border-right: none;
-    color: black;
+.react-tel-input .country-list {
+  width: 300px;
+  max-height: 200px;
+  overflow-y: scroll;
+  background: #ffffff;
+  z-index: 1000;
+}
 
-  }
-  
-  .phone-input-container .form-control::placeholder {
-    color: #6c757d;
-    opacity: 0.65;
-  }
+.react-tel-input .country-list::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+  background-color: #f5f5f5;
+  border-radius: 10px;
+}
 
-  .custom-checkbox .form-check-input:checked {
-    background-color: none;
-    border-color:#b71a18;
-    background-color: #b71a18;
-    box-shadow: none;
-  }
+.react-tel-input .country-list::-webkit-scrollbar {
+  width: 8px;
+  background-color: #f5f5f5;
+}
 
-  .custom-checkbox .form-check-input {
-    background-color: none;
-    border-color:#adb5bd;   
-    box-shadow: none;
-  }
+.react-tel-input .country-list::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+  background-color: #c6c6c6; /* You can change this color as needed */
+}
 
-  .custom-label 
-  {
-    color: #828282;
-    font-size:clamp(12px, 0.75rem + 0.1vw, 16px) ;
-  }
+.react-tel-input .country-list .country {
+  display: flex;
+  align-items: center;
+  padding: 7px 10px;
+}
 
-  .custom-checkbox 
-  {
-    font-size: clamp(12px, 0.75rem + 0.1vw, 16px);
-  }
-  
+.react-tel-input .country-list .country .flag {
+  margin-right: 10px;
+}
 
- .forgetpassword {
+.react-tel-input .country-list .country-name {
+  color: black;
+  margin-right: auto;
+}
+
+.react-tel-input .country-list .dial-code {
+  color: #6b6b6b;
+}
+.phone-input-container .form-control {
+  flex-grow: 1;
+  width: auto;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  padding-left: 50px;
+}
+
+.phone-input-container .flag-dropdown {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.phone-input-container .selected-flag {
+  background-color: #f8f9fa;
+  border: 1px solid #ced4da;
+  border-right: none;
+  color: black;
+}
+
+.phone-input-container .form-control::placeholder {
+  color: #6c757d;
+  opacity: 0.65;
+}
+
+.custom-checkbox .form-check-input:checked {
+  background-color: none;
+  border-color: #b71a18;
+  background-color: #b71a18;
+  box-shadow: none;
+}
+
+.custom-checkbox .form-check-input {
+  background-color: none;
+  border-color: #adb5bd;
+  box-shadow: none;
+}
+
+.custom-label {
+  color: #828282;
+  font-size: clamp(12px, 0.75rem + 0.1vw, 16px);
+}
+
+.custom-checkbox {
+  font-size: clamp(12px, 0.75rem + 0.1vw, 16px);
+}
+
+.forgetpassword {
   color: #b71a18;
   text-decoration: none;
   text-align: end;
@@ -155,7 +145,6 @@
   color: #b71a18;
   text-decoration: underline;
 }
-
 
 .social-btn {
   transition: all 0.3s ease;
@@ -170,7 +159,9 @@
   border-color: #3b5998;
 }
 
-.facebook-btn:hover, .facebook-btn:focus, .facebook-btn:active {
+.facebook-btn:hover,
+.facebook-btn:focus,
+.facebook-btn:active {
   background-color: #3b5998 !important;
   border-color: #3b5998 !important;
   color: white !important;
@@ -181,25 +172,25 @@
   border-color: #db4437;
 }
 
-.google-btn:hover, .google-btn:focus, .google-btn:active {
+.google-btn:hover,
+.google-btn:focus,
+.google-btn:active {
   background-color: #db4437 !important;
   border-color: #db4437 !important;
   color: white !important;
 }
 
-body, html {
+body,
+html {
   margin: 0;
   padding: 0;
   height: 100%;
   overflow-x: hidden;
 }
 
-
 .password-input-group {
   position: relative;
 }
-
-
 
 .password-input-group .input-group-text {
   background-color: transparent;
@@ -248,29 +239,32 @@ body, html {
   height: 100%;
 }
 
-.VIpgJd-ZVi9od-ORHb-OEVmcd
-{
-  display:none !important;
-  z-index:-1;
+.VIpgJd-ZVi9od-ORHb-OEVmcd {
+  display: none !important;
+  z-index: -1;
 }
 
 @media (max-width: 767px) {
   .h-50 {
     min-height: auto;
   }
-  
+
   .object-fit-cover {
     height: 300px; /* Adjust this value as needed */
   }
-  
+
   .d-flex.align-items-center {
     padding-top: 2rem;
     padding-bottom: 2rem;
   }
-  .forminputlogin{
+  .forminputlogin {
     border: #ced4da 1px solid !important;
     border-radius: 5px !important;
-    }
+  }
+  .forminputlogin::placeholder {
+    color: #AAAAAA; /* Lighter gray color for placeholder */
+    opacity: 0.7; /* Reduced opacity for lighter appearance */
+  }
 }
 
 /* Ensure the form content is scrollable on small screens */
@@ -280,14 +274,22 @@ body, html {
     overflow-y: auto;
     max-height: 100vh;
   }
-  .forminputlogin{
+  .forminputlogin {
     border: #ced4da 1px solid !important;
     border-radius: 5px !important;
-    }
+  }
+  .forminputlogin::placeholder {
+    color: #aaaaaa; /* Lighter gray color for placeholder */
+    opacity: 0.7; /* Reduced opacity for lighter appearance */
+  }
 }
-.forminputlogin{
-border: #ced4da 1px solid !important;
-border-radius: 5px !important;
+.forminputlogin {
+  border: #ced4da 1px solid !important;
+  border-radius: 5px !important;
+}
+.forminputlogin::placeholder {
+  color: #AAAAAA; /* Lighter gray color for placeholder */
+  opacity: 0.7; /* Reduced opacity for lighter appearance */
 }
 /* .input-group .form-control{
   border-left: 1px solid !important;

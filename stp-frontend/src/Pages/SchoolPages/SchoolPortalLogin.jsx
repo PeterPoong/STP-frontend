@@ -213,7 +213,7 @@ const SchoolPortalLogin = () => {
                     </InputGroup>
                   </Form.Group>
                   <Form.Group controlId="formBasicPassword" className="mb-3">
-                    <p className="text-start p-0 mb-0 custom-color-title-label small ">
+                    <p className="text-start ps-0 mb-0 custom-color-title-label small ">
                       Password
                     </p>
                     <InputGroup>
