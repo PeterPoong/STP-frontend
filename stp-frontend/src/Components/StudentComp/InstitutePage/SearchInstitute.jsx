@@ -27,6 +27,12 @@ import "swiper/swiper-bundle.css";
 import { Navigation, Autoplay } from "swiper/modules";
 import { debounce } from 'lodash';
 import { FixedSizeList as List } from 'react-window';
+import { dotWave, dotPulse } from 'ldrs'
+
+// Register the ldrs loader
+dotWave.register()
+dotPulse.register()
+
 const baseURL = import.meta.env.VITE_BASE_URL;
 const countriesURL = `${baseURL}api/student/countryList`;
 const filterURL = `${baseURL}api/student/listingFilterList`;
@@ -268,9 +274,11 @@ const SearchInstitute = () => {
         
         {filterLoading ? (
           <div className="d-flex justify-content-center my-3">
-            <Spinner animation="border" size="sm" role="status">
-              <span className="visually-hidden">Loading filters...</span>
-            </Spinner>
+            <l-dot-pulse
+              size="30"
+              speed="1.5" 
+              color="#b71a18" 
+            ></l-dot-pulse>
           </div>
         ) : !items || items.length === 0 ? (
           <p className="text-muted">No options available</p>
@@ -319,6 +327,7 @@ const SearchInstitute = () => {
     if (!selectedCountry) return;
 
     setLoading(true);
+    setError(null);
     try {
       const requestBody = {
         country: selectedCountry.id,
@@ -342,6 +351,8 @@ const SearchInstitute = () => {
         })
       };
 
+      console.log("Fetching institutes for page:", currentPage);
+      
       const response = await fetch(schoolListURL, {
         method: "POST",
         headers: {
@@ -361,13 +372,18 @@ const SearchInstitute = () => {
         }) : [];
 
         setInstitutes(sortedData);
-        setCurrentPage(result.current_page);
-        setTotalPages(result.last_page);
+        setCurrentPage(result.current_page || currentPage);
+        setTotalPages(result.last_page || 1);
         setResultCount(result.total || 0);
+        
+        console.log(`Loaded page ${result.current_page} of ${result.last_page}, with ${sortedData.length} institutes`);
+      } else {
+        console.error("API returned success:false", result);
+        setError("Failed to fetch institutes data");
       }
     } catch (error) {
       console.error("Error fetching institutes:", error);
-      setError(error.message);
+      setError(error.message || "An error occurred while fetching institutes");
     } finally {
       setLoading(false);
     }
@@ -492,65 +508,80 @@ const SearchInstitute = () => {
 
   // Update the pagination handling functions
   const handlePageChange = (pageNumber) => {
+    console.log("Changing page to:", pageNumber);
     setCurrentPage(pageNumber);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    scrollToTop();
   };
 
-  // Replace your current pagination JSX with this updated version
+  // Replace your current pagination rendering function with this updated version
   const renderPagination = () => {
     if (!institutes.length || totalPages <= 1) return null;
 
     return (
-      <div className="d-flex justify-content-end mt-4">
-        <Pagination>
-          <Pagination.Prev
-            onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-            disabled={currentPage === 1}
-          />
-          {/* Pages around current page */}
-          {Array.from({ length: totalPages }, (_, i) => i + 1)
-            .filter((page) => {
-              if (totalPages <= 5) return true;
-              return (
-                Math.abs(page - currentPage) <= 1 ||
-                page === 1 ||
-                page === totalPages
-              );
-            })
-            .map((page, index, array) => {
-              // Add ellipsis where there are gaps
-              if (index > 0 && page - array[index - 1] > 1) {
-                return (
-                  <React.Fragment key={`ellipsis-${page}`}>
-                    <Pagination.Ellipsis />
-                    <Pagination.Item
-                      active={page === currentPage}
-                      onClick={() => handlePageChange(page)}
-                    >
-                      {page}
-                    </Pagination.Item>
-                  </React.Fragment>
-                );
-              }
+      <Pagination className="pagination-custom">
+        <Pagination.Prev
+          onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+          disabled={currentPage === 1}
+        >
+          <span aria-hidden="true">&laquo;</span>
+        </Pagination.Prev>
+        
+        {/* First page */}
+        <Pagination.Item
+          active={1 === currentPage}
+          onClick={() => handlePageChange(1)}
+        >
+          1
+        </Pagination.Item>
+        
+        {/* Show dots if current page is more than 3 */}
+        {currentPage > 3 && <Pagination.Ellipsis />}
+        
+        {/* Pages around current page */}
+        {[...Array(totalPages)]
+          .map((_, index) => {
+            const pageNumber = index + 1;
+            // Only show pages around current page
+            if (
+              pageNumber !== 1 && // Skip first page as it's already shown
+              pageNumber !== totalPages && // Skip last page as it will be shown separately
+              pageNumber >= currentPage - 1 &&
+              pageNumber <= currentPage + 1
+            ) {
               return (
                 <Pagination.Item
-                  key={page}
-                  active={page === currentPage}
-                  onClick={() => handlePageChange(page)}
+                  key={pageNumber}
+                  active={pageNumber === currentPage}
+                  onClick={() => handlePageChange(pageNumber)}
                 >
-                  {page}
+                  {pageNumber}
                 </Pagination.Item>
               );
-            })}
-
-          <Pagination.Next
-            onClick={() =>
-              handlePageChange(Math.min(totalPages, currentPage + 1))
             }
-            disabled={currentPage === totalPages}
-          />
-        </Pagination>
-      </div>
+            return null;
+          })
+          .filter(Boolean)} {/* Remove null values */}
+        
+        {/* Show dots if there are more pages */}
+        {currentPage < totalPages - 2 && <Pagination.Ellipsis />}
+        
+        {/* Last page */}
+        {totalPages > 1 && (
+          <Pagination.Item
+            active={totalPages === currentPage}
+            onClick={() => handlePageChange(totalPages)}
+          >
+            {totalPages}
+          </Pagination.Item>
+        )}
+        
+        <Pagination.Next
+          onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+          disabled={currentPage === totalPages}
+        >
+          <span aria-hidden="true">&raquo;</span>
+        </Pagination.Next>
+      </Pagination>
     );
   };
 
@@ -1021,7 +1052,7 @@ const SearchInstitute = () => {
                   }}
                 >
                   {selectedInstitute
-                    ? selectedInstitute.core_metaName
+                    ? selectedInstitute.institute_name || selectedInstitute.core_metaName || selectedInstitute.name
                     : "University"}
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
@@ -1030,7 +1061,7 @@ const SearchInstitute = () => {
                       key={index}
                       onClick={() => setSelectedInstitute(institute)}
                     >
-                      {institute.core_metaName}
+                      {institute.institute_name || institute.core_metaName || institute.name}
                     </Dropdown.Item>
                   ))}
                 </Dropdown.Menu>
@@ -1064,15 +1095,13 @@ const SearchInstitute = () => {
             fetchInstitutes();
           }}
         >
-          <InputGroup className="mb-3 saerchinstitute-display-none">
-            <Form.Control
-              className="custom-placeholder searchinputborder"
-              style={{ height: "45px", marginTop: "9px" }}
-              placeholder="Search for Institutions, Country"
-              value={tempSearch}
-              onChange={handleSearchChange}
-            />
-          </InputGroup>
+          <Form.Control
+            className="custom-placeholder searchinputborder saerchinstitute-display-none"
+            style={{ height: "45px", marginTop: "9px" }}
+            placeholder="Search for Institutions, Country"
+            value={tempSearch}
+            onChange={handleSearchChange}
+          />
         </Form>
 
         <div className="institute-reset-display">
@@ -1083,30 +1112,28 @@ const SearchInstitute = () => {
             }}
             className="d-flex align-items-center gap-2"
           >
-            <InputGroup style={{ flex: 1 }}>
-              <Form.Control
-                className="custom-placeholder searchinputborder"
-                style={{ height: "45px", marginTop: "9px" }}
-                placeholder="Search for Institutions, Country"
-                value={tempSearch}
-                onChange={handleSearchChange}
-              />
-            </InputGroup>
+            <Form.Control
+              className="custom-placeholder searchinputborder"
+              style={{ height: "45px", marginTop: "9px" }}
+              placeholder="Search for Institutions, Country"
+              value={tempSearch}
+              onChange={handleSearchChange}
+            />
             
             {/* Mobile Filter Button */}
             <button
               onClick={() => setShowMobileFilters(!showMobileFilters)}
-              className="mobile-filter-button d-flex align-items-center"
-              style={{
-                height: "42px",
-                marginTop: "9px",
-                padding: "0 15px",
-                borderRadius: "5px"
-              }}
+              className="mobile-filter-button d-flex mt-3"
             >
-              <i className={`bi bi-funnel${countSelectedFilters() > 0 ? '-fill' : ''}`}></i>
+              <i
+                className={`bi bi-funnel${
+                  countSelectedFilters() > 0 ? "-fill" : ""
+                }`}
+              ></i>
               <span>Filter</span>
-              {countSelectedFilters() > 0 && <span className="ms-1">({countSelectedFilters()})</span>}
+              {countSelectedFilters() > 0 && (
+                <span className="ms-1">({countSelectedFilters()})</span>
+              )}
             </button>
           </Form>
         </div>
@@ -1240,9 +1267,10 @@ const SearchInstitute = () => {
 
               {loading ? (
                 <div className="text-center">
-                  <Spinner animation="border" role="status">
-                    <span className="visually-hidden">Loading...</span>
-                  </Spinner>
+                  <l-dot-wave 
+                    color="#b71a18"
+                  ></l-dot-wave>
+                  <span className="visually-hidden">Loading...</span>
                 </div>
               ) : error ? (
                 <div className="text-center text-danger">
@@ -1354,7 +1382,9 @@ const SearchInstitute = () => {
               {/* University Filter */}
               <Accordion.Item eventKey="1">
                 <Accordion.Header className="custom-accordion-header">
-                  {selectedInstitute ? selectedInstitute.core_metaName : "Select University"}
+                  {selectedInstitute 
+                    ? selectedInstitute.institute_name || selectedInstitute.core_metaName || selectedInstitute.name 
+                    : "Select University"}
                 </Accordion.Header>
                 <Accordion.Body>
                   {filterData.institueList.map((institute, index) => (
@@ -1363,7 +1393,7 @@ const SearchInstitute = () => {
                       type="radio"
                       name="university"
                       id={`institute-${institute.id}`}
-                      label={institute.core_metaName}
+                      label={institute.institute_name || institute.core_metaName || institute.name}
                       checked={selectedInstitute?.id === institute.id}
                       onChange={() => setSelectedInstitute(institute)}
                       className="mb-2"
@@ -1379,7 +1409,11 @@ const SearchInstitute = () => {
                   <Accordion.Body className="custom-accordion-body">
                     {filterLoading ? (
                       <div className="text-center py-2">
-                        <Spinner animation="border" size="sm" />
+                        <l-dot-pulse
+                          size="30"
+                          speed="1.5" 
+                          color="#b71a18" 
+                        ></l-dot-pulse>
                       </div>
                     ) : (
                       <Form.Group>
@@ -1413,7 +1447,11 @@ const SearchInstitute = () => {
                   <Accordion.Body className="custom-accordion-body">
                     {filterLoading ? (
                       <div className="text-center py-2">
-                        <Spinner animation="border" size="sm" />
+                        <l-dot-pulse
+                          size="30"
+                          speed="1.5" 
+                          color="#b71a18" 
+                        ></l-dot-pulse>
                       </div>
                     ) : (
                       <Form.Group>
@@ -1447,7 +1485,11 @@ const SearchInstitute = () => {
                   <Accordion.Body className="custom-accordion-body">
                     {filterLoading ? (
                       <div className="text-center py-2">
-                        <Spinner animation="border" size="sm" />
+                        <l-dot-pulse
+                          size="30"
+                          speed="1.5" 
+                          color="#b71a18" 
+                        ></l-dot-pulse>
                       </div>
                     ) : (
                       <Form.Group>
@@ -1481,7 +1523,11 @@ const SearchInstitute = () => {
                   <Accordion.Body className="custom-accordion-body">
                     {filterLoading ? (
                       <div className="text-center py-2">
-                        <Spinner animation="border" size="sm" />
+                        <l-dot-pulse
+                          size="30"
+                          speed="1.5" 
+                          color="#b71a18" 
+                        ></l-dot-pulse>
                       </div>
                     ) : (
                       <Form.Group>
@@ -1515,7 +1561,11 @@ const SearchInstitute = () => {
                   <Accordion.Body className="custom-accordion-body">
                     {filterLoading ? (
                       <div className="text-center py-2">
-                        <Spinner animation="border" size="sm" />
+                        <l-dot-pulse
+                          size="30"
+                          speed="1.5" 
+                          color="#b71a18" 
+                        ></l-dot-pulse>
                       </div>
                     ) : (
                       <Form.Group>
