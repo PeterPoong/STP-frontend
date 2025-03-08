@@ -720,7 +720,36 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
     }
   };
 
+  const [subjectErrors, setSubjectErrors] = useState({});
+
+  // Replace the existing function with this enhanced version
   const handleSaveSubject = (transcriptIndex, subjectIndex) => {
+    const subject = academicTranscripts[transcriptIndex].subjects[subjectIndex];
+    
+    // Validate that subject has a name and grade
+    if (!subject.name.trim()) {
+      setSubjectErrors(prev => ({
+        ...prev,
+        [`${transcriptIndex}-${subjectIndex}`]: "Subject name is required"
+      }));
+      return;
+    }
+    
+    if (!subject.grade) {
+      setSubjectErrors(prev => ({
+        ...prev,
+        [`${transcriptIndex}-${subjectIndex}`]: "Grade is required"
+      }));
+      return;
+    }
+    
+    // Clear any existing errors
+    setSubjectErrors(prev => {
+      const newErrors = {...prev};
+      delete newErrors[`${transcriptIndex}-${subjectIndex}`];
+      return newErrors;
+    });
+    
     const updatedTranscripts = academicTranscripts.map((transcript, i) =>
       i === transcriptIndex
         ? {
@@ -733,6 +762,58 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
     );
     setAcademicTranscripts(updatedTranscripts);
     setHasUnsavedChanges(true);
+  };
+
+  // Add this new validation function
+  const validateSubjects = (transcriptIndex) => {
+    const transcript = academicTranscripts[transcriptIndex];
+    let hasErrors = false;
+    const newErrors = {...subjectErrors};
+    
+    // Check each subject in editing mode
+    transcript.subjects.forEach((subject, subjectIndex) => {
+      if (subject.isEditing) {
+        if (!subject.name.trim()) {
+          newErrors[`${transcriptIndex}-${subjectIndex}`] = "Subject name is required";
+          hasErrors = true;
+        } else if (!subject.grade) {
+          newErrors[`${transcriptIndex}-${subjectIndex}`] = "Grade is required";
+          hasErrors = true;
+        } else {
+          delete newErrors[`${transcriptIndex}-${subjectIndex}`];
+        }
+      }
+    });
+    
+    setSubjectErrors(newErrors);
+    return !hasErrors;
+  };
+
+  // Modify the edit subjects button click handler
+  const handleEditSubjectsToggle = (transcriptIndex) => {
+    const updatedTranscripts = [...academicTranscripts];
+    const isCurrentlyEditing = updatedTranscripts[transcriptIndex].subjects.some((s) => s.isEditing);
+    
+    if (isCurrentlyEditing) {
+      // Validate all subjects before disabling edit mode
+      if (!validateSubjects(transcriptIndex)) {
+        // If validation fails, keep edit mode on
+        return;
+      }
+    }
+    
+    // Toggle editing state for all subjects in this transcript
+    updatedTranscripts[transcriptIndex].subjects = updatedTranscripts[transcriptIndex].subjects.map((subject) => ({
+      ...subject,
+      isEditing: !isCurrentlyEditing,
+    }));
+    
+    setAcademicTranscripts(updatedTranscripts);
+    
+    // If turning on edit mode, fetch available subjects for SPM transcripts
+    if (!isCurrentlyEditing && (updatedTranscripts[transcriptIndex].id === 32 || updatedTranscripts[transcriptIndex].id === 85)) {
+      fetchAvailableSubjects(updatedTranscripts[transcriptIndex].id, transcriptIndex);
+    }
   };
 
   const handleRemoveSubject = (transcriptIndex, subjectIndex) => {
@@ -1024,7 +1105,18 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
     setSavingStates((prev) => ({ ...prev, [transcriptIndex]: "loading" }));
     try {
       const transcript = academicTranscripts[transcriptIndex];
-      // console.log('Current transcript data:', transcript);
+      
+      // First validate any subjects in editing mode
+      if (transcript.subjects.some(subject => subject.isEditing)) {
+        if (!validateSubjects(transcriptIndex)) {
+          setSavingStates((prev) => ({ ...prev, [transcriptIndex]: "failed" }));
+          setTimeout(() => {
+            setSavingStates((prev) => ({ ...prev, [transcriptIndex]: null }));
+          }, 2000);
+          return;
+        }
+      }
+      
       // Check if the transcript is empty or if any required fields are missing
       const isTranscriptEmpty =
         transcript.subjects.length === 0 && transcript.documents.length === 0;
@@ -1036,9 +1128,10 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
 
       if (isTranscriptEmpty || isCGPAMissing || areSubjectsIncomplete) {
         setIsAcademicRemindPopupOpen(true);
+        setSavingStates((prev) => ({ ...prev, [transcriptIndex]: null }));
         return;
       }
-
+      
       // Proceed with saving if all checks pass
       const token =
         sessionStorage.getItem("token") || localStorage.getItem("token");
@@ -1606,30 +1699,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                   variant="secondary"
                   size="sm"
                   className="d-flex align-self-center py-2 py-md-2 rounded-pill me-0 me-md-3"
-                  onClick={() => {
-                    // Toggle editing state for all subjects in this transcript
-                    const updatedTranscripts = [...academicTranscripts];
-                    const isCurrentlyEditing = updatedTranscripts[
-                      index
-                    ].subjects.some((s) => s.isEditing);
-
-                    updatedTranscripts[index].subjects = updatedTranscripts[
-                      index
-                    ].subjects.map((subject) => ({
-                      ...subject,
-                      isEditing: !isCurrentlyEditing,
-                    }));
-
-                    setAcademicTranscripts(updatedTranscripts);
-
-                    // If turning on edit mode, fetch available subjects for SPM transcripts
-                    if (
-                      !isCurrentlyEditing &&
-                      (transcript.id === 32 || transcript.id === 85)
-                    ) {
-                      fetchAvailableSubjects(transcript.id, index);
-                    }
-                  }}
+                  onClick={() => handleEditSubjectsToggle(index)}
                 >
                   {academicTranscripts[index].subjects.some(
                     (s) => s.isEditing
@@ -1860,6 +1930,13 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                       </div>
                     </>
                   )}
+
+                  {/* Add error display for subjects */}
+                  {subject.isEditing && subjectErrors[`${index}-${subIndex}`] && (
+                    <div className="text-danger" style={{ fontSize: "0.825rem", width: "100%" }}>
+                      {subjectErrors[`${index}-${subIndex}`]}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -1878,7 +1955,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                       handleProgramNameChange(index, e.target.value)
                     }
                     placeholder="Enter Program Name"
-                    className="ACAT-ProgramName-CGPA-Input w-75 rounded-pill"
+                    className="ACAT-ProgramName-CGPA-Input w-100 rounded-pill"
                   />
                 </Col>
                 <Form.Label column sm="auto">
@@ -1958,12 +2035,12 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
               </div> */}
 
               {/* Mobile View */}
-              <div className="d-block d-sm-none">
+              {/* <div className="d-block d-sm-none">
                 <div className="d-flex justify-content-center bg-light rounded-pill">
                   <Button
                     variant="light"
                     size="sm"
-                    className="text-secondary d-flex align-items-center rounded-pill border shadow-sm py-1 px-2"
+                    className="text-secondary d-flex align-items-center rounded-pill py-1 px-2"
                     onClick={() => handleAddDocument(index)}
                   >
                     <div className="align-items-center">
@@ -1972,7 +2049,7 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
                     </div>
                   </Button>
                 </div>
-              </div>
+              </div> */}
             </div>
 
             {transcript.documents.map((doc, docIndex) => (
