@@ -1625,7 +1625,7 @@ const SearchCourse = () => {
                     }}
                   >
                     {selectedInstitute
-                      ? selectedInstitute.core_metaName
+                      ? selectedInstitute.institute_name || selectedInstitute.core_metaName || selectedInstitute.name
                       : "University"}
                   </Dropdown.Toggle>
                   <Dropdown.Menu>
@@ -1634,7 +1634,7 @@ const SearchCourse = () => {
                         key={index}
                         onClick={() => setSelectedInstitute(institute)}
                       >
-                        {institute.core_metaName}
+                        {institute.institute_name || institute.core_metaName || institute.name}
                       </Dropdown.Item>
                     ))}
                   </Dropdown.Menu>
@@ -1848,7 +1848,7 @@ const SearchCourse = () => {
               <Accordion.Item eventKey="1">
                 <Accordion.Header className="custom-accordion-header">
                   {selectedInstitute
-                    ? selectedInstitute.core_metaName
+                    ? selectedInstitute.institute_name || selectedInstitute.core_metaName || selectedInstitute.name
                     : "Select University"}
                 </Accordion.Header>
                 <Accordion.Body>
@@ -1858,7 +1858,7 @@ const SearchCourse = () => {
                       type="radio"
                       name="university"
                       id={`institute-${institute.id}`}
-                      label={institute.core_metaName}
+                      label={institute.institute_name || institute.core_metaName || institute.name}
                       checked={selectedInstitute?.id === institute.id}
                       onChange={() => setSelectedInstitute(institute)}
                       className="mb-2"
