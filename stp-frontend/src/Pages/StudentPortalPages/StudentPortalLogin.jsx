@@ -217,28 +217,27 @@ const StudentPortalLogin = () => {
   return (
     <Container fluid className="h-100">
       <Row className="h-50">
-      <div className="position-absolute top-0 ">
-            <button
-              className="p-1 login-back-button rounded-circle"
-              onClick={handleBackClick}
+        <div className="position-absolute top-0 ">
+          <button
+            className="p-1 login-back-button rounded-circle"
+            onClick={handleBackClick}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="1.5rem"
+              height="1.25rem"
+              fill="#FFFFFFFF"
+              class="bi bi-chevron-left"
+              viewBox="0 0 16 16"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="1.5rem"
-                height="1.25rem"
-                fill="#FFFFFFFF"
-                class="bi bi-chevron-left"
-                viewBox="0 0 16 16"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"
-                />
-              </svg>
-            </button>
-          </div>
+              <path
+                fill-rule="evenodd"
+                d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"
+              />
+            </svg>
+          </button>
+        </div>
         <Col md={6} className="p-0 h-100 d-md-flex d-none">
-         
           <img
             src={studentPortalLogin}
             alt="Student Portal Login"
@@ -301,7 +300,7 @@ const StudentPortalLogin = () => {
                       inputStyle={{ fontSize: "16px" }}
                     />
                   </Form.Group>
-                  <Form.Group controlId="formBasicPassword" className="mb-3">
+                  <Form.Group controlId="formBasicPassword" className="mb-2">
                     <p className="text-start p-0 mb-0 custom-color-title-label small ">
                       Password
                     </p>
@@ -312,7 +311,7 @@ const StudentPortalLogin = () => {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
-                        className="forminputlogin pe-5"
+                        className="forminputlogin ps-3"
                       />
                       <div
                         className="position-absolute top-50 end-0 translate-middle-y pe-3"
@@ -332,30 +331,30 @@ const StudentPortalLogin = () => {
                       </div>
                     </InputGroup>
                   </Form.Group>
-                  <Row className="mb-3">
-                    <Col>
+                  <div className="d-flex justify-content-between align-items-center py-1 mb-2">
+                    <div className="ms-2">
                       <Form.Check
                         type="checkbox"
                         id="rememberMe"
                         label="Remember me"
                         checked={rememberMe}
                         onChange={(e) => setRememberMe(e.target.checked)}
-                        className="custom-checkbox"
+                        className="custom-checkbox pt-1"
                       />
-                    </Col>
-                    <Col className="text-end">
+                    </div>
+                    <div className="me-2">
                       <Link
                         to="/studentPortalForgetPassword"
                         className="forgetpassword"
                       >
                         Forgot password?
                       </Link>
-                    </Col>
-                  </Row>
+                    </div>
+                  </div>
                   <Button
                     variant="danger"
                     type="submit"
-                    className="my-3 m-0 btn-login-signup-forgetpassword"
+                    className="my-3 m-0 rounded-4 btn-login-signup-forgetpassword"
                     style={{ width: "100%", height: "40px" }}
                   >
                     Login
