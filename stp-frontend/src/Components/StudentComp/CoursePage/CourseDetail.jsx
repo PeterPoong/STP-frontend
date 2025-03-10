@@ -115,7 +115,7 @@ const CourseDetail = () => {
   const [fetchedCountry, setFetchedCountry] = useState(null);
   const fetchExchangeRates = async (currencyCode) => {
     try {
-      console.log("Fetching exchange rates..."); // Log before fetching
+      // console.log("Fetching exchange rates..."); // Log before fetching
       const response = await fetch(
         `https://api.frankfurter.app/latest?from=MYR`
       );
@@ -204,7 +204,7 @@ const CourseDetail = () => {
           currencyInfo.currency_symbol
         );
 
-        console.log("Fetched country:", country);
+        // console.log("Fetched country:", country);
         // console.log("Currency Code:", currencyInfo.currency_code);
         // console.log("Currency Symbol:", currencyInfo.currency_symbol);
 
@@ -360,7 +360,7 @@ const CourseDetail = () => {
       } else {
         requestBody = {
           schoolName: formattedSchoolName,
-          courseName: formattedCourseName
+          courseName: formattedCourseName,
         };
       }
 
@@ -383,22 +383,34 @@ const CourseDetail = () => {
           sessionStorage.setItem("schoolId", selectedProgram.schoolID);
 
           // Immediately fetch featured courses
-          const featuredResponse = await fetch(`${baseURL}api/student/featuredCourseList`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ 
-              type: "thirdPage", 
-              courseId: selectedProgram.id 
-            }),
-          });
+          const featuredResponse = await fetch(
+            `${baseURL}api/student/featuredCourseList`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                type: "thirdPage",
+                courseId: selectedProgram.id,
+              }),
+            }
+          );
 
           const featuredData = await featuredResponse.json();
-          if (featuredData && featuredData.success && Array.isArray(featuredData.data)) {
+          console.log("featured", featuredData);
+
+          if (
+            featuredData &&
+            featuredData.success &&
+            Array.isArray(featuredData.data)
+          ) {
             setFeaturedCourses(featuredData.data);
           } else {
-            console.error("Invalid data structure for featured courses:", featuredData);
+            console.error(
+              "Invalid data structure for featured courses:",
+              featuredData
+            );
             setFeaturedCourses([]);
           }
         } else {
@@ -421,7 +433,7 @@ const CourseDetail = () => {
   useEffect(() => {
     const storedCourseId = sessionStorage.getItem("courseId");
     const courseID = storedCourseId || id;
-    
+
     fetchProgram(courseID);
     fetchAddsImage();
   }, [id]);
@@ -506,18 +518,35 @@ const CourseDetail = () => {
                   md={3}
                   className="d-flex justify-content-center justify-content-md-end"
                 >
-                  <Button
-                    style={{
-                      backgroundColor: "#B71A18",
-                      border: "none",
-                      width: "180px",
-                      height: "50px",
-                      marginBottom: "20px",
-                    }}
-                    onClick={() => handleApplyNow(program)} // Pass the correct ID
-                  >
-                    Apply Now
-                  </Button>
+                  {program.schoolCategory === "Local University" ? (
+                    <Button
+                      onClick={() =>
+                        (window.location.href = `mailto:${program.schoolEmail}`)
+                      }
+                      style={{
+                        backgroundColor: "#B71A18",
+                        border: "none",
+                        width: "180px",
+                        height: "50px",
+                        marginBottom: "20px",
+                      }} // Pass the correct ID
+                    >
+                      Contact Now
+                    </Button>
+                  ) : (
+                    <Button
+                      style={{
+                        backgroundColor: "#B71A18",
+                        border: "none",
+                        width: "180px",
+                        height: "50px",
+                        marginBottom: "20px",
+                      }}
+                      onClick={() => handleApplyNow(program)} // Pass the correct ID
+                    >
+                      Apply Now
+                    </Button>
+                  )}
                 </Col>
               </Row>
 
@@ -665,38 +694,47 @@ const CourseDetail = () => {
                     </Col>
                     <Col md={12}>
                       {!openDescription ? (
-                        <div id="collapse-description" className="student-coursedetil-wordbreak">
-                          <div 
-                            dangerouslySetInnerHTML={{ __html: program.description }} 
-                            style={{ 
-                                display: '-webkit-box',
-                                WebkitLineClamp: 2,
-                                WebkitBoxOrient: 'vertical',
-                                overflow: 'hidden' 
+                        <div
+                          id="collapse-description"
+                          className="student-coursedetil-wordbreak"
+                        >
+                          <div
+                            dangerouslySetInnerHTML={{
+                              __html: program.description,
+                            }}
+                            style={{
+                              display: "-webkit-box",
+                              WebkitLineClamp: 2,
+                              WebkitBoxOrient: "vertical",
+                              overflow: "hidden",
                             }}
                           />
                         </div>
                       ) : (
                         <Collapse in={openDescription}>
                           <div id="collapse-description">
-                            <div dangerouslySetInnerHTML={{ __html: program.description }} />
+                            <div
+                              dangerouslySetInnerHTML={{
+                                __html: program.description,
+                              }}
+                            />
                           </div>
                         </Collapse>
                       )}
                     </Col>
                     <Col className="d-flex justify-content-center">
-                      {program.description && 
-                       (program.description.length > 100) && (
-                        <Button
-                          onClick={() => setOpenDescription(!openDescription)}
-                          aria-controls="collapse-description"
-                          aria-expanded={openDescription}
-                          style={{ textDecoration: "none" }}
-                          variant="link"
-                        >
-                          {openDescription ? "View Less" : "View More"}
-                        </Button>
-                      )}
+                      {program.description &&
+                        program.description.length > 100 && (
+                          <Button
+                            onClick={() => setOpenDescription(!openDescription)}
+                            aria-controls="collapse-description"
+                            aria-expanded={openDescription}
+                            style={{ textDecoration: "none" }}
+                            variant="link"
+                          >
+                            {openDescription ? "View Less" : "View More"}
+                          </Button>
+                        )}
                     </Col>
                   </Row>
                 </div>
@@ -714,35 +752,47 @@ const CourseDetail = () => {
                     </Col>
                     <Col md={12}>
                       {!openRequirement ? (
-                        <div id="collapse-requirement" className="student-coursedetil-wordbreak">
-                          <div 
-                            dangerouslySetInnerHTML={{ __html: program.requirement }}
-                            style={{ display: '-webkit-box',
-                                      WebkitLineClamp: 2,
-                                      WebkitBoxOrient: 'vertical',
-                                      overflow: 'hidden' }}
+                        <div
+                          id="collapse-requirement"
+                          className="student-coursedetil-wordbreak"
+                        >
+                          <div
+                            dangerouslySetInnerHTML={{
+                              __html: program.requirement,
+                            }}
+                            style={{
+                              display: "-webkit-box",
+                              WebkitLineClamp: 2,
+                              WebkitBoxOrient: "vertical",
+                              overflow: "hidden",
+                            }}
                           />
                         </div>
                       ) : (
                         <Collapse in={openRequirement}>
                           <div id="collapse-requirement">
-                            <div dangerouslySetInnerHTML={{ __html: program.requirement }} />
+                            <div
+                              dangerouslySetInnerHTML={{
+                                __html: program.requirement,
+                              }}
+                            />
                           </div>
                         </Collapse>
                       )}
                     </Col>
                     <Col className="d-flex justify-content-center">
-                      {program.requirement && program.requirement.length > 300 && (
-                        <Button
-                          onClick={() => setOpenRequirement(!openRequirement)}
-                          aria-controls="collapse-requirement"
-                          aria-expanded={openRequirement}
-                          style={{ textDecoration: "none" }}
-                          variant="link"
-                        >
-                          {openRequirement ? "View Less" : "View More"}
-                        </Button>
-                      )}
+                      {program.requirement &&
+                        program.requirement.length > 300 && (
+                          <Button
+                            onClick={() => setOpenRequirement(!openRequirement)}
+                            aria-controls="collapse-requirement"
+                            aria-expanded={openRequirement}
+                            style={{ textDecoration: "none" }}
+                            variant="link"
+                          >
+                            {openRequirement ? "View Less" : "View More"}
+                          </Button>
+                        )}
                     </Col>
                   </Row>
                 </div>
@@ -837,17 +887,21 @@ const CourseDetail = () => {
                               maxHeight: openAboutInstitute ? "none" : "100px",
                               overflow: "hidden",
                               transition: "max-height 0.5s ease",
-                              position: 'relative'
+                              position: "relative",
                             }}
                           >
-                            <div 
-                              dangerouslySetInnerHTML={{ __html: program.schoolLongDescription }}
-                              style={{ 
-                                display: '-webkit-box',
-                                WebkitLineClamp: openAboutInstitute ? 'unset' : 3,
-                                WebkitBoxOrient: 'vertical',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis'
+                            <div
+                              dangerouslySetInnerHTML={{
+                                __html: program.schoolLongDescription,
+                              }}
+                              style={{
+                                display: "-webkit-box",
+                                WebkitLineClamp: openAboutInstitute
+                                  ? "unset"
+                                  : 3,
+                                WebkitBoxOrient: "vertical",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
                               }}
                             />
                           </div>
@@ -861,28 +915,29 @@ const CourseDetail = () => {
                           </Collapse>
                         </Col>
                         <Col className="d-flex justify-content-center">
-                          {program.schoolLongDescription && program.schoolLongDescription.length > 100 && (
-                            <Button
-                              style={{
-                                textDecoration: "none",
-                                color: "#007bff",
-                                background: "none",
-                                border: "none",
-                                marginTop: "20px",
-                                cursor: "pointer",
-                              }}
-                              onClick={() => {
-                                setOpenAboutInstitute(!openAboutInstitute);
-                                setTimeout(() => {
-                                  handleContentHeight();
-                                }, 0);
-                              }}
-                              aria-controls="collapse-about-institute"
-                              aria-expanded={openAboutInstitute}
-                            >
-                              {openAboutInstitute ? "View Less" : "View More"}
-                            </Button>
-                          )}
+                          {program.schoolLongDescription &&
+                            program.schoolLongDescription.length > 100 && (
+                              <Button
+                                style={{
+                                  textDecoration: "none",
+                                  color: "#007bff",
+                                  background: "none",
+                                  border: "none",
+                                  marginTop: "20px",
+                                  cursor: "pointer",
+                                }}
+                                onClick={() => {
+                                  setOpenAboutInstitute(!openAboutInstitute);
+                                  setTimeout(() => {
+                                    handleContentHeight();
+                                  }, 0);
+                                }}
+                                aria-controls="collapse-about-institute"
+                                aria-expanded={openAboutInstitute}
+                              >
+                                {openAboutInstitute ? "View Less" : "View More"}
+                              </Button>
+                            )}
                         </Col>
                       </Row>
                     </div>
@@ -1168,18 +1223,35 @@ const CourseDetail = () => {
               </div>
               {/* End of Image Swiper */}
               <div className="d-flex justify-content-center">
-                <Button
-                  style={{
-                    backgroundColor: "#B71A18",
-                    border: "none",
-                    width: "180px",
-                    height: "50px",
-                    marginTop: "2rem",
-                  }}
-                  onClick={() => handleApplyNow(program)} // Ensure you pass the correct course or program ID
-                >
-                  Apply Now
-                </Button>
+                {program.schoolCategory === "Local University" ? (
+                  <Button
+                    onClick={() =>
+                      (window.location.href = `mailto:${program.schoolEmail}`)
+                    }
+                    style={{
+                      backgroundColor: "#B71A18",
+                      border: "none",
+                      width: "180px",
+                      height: "50px",
+                      marginBottom: "20px",
+                    }} // Pass the correct ID
+                  >
+                    Contact Now
+                  </Button>
+                ) : (
+                  <Button
+                    style={{
+                      backgroundColor: "#B71A18",
+                      border: "none",
+                      width: "180px",
+                      height: "50px",
+                      marginBottom: "20px",
+                    }}
+                    onClick={() => handleApplyNow(program)} // Pass the correct ID
+                  >
+                    Apply Now
+                  </Button>
+                )}
                 {/* <Button
                   style={{
                     backgroundColor: "#FFA500",
@@ -1358,19 +1430,32 @@ const CourseDetail = () => {
                             >
                               {course.knowMoreText || "Know More"}
                             </button>
-                            <button
-                              className="button-apply-now"
-                              onClick={() =>
-                                handleApplyNow({
-                                  id: course.id || course.course_id,
-                                  logo: course.course_logo,
-                                  school: course.course_school,
-                                  course: course.course_name,
-                                })
-                              }
-                            >
-                              {course.applyNowText || "Apply Now"}
-                            </button>
+
+                            {course.school_category === "Local University" ? (
+                              <button
+                                onClick={() =>
+                                  (window.location.href = `mailto:${course.school_email}`)
+                                }
+                                className="button-apply-now"
+                                style={{ fontSize: "12px" }}
+                              >
+                                Contact Now
+                              </button>
+                            ) : (
+                              <button
+                                className="button-apply-now"
+                                onClick={() =>
+                                  handleApplyNow({
+                                    id: course.id || course.course_id,
+                                    logo: course.course_logo,
+                                    school: course.course_school,
+                                    course: course.course_name,
+                                  })
+                                }
+                              >
+                                {course.applyNowText || "Apply Now"}
+                              </button>
+                            )}
                           </div>
                         </div>
                       </SwiperSlide>
