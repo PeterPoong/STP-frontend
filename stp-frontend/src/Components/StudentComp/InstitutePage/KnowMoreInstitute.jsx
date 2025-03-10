@@ -42,6 +42,7 @@ const KnowMoreInstitute = () => {
 
   const [enlargedImageIndex, setEnlargedImageIndex] = useState(null);
   const { school_name } = useParams();
+  const [schoolCategory, setSchoolCategory] = useState();
   const formattedSchoolName = decodeURIComponent(school_name)
     .replace(/\((.*?)\)/g, (match) => match.replace(/-/g, "###HYPHEN###")) // Temporarily replace hyphens in parentheses
     .replace(/-/g, " ") // Replace remaining hyphens with spaces
@@ -49,8 +50,8 @@ const KnowMoreInstitute = () => {
     .replace(/\s+/g, " ") // Replace multiple spaces with single space
     .trim(); // Remove leading/trailing spaces
 
-  console.log("Original school name from URL:", school_name);
-  console.log("Formatted school name:", formattedSchoolName);
+  // console.log("Original school name from URL:", school_name);
+  // console.log("Formatted school name:", formattedSchoolName);
 
   const [showSwiperModal, setShowSwiperModal] = useState(false);
   const [activePhotoIndex, setActivePhotoIndex] = useState(0); // To track the clicked photo
@@ -115,7 +116,7 @@ const KnowMoreInstitute = () => {
   const [featuredInstitutes, setFeaturedInstitutes] = useState([]);
   const navigate = useNavigate();
   const storedSchoolId = sessionStorage.getItem("schoolId"); // Retrieve school_id from session
-  console.log("School Name from URL:", formattedSchoolName); // Log the school name
+  // console.log("School Name from URL:", formattedSchoolName); // Log the school name
   const handleContentHeight = () => {
     if (contentRef.current) {
       setContentHeight(contentRef.current.scrollHeight);
@@ -184,7 +185,7 @@ const KnowMoreInstitute = () => {
   const [fetchedCountry, setFetchedCountry] = useState(null);
   const fetchExchangeRates = async (currencyCode) => {
     try {
-      console.log("Fetching exchange rates..."); // Log before fetching
+      // console.log("Fetching exchange rates..."); // Log before fetching
       const response = await fetch(
         `https://api.frankfurter.app/latest?from=MYR`
       );
@@ -229,10 +230,10 @@ const KnowMoreInstitute = () => {
           currency_symbol: sessionStorage.getItem("userCurrencySymbol") || "RM",
         });
 
-        console.log(
-          "Detected currency change in sessionStorage:",
-          newCurrencyCode
-        );
+        // console.log(
+        //   "Detected currency change in sessionStorage:",
+        //   newCurrencyCode
+        // );
 
         fetchExchangeRates(newCurrencyCode);
         fetchSchool();
@@ -350,33 +351,45 @@ const KnowMoreInstitute = () => {
       });
 
       const data = await response.json();
-      
+
+      setSchoolCategory(data.data.category);
+
       if (data && data.success && data.data) {
         setInstitutes([data.data]);
         setCourses(data.data.courses);
-        
+
         // If we got school via name, store the ID
         if (formattedSchoolName && !storedSchoolId) {
           sessionStorage.setItem("schoolId", data.data.id);
         }
 
         // Immediately fetch featured institutes using the school ID
-        const featuredResponse = await fetch(`${baseURL}api/student/featuredInstituteList`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            type: "thirdPage",
-            schoolId: data.data.id,
-          }),
-        });
+        const featuredResponse = await fetch(
+          `${baseURL}api/student/featuredInstituteList`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              type: "thirdPage",
+              schoolId: data.data.id,
+            }),
+          }
+        );
 
         const featuredData = await featuredResponse.json();
-        if (featuredData && featuredData.success && Array.isArray(featuredData.data)) {
+        if (
+          featuredData &&
+          featuredData.success &&
+          Array.isArray(featuredData.data)
+        ) {
           setFeaturedInstitutes(featuredData.data);
         } else {
-          console.error("Invalid data structure for featured institutes: ", featuredData);
+          console.error(
+            "Invalid data structure for featured institutes: ",
+            featuredData
+          );
           setFeaturedInstitutes([]);
         }
       } else {
@@ -485,8 +498,11 @@ const KnowMoreInstitute = () => {
 
   const countWords = (html) => {
     if (!html) return 0;
-    const text = html.replace(/<[^>]+>/g, ' '); // Remove HTML tags
-    return text.trim().split(/\s+/).filter(word => word).length;
+    const text = html.replace(/<[^>]+>/g, " "); // Remove HTML tags
+    return text
+      .trim()
+      .split(/\s+/)
+      .filter((word) => word).length;
   };
 
   return (
@@ -536,6 +552,7 @@ const KnowMoreInstitute = () => {
                     }}
                     className="institute-name-container"
                   >
+                    <p>{schoolCategory}</p>
                     <h4
                       className="institute-name"
                       style={{
@@ -596,10 +613,11 @@ const KnowMoreInstitute = () => {
               <div className="image-gallery" style={{ marginTop: "20px" }}>
                 {institutes.map((institute) => {
                   // Get photos array or use default - ensure proper fallback
-                  const photos = institute.school_photo?.length > 0 
-                    ? institute.school_photo 
-                    : [{ id: "default", schoolMedia_location: null }];
-                    
+                  const photos =
+                    institute.school_photo?.length > 0
+                      ? institute.school_photo
+                      : [{ id: "default", schoolMedia_location: null }];
+
                   return photos.slice(0, 5).map((photo, index) => (
                     <div
                       key={`${institute.id}-${photo.id}`}
@@ -889,28 +907,33 @@ const KnowMoreInstitute = () => {
                         id="collapse-course-overview"
                         className="student-knowmoreinsti-wordbreak"
                         style={{
-                          overflow: 'hidden',
-                          display: '-webkit-box',
-                          WebkitLineClamp: open ? 'unset' : 3,
-                          WebkitBoxOrient: 'vertical',
-                          textOverflow: 'ellipsis'
+                          overflow: "hidden",
+                          display: "-webkit-box",
+                          WebkitLineClamp: open ? "unset" : 3,
+                          WebkitBoxOrient: "vertical",
+                          textOverflow: "ellipsis",
                         }}
                       >
-                        <div dangerouslySetInnerHTML={{ __html: institute.short_description }} />
+                        <div
+                          dangerouslySetInnerHTML={{
+                            __html: institute.short_description,
+                          }}
+                        />
                       </div>
                     </Col>
                     <Col className="d-flex justify-content-center">
-                      {institute.short_description && countWords(institute.short_description) > 100 && (
-                        <Button
-                          style={{ textDecoration: "none" }}
-                          variant="link"
-                          onClick={() => setOpen(!open)}
-                          aria-controls="collapse-course-overview"
-                          aria-expanded={open}
-                        >
-                          {open ? "View Less" : "View More"}
-                        </Button>
-                      )}
+                      {institute.short_description &&
+                        countWords(institute.short_description) > 100 && (
+                          <Button
+                            style={{ textDecoration: "none" }}
+                            variant="link"
+                            onClick={() => setOpen(!open)}
+                            aria-controls="collapse-course-overview"
+                            aria-expanded={open}
+                          >
+                            {open ? "View Less" : "View More"}
+                          </Button>
+                        )}
                     </Col>
                   </Row>
                 </div>
@@ -1144,27 +1167,31 @@ const KnowMoreInstitute = () => {
                             ref={contentRef}
                             style={{
                               zIndex: 1,
-                              maxHeight: openAbout ? `${contentRef.current?.scrollHeight}px` : "100px",
+                              maxHeight: openAbout
+                                ? `${contentRef.current?.scrollHeight}px`
+                                : "100px",
                               overflow: "hidden",
                               transition: "max-height 0.5s ease",
                             }}
                           >
-                            <div 
-                              className="truncate-text" 
-                              style={{ 
-                                display: '-webkit-box',
-                                WebkitLineClamp: openAbout ? 'unset' : 3,
-                                WebkitBoxOrient: 'vertical',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis'
+                            <div
+                              className="truncate-text"
+                              style={{
+                                display: "-webkit-box",
+                                WebkitLineClamp: openAbout ? "unset" : 3,
+                                WebkitBoxOrient: "vertical",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
                               }}
                             >
-                              <div 
-                                dangerouslySetInnerHTML={{ __html: institute.long_description }} 
-                                style={{ 
-                                  display: 'inline', // Makes nested elements inline
-                                  lineClamp: 3 
-                                }} 
+                              <div
+                                dangerouslySetInnerHTML={{
+                                  __html: institute.long_description,
+                                }}
+                                style={{
+                                  display: "inline", // Makes nested elements inline
+                                  lineClamp: 3,
+                                }}
                               />
                             </div>
                           </div>
@@ -1184,7 +1211,9 @@ const KnowMoreInstitute = () => {
                                 setOpenAbout(!openAbout);
                                 if (!openAbout) {
                                   setTimeout(() => {
-                                    setContentHeight(contentRef.current?.scrollHeight);
+                                    setContentHeight(
+                                      contentRef.current?.scrollHeight
+                                    );
                                   }, 50);
                                 }
                               }}
@@ -1337,13 +1366,16 @@ const KnowMoreInstitute = () => {
                                             display: "flex",
                                             flexWrap: "nowrap",
                                             width: "100%",
-                                            alignItems: "center"
+                                            alignItems: "center",
                                           }}
                                           className="knowmoreinstitute-dflex-center"
                                         >
                                           <i
                                             className="bi bi-calendar2-week"
-                                            style={{ marginRight: "10px", flexShrink: 0 }}
+                                            style={{
+                                              marginRight: "10px",
+                                              flexShrink: 0,
+                                            }}
                                           ></i>
                                           <p
                                             style={{
@@ -1354,12 +1386,14 @@ const KnowMoreInstitute = () => {
                                               overflowWrap: "break-word",
                                               display: "inline-block",
                                               flex: 1,
-                                              minWidth: 0
+                                              minWidth: 0,
                                             }}
                                           >
                                             {Array.isArray(course.course_intake)
                                               ? course.course_intake
-                                                  .map((intake) => intake.trim())
+                                                  .map((intake) =>
+                                                    intake.trim()
+                                                  )
                                                   .join(", ")
                                               : course.course_intake}
                                           </p>
@@ -1386,54 +1420,86 @@ const KnowMoreInstitute = () => {
                                   >
                                     estimate fee<br></br>
                                     <p style={{ fontSize: "16px" }}>
-                                      {console.log("Fetched Country:", fetchedCountry)}
-                                      {console.log("Institute Country Code:", institute.country_code)}
-                                      {console.log("Are they equal?:", fetchedCountry?.toUpperCase() === institute.country_code?.toUpperCase())}
-                                      
-                                      {fetchedCountry?.toUpperCase() === institute.country_code?.toUpperCase() ? (
+                                      {/* {console.log(
+                                        "Fetched Country:",
+                                        fetchedCountry
+                                      )}
+                                      {console.log(
+                                        "Institute Country Code:",
+                                        institute.country_code
+                                      )}
+                                      {console.log(
+                                        "Are they equal?:",
+                                        fetchedCountry?.toUpperCase() ===
+                                          institute.country_code?.toUpperCase()
+                                      )} */}
+
+                                      {fetchedCountry?.toUpperCase() ===
+                                      institute.country_code?.toUpperCase() ? (
                                         course.course_cost === "0" ? (
                                           "N/A"
                                         ) : (
                                           <>
                                             <strong>
-                                              {sessionStorage.getItem("userCurrencySymbol") || "RM"}
+                                              {sessionStorage.getItem(
+                                                "userCurrencySymbol"
+                                              ) || "RM"}
                                             </strong>{" "}
-                                            {convertToFetchedCurrency(course.course_cost).replace(/^.*?(\d+.*)/, "$1")}
+                                            {convertToFetchedCurrency(
+                                              course.course_cost
+                                            ).replace(/^.*?(\d+.*)/, "$1")}
                                           </>
                                         )
-                                      ) : (
-                                        course.international_cost === "0" ? (
-                                          course.course_cost === "0" ? (
-                                            "N/A"
-                                          ) : (
-                                            <>
-                                              <strong>
-                                                {sessionStorage.getItem("userCurrencySymbol") || "RM"}
-                                              </strong>{" "}
-                                              {convertToFetchedCurrency(course.course_cost).replace(/^.*?(\d+.*)/, "$1")}
-                                            </>
-                                          )
+                                      ) : course.international_cost === "0" ? (
+                                        course.course_cost === "0" ? (
+                                          "N/A"
                                         ) : (
                                           <>
                                             <strong>
-                                              {sessionStorage.getItem("userCurrencySymbol") || "RM"}
+                                              {sessionStorage.getItem(
+                                                "userCurrencySymbol"
+                                              ) || "RM"}
                                             </strong>{" "}
-                                            {convertToFetchedCurrency(course.international_cost).replace(/^.*?(\d+.*)/, "$1")}
+                                            {convertToFetchedCurrency(
+                                              course.course_cost
+                                            ).replace(/^.*?(\d+.*)/, "$1")}
                                           </>
                                         )
+                                      ) : (
+                                        <>
+                                          <strong>
+                                            {sessionStorage.getItem(
+                                              "userCurrencySymbol"
+                                            ) || "RM"}
+                                          </strong>{" "}
+                                          {convertToFetchedCurrency(
+                                            course.international_cost
+                                          ).replace(/^.*?(\d+.*)/, "$1")}
+                                        </>
                                       )}
                                     </p>
                                   </p>
                                 </div>
                                 <div className="apply-button mt-3">
-                                  <button
-                                    className="featured"
-                                    onClick={() =>
-                                      handleApplyNow(course, institute)
-                                    }
-                                  >
-                                    Apply Now
-                                  </button>
+                                  {institute.category === "Local University" ? (
+                                    <button
+                                      onClick={() =>
+                                        (window.location.href = `mailto:${institute.school_email}`)
+                                      }
+                                      className="featured coursepage-applybutton"
+                                    >
+                                      Contact Now
+                                    </button>
+                                  ) : (
+                                    <button
+                                      className="featured"
+                                      onClick={() =>
+                                        handleApplyNow(course, institute)
+                                      }
+                                    >
+                                      Apply Now
+                                    </button>
+                                  )}
                                 </div>
                               </div>
                             </div>
