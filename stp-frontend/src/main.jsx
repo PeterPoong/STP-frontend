@@ -65,6 +65,7 @@ import AdminEditQuestion from "./Pages/AdminPages/AdminEditQuestion";
 import AdminRiasec from "./Pages/AdminPages/AdminRiasec";
 import AdminAddRiasec from "./Pages/AdminPages/AdminAddRiasec";
 import AdminEditRiasec from "./Pages/AdminPages/AdminEditRiasec";
+import ApplicantProfile from "./Pages/AdminPages/ApplicantProfile";
 
 //StudentPortal Page
 import StudentPortalLogin from "./Pages/StudentPortalPages/StudentPortalLogin";
@@ -486,6 +487,14 @@ const router = createBrowserRouter([
     element:  (
       <ProtectedAdminRoute>
         <AdminEditRiasec />,
+      </ProtectedAdminRoute>
+    ),
+  },
+  {
+    path: "/applicantProfile",
+    element:  (
+      <ProtectedAdminRoute>
+        <ApplicantProfile />,
       </ProtectedAdminRoute>
     ),
   },

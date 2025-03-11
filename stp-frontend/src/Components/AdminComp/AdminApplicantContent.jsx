@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Table, Button, Modal, Form } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit } from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faUser } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import { MDBSwitch } from 'mdb-react-ui-kit';
 import CircleDotLoader from './CircleDotLoader';
@@ -130,6 +130,11 @@ const AdminApplicantContent = () => {
         sessionStorage.setItem('applicantId', id); // Store package ID in session storage
         navigate(`/adminEditApplicant`); // Navigate to the edit page
     };
+    const handleProfile = (id) => {
+        // console.log(`Edit applicant with ID: ${id}`); // Log the ID being passed
+        sessionStorage.setItem('applicantId', id); // Store package ID in session storage
+        navigate(`/applicantProfile`); // Navigate to the edit page
+    };
     const confirmAction = async () => {
         if (!targetApplicant) return;
 
@@ -223,6 +228,7 @@ const AdminApplicantContent = () => {
                 Status {sortColumn === "form_status" && (sortDirection === "asc" ? "↑" : "↓")}
             </th>
             <th>Action</th>
+            <th>Profile</th>
         </tr>
     );
 
@@ -274,6 +280,18 @@ const AdminApplicantContent = () => {
                             />
                         </>
                     )}
+                </div>
+            </td>
+            <td>
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                   
+                            <FontAwesomeIcon
+                                className="icon-color-edit"
+                                title="View Profile"
+                                icon={faUser}
+                                style={{ marginRight: '8px', color: '#691ED2', cursor: 'pointer' }}
+                                onClick={() => handleProfile(Applicant.id)}
+                            />
                 </div>
             </td>
         </tr>
