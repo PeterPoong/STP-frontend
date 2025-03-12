@@ -19,6 +19,11 @@ import {
     faPaperclip,
     faStar,
     faBook,
+    faTrophy,
+    faUsers,
+    faMedal,
+    faFile,
+    faCertificate
   } from "@fortawesome/free-solid-svg-icons";
 import "../../css/StudentPortalStyles/StudentApplyCourse.css"
 import "../../css/SchoolPortalStyle/ApplicantViewSummary.css"
@@ -132,7 +137,10 @@ const ApplicantProfileContent = () => {
                     media_diploma:applicantDetails.media_diploma,
                     media_alevel:applicantDetails.media_alevel,
                     media_olevel:applicantDetails.media_olevel,
-                    media_foundation:applicantDetails.media_foundation
+                    media_foundation:applicantDetails.media_foundation,
+                    achievement:applicantDetails.achievement,
+                    cocurriculum:applicantDetails.cocurriculum,
+                    others:applicantDetails.others
                 });
 
                 // Fetch courses for the existing schoolID
@@ -503,16 +511,28 @@ const ApplicantProfileContent = () => {
             {/* Tab Navigation */}
             <div className="tab-navigation">
                 <button 
-                    className={`tab-button ${activeTab === 'studentInfo' ? 'active' : ''}`} 
+                    className={`custom-tab-button ${activeTab === 'studentInfo' ? 'active' : ''}`} 
                     onClick={() => setActiveTab('studentInfo')}
                 >
                     Student Info
                 </button>
                 <button 
-                    className={`tab-button ${activeTab === 'relatedDocuments' ? 'active' : ''}`} 
+                    className={`custom-tab-button ${activeTab === 'relatedDocuments' ? 'active' : ''}`} 
                     onClick={() => setActiveTab('relatedDocuments')}
                 >
                     Academic
+                </button>
+                <button 
+                    className={`custom-tab-button ${activeTab === 'achievements' ? 'active' : ''}`} 
+                    onClick={() => setActiveTab('achievements')}
+                >
+                    Achievement and Co-curriculum
+                </button>
+                <button 
+                    className={`custom-tab-button ${activeTab === 'otherDocuments' ? 'active' : ''}`} 
+                    onClick={() => setActiveTab('otherDocuments')}
+                >
+                    Other Documents
                 </button>
             </div>
 
@@ -634,9 +654,8 @@ const ApplicantProfileContent = () => {
                                { key: "foundation", title: "Foundation Results", icon: faUniversity },
                                { key: "diploma", title: "Diploma Results", icon: faUniversity },
                              ].map(({ key, title, icon }) => (
-                               formData[key] &&
-                               formData[key].length > 0 && (
-                                 <div className="list-group-item" key={key}>
+                                formData[key] && formData[key].length > 0 ? (
+                                 <div className="list-group-item shadow-lg p-4 rounded-5 mb-2" key={key}>
                                    <h4 style={{ color: "#800000" }}>
                                      <FontAwesomeIcon icon={icon} style={{ color: "#800000" }} /> {title}
                                    </h4>
@@ -653,7 +672,7 @@ const ApplicantProfileContent = () => {
                      
                                    {/* Subjects in a Table */}
                                    <div className="table-responsive">
-                                     <table className="table table-bordered">
+                                     <table className="table table-rounded-bordered">
                                        <thead className="table-light">
                                          <tr>
                                            <th>Subject</th>
@@ -685,11 +704,158 @@ const ApplicantProfileContent = () => {
                                        </a>
                                      ))}
                                  </div>
-                               )
+                                   ) : null // Skip rendering if no data
                              ))}
+                             {/* Check if all categories have no data */}
+                             {[
+                               "spm", "spm_trial", "alevel", "olevel", "foundation", "diploma"
+                             ].every(key => !formData[key] || formData[key].length === 0) && (
+                               <div className="list-group-item">
+                                 <p>No Data Available for all results</p>
+                               </div>
+                             )}
                            </div>
                          </div>
                     )}
+                     {activeTab === 'achievements' && (
+                        <div className="container mt-4">
+                            <h2 className="mb-4 text-danger">
+                            <FontAwesomeIcon icon={faFileAlt} style={{ color: "#800000" }} /> Achievement and Co-curriculum
+                            </h2>
+
+                            <div className="list-group">
+                            {/* Achievements Section */}
+                            {formData.achievement && formData.achievement.length > 0 ? (
+                                <div className="list-group-item p-4 shadow-lg rounded border p-4 rounded-5">
+                                <h4 className="mb-3 text-uppercase" style={{ color: "#800000", fontWeight: "bold" }}>
+                                    <FontAwesomeIcon icon={faStar} style={{ color: "#800000" }} /> Achievements
+                                </h4>
+
+                                <div className="row">
+                                    {formData.achievement.map((achievement, index) => (
+                                    <div key={index} className="col-md-6 mb-4">
+                                        <div className="card border-0 shadow-sm">
+                                        <div className="card-body">
+                                            <h5 className="card-title text-primary">
+                                            <FontAwesomeIcon icon={faTrophy} className="me-2 text-warning" />
+                                            {achievement.achievement_name}
+                                            </h5>
+                                            <p className="mb-2">
+                                            <strong>🏅 Title Obtained:</strong> <span className="text-dark">{achievement.title_obtained}</span>
+                                            </p>
+                                            <p className="mb-3">
+                                            <strong>🏛 Awarded By:</strong> <span className="text-muted">{achievement.awarded_by}</span>
+                                            </p>
+
+                                            {achievement.achievement_media && (
+                                            <a
+                                                className="btn btn-sm btn-outline-primary"
+                                                href={`${import.meta.env.VITE_BASE_URL}storage/${achievement.achievement_media}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                            >
+                                                <FontAwesomeIcon icon={faPaperclip} className="me-1" /> View Media
+                                            </a>
+                                            )}
+                                        </div>
+                                        </div>
+                                    </div>
+                                    ))}
+                                </div>
+                                </div>
+                            ) : (
+                                <div className="list-group-item">
+                                    <p>No Data Available for Achievements</p>
+                                </div>
+                            )}
+
+                            {/* Co-Curriculum Section */}
+                            {formData.cocurriculum && formData.cocurriculum.length > 0 ? (
+                                <div className="list-group-item p-4 shadow-lg rounded p-4 rounded-5 border mt-4 mb-2">
+                                <h4 className="mb-3 text-uppercase" style={{ color: "#800000", fontWeight: "bold" }}>
+                                    <FontAwesomeIcon icon={faUsers} style={{ color: "#800000" }} /> Co-Curriculum Activities
+                                </h4>
+
+                                <div className="row">
+                                    {formData.cocurriculum.map((activity, index) => (
+                                    <div key={index} className="col-md-6 mb-4">
+                                        <div className="card border-0 shadow-sm">
+                                        <div className="card-body">
+                                            <h5 className="card-title text-primary">
+                                            <FontAwesomeIcon icon={faMedal} className="me-2 text-success" />
+                                            {activity.club_name}
+                                            </h5>
+                                            <p className="mb-2">
+                                            <strong>🎖 Position:</strong> <span className="text-dark">{activity.student_position}</span>
+                                            </p>
+                                            <p className="mb-2">
+                                            <strong>📍 Location:</strong> <span className="text-muted">{activity.location}</span>
+                                            </p>
+                                            <p className="mb-3">
+                                            <strong>📅 Year:</strong> <span className="text-dark">{activity.year}</span>
+                                            </p>
+                                        </div>
+                                        </div>
+                                    </div>
+                                    ))}
+                                </div>
+                                </div>
+                            ) : (
+                                <div className="list-group-item mt-4">
+                                    <p>No Data Available for Co-Curriculum Activities</p>
+                                </div>
+                            )}
+                            </div>
+                        </div>
+                        )}
+
+                        {activeTab === 'otherDocuments' && (
+                        <div className="container mt-4">
+                            <h2 className="mb-4 text-danger">
+                            <FontAwesomeIcon icon={faFileAlt} style={{ color: "#800000" }} /> Others
+                            </h2>
+
+                            {/* Others Section */}
+                            {formData.others && formData.others.length > 0 ? (
+                            <div className="list-group-item p-4 shadow-lg rounded border mb-2 p-4 rounded-5">
+                                <h4 className="mb-3 text-uppercase" style={{ color: "#800000", fontWeight: "bold" }}>
+                                <FontAwesomeIcon icon={faFile} style={{ color: "#800000" }} /> Other Certificates
+                                </h4>
+
+                                <div className="row">
+                                {formData.others.map((document, index) => (
+                                    <div key={index} className="col-md-6 mb-4">
+                                    <div className="card border-0 shadow-sm">
+                                        <div className="card-body">
+                                        <h5 className="card-title text-primary">
+                                            <FontAwesomeIcon icon={faCertificate} className="me-2 text-success" />
+                                            {document.certificate_name}
+                                        </h5>
+
+                                        {document.certificate_media && (
+                                            <a
+                                            className="btn btn-sm btn-outline-primary mt-2"
+                                            href={`${import.meta.env.VITE_BASE_URL}storage/${document.certificate_media}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            >
+                                            <FontAwesomeIcon icon={faPaperclip} className="me-1" /> View Certificate
+                                            </a>
+                                        )}
+                                        </div>
+                                    </div>
+                                    </div>
+                                ))}
+                                </div>
+                            </div>
+                            ) : (
+                                <div className="list-group-item">
+                                    <p>No Data Available</p>
+                                </div>
+                            )}
+                        </div>
+                        )}
+
                 </div>
             )}
         </Container>

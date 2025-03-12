@@ -3,7 +3,17 @@
 * {
     font-family: 'Ubuntu', sans-serif;
 }
+.custom-tab-button {
+  color: #FFFF; /* Default color for inactive tabs */
+  text-decoration: none; /* Remove underline for inactive tabs */
+  padding: 10px; /* Add some padding for better spacing */
+}
 
+.custom-tab-button.active {
+  color: #000; /* Maroon color for active tab */
+  text-decoration: underline; /* Underline for active tab */
+  background-color: transparent;
+}
 .admin-add-school-container {
     width: 952px;
     height: auto;
