@@ -319,7 +319,7 @@ const AdminFeaturedContent = () => {
 
     const handleReceiptClick = (transactionProof) => {
         if (transactionProof) {
-            const fullPath = `${import.meta.env.VITE_BASE_URL}storage/${transactionProof}`;
+            const fullPath = `${import.meta.env.VITE_BASE_URL}storage/transactionProof/${transactionProof}`;
             setSelectedReceipt(fullPath);
             setShowReceiptModal(true);
         }
