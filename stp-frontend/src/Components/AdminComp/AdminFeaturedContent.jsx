@@ -317,10 +317,14 @@ const AdminFeaturedContent = () => {
         }
     };
 
-    const handleReceiptClick = (receiptPath) => {
-        setSelectedReceipt(`${import.meta.env.VITE_BASE_URL}storage/${receiptPath}`);
-        setShowReceiptModal(true);
+    const handleReceiptClick = (transactionProof) => {
+        if (transactionProof) {
+            const fullPath = `${import.meta.env.VITE_BASE_URL}storage/${transactionProof}`;
+            setSelectedReceipt(fullPath);
+            setShowReceiptModal(true);
+        }
     };
+    
 
     const handleFeaturedTypeFilter = (selectedType) => {
         setSelectedFeaturedType(selectedType); // Update the selected featured type
