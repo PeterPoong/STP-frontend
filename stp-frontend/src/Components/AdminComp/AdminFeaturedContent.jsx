@@ -40,7 +40,7 @@ const AdminFeaturedContent = () => {
         // Hardcoded statList values
         const hardcodedStatList = [
             { id: 0, name: "Disable" },
-            { id: 1, name: "Active" },
+            { id: 1, name: "Approved" },
             { id: 2, name: "Pending" },
             { id: 2, name: "Rejected" }
         ];
@@ -86,7 +86,6 @@ const AdminFeaturedContent = () => {
         search = "", 
         featuredType = "",
         stat = selectedStat
-
     ) => {
         try {
             setLoading(true);
@@ -111,10 +110,13 @@ const AdminFeaturedContent = () => {
             const result = await response.json();
 
             if (result.success && result.data) {
-                setFeatureds(result.data.data);
-                setFilteredFeatureds(result.data.data); // Store the original data
-                setTotalPages(result.data.last_page);
-                setCurrentPage(result.data.current_page);
+                setFeatureds(result.data); // Store the data array directly
+                setFilteredFeatureds(result.data); // Store the data array directly
+                // Update pagination using the pagination object
+                if (result.pagination) {
+                    setTotalPages(result.pagination.last_page);
+                    setCurrentPage(result.pagination.current_page);
+                }
             } else {
                 setFeatureds([]);
                 setFilteredFeatureds([]);
@@ -301,11 +303,11 @@ const AdminFeaturedContent = () => {
     const getStatusClass = (request_status) => {
         switch (request_status) {
             case 0:
-                return 'status-expired';
+                return 'status-disable';
             case 3:
                 return 'status-rejected';
             case 1:
-                return 'status-ongoing';
+                return 'status-approved';
             case 2:
                 return 'status-pending';
             case 4:
@@ -420,7 +422,7 @@ const AdminFeaturedContent = () => {
                         />
                     </td>
                     <td className={getStatusClass(Featured.request_status)}>
-                        {Featured.request_status === 1 ? 'Active' : 
+                        {Featured.request_status === 1 ? 'Approved' : 
                          Featured.request_status === 3 ? 'Rejected' : 'Pending'}
                     </td>
                     <td>
