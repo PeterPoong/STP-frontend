@@ -140,14 +140,13 @@
     font-weight: bold;
 
 }
-.status-ongoing {
-    content: "Ongoing";
+.status-approved {
+    content: "Approved";
     color: green !important;
     padding: 5px;
     text-align: center;
     position: relative;
     font-weight: bold;
-
 }
 .status-replied {
     color: green !important;

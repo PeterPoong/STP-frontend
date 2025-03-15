@@ -774,7 +774,8 @@ const FeaturedRequest = ({ authToken }) => {
                                         </Row>
                                     </Accordion.Header>
                                     <Accordion.Body>
-                                        {activeTab === 'course' && featured.quantity_used < featured.request_quantity &&  featured.request_status === 1 && (
+                                        {activeTab === 'course' && featured.quantity_used < featured.request_quantity && 
+                                         featured.request_status === "Approved" && (
                                             <Row className="mb-3">
                                                 <Col md={12}>
                                                     <Button 

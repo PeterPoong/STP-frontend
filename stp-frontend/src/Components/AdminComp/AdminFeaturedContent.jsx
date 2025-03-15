@@ -40,7 +40,7 @@ const AdminFeaturedContent = () => {
         // Hardcoded statList values
         const hardcodedStatList = [
             { id: 0, name: "Disable" },
-            { id: 1, name: "Active" },
+            { id: 1, name: "Approved" },
             { id: 2, name: "Pending" },
             { id: 2, name: "Rejected" }
         ];
@@ -86,7 +86,6 @@ const AdminFeaturedContent = () => {
         search = "", 
         featuredType = "",
         stat = selectedStat
-
     ) => {
         try {
             setLoading(true);
@@ -111,10 +110,13 @@ const AdminFeaturedContent = () => {
             const result = await response.json();
 
             if (result.success && result.data) {
-                setFeatureds(result.data.data);
-                setFilteredFeatureds(result.data.data); // Store the original data
-                setTotalPages(result.data.last_page);
-                setCurrentPage(result.data.current_page);
+                setFeatureds(result.data); // Store the data array directly
+                setFilteredFeatureds(result.data); // Store the data array directly
+                // Update pagination using the pagination object
+                if (result.pagination) {
+                    setTotalPages(result.pagination.last_page);
+                    setCurrentPage(result.pagination.current_page);
+                }
             } else {
                 setFeatureds([]);
                 setFilteredFeatureds([]);
@@ -301,11 +303,11 @@ const AdminFeaturedContent = () => {
     const getStatusClass = (request_status) => {
         switch (request_status) {
             case 0:
-                return 'status-expired';
+                return 'status-disable';
             case 3:
                 return 'status-rejected';
             case 1:
-                return 'status-ongoing';
+                return 'status-approved';
             case 2:
                 return 'status-pending';
             case 4:
@@ -315,10 +317,14 @@ const AdminFeaturedContent = () => {
         }
     };
 
-    const handleReceiptClick = (receiptPath) => {
-        setSelectedReceipt(`${import.meta.env.VITE_BASE_URL}storage/${receiptPath}`);
-        setShowReceiptModal(true);
+    const handleReceiptClick = (transactionProof) => {
+        if (transactionProof) {
+            const fullPath = `${import.meta.env.VITE_BASE_URL}storage/transactionProof/${transactionProof}`;
+            setSelectedReceipt(fullPath);
+            setShowReceiptModal(true);
+        }
     };
+    
 
     const handleFeaturedTypeFilter = (selectedType) => {
         setSelectedFeaturedType(selectedType); // Update the selected featured type
@@ -348,6 +354,9 @@ const AdminFeaturedContent = () => {
             </th>
             <th onClick={() => handleSort("transactionProof")}>
                 Transaction Receipt {sortColumn === "transactionProof" && (sortDirection === "asc" ? "↑" : "↓")}
+            </th>
+            <th onClick={() => handleSort("request_date")}>
+                Request Date {sortColumn === "request_date" && (sortDirection === "asc" ? "↑" : "↓")}
             </th>
             <th onClick={() => handleSort("featuredStatus")}>
                 Status {sortColumn === "featuredStatus" && (sortDirection === "asc" ? "↑" : "↓")}
@@ -419,8 +428,9 @@ const AdminFeaturedContent = () => {
                             title="View Receipt"
                         />
                     </td>
+                    <td>{Featured.request_date || 'N/A'}</td>
                     <td className={getStatusClass(Featured.request_status)}>
-                        {Featured.request_status === 1 ? 'Active' : 
+                        {Featured.request_status === 1 ? 'Approved' : 
                          Featured.request_status === 3 ? 'Rejected' : 'Pending'}
                     </td>
                     <td>
