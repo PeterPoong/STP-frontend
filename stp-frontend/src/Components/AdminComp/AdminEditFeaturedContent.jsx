@@ -815,8 +815,21 @@ const fetchFeaturedRequests = async () => {
                                         </Row>
                                     </Accordion.Header>
                                     <Accordion.Body>
-                                        {activeTab === 'course' && featured.quantity_used < featured.request_quantity && featured.request_status === 1 &&(
-                                            <Row>
+                                        {console.log('Debug values:', {
+                                            activeTab,
+                                            quantity_used: featured.quantity_used,
+                                            request_quantity: featured.request_quantity,
+                                            request_status: featured.request_status,
+                                            conditions: {
+                                                isActiveTabCourse: activeTab === 'course',
+                                                hasAvailableQuantity: featured.quantity_used < featured.request_quantity,
+                                                isApproved: featured.request_status === 1
+                                            }
+                                        })}
+                                        {activeTab === 'course' && 
+                                        featured.quantity_used < featured.request_quantity && 
+                                        featured.request_status === "Approved" && (
+                                            <Row className="mb-3 p-3 d-flex" style={getStatusStyling(featured.request_status).rowStyle}>
                                                 <Col md={12}>
                                                     <Button 
                                                         variant="primary" 
@@ -837,7 +850,8 @@ const fetchFeaturedRequests = async () => {
                                             </Row>
                                         )}
                                         {showAddCourse[featured.id] && (
-                                            <Row className="mb-3 p-3 d-flex" style={{ backgroundColor: '#f8f9fa', borderRadius: '15px' }}>
+                                            <Row className="mb-3 p-3 d-flex"
+                                             style={{ backgroundColor: '#f8f9fa', borderRadius: '15px' }}>
                                                 <Col md={4}>
                                                     <Form.Group style={{ marginBottom: 0 }}>
                                                         <div className='text-center'>
