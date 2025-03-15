@@ -355,6 +355,9 @@ const AdminFeaturedContent = () => {
             <th onClick={() => handleSort("transactionProof")}>
                 Transaction Receipt {sortColumn === "transactionProof" && (sortDirection === "asc" ? "↑" : "↓")}
             </th>
+            <th onClick={() => handleSort("request_date")}>
+                Request Date {sortColumn === "request_date" && (sortDirection === "asc" ? "↑" : "↓")}
+            </th>
             <th onClick={() => handleSort("featuredStatus")}>
                 Status {sortColumn === "featuredStatus" && (sortDirection === "asc" ? "↑" : "↓")}
             </th>
@@ -425,6 +428,7 @@ const AdminFeaturedContent = () => {
                             title="View Receipt"
                         />
                     </td>
+                    <td>{Featured.request_date || 'N/A'}</td>
                     <td className={getStatusClass(Featured.request_status)}>
                         {Featured.request_status === 1 ? 'Approved' : 
                          Featured.request_status === 3 ? 'Rejected' : 'Pending'}
