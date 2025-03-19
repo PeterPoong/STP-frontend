@@ -151,11 +151,7 @@ const SchoolPortalLogin = () => {
   };
 
   return (
-    <Container
-      fluid
-      className="h-100 notranslate "
-      style={{ backgroundColor: "red" }}
-    >
+    <Container fluid className="h-100 notranslate">
       <Row className="h-50">
         <div className="position-absolute top-0 ">
           <button

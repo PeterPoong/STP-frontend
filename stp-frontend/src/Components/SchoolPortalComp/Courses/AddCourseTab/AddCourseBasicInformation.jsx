@@ -177,7 +177,7 @@ const AddCourseBasicInformation = ({ list }) => {
               body: formData,
             }
           );
-          
+
           const responseData = await response.json();
 
           if (!response.ok) {
@@ -186,6 +186,20 @@ const AddCourseBasicInformation = ({ list }) => {
 
           if (responseData.success === false) {
             let error = [];
+            const errorType = responseData.error;
+            console.log("error", errorType);
+            if (errorType.description) {
+              setCourseDescriptionError(errorType.description);
+            }
+
+            if (errorType.requirement) {
+              setCourseRequirementError(errorType.requirement);
+            }
+
+            if (errorType.name) {
+              setCourseNameError(errorType.name[0]);
+            }
+
             const courseArrayError = responseData.error.courses ?? [];
             if (courseArrayError.length > 0) {
               setCourseNameError(courseArrayError[0]);
@@ -367,6 +381,7 @@ const AddCourseBasicInformation = ({ list }) => {
                   Course Name <span className="span-style">*</span>{" "}
                   {courseNameError ? (
                     <span className="ms-2" style={{ color: "red" }}>
+                      <br></br>
                       {courseNameError}
                     </span>
                   ) : null}
@@ -660,6 +675,7 @@ const AddCourseBasicInformation = ({ list }) => {
                   Course Description <span className="span-style">*</span>{" "}
                   {courseDescriptionError ? (
                     <span className="ms-2" style={{ color: "red" }}>
+                      <br></br>
                       {courseDescriptionError}
                     </span>
                   ) : null}
@@ -682,6 +698,7 @@ const AddCourseBasicInformation = ({ list }) => {
                   Course Requirement <span className="span-style">*</span>{" "}
                   {courseRequirementError ? (
                     <span className="ms-2" style={{ color: "red" }}>
+                      <br></br>
                       {courseRequirementError}
                     </span>
                   ) : null}

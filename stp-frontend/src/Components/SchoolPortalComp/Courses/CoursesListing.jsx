@@ -1,9 +1,24 @@
 import React, { useState, useEffect, useRef } from "react";
 
 // Third-party libraries
-import { Search, GeoAlt, Alarm, CalendarCheck, Book, ThreeDots } from "react-bootstrap-icons";
+import {
+  Search,
+  GeoAlt,
+  Alarm,
+  CalendarCheck,
+  Book,
+  ThreeDots,
+} from "react-bootstrap-icons";
 import "bootstrap/dist/css/bootstrap.min.css"; // Import Bootstrap CSS
-import { Row, Col, Form, Button, InputGroup, Modal, Spinner} from "react-bootstrap";
+import {
+  Row,
+  Col,
+  Form,
+  Button,
+  InputGroup,
+  Modal,
+  Spinner,
+} from "react-bootstrap";
 import SchoolOutlinedIcon from "@mui/icons-material/SchoolOutlined";
 
 // Custom styles and components
@@ -107,8 +122,12 @@ const CoursesListing = ({ onAddCourseClick, courseID, editCourse }) => {
         );
         if (!response.ok) {
           const errorData = await response.json();
-         // console.log("Error Data:", errorData["errors"]);
+          // console.log("Error Data:", errorData["errors"]);
           throw new Error(errorData["errors"] || "Internal Server Error");
+        } else {
+          setCoursesList((prevCourses) =>
+            prevCourses.filter((course) => course.id !== courseId)
+          );
         }
 
         // console.log("set", courses);
@@ -353,7 +372,6 @@ const CoursesListing = ({ onAddCourseClick, courseID, editCourse }) => {
           </div>
         </Col>
 
-
         <Col md={3}>
           {/* <Button
             className={`${styles.customRadius}`}
@@ -378,8 +396,7 @@ const CoursesListing = ({ onAddCourseClick, courseID, editCourse }) => {
       {/* Display loading message */}
       {loading ? (
         <div className="w-100 h-100 align-items-center justify-content-center">
-          <Spinner animation="border" role="status">
-          </Spinner>
+          <Spinner animation="border" role="status"></Spinner>
         </div>
       ) : coursesList.length === 0 ? (
         <p>No courses available.</p>
@@ -402,8 +419,9 @@ const CoursesListing = ({ onAddCourseClick, courseID, editCourse }) => {
                   <Col md={4}>
                     <div className="d-flex flex-column align-items-start ms-4 mt-3">
                       <img
-                        src={`${import.meta.env.VITE_BASE_URL}storage/${course.logo
-                          }`}
+                        src={`${import.meta.env.VITE_BASE_URL}storage/${
+                          course.logo
+                        }`}
                         alt="University Logo"
                         className="img-fluid mb-2"
                         style={{
@@ -482,7 +500,7 @@ const CoursesListing = ({ onAddCourseClick, courseID, editCourse }) => {
                           className={`dropdown-item ${styles.customDropdownItem}`}
                           onClick={() => detailPage(course.id)}
 
-                        // onClick={() => handleViewDetail(course.id)} // Pass the function correctly
+                          // onClick={() => handleViewDetail(course.id)} // Pass the function correctly
                         >
                           View Detail
                         </button>
