@@ -1,8 +1,8 @@
 .orbit-button-container {
-  position: relative;
+  position: absolute;
   display: block;
-  width: 100%;
-  height: 100%;
+  width: 140px;
+  height: 38px;
   text-decoration: none;
   cursor: pointer;
   transition: transform 0.3s ease;
@@ -21,13 +21,14 @@
   height: 100%;
   min-width: 120px;
   min-height: 30px;
+  overflow: visible;
 }
 
 .container-orbit canvas {
   position: absolute;
   top: 0;
-  left: 0;
-  width: 100%;
+  left: -30px;
+  width: calc(100% + 60px);
   height: 100%;
   z-index: 1;
 }
