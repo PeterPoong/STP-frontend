@@ -96,7 +96,7 @@ const UniversityRow = () => {
                 '--swiper-pagination-bottom': '-5px',
                 '--swiper-navigation-color': '#BA1718',
                 '--swiper-navigation-size': '25px',
-                paddingBottom: '20px',
+                // paddingBottom: '20px',
                 paddingLeft: '35px',
                 paddingRight: '35px',
                 position: 'relative'
@@ -130,7 +130,7 @@ const UniversityRow = () => {
               {schools.map((school, index) => (
                 <SwiperSlide key={index} className="swiper-slide-image">
                   
-                  <Col xs={12} className="mb-3 ">
+                  <Col xs={12} className="my-3">
                     <Card className="university-card">
                       <Link
                         to={`/university-details/${school.schoolName.replace(/\s+/g, '-').toLowerCase()}`}
