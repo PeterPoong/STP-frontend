@@ -15,8 +15,8 @@ const OrbitingStarButton = ({ isActive }) => {
     
     const ctx = canvas.getContext('2d');
     
-    // Set canvas dimensions
-    canvas.width = container.offsetWidth;
+    // Set canvas dimensions with extra width
+    canvas.width = container.offsetWidth + 82; // Increased from 40 to 80
     canvas.height = container.offsetHeight;
     
     // Animation parameters
@@ -31,7 +31,7 @@ const OrbitingStarButton = ({ isActive }) => {
     const SHADOW_COLOR = 'rgba(230, 80, 60, 0.7)'; // Brand red for shadow
     
     // Text dimensions (approximation)
-    const textWidth = width * 0.8;
+    const textWidth = (width - 80) * 0.8; // Adjusted for the wider canvas
     const textHeight = height * 0.4;
     
     // Star properties
@@ -40,7 +40,7 @@ const OrbitingStarButton = ({ isActive }) => {
     let starRotation = 0; // Add rotation angle for the star itself
     const angleIncrement = 0.02;
     const starRotationSpeed = 0.03; // Control how fast the star rotates
-    const orbitRadiusX = textWidth * 0.6;
+    const orbitRadiusX = textWidth * 0.7; // Increased from 0.5 to 0.7 for wider orbit
     const orbitRadiusY = textHeight * 0.8;
     
     // Trail properties
@@ -142,7 +142,7 @@ const OrbitingStarButton = ({ isActive }) => {
     
     // Handle window resize
     const handleResize = () => {
-      canvas.width = container.offsetWidth;
+      canvas.width = container.offsetWidth + 80; // Increased from 40 to 80
       canvas.height = container.offsetHeight;
     };
     
@@ -160,6 +160,7 @@ const OrbitingStarButton = ({ isActive }) => {
     <OverlayTrigger
       placement="bottom"
       overlay={<Tooltip id="path-tooltip">RIASEC Career Assessment</Tooltip>}
+      className="position-absolute"
     >
       <Link 
         to="/studentStudyPath" 
