@@ -321,7 +321,7 @@ const NavigationBar = () => {
               >
                 Schools
               </Button>
-              <div className="d-none d-xl-block" style={{ height: "38px", width: "140px" }}>
+              <div className="d-none d-xl-block nav-item-custom" style={{ height: "38px", width: "140px" }}>
                 <OrbitingStarButton 
                   isActive={location.pathname === "/studentStudyPath" || 
                           location.pathname.startsWith("/studentStudyPath")} 
