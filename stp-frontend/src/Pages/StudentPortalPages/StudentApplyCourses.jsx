@@ -286,6 +286,7 @@ const StudentApplyCourses = () => {
       </CustomStepIcon>
     );
   };
+
   if (isSubmitted) {
     return (
       <div className="app-container-applycourse">
