@@ -64,9 +64,9 @@ const FeaturedCoursesContainer = () => {
   };
 
   const handleKnowMoreClick = (course) => {
-    sessionStorage.setItem('courseId', course.id); // Store the course ID
-    const schoolName = course.course_school.replace(/\s+/g, '-').toLowerCase(); // Use course_school for school name
-    const courseName = course.course_name.replace(/\s+/g, '-').toLowerCase(); // Use course_name for course name
+    sessionStorage.setItem("courseId", course.id); // Store the course ID
+    const schoolName = course.course_school.replace(/\s+/g, "-").toLowerCase(); // Use course_school for school name
+    const courseName = course.course_name.replace(/\s+/g, "-").toLowerCase(); // Use course_name for course name
     navigate(`/course-details/${schoolName}/${courseName}`); // Navigate to CourseDetail with the courseID
   };
 
@@ -75,12 +75,14 @@ const FeaturedCoursesContainer = () => {
       navigate(`/studentApplyCourses/${course.id}`, {
         state: {
           programId: course.id,
-          schoolLogoUrl: `${import.meta.env.VITE_BASE_URL}storage/${course.course_logo
-            }`,
+          schoolLogoUrl: `${import.meta.env.VITE_BASE_URL}storage/${
+            course.course_logo
+          }`,
           schoolName: course.course_school,
           courseName: course.course_name,
-        }
-      })
+          schoolId: course.school_id,
+        },
+      });
     } else {
       console.error("Course ID is undefined");
     }
@@ -90,53 +92,61 @@ const FeaturedCoursesContainer = () => {
     return courses.length > 0 ? courses.length - 1 : 1;
   };
   const getAutoplaySettings = () => {
-    if (typeof window !== 'undefined') {
-      return window.innerWidth <= 768 ? {
-        delay: 3000,
-        disableOnInteraction: false,
-      } : false;
+    if (typeof window !== "undefined") {
+      return window.innerWidth <= 768
+        ? {
+            delay: 3000,
+            disableOnInteraction: false,
+          }
+        : false;
     }
     return false;
   };
-  
+
   return (
     <div>
       {error && <div>Error: {error}</div>}
-      {loading && <div>
+      {loading && (
         <div>
-          <div className="d-flex justify-content-center align-items-center m-5 " >
-            <Spinner animation="border" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </Spinner>
+          <div>
+            <div className="d-flex justify-content-center align-items-center m-5 ">
+              <Spinner animation="border" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </Spinner>
+            </div>
           </div>
-        </div></div>}
+        </div>
+      )}
       {!loading && !error && courses.length > 0 && (
-        <Container className="course-container" style={{ position: 'relative' }}>
+        <Container
+          className="course-container"
+          style={{ position: "relative" }}
+        >
           <Swiper
             modules={[Navigation, Pagination, Autoplay]}
             spaceBetween={5}
             slidesPerView={5}
             loop={true}
             navigation={{
-              nextEl: '.swiper-button-next',
-              prevEl: '.swiper-button-prev',
+              nextEl: ".swiper-button-next",
+              prevEl: ".swiper-button-prev",
             }}
-            pagination={{ 
-              clickable: true 
+            pagination={{
+              clickable: true,
             }}
             autoplay={getAutoplaySettings()}
             style={{
-              '--swiper-pagination-bottom': '-5px',
-              '--swiper-navigation-color': '#BA1718',
-              '--swiper-navigation-size': '25px',
-              '--swiper-pagination-color': '#BA1718',
-              '--swiper-pagination-bullet-inactive-color': '#CCCCCC',
-              '--swiper-pagination-bullet-inactive-opacity': '0.5',
-              '--swiper-pagination-bullet-size': '8px',
-              '--swiper-pagination-bullet-horizontal-gap': '4px',
-              paddingBottom: '20px',
-              paddingLeft: '25px',
-              paddingRight: '25px'
+              "--swiper-pagination-bottom": "-5px",
+              "--swiper-navigation-color": "#BA1718",
+              "--swiper-navigation-size": "25px",
+              "--swiper-pagination-color": "#BA1718",
+              "--swiper-pagination-bullet-inactive-color": "#CCCCCC",
+              "--swiper-pagination-bullet-inactive-opacity": "0.5",
+              "--swiper-pagination-bullet-size": "8px",
+              "--swiper-pagination-bullet-horizontal-gap": "4px",
+              paddingBottom: "20px",
+              paddingLeft: "25px",
+              paddingRight: "25px",
             }}
             grabCursor={true}
             resistance={true}
@@ -162,7 +172,7 @@ const FeaturedCoursesContainer = () => {
               1200: {
                 slidesPerView: 5,
                 spaceBetween: 5,
-              }
+              },
             }}
           >
             <div className="swiper-button-prev"></div>
@@ -187,8 +197,12 @@ const FeaturedCoursesContainer = () => {
                       </span>
                     )}
                     <Link
-                      to={`/university-details/${course.course_school.replace(/\s+/g, '-').toLowerCase()}`} // Correctly using course_school
-                      onClick={() => sessionStorage.setItem("schoolId", course.school_id)}
+                      to={`/university-details/${course.course_school
+                        .replace(/\s+/g, "-")
+                        .toLowerCase()}`} // Correctly using course_school
+                      onClick={() =>
+                        sessionStorage.setItem("schoolId", course.school_id)
+                      }
                     >
                       <img
                         src={`${baseURL}storage/${course.course_logo}`}
@@ -210,33 +224,35 @@ const FeaturedCoursesContainer = () => {
                         fontSize: "16px",
                         fontWeight: "500",
                         marginBottom: "15px",
-                        height: "3rem"
+                        height: "3rem",
                       }}
                     >
                       <Link
                         style={{
-                          color: "#514E4E"
+                          color: "#514E4E",
                         }}
-                        to={`/university-details/${course.course_school.replace(/\s+/g, '-').toLowerCase()}`}
-                        onClick={() => sessionStorage.setItem("schoolId", course.school_id)}
+                        to={`/university-details/${course.course_school
+                          .replace(/\s+/g, "-")
+                          .toLowerCase()}`}
+                        onClick={() =>
+                          sessionStorage.setItem("schoolId", course.school_id)
+                        }
                       >
                         {course.course_school}
                       </Link>
-
                     </p>
                     <p
                       className="course-title"
-                    // style={{
-                    //   color: "#B71A18",
-                    //   fontSize: "18px",
-                    //   fontWeight: "500",
-                    //   marginBottom: "15px",
-                    // }}
-
+                      // style={{
+                      //   color: "#B71A18",
+                      //   fontSize: "18px",
+                      //   fontWeight: "500",
+                      //   marginBottom: "15px",
+                      // }}
                     >
                       <Link
                         style={{ color: "#BA1718" }}
-                        onClick={() => handleKnowMoreClick(course)} 
+                        onClick={() => handleKnowMoreClick(course)}
                       >
                         {course.course_name}
                       </Link>
@@ -271,9 +287,8 @@ const FeaturedCoursesContainer = () => {
           </Swiper>
           <div className="swiper-pagination"></div>
         </Container>
-      )
-      }
-    </div >
+      )}
+    </div>
   );
 };
 

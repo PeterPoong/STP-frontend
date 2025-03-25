@@ -529,6 +529,7 @@ const SearchCourse = () => {
         console.log("fetch data");
       }
       setResultCount(result.total || 0);
+      console.log("program", result.data[0]);
       setPrograms(result.data || []);
       setTotalPages(result.last_page);
     } catch (error) {
@@ -737,6 +738,7 @@ const SearchCourse = () => {
           state: {
             programId: program.id,
             schoolLogoUrl: `${baseURL}storage/${program.logo}`,
+            schoolId: program.school_id,
             schoolName: program.school_name,
             courseName: program.name,
           },
