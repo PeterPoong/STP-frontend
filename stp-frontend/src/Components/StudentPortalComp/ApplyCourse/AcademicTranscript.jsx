@@ -1366,30 +1366,109 @@ const AcademicTranscript = ({ data = [], onBack, onNext }) => {
     return "secondary";
   };
 
+  // Add this new validation function
+  const hasValidTranscripts = () => {
+    // Check if there are any transcripts at all
+    if (academicTranscripts.length === 0) {
+      return false;
+    }
+
+    // Check if at least one transcript has been properly saved with data
+    return academicTranscripts.some(transcript => {
+      // Skip validation for transcripts that don't have an ID (not saved yet)
+      if (!transcript.id) {
+        return false;
+      }
+
+      // For SPM/Trial transcripts
+      if (transcript.id === 32 || transcript.id === 85) {
+        const hasValidSubjects = transcript.subjects && 
+                                transcript.subjects.length > 0 && 
+                                transcript.subjects.every(subject => 
+                                  subject.name && 
+                                  subject.grade && 
+                                  !subject.isEditing  // Make sure subjects are saved
+                                );
+        
+        return hasValidSubjects;  // For SPM, we only need valid subjects
+      }
+      
+      // For other transcripts
+      const hasValidSubjects = transcript.subjects && 
+                              transcript.subjects.length > 0 && 
+                              transcript.subjects.every(subject => 
+                                subject.name && 
+                                subject.grade && 
+                                !subject.isEditing
+                              );
+      
+      const hasValidCGPA = transcript.cgpa !== null && 
+                          transcript.cgpa !== undefined;
+
+      return hasValidSubjects && hasValidCGPA;
+    });
+  };
+
+  // Modify the handleNext function
   const handleNext = () => {
     if (academicTranscripts.length === 0) {
-      setIsPopupOpen(true);
-    } else {
-      onNext();
+      setIsPopupOpen(true); // Show popup for no transcripts
+      return;
     }
+
+    if (!hasValidTranscripts()) {
+      setIsAcademicRemindPopupOpen(true); // Show popup for incomplete transcripts
+      return;
+    }
+
+    onNext();
   };
 
   const handleClosePopup = () => {
     setIsPopupOpen(false);
   };
 
+  // Modify the handleNavigation function
   const handleNavigation = (direction) => {
-    if (hasUnsavedChanges) {
-      setNavigationDirection(direction);
-      setIsUnsavedChangesPopupOpen(true);
+    if (direction === "next") {
+      if (academicTranscripts.length === 0) {
+        setIsPopupOpen(true);
+        return;
+      }
+
+      // First check for unsaved changes
+      if (hasUnsavedChanges) {
+        setNavigationDirection(direction);
+        setIsUnsavedChangesPopupOpen(true);
+        return;
+      }
+
+      // Then check for valid transcripts
+      if (!hasValidTranscripts()) {
+        setIsAcademicRemindPopupOpen(true);
+        return;
+      }
+
+      onNext();
     } else {
-      direction === "next" ? handleNext() : onBack();
+      if (hasUnsavedChanges) {
+        setNavigationDirection(direction);
+        setIsUnsavedChangesPopupOpen(true);
+      } else {
+        onBack();
+      }
     }
   };
 
   const handleUnsavedChangesConfirm = () => {
     setIsUnsavedChangesPopupOpen(false);
+    
     if (navigationDirection === "next") {
+      // Check if there's at least one valid saved transcript before proceeding
+      if (!hasValidTranscripts()) {
+        setIsAcademicRemindPopupOpen(true);
+        return;
+      }
       onNext();
     } else if (navigationDirection === "back") {
       onBack();
