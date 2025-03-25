@@ -20,6 +20,8 @@ const StudentApplyCustomCourses = ({
 }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [appliedCourses, setAppliedCourses] = useState(null);
+  const [submissionSuccess, setSubmissionSuccess] = useState(false);
+
   const onDrop = (acceptedFiles) => {
     // Handle the uploaded files here
     console.log(acceptedFiles);
@@ -57,6 +59,7 @@ const StudentApplyCustomCourses = ({
       if (result.success == true) {
         // Handle success
         console.log("Submission successful!");
+        setSubmissionSuccess(true);
       } else {
         // Handle error
         console.error("Submission failed:", result.error);
@@ -99,6 +102,12 @@ const StudentApplyCustomCourses = ({
     };
     checkApplicant();
   });
+
+  useEffect(() => {
+    if (submissionSuccess) {
+      console.log("Page will rerender due to successful submission.");
+    }
+  }, [submissionSuccess]);
 
   return (
     <div className={styles.container}>
