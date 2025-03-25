@@ -26,7 +26,34 @@ const AdminApplicantContent = () => {
     const Authenticate = `Bearer ${token}`;
     const navigate = useNavigate();
     const [statList, setStatList] = useState([]); // State for category list
+    const [schList, setSchList] = useState([]); // State for category list
     const [selectedStat, setSelectedStat] = useState(""); // State for selected subject
+    const [selectedSch, setSelectedSch] = useState('');
+    const fetchSchList = async () => {
+        try {
+          const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/schoolListAdmin`, {
+              method: 'GET',
+              headers: {
+                  'Authorization': Authenticate,
+              },
+          });
+    
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+    
+            const result = await response.json();
+            console.log("Fetched School List:", result); // Log the fetched data
+            if (result && result.length > 0) { // Check if result has data
+                setSchList(result);
+            } else {
+                setSchList([]);
+            }
+        } catch (error) {
+            setError(error.message);
+            console.error("Error fetching the school list:", error);
+        }
+    };
     useEffect(() => {
         // Hardcoded statList values
         const hardcodedStatList = [
@@ -37,15 +64,17 @@ const AdminApplicantContent = () => {
             { id: 4, name: "Accepted" },
         ];
         setStatList(hardcodedStatList);
+        fetchSchList();
         fetchApplicants(); // Fetch enquiries initially
     }, []);
     const fetchApplicants = async (
         page = 1, 
         perPage = rowsPerPage, 
         search = searchQuery,
-        stat = selectedStat) => {
+        stat = selectedStat,
+        school_id = selectedSch) => {
         try {
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/applicantDetailInfo?page=${page}&per_page=${perPage === "All" ? subjects.length : perPage}&search=${search}&stat=${stat}`, {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/admin/applicantDetailInfo?page=${page}&per_page=${perPage === "All" ? subjects.length : perPage}&search=${search}&stat=${stat}&school_id=${school_id}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -74,26 +103,26 @@ const AdminApplicantContent = () => {
     };
 
     useEffect(() => {
-        fetchApplicants(currentPage, rowsPerPage, searchQuery, selectedStat, sortColumn, sortDirection);
-    }, [currentPage, rowsPerPage, searchQuery, selectedStat, sortColumn, sortDirection]);
+        fetchApplicants(currentPage, rowsPerPage, searchQuery, selectedStat, selectedSch, sortColumn, sortDirection);
+    }, [currentPage, rowsPerPage, searchQuery, selectedStat,selectedSch, sortColumn, sortDirection]);
 
     const handleRowsPerPageChange = (newRowsPerPage) => {
         setRowsPerPage(newRowsPerPage);
         setCurrentPage(1); 
-        fetchApplicants(1, newRowsPerPage === "All" ? subjects.length : newRowsPerPage, searchQuery, selectedStat);
+        fetchApplicants(1, newRowsPerPage === "All" ? subjects.length : newRowsPerPage, searchQuery, selectedStat, selectedSch);
     };
 
     const handleSearch = (query) => {
         setSearchQuery(query);
         setCurrentPage(1);
-        fetchApplicants(1, rowsPerPage, query, selectedStat);
+        fetchApplicants(1, rowsPerPage, query, selectedStat, selectedSch);
     };
 
     const handleSort = (column) => {
         const newDirection = sortColumn === column && sortDirection === "asc" ? "desc" : "asc";
         setSortColumn(column);
         setSortDirection(newDirection);
-        fetchApplicants(currentPage, rowsPerPage, searchQuery, selectedStat);
+        fetchApplicants(currentPage, rowsPerPage, searchQuery, selectedStat, selectedSch);
     };
 
     const sortedApplicants = (() => {
@@ -146,6 +175,11 @@ const AdminApplicantContent = () => {
         setSelectedStat(statId);
         setCurrentPage(1);
         fetchApplicants(1, rowsPerPage, searchQuery, statId);
+    };
+    const handleSchoolChange = (schoolId) => {
+        setSelectedSch(schoolId); // Update the selected school
+        setCurrentPage(1); // Reset to the first page
+        fetchApplicants(1, rowsPerPage, searchQuery, selectedStat, schoolId); // Fetch courses with the new school filter
     };
     const submitFeedback = async () => {
         if (!targetApplicant) return;
@@ -316,6 +350,8 @@ const AdminApplicantContent = () => {
                  onPageChange={handlePageChange}
                  onRowsPerPageChange={handleRowsPerPageChange}
                  statList={statList}
+                 schList={schList}
+                 onSchChange={handleSchoolChange}
                  onStatChange={handleStatChange}
             />
         )}
