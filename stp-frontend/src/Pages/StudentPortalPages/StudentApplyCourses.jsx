@@ -161,6 +161,7 @@ const StudentApplyCourses = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log("course", schoolId);
     const token =
       sessionStorage.getItem("token") || localStorage.getItem("token");
 
