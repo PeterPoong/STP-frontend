@@ -20,7 +20,7 @@ import ApplyForm from "./Pages/StudentPages/ApplyPage/ApplyForm";
 import PersonalDetails from "./Pages/StudentPages/ApplyPage/PersonalDetails";
 
 // Admin Login Page
-import ProtectedAdminRoute from './Components/AdminComp/ProtectedAdminRoute';
+import ProtectedAdminRoute from "./Components/AdminComp/ProtectedAdminRoute";
 import AdminSignup from "./Pages/AdminPages/AdminSignup";
 import AdminLogin from "./Pages/AdminPages/AdminLogin";
 import AdminForgetPass from "./Pages/AdminPages/AdminForgetPass";
@@ -195,7 +195,7 @@ const router = createBrowserRouter([
 
   {
     path: "/adminSchool",
-    element:(
+    element: (
       <ProtectedAdminRoute>
         <AdminSchool />,
       </ProtectedAdminRoute>
@@ -204,7 +204,7 @@ const router = createBrowserRouter([
 
   {
     path: "/adminAddSchool",
-    element:(
+    element: (
       <ProtectedAdminRoute>
         <AdminAddSchool />,
       </ProtectedAdminRoute>
@@ -222,7 +222,7 @@ const router = createBrowserRouter([
 
   {
     path: "/adminStudent",
-    element:  (
+    element: (
       <ProtectedAdminRoute>
         <AdminStudent />,
       </ProtectedAdminRoute>
@@ -231,7 +231,7 @@ const router = createBrowserRouter([
 
   {
     path: "/adminAddStudent",
-    element:  (
+    element: (
       <ProtectedAdminRoute>
         <AdminAddStudent />,
       </ProtectedAdminRoute>
@@ -239,7 +239,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/adminEditStudent",
-    element:  (
+    element: (
       <ProtectedAdminRoute>
         <AdminEditStudent />,
       </ProtectedAdminRoute>
@@ -306,7 +306,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/adminAddSubject",
-    element:  (
+    element: (
       <ProtectedAdminRoute>
         <AdminAddSubject />,
       </ProtectedAdminRoute>
@@ -484,7 +484,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/adminEditRiasec",
-    element:  (
+    element: (
       <ProtectedAdminRoute>
         <AdminEditRiasec />,
       </ProtectedAdminRoute>
