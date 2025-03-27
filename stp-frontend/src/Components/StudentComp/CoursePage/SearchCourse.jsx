@@ -876,7 +876,7 @@ const SearchCourse = () => {
       return (
         <Suspense
           fallback={
-            <div className="mb-4">
+            <div className="mb-1">
               <Placeholder
                 as="div"
                 animation="wave"
@@ -888,47 +888,47 @@ const SearchCourse = () => {
             </div>
           }
         >
-          <LazySwiper
-            spaceBetween={10}
-            slidesPerView={1}
-            navigation
-            autoplay={{ delay: 5000, disableOnInteraction: false }}
-            modules={[Navigation, Autoplay]}
-            style={{ padding: "0px 0" }}
-          >
-            {adsImages.map((ad, index) => (
-              <LazySwiperSlide key={ad.id} className="advertisement-item">
-                <a
-                  href={
-                    ad.banner_url.startsWith("http")
-                      ? ad.banner_url
-                      : `https://${ad.banner_url}`
-                  }
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <img
-                    loading="lazy"
-                    src={`${baseURL}storage/${ad.banner_file}`}
-                    alt={`Advertisement ${ad.banner_name}`}
-                    className="studypal-image rounded-3"
-                    style={{
-                      height: adsImages === adsImageB ? "100px" : "175px",
-                      objectFit: "fill",
-                      width: "100%",
-                      marginBottom: index < adsImages.length - 1 ? "20px" : "0",
-                    }}
-                  />
-                </a>
-              </LazySwiperSlide>
-            ))}
-          </LazySwiper>
+          <div className="advertisement-container">
+            <Swiper
+              modules={[Navigation, Autoplay]}
+              spaceBetween={0}
+              slidesPerView={1}
+              navigation={true}
+              loop={true}
+              autoplay={{
+                delay: 3000,
+                disableOnInteraction: false,
+              }}
+              className="advertisement-swiper"
+            >
+              {adsImages.map((ad) => (
+                <SwiperSlide key={ad.id}>
+                  <a
+                    href={ad.banner_url.startsWith("http") ? ad.banner_url : `https://${ad.banner_url}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <img
+                      src={`${baseURL}storage/${ad.banner_file}`}
+                      alt={`Advertisement ${ad.banner_name}`}
+                      className="studypal-image rounded-3"
+                      style={{
+                        height: adsImages === adsImageB ? "100px" : "175px",
+                        width: "100%",
+                        objectFit: "contain"
+                      }}
+                    />
+                  </a>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </div>
         </Suspense>
       );
     }
+
     return (
       <img
-        loading="lazy"
         src={defaultImage}
         alt="Default Image"
         className="studypal-image"
@@ -2263,7 +2263,7 @@ const SearchCourse = () => {
 
             {/* Right Content - Course Listings */}
             <Col xs={12} md={9} className="degreeprograms-division">
-              <div className="mb-5">{renderAdImages(adsImageA, StudyPal)}</div>
+              <div>{renderAdImages(adsImageA, StudyPal)}</div>
 
               {loading ? (
                 <div>

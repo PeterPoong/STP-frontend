@@ -1680,7 +1680,7 @@ const KnowMoreInstitute = () => {
                           className="adverstise-image"
                           style={{
                             height: "175px",
-                            objectFit: "fill",
+                            objectFit: "contain",
                             marginBottom:
                               index < adsImage.length - 1 ? "20px" : "0",
                           }}

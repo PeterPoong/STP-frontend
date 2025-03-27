@@ -1497,7 +1497,7 @@ const CourseDetail = () => {
                   className="adverstise-image"
                   style={{
                     height: "175px",
-                    objectFit: "fill",
+                    objectFit: "contain",
                   }}
                 />
               </a>

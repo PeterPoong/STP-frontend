@@ -1247,7 +1247,7 @@ const SearchInstitute = () => {
                           className="studypal-image"
                           style={{
                             height: "175px",
-                            objectFit: "fill",
+                            objectFit: "contain",
                             marginBottom: index < adsImageA.length - 1 ? "20px" : "0"
                           }}
                         />
