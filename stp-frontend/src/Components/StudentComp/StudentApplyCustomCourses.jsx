@@ -243,7 +243,7 @@ const StudentApplyCustomCourses = ({
               <Row>
                 <Col>
                   <p
-                    className="ms-4 ms-md-4 "
+                    className="ms-5 ms-md-4 "
                     style={{ fontSize: "13px", color: "#B71A18" }}
                   >
                     (*You must upload a document before submitting.)
@@ -252,7 +252,7 @@ const StudentApplyCustomCourses = ({
               </Row>
               <Row>
                 <Col>
-                  <div className="d-flex justify-content-end pe-md-3">
+                  <div className="d-flex justify-content-end pe-3">
                     <button
                       onClick={handleSubmit}
                       className={`${styles.button_customCourse} btn`}
@@ -265,8 +265,8 @@ const StudentApplyCustomCourses = ({
             </div>
           ) : (
             // Render something when appliedCourses is false
-            <div className="mt-1 ms-5 mt-md-5 ms-md-0">
-              <div className="d-flex flex-column align-items-center">
+            <div className="ms-5 mt-md-5 ms-md-0">
+              <div className="d-flex flex-column align-items-md-center">
                 <img
                   src={pending}
                   alt="Pending"
