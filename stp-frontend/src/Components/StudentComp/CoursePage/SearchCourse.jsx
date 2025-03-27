@@ -711,39 +711,48 @@ const SearchCourse = () => {
     if (!token) {
       navigate("/studentPortalLogin");
     } else {
-      if (program.school_id === 122) {
-        setUniszaProgram(program);
-        const response = await fetch(
-          `${
-            import.meta.env.VITE_BASE_URL
-          }api/student/checkCourseApplicationStatus`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ courseId: program.id }),
-          }
-        );
-        const data = await response.json();
-        if (data.success) {
-          setUniszarPopUp(true);
-        } else {
-          setUniszarErrorPopUp(true);
-          setUniszarErrorPopUpMessage(data.error);
-        }
-      } else {
-        navigate(`/studentApplyCourses/${program.id}`, {
-          state: {
-            programId: program.id,
-            schoolLogoUrl: `${baseURL}storage/${program.logo}`,
-            schoolId: program.school_id,
-            schoolName: program.school_name,
-            courseName: program.name,
-          },
-        });
-      }
+      navigate(`/studentApplyCourses/${program.id}`, {
+        state: {
+          programId: program.id,
+          schoolLogoUrl: `${baseURL}storage/${program.logo}`,
+          schoolId: program.school_id,
+          schoolName: program.school_name,
+          courseName: program.name,
+        },
+      });
+      // if (program.school_id === 122) {
+      //   setUniszaProgram(program);
+      //   const response = await fetch(
+      //     `${
+      //       import.meta.env.VITE_BASE_URL
+      //     }api/student/checkCourseApplicationStatus`,
+      //     {
+      //       method: "POST",
+      //       headers: {
+      //         Authorization: `Bearer ${token}`,
+      //         "Content-Type": "application/json",
+      //       },
+      //       body: JSON.stringify({ courseId: program.id }),
+      //     }
+      //   );
+      //   const data = await response.json();
+      //   if (data.success) {
+      //     setUniszarPopUp(true);
+      //   } else {
+      //     setUniszarErrorPopUp(true);
+      //     setUniszarErrorPopUpMessage(data.error);
+      //   }
+      // } else {
+      //   navigate(`/studentApplyCourses/${program.id}`, {
+      //     state: {
+      //       programId: program.id,
+      //       schoolLogoUrl: `${baseURL}storage/${program.logo}`,
+      //       schoolId: program.school_id,
+      //       schoolName: program.school_name,
+      //       courseName: program.name,
+      //     },
+      //   });
+      // }
     }
   };
 

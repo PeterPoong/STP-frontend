@@ -140,3 +140,15 @@ font-weight: bold;
     margin: 0; /* Remove margin to center properly */
     display: block; /* Center the image */
   }
+
+  .button_customCourse {
+    border: 1px solid #B71A18; /* Red outline */
+    background-color: white; /* White background */
+    color: #B71A18; /* Red text */
+    transition: background-color 0.3s, color 0.3s; /* Smooth transition */
+  }
+  
+  .button_customCourse:hover {
+    background-color: #B71A18; /* Fill with red on hover */
+    color: white; /* Change text to white on hover */
+  }

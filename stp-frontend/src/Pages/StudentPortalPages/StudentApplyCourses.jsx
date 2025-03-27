@@ -292,13 +292,15 @@ const StudentApplyCourses = () => {
   };
 
   // Add early return for schoolId 118
-  if (schoolId === 118) {
+  if (schoolId === 118 || schoolId === 122) {
+    // if (schoolId === 118 || schoolId === 2) {
     return (
       <StudentApplyCustomCourses
         courseId={courseId}
         schoolLogoUrl={schoolLogoUrl}
         schoolName={schoolName}
         courseName={courseName}
+        schoolId={schoolId}
       />
     );
   }

@@ -9,6 +9,7 @@ import pending from "../../../src/assets/StudentPortalAssets/applyCustomCourses/
 import NavButtonsSP from "../../Components/StudentPortalComp/NavButtonsSP";
 import styles from "../../css/StudentPortalStyles/StudentApplyCustomCourses.module.css";
 import SpcFooter from "../../Components/StudentPortalComp/SpcFooter";
+import ApplyUniszaPage from "../../Components/StudentComp/CustomApplyCourseContent/ApplyUniszaCourse.jsx";
 
 import { useDropzone } from "react-dropzone";
 
@@ -17,6 +18,7 @@ const StudentApplyCustomCourses = ({
   schoolLogoUrl,
   schoolName,
   courseName,
+  schoolId,
 }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [appliedCourses, setAppliedCourses] = useState(null);
@@ -109,65 +111,23 @@ const StudentApplyCustomCourses = ({
     }
   }, [submissionSuccess]);
 
-  return (
-    <div className={styles.container}>
-      <Container className={styles.studentapplycustomcourses_nav_container}>
-        <Row>
-          <Col xs={12} md={8} lg={6}>
-            <NavButtonsSP />
-          </Col>
-        </Row>
-      </Container>
+  useEffect(() => {
+    console.log("test", schoolName);
+  });
 
-      <Row className={styles.applycustomcourses_row}>
-        <Col
-          md={6}
-          className={`${styles.applycustomcourses_column} mb-3 mb-md-0`}
-        >
-          <div className={styles.applycustomcourses_content}>
-            <div className={styles.applycustomcourses_image_container}>
-              <img
-                src={cover}
-                alt="Custom Apply School"
-                className={styles.applycustomcourses_image}
-              />
-              <div className={styles.applycustomcourses_text_overlay}>
-                <p
-                  className={`${styles.applycustomcourses_subtitle} text-center text-md-start`}
-                >
-                  You are applying for
-                </p>
-                <h2
-                  className={`${styles.applycustomcourses_title} text-center text-md-start`}
-                >
-                  {courseName}{" "}
-                  <span style={{ color: "white", fontSize: "20px" }}>at</span>
-                </h2>
-                <Row className="align-items-center text-center text-md-start">
-                  <Col
-                    xs="auto"
-                    className="d-flex justify-content-center justify-content-md-start"
-                  >
-                    <div className={styles.applycustomcourses_logo_container}>
-                      <img
-                        src={schoolLogoUrl}
-                        alt="School Logo"
-                        className={styles.applycustomcourses_school_logo}
-                      />
-                    </div>
-                  </Col>
-                  <Col className="d-flex justify-content-center justify-content-md-start align-items-center">
-                    <p
-                      className={`${styles.applycustomcourses_school_name} mb-0`}
-                    >
-                      {schoolName}
-                    </p>
-                  </Col>
-                </Row>
-              </div>
-            </div>
-          </div>
+  let content;
+
+  switch (schoolId) {
+    case 122:
+      // case 2:
+      content = (
+        <Col md={6} className={styles.applycustomcourses_column}>
+          <ApplyUniszaPage courseId={courseId} courseName={courseName} />
         </Col>
+      );
+      break;
+    default:
+      content = (
         <Col md={6} className={styles.applycustomcourses_column}>
           {appliedCourses === true ? (
             <div>
@@ -292,9 +252,14 @@ const StudentApplyCustomCourses = ({
               </Row>
               <Row>
                 <Col>
-                  <button onClick={handleSubmit} className="btn btn-primary">
-                    Submit
-                  </button>
+                  <div className="d-flex justify-content-end pe-md-3">
+                    <button
+                      onClick={handleSubmit}
+                      className={`${styles.button_customCourse} btn`}
+                    >
+                      Submit
+                    </button>
+                  </div>
                 </Col>
               </Row>
             </div>
@@ -330,6 +295,69 @@ const StudentApplyCustomCourses = ({
             </div>
           )}
         </Col>
+      );
+  }
+
+  return (
+    <div className={styles.container}>
+      <Container className={styles.studentapplycustomcourses_nav_container}>
+        <Row>
+          <Col xs={12} md={8} lg={6}>
+            <NavButtonsSP />
+          </Col>
+        </Row>
+      </Container>
+
+      <Row className={styles.applycustomcourses_row}>
+        <Col
+          md={6}
+          className={`${styles.applycustomcourses_column} mb-3 mb-md-0`}
+        >
+          <div className={styles.applycustomcourses_content}>
+            <div className={styles.applycustomcourses_image_container}>
+              <img
+                src={cover}
+                alt="Custom Apply School"
+                className={styles.applycustomcourses_image}
+              />
+              <div className={styles.applycustomcourses_text_overlay}>
+                <p
+                  className={`${styles.applycustomcourses_subtitle} text-center text-md-start`}
+                >
+                  You are applying for
+                </p>
+                <h2
+                  className={`${styles.applycustomcourses_title} text-center text-md-start`}
+                >
+                  {courseName}{" "}
+                  <span style={{ color: "white", fontSize: "20px" }}>at</span>
+                </h2>
+                <Row className="align-items-center text-center text-md-start">
+                  <Col
+                    xs="auto"
+                    className="d-flex justify-content-center justify-content-md-start"
+                  >
+                    <div className={styles.applycustomcourses_logo_container}>
+                      <img
+                        src={schoolLogoUrl}
+                        alt="School Logo"
+                        className={styles.applycustomcourses_school_logo}
+                      />
+                    </div>
+                  </Col>
+                  <Col className="d-flex justify-content-center justify-content-md-start align-items-center">
+                    <p
+                      className={`${styles.applycustomcourses_school_name} mb-0`}
+                    >
+                      {schoolName}
+                    </p>
+                  </Col>
+                </Row>
+              </div>
+            </div>
+          </div>
+        </Col>
+        {content}
       </Row>
       <SpcFooter />
     </div>
