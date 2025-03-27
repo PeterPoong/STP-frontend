@@ -429,6 +429,7 @@ const KnowMoreInstitute = () => {
         schoolLogoUrl: `${import.meta.env.VITE_BASE_URL}storage/${
           program.course_logo || program.logo
         }`,
+        schoolId: institute.id,
         schoolName: institute.name,
         courseName: program.course_name,
       },

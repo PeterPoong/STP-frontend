@@ -7,9 +7,11 @@ import React, {
   Suspense,
   lazy,
 } from "react";
-import { useLocation, useNavigate, Link } from "react-router-dom";
+import { useLocation, useNavigate, Link, redirect } from "react-router-dom";
 import "../../../css/StudentCss/course page css/SearchCourse.css";
 import {
+  Modal,
+  Button,
   ButtonGroup,
   Container,
   Dropdown,
@@ -164,6 +166,11 @@ const SearchCourse = () => {
   // Add this to your state declarations at the top of the component
   const [resultCount, setResultCount] = useState(0);
 
+  const [uniszarPopUp, setUniszarPopUp] = useState(false);
+  const [uniszarErrorPopUp, setUniszarErrorPopUp] = useState(false);
+  const [uniszarErrorPopUpMessage, setUniszarErrorPopUpMessage] =
+    useState(false);
+  const [uniszaProgram, setUniszaProgram] = useState("");
   // Add new state for interests
   const [courseInterests, setCourseInterests] = useState({});
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -196,6 +203,8 @@ const SearchCourse = () => {
 
   // Add this new state for tracking initialization
   const [isInitializing, setIsInitializing] = useState(true);
+
+  const [selectedProgram, setSelectedProgram] = useState(null); // State for the selected program
 
   // Move fetchFilters definition here - before any references to it
   // Optimize filter fetching with caching
@@ -349,45 +358,45 @@ const SearchCourse = () => {
       try {
         // Step 1: Fetch countries and user's location in parallel
         const [countriesResult, userCountry] = await Promise.all([
-          fetch(countriesURL).then(res => res.json()),
+          fetch(countriesURL).then((res) => res.json()),
           fetchCountry(),
         ]);
 
         // Step 2: Set countries and determine selected country
         if (countriesResult.data) {
           setCountries(countriesResult.data);
-          
+
           // Determine which country to select (from URL params, user location, or default to Malaysia)
           let countryToSelect;
-          
+
           if (location.state?.initialCountry) {
             countryToSelect = countriesResult.data.find(
-              c => c.country_name === location.state.initialCountry
+              (c) => c.country_name === location.state.initialCountry
             );
           }
-          
+
           if (!countryToSelect && userCountry) {
             countryToSelect = countriesResult.data.find(
-              c => c.country_code === userCountry
+              (c) => c.country_code === userCountry
             );
           }
-          
+
           if (!countryToSelect) {
             countryToSelect = countriesResult.data.find(
-              c => c.country_name === "Malaysia"
+              (c) => c.country_name === "Malaysia"
             );
           }
-          
+
           // Step 3: Set selected country without triggering course fetch
           if (countryToSelect) {
             setSelectedCountry(countryToSelect);
-            
+
             // Step 4: Fetch filters and exchange rates in parallel
             await Promise.all([
               fetchFilters(countryToSelect.id),
               fetchExchangeRates(),
               fetchAddsImageA(),
-              fetchAddsImageB()
+              fetchAddsImageB(),
             ]);
           }
         }
@@ -520,6 +529,7 @@ const SearchCourse = () => {
         console.log("fetch data");
       }
       setResultCount(result.total || 0);
+      console.log("program", result.data[0]);
       setPrograms(result.data || []);
       setTotalPages(result.last_page);
     } catch (error) {
@@ -552,8 +562,8 @@ const SearchCourse = () => {
       console.error("Error fetching advertisements:", error);
     }
   };
-  const openSwiperModal = (index) => {
-    setActivePhotoIndex(index);
+  const openSwiperModal = (program) => {
+    setSelectedProgram(program); // Set the selected program
     setShowSwiperModal(true);
   };
 
@@ -695,7 +705,7 @@ const SearchCourse = () => {
     setCurrentPage(1);
   };
 
-  const handleApplyNow = (program) => {
+  const handleApplyNow = async (program) => {
     const token =
       sessionStorage.getItem("token") || localStorage.getItem("token");
     if (!token) {
@@ -705,10 +715,73 @@ const SearchCourse = () => {
         state: {
           programId: program.id,
           schoolLogoUrl: `${baseURL}storage/${program.logo}`,
+          schoolId: program.school_id,
           schoolName: program.school_name,
           courseName: program.name,
         },
       });
+      // if (program.school_id === 122) {
+      //   setUniszaProgram(program);
+      //   const response = await fetch(
+      //     `${
+      //       import.meta.env.VITE_BASE_URL
+      //     }api/student/checkCourseApplicationStatus`,
+      //     {
+      //       method: "POST",
+      //       headers: {
+      //         Authorization: `Bearer ${token}`,
+      //         "Content-Type": "application/json",
+      //       },
+      //       body: JSON.stringify({ courseId: program.id }),
+      //     }
+      //   );
+      //   const data = await response.json();
+      //   if (data.success) {
+      //     setUniszarPopUp(true);
+      //   } else {
+      //     setUniszarErrorPopUp(true);
+      //     setUniszarErrorPopUpMessage(data.error);
+      //   }
+      // } else {
+      //   navigate(`/studentApplyCourses/${program.id}`, {
+      //     state: {
+      //       programId: program.id,
+      //       schoolLogoUrl: `${baseURL}storage/${program.logo}`,
+      //       schoolId: program.school_id,
+      //       schoolName: program.school_name,
+      //       courseName: program.name,
+      //     },
+      //   });
+      // }
+    }
+  };
+
+  const handleApplyUniszar = async (program) => {
+    try {
+      const token =
+        sessionStorage.getItem("token") || localStorage.getItem("token");
+      // console.log("program", program);
+      // setUniszarPopUp(false);
+
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL}api/student/applyCourse`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ courseID: program.id }),
+        }
+      );
+      const data = await response.json();
+
+      if (data.success) {
+        setUniszarPopUp(false);
+        window.location.href = "https://www.unisza.edu.my/pendidikan/pesisir";
+      }
+    } catch (error) {
+      console.log(error.message);
     }
   };
 
@@ -1135,12 +1208,14 @@ const SearchCourse = () => {
                         </button>
                       </div>
                       <div className="apply-button">
-                        {program.institute_category === "Local University" ? (
+                        {program.institute_category === "Local University" &&
+                        program.school_id != 122 ? (
                           <button
                             onClick={() =>
                               (window.location.href = `mailto:${program.email}`)
                             }
-                            className="featured coursepage-applybutton">
+                            className="featured coursepage-applybutton"
+                          >
                             Contact Now
                           </button>
                         ) : (
@@ -1179,45 +1254,45 @@ const SearchCourse = () => {
       try {
         // Step 1: Fetch countries and user's location in parallel
         const [countriesResult, userCountry] = await Promise.all([
-          fetch(countriesURL).then(res => res.json()),
+          fetch(countriesURL).then((res) => res.json()),
           fetchCountry(),
         ]);
 
         // Step 2: Set countries and determine selected country
         if (countriesResult.data) {
           setCountries(countriesResult.data);
-          
+
           // Determine which country to select (from URL params, user location, or default to Malaysia)
           let countryToSelect;
-          
+
           if (location.state?.initialCountry) {
             countryToSelect = countriesResult.data.find(
-              c => c.country_name === location.state.initialCountry
+              (c) => c.country_name === location.state.initialCountry
             );
           }
-          
+
           if (!countryToSelect && userCountry) {
             countryToSelect = countriesResult.data.find(
-              c => c.country_code === userCountry
+              (c) => c.country_code === userCountry
             );
           }
-          
+
           if (!countryToSelect) {
             countryToSelect = countriesResult.data.find(
-              c => c.country_name === "Malaysia"
+              (c) => c.country_name === "Malaysia"
             );
           }
-          
+
           // Step 3: Set selected country without triggering course fetch
           if (countryToSelect) {
             setSelectedCountry(countryToSelect);
-            
+
             // Step 4: Fetch filters and exchange rates in parallel
             await Promise.all([
               fetchFilters(countryToSelect.id),
               fetchExchangeRates(),
               fetchAddsImageA(),
-              fetchAddsImageB()
+              fetchAddsImageB(),
             ]);
           }
         }
@@ -1469,8 +1544,8 @@ const SearchCourse = () => {
             <small
               className="ms-2 cursor-pointer"
               onClick={() => toggleFilterExpand(filterType)}
-              style={{ 
-                color: "#B71A18", 
+              style={{
+                color: "#B71A18",
                 fontSize: "0.8rem",
                 cursor: "pointer",
               }}
@@ -1625,7 +1700,9 @@ const SearchCourse = () => {
                     }}
                   >
                     {selectedInstitute
-                      ? selectedInstitute.institute_name || selectedInstitute.core_metaName || selectedInstitute.name
+                      ? selectedInstitute.institute_name ||
+                        selectedInstitute.core_metaName ||
+                        selectedInstitute.name
                       : "University"}
                   </Dropdown.Toggle>
                   <Dropdown.Menu>
@@ -1634,7 +1711,9 @@ const SearchCourse = () => {
                         key={index}
                         onClick={() => setSelectedInstitute(institute)}
                       >
-                        {institute.institute_name || institute.core_metaName || institute.name}
+                        {institute.institute_name ||
+                          institute.core_metaName ||
+                          institute.name}
                       </Dropdown.Item>
                     ))}
                   </Dropdown.Menu>
@@ -1848,7 +1927,9 @@ const SearchCourse = () => {
               <Accordion.Item eventKey="1">
                 <Accordion.Header className="custom-accordion-header">
                   {selectedInstitute
-                    ? selectedInstitute.institute_name || selectedInstitute.core_metaName || selectedInstitute.name
+                    ? selectedInstitute.institute_name ||
+                      selectedInstitute.core_metaName ||
+                      selectedInstitute.name
                     : "Select University"}
                 </Accordion.Header>
                 <Accordion.Body>
@@ -1858,7 +1939,11 @@ const SearchCourse = () => {
                       type="radio"
                       name="university"
                       id={`institute-${institute.id}`}
-                      label={institute.institute_name || institute.core_metaName || institute.name}
+                      label={
+                        institute.institute_name ||
+                        institute.core_metaName ||
+                        institute.name
+                      }
                       checked={selectedInstitute?.id === institute.id}
                       onChange={() => setSelectedInstitute(institute)}
                       className="mb-2"
@@ -2306,11 +2391,12 @@ const SearchCourse = () => {
                   <div className="blankslate-courses-body text-md-left mt-3 mt-md-0 ml-md-0">
                     <h4 className="h5 h4-md">No programs found</h4>
                     <p className="mb-0 d-none d-md-block">
-                      There are no programs that match your selected filters. Please try
-                      adjusting your filters and search criteria.
+                      There are no programs that match your selected filters.
+                      Please try adjusting your filters and search criteria.
                     </p>
                     <p className="mb-0 d-block d-md-none">
-                      No results match your filters. Try adjusting your search criteria.
+                      No results match your filters. Try adjusting your search
+                      criteria.
                     </p>
                   </div>
                 </div>
@@ -2323,7 +2409,9 @@ const SearchCourse = () => {
                         className="card mb-4 degree-card"
                         style={{ position: "relative", height: "auto" }}
                       >
-                        {program.featured && <div className="featured-badge">Featured</div>}
+                        {program.featured && (
+                          <div className="featured-badge">Featured</div>
+                        )}
                         <div className="card-body d-flex flex-column flex-md-row align-items-start">
                           <Row className="coursepage-row">
                             <Col md={6} lg={6} className="course-card-ipad">
@@ -2338,7 +2426,10 @@ const SearchCourse = () => {
                                       .toLowerCase()}`}
                                     style={{ color: "black" }}
                                     onClick={() =>
-                                      sessionStorage.setItem("courseId", program.id)
+                                      sessionStorage.setItem(
+                                        "courseId",
+                                        program.id
+                                      )
                                     }
                                   >
                                     {program.name}
@@ -2363,7 +2454,10 @@ const SearchCourse = () => {
                                         .toLowerCase()}`}
                                       style={{ color: "black" }}
                                       onClick={() =>
-                                        sessionStorage.setItem("schoolId", program.school_id)
+                                        sessionStorage.setItem(
+                                          "schoolId",
+                                          program.school_id
+                                        )
                                       }
                                     >
                                       <div className="image-container">
@@ -2392,15 +2486,21 @@ const SearchCourse = () => {
                                           )
                                         }
                                       >
-                                        <h5 className="card-text">{program.school_name}</h5>
+                                        <h5 className="card-text">
+                                          {program.school_name}
+                                        </h5>
                                       </Link>
 
                                       <i
                                         className="bi bi-geo-alt"
-                                        style={{ marginRight: "10px", color: "#AAAAAA" }}
+                                        style={{
+                                          marginRight: "10px",
+                                          color: "#AAAAAA",
+                                        }}
                                       ></i>
                                       <span>
-                                        {program.state || "N/A"}, {program.country || "N/A"}
+                                        {program.state || "N/A"},{" "}
+                                        {program.country || "N/A"}
                                       </span>
                                     </div>
                                     <div>
@@ -2431,7 +2531,9 @@ const SearchCourse = () => {
                                                 className="bi bi-mortarboard"
                                                 style={{ marginRight: "10px" }}
                                               ></i>
-                                              <p style={{ paddingLeft: "20px" }}>
+                                              <p
+                                                style={{ paddingLeft: "20px" }}
+                                              >
                                                 {program.qualification}
                                               </p>
                                             </div>
@@ -2443,7 +2545,9 @@ const SearchCourse = () => {
                                                 className="bi bi-calendar-check"
                                                 style={{ marginRight: "10px" }}
                                               ></i>
-                                              <p style={{ paddingLeft: "20px" }}>
+                                              <p
+                                                style={{ paddingLeft: "20px" }}
+                                              >
                                                 {program.mode}
                                               </p>
                                             </div>
@@ -2455,7 +2559,9 @@ const SearchCourse = () => {
                                                 className="bi bi-clock"
                                                 style={{ marginRight: "10px" }}
                                               ></i>
-                                              <p style={{ paddingLeft: "20px" }}>
+                                              <p
+                                                style={{ paddingLeft: "20px" }}
+                                              >
                                                 {program.period}
                                               </p>
                                             </div>
@@ -2480,7 +2586,9 @@ const SearchCourse = () => {
                                               >
                                                 {Array.isArray(program.intake)
                                                   ? program.intake
-                                                      .map((intake) => intake.trim())
+                                                      .map((intake) =>
+                                                        intake.trim()
+                                                      )
                                                       .join(", ")
                                                   : "N/A"}
                                               </p>
@@ -2503,9 +2611,11 @@ const SearchCourse = () => {
                                       estimate fee
                                       <p style={{ fontSize: "16px" }}>
                                         {program.international_cost &&
-                                        program.country_code !== fetchedCountry ? (
+                                        program.country_code !==
+                                          fetchedCountry ? (
                                           program.international_cost === "0" ? (
-                                            program.cost === "0" || program.cost === "RM0" ? (
+                                            program.cost === "0" ||
+                                            program.cost === "RM0" ? (
                                               "N/A"
                                             ) : (
                                               <>
@@ -2531,18 +2641,19 @@ const SearchCourse = () => {
                                               ).replace(/^.*?(\d+.*)/, "$1")}
                                             </>
                                           )
-                                        ) : program.cost === "0" || program.cost === "RM0" ? (
+                                        ) : program.cost === "0" ||
+                                          program.cost === "RM0" ? (
                                           "N/A"
                                         ) : (
                                           <>
                                             <strong>
-                                              {sessionStorage.getItem("userCurrencySymbol") ||
-                                                "RM"}
+                                              {sessionStorage.getItem(
+                                                "userCurrencySymbol"
+                                              ) || "RM"}
                                             </strong>
-                                            {convertToFetchedCurrency(program.cost).replace(
-                                              /^.*?(\d+.*)/,
-                                              "$1"
-                                            )}
+                                            {convertToFetchedCurrency(
+                                              program.cost
+                                            ).replace(/^.*?(\d+.*)/, "$1")}
                                           </>
                                         )}
                                       </p>
@@ -2557,19 +2668,22 @@ const SearchCourse = () => {
                                         }}
                                         className="interest-button"
                                         aria-label={
-                                          courseInterests[program.id]?.status === 1
+                                          courseInterests[program.id]
+                                            ?.status === 1
                                             ? "Remove from interests"
                                             : "Add to interests"
                                         }
                                       >
                                         <span style={{ fontSize: "16px" }}>
-                                          {courseInterests[program.id]?.status === 1
+                                          {courseInterests[program.id]
+                                            ?.status === 1
                                             ? "Favourite"
                                             : "Favourite"}
                                         </span>
                                         <i
                                           className={
-                                            courseInterests[program.id]?.status === 1
+                                            courseInterests[program.id]
+                                              ?.status === 1
                                               ? "bi bi-heart-fill"
                                               : "bi bi-heart"
                                           }
@@ -2577,23 +2691,90 @@ const SearchCourse = () => {
                                       </button>
                                     </div>
                                     <div className="apply-button">
-                                      {program.institute_category === "Local University" ? (
+                                      {program.institute_category ===
+                                        "Local University" &&
+                                      program.school_id != 122 ? (
                                         <button
                                           onClick={() =>
                                             (window.location.href = `mailto:${program.email}`)
                                           }
-                                          className="featured coursepage-applybutton">
+                                          className="featured coursepage-applybutton"
+                                        >
                                           Contact Now
                                         </button>
                                       ) : (
                                         <button
                                           className="featured coursepage-applybutton"
-                                          onClick={() => handleApplyNow(program)}
+                                          onClick={() =>
+                                            handleApplyNow(program)
+                                          }
                                         >
                                           Apply Now
                                         </button>
                                       )}
                                     </div>
+                                    {/* Modal for applying to program with school_id === 122 */}
+                                    <Modal
+                                      show={uniszarPopUp}
+                                      onHide={() => setUniszarPopUp(false)}
+                                    >
+                                      <Modal.Header closeButton>
+                                        <Modal.Title>
+                                          Confirmation Required
+                                        </Modal.Title>
+                                      </Modal.Header>
+                                      <Modal.Body>
+                                        <b>
+                                          We will notify the school and redirect
+                                          you to another page.
+                                        </b>
+                                        <br></br>Are you sure you want to apply
+                                        to <b>{uniszaProgram.name}</b> from{" "}
+                                        <b>{uniszaProgram.school_name}</b>?
+                                      </Modal.Body>
+                                      <Modal.Footer>
+                                        <Button
+                                          className="uniszarPopOutConfirmButton"
+                                          onClick={
+                                            () =>
+                                              handleApplyUniszar(uniszaProgram) // Use the selected program
+                                          }
+                                        >
+                                          Confirm
+                                        </Button>
+                                        <Button
+                                          className="uniszarPopOutCancelButton"
+                                          onClick={() => setUniszarPopUp(false)} // Close button
+                                        >
+                                          Close
+                                        </Button>
+                                      </Modal.Footer>
+                                    </Modal>
+                                    {/* if student already applied */}
+                                    <Modal
+                                      show={uniszarErrorPopUp}
+                                      onHide={() => setUniszarErrorPopUp(false)}
+                                    >
+                                      <Modal.Header closeButton>
+                                        <Modal.Title style={{ color: "red" }}>
+                                          Notice
+                                        </Modal.Title>
+                                      </Modal.Header>
+                                      <Modal.Body>
+                                        <b>{uniszarErrorPopUpMessage}</b>
+                                      </Modal.Body>
+                                      <Modal.Footer>
+                                        <Button
+                                          // variant="secondary"
+                                          className="uniszarPopOutCancelButton"
+                                          onClick={() =>
+                                            setUniszarErrorPopUp(false)
+                                          } // Close button
+                                        >
+                                          Close
+                                        </Button>
+                                      </Modal.Footer>
+                                    </Modal>
                                   </div>
                                 </div>
                               </div>
@@ -2603,14 +2784,14 @@ const SearchCourse = () => {
                       </div>
                     </React.Fragment>
                   ))}
-                  
+
                   {/* Advertisement after first 3 programs */}
                   {programs.length > 3 && (
                     <div className="my-5">
                       {renderAdImages(adsImageB, StudyPal)}
                     </div>
                   )}
-                  
+
                   {/* Remaining programs */}
                   {programs.slice(3).map((program, index) => (
                     <React.Fragment key={program.id}>
@@ -2618,7 +2799,9 @@ const SearchCourse = () => {
                         className="card mb-4 degree-card"
                         style={{ position: "relative", height: "auto" }}
                       >
-                        {program.featured && <div className="featured-badge">Featured</div>}
+                        {program.featured && (
+                          <div className="featured-badge">Featured</div>
+                        )}
                         <div className="card-body d-flex flex-column flex-md-row align-items-start">
                           <Row className="coursepage-row">
                             <Col md={6} lg={6} className="course-card-ipad">
@@ -2633,7 +2816,10 @@ const SearchCourse = () => {
                                       .toLowerCase()}`}
                                     style={{ color: "black" }}
                                     onClick={() =>
-                                      sessionStorage.setItem("courseId", program.id)
+                                      sessionStorage.setItem(
+                                        "courseId",
+                                        program.id
+                                      )
                                     }
                                   >
                                     {program.name}
@@ -2658,7 +2844,10 @@ const SearchCourse = () => {
                                         .toLowerCase()}`}
                                       style={{ color: "black" }}
                                       onClick={() =>
-                                        sessionStorage.setItem("schoolId", program.school_id)
+                                        sessionStorage.setItem(
+                                          "schoolId",
+                                          program.school_id
+                                        )
                                       }
                                     >
                                       <div className="image-container">
@@ -2687,15 +2876,21 @@ const SearchCourse = () => {
                                           )
                                         }
                                       >
-                                        <h5 className="card-text">{program.school_name}</h5>
+                                        <h5 className="card-text">
+                                          {program.school_name}
+                                        </h5>
                                       </Link>
 
                                       <i
                                         className="bi bi-geo-alt"
-                                        style={{ marginRight: "10px", color: "#AAAAAA" }}
+                                        style={{
+                                          marginRight: "10px",
+                                          color: "#AAAAAA",
+                                        }}
                                       ></i>
                                       <span>
-                                        {program.state || "N/A"}, {program.country || "N/A"}
+                                        {program.state || "N/A"},{" "}
+                                        {program.country || "N/A"}
                                       </span>
                                     </div>
                                     <div>
@@ -2726,7 +2921,9 @@ const SearchCourse = () => {
                                                 className="bi bi-mortarboard"
                                                 style={{ marginRight: "10px" }}
                                               ></i>
-                                              <p style={{ paddingLeft: "20px" }}>
+                                              <p
+                                                style={{ paddingLeft: "20px" }}
+                                              >
                                                 {program.qualification}
                                               </p>
                                             </div>
@@ -2738,7 +2935,9 @@ const SearchCourse = () => {
                                                 className="bi bi-calendar-check"
                                                 style={{ marginRight: "10px" }}
                                               ></i>
-                                              <p style={{ paddingLeft: "20px" }}>
+                                              <p
+                                                style={{ paddingLeft: "20px" }}
+                                              >
                                                 {program.mode}
                                               </p>
                                             </div>
@@ -2750,7 +2949,9 @@ const SearchCourse = () => {
                                                 className="bi bi-clock"
                                                 style={{ marginRight: "10px" }}
                                               ></i>
-                                              <p style={{ paddingLeft: "20px" }}>
+                                              <p
+                                                style={{ paddingLeft: "20px" }}
+                                              >
                                                 {program.period}
                                               </p>
                                             </div>
@@ -2775,7 +2976,9 @@ const SearchCourse = () => {
                                               >
                                                 {Array.isArray(program.intake)
                                                   ? program.intake
-                                                      .map((intake) => intake.trim())
+                                                      .map((intake) =>
+                                                        intake.trim()
+                                                      )
                                                       .join(", ")
                                                   : "N/A"}
                                               </p>
@@ -2798,9 +3001,11 @@ const SearchCourse = () => {
                                       estimate fee
                                       <p style={{ fontSize: "16px" }}>
                                         {program.international_cost &&
-                                        program.country_code !== fetchedCountry ? (
+                                        program.country_code !==
+                                          fetchedCountry ? (
                                           program.international_cost === "0" ? (
-                                            program.cost === "0" || program.cost === "RM0" ? (
+                                            program.cost === "0" ||
+                                            program.cost === "RM0" ? (
                                               "N/A"
                                             ) : (
                                               <>
@@ -2826,18 +3031,19 @@ const SearchCourse = () => {
                                               ).replace(/^.*?(\d+.*)/, "$1")}
                                             </>
                                           )
-                                        ) : program.cost === "0" || program.cost === "RM0" ? (
+                                        ) : program.cost === "0" ||
+                                          program.cost === "RM0" ? (
                                           "N/A"
                                         ) : (
                                           <>
                                             <strong>
-                                              {sessionStorage.getItem("userCurrencySymbol") ||
-                                                "RM"}
+                                              {sessionStorage.getItem(
+                                                "userCurrencySymbol"
+                                              ) || "RM"}
                                             </strong>
-                                            {convertToFetchedCurrency(program.cost).replace(
-                                              /^.*?(\d+.*)/,
-                                              "$1"
-                                            )}
+                                            {convertToFetchedCurrency(
+                                              program.cost
+                                            ).replace(/^.*?(\d+.*)/, "$1")}
                                           </>
                                         )}
                                       </p>
@@ -2852,19 +3058,22 @@ const SearchCourse = () => {
                                         }}
                                         className="interest-button"
                                         aria-label={
-                                          courseInterests[program.id]?.status === 1
+                                          courseInterests[program.id]
+                                            ?.status === 1
                                             ? "Remove from interests"
                                             : "Add to interests"
                                         }
                                       >
                                         <span style={{ fontSize: "16px" }}>
-                                          {courseInterests[program.id]?.status === 1
+                                          {courseInterests[program.id]
+                                            ?.status === 1
                                             ? "Favourite"
                                             : "Favourite"}
                                         </span>
                                         <i
                                           className={
-                                            courseInterests[program.id]?.status === 1
+                                            courseInterests[program.id]
+                                              ?.status === 1
                                               ? "bi bi-heart-fill"
                                               : "bi bi-heart"
                                           }
@@ -2872,18 +3081,23 @@ const SearchCourse = () => {
                                       </button>
                                     </div>
                                     <div className="apply-button">
-                                      {program.institute_category === "Local University" ? (
+                                      {program.institute_category ===
+                                        "Local University" &&
+                                      program.school_id != 122 ? (
                                         <button
                                           onClick={() =>
                                             (window.location.href = `mailto:${program.email}`)
                                           }
-                                          className="featured coursepage-applybutton">
+                                          className="featured coursepage-applybutton"
+                                        >
                                           Contact Now
                                         </button>
                                       ) : (
                                         <button
                                           className="featured coursepage-applybutton"
-                                          onClick={() => handleApplyNow(program)}
+                                          onClick={() =>
+                                            handleApplyNow(program)
+                                          }
                                         >
                                           Apply Now
                                         </button>

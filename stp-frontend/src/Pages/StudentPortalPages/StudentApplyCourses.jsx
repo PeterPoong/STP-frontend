@@ -19,6 +19,7 @@ import "../../css/StudentPortalStyles/StudentApplyCourse.css";
 import "../../css/StudentPortalStyles/StudentButtonGroup.css";
 import image1 from "../../assets/StudentAssets/University Logo/image1.jpg";
 import WidgetPopUpError from "../../Components/StudentPortalComp/Widget/WidgetPopUpError";
+import StudentApplyCustomCourses from "../../Components/StudentComp/StudentApplyCustomCourses";
 
 const CustomConnector = styled(StepConnector)(({ theme }) => ({
   [`&.${stepConnectorClasses.alternativeLabel}`]: {
@@ -148,7 +149,8 @@ const StudentApplyCourses = () => {
   const [showErrorPopup, setShowErrorPopup] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const location = useLocation();
-  const { schoolLogoUrl, schoolName, courseName } = location.state || {};
+  const { schoolLogoUrl, schoolId, schoolName, courseName } =
+    location.state || {};
   const [formData, setFormData] = useState({
     basicInformation: {},
     academicTranscript: {},
@@ -159,8 +161,10 @@ const StudentApplyCourses = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log("course", schoolId);
     const token =
       sessionStorage.getItem("token") || localStorage.getItem("token");
+
     if (!token) {
       navigate("/studentPortalLogin");
     }
@@ -286,6 +290,21 @@ const StudentApplyCourses = () => {
       </CustomStepIcon>
     );
   };
+
+  // Add early return for schoolId 118
+  if (schoolId === 118 || schoolId === 122) {
+    // if (schoolId === 118 || schoolId === 2) {
+    return (
+      <StudentApplyCustomCourses
+        courseId={courseId}
+        schoolLogoUrl={schoolLogoUrl}
+        schoolName={schoolName}
+        courseName={courseName}
+        schoolId={schoolId}
+      />
+    );
+  }
+
   if (isSubmitted) {
     return (
       <div className="app-container-applycourse">

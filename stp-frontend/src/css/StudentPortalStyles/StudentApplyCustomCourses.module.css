@@ -1,0 +1,154 @@
+.applycustomcourses_row {
+  margin-top: 2rem;  /* Default margin for mobile */
+}
+
+/* @media (min-width: 768px) {
+  .applycustomcourses_row {
+    margin-top: 4rem;  
+  }
+} */
+
+.applycustomcourses_column {
+  padding: 1rem;
+}
+
+.applycustomcourses_content {
+  padding: 1rem;
+}
+
+.applycustomcourses_image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  filter: brightness(0.5);
+}
+
+.applycustomcourses_image_container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.applycustomcourses_text_overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;  /* Adjust this value to position text where you want */
+  transform: translate(-50%, -50%);
+  text-align: left;
+  color: white;
+  z-index: 1;
+  width: 90%;
+  max-width: 100%;  /* Ensure it doesn't overflow */
+  padding: 1rem;    /* Add some padding */
+  word-wrap: break-word;  /* Handle long words */
+  overflow-wrap: break-word;
+}
+
+.applycustomcourses_school_name{
+  font-size: clamp(1rem, 2vw, 1.25rem);
+font-weight: bold;
+  margin-top: clamp(0rem,1.5vw,1.5rem);
+  margin-bottom: 0.5rem;
+  opacity: 0.9;
+  white-space: normal;  /* Allow text to wrap */
+}
+
+.applycustomcourses_subtitle{
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    margin-top: clamp(1rem, 2vw, 1.25rem);
+    margin-bottom: 0.5rem;
+    opacity: 0.9;
+    white-space: normal;  /* Allow text to wrap */
+}
+
+.applycustomcourses_title {
+  font-size: clamp(1.5rem, 2vw, 2.5rem);
+  font-weight: bold;
+  margin: 0;
+  color: red;
+  white-space: normal;  /* Allow text to wrap */
+  line-height: 1.2;    /* Improve readability for wrapped text */
+}
+
+.applycustomcourses_logo_container {
+  width: clamp(150px, 15vw, 200px);
+  height: clamp(90px, 10vw, 120px);
+  border-radius: clamp(16px, 1vw, 24px);
+  margin-top: 20px;
+  overflow: hidden;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.applycustomcourses_school_logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 5px;
+}
+.studentapplycustomcourses_nav_container {
+    margin-top: clamp(1rem, 3vw + 0.5rem, 3rem);
+  }
+
+.applycustomcourses_icon {
+  width: clamp(25px, 3vw, 100px);
+  height: auto;
+  display: block;
+}
+
+.studentapplycustomcourses_dropzone {
+    border: 2px dashed #007bff; /* Change color as needed */
+    background-color: white; /* Light background */
+    transition: background-color 0.3s;
+  }
+  
+  .studentapplycustomcourses_dropzone:hover {
+    background-color: #e9ecef; /* Change background on hover */
+  }
+
+  .applycustomcourses_upload_icon {
+    width: clamp(25px, 3vw, 100px);
+    height: auto;
+    display: block;
+  }
+
+  .applycustomcourses_document_icon {
+    width: clamp(25px, 2vw, 100px);
+    height: auto;
+    display: block;
+  }
+  /* src/css/StudentPortalStyles/StudentApplyCustomCourses.module.css */
+.applycustomcourses_uploadedFileContainer {
+    border: 2px ;           
+    text-align: left;   
+     
+    border-radius: 0.375rem;    
+    background-color: white;    
+    color: #B71A18;             
+  }
+
+/* src/css/StudentPortalStyles/StudentApplyCustomCourses.module.css */
+
+  
+  /* ... existing code ... */
+  .applycustomcourses_pendingImage {
+    width: clamp(300px, 20vw, 1000px);
+    height: auto; /* Maintain aspect ratio */
+    margin: 0; /* Remove margin to center properly */
+    display: block; /* Center the image */
+  }
+
+  .button_customCourse {
+    border: 1px solid #B71A18; /* Red outline */
+    background-color: white; /* White background */
+    color: #B71A18; /* Red text */
+    transition: background-color 0.3s, color 0.3s; /* Smooth transition */
+  }
+  
+  .button_customCourse:hover {
+    background-color: #B71A18; /* Fill with red on hover */
+    color: white; /* Change text to white on hover */
+  }

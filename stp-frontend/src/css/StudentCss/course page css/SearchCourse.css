@@ -425,3 +425,49 @@
     padding: 0 1rem;
   }
 }
+
+.uniszarPopOutConfirmButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 15px;
+  background-color: white !important; /* White background */
+  border: 1px solid #B71A18 !important; /* Red border */
+  border-radius: 4px;
+  color: #B71A18 !important; /* Red text color */
+  font-size: 14px !important;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: clamp(80px, 5vw, 145px); /* Responsive width */
+  height: clamp(35px, 8vh, 45px); /* Responsive height */
+  margin-top: 10px;
+}
+
+.uniszarPopOutConfirmButton:hover {
+  background-color: #B71A18 !important; /* Red background on hover */
+  color: white !important; /* White text color on hover */
+}
+
+.uniszarPopOutCancelButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 15px;
+  background-color: white !important; /* White background */
+  border: 1px solid grey !important; /* Red border */
+  border-radius: 4px;
+  color: grey !important; /* Red text color */
+  font-size: 14px !important;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: clamp(80px, 5vw, 145px); /* Responsive width */
+  height: clamp(35px, 8vh, 45px); /* Responsive height */
+  margin-top: 10px;
+}
+
+.uniszarPopOutCancelButton:hover {
+  background-color: grey !important; /* Red background on hover */
+  color: white !important; /* White text color on hover */
+}

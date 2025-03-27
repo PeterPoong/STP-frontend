@@ -324,6 +324,7 @@ const CourseDetail = () => {
           }`,
           schoolName: program.school,
           courseName: program.course,
+          schoolId: program.schoolID,
         },
       });
     } else {
@@ -341,7 +342,7 @@ const CourseDetail = () => {
       });
 
       const result = await response.json();
-      //console.log(result);
+
       if (result.success) {
         setAdsImage(result.data);
       }
@@ -544,7 +545,7 @@ const CourseDetail = () => {
                       }}
                       onClick={() => handleApplyNow(program)} // Pass the correct ID
                     >
-                      Apply Now
+                      Apply Nows
                     </Button>
                   )}
                 </Col>
