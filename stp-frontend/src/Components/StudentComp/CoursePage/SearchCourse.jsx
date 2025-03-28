@@ -27,6 +27,8 @@ import {
 import CountryFlag from "react-country-flag";
 import debounce from "lodash.debounce";
 import StudyPal from "../../../assets/StudentAssets/coursepage image/StudyPal.webp";
+import adsImageBdefault from "../../../assets/StudentAssets/coursepage image/adsImageB.png";
+import adsImageAdefault from "../../../assets/StudentAssets/coursepage image/adsImage.png";
 import emptyStateImage from "../../../assets/StudentAssets/emptyStateImage/emptystate.png";
 import { Helmet } from "react-helmet";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -874,56 +876,34 @@ const SearchCourse = () => {
   const renderAdImages = (adsImages, defaultImage) => {
     if (Array.isArray(adsImages) && adsImages.length > 0) {
       return (
-        <Suspense
-          fallback={
-            <div className="mb-1">
-              <Placeholder
-                as="div"
-                animation="wave"
-                className="w-100"
-                style={{ height: "175px" }}
-              >
-                <Placeholder xs={12} style={{ height: "100%" }} />
-              </Placeholder>
-            </div>
-          }
+        <Swiper
+          spaceBetween={0}
+          slidesPerView={1}
+          autoplay={{ delay: 5000, disableOnInteraction: false }}
+          modules={[Navigation, Autoplay]}
+        
         >
-          <div className="advertisement-container">
-            <Swiper
-              modules={[Navigation, Autoplay]}
-              spaceBetween={0}
-              slidesPerView={1}
-              navigation={true}
-              loop={true}
-              autoplay={{
-                delay: 3000,
-                disableOnInteraction: false,
-              }}
-              className="advertisement-swiper"
-            >
-              {adsImages.map((ad) => (
-                <SwiperSlide key={ad.id}>
-                  <a
-                    href={ad.banner_url.startsWith("http") ? ad.banner_url : `https://${ad.banner_url}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <img
-                      src={`${baseURL}storage/${ad.banner_file}`}
-                      alt={`Advertisement ${ad.banner_name}`}
-                      className="studypal-image rounded-3"
-                      style={{
-                        height: adsImages === adsImageB ? "100px" : "175px",
-                        width: "100%",
-                        objectFit: "contain"
-                      }}
-                    />
-                  </a>
-                </SwiperSlide>
-              ))}
-            </Swiper>
-          </div>
-        </Suspense>
+          {adsImages.map((ad) => (
+            <SwiperSlide key={ad.id}>
+              <a
+                href={ad.banner_url.startsWith('http') ? ad.banner_url : `https://${ad.banner_url}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img
+                  src={`${baseURL}storage/${ad.banner_file}`}
+                  alt={`Advertisement ${ad.banner_name}`}
+                  className="studypal-image"
+                  style={{
+                    height: adsImages === adsImageB ? "100px" : "175px",
+                    objectFit: "contain",
+                  
+                  }}
+                />
+              </a>
+            </SwiperSlide>
+          ))}
+        </Swiper>
       );
     }
 
@@ -932,7 +912,11 @@ const SearchCourse = () => {
         src={defaultImage}
         alt="Default Image"
         className="studypal-image"
-        style={{ height: "175px" }}
+        style={{ 
+          height: adsImages === adsImageB ? "100px" : "175px",
+          objectFit: "contain",
+       
+        }}
       />
     );
   };
@@ -2263,7 +2247,7 @@ const SearchCourse = () => {
 
             {/* Right Content - Course Listings */}
             <Col xs={12} md={9} className="degreeprograms-division">
-              <div>{renderAdImages(adsImageA, StudyPal)}</div>
+              <div>{renderAdImages(adsImageA, adsImageAdefault)}</div>
 
               {loading ? (
                 <div>
@@ -2787,8 +2771,8 @@ const SearchCourse = () => {
 
                   {/* Advertisement after first 3 programs */}
                   {programs.length > 3 && (
-                    <div className="my-5">
-                      {renderAdImages(adsImageB, StudyPal)}
+                    <div className="my-5 mb-3">
+                      {renderAdImages(adsImageB, adsImageBdefault)}
                     </div>
                   )}
 
