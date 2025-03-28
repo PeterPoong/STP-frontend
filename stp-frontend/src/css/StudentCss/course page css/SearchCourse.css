@@ -425,3 +425,82 @@
     padding: 0 1rem;
   }
 }
+
+/* Advertisement Styles */
+.ad-container {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.advertisement-item {
+  width: 100%;
+  margin-bottom:  5px!important;
+  padding: 0 !important;
+}
+
+.studypal-image {
+  width: 100%;
+  display: block;
+  margin: 0 ;
+  padding: 0 ;
+}
+
+.advertisements-container {
+  margin-bottom: 20px;
+}
+
+/* Swiper container styles */
+.swiper-container {
+  width: 100%;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* For mobile devices */
+@media (max-width: 768px) {
+  .ad-container {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  /* Add bottom margin to adsImageB container */
+  .degree-card:nth-child(3) + .ad-container {
+    margin-bottom: 15px !important; /* Increased space at bottom of container */
+  }
+  
+  /* Keep the existing padding for the image */
+  .degree-card:nth-child(3) + .ad-container .studypal-image {
+    margin-bottom: 15px !important;
+  }
+  
+  .studypal-image {
+    height: auto !important;
+    max-height: 100px;
+    /* margin: 0 !important;
+    padding: 0 !important; */
+  }
+  
+  .swiper-container {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+
+}
+
+/* Remove any extra spacing from surrounding containers */
+.my-5 {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Ensure proper spacing between cards */
+.degree-card {
+  margin-bottom: 0 !important;
+}
+
+/* Remove spacing from my-5 class when used with advertisements */
+.degreeprograms-division .my-5 {
+  margin: 0 !important;
+  padding: 0 !important;
+}

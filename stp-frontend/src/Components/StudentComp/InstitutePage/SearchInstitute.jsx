@@ -16,6 +16,8 @@ import {
 import CountryFlag from "react-country-flag";
 import "../../../css/StudentCss/institutepage css/Institute.css";
 import StudyPal from "../../../assets/StudentAssets/institute image/StudyPal.png";
+import adsImageBdefault from "../../../assets/StudentAssets/coursepage image/adsImageB.png";
+import adsImageAdefault from "../../../assets/StudentAssets/coursepage image/adsImage.png";
 import emptyStateImage from "../../../assets/StudentAssets/emptyStateImage/emptystate.png";
 import "../../../css/StudentCss/course page css/SearchCourse.css";
 import { Helmet } from "react-helmet";
@@ -752,13 +754,13 @@ const SearchInstitute = () => {
                  <Swiper
                  spaceBetween={10}
                  slidesPerView={1}
-                 navigation
+              
                  autoplay={{ delay: 5000, disableOnInteraction: false }} // Ensure autoplay is enabled
-                 modules={[Navigation, Autoplay]} 
-                 style={{ padding: "20px 0" }}
+                 modules={[Autoplay]} 
+              
                >
                 {adsImageB.map((ad, index) => (
-                  <SwiperSlide key={ad.id} className="advertisement-item mb-3">
+                  <SwiperSlide key={ad.id} className="advertisement-item">
                     <a
                       href={ad.banner_url.startsWith('http') ? ad.banner_url : `https://${ad.banner_url}`}
                       target="_blank"
@@ -771,8 +773,8 @@ const SearchInstitute = () => {
                         className="studypal-image"
                         style={{
                           height: "100px",
-                          objectFit: "fill",
-                          marginBottom: index < adsImageB.length - 1 ? "20px" : "0"
+                          objectFit: "contain",
+                    
                         }}
                       />
                     </a>
@@ -783,7 +785,7 @@ const SearchInstitute = () => {
             ) : (
               <img
                 loading="lazy"
-                src={StudyPal}
+                src={adsImageBdefault}
                 alt="Study Pal"
                 className="studypal-image"
                 style={{ height: "100px" }}
@@ -1228,10 +1230,9 @@ const SearchInstitute = () => {
                  <Swiper
                  spaceBetween={10}
                  slidesPerView={1}
-                 navigation
                  autoplay={{ delay: 5000, disableOnInteraction: false }} // Ensure autoplay is enabled
-                 modules={[Navigation, Autoplay]} 
-                 style={{ padding: "20px 0" }}
+                 modules={[ Autoplay]} 
+               
                >
                   {adsImageA.map((ad, index) => (
                      <SwiperSlide key={ad.id} className="advertisement-item mb-3">
@@ -1248,6 +1249,7 @@ const SearchInstitute = () => {
                           style={{
                             height: "175px",
                             objectFit: "contain",
+                            margin: "0",
                             marginBottom: index < adsImageA.length - 1 ? "20px" : "0"
                           }}
                         />
@@ -1258,7 +1260,7 @@ const SearchInstitute = () => {
               ) : (
                 <img
                   loading="lazy"
-                  src={StudyPal}
+                  src={adsImageAdefault}
                   alt="Study Pal"
                   className="studypal-image"
                   style={{ height: "175px" }}

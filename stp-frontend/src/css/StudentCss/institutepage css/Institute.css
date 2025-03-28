@@ -255,10 +255,10 @@
 
 .studypal-image {
   width: 1180px;
-  height: 150px;
+  height: 100px;
   display: block;
-  object-fit: cover;
-  margin-bottom: 40px;
+  object-fit: contain;
+  /* margin-bottom: 40px; */
 }
 
 .blankslate-institutes {
