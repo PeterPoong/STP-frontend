@@ -11,7 +11,8 @@ const KnowMore = () => {
     // Set meta description
     const metaDescription = document.createElement("meta");
     metaDescription.name = "description";
-    metaDescription.content = "The details of the course and university for the future student at studypal.my.";
+    metaDescription.content =
+      "The details of the course and university for the future student at studypal.my.";
     document.head.appendChild(metaDescription);
 
     // Clean up by removing the meta tag and schoolId when component unmounts
@@ -23,7 +24,7 @@ const KnowMore = () => {
 
   return (
     <div>
-      <KnowMoreInstitute/>
+      <KnowMoreInstitute />
     </div>
   );
 };
