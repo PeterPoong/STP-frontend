@@ -33,6 +33,9 @@ const StudentPortalSignUp = () => {
   const [isFormValid, setIsFormValid] = useState(false);
   const [phoneError, setPhoneError] = useState("");
   const navigate = useNavigate();
+  const [localStudent, setLocalStudent] = useState();
+  const [studentNationality, setStudentNationality] = useState();
+  // const [icFormat, setIcFormat] = useState("^d{12}$");
   const [icError, setIcError] = useState("");
   /*Checking if have token or not if dont have navigate back to studentportalbasicinformations page */
   useEffect(() => {
@@ -69,15 +72,15 @@ const StudentPortalSignUp = () => {
     }
 
     // Revalidate IC when country changes
-    if (country.dialCode === "60" && identityCard) {
-      if (!validateMalaysianIC(identityCard)) {
-        setIcError("Malaysian IC must be 12 digits");
-      } else {
-        setIcError("");
-      }
-    } else {
-      setIcError(""); // Clear error for non-Malaysian ICs
-    }
+    // if (country.dialCode === "60" && identityCard) {
+    //   if (!validateMalaysianIC(identityCard)) {
+    //     setIcError("Malaysian IC must be 12 digits");
+    //   } else {
+    //     setIcError("");
+    //   }
+    // } else {
+    //   setIcError(""); // Clear error for non-Malaysian ICs
+    // }
   };
   /*end */
 
@@ -99,10 +102,10 @@ const StudentPortalSignUp = () => {
       setSignupStatus("password_too_short");
       return;
     }
-    if (countryCode === "60" && !validateMalaysianIC(identityCard)) {
-      setIcError("Malaysian IC must be 12 digits");
-      return;
-    }
+    // if (countryCode === "60" && !validateMalaysianIC(identityCard)) {
+    //   setIcError("Malaysian IC must be 12 digits");
+    //   return;
+    // }
 
     const formData = {
       name: name,
@@ -110,6 +113,7 @@ const StudentPortalSignUp = () => {
       password: password,
       confirm_password: confirmPassword,
       ic: identityCard,
+      student_nationality: studentNationality,
       type: "student",
       country_code: `+${countryCode}`,
       contact_number: phone.slice(countryCode.length),
@@ -178,7 +182,7 @@ const StudentPortalSignUp = () => {
     const value = e.target.value.replace(/[^a-zA-Z0-9]/g, "");
     setIdentityCard(value);
 
-    if (countryCode === "60") {
+    if (studentNationality === "malaysian") {
       // Check if the country is Malaysia
       if (!validateMalaysianIC(value)) {
         setIcError("Malaysian IC must be 12 digits");
@@ -199,6 +203,19 @@ const StudentPortalSignUp = () => {
     window.location.href = `${import.meta.env.VITE_BASE_URL}api/auth/google`;
   };
 
+  const handleRadioButton = (isLocal, nationality) => {
+    setLocalStudent(isLocal);
+    setIdentityCard("");
+    setIcError("");
+    if (isLocal == "true") {
+      setStudentNationality(nationality);
+      // setIcFormat("^d{12}$");
+    } else {
+      setStudentNationality(nationality);
+      // setIcFormat("");
+    }
+  };
+
   return (
     <Container fluid className="h-100">
       <Row className="h-100">
@@ -209,7 +226,10 @@ const StudentPortalSignUp = () => {
             className="w-100 h-100 object-fit-cover"
           />
         </Col>
-        <Col md={6} className="d-flex align-items-center justify-content-center bg-white">
+        <Col
+          md={6}
+          className="d-flex align-items-center justify-content-center bg-white"
+        >
           <div className="w-100" style={{ maxWidth: "600px" }}>
             <div className="studypal-logo-div">
               {/*<img
@@ -254,8 +274,8 @@ const StudentPortalSignUp = () => {
 
             {signupStatus === "ic_exists" && (
               <Alert variant="warning">
-                This ic is already registered. Please use a different email or
-                try logging in.
+                This ic is already registered. Please use a different ic or try
+                logging in.
               </Alert>
             )}
             {signupStatus === "phone_exists" && (
@@ -280,6 +300,44 @@ const StudentPortalSignUp = () => {
                   className="std-input-placeholder"
                 />
               </Form.Group>
+              <Row>
+                <Col xs={12}>
+                  <Form.Group className="mb-3">
+                    <p className="text-start p-0 mb-0 custom-color-title-label small">
+                      Nationality
+                    </p>
+                    <div className="d-flex justify-content-start">
+                      <Form.Check
+                        type="radio"
+                        label={
+                          <span className="custom-color-title-label">
+                            Malaysian
+                          </span>
+                        }
+                        name="userType"
+                        id="local"
+                        className="me-3"
+                        onChange={() => handleRadioButton(true, "malaysian")}
+                        required
+                        // defaultChecked
+                      />
+                      <Form.Check
+                        type="radio"
+                        label={
+                          <span className="custom-color-title-label">
+                            Non Malaysian
+                          </span>
+                        }
+                        name="userType"
+                        id="international"
+                        onChange={() =>
+                          handleRadioButton(false, "international")
+                        }
+                      />
+                    </div>
+                  </Form.Group>
+                </Col>
+              </Row>
               <Row classname="std-fix-align ">
                 <Col xs={12} md={6}>
                   <Form.Group controlId="formBasicPhone" className="mb-3">
@@ -326,13 +384,17 @@ const StudentPortalSignUp = () => {
                     </p>
                     <Form.Control
                       type="text"
-                      placeholder="XXXXXXXX "
+                      placeholder={
+                        localStudent == null
+                          ? "Please select your nationality"
+                          : "Please enter your IC number"
+                      }
                       value={identityCard}
                       onChange={handleIdentityCardChange}
-                      required
-                      pattern="[a-zA-Z0-9]+"
+                      required={localStudent !== null}
                       title="IC can only contain letters and numbers"
                       className="std-input-placeholder"
+                      disabled={localStudent == null}
                     />
                     {icError && (
                       <Form.Control.Feedback
@@ -481,7 +543,6 @@ const StudentPortalSignUp = () => {
                   </button>
                 </Col>
               </Row>
-              
 
               <p className="text-center small mb-0 mt-5">
                 Already have an account?{" "}

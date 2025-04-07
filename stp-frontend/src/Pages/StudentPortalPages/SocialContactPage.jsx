@@ -12,6 +12,10 @@ const SocialContactPage = () => {
   const [id, setId] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate(); // React Router's hook for navigation
+  const [identityCard, setIdentityCard] = useState("");
+  const [localStudent, setLocalStudent] = useState();
+  const [studentNationality, setStudentNationality] = useState();
+  const [icError, setIcError] = useState("");
 
   const handlePhoneChange = (value, country) => {
     setPhone(value);
@@ -22,35 +26,74 @@ const SocialContactPage = () => {
     e.preventDefault();
 
     const formData = {
-      id: id,
+      id: id ?? 1,
       country_id: `+${countryCode}`,
       contact_number: phone.slice(countryCode.length),
+      student_icNumber: identityCard,
+      student_nationality: studentNationality,
     };
-
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}api/social/updateContact`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
+      // console.log("icerror", icError);
+      if (icError == "") {
+        const response = await fetch(
+          `${import.meta.env.VITE_BASE_URL}api/social/updateContact`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData),
+          }
+        );
+        const data = await response.json();
+        if (data["success"] == false) {
+          setError(data["error"]);
+        } else {
+          setError("");
+          setTimeout(() => {
+            navigate("/studentPortalBasicInformations");
+            // navigate("/SocialContactPage");
+          }, 500);
         }
-      );
-      const data = await response.json();
-      if (data["success"] == false) {
-        setError(data["error"]);
-        console.log(data["error"]);
       } else {
-        setError("");
-        setTimeout(() => {
-          navigate("/studentPortalBasicInformations");
-          // navigate("/SocialContactPage");
-        }, 500);
+        console.log("incorrect");
       }
     } catch (error) {
       setError(`Error update contact number: ${error.error}`);
+    }
+  };
+
+  const validateMalaysianIC = (ic) => {
+    // Malaysian IC should be exactly 12 digits
+    return /^\d{12}$/.test(ic);
+  };
+
+  const handleRadioButton = (isLocal, nationality) => {
+    setLocalStudent(isLocal);
+    setIdentityCard("");
+    setIcError("");
+    if (isLocal == "true") {
+      setStudentNationality(nationality);
+      // setIcFormat("^d{12}$");
+    } else {
+      setStudentNationality(nationality);
+      // setIcFormat("");
+    }
+  };
+
+  const handleIdentityCardChange = (e) => {
+    const value = e.target.value.replace(/[^a-zA-Z0-9]/g, "");
+    setIdentityCard(value);
+
+    if (studentNationality === "malaysian") {
+      // Check if the country is Malaysia
+      if (!validateMalaysianIC(value)) {
+        setIcError("Malaysian IC must be 12 digits");
+      } else {
+        setIcError("");
+      }
+    } else {
+      setIcError(""); // Clear error for non-Malaysian ICs
     }
   };
 
@@ -73,10 +116,11 @@ const SocialContactPage = () => {
             <Row className="justify-content-center">
               <Col md={8} lg={6} className="px-0">
                 <h2 className="text-start mb-2 custom-color-title">
-                  Contact Number
+                  More Information
                 </h2>
                 <p className="text-start mb-4 small custom-color-title">
-                  Please enter your contact number.
+                  Please enter your contact number and Identical Card Number
+                  (IC).
                 </p>
                 <Form onSubmit={handleSubmit}>
                   <Form.Group controlId="formBasicPhone" className="mb-3">
@@ -105,6 +149,76 @@ const SocialContactPage = () => {
                   {error && (
                     <div className="text-danger small mt-2">{error}</div>
                   )}
+
+                  <Row>
+                    <Col xs={12}>
+                      <Form.Group className="mb-3">
+                        <p className="text-start p-0 mb-0 custom-color-title-label small">
+                          Nationality
+                        </p>
+                        <div className="d-flex justify-content-start">
+                          <Form.Check
+                            type="radio"
+                            label={
+                              <span className="custom-color-title-label">
+                                Malaysian
+                              </span>
+                            }
+                            name="userType"
+                            id="local"
+                            className="me-3"
+                            onChange={() =>
+                              handleRadioButton(true, "malaysian")
+                            }
+                            required
+                            // defaultChecked
+                          />
+                          <Form.Check
+                            type="radio"
+                            label={
+                              <span className="custom-color-title-label">
+                                Non Malaysian
+                              </span>
+                            }
+                            name="userType"
+                            id="international"
+                            onChange={() =>
+                              handleRadioButton(false, "international")
+                            }
+                          />
+                        </div>
+                      </Form.Group>
+                    </Col>
+                  </Row>
+                  <Col xs={12} md={6}>
+                    <Form.Group className="mb-3">
+                      <p className="text-start p-0 mb-0 custom-color-title-label small">
+                        Identity Card Number
+                      </p>
+                      <Form.Control
+                        type="text"
+                        placeholder={
+                          localStudent == null
+                            ? "Please select your nationality"
+                            : "Please enter your IC number"
+                        }
+                        value={identityCard}
+                        onChange={handleIdentityCardChange}
+                        required={localStudent !== null}
+                        title="IC can only contain letters and numbers"
+                        className="std-input-placeholder"
+                        disabled={localStudent == null}
+                      />
+                      {icError && (
+                        <Form.Control.Feedback
+                          type="invalid"
+                          style={{ display: "block" }}
+                        >
+                          {icError}
+                        </Form.Control.Feedback>
+                      )}
+                    </Form.Group>
+                  </Col>
                   <Button
                     variant="danger"
                     type="submit"
