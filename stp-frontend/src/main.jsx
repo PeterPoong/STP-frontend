@@ -492,7 +492,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/applicantProfile",
-    element:  (
+    element: (
       <ProtectedAdminRoute>
         <ApplicantProfile />,
       </ProtectedAdminRoute>

@@ -4,7 +4,11 @@ import "../../../css/StudentPortalStyles/StudentPortalLoginForm.css";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import "../../../css/StudentPortalStyles/StudentButtonGroup.css";
-
+// import documentIcon from "../../../../assets/icons/document.png";
+import documentIcon from "../../../assets/StudentPortalAssets/applyCustomCourses/upload icon.png";
+import trash from "../../../assets/StudentPortalAssets/applyCustomCourses/trash.png";
+import styles from "../../../css/StudentPortalStyles/StudentApplyCustomCourses.module.css";
+const baseURL = import.meta.env.VITE_BASE_URL;
 const BasicInformationWidget = ({ onProfilePicUpdate }) => {
   const [studentData, setStudentData] = useState({
     id: "",
@@ -31,6 +35,26 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
   const [genderList, setGenderList] = useState([]);
+
+  // const [identityCard, setIdentityCard] = useState("");
+  const [localStudent, setLocalStudent] = useState();
+  const [studentNationality, setStudentNationality] = useState("");
+  const [icError, setIcError] = useState("");
+
+  const [uploadedFrontIcFileName, setUploadedFrontIcFileName] = useState("");
+  const [uploadedFrontIcFile, setUploadedFrontIcFile] = useState(null);
+  const [uploadedFrontIcFileUrl, setUploadedFrontIcFileUrl] = useState("");
+  const [frontIcFileError, setFrontIcFileError] = useState("");
+
+  const [uploadedBackIcFileName, setUploadedBackIcFileName] = useState("");
+  const [uploadedBackIcFile, setUploadedBackIcFile] = useState(null);
+  const [uploadedBackIcFileUrl, setUploadedBackIcFileUrl] = useState("");
+  const [backIcFileError, setBackIcFileError] = useState("");
+
+  const [uploadedPassportFileName, setUploadedPassportFileName] = useState("");
+  const [uploadedPassportFile, setUploadedPassportFile] = useState(null);
+  const [uploadedPassportFileUrl, setUploadedPassportFileUrl] = useState("");
+  const [passportFileError, setPassportFileError] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -134,7 +158,8 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
       }
 
       const responseData = await response.json();
-      //console.log('Fetched student data:', responseData);
+      // console.log("student data", responseData);
+      // console.log("Fetched student data:", responseData);
 
       if (!responseData.data || Object.keys(responseData.data).length === 0) {
         throw new Error(
@@ -146,6 +171,34 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
         // Map gender ID to name
         // Use the gender from the response directly, as it's already the core_metaName
         const genderName = responseData.data.gender || "";
+        setStudentNationality(responseData.data.nationality ?? "malaysian");
+
+        //set front ic file
+        setUploadedFrontIcFileName(
+          responseData.data.frontIc.studentMedia_name ?? ""
+        );
+        setUploadedFrontIcFileUrl(
+          `${baseURL}storage/${responseData.data.frontIc.studentMedia_location}` ??
+            ""
+        );
+
+        // //set back ic file
+        setUploadedBackIcFileName(
+          responseData.data.backIc.studentMedia_name ?? ""
+        );
+        setUploadedBackIcFileUrl(
+          `${baseURL}storage/${responseData.data.backIc.studentMedia_location}` ??
+            ""
+        );
+
+        //set passport
+        setUploadedPassportFileName(
+          responseData.data.passport.studentMedia_name ?? ""
+        );
+        setUploadedPassportFileUrl(
+          `${baseURL}storage/${responseData.data.passport.studentMedia_location}` ??
+            ""
+        );
 
         const updatedStudentData = {
           ...responseData.data,
@@ -294,10 +347,8 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
     } else if (name === "postcode") {
       sanitizedValue = value.replace(/[^0-9]/g, "");
     } else if (name === "ic") {
-      if (studentData.country_code === "+60") {
+      if (studentNationality == "malaysian") {
         sanitizedValue = value.replace(/[^0-9]/g, "").slice(0, 12);
-      } else {
-        sanitizedValue = value.replace(/[^a-zA-Z0-9]/g, "");
       }
     }
 
@@ -386,34 +437,52 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
     setError("");
     setSuccess("");
 
-    const submissionData = {
-      name: studentData.username,
-      country_code: studentData.country_code,
-      contact_number: studentData.contact,
-      email: studentData.email,
-      first_name: studentData.firstName,
-      last_name: studentData.lastName,
-      country:
-        countries
-          .find((c) => c.country_name === studentData.country)
-          ?.id.toString() || "",
-      state:
-        states.find((s) => s.state_name === studentData.state)?.id.toString() ||
-        "",
-      city:
-        cities.find((c) => c.city_name === studentData.city)?.id.toString() ||
-        "",
-      postcode: studentData.postcode,
-      ic: studentData.ic,
-      address: studentData.address,
-      gender:
-        genderList
-          .find((g) => g.core_metaName === studentData.gender)
-          ?.id.toString() || "",
-    };
+    const formData = new FormData();
+    formData.append("name", studentData.username);
+    formData.append("country_code", studentData.country_code);
+    formData.append("contact_number", studentData.contact);
+    formData.append("email", studentData.email);
+    formData.append("first_name", studentData.firstName);
+    formData.append("last_name", studentData.lastName);
+    formData.append("student_nationality", studentNationality);
+    formData.append(
+      "country",
+      countries
+        .find((c) => c.country_name === studentData.country)
+        ?.id.toString() || ""
+    );
+    formData.append(
+      "state",
+      states.find((s) => s.state_name === studentData.state)?.id.toString() ||
+        ""
+    );
+    formData.append(
+      "city",
+      cities.find((c) => c.city_name === studentData.city)?.id.toString() || ""
+    );
+    formData.append("postcode", studentData.postcode);
+    formData.append("ic", studentData.ic);
+    formData.append("address", studentData.address);
+    formData.append(
+      "gender",
+      genderList
+        .find((g) => g.core_metaName === studentData.gender)
+        ?.id.toString() || ""
+    );
+    if (uploadedFrontIcFile) {
+      formData.append("student_frontIC", uploadedFrontIcFile);
+    }
+    if (uploadedBackIcFile) {
+      formData.append("student_backIC", uploadedBackIcFile);
+    }
+    if (uploadedPassportFile) {
+      formData.append("student_passport", uploadedPassportFile);
+    }
 
     //console.log('Data to be sent to the API:', JSON.stringify(submissionData, null, 2));
-
+    // console.log("front", uploadedFrontIcFile);
+    // console.log("back", uploadedBackIcFile);
+    // console.log("passport", uploadedPassportFile);
     try {
       const token =
         sessionStorage.getItem("token") || localStorage.getItem("token");
@@ -422,42 +491,148 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
         {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
+            // "Content-Type": "application/json",  // Uncomment if you're sending JSON
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify(submissionData),
+          body: formData,
         }
       );
 
+      // Parse the response data
       const responseData = await response.json();
-      //console.log('API Response:', responseData);
 
+      // Check if the response is not okay (non-2xx status)
       if (!response.ok) {
         if (response.status === 422) {
+          // console.log("response error", responseData);
+          // If it's a validation error (422), handle it here
+          const errorMessage =
+            "Please make sure the file you upload is either jpeg,png,jpg or pdf";
+          if (responseData.errors.student_frontIC) {
+            setFrontIcFileError(errorMessage);
+          }
+
+          if (responseData.errors.student_backIC) {
+            setBackIcFileError(errorMessage);
+          }
+          if (responseData.errors.student_passport) {
+            setPassportFileError(errorMessage);
+          }
+
           const errorMessages = Object.values(responseData.errors)
             .flat()
             .join(", ");
           throw new Error(`Validation error: ${errorMessages}`);
         }
+        // Handle other HTTP errors
         throw new Error(
           `Failed to update student details. Status: ${response.status}`
         );
       }
 
+      // If the request was successful
       if (responseData.success) {
         setSuccess("Student details updated successfully!");
         localStorage.removeItem("userName");
         localStorage.setItem("userName", studentData.username);
-
         window.location.reload();
-        // Optionally, you can refetch the student details here to update the form with the latest data
-        // fetchStudentDetails();
       } else {
+        // If the response indicates failure
         setError(responseData.message || "Failed to update student details");
       }
     } catch (error) {
-      console.error("Error in handleSubmit:", error);
-      setError(`Error updating student details: ${error.message}`);
+      // This will handle any errors, including validation errors
+      console.error("Error test", error); // Log the error object
+
+      // If the error message contains validation errors, extract them
+      if (error.message.includes("Validation error")) {
+        console.error("Validation error details:", error.message);
+        // setError(error.message); // Set the error message to show on the UI
+      } else {
+        // For other errors (e.g., network or non-validation errors)
+        // setError(`Error updating student details: ${error.message}`);
+      }
+    }
+  };
+
+  const handleRadioButton = (isLocal, nationality) => {
+    setLocalStudent(isLocal);
+    // setIdentityCard("");
+    // setIcError("");
+    studentData.ic = "";
+
+    if (isLocal == "true") {
+      setStudentNationality(nationality);
+      // setIcFormat("^d{12}$");
+    } else {
+      setStudentNationality(nationality);
+      // setIcFormat("");
+    }
+  };
+
+  const formatFileName = (fileName) => {
+    // Check if the filename contains spaces
+    if (fileName.length > 15) {
+      // Truncate the filename to the first 15 characters and add "..."
+      return `${fileName.slice(0, 25)}...`;
+    }
+    return fileName; // Return the original filename if it contains spaces
+  };
+
+  //front ic file
+  const handleDrop = (e) => {
+    e.preventDefault();
+    const files = Array.from(e.dataTransfer.files);
+    if (files.length > 0) {
+      handleFileChange({ target: { files } });
+    }
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setUploadedFrontIcFile(file);
+      setUploadedFrontIcFileName(file.name);
+      console.log("File selected:", file);
+      // You can also update the state to show a preview or upload the file
+    }
+  };
+
+  //back ic file
+  const handleBackIcFileDrop = (e) => {
+    e.preventDefault();
+    const files = Array.from(e.dataTransfer.files);
+    if (files.length > 0) {
+      handleBackIcFileChange({ target: { files } });
+    }
+  };
+
+  const handleBackIcFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setUploadedBackIcFile(file);
+      setUploadedBackIcFileName(file.name);
+      console.log("File back selected:", file);
+      // You can also update the state to show a preview or upload the file
+    }
+  };
+
+  //passport file
+  const handlePassportFileDrop = (e) => {
+    e.preventDefault();
+    const files = Array.from(e.dataTransfer.files);
+    if (files.length > 0) {
+      handlePassportFileChange({ target: { files } });
+    }
+  };
+
+  const handlePassportFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setUploadedPassportFile(file);
+      setUploadedPassportFileName(file.name);
+      console.log("File passport selected:", file);
+      // You can also update the state to show a preview or upload the file
     }
   };
 
@@ -495,7 +670,7 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
               <Col md={6}>
                 <Form.Group className="mb-3 " controlId="username">
                   <Form.Label className="fw-bold small formlabel">
-                    Username <span className="text-danger">*</span>
+                    Username<span className="text-danger">*</span>
                   </Form.Label>
                   <Form.Control
                     type="text"
@@ -507,6 +682,30 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
                     placeholder="Enter username (letters and numbers only)"
                     pattern="[a-zA-Z0-9]+"
                     title="Username can only contain letters and numbers"
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group controlId="formBasicPhone" className="mb-3">
+                  <Form.Label className="fw-bold small formlabel">
+                    Contact Number
+                  </Form.Label>
+                  <PhoneInput
+                    country={"my"}
+                    value={phone}
+                    onChange={handlePhoneChange}
+                    inputProps={{
+                      name: "contact",
+                      required: true,
+                      placeholder: "Enter phone number",
+                    }}
+                    inputClass="form-control"
+                    containerClass="phone-input-container"
+                    buttonClass="btn btn-outline-secondary"
+                    dropdownClass="country-dropdown custom-dropdown"
+                    countryCodeEditable={false}
+                    className="w-75"
+                    inputStyle={{ fontSize: "16px" }}
                   />
                 </Form.Group>
               </Col>
@@ -551,6 +750,41 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
             </Row>
             <Row className="mb-3 px-0">
               <Col md={6}>
+                <Form.Group className="mb-3">
+                  <p className="text-start p-0 mb-2 custom-color-title-label small">
+                    Nationality
+                  </p>
+                  <div className="d-flex justify-content-start">
+                    <Form.Check
+                      type="radio"
+                      label={
+                        <span className="custom-color-title-label">
+                          Malaysian
+                        </span>
+                      }
+                      name="userType"
+                      id="local"
+                      className="me-3"
+                      onChange={() => handleRadioButton(true, "malaysian")}
+                      required
+                      checked={studentNationality === "malaysian"}
+                    />
+                    <Form.Check
+                      type="radio"
+                      label={
+                        <span className="custom-color-title-label">
+                          Non Malaysian
+                        </span>
+                      }
+                      name="userType"
+                      id="international"
+                      onChange={() => handleRadioButton(false, "international")}
+                      checked={studentNationality !== "malaysian"}
+                    />
+                  </div>
+                </Form.Group>
+              </Col>
+              <Col md={6}>
                 <Form.Group controlId="ic">
                   <Form.Label className="fw-bold small formlabel">
                     Identity Card Number <span className="text-danger">*</span>
@@ -563,26 +797,28 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
                     value={studentData.ic || ""}
                     onChange={handleInputChange}
                     placeholder={
-                      studentData.country_code === "+60"
+                      studentNationality == "malaysian"
                         ? "Enter 12-digit IC number"
-                        : "Enter IC number"
+                        : "Enter Your identical number"
                     }
-                    pattern={
-                      studentData.country_code === "+60"
-                        ? "[0-9]{12}"
-                        : "[a-zA-Z0-9]+"
-                    }
-                    title={
-                      studentData.country_code === "+60"
-                        ? "IC must be exactly 12 digits"
-                        : "IC can only contain letters and numbers"
-                    }
-                    maxLength={
-                      studentData.country_code === "+60" ? 12 : undefined
-                    }
+                    // pattern={
+                    //   studentData.country_code === "+60"
+                    //     ? "[0-9]{12}"
+                    //     : "[a-zA-Z0-9]+"
+                    // }
+                    // title={
+                    //   studentData.country_code === "+60"
+                    //     ? "IC must be exactly 12 digits"
+                    //     : "IC can only contain letters and numbers"
+                    // }
+                    // maxLength={
+                    //   studentData.country_code === "+60" ? 12 : undefined
+                    // }
                   />
                 </Form.Group>
               </Col>
+            </Row>
+            <Row className="mb-3 px-0">
               <Col md={6}>
                 <Form.Group controlId="gender">
                   <Form.Label className="fw-bold small formlabel">
@@ -605,32 +841,6 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
                       </option>
                     ))}
                   </Form.Select>
-                </Form.Group>
-              </Col>
-            </Row>
-            <Row className="mb-3 px-0">
-              <Col md={6}>
-                <Form.Group controlId="formBasicPhone" className="mb-3">
-                  <Form.Label className="fw-bold small formlabel">
-                    Contact Number
-                  </Form.Label>
-                  <PhoneInput
-                    country={"my"}
-                    value={phone}
-                    onChange={handlePhoneChange}
-                    inputProps={{
-                      name: "contact",
-                      required: true,
-                      placeholder: "Enter phone number",
-                    }}
-                    inputClass="form-control"
-                    containerClass="phone-input-container"
-                    buttonClass="btn btn-outline-secondary"
-                    dropdownClass="country-dropdown custom-dropdown"
-                    countryCodeEditable={false}
-                    className="w-75"
-                    inputStyle={{ fontSize: "16px" }}
-                  />
                 </Form.Group>
               </Col>
               <Col md={6}>
@@ -760,6 +970,346 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
                     pattern="[0-9]+"
                     title="Postcode can only contain numbers"
                   />
+                </Form.Group>
+              </Col>
+            </Row>
+
+            {/* front ic and back ic */}
+            <Row className="mb-4">
+              {/* front ic */}
+              <Col md={6} className="mb-5 mb-md-0">
+                <Form.Group controlId="photoUpload">
+                  <Form.Label className="fw-bold small formlabel">
+                    Front Ic <span className="text-danger"></span>
+                  </Form.Label>
+                  <br></br>
+                  <p>
+                    <b style={{ fontSize: "0.8em", color: "#B71A18" }}>
+                      {frontIcFileError}
+                    </b>
+                  </p>
+
+                  {uploadedFrontIcFileName ? (
+                    <div
+                      className="d-flex align-items-center py-2"
+                      style={{
+                        border: "2px solid white",
+                        borderRadius: "5px",
+                        padding: "10px",
+                        boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
+                      }}
+                    >
+                      <Col xs={4} md={2} className="d-flex align-self-center">
+                        <img
+                          src={documentIcon}
+                          className={`${styles.applycustomcourses_icon} `}
+                          alt="Custom Apply School icon"
+                        />
+                      </Col>
+                      <Col xs={7} md={5} className="d-flex align-self-center">
+                        <a
+                          href={
+                            uploadedFrontIcFileUrl ||
+                            (uploadedFrontIcFile
+                              ? URL.createObjectURL(uploadedFrontIcFile)
+                              : "#")
+                          } // Use the file object if URL is empty
+                          target="_blank"
+                          style={{ color: "#B71A18", fontSize: "13px" }}
+                          rel="noopener noreferrer"
+                        >
+                          {formatFileName(uploadedFrontIcFileName)}
+                        </a>
+                      </Col>
+
+                      <Col
+                        xs={1}
+                        md={2}
+                        className="d-flex align-self-center justify-content-end"
+                      >
+                        <img
+                          src={trash}
+                          alt="Delete"
+                          onClick={() => setUploadedFrontIcFileName("")}
+                          style={{
+                            cursor: "pointer",
+                            width: "20px",
+                            height: "20px",
+                          }}
+                        />
+                      </Col>
+                    </div>
+                  ) : (
+                    <div
+                      onDragOver={(e) => e.preventDefault()}
+                      onDrop={handleDrop}
+                      onClick={() =>
+                        document.getElementById("fileInput").click()
+                      }
+                      style={{
+                        border: "2px solid white",
+                        borderRadius: "5px",
+                        padding: "10px",
+                        textAlign: "center",
+                        cursor: "pointer",
+                        boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
+                      }}
+                    >
+                      <div className="d-flex justify-content-center">
+                        <img
+                          src={documentIcon}
+                          className={`${styles.applycustomcourses_icon}`}
+                          alt="Custom Apply School icon"
+                        />
+                      </div>
+                      <p className="mt-2">
+                        Drag and drop your photo here, or click to select
+                      </p>
+
+                      <p style={{ fontSize: "0.8em" }}>
+                        <b>(Max File Size 10MB)</b>
+                      </p>
+
+                      <input
+                        type="file"
+                        id="fileInput"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        style={{ display: "none" }}
+                      />
+                    </div>
+                  )}
+                </Form.Group>
+              </Col>
+
+              {/* back ic */}
+              <Col md={6} className="mb-5 mb-md-0">
+                <Form.Group controlId="photoUpload">
+                  <Form.Label className="fw-bold small formlabel">
+                    Back Ic <span className="text-danger"></span>
+                  </Form.Label>
+                  <br></br>
+                  <p>
+                    <b style={{ fontSize: "0.8em", color: "#B71A18" }}>
+                      {backIcFileError}
+                    </b>
+                  </p>
+                  {uploadedBackIcFileName ? (
+                    <div
+                      className="d-flex align-items-center py-2"
+                      style={{
+                        border: "2px solid white",
+                        borderRadius: "5px",
+                        padding: "10px",
+                        boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
+                      }}
+                    >
+                      <Col xs={4} md={2} className="d-flex align-self-center">
+                        <img
+                          src={documentIcon}
+                          className={`${styles.applycustomcourses_icon} `}
+                          alt="Custom Apply School icon"
+                        />
+                      </Col>
+                      <Col xs={7} md={5} className="d-flex align-self-center">
+                        <a
+                          href={
+                            uploadedBackIcFileUrl ||
+                            (uploadedBackIcFile
+                              ? URL.createObjectURL(uploadedBackIcFile)
+                              : "#")
+                          } // Use the file object
+                          target="_blank"
+                          style={{ color: "#B71A18", fontSize: "13px" }}
+                          rel="noopener noreferrer"
+                        >
+                          {formatFileName(uploadedBackIcFileName)}
+                        </a>
+                      </Col>
+
+                      <Col
+                        xs={1}
+                        md={2}
+                        className="d-flex align-self-center justify-content-end"
+                      >
+                        <img
+                          src={trash}
+                          alt="Delete"
+                          onClick={() => setUploadedBackIcFileName("")}
+                          style={{
+                            cursor: "pointer",
+                            width: "20px",
+                            height: "20px",
+                          }}
+                        />
+                      </Col>
+                    </div>
+                  ) : (
+                    <div
+                      onDragOver={(e) => e.preventDefault()}
+                      onDrop={handleBackIcFileDrop}
+                      onClick={() =>
+                        document.getElementById("backIcFileInput").click()
+                      }
+                      style={{
+                        border: "2px solid white",
+                        borderRadius: "5px",
+                        padding: "10px",
+                        textAlign: "center",
+                        cursor: "pointer",
+                        boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
+                      }}
+                    >
+                      <div className="d-flex justify-content-center">
+                        <img
+                          src={documentIcon}
+                          className={`${styles.applycustomcourses_icon}`}
+                          alt="Custom Apply School icon"
+                        />
+                      </div>
+                      <p className="mt-2">
+                        Drag and drop your photo here, or click to select
+                      </p>
+                      <input
+                        type="file"
+                        id="backIcFileInput"
+                        accept="image/*"
+                        onChange={handleBackIcFileChange}
+                        style={{ display: "none" }}
+                      />
+                    </div>
+                  )}
+                </Form.Group>
+              </Col>
+            </Row>
+
+            {/* passport  */}
+            <Row>
+              <Col className="mb-5 mb-md-0">
+                <Form.Group controlId="photoUpload">
+                  <Form.Label className="fw-bold small formlabel">
+                    Passport<span className="text-danger"></span>
+                  </Form.Label>
+                  <br></br>
+                  <p>
+                    <b style={{ fontSize: "0.8em", color: "#B71A18" }}>
+                      {backIcFileError}
+                    </b>
+                  </p>
+                  {uploadedPassportFileName ? (
+                    <div
+                      className="d-flex align-items-center py-2"
+                      style={{
+                        border: "2px solid white",
+                        borderRadius: "5px",
+                        padding: "10px",
+                        boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
+                      }}
+                    >
+                      <Col xs={4} md={2} className="d-flex align-self-center">
+                        <img
+                          src={documentIcon}
+                          className={`${styles.applycustomcourses_icon} `}
+                          alt="Custom Apply School icon"
+                        />
+                      </Col>
+                      <Col xs={7} md={5} className="d-flex align-self-center">
+                        {/* Link for mobile view */}
+                        <a
+                          href={
+                            uploadedPassportFileUrl ||
+                            (uploadedPassportFile
+                              ? URL.createObjectURL(uploadedPassportFile)
+                              : "#")
+                          } // Use the file object
+                          target="_blank"
+                          style={{
+                            color: "#B71A18",
+                            fontSize: "13px",
+                            display: "block",
+                          }} // Ensure it takes full width
+                          rel="noopener noreferrer"
+                          className="d-md-none" // Only show on mobile
+                        >
+                          {formatFileName(uploadedPassportFileName)}
+                        </a>
+                        {/* Paragraph for laptop view */}
+                        <p
+                          className="pt-3 pt-md-3 d-none d-md-block" // Only show on larger screens
+                          style={{ fontSize: "13px", color: "black" }}
+                        >
+                          {formatFileName(uploadedPassportFileName)}
+                        </p>
+                      </Col>
+                      <Col xs={2} md={2} className="d-none d-md-block">
+                        {" "}
+                        {/* Hide on mobile */}
+                        <a
+                          href={
+                            uploadedPassportFileUrl ||
+                            (uploadedPassportFile
+                              ? URL.createObjectURL(uploadedPassportFile)
+                              : "#")
+                          } // Use the file object
+                          target="_blank"
+                          style={{ color: "#B71A18", fontSize: "13px" }}
+                          rel="noopener noreferrer"
+                        >
+                          Click to View
+                        </a>
+                      </Col>
+                      <Col
+                        xs={1}
+                        md={2}
+                        className="d-flex align-self-center justify-content-end"
+                      >
+                        <img
+                          src={trash}
+                          alt="Delete"
+                          onClick={() => setUploadedPassportFileName("")}
+                          style={{
+                            cursor: "pointer",
+                            width: "20px",
+                            height: "20px",
+                          }}
+                        />
+                      </Col>
+                    </div>
+                  ) : (
+                    <div
+                      onDragOver={(e) => e.preventDefault()}
+                      onDrop={handlePassportFileDrop}
+                      onClick={() =>
+                        document.getElementById("passportFileInput").click()
+                      }
+                      style={{
+                        border: "2px solid white",
+                        borderRadius: "5px",
+                        padding: "10px",
+                        textAlign: "center",
+                        cursor: "pointer",
+                        boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
+                      }}
+                    >
+                      <div className="d-flex justify-content-center">
+                        <img
+                          src={documentIcon}
+                          className={`${styles.applycustomcourses_icon}`}
+                          alt="Custom Apply School icon"
+                        />
+                      </div>
+                      <p className="mt-2">
+                        Drag and drop your photo here, or click to select
+                      </p>
+                      <input
+                        type="file"
+                        id="passportFileInput"
+                        accept="image/*"
+                        onChange={handlePassportFileChange}
+                        style={{ display: "none" }}
+                      />
+                    </div>
+                  )}
                 </Form.Group>
               </Col>
             </Row>
