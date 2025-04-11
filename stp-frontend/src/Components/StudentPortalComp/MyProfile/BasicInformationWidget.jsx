@@ -504,7 +504,6 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
       // Check if the response is not okay (non-2xx status)
       if (!response.ok) {
         if (response.status === 422) {
-          // console.log("response error", responseData);
           // If it's a validation error (422), handle it here
           const errorMessage =
             "Please make sure the file you upload is either jpeg,png,jpg or pdf";
@@ -524,6 +523,7 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
             .join(", ");
           throw new Error(`Validation error: ${errorMessages}`);
         }
+
         // Handle other HTTP errors
         throw new Error(
           `Failed to update student details. Status: ${response.status}`
@@ -1193,7 +1193,7 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
                   <br></br>
                   <p>
                     <b style={{ fontSize: "0.8em", color: "#B71A18" }}>
-                      {backIcFileError}
+                      {passportFileError}
                     </b>
                   </p>
                   {uploadedPassportFileName ? (
