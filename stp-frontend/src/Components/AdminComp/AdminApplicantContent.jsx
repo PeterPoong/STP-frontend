@@ -217,24 +217,21 @@ const AdminApplicantContent = () => {
         }
     };
 
-    const getStatusClass = (form_status) => {
+    const getStatusColor = (form_status) => {
         switch (form_status) {
             case 'Disable':
-                return 'status-disable';
             case 'Rejected':
-                return 'status-rejected';
             case 'Temporary-Disable':
-                return 'status-disable';
+                return 'red';
             case 'Active':
-                return 'status-active';
             case 'Accepted':
-             return 'status-accepted';
+                return 'green';
             case 'Pending':
-                return 'status-pending';
+                return '#FFAA1D';
             case 'Temporary':
-                return 'status-temporary';
+                return '#D2691E';
             default:
-                return '';
+                return 'inherit';
         }
     };
 
@@ -275,7 +272,7 @@ const AdminApplicantContent = () => {
             <td>{Applicant.institution}</td>
             <td>{Applicant.country_code}{Applicant.contact_number}</td>
             <td>{Applicant.created_date}</td>
-            <td className={getStatusClass(Applicant.form_status)}>
+            <td style={{ color: getStatusColor(Applicant.form_status) }}>
                 {Applicant.form_status}
             </td>
             <td>
@@ -336,70 +333,72 @@ const AdminApplicantContent = () => {
 </tr>
 );
     return (
-        <>
-        {loading ? (
-            <CircleDotLoader />
+        <div className="applicant-content">
+            {loading ? (
+                <CircleDotLoader />
             ) : (
-            <TableWithControls
-                 theadContent={theadContent}
-                 tbodyContent={tbodyContent}
-                 onSearch={handleSearch}
-                 onSort={handleSort}
-                 totalPages={totalPages}
-                 currentPage={currentPage}
-                 onPageChange={handlePageChange}
-                 onRowsPerPageChange={handleRowsPerPageChange}
-                 statList={statList}
-                 schList={schList}
-                 onSchChange={handleSchoolChange}
-                 onStatChange={handleStatChange}
-            />
-        )}
-            <Modal show={showModal} onHide={() => setShowModal(false)} centered>
-                <Modal.Header closeButton>
-                    <Modal.Title>Confirm Action</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    Are you sure you want to {targetApplicant?.action} this applicant?
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShowModal(false)}>
-                        Cancel
-                    </Button>
-                    <Button variant="primary" onClick={confirmAction}>
-                        Confirm
-                    </Button>
-                </Modal.Footer>
-            </Modal>
+                <>
+                    <TableWithControls
+                        theadContent={theadContent}
+                        tbodyContent={tbodyContent}
+                        onSearch={handleSearch}
+                        onSort={handleSort}
+                        totalPages={totalPages}
+                        currentPage={currentPage}
+                        onPageChange={handlePageChange}
+                        onRowsPerPageChange={handleRowsPerPageChange}
+                        statList={statList}
+                        schList={schList}
+                        onSchChange={handleSchoolChange}
+                        onStatChange={handleStatChange}
+                    />
+                    <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+                        <Modal.Header closeButton>
+                            <Modal.Title>Confirm Action</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            Are you sure you want to {targetApplicant?.action} this applicant?
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <Button variant="secondary" onClick={() => setShowModal(false)}>
+                                Cancel
+                            </Button>
+                            <Button variant="primary" onClick={confirmAction}>
+                                Confirm
+                            </Button>
+                        </Modal.Footer>
+                    </Modal>
 
-            <Modal show={showFeedbackModal} onHide={() => setShowFeedbackModal(false)} centered>
-                <Modal.Header closeButton>
-                    <Modal.Title>Provide Feedback</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Form>
-                        <Form.Group>
-                            <Form.Label>Feedback</Form.Label>
-                            <Form.Control
-                                as="textarea"
-                                rows={3}
-                                value={feedback}
-                                onChange={(e) => setFeedback(e.target.value)}
-                                placeholder="Enter your feedback here..."
-                            />
-                        </Form.Group>
-                    </Form>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShowFeedbackModal(false)}>
-                        Cancel
-                    </Button>
-                    <Button variant="primary" onClick={submitFeedback}>
-                        Submit
-                    </Button>
-                </Modal.Footer>
-            </Modal>
-        </>
+                    <Modal show={showFeedbackModal} onHide={() => setShowFeedbackModal(false)} centered>
+                        <Modal.Header closeButton>
+                            <Modal.Title>Provide Feedback</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            <Form>
+                                <Form.Group>
+                                    <Form.Label>Feedback</Form.Label>
+                                    <Form.Control
+                                        as="textarea"
+                                        rows={3}
+                                        value={feedback}
+                                        onChange={(e) => setFeedback(e.target.value)}
+                                        placeholder="Enter your feedback here..."
+                                    />
+                                </Form.Group>
+                            </Form>
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <Button variant="secondary" onClick={() => setShowFeedbackModal(false)}>
+                                Cancel
+                            </Button>
+                            <Button variant="primary" onClick={submitFeedback}>
+                                Submit
+                            </Button>
+                        </Modal.Footer>
+                    </Modal>
+                </>
+            )}
+        </div>
     );
 };
 

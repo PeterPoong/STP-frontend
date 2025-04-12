@@ -1,27 +1,34 @@
 .AdminTable {
     margin-top: 2.5%;
     width: 100%;
-    border-collapse: separate; /* This allows the border-radius to be respected */
-    border-spacing: 0; /* Removes the gap between cells */
+    table-layout: auto; /* Change to auto to allow content-based sizing */
+    border-collapse: separate;
+    border-spacing: 0;
     border: #E0E0E0 1px;
-
 }
 
 .AdminTable th, .AdminTable td{
     text-align: center;
-    background: space;
-    vertical-align: baseline;
+    vertical-align: middle;
+    padding: 8px;
+    white-space: normal; /* Allow text to wrap */
+    word-wrap: break-word; /* Break long words if needed */
+    min-width: 80px; /* Reduced minimum width to accommodate more columns */
+    max-width: 180px;
+    line-height: 1.4; /* Improve readability for wrapped text */
+    background-color: transparent !important;
+    display: table-cell; /* Ensure consistent display */
 }
 
 .AdminTableBody tr:nth-child(odd) {
-    background-color: #F5F5F5;
+    background-color: transparent !important;
 }
 .AdminTableHead{
     background-color: #E0E0E0!important;
 }
 
 .AdminTableBody tr:nth-child(even) {
-    background-color: #E0E0E0!important;
+    background-color: transparent !important;
 }
 
 
@@ -34,16 +41,19 @@
 }
 
 .TableContainer{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
+    width: 100%;
+    overflow-x: auto; /* Enable horizontal scrolling if needed */
+    -webkit-overflow-scrolling: touch;
+    margin-top: 1rem;
+    padding-bottom: 1rem; /* Add padding to account for wrapped content */
 }
 
 .topbar {
-    margin-bottom: -2rem !important;
-    width: 92%;
+    width: 100%;
+    padding: 1rem;
+    margin-bottom: 1rem;
 }
+
 @media (min-width: 1400px) {
     .container, .container-lg, .container-md, .container-sm, .container-xl, .container-xxl {
         max-width: 1479px;
@@ -72,7 +82,7 @@
         width: 100%; /* Full width search input */
     }
 
-    .addNew {
+    .addNewAdmin {
         width: 100%; /* Full width button */
         text-align: center; /* Center align the button text */
     }
@@ -87,110 +97,131 @@
     }
 }
 
-.status-disable {
-    color: red !important;
-    padding: 5px;
-    text-align: center;
-    text-indent: -9999px; /* Hide the actual content off-screen */
-    position: relative;
-    font-weight: bold;
-
-}
-.status-rejected {
-    color: red !important;
-    padding: 5px;
-    text-align: center;
-    position: relative;
-    font-weight: bold;
-
-}
-.status-disable::before {
-    content: "Disabled"; /* Add "Disabled" text */
-    text-indent: 0; /* Ensure the custom text is visible */
-    position: absolute;
-    left: 0;
-    right: 0;
-    font-weight: bold;
-
-}
-.status-expired {
-    content: "Expired";
-    color: red !important;
-    padding: 5px;
-    text-align: center;
-    position: relative;
-    font-weight: bold;
-
-}
-.status-active {
-    color: green !important;
-    padding: 5px;
-    text-align: center;
-    text-indent: -9999px; /* Hide the actual content off-screen */
-    position: relative;
-    font-weight: bold;
-
-}
-.status-active {
-    color: green !important;
-    padding: 5px;
-    text-align: center;
-    text-indent: -9999px; /* Hide the actual content off-screen */
-    position: relative;
-    font-weight: bold;
-
-}
-.status-approved {
-    content: "Approved";
-    color: green !important;
-    padding: 5px;
-    text-align: center;
-    position: relative;
-    font-weight: bold;
-}
-.status-replied {
-    color: green !important;
-    font-weight: bold;
+/* Reset all status styles */
+[class^="status-"] {
+    all: unset;
+    display: inline;
+    background: none !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
 }
 
+/* Remove these styles completely */
+.status-disable::before,
 .status-active::before {
-    content: "Active"; /* Add "Active" text */
-    text-indent: 0; /* Ensure the custom text is visible */
-    position: absolute;
-    left: 0;
-    font-weight: bold;
-    right: 0;
+    content: none !important;
 }
 
-
-.status-pending {
-    color: #FFAA1D !important;
-    padding: 5px;
-    text-align: center;
-    font-weight: bold;
-
-}
-
+/* Remove background styles */
+.status-disable,
+.status-rejected,
+.status-temporary-disable,
+.status-active,
+.status-accepted,
+.status-approved,
+.status-replied,
+.status-pending,
 .status-temporary {
-    color: #D2691E !important;
-    padding: 5px;
-    text-align: center;
-    font-weight: bold;
-
+    background: none !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
 }
-.status-schedule {
-    content: "Schedule";
-    color: #D2691E !important;
-    padding: 5px;
-    text-align: center;
-    font-weight: bold;
 
+
+/* If you still want to use classes for status colors */
+td[style*="color: green"] {
+    color: green !important;
 }
+
+td[style*="color: red"] {
+    color: red !important;
+}
+
+/* Remove any specific column styling */
+.AdminTable td:nth-child(5) {
+    /* Remove this entire block */
+    /* all: unset;
+    display: table-cell;
+    text-align: center !important;
+    vertical-align: middle !important;
+    padding: 8px !important;
+    background: none !important; */
+}
+
+/* Mobile adjustments */
+@media screen and (max-width: 768px) {
+    .AdminTableBody td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 15px;
+    }
+}
+
+/* Action buttons container */
+.action-buttons {
+    display: block; /* Change to block for vertical stacking */
+    text-align: center;
+    padding: 4px;
+}
+
+/* Accept/Reject buttons */
+button.accept,
+button.rejected {
+    display: block; /* Make buttons block level */
+    width: 70px;
+    height: 29px;
+    border-radius: 15px;
+    font-size: 12px;
+    padding: 0;
+    margin: 4px auto; /* Center buttons and add vertical spacing */
+}
+
+button.accept {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+button.rejected {
+    background-color: #D32F2F;
+    border-color: #D32F2F;
+}
+
+/* Edit icon and switch container */
+.action-buttons:not(:has(button)) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Edit icon */
 .icon-color-edit {
-    color: #a14bfc;
+    color: #691ED2;
+    cursor: pointer;
 }
-.icon-color-delete{
-    color: #8b0000;
+
+/* Switch styles */
+.MDBSwitch {
+    margin-left: 4px;
+}
+
+/* Mobile adjustments */
+@media screen and (max-width: 768px) {
+    .action-buttons {
+        padding: 8px 4px;
+    }
+
+    button.accept,
+    button.rejected {
+        width: 80px;
+        margin: 6px auto;
+    }
+
+    [class^="status-"] {
+        margin: 4px auto;
+    }
 }
 
 /* Styles for the search input and icon */
@@ -215,7 +246,7 @@
     pointer-events: none; /* Prevent icon from being clicked */
 }
 
-button.addNew{
+button.addNewAdmin{
     background-color: #D32F2F;
     border-color: #D32F2F;
     border-radius: 15px;
@@ -224,7 +255,7 @@ button.addNew{
     font-size: 14px;
     line-height: 14.4px;
 }
-button.addNew:hover{
+button.addNewAdmin:hover{
     background-color: #8b0000;
 }
 
@@ -340,4 +371,707 @@ button.confirm:hover{
 
 .interestDatepicker{
     height: 25px;
+}
+
+/* Responsive table styles */
+@media screen and (max-width: 768px) {
+    .AdminTable {
+        display: block;
+        width: 100%;
+    }
+
+    /* Hide table headers on mobile */
+    .AdminTableHead {
+        display: none;
+    }
+
+    .AdminTableBody {
+        display: block;
+    }
+
+    .AdminTableBody tr {
+        display: block;
+        margin-bottom: 1rem;
+        border: 1px solid #E0E0E0;
+        border-radius: 8px;
+        background-color: #fff !important;
+    }
+
+    .AdminTableBody tr:nth-child(odd),
+    .AdminTableBody tr:nth-child(even) {
+        background-color: transparent !important;
+    }
+
+    .AdminTableBody td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 15px;
+        text-align: right;
+        border-bottom: 1px solid #E0E0E0;
+        background-color: transparent !important;
+    }
+
+    /* Add labels for each cell */
+    .AdminTableBody td::before {
+        content: attr(data-label);
+        font-weight: bold;
+        text-align: left;
+        padding-right: 10px;
+    }
+
+    /* Style for action buttons in mobile view */
+    .AdminTableBody td:last-child {
+        border-bottom: none;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    /* Adjust button sizes in mobile view */
+    button.accept,
+    button.rejected {
+        width: auto;
+        min-width: 80px;
+        height: auto;
+        padding: 8px 15px;
+    }
+
+    /* Status styles in mobile view */
+    [class^="status-"] {
+        width: auto;
+        display: inline-block;
+        text-align: right;
+    }
+}
+
+/* Additional responsive adjustments for very small screens */
+@media screen and (max-width: 480px) {
+    .AdminTableBody td {
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+    }
+
+    .AdminTableBody td::before {
+        margin-bottom: 5px;
+    }
+
+    .AdminTableBody td:last-child {
+        flex-direction: row;
+        justify-content: center;
+    }
+}
+
+/* Update the controls layout */
+.controls-wrapper {
+  display: flex;
+  margin-bottom: 20px;
+  padding: 0 15px;
+}
+
+.control-row {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  width: auto;
+  flex-wrap: nowrap;
+}
+
+/* Reset all control items to have consistent sizing */
+.control-item {
+  flex: 0 0 auto; /* Prevent flex growing/shrinking */
+}
+
+.rows-per-page {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.search-wrapper {
+  width: 200px;
+  flex: 0 0 auto;
+}
+
+.status-filter,
+.subject-filter,
+.school-filter,
+.category-filter,
+.featured-filter,
+.cat-filter {
+  width: 150px;
+  flex: 0 0 auto;
+}
+
+.status-filter select,
+.subject-filter select,
+.school-filter select,
+.category-filter select,
+.featured-filter select,
+.cat-filter select {
+  width: 100%;
+  height: 35px;
+  padding: 0.25rem;
+  border-radius: 4px;
+  border: 1px solid #ced4da;
+}
+
+/* Remove absolute positioning and auto margins */
+.add-button {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+button.addNewAdmin {
+  height: 35px;
+  padding: 0 15px;
+  background-color: #D32F2F;
+  border-color: #D32F2F;
+  border-radius: 15px;
+  font-size: 14px;
+  line-height: 14.4px;
+  white-space: nowrap;
+  min-width: 110px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Ensure all form controls have the same height */
+.rows-select,
+.search-input,
+.status-filter select,
+.subject-filter select,
+button.addNewAdmin {
+  height: 35px;
+}
+
+/* Mobile styles */
+@media screen and (max-width: 768px) {
+  .control-row {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .control-item,
+  .search-wrapper,
+  .status-filter,
+  .subject-filter,
+  .school-filter,
+  .category-filter,
+  .featured-filter,
+  .cat-filter,
+  .add-button {
+    width: 100%;
+  }
+
+  button.addNewAdmin {
+    width: 100%;
+  }
+}
+
+.total-count-header {
+  text-align: left;
+  font-weight: bold;
+  background-color: #f5f5f5;
+  padding: 1rem;
+}
+
+.action-cell {
+  padding: 0.5rem;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap; /* Allow buttons to wrap if needed */
+  padding: 4px;
+}
+
+.switch-active {
+  color: green;
+}
+
+@media screen and (max-width: 768px) {
+  .action-buttons {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+  
+  .total-count-header {
+    text-align: center;
+  }
+}
+
+/* Top controls container */
+.topbar {
+  width: 100%;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Controls layout */
+.controls-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* First row with basic controls */
+.control-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+/* Rows per page control */
+.rows-per-page {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: auto;
+}
+
+.rows-select {
+  padding: 0.25rem;
+  border-radius: 4px;
+  border: 1px solid #ced4da;
+}
+
+/* Search control */
+.search-wrapper {
+  position: relative;
+  width: 200px;
+}
+
+.search-input {
+  width: 100%;
+  height: 35px;
+  padding-right: 30px;
+  border-radius: 4px;
+  border: 1px solid #ced4da;
+}
+
+.search-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #999;
+}
+
+/* Add New button */
+.addNewAdmin {
+  margin-left: auto;
+  height: 35px;
+  padding: 0 1.5rem;
+}
+
+/* Filters row */
+.filters-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  width: 100%;
+}
+
+.filters-row select {
+  padding: 0.25rem;
+  border-radius: 4px;
+  border: 1px solid #ced4da;
+  min-width: 150px;
+}
+
+/* Desktop-specific styles */
+@media screen and (min-width: 769px) {
+  .topbar {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .control-row {
+    flex-wrap: nowrap;
+    padding-right: 15px;
+  }
+
+  .rows-per-page {
+    flex: 0 0 auto;
+    margin-right: 15px;
+  }
+
+  .search-wrapper {
+    flex: 0 0 200px;
+  }
+
+  .filters-row {
+    flex-wrap: wrap;
+  }
+
+  .filters-row select {
+    flex: 0 0 auto;
+  }
+
+  /* Desktop table styles */
+  .AdminTable {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  .AdminTableHead th {
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+  }
+
+  .AdminTableBody td {
+    padding: 1rem;
+    vertical-align: middle;
+  }
+
+  .action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+  }
+}
+
+/* Add at the top of your CSS file */
+.table-controls-wrapper {
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 20px;
+  min-height: calc(100vh - 110px);
+}
+
+.table-controls-container {
+  height: 100%;
+}
+
+.topbar {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.controls-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.control-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  align-items: center;
+}
+
+/* Responsive table styles */
+.AdminTable {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+@media screen and (max-width: 768px) {
+  .table-controls-wrapper {
+    padding: 10px;
+    margin: 10px;
+  }
+
+  .control-row {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .control-item {
+    width: 100%;
+  }
+
+  /* Make table scrollable horizontally on mobile */
+  .TableContainer {
+    overflow-x: auto;
+  }
+}
+
+/* Adjust specific column widths to be more flexible */
+.AdminTable th:nth-child(1), /* Username */
+.AdminTable td:nth-child(1) {
+    min-width: 80px;
+    max-width: 120px;
+}
+
+.AdminTable th:nth-child(2), /* Fullname */
+.AdminTable td:nth-child(2) {
+    min-width: 100px;
+    max-width: 150px;
+}
+
+.AdminTable th:nth-child(3), /* Course(s) */
+.AdminTable td:nth-child(3) {
+    /* min-width: 120px; */
+    max-width: 200px;
+}
+
+.AdminTable th:nth-child(4), /* Institution */
+.AdminTable td:nth-child(4) {
+    /* min-width: 120px; */
+    max-width: 200px;
+}
+
+.AdminTable th:nth-child(5), /* Contact */
+.AdminTable td:nth-child(5) {
+    min-width: 100px;
+    max-width: 130px;
+}
+
+.AdminTable th:nth-child(6), /* Applied Date */
+.AdminTable td:nth-child(6) {
+    min-width: 90px;
+    max-width: 120px;
+}
+
+.AdminTable th:nth-child(7), /* Status */
+.AdminTable td:nth-child(7) {
+    min-width: 90px;
+    max-width: 120px;
+}
+
+.AdminTable th:nth-child(8), /* Action */
+.AdminTable td:nth-child(8) {
+    min-width: 100px;
+    max-width: 120px;
+}
+
+/* Update action buttons container to handle wrapped content */
+.action-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: nowrap;
+}
+
+/* Remove tooltip since we're showing full content now */
+.AdminTable td:hover::after {
+    display: none;
+}
+
+/* Ensure table container handles wrapped content properly */
+.TableContainer {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-top: 1rem;
+    padding-bottom: 1rem; /* Add padding to account for wrapped content */
+}
+
+/* Adjust row heights for wrapped content */
+.AdminTableBody tr {
+    height: auto; /* Allow rows to expand based on content */
+}
+
+/* Status classes adjustment for wrapped text */
+[class^="status-"] {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin: 2px 0;
+    width: auto;
+    text-indent: 0; /* Remove text-indent to show status text properly */
+}
+
+.status-disable::before,
+.status-active::before {
+    position: static; /* Change from absolute to static */
+    content: attr(data-status); /* Use data attribute for status text */
+    display: inline;
+}
+
+/* Remove the hidden text and use direct content */
+.status-disable,
+.status-active {
+    text-indent: 0;
+}
+
+/* Ensure table maintains structure with merged cells */
+.AdminTable {
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: auto;
+}
+
+/* Add styles for merged cells */
+.AdminTable td[colspan] {
+    text-align: left;
+    padding-left: 15px;
+}
+
+/* Improve readability of institution and course names */
+.AdminTable td[data-label="Course(s)"],
+.AdminTable td[data-label="Institution"] {
+    text-align: left;
+    padding-left: 10px;
+}
+
+/* Update action buttons layout */
+.action-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: nowrap;
+}
+
+/* Ensure switch and edit button align properly */
+.action-buttons .icon-color-edit {
+    margin-right: 4px;
+}
+
+.action-buttons .mdb-switch {
+    margin-left: 4px;
+}
+
+/* Mobile responsiveness for merged cells */
+@media screen and (max-width: 768px) {
+    .AdminTable td[colspan] {
+        width: 100%;
+        text-align: left;
+        padding: 10px;
+    }
+
+    .AdminTableBody td::before {
+        min-width: 120px; /* Ensure label has enough space */
+    }
+
+    .status-disable,
+    .status-active {
+        width: auto;
+        text-align: center;
+    }
+}
+
+/* Only keep color styles */
+.status-disable,
+.status-rejected,
+.status-temporary-disable {
+    color: red !important;
+}
+
+.status-active,
+.status-accepted,
+.status-approved,
+.status-replied {
+    color: green !important;
+}
+
+.status-pending {
+    color: #FFAA1D !important;
+}
+
+.status-temporary {
+    color: #D2691E !important;
+}
+
+/* Update the table container styles */
+.TableContainer {
+    width: 100%;
+    overflow-x: auto; /* Keep this for mobile */
+    margin-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+/* Update the table styles for AdminApplicant page */
+.applicant-content .AdminTable {
+    width: 100%;
+    table-layout: auto;
+    font-size: 0.9rem; /* Slightly reduce font size */
+}
+
+.applicant-content .AdminTable th,
+.applicant-content .AdminTable td {
+    padding: 6px 4px; /* Reduce padding */
+    min-width: unset; /* Remove minimum width */
+    max-width: unset; /* Remove maximum width */
+    white-space: normal;
+    word-wrap: break-word;
+}
+
+/* Adjust specific column widths for AdminApplicant */
+.applicant-content .AdminTable th:nth-child(1), /* Username */
+.applicant-content .AdminTable td:nth-child(1) {
+    width: 10%;
+}
+
+.applicant-content .AdminTable th:nth-child(2), /* Fullname */
+.applicant-content .AdminTable td:nth-child(2) {
+    width: 12%;
+}
+
+.applicant-content .AdminTable th:nth-child(3), /* Course(s) */
+.applicant-content .AdminTable td:nth-child(3) {
+    width: 20%;
+}
+
+.applicant-content .AdminTable th:nth-child(4), /* Institution */
+.applicant-content .AdminTable td:nth-child(4) {
+    width: 15%;
+}
+
+.applicant-content .AdminTable th:nth-child(5), /* Contact */
+.applicant-content .AdminTable td:nth-child(5) {
+    width: 10%;
+}
+
+.applicant-content .AdminTable th:nth-child(6), /* Applied Date */
+.applicant-content .AdminTable td:nth-child(6) {
+    width: 8%;
+}
+
+.applicant-content .AdminTable th:nth-child(7), /* Status */
+.applicant-content .AdminTable td:nth-child(7) {
+    width: 8%;
+}
+
+.applicant-content .AdminTable th:nth-child(8), /* Action */
+.applicant-content .AdminTable td:nth-child(8) {
+    width: 10%;
+}
+
+.applicant-content .AdminTable th:nth-child(9), /* Profile */
+.applicant-content .AdminTable td:nth-child(9) {
+    width: 7%;
+}
+
+/* Make action buttons more compact */
+.applicant-content .action-buttons {
+    gap: 4px;
+}
+
+.applicant-content button.accept,
+.applicant-content button.rejected {
+    padding: 2px 8px;
+    font-size: 0.8rem;
+}
+
+/* Responsive design for mobile */
+@media screen and (max-width: 768px) {
+    .applicant-content .AdminTable {
+        font-size: 1rem; /* Reset font size for mobile */
+    }
+    
+    .applicant-content .AdminTable th,
+    .applicant-content .AdminTable td {
+        padding: 8px;
+        width: 100% !important; /* Full width for stacked layout */
+    }
 }

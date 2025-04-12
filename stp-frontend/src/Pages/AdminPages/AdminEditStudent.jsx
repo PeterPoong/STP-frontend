@@ -25,7 +25,7 @@ const AdminEditStudent = () => {
 
       <div className='HeadNavBarContainer'>
         <HeadNavBar />
-        <div>
+        <div className="content-area">
           <AdminEditStudentContent />
         </div>
       </div>

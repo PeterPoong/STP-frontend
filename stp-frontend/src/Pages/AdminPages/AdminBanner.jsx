@@ -23,7 +23,7 @@ const AdminBanner = () => {
 
       <div className='HeadNavBarContainer'>
         <HeadNavBar />
-        <div>
+        <div className="content-area">
           <AdminBannerContent />
         </div>
       </div>

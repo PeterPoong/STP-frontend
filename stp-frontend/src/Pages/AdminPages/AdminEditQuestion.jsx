@@ -25,7 +25,7 @@ const AdminEditQuestion = () => {
 
       <div className='HeadNavBarContainer'>
         <HeadNavBar />
-        <div>
+        <div className="content-area">
           <AdminEditQuestionContent />
         </div>
       </div>

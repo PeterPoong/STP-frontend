@@ -429,9 +429,16 @@ const AdminFeaturedContent = () => {
                         />
                     </td>
                     <td>{Featured.request_date || 'N/A'}</td>
-                    <td className={getStatusClass(Featured.request_status)}>
-                        {Featured.request_status === 1 ? 'Approved' : 
-                         Featured.request_status === 3 ? 'Rejected' : 'Pending'}
+                    <td style={{ padding: '8px' }}>
+                        <span style={{ 
+                            color: Featured.request_status === 1 ? 'green' : 
+                                   Featured.request_status === 2 ? '#FFAA1D' : 
+                                   Featured.request_status === 3 ? 'red' : 
+                                   Featured.request_status === 4 ? 'blue' : 'red'
+                        }}>
+                            {Featured.request_status === 1 ? 'Approved' : 
+                             Featured.request_status === 3 ? 'Rejected' : 'Pending'}
+                        </span>
                     </td>
                     <td>
                         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>

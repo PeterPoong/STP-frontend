@@ -234,14 +234,14 @@ const AdminRiasecContent = () => {
         }
     };
     
-    const getStatusClass = (status) => {
+    const getStatusDisplay = (status) => {
+        // Convert status to text and color
         switch (status) {
             case 1:
-                return 'status-active'; // Green color
-            case 2:
-                return 'status-pending'; // Yellow color
+                return { text: 'Active', color: 'green' };
+            case 0:
             default:
-                return 'status-disable'; // Default for other cases
+                return { text: 'Disable', color: 'red' };
         }
     };
     
@@ -264,85 +264,54 @@ const AdminRiasecContent = () => {
         </tr>
     );
 
-    const tbodyContent =
-    sortedriasecs.length > 0 ? (
-      sortedriasecs.map((riasec) => (
-        <tr key={riasec.id}>
-          <td>{riasec.type_name}</td>
-          <td>{riasec.unique_description}</td>
-          <td>
-            {riasec.strength && riasec.strength.includes('<') ? (
-              <div dangerouslySetInnerHTML={{ __html: riasec.strength }} />
-            ) : (
-              riasec.strength
-            )}
-          </td>
-          <td className={getStatusClass(riasec.status)}>{riasec.status}</td>
-          <td>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              {riasec.status === "Pending" ? (
-                <>
-                  <Button
-                    className="accept"
-                    variant="success"
-                    onClick={() => handlePendingAction(riasec.id, "true")}
-                  >
-                    Accept
-                  </Button>
-                  <Button
-                    className="rejected"
-                    variant="danger"
-                    onClick={() => handlePendingAction(riasec.id, "false")}
-                  >
-                    Reject
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <FontAwesomeIcon
-                    className="icon-color-edit"
-                    title="Edit"
-                    icon={faEdit}
-                    style={{
-                      marginRight: "8px",
-                      color: "#691ED2",
-                      cursor: "pointer",
-                    }}
-                    onClick={() => handleEdit(riasec.id)}
-                  />
-                  <MDBSwitch
-                    id={`switch-${riasec.id}`}
-                    checked={
-                      riasec.status === 1
-                    }
-                    onChange={() =>
-                      handleToggleSwitch(riasec.id, riasec.status)
-                    }
-                    style={{
-                      color:
-                        riasec.status === 1
-                          ? "green"
-                          : "",
-                    }}
-                  />
-                </>
-              )}
-            </div>
-          </td>
-        </tr>
-      ))
+    const tbodyContent = sortedriasecs.length > 0 ? (
+        sortedriasecs.map((riasec) => (
+            <tr key={riasec.id}>
+                <td>{riasec.type_name}</td>
+                <td>{riasec.unique_description}</td>
+                <td>
+                    {riasec.strength && riasec.strength.includes('<') ? (
+                        <div dangerouslySetInnerHTML={{ __html: riasec.strength }} />
+                    ) : (
+                        riasec.strength
+                    )}
+                </td>
+                <td style={{ color: getStatusDisplay(riasec.status).color }}>
+                    {getStatusDisplay(riasec.status).text}
+                </td>
+                <td>
+                    <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                        <>
+                            <FontAwesomeIcon
+                                className="icon-color-edit"
+                                title="Edit"
+                                icon={faEdit}
+                                style={{
+                                    marginRight: "8px",
+                                    color: "#691ED2",
+                                    cursor: "pointer",
+                                }}
+                                onClick={() => handleEdit(riasec.id)}
+                            />
+                            <MDBSwitch
+                                id={`switch-${riasec.id}`}
+                                checked={riasec.status === 1}
+                                onChange={() => handleToggleSwitch(riasec.id, riasec.status)}
+                                style={{
+                                    color: riasec.status === 1 ? "green" : ""
+                                }}
+                            />
+                        </>
+                    </div>
+                </td>
+            </tr>
+        ))
     ) : (
-      <tr>
-        <td colSpan="6" style={{ textAlign: "center" }}>
-          No Data Available
-        </td>
-      </tr>
+        <tr>
+            <td colSpan="6" style={{ textAlign: "center" }}>
+                No Data Available
+            </td>
+        </tr>
     );
     const handleStatChange = (stat) => {
       setSelectedStat(stat);

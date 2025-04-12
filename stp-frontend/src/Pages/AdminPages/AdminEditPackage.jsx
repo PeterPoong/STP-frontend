@@ -25,7 +25,7 @@ const AdminEditPackage = () => {
 
       <div className='HeadNavBarContainer'>
         <HeadNavBar />
-        <div>
+        <div className="content-area">
           <AdminEditPackageContent />
         </div>
       </div>

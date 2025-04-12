@@ -258,14 +258,14 @@ const AdminCategoryContent = () => {
         }
     };
     
-    const getStatusClass = (category_status) => {
-        switch (category_status) {
-            case 'Disable':
-                return 'status-disable';
+    const getStatusDisplay = (status) => {
+        switch (status) {
             case 'Active':
-                return 'status-active';
+                return { text: status, color: 'green' };
+            case 'Disable':
+                return { text: status, color: 'red' };
             default:
-                return '';
+                return { text: status, color: 'red' };
         }
     };
 
@@ -300,8 +300,8 @@ const AdminCategoryContent = () => {
                 />
             </td>
             <td>{riasecDetails[Category.riasec] || Category.riasec}</td>
-            <td className={getStatusClass(Category.category_status)}>
-                {Category.category_status}
+            <td style={{ color: getStatusDisplay(Category.category_status).color }}>
+                {getStatusDisplay(Category.category_status).text}
             </td>
             <td>
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>

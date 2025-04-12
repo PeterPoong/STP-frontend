@@ -24,7 +24,7 @@ const AdminAddCourse = () => {
 
       <div className='HeadNavBarContainer'>
         <HeadNavBar />
-        <div>
+        <div className="content-area">
           <AdminAddCourseContent />
         </div>
       </div>

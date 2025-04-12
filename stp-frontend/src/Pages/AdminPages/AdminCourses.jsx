@@ -22,7 +22,7 @@ const AdminCourses = () => {
 
       <div className='HeadNavBarContainer'>
         <HeadNavBar />
-        <div>
+        <div className="content-area">
           <AdminCoursesContent />
         </div>
       </div>

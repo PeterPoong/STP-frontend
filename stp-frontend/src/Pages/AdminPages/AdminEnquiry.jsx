@@ -23,7 +23,7 @@ const AdminEnquiry = () => {
 
       <div className='HeadNavBarContainer'>
         <HeadNavBar />
-        <div>
+        <div className="content-area">
           <AdminEnquiryContent />
         </div>
       </div>

@@ -22,7 +22,7 @@ const AdminCategory = () => {
 
       <div className='HeadNavBarContainer'>
         <HeadNavBar />
-        <div>
+        <div className="content-area">
           <AdminCategoryContent />
         </div>
       </div>

@@ -25,7 +25,7 @@ const AdminAddRiasec = () => {
 
       <div className='HeadNavBarContainer'>
         <HeadNavBar />
-        <div>
+        <div className="content-area">
           <AdminAddRiasecContent />
         </div>
       </div>

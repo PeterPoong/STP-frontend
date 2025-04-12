@@ -183,18 +183,17 @@ const AdminStudentContent = () => {
     }
   };
 
-  const getStatusClass = (student_status) => {
-    switch (student_status) {
-      case "Disable":
-        return "status-disable";
-      case "Temporary-Disable":
-        return "status-disable";
-      case "Active":
-        return "status-active";
-      case "Temporary":
-        return "status-temporary";
-      default:
-        return "";
+  const getStatusDisplay = (status) => {
+    switch (status) {
+        case 'Active':
+            return { text: status, color: 'green' };
+        case 'Temporary':
+            return { text: status, color: 'orange' };
+        case 'Temporary-Disable':
+        case 'Disable':
+            return { text: status, color: 'red' };
+        default:
+            return { text: status, color: 'red' };
     }
   };
 
@@ -234,14 +233,14 @@ const AdminStudentContent = () => {
     <>
       {/* Row for the Total Count */}
       <tr>
-        <th
-          colSpan={6}
-          style={{
-            textAlign: "left",
-            fontWeight: "bold",
-            backgroundColor: "#f5f5f5",
-          }}
-        >
+      <th
+                colSpan={6}
+                style={{
+                    textAlign: "left",
+                    fontWeight: "bold",
+                    backgroundColor: "#f5f5f5",
+                }}
+            >
           Total Students: {total}
         </th>
       </tr>
@@ -281,39 +280,25 @@ const AdminStudentContent = () => {
           <td>{student.email}</td>
           <td>{student.contact_number}</td>
           <td>{student.created_at}</td>
-          <td className={getStatusClass(student.status)}>{student.status}</td>
-          <td>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
+          <td style={{ padding: '8px' }}>
+            <span style={{ color: student.status === 'Active' ? 'green' : 
+                                student.status === 'Temporary' ? 'orange' : 'red' }}>
+              {student.status}
+            </span>
+          </td>
+          <td className="action-cell">
+            <div className="action-buttons">
               <FontAwesomeIcon
                 className="icon-color-edit"
                 title="Edit"
                 icon={faEdit}
-                style={{
-                  marginRight: "8px",
-                  color: "#691ED2",
-                  cursor: "pointer",
-                }}
                 onClick={() => handleEdit(student.id)}
               />
               <MDBSwitch
                 id={`switch-${student.id}`}
-                checked={
-                  student.status === "Active" || student.status === "Temporary"
-                }
+                checked={student.status === "Active" || student.status === "Temporary"}
                 onChange={() => handleToggleSwitch(student.id, student.status)}
-                style={{
-                  color:
-                    student.status === "Active" ||
-                    student.status === "Temporary"
-                      ? "green"
-                      : "",
-                }}
+                className={student.status === "Active" || student.status === "Temporary" ? "switch-active" : ""}
               />
             </div>
           </td>

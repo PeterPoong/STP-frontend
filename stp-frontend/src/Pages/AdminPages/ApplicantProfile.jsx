@@ -22,7 +22,7 @@ const ApplicantProfile = () => {
 
       <div className='HeadNavBarContainer'>
         <HeadNavBar />
-        <div>
+        <div className="content-area">
           <ApplicantProfileContent />
         </div>
       </div>

@@ -23,7 +23,7 @@ const AdminList = () => {
 
       <div className='HeadNavBarContainer'>
         <HeadNavBar />
-        <div>
+        <div className="content-area">
           <AdminListContent />
         </div>
       </div>
