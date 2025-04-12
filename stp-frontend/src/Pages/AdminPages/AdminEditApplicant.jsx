@@ -26,7 +26,7 @@ const AdminEditApplicant = () => {
 
       <div className='HeadNavBarContainer'>
         <HeadNavBar />
-        <div>
+        <div className="content-area">
           <AdminEditApplicantContent />
         </div>
       </div>

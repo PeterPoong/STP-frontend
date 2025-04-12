@@ -209,14 +209,7 @@ const AdminSubjectContent = () => {
     };
 
     const getStatusClass = (status) => {
-        switch (status) {
-            case 'Disable':
-                return 'status-disable';
-            case 'Active':
-                return 'status-active';
-            default:
-                return '';
-        }
+        return status?.toLowerCase() || ''; // Just convert to lowercase, no switch needed
     };
 
     const theadContent = (
@@ -240,7 +233,7 @@ const AdminSubjectContent = () => {
         <tr key={subject.id}>
             <td>{subject.name}</td>
             <td>{subject.category}</td>
-            <td className={getStatusClass(subject.status)}>
+            <td style={{ color: subject.status === 'Active' ? 'green' : 'red' }}>
                 {subject.status}
             </td>
             <td>

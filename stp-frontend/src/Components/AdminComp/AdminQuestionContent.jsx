@@ -244,14 +244,14 @@ const AdminQuestionContent = () => {
         }
     };
     
-    const getStatusClass = (status) => {
+    const getStatusDisplay = (status) => {
+        // Convert numeric status to text and color
         switch (status) {
             case 1:
-                return 'status-active'; // Green color
-            case 2:
-                return 'status-pending'; // Yellow color
+                return { text: 'Active', color: 'green' };
+            case 0:
             default:
-                return 'status-disable'; // Default for other cases
+                return { text: 'Disable', color: 'red' };
         }
     };
     
@@ -283,78 +283,51 @@ const handleCategoryChange = (categoryId) => {
         </tr>
     );
 
-    const tbodyContent =
-    sortedquestions.length > 0 ? (
-      sortedquestions.map((question) => (
-        <tr key={question.id}>
-          <td>{question.question}</td>
-          <td>{question.riasec_type}</td>
-          <td className={getStatusClass(question.status)}>{question.status}</td>
-          <td>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              {question.status === "Pending" ? (
-                <>
-                  <Button
-                    className="accept"
-                    variant="success"
-                    onClick={() => handlePendingAction(question.id, "true")}
-                  >
-                    Accept
-                  </Button>
-                  <Button
-                    className="rejected"
-                    variant="danger"
-                    onClick={() => handlePendingAction(question.id, "false")}
-                  >
-                    Reject
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <FontAwesomeIcon
-                    className="icon-color-edit"
-                    title="Edit"
-                    icon={faEdit}
-                    style={{
-                      marginRight: "8px",
-                      color: "#691ED2",
-                      cursor: "pointer",
-                    }}
-                    onClick={() => handleEdit(question.id)}
-                  />
-                  <MDBSwitch
-                    id={`switch-${question.id}`}
-                    checked={
-                      question.status === 1
-                    }
-                    onChange={() =>
-                      handleToggleSwitch(question.id, question.status)
-                    }
-                    style={{
-                      color:
-                        question.status === 1
-                          ? "green"
-                          : "",
-                    }}
-                  />
-                </>
-              )}
-            </div>
-          </td>
-        </tr>
-      ))
+    const tbodyContent = sortedquestions.length > 0 ? (
+        sortedquestions.map((question) => (
+            <tr key={question.id}>
+                <td>{question.question}</td>
+                <td>{question.riasec_type}</td>
+                <td style={{ color: getStatusDisplay(question.status).color }}>
+                    {getStatusDisplay(question.status).text}
+                </td>
+                <td>
+                    <div style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                    }}>
+                        <>
+                            <FontAwesomeIcon
+                                className="icon-color-edit"
+                                title="Edit"
+                                icon={faEdit}
+                                style={{
+                                    marginRight: "8px",
+                                    color: "#691ED2",
+                                    cursor: "pointer",
+                                }}
+                                onClick={() => handleEdit(question.id)}
+                            />
+                            <MDBSwitch
+                                id={`switch-${question.id}`}
+                                checked={question.status === 1}
+                                onChange={() => handleToggleSwitch(question.id, question.status)}
+                                style={{
+                                    color: question.status === 1 ? "green" : ""
+                                }}
+                            />
+                        </>
+                    </div>
+                </td>
+            </tr>
+        ))
     ) : (
-      <tr>
-        <td colSpan="6" style={{ textAlign: "center" }}>
-          No Data Available
-        </td>
-      </tr>
+        <tr>
+            <td colSpan="6" style={{ textAlign: "center" }}>
+                No Data Available
+            </td>
+        </tr>
     );
 
     console.log("Current categoryList:", categoryList);

@@ -182,12 +182,14 @@ const AdminPackageContent = () => {
     };
     
     
-    const getStatusClass = (package_status) => {
+    const getStatusColor = (package_status) => {
         switch (package_status) {
             case 'Disable':
-                return 'status-disable';
+                return 'red';
             case 'Active':
-                return 'status-active';
+                return 'green';
+            default:
+                return 'inherit';
         }
     };
     const getPackageClass = (package_type) => {
@@ -231,7 +233,7 @@ const AdminPackageContent = () => {
             <td>{Package.package_name}</td>
             <td>{getPackageClass(Package.package_type)}</td>
             <td>{Package.package_price}</td>
-            <td className={getStatusClass(Package.package_status)}>
+            <td style={{ color: getStatusColor(Package.package_status) }}>
                 {Package.package_status}
             </td>
             <td>

@@ -225,14 +225,14 @@ const AdminEnquiryContent = () => {
         }
     };
     
-    const getStatusClass = (status) => {
+    const getStatusDisplay = (status) => {
         switch (status) {
             case 1:
-                return 'status-replied'; // Green color
+                return { text: "Replied", color: "green" };
             case 2:
-                return 'status-pending'; // Yellow color
+                return { text: "Pending", color: "#FFAA1D" };
             default:
-                return 'status-disable'; // Default for other cases
+                return { text: "Disabled", color: "red" };
         }
     };
     
@@ -285,8 +285,8 @@ const handleStatChange = (stat) => {
                 <td>{enquiry.enquiry_subject}</td>
                 <td>{enquiry.created_at}</td>
                 <td>{enquiry.enquiry_message}</td>
-                <td className={getStatusClass(enquiry.enquiry_status)}>
-                    {enquiry.enquiry_status === 1 ? "Replied" : enquiry.enquiry_status === 2 ? "Pending" : "Disabled"}
+                <td style={{ color: getStatusDisplay(enquiry.enquiry_status).color }}>
+                    {getStatusDisplay(enquiry.enquiry_status).text}
                 </td>
                 <td>
                     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>

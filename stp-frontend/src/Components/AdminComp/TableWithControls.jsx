@@ -139,239 +139,176 @@ const TableWithControls = ({
   };
 
   const [totalCount, setTotalCount] = useState(0);
+
+  // Add this function to your component to transform the thead content into data labels
+  const addDataLabels = (tbodyContent, theadContent) => {
+    const headers = React.Children.toArray(theadContent.props.children)
+      .filter(child => child.type === 'th')
+      .map(th => th.props.children);
+
+    return React.Children.map(tbodyContent, (tr) => {
+      if (!tr) return null;
+      
+      return React.cloneElement(tr, {
+        children: React.Children.map(tr.props.children, (td, index) => {
+          // Add title attribute for tooltip
+          return React.cloneElement(td, {
+            'data-label': headers[index] || '',
+            'title': td.props.children, // Add tooltip
+          });
+        })
+      });
+    });
+  };
+
   return (
-    <Container fluid>
-      <div className="topbar container">
-        <div className="row align-items-center">
-          <div className="col d-flex">
-            {/* Conditionally render the rows-per-page dropdown */}
-            {showRowsPerPage && (
-              <div className="me-1 mb-3 mt-3 custom-dropdown">
-                Show <span></span>
-                <select
-                  onChange={(e) =>
-                    onRowsPerPageChange(parseInt(e.target.value, 10))
-                  }
-                >
-                  <option value="10">10</option>
-                  <option value="20">20</option>
-                  <option value="50">50</option>
-                  <option value="All">All</option>
-                </select>
-              </div>
-            )}
-
-            {/* Conditionally render the search input */}
-            {showSearch && (
-              <div className="search-input-wrapper mt-2 mb-3 ms-4">
-                <Form.Control
-                  type="text"
-                  placeholder="Search Name"
-                  onChange={(e) => onSearch(e.target.value)}
-                  className="search-input"
-                />
-                <FontAwesomeIcon icon={faSearch} className="search-icon" />
-              </div>
-            )}
-            {/* Conditionally render the subject enquiry dropdown */}
-            {subjectList && subjectList.length > 0 && (
-              <div className="me-1 mb-3 mt-3 ms-3 custom-dropdown">
-                Enquiry Subject
-                <select
-                  onChange={(e) => onSubjectChange(e.target.value)}
-                  className="subject-dropdown"
-                >
-                  <option value="">All Subjects</option>
-                  {subjectList.map((subject) => (
-                    <option key={subject.id} value={subject.id}>
-                      {subject.core_metaName}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-              {/* Conditionally render the category enquiry dropdown */}
-              {categoryList && categoryList.length > 0 && (
-              <div className="mb-3 mt-3 ms-3 custom-dropdown" >
-                Category
-                <select
-                  onChange={(e) => onCategoryChange(e.target.value)}
-                  className="subject-dropdown"
-                >
-                  <option value="">All Categories</option>
-                  {categoryList.map((category) => (
-                    <option key={category.id} value={category.id}>
-                      {category.category_name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-
-             {/* Conditionally render the category enquiry dropdown */}
-             {/* Featured Type Filter */}
-             {featList && featList.length > 0 && (
-                <div className="mb-3 mt-3 ms-3 custom-dropdown">
-                    Featured Type
-                    <select
-                        onChange={(e) => onFeatChange(e.target.value)}
-                        className="subject-dropdown ms-2"
-                    >
-                        <option value="">All Featured Types</option>
-                        {featList.map((feat) => (
-                            <option key={feat.id} value={feat.id}>
-                                {feat.name}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-            )}
-           
-            {/* Status Type Filter */}
-            {statList && statList.length > 0 && (
-              <div className="mb-3 mt-3 ms-3 custom-dropdown">
-                  Status
+    <div className="table-controls-wrapper">
+      <Container fluid className="table-controls-container">
+        <div className="topbar">
+          <div className="controls-wrapper">
+            <div className="control-row">
+              {showRowsPerPage && (
+                <div className="control-item rows-per-page">
+                  Show
                   <select
-                      onChange={(e) => onStatChange(e.target.value)}
-                      className="subject-dropdown ms-2"
+                    onChange={(e) => onRowsPerPageChange(parseInt(e.target.value, 10))}
+                    className="rows-select"
                   >
-                      <option value="">All Status</option>
-                      {statList.map((stat) => (
-                          <option key={stat.id} value={stat.id}>
-                              {stat.name}
-                          </option>
-                      ))}
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                    <option value="All">All</option>
                   </select>
-              </div>
-          )}
-        {/* Category Type Filter */}
-        {catList && catList.length > 0 && (
-          <div className="mb-3 mt-3 ms-5 custom-dropdown">
-              Category
-              <select
-                  onChange={(e) => {
-                      const selectedCategoryId = e.target.value;
-                      onCatChange(selectedCategoryId); // Call the handler passed as a prop
-                  }}
-                  className="subject-dropdown ms-2"
-              >
-                  <option value="">All Categories</option>
-                  {catList.map((cat) => (
-                      <option key={cat.id} value={cat.id}>
-                          {cat.name}
+                </div>
+              )}
+
+              {showSearch && (
+                <div className="control-item search-wrapper">
+                  <Form.Control
+                    type="text"
+                    placeholder="Search Name"
+                    onChange={(e) => onSearch(e.target.value)}
+                    className="search-input"
+                  />
+                  <FontAwesomeIcon icon={faSearch} className="search-icon" />
+                </div>
+              )}
+
+              {/* Status filter */}
+              {statList && statList.length > 0 && (
+                <div className="control-item status-filter">
+                  <select onChange={(e) => onStatChange(e.target.value)}>
+                    <option value="">All Status</option>
+                    {statList.map((stat) => (
+                      <option key={stat.id} value={stat.id}>
+                        {stat.name}
                       </option>
-                  ))}
-              </select>
-          </div>
-      )}
-            {/* Add the month/year filter after the category dropdown */}
-            {showMonthFilter && (
-              <div className="me-1 mb-3 mt-3 ms-3 custom-dropdown d-flex">
-                {/* <h6 className="me-2" >MM/YY</h6> */}
-             
-                <button 
-                  onClick={() => setIsRangeMode(!isRangeMode)}
-                  style={{
-                    marginRight: '10px',
-                    padding: '2px',
-                    fontSize:'12px',
-                    backgroundColor: isRangeMode ? '#007bff' : '#6c757d',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '4px',
-                    cursor: 'pointer'
-                  }}
-                >
-                  {isRangeMode ? 'MM/YY - MM/YY' : 'MM/YY'}
-                </button>
-                <DatePicker
-                  selected={startDate}
-                  onChange={(dates) => {
-                    if (isRangeMode) {
-                      const [start, end] = dates;
-                      setStartDate(start);
-                      setEndDate(end);
-                      
-                      if (start && end) {
-                        onMonthYearChange(`${formatDate(start)} - ${formatDate(end)}`);
-                      } else if (start) {
-                        onMonthYearChange(formatDate(start));
-                      }
-                    } else {
-                      setStartDate(dates);
-                      setEndDate(null);
-                      onMonthYearChange(formatDate(dates));
-                    }
-                  }}
-                  startDate={startDate}
-                  endDate={isRangeMode ? endDate : null}
-                  dateFormat="MM/yyyy"
-                  showMonthYearPicker
-                  selectsRange={isRangeMode}
-                  className="form-control"
-                  placeholderText="Select Month/Year"
-                  isClearable
-                  style={{
-                    height: '38px',
-                    width: '150px',
-                    padding: '8px 12px',
-                    fontSize: '14px',
-                    border: '1px solid #ced4da',
-                    borderRadius: '4px',
-                    backgroundColor: '#fff',
-                    cursor: 'pointer'
-                  }}
-                />
-                 
-              </div>
-            )}
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* School filter */}
+              {schList && schList.length > 0 && (
+                <div className="control-item school-filter">
+                  <select onChange={(e) => onSchChange(e.target.value)}>
+                    <option value="">All Schools</option>
+                    {schList.map((sch) => (
+                      <option key={sch.id} value={sch.id}>
+                        {sch.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* Subject filter */}
+              {subjectList && subjectList.length > 0 && (
+                <div className="control-item subject-filter">
+                  <select onChange={(e) => onSubjectChange(e.target.value)}>
+                    <option value="">All Subjects</option>
+                    {subjectList.map((subject) => (
+                      <option key={subject.id} value={subject.id}>
+                        {subject.core_metaName}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* Category filter */}
+              {categoryList && categoryList.length > 0 && (
+                <div className="control-item category-filter">
+                  <select onChange={(e) => onCategoryChange(e.target.value)}>
+                    <option value="">All Categories</option>
+                    {categoryList.map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {category.category_name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* Featured Type filter */}
+              {featList && featList.length > 0 && (
+                <div className="control-item featured-filter">
+                  <select onChange={(e) => onFeatChange(e.target.value)}>
+                    <option value="">All Featured Types</option>
+                    {featList.map((feat) => (
+                      <option key={feat.id} value={feat.id}>
+                        {feat.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* Category Type filter */}
+              {catList && catList.length > 0 && (
+                <div className="control-item cat-filter">
+                  <select onChange={(e) => onCatChange(e.target.value)}>
+                    <option value="">All Categories</option>
+                    {catList.map((cat) => (
+                      <option key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {showAddButton && (
+                <div>
+                  <Button
+                    className="addNewAdmin"
+                    variant="primary"
+                    onClick={onAddButtonClick}
+                  >
+                    + Add New
+                  </Button>
+                </div>
+              )}
+            </div>
           </div>
 
-          <div className="col-auto">
-            {/* Conditionally render the Add New button */}
-            {showAddButton && (
-              <Button
-                className="addNew"
-                variant="primary"
-                onClick={onAddButtonClick}
-              >
-                + Add New
-              </Button>
-            )}
+          {/* Table container remains the same */}
+          <div className="TableContainer">
+            <MDBTable className="AdminTable table-borderless" hover>
+              <MDBTableHead className="AdminTableHead">
+                {React.cloneElement(theadContent, { onSort })}
+              </MDBTableHead>
+              <MDBTableBody className="AdminTableBody">
+                {addDataLabels(tbodyContent, theadContent)}
+              </MDBTableBody>
+            </MDBTable>
+          </div>
+          <div className="pagination-controls">
+            <MDBPagination>{renderPaginationItems()}</MDBPagination>
           </div>
         </div>
- {/* School Type Filter */}
- {schList && schList.length > 0 && (
-                <div className="mb-1 mt-1 custom-dropdown">
-                    School Name
-                    <select
-                        onChange={(e) => onSchChange(e.target.value)}
-                        className="subject-dropdown ms-2"
-                    >
-                        <option value="">All Schools</option>
-                        {schList.map((sch) => (
-                            <option key={sch.id} value={sch.id}>
-                                {sch.name}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-            )}
-        <div className="TableContainer">
-          <MDBTable className="AdminTable table-borderless" hover>
-            <MDBTableHead className="AdminTableHead">
-              {React.cloneElement(theadContent, { onSort })}
-            </MDBTableHead>
-            <MDBTableBody className="AdminTableBody">
-              {tbodyContent}
-            </MDBTableBody>
-          </MDBTable>
-        </div>
-        <div className="pagination-controls">
-          <MDBPagination>{renderPaginationItems()}</MDBPagination>
-        </div>
-      </div>
-    </Container>
+      </Container>
+    </div>
   );
 };
 

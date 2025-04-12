@@ -23,7 +23,7 @@ const AdminAddSchool = () => {
 
       <div className='HeadNavBarContainer'>
         <HeadNavBar />
-        <div>
+        <div className="content-area">
           <AdminAddSchoolContent />
         </div>
       </div>

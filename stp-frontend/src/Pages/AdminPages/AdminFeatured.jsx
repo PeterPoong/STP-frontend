@@ -24,7 +24,7 @@ const AdminFeatured = () => {
 
       <div className='HeadNavBarContainer'>
         <HeadNavBar />
-        <div>
+        <div className="content-area">
           <AdminFeaturedContent />
         </div>
       </div>

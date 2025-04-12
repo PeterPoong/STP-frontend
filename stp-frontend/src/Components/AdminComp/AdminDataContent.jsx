@@ -185,16 +185,14 @@ const AdminDataContent = () => {
         }
     };
     
-    const getStatusClass = (status) => {
+    const getStatusDisplay = (status) => {
+        // Convert numeric status to text and color
         switch (status) {
-            case 0:
-                return 'status-disable';
-            case 'Temporary-Disable':
-                return 'status-disable';
             case 1:
-                return 'status-active';
+                return { text: 'Active', color: 'green' };
+            case 0:
             default:
-                return '';
+                return { text: 'Disable', color: 'red' };
         }
     };
 
@@ -215,43 +213,33 @@ const AdminDataContent = () => {
 
     const tbodyContent = sortedDatas.length > 0 ? ( 
         sortedDatas.map((Data) => (
-        // console.log(Data); // Add this to check if 'id' is fetched
             <tr key={Data.id}>
                 <td>{Data.core_metaType}</td>
                 <td>{Data.core_metaName}</td>
-                <td className={getStatusClass(Data.status)}>
-                    {Data.status}
+                <td style={{ color: getStatusDisplay(Data.status).color }}>
+                    {getStatusDisplay(Data.status).text}
                 </td>
                 <td>
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                         <>
-                        {/* <FontAwesomeIcon
-                            className="icon-color-edit"
-                            title="Edit"
-                            icon={faEdit}
-                            style={{ marginRight: '8px', color: '#691ED2', cursor: 'pointer' }}
-                            onClick={() => handleEdit(Data.id)}
-                        /> */}
-                        <MDBSwitch
-                            id={`switch-${Data.id}`}
-                            checked={Data.status === 1}
-                            onChange={() => handleToggleSwitch(Data.id, Data.status)}
-                            style={{
-                                color: (Data.status === 1) ? 'green' : ''
-                            }}
-                        />
-                    </>
-                     
+                            <MDBSwitch
+                                id={`switch-${Data.id}`}
+                                checked={Data.status === 1}
+                                onChange={() => handleToggleSwitch(Data.id, Data.status)}
+                                style={{
+                                    color: Data.status === 1 ? 'green' : ''
+                                }}
+                            />
+                        </>
                     </div>
-                    
                 </td>
             </tr>
-    ))
-) : (
-    <tr>
-        <td colSpan="6" style={{ textAlign: "center" }}>No Data Available (Please Select A Data Type)</td>
-    </tr>
-);
+        ))
+    ) : (
+        <tr>
+            <td colSpan="6" style={{ textAlign: "center" }}>No Data Available (Please Select A Data Type)</td>
+        </tr>
+    );
     
 
     return (

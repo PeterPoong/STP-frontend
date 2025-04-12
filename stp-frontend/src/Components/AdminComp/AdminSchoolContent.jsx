@@ -221,13 +221,14 @@ const AdminSchoolContent = () => {
       <tr>
         <th
           colSpan={6}
+         
           style={{
             textAlign: "left",
             fontWeight: "bold",
             backgroundColor: "#f5f5f5",
           }}
         >
-          Total Students: {total}
+          Total Schools: {total}
         </th>
       </tr>
       <tr>
@@ -264,7 +265,16 @@ const AdminSchoolContent = () => {
           <td>{school.email}</td>
           <td>{school.contact}</td>
           <td>{school.category}</td>
-          <td className={getStatusClass(school.status)}>{school.status}</td>
+          <td style={{ padding: '8px', background: 'none' }}>
+            <span style={{ 
+                color: school.status === 'Active' ? 'green' : 
+                       school.status === 'Temporary' ? 'orange' :
+                       school.status === 'Pending' ? '#FFAA1D' : 'red',
+                background: 'none'
+            }}>
+                {school.status}
+            </span>
+          </td>
           <td>
             <FontAwesomeIcon
               className="icon-color-featured"

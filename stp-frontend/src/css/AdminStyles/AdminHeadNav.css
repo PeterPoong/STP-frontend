@@ -1,82 +1,117 @@
 /* AdminHeadNav.css */
 .head-nav-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #ffffff;
-    padding: 10px 20px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  }
-  
-  .left-side h1 {
-    font-size: 18px;
-    font-weight: bold;
-  }
-  
-  .right-side span {
-    margin-right: auto;
-  }
-  
-  .profile-info {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-  }
-  
-  .dropdown-arrow {
-    position: absolute;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    /* Placeholder for dropdown arrow icon */
-  }
-  
-  .profile-info span {
-    margin-top: 5px;
-    font-size: 14px;
-  }
-  
-  .separator-line {
-    border-bottom: 1px solid #ccc;
-    width: 100%;
-    margin-top: 10px;
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 250px; /* Match sidebar width */
+  height: 60px; /* Reduced from 70px to 60px */
+  background: #fff;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1040;
+}
+
+.left-side h1 {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.right-side {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-info span {
+  font-size: 14px;
+}
+
+.profile-info {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.profile-info span {
+  color: #666;
+}
+
+.logout-button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  background-color: #343a40;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  font-size: 14px;
+}
+
+.logout-button:hover {
+  background-color: #23272b;
+}
+
+/* Mobile styles */
+@media screen and (max-width: 768px) {
+  .head-nav-bar {
+    left: 0;
+    height: 50px; /* Even smaller for mobile */
+    padding: 0 15px;
   }
 
-  .head-nav-bar {
-    display: flex;
-    justify-content: space-between; /* Distribute space between items */
-    align-items: center; /* Align items vertically centered */
-    padding: 10px 20px;
-    background-color: #f8f9fa; /* Example background color */
-  }
-  
   .left-side h1 {
-    margin: 0; /* Remove default margin */
+    font-size: 16px;
   }
-  
-  .right-side {
-    display: flex;
-    align-items: center;
+
+  .user-info span:first-child {
+    display: none; /* Hide "Welcome" text on mobile */
   }
-  
-  .user-info {
-    display: flex;
-    flex-direction: column; /* Stack elements vertically */
-    margin-right: 15px; /* Spacing between elements */
-  }
-  
+
   .profile-info {
-    display: flex;
-    align-items: center;
+    display: none; /* Hide role info on mobile */
   }
-  
-  .profile-info span {
-    margin-right: 5px; /* Spacing between role and dropdown arrow */
-  }
-  
+
   .logout-button {
-    margin-left: 15px; /* Ensure the button is separated from other elements */
-    padding: 6px 12px;
+    padding: 4px 8px;
+    font-size: 12px;
   }
+
+  /* When sidebar is collapsed */
+  .head-nav-bar.sidebar-collapsed {
+    left: 0;
+  }
+}
+
+/* Very small screens */
+@media screen and (max-width: 480px) {
+  .head-nav-bar {
+    padding: 10px;
+  }
+
+  .left-side h1 {
+    font-size: 14px;
+  }
+
+  .logout-button {
+    padding: 4px 6px;
+  }
+
+  .logout-button span {
+    display: none; /* Hide logout text, show only icon */
+  }
+}
   

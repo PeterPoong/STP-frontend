@@ -22,7 +22,7 @@ const AdminDashboard= () => {
 
       <div className='HeadNavBarContainer'>
         <HeadNavBar />
-        <div>
+        <div className="content-area">
           <AdminDashContent />
         </div>
       </div>
