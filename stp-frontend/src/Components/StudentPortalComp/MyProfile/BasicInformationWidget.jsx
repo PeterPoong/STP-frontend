@@ -1170,6 +1170,9 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
                       <p className="mt-2">
                         Drag and drop your photo here, or click to select
                       </p>
+                      <p style={{ fontSize: "0.8em" }}>
+                        <b>(Max File Size 10MB)</b>
+                      </p>
                       <input
                         type="file"
                         id="backIcFileInput"
@@ -1300,6 +1303,9 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
                       </div>
                       <p className="mt-2">
                         Drag and drop your photo here, or click to select
+                      </p>
+                      <p style={{ fontSize: "0.8em" }}>
+                        <b>(Max File Size 10MB)</b>
                       </p>
                       <input
                         type="file"
