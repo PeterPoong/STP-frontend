@@ -240,6 +240,7 @@ const StudentApplyCourses = () => {
               updateFormData("basicInformation", data);
               handleNext();
             }}
+            nextStep={handleNext}
           />
         );
       case 1:

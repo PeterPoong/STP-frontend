@@ -477,40 +477,45 @@ const BasicInformation = ({ onSubmit, nextStep }) => {
       //   setShowPopup(true);
       // }
 
-      if (!responseData.ok) {
-        if (response.status === 422) {
-          // console.log("response error", responseData);
-          // If it's a validation error (422), handle it here
-          const errorMessage =
-            "Please make sure the file you upload is either jpeg,png,jpg or pdf";
-          if (responseData.errors.student_frontIC) {
-            setFrontIcFileError(errorMessage);
-          }
+      // if (!responseData.ok) {
 
-          console.log("error message", errorMessage);
-          if (responseData.errors.student_backIC) {
-            setBackIcFileError(errorMessage);
-          }
-          if (responseData.errors.student_passport) {
-            setPassportFileError(errorMessage);
-          }
-
-          const errorMessages = Object.values(responseData.errors)
-            .flat()
-            .join(", ");
-          throw new Error(`Validation errors: ${errorMessages}`);
+      if (response.status === 422) {
+        // console.log("response error", responseData);
+        // If it's a validation error (422), handle it here
+        const errorMessage =
+          "Please make sure the file you upload is either jpeg,png,jpg or pdf";
+        if (responseData.errors.student_frontIC) {
+          console.log("setfronticerror");
+          setFrontIcFileError(errorMessage);
         }
-        // Handle other HTTP errors
-        throw new Error(
-          `Failed to update student details. Status: ${response.status}`
-        );
-      } else {
-        // if (responseData.success) {
-        //   setSuccess("Student details updated successfully!");
-        //   nextStep();
-        // } else {
-        //   setShowPopup(true); // Show the popup in case of a server error
-        // }
+
+        console.log("error message", errorMessage);
+        if (responseData.errors.student_backIC) {
+          console.log("setbackicerror");
+          setBackIcFileError(errorMessage);
+        }
+        if (responseData.errors.student_passport) {
+          console.log("setpassportcerror");
+          setPassportFileError(errorMessage);
+        }
+
+        const errorMessages = Object.values(responseData.errors)
+          .flat()
+          .join(", ");
+        throw new Error(`Validation errors: ${errorMessages}`);
+      }
+
+      // throw new Error(
+      //   `Failed to update student details. Status: ${responseData}`
+      // );
+      else {
+        if (responseData.success) {
+          console.log("Student details updated successfully!");
+          setSuccess("Student details updated successfully!");
+          nextStep();
+        } else {
+          setShowPopup(true); // Show the popup in case of a server error
+        }
       }
     } catch (error) {
       console.error("Error in handleSubmit:", error);
@@ -915,9 +920,9 @@ const BasicInformation = ({ onSubmit, nextStep }) => {
                   </Form.Label>
                   <br></br>
                   <p>
-                    {/* <b style={{ fontSize: "0.8em", color: "#B71A18" }}>
+                    <b style={{ fontSize: "0.8em", color: "#B71A18" }}>
                       {frontIcFileError}
-                    </b> */}
+                    </b>
                   </p>
 
                   {uploadedFrontIcFileName ? (
@@ -1020,11 +1025,11 @@ const BasicInformation = ({ onSubmit, nextStep }) => {
                     Back Ic <span className="text-danger"></span>
                   </Form.Label>
                   <br></br>
-                  {/* <p>
+                  <p>
                     <b style={{ fontSize: "0.8em", color: "#B71A18" }}>
                       {backIcFileError}
                     </b>
-                  </p> */}
+                  </p>
                   {uploadedBackIcFileName ? (
                     <div
                       className="d-flex align-items-center py-2"
@@ -1122,11 +1127,11 @@ const BasicInformation = ({ onSubmit, nextStep }) => {
                     Passport<span className="text-danger"></span>
                   </Form.Label>
                   <br></br>
-                  {/* <p>
+                  <p>
                     <b style={{ fontSize: "0.8em", color: "#B71A18" }}>
                       {passportFileError}
                     </b>
-                  </p> */}
+                  </p>
                   {uploadedPassportFileName ? (
                     <div
                       className="d-flex align-items-center py-2"
