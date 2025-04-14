@@ -149,6 +149,7 @@ const CourseDetail = () => {
     };
     fetchCurrencyOnChange(); // Fetch the currency rates immediately on component mount or currency change
   }, [sessionStorage.getItem("userCurrencyCode")]); // Trigger on currency code change in session storage
+
   useEffect(() => {
     const interval = setInterval(() => {
       const newCurrencyCode =
@@ -169,6 +170,7 @@ const CourseDetail = () => {
 
     return () => clearInterval(interval);
   }, [selectedCurrency]);
+
   const convertToFetchedCurrency = (amount) => {
     const currencyCode = sessionStorage.getItem("userCurrencyCode") || "MYR"; // Use sessionStorage value
     const currencySymbol = sessionStorage.getItem("userCurrencySymbol") || "RM";
@@ -220,12 +222,26 @@ const CourseDetail = () => {
       return null;
     }
   };
+
+  const recordVisit = async () => {
+    console.log("school name", formattedSchoolName);
+    try {
+      response = await fetch(`${baseURL}api/student/increaseNumberVisit`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ school_name: formattedSchoolName }),
+      });
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+    }
+  };
+
   useEffect(() => {
     const fetchCountryAndSet = async () => {
       const country = await fetchCountry(); // Fetch the country
       if (country) {
-        // console.log("User country:", country);
-
         const currencyCode =
           sessionStorage.getItem("userCurrencyCode") || "MYR"; // Fetch from storage
         setSelectedCurrency(countryCurrencyMap[country]); // Use country directly from fetchCountry
@@ -235,7 +251,10 @@ const CourseDetail = () => {
       }
     };
     fetchCountryAndSet();
+
+    recordVisit();
   }, []);
+
   // Convert hyphenated names to space-separated names while preserving hyphens in parentheses
   const formattedSchoolName = decodeURIComponent(school_name)
     .replace(/\((.*?)\)/g, (match) => match.replace(/-/g, "###HYPHEN###")) // Temporarily replace hyphens in parentheses
@@ -545,7 +564,7 @@ const CourseDetail = () => {
                       }}
                       onClick={() => handleApplyNow(program)} // Pass the correct ID
                     >
-                      Apply Nows
+                      Apply Now
                     </Button>
                   )}
                 </Col>

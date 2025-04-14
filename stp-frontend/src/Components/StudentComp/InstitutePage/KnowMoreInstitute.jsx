@@ -203,45 +203,7 @@ const KnowMoreInstitute = () => {
       console.error("Error fetching exchange rates:", error);
     }
   };
-  useEffect(() => {
-    const fetchCurrencyOnChange = async () => {
-      const currencyCode = sessionStorage.getItem("userCurrencyCode") || "MYR";
-      const currencySymbol =
-        sessionStorage.getItem("userCurrencySymbol") || "RM";
 
-      // Fetch exchange rates based on the selected currency
-      await fetchExchangeRates(currencyCode);
-
-      setSelectedCurrency({
-        currency_code: currencyCode,
-        currency_symbol: currencySymbol,
-      });
-    };
-    fetchCurrencyOnChange(); // Fetch the currency rates immediately on component mount or currency change
-  }, [sessionStorage.getItem("userCurrencyCode")]); // Trigger on currency code change in session storage
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const newCurrencyCode =
-        sessionStorage.getItem("userCurrencyCode") || "MYR";
-
-      if (newCurrencyCode !== selectedCurrency.currency_code) {
-        setSelectedCurrency({
-          currency_code: newCurrencyCode,
-          currency_symbol: sessionStorage.getItem("userCurrencySymbol") || "RM",
-        });
-
-        // console.log(
-        //   "Detected currency change in sessionStorage:",
-        //   newCurrencyCode
-        // );
-
-        fetchExchangeRates(newCurrencyCode);
-        fetchSchool();
-      }
-    }, 1000); // Check every second
-
-    return () => clearInterval(interval);
-  }, [selectedCurrency]);
   const convertToFetchedCurrency = (amount) => {
     const currencyCode = sessionStorage.getItem("userCurrencyCode") || "MYR"; // Use sessionStorage value
     const currencySymbol = sessionStorage.getItem("userCurrencySymbol") || "RM";
@@ -293,6 +255,74 @@ const KnowMoreInstitute = () => {
       return null;
     }
   };
+
+  const recordVisit = async () => {
+    try {
+      let requestBody;
+
+      if (storedSchoolId) {
+        requestBody = JSON.stringify({ school_id: storedSchoolId });
+      } else if (formattedSchoolName) {
+        requestBody = JSON.stringify({ school_name: formattedSchoolName });
+      } else {
+        console.error("No school identifier available");
+        return;
+      }
+      // console.log("test", requestBody);
+      response = await fetch(`${baseURL}api/student/increaseNumberVisit`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: requestBody,
+      });
+      const data = await response.json();
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchCurrencyOnChange = async () => {
+      const currencyCode = sessionStorage.getItem("userCurrencyCode") || "MYR";
+      const currencySymbol =
+        sessionStorage.getItem("userCurrencySymbol") || "RM";
+
+      // Fetch exchange rates based on the selected currency
+      await fetchExchangeRates(currencyCode);
+
+      setSelectedCurrency({
+        currency_code: currencyCode,
+        currency_symbol: currencySymbol,
+      });
+    };
+    fetchCurrencyOnChange(); // Fetch the currency rates immediately on component mount or currency change
+  }, [sessionStorage.getItem("userCurrencyCode")]); // Trigger on currency code change in session storage
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const newCurrencyCode =
+        sessionStorage.getItem("userCurrencyCode") || "MYR";
+
+      if (newCurrencyCode !== selectedCurrency.currency_code) {
+        setSelectedCurrency({
+          currency_code: newCurrencyCode,
+          currency_symbol: sessionStorage.getItem("userCurrencySymbol") || "RM",
+        });
+
+        // console.log(
+        //   "Detected currency change in sessionStorage:",
+        //   newCurrencyCode
+        // );
+
+        fetchExchangeRates(newCurrencyCode);
+        fetchSchool();
+      }
+    }, 1000); // Check every second
+
+    return () => clearInterval(interval);
+  }, [selectedCurrency]);
+
   useEffect(() => {
     const fetchCountryAndSet = async () => {
       const country = await fetchCountry(); // Fetch the country
@@ -307,8 +337,11 @@ const KnowMoreInstitute = () => {
         await fetchExchangeRates(currencyCode);
       }
     };
+
     fetchCountryAndSet();
-  }, []);
+    recordVisit();
+  }, []); // This will run only once on mount
+
   //Fecth Ads Image
   const fetchAddsImage = async () => {
     try {
