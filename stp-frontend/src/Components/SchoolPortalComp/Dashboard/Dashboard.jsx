@@ -266,7 +266,8 @@ const Dashboard = () => {
         <div className="SchoolDashboard-Application-Container">
           <div className="border shadow-sm rounded SchoolDasboard-Application-Content">
             <p className="SchoolDashboard-Application-Title">
-              NEW APPLICATIONS
+              {/* NEW APPLICATIONS */}
+              TOTAL APPLICATIONS
             </p>
             {newApplication !== null ? (
               <h1>{newApplication}</h1>
