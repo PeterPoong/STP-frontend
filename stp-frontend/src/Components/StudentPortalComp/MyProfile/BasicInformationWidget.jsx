@@ -999,14 +999,14 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
                         boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
                       }}
                     >
-                      <Col xs={4} md={2} className="d-flex align-self-center">
+                      <Col xs={3} md={2} className="d-flex align-self-center">
                         <img
                           src={documentIcon}
                           className={`${styles.applycustomcourses_icon} `}
                           alt="Custom Apply School icon"
                         />
                       </Col>
-                      <Col xs={7} md={5} className="d-flex align-self-center">
+                      <Col xs={9} md={5} className="d-flex align-self-center">
                         <a
                           href={
                             uploadedFrontIcFileUrl ||
@@ -1027,7 +1027,7 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
                         md={2}
                         className="d-flex align-self-center justify-content-end"
                       >
-                        <img
+                        {/* <img
                           src={trash}
                           alt="Delete"
                           onClick={() => setUploadedFrontIcFileName("")}
@@ -1036,6 +1036,28 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
                             width: "20px",
                             height: "20px",
                           }}
+                        /> */}
+                        <Button
+                          variant="danger"
+                          style={{
+                            color: "#B71A18",
+                            fontSize: "11px",
+                            padding:
+                              "clamp(2px, 1vw, 6px) clamp(5px, 5vw, 10px)",
+                          }}
+                          className={`${styles.reupload_button}`}
+                          onClick={() =>
+                            document.getElementById("fileInput").click()
+                          }
+                        >
+                          Reupload
+                        </Button>
+                        <input
+                          type="file"
+                          id="fileInput"
+                          accept="image/*"
+                          onChange={handleFileChange}
+                          style={{ display: "none" }}
                         />
                       </Col>
                     </div>
@@ -1104,14 +1126,14 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
                         boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
                       }}
                     >
-                      <Col xs={4} md={2} className="d-flex align-self-center">
+                      <Col xs={3} md={2} className="d-flex align-self-center">
                         <img
                           src={documentIcon}
                           className={`${styles.applycustomcourses_icon} `}
                           alt="Custom Apply School icon"
                         />
                       </Col>
-                      <Col xs={7} md={5} className="d-flex align-self-center">
+                      <Col xs={9} md={7} className="d-flex align-self-center">
                         <a
                           href={
                             uploadedBackIcFileUrl ||
@@ -1128,11 +1150,11 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
                       </Col>
 
                       <Col
-                        xs={1}
+                        xs={2}
                         md={2}
                         className="d-flex align-self-center justify-content-end"
                       >
-                        <img
+                        {/* <img
                           src={trash}
                           alt="Delete"
                           onClick={() => setUploadedBackIcFileName("")}
@@ -1141,6 +1163,28 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
                             width: "20px",
                             height: "20px",
                           }}
+                        /> */}
+                        <Button
+                          variant="danger"
+                          style={{
+                            color: "#B71A18",
+                            fontSize: "11px",
+                            padding:
+                              "clamp(2px, 1vw, 6px) clamp(5px, 5vw, 10px)",
+                          }}
+                          className={`${styles.reupload_button}`}
+                          onClick={() =>
+                            document.getElementById("backIcFileInput").click()
+                          }
+                        >
+                          Reupload
+                        </Button>
+                        <input
+                          type="file"
+                          id="backIcFileInput"
+                          accept="image/*"
+                          onChange={handleBackIcFileChange}
+                          style={{ display: "none" }}
                         />
                       </Col>
                     </div>
@@ -1209,14 +1253,14 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
                         boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
                       }}
                     >
-                      <Col xs={4} md={2} className="d-flex align-self-center">
+                      <Col xs={3} md={2} className="d-flex align-self-center">
                         <img
                           src={documentIcon}
                           className={`${styles.applycustomcourses_icon} `}
                           alt="Custom Apply School icon"
                         />
                       </Col>
-                      <Col xs={7} md={5} className="d-flex align-self-center">
+                      <Col xs={10} md={5} className="d-flex align-self-center">
                         {/* Link for mobile view */}
                         <a
                           href={
@@ -1266,7 +1310,7 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
                         md={2}
                         className="d-flex align-self-center justify-content-end"
                       >
-                        <img
+                        {/* <img
                           src={trash}
                           alt="Delete"
                           onClick={() => setUploadedPassportFileName("")}
@@ -1275,6 +1319,27 @@ const BasicInformationWidget = ({ onProfilePicUpdate }) => {
                             width: "20px",
                             height: "20px",
                           }}
+                        /> */}
+                        <Button
+                          variant="danger"
+                          style={{
+                            color: "#B71A18",
+                            fontSize: "11px",
+                            padding: "5px 10px",
+                          }}
+                          className={`${styles.reupload_button}`}
+                          onClick={() =>
+                            document.getElementById("passportFileInput").click()
+                          }
+                        >
+                          Reupload
+                        </Button>
+                        <input
+                          type="file"
+                          id="passportFileInput"
+                          accept="image/*"
+                          onChange={handlePassportFileChange}
+                          style={{ display: "none" }}
                         />
                       </Col>
                     </div>

@@ -152,3 +152,16 @@ font-weight: bold;
     background-color: #B71A18; /* Fill with red on hover */
     color: white; /* Change text to white on hover */
   }
+
+  .reupload_button {
+    background-color: white ; /* Default background color */
+    color: #B71A18; /* Text color */
+    border: 1px solid #B71A18; /* Border color */
+  }
+
+  .reupload_button:hover {
+    background-color: #B71A18; /* Background color on hover */
+    color: white!important; /* Text color on hover */
+
+  }
+
