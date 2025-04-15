@@ -234,7 +234,7 @@ const AdminStudentContent = () => {
       {/* Row for the Total Count */}
       <tr>
       <th
-                colSpan={6}
+                colSpan={8}
                 style={{
                     textAlign: "left",
                     fontWeight: "bold",

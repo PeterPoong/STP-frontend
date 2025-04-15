@@ -220,7 +220,7 @@ const AdminSchoolContent = () => {
     <>
       <tr>
         <th
-          colSpan={6}
+          colSpan={8}
          
           style={{
             textAlign: "left",
