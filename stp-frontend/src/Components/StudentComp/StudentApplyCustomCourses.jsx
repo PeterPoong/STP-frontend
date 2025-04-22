@@ -176,9 +176,9 @@ const StudentApplyCustomCourses = ({
           }
         );
         const responseData = await response.json();
-        console.log("apply course", responseData);
-
-        window.location.reload();
+        if (responseData.success == true) {
+          window.location.reload();
+        }
       } else {
         setError(responseData.message || "Failed to update student details");
       }
