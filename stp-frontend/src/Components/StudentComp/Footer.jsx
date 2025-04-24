@@ -25,6 +25,21 @@ const Footer = () => {
           alignItems: "center",
         }}
       >
+         <div style={{ marginBottom: "5px" }}>
+          <img
+            src={assets/StudentAssets/logo/appdownload.png}
+            alt="App Download"
+            style={{ height: "70px", margin: "0 10px" }}
+          />
+         </div>
+      </div>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
         <div style={{ marginBottom: "5px" }}>
           <img
             src={fb}
