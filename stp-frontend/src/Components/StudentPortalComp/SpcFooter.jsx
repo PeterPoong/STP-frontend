@@ -3,7 +3,7 @@ import { Row } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../css/StudentCss/Footer.css";
 import { Link } from "react-router-dom";
-import appDownloadImg from '../../assets/StudentAssets/logo/appdownload.png';
+import appDownloadImg from "../../assets/StudentAssets/logo/appdownload.png";
 
 const SpcFooter = () => {
   return (
@@ -22,10 +22,8 @@ const SpcFooter = () => {
           alignItems: "center",
         }}
       >
-        
         <div style={{ marginBottom: "15px", marginTop: "15px" }}>
           <div className="d-flex gap-3 justify-content-center">
-            
             <a
               href="https://www.facebook.com/profile.php?id=61567875925810"
               target="_blank"
@@ -94,20 +92,20 @@ const SpcFooter = () => {
               </svg>
             </a>
             <a
-            href="http://studypalapp.studypal.my/StudyPal.apk"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <img
-              src={appDownloadImg}
-              alt="Download StudyPal App"
-              style={{ 
-                height: "40px", 
-                cursor: "pointer",
-                maxWidth: "280px"
-              }}
-            />
-          </a>
+              href="https://studypalapp.studypal.my/StudyPal.apk"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img
+                src={appDownloadImg}
+                alt="Download StudyPal App"
+                style={{
+                  height: "40px",
+                  cursor: "pointer",
+                  maxWidth: "280px",
+                }}
+              />
+            </a>
           </div>
         </div>
         <p style={{ marginBottom: "5px", color: "#AAAAAA" }}>

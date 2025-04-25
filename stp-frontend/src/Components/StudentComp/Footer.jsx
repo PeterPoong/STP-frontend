@@ -25,13 +25,13 @@ const Footer = () => {
           alignItems: "center",
         }}
       >
-         <div style={{ marginBottom: "5px" }}>
+        <div style={{ marginBottom: "5px" }}>
           <img
-            src={assets/StudentAssets/logo/appdownload.png}
+            src={assets / StudentAssets / logo / appdownload.png}
             alt="App Download"
             style={{ height: "70px", margin: "0 10px" }}
           />
-         </div>
+        </div>
       </div>
       <div
         style={{
@@ -62,7 +62,8 @@ const Footer = () => {
           Miri, Sarawak
         </div>
         <div style={{ fontSize: "12px" }}>
-          Copyright © {new Date().getFullYear()} iMedia Enterprise. Designed by iMedia.
+          Copyright © {new Date().getFullYear()} iMedia Enterprise. Designed by
+          iMedia.
         </div>
       </div>
     </footer>
