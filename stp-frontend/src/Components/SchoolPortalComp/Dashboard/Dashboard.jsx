@@ -8,6 +8,7 @@ import {
   Book,
   Bookmark,
   Heart,
+  Person,
 } from "react-bootstrap-icons";
 import Form from "react-bootstrap/Form";
 import Lock from "../../../assets/StudentPortalAssets/lock.svg";
@@ -18,6 +19,7 @@ import QualificationChart from "./QualificationChart";
 import GenderChart from "./GenderChart";
 import ProgramChart from "./ProgramChart";
 import InterestedCategory from "./CourseCategoryInterested";
+import VisitChart from "./VisitLineChart";
 
 const Dashboard = () => {
   const token = sessionStorage.getItem("token");
@@ -220,6 +222,9 @@ const Dashboard = () => {
         return <ProgramChart typeOfFilter={durationFilter} />;
       case "interested":
         return <InterestedCategory typeOfFilter={durationFilter} />;
+      case "visit":
+        return <VisitChart />;
+
       default:
         return null;
     }
@@ -359,6 +364,11 @@ const Dashboard = () => {
           <button onClick={() => handleTabClick("interested")}>
             <Heart size={22} />
             <p>Interested</p>
+          </button>
+          {/* number visit */}
+          <button onClick={() => handleTabClick("visit")}>
+            <Person size={22} />
+            <p>Visit</p>
           </button>
         </div>
 
