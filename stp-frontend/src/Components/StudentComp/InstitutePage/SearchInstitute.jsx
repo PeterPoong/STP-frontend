@@ -332,7 +332,7 @@ const SearchInstitute = () => {
     setError(null);
     try {
       const requestBody = {
-        country: selectedCountry.id,
+        countryID: selectedCountry.id,
         page: currentPage,
         ...(searchQuery && { search: searchQuery }),
         ...(selectedInstitute?.id && { institute: selectedInstitute.id }),
