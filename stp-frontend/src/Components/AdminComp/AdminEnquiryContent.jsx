@@ -227,9 +227,9 @@ const AdminEnquiryContent = () => {
     
     const getStatusDisplay = (status) => {
         switch (status) {
-            case 1:
+            case "1":
                 return { text: "Replied", color: "green" };
-            case 2:
+            case "2":
                 return { text: "Pending", color: "#FFAA1D" };
             default:
                 return { text: "Disabled", color: "red" };

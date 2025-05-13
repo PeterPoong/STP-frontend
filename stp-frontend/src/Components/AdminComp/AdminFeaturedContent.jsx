@@ -302,15 +302,15 @@ const AdminFeaturedContent = () => {
 
     const getStatusClass = (request_status) => {
         switch (request_status) {
-            case 0:
+            case "0":
                 return 'status-disable';
-            case 3:
+            case "3":
                 return 'status-rejected';
-            case 1:
+            case "1":
                 return 'status-approved';
-            case 2:
+            case "2":
                 return 'status-pending';
-            case 4:
+            case "4":
                 return 'status-schedule';
             default:
                 return '';
@@ -431,13 +431,13 @@ const AdminFeaturedContent = () => {
                     <td>{Featured.request_date || 'N/A'}</td>
                     <td style={{ padding: '8px' }}>
                         <span style={{ 
-                            color: Featured.request_status === 1 ? 'green' : 
-                                   Featured.request_status === 2 ? '#FFAA1D' : 
-                                   Featured.request_status === 3 ? 'red' : 
-                                   Featured.request_status === 4 ? 'blue' : 'red'
+                            color: Featured.request_status === "1" ? 'green' : 
+                                   Featured.request_status === "2" ? 'yellow' : 
+                                   Featured.request_status === "3" ? 'red' : 
+                                   Featured.request_status === "4" ? 'blue' : 'red'
                         }}>
-                            {Featured.request_status === 1 ? 'Approved' : 
-                             Featured.request_status === 3 ? 'Rejected' : 'Pending'}
+                            {Featured.request_status === "1" ? 'Approved' : 
+                             Featured.request_status === "3" ? 'Rejected' : 'Pending'}
                         </span>
                     </td>
                     <td>
@@ -450,7 +450,7 @@ const AdminFeaturedContent = () => {
                                     Save
                                 </Button>
                             ) : (
-                                Featured.request_status === 2 ? (
+                                Featured.request_status === "2" ? (
                                     <>
                                         <Button className="accept"
                                             variant="success"

@@ -149,7 +149,7 @@ const AdminDataContent = () => {
     
 
     const handleToggleSwitch = (id, currentStatus) => {
-        const action = (currentStatus === 1) ? 'disable' : 'enable'; // Ensure that 1 maps to 'disable' and 0 maps to 'enable'
+        const action = (currentStatus === "1") ? 'disable' : 'enable'; // Ensure that 1 maps to 'disable' and 0 maps to 'enable'
         setTargetData({ id, action });
         setShowModal(true);
     };
@@ -188,9 +188,9 @@ const AdminDataContent = () => {
     const getStatusDisplay = (status) => {
         // Convert numeric status to text and color
         switch (status) {
-            case 1:
+            case "1":
                 return { text: 'Active', color: 'green' };
-            case 0:
+            case "0":
             default:
                 return { text: 'Disable', color: 'red' };
         }
@@ -224,10 +224,10 @@ const AdminDataContent = () => {
                         <>
                             <MDBSwitch
                                 id={`switch-${Data.id}`}
-                                checked={Data.status === 1}
+                                checked={Data.status === "1"}
                                 onChange={() => handleToggleSwitch(Data.id, Data.status)}
                                 style={{
-                                    color: Data.status === 1 ? 'green' : ''
+                                    color: Data.status === "1" ? 'green' : ''
                                 }}
                             />
                         </>

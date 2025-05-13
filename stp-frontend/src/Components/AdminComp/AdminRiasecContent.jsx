@@ -38,8 +38,8 @@ const AdminRiasecContent = () => {
     useEffect(() => {
         // Hardcoded statList values
         const hardcodedStatList = [
-            { id: 0, name: "Disable" },
-            { id: 1, name: "Active" }
+            { id: "0", name: "Disable" },
+            { id: "1", name: "Active" }
         ];
         setStatList(hardcodedStatList);
         fetchriasecs(); // Fetch enquiries initially
@@ -237,9 +237,9 @@ const AdminRiasecContent = () => {
     const getStatusDisplay = (status) => {
         // Convert status to text and color
         switch (status) {
-            case 1:
+            case "1":
                 return { text: 'Active', color: 'green' };
-            case 0:
+            case "0":
             default:
                 return { text: 'Disable', color: 'red' };
         }
@@ -295,10 +295,10 @@ const AdminRiasecContent = () => {
                             />
                             <MDBSwitch
                                 id={`switch-${riasec.id}`}
-                                checked={riasec.status === 1}
+                                checked={riasec.status === "1"}
                                 onChange={() => handleToggleSwitch(riasec.id, riasec.status)}
                                 style={{
-                                    color: riasec.status === 1 ? "green" : ""
+                                    color: riasec.status === "1" ? "green" : ""
                                 }}
                             />
                         </>

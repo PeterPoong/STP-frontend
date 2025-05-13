@@ -247,9 +247,9 @@ const AdminQuestionContent = () => {
     const getStatusDisplay = (status) => {
         // Convert numeric status to text and color
         switch (status) {
-            case 1:
+            case "1":
                 return { text: 'Active', color: 'green' };
-            case 0:
+            case "0":
             default:
                 return { text: 'Disable', color: 'red' };
         }
@@ -311,10 +311,10 @@ const handleCategoryChange = (categoryId) => {
                             />
                             <MDBSwitch
                                 id={`switch-${question.id}`}
-                                checked={question.status === 1}
+                                checked={question.status === "1"}
                                 onChange={() => handleToggleSwitch(question.id, question.status)}
                                 style={{
-                                    color: question.status === 1 ? "green" : ""
+                                    color: question.status === "1" ? "green" : ""
                                 }}
                             />
                         </>

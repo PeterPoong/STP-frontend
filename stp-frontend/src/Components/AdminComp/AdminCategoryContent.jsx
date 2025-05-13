@@ -133,7 +133,7 @@ const AdminCategoryContent = () => {
 
     // Toggle for hotpick status
     const handleToggleHotPick = (id, currentHotPick) => {
-        const action = currentHotPick === 1 ? 'disable' : 'enable';
+        const action = currentHotPick === "1" ? 'disable' : 'enable';
         setTargetCategory({ id, action });
         setModalType('hotpick');  // Set modal type for hotpick action
         setShowModal(true);
@@ -295,7 +295,7 @@ const AdminCategoryContent = () => {
                 <input
                     className="categoryBox"
                     type="checkbox"
-                    checked={Category.course_hotPick === 1}
+                    checked={Category.course_hotPick === "1"}
                     onChange={() => handleToggleHotPick(Category.id, Category.course_hotPick)}
                 />
             </td>
