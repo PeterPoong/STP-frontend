@@ -87,10 +87,10 @@ const AdminApplicantContent = () => {
             }
 
             const result = await response.json();
-            if (result && result.data) {
-                setApplicants(result.data);
-                setTotalPages(result.last_page);
-                setCurrentPage(result.current_page);
+            if (result && result.data && Array.isArray(result.data.data)) {
+                setApplicants(result.data.data);
+                setTotalPages(result.data.last_page);
+                setCurrentPage(result.data.current_page);
             } else {
                 setApplicants([]);
             }
