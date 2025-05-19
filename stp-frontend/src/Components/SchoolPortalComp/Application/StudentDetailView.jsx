@@ -453,39 +453,51 @@ const StudentDetailView = ({
       }
 
       const responseData = await response.json();
-      console.log("ic", responseData.data.frontIc.studentMedia_name);
 
       if (responseData.success && responseData.data) {
         if (responseData.data.frontIc != null) {
           setUploadedFrontIcFileName(
             responseData.data.frontIc.studentMedia_name
           );
+          console.log("front ic name");
           // setUploadedFrontIcFile(responseData.data.frontIc.studentMedia_location);
+
           setUploadedFrontIcFileUrl(
             `${baseURL}storage/${responseData.data.frontIc.studentMedia_location}` ??
               ""
           );
+          console.log("front ic url");
         }
 
         if (responseData.data.backIC != null) {
           setUploadedBackIcFileName(responseData.data.backIC.studentMedia_name);
+          console.log("backic name");
+
           setUploadedBackIcFileUrl(
             `${baseURL}storage/${responseData.data.backIC.studentMedia_location}` ??
               ""
           );
+          console.log("backic url");
         }
 
         if (responseData.data.passport != null) {
           setUploadedPassportFileName(
             responseData.data.passport.studentMedia_name ?? "null"
           );
+          console.log("passport name");
+
           setUploadedPassportFile(
             responseData.data.passport.studentMedia_location
           );
+
+          console.log("passport location");
+
           setUploadedPassportFileUrl(
             `${baseURL}storage/${responseData.data.passport.studentMedia_location}` ??
               ""
           );
+
+          console.log("passport url");
         }
 
         setBasicInfo(responseData.data);
@@ -1954,74 +1966,80 @@ const StudentDetailView = ({
                         <p className="text-secondary fw-bold border-bottom border-2 pb-3">
                           Front ic
                         </p>
-                        <Col md={12} className="mb-5 mb-md-0">
-                          <Form.Group controlId="photoUpload">
-                            <div
-                              className="d-flex align-items-center py-2"
-                              style={{
-                                border: "2px solid white",
-                                borderRadius: "5px",
-                                padding: "10px",
-                                boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
-                              }}
-                            >
-                              <Col
-                                xs={3}
-                                md={2}
-                                className="d-flex align-self-center"
+                        {uploadedFrontIcFileName ? (
+                          <Col md={12} className="mb-5 mb-md-0">
+                            <Form.Group controlId="photoUpload">
+                              <div
+                                className="d-flex align-items-center py-2"
+                                style={{
+                                  border: "2px solid white",
+                                  borderRadius: "5px",
+                                  padding: "10px",
+                                  boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
+                                }}
                               >
-                                <img
-                                  src={documentIcon}
-                                  className={`${styles.applycustomcourses_icon} `}
-                                  alt="Custom Apply School icon"
-                                />
-                              </Col>
-                              <Col
-                                xs={9}
-                                md={8}
-                                className="d-flex align-self-center"
-                              >
-                                {uploadedFrontIcFileName ? (
+                                <Col
+                                  xs={3}
+                                  md={2}
+                                  className="d-flex align-self-center"
+                                >
+                                  <img
+                                    src={documentIcon}
+                                    className={`${styles.applycustomcourses_icon} `}
+                                    alt="Custom Apply School icon"
+                                  />
+                                </Col>
+                                <Col
+                                  xs={9}
+                                  md={8}
+                                  className="d-flex align-self-center"
+                                >
+                                  {uploadedFrontIcFileName ? (
+                                    <a
+                                      href={uploadedFrontIcFileUrl} // Use the file object if URL is empty
+                                      target="_blank"
+                                      style={{
+                                        color: "#B71A18",
+                                        fontSize: "13px",
+                                      }}
+                                      rel="noopener noreferrer"
+                                    >
+                                      {formatFileName(uploadedFrontIcFileName)}
+                                    </a>
+                                  ) : (
+                                    <span className="text-muted">
+                                      No file being uploaded
+                                    </span>
+                                  )}
+                                </Col>
+
+                                <Col
+                                  xs={1}
+                                  md={2}
+                                  className="d-flex align-self-center justify-content-end"
+                                >
                                   <a
-                                    href={uploadedFrontIcFileUrl} // Use the file object if URL is empty
-                                    target="_blank"
+                                    // href="http://192.168.0.75:8000/storage/studentDocument/frontIc1745200884.png"
+                                    href={uploadedFrontIcFileUrl}
+                                    download={uploadedFrontIcFileName}
                                     style={{
                                       color: "#B71A18",
-                                      fontSize: "13px",
+                                      fontSize: "11px",
+                                      padding:
+                                        "clamp(2px, 1vw, 6px) clamp(5px, 5vw, 10px)",
                                     }}
-                                    rel="noopener noreferrer"
                                   >
-                                    {formatFileName(uploadedFrontIcFileName)}
+                                    Download
                                   </a>
-                                ) : (
-                                  <span className="text-muted">
-                                    No file being uploaded
-                                  </span>
-                                )}
-                              </Col>
-
-                              <Col
-                                xs={1}
-                                md={2}
-                                className="d-flex align-self-center justify-content-end"
-                              >
-                                <a
-                                  // href="http://192.168.0.75:8000/storage/studentDocument/frontIc1745200884.png"
-                                  href={uploadedFrontIcFileUrl}
-                                  download={uploadedFrontIcFileName}
-                                  style={{
-                                    color: "#B71A18",
-                                    fontSize: "11px",
-                                    padding:
-                                      "clamp(2px, 1vw, 6px) clamp(5px, 5vw, 10px)",
-                                  }}
-                                >
-                                  Download
-                                </a>
-                              </Col>
-                            </div>
-                          </Form.Group>
-                        </Col>
+                                </Col>
+                              </div>
+                            </Form.Group>
+                          </Col>
+                        ) : (
+                          <p className="text-center text-muted">
+                            No passport front ic uploaded yet.
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -2031,74 +2049,80 @@ const StudentDetailView = ({
                     <p className="text-secondary fw-bold border-bottom border-2 pb-3">
                       Back IC
                     </p>
-                    <Col md={12} className="mb-5 mb-md-0">
-                      <Form.Group controlId="photoUpload">
-                        <div
-                          className="d-flex align-items-center py-2"
-                          style={{
-                            border: "2px solid white",
-                            borderRadius: "5px",
-                            padding: "10px",
-                            boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
-                          }}
-                        >
-                          <Col
-                            xs={3}
-                            md={2}
-                            className="d-flex align-self-center"
+                    {uploadedBackIcFileName ? (
+                      <Col md={12} className="mb-5 mb-md-0">
+                        <Form.Group controlId="photoUpload">
+                          <div
+                            className="d-flex align-items-center py-2"
+                            style={{
+                              border: "2px solid white",
+                              borderRadius: "5px",
+                              padding: "10px",
+                              boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
+                            }}
                           >
-                            <img
-                              src={documentIcon}
-                              className={`${styles.applycustomcourses_icon} `}
-                              alt="Custom Apply School icon"
-                            />
-                          </Col>
-                          <Col
-                            xs={9}
-                            md={8}
-                            className="d-flex align-self-center"
-                          >
-                            {uploadedBackIcFileName ? (
+                            <Col
+                              xs={3}
+                              md={2}
+                              className="d-flex align-self-center"
+                            >
+                              <img
+                                src={documentIcon}
+                                className={`${styles.applycustomcourses_icon} `}
+                                alt="Custom Apply School icon"
+                              />
+                            </Col>
+                            <Col
+                              xs={9}
+                              md={8}
+                              className="d-flex align-self-center"
+                            >
+                              {uploadedBackIcFileName ? (
+                                <a
+                                  href={uploadedBackIcFileUrl} // Use the file object if URL is empty
+                                  target="_blank"
+                                  style={{
+                                    color: "#B71A18",
+                                    fontSize: "13px",
+                                  }}
+                                  rel="noopener noreferrer"
+                                >
+                                  {formatFileName(uploadedBackIcFileName)}
+                                </a>
+                              ) : (
+                                <span className="text-muted">
+                                  No file being uploaded
+                                </span>
+                              )}
+                            </Col>
+
+                            <Col
+                              xs={1}
+                              md={2}
+                              className="d-flex align-self-center justify-content-end"
+                            >
                               <a
-                                href={uploadedBackIcFileUrl} // Use the file object if URL is empty
-                                target="_blank"
+                                // href="http://192.168.0.75:8000/storage/studentDocument/frontIc1745200884.png"
+                                href={uploadedBackIcFileUrl}
+                                download={uploadedBackIcFileName}
                                 style={{
                                   color: "#B71A18",
-                                  fontSize: "13px",
+                                  fontSize: "11px",
+                                  padding:
+                                    "clamp(2px, 1vw, 6px) clamp(5px, 5vw, 10px)",
                                 }}
-                                rel="noopener noreferrer"
                               >
-                                {formatFileName(uploadedBackIcFileName)}
+                                Download
                               </a>
-                            ) : (
-                              <span className="text-muted">
-                                No file being uploaded
-                              </span>
-                            )}
-                          </Col>
-
-                          <Col
-                            xs={1}
-                            md={2}
-                            className="d-flex align-self-center justify-content-end"
-                          >
-                            <a
-                              // href="http://192.168.0.75:8000/storage/studentDocument/frontIc1745200884.png"
-                              href={uploadedBackIcFileUrl}
-                              download={uploadedBackIcFileName}
-                              style={{
-                                color: "#B71A18",
-                                fontSize: "11px",
-                                padding:
-                                  "clamp(2px, 1vw, 6px) clamp(5px, 5vw, 10px)",
-                              }}
-                            >
-                              Download
-                            </a>
-                          </Col>
-                        </div>
-                      </Form.Group>
-                    </Col>
+                            </Col>
+                          </div>
+                        </Form.Group>
+                      </Col>
+                    ) : (
+                      <p className="text-center text-muted">
+                        No passport back ic uploaded yet.
+                      </p>
+                    )}
                   </div>
 
                   {/* passport */}

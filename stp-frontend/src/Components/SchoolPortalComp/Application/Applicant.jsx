@@ -56,7 +56,7 @@ const Applicant = ({ onActionUpgrade }) => {
       }
       const data = await response.json();
       // console.log("data", data.data);
-
+      console.log("student detail", data.data);
       setApplicants(data.data);
     } catch (error) {
       console.error("There was a problem with the fetch operation:", error);
@@ -236,8 +236,9 @@ const Applicant = ({ onActionUpgrade }) => {
     const isAccepted = status === "Accepted";
     return (
       <div
-        className={`${styles["status-message"]} ${isAccepted ? styles["accepted"] : styles["rejected"]
-          }`}
+        className={`${styles["status-message"]} ${
+          isAccepted ? styles["accepted"] : styles["rejected"]
+        }`}
       >
         <FontAwesomeIcon
           icon={isAccepted ? faCheck : faTimes}
@@ -292,13 +293,16 @@ const Applicant = ({ onActionUpgrade }) => {
     handleBackToList();
   };
 
-  if (isLoading) return <div>
-    <div className="w-100 h-100 align-items-center justify-content-center">
-      <Spinner animation="border" role="status">
-        <span className="visually-hidden">Loading...</span>
-      </Spinner>
-    </div>
-  </div>;
+  if (isLoading)
+    return (
+      <div>
+        <div className="w-100 h-100 align-items-center justify-content-center">
+          <Spinner animation="border" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </Spinner>
+        </div>
+      </div>
+    );
   if (error) return <div>Error: {error}</div>;
 
   if (selectedStudent) {
@@ -311,7 +315,7 @@ const Applicant = ({ onActionUpgrade }) => {
         onBack={handleBackToList}
         onActionSuccess={handleActionSuccess}
         onActionUpgrade={onActionUpgrade}
-      // Pass the callback
+        // Pass the callback
       />
     );
   }
@@ -423,8 +427,9 @@ const Applicant = ({ onActionUpgrade }) => {
                   <img
                     src={
                       applicant.profile_pic
-                        ? `${import.meta.env.VITE_BASE_URL}storage/${applicant.profile_pic
-                        }`
+                        ? `${import.meta.env.VITE_BASE_URL}storage/${
+                            applicant.profile_pic
+                          }`
                         : defaultProfilePic
                     }
                     alt={`${applicant.student_name}'s profile`}
@@ -466,11 +471,15 @@ const Applicant = ({ onActionUpgrade }) => {
                     )}
                     <div className={`${styles["first-row"]} flex-wrap`}>
                       <h2 className={styles["student-name"]}>
-                        {`${applicant.student_name}`}
+                        {applicant.student_name != null &&
+                        applicant.student_name !== "null"
+                          ? `${applicant.student_name}`
+                          : `${applicant.user_name}`}
                       </h2>
                       <div
-                        className={`${styles["application-status"]
-                          } ${getStatusClassName(applicant.form_status)}`}
+                        className={`${
+                          styles["application-status"]
+                        } ${getStatusClassName(applicant.form_status)}`}
                       >
                         <p>{applicant.form_status}</p>
                       </div>
