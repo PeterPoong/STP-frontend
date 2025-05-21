@@ -315,7 +315,7 @@ const StudentDetailView = ({
       }
 
       const result = await response.json();
-      console.log("Transcript subjects response:", result); // Add logging for debugging
+      // console.log("Transcript subjects response:", result); // Add logging for debugging
 
       if (result.success) {
         if (
@@ -459,48 +459,49 @@ const StudentDetailView = ({
           setUploadedFrontIcFileName(
             responseData.data.frontIc.studentMedia_name
           );
-          console.log("front ic name");
+          // console.log("front ic name");
           // setUploadedFrontIcFile(responseData.data.frontIc.studentMedia_location);
 
           setUploadedFrontIcFileUrl(
             `${baseURL}storage/${responseData.data.frontIc.studentMedia_location}` ??
               ""
           );
-          console.log("front ic url");
+          // console.log("front ic url");
         }
 
         if (responseData.data.backIC != null) {
           setUploadedBackIcFileName(responseData.data.backIC.studentMedia_name);
-          console.log("backic name");
+          // console.log("backic name");
 
           setUploadedBackIcFileUrl(
             `${baseURL}storage/${responseData.data.backIC.studentMedia_location}` ??
               ""
           );
-          console.log("backic url");
+          // console.log("backic url");
         }
 
         if (responseData.data.passport != null) {
           setUploadedPassportFileName(
             responseData.data.passport.studentMedia_name ?? "null"
           );
-          console.log("passport name");
+          // console.log("passport name");
 
           setUploadedPassportFile(
             responseData.data.passport.studentMedia_location
           );
 
-          console.log("passport location");
+          // console.log("passport location");
 
           setUploadedPassportFileUrl(
             `${baseURL}storage/${responseData.data.passport.studentMedia_location}` ??
               ""
           );
 
-          console.log("passport url");
+          // console.log("passport url");
         }
 
         setBasicInfo(responseData.data);
+        // console.log("basic info", responseData.data);
       } else {
         throw new Error("No data received from the server.");
       }
@@ -1002,6 +1003,14 @@ const StudentDetailView = ({
     }
 
     return overallGrade.trim() || "N/A";
+  };
+
+  const truncateUsername = (username) => {
+    // Check if the username length exceeds 15 characters
+    if (username.length > 15) {
+      return `${username.slice(0, 10)}...`; // Truncate to 15 characters and add "..."
+    }
+    return username; // Return the original username if it's within the limit
   };
 
   if (isLoading)
@@ -1565,9 +1574,14 @@ const StudentDetailView = ({
                     alt="Student"
                   />
                   <div>
-                    <p className="my-0 school-fontsize-1 ">{`${
-                      basicInfo?.first_name || ""
-                    } ${basicInfo?.last_name || ""}`}</p>
+                    <p className="my-0 school-fontsize-1 ">
+                      {`${
+                        basicInfo?.first_name !== "null" &&
+                        basicInfo?.last_name != null
+                          ? `${basicInfo.first_name} ${basicInfo.last_name}`
+                          : `${basicInfo.student_userName}`
+                      }`}
+                    </p>
                     <p className="my-0 text-secondary mt-2">
                       <small>Applied For:</small>{" "}
                       <span className="text-black ms-2">
@@ -1651,17 +1665,23 @@ const StudentDetailView = ({
                           </p>
                           <p className="d-flex align-items-center">
                             <span className="me-2">
-                              {`${basicInfo?.first_name || ""} ${
-                                basicInfo?.last_name || ""
-                              }`.trim()}
+                              {`${
+                                basicInfo?.first_name !== "null" &&
+                                basicInfo?.last_name != null
+                                  ? `${basicInfo.first_name} ${basicInfo.last_name}`
+                                  : truncateUsername(basicInfo.student_userName)
+                              }`}
                             </span>
                             <span
                               className="copy-icon-wrapper"
                               onClick={() =>
                                 copyToClipboard(
-                                  `${basicInfo?.first_name || ""} ${
-                                    basicInfo?.last_name || ""
-                                  }`.trim(),
+                                  `${
+                                    basicInfo?.first_name !== "null" &&
+                                    basicInfo?.last_name != null
+                                      ? `${basicInfo.first_name} ${basicInfo.last_name}`
+                                      : `${basicInfo.student_userName}`
+                                  }`,
                                   "name"
                                 )
                               }
@@ -1789,28 +1809,28 @@ const StudentDetailView = ({
                           </p>
                           <p className="d-flex align-items-center">
                             <span className="me-2">
-                              {basicInfo?.address || ""}
+                              {basicInfo?.address ||
+                                "Student didn't fill in the address."}
                             </span>
-                            <span
-                              className="copy-icon-wrapper"
-                              onClick={() =>
-                                copyToClipboard(
-                                  basicInfo?.address || "",
-                                  "address"
-                                )
-                              }
-                              title={
-                                copiedFields.address
-                                  ? "Copied!"
-                                  : "Copy to clipboard"
-                              }
-                            >
-                              {copiedFields.address ? (
-                                <Check size={16} className="copied-icon" />
-                              ) : (
-                                <Copy size={16} className="copy-icon" />
-                              )}
-                            </span>
+                            {basicInfo?.address && (
+                              <span
+                                className="copy-icon-wrapper"
+                                onClick={() =>
+                                  copyToClipboard(basicInfo.address, "address")
+                                }
+                                title={
+                                  copiedFields.address
+                                    ? "Copied!"
+                                    : "Copy to clipboard"
+                                }
+                              >
+                                {copiedFields.address ? (
+                                  <Check size={16} className="copied-icon" />
+                                ) : (
+                                  <Copy size={16} className="copy-icon" />
+                                )}
+                              </span>
+                            )}
                           </p>
                         </div>
                       </div>

@@ -355,7 +355,7 @@ const Sidebar = ({ onDropdownItemSelect, selectTabPage }) => {
               </Modal>
             </div>
 
-            {accountType === 64 ? (
+            {accountType == 64 ? (
               <Button
                 variant="outline-warning"
                 size="sm"
@@ -365,7 +365,7 @@ const Sidebar = ({ onDropdownItemSelect, selectTabPage }) => {
                 <Person className="pe-1" />
                 Basic
               </Button>
-            ) : accountType === 65 ? (
+            ) : accountType == 65 ? (
               <Button
                 variant="outline-warning"
                 size="sm"

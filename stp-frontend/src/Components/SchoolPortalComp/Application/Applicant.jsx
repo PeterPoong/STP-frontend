@@ -56,7 +56,7 @@ const Applicant = ({ onActionUpgrade }) => {
       }
       const data = await response.json();
       // console.log("data", data.data);
-      console.log("student detail", data.data);
+      // console.log("student detail", data.data);
       setApplicants(data.data);
     } catch (error) {
       console.error("There was a problem with the fetch operation:", error);
